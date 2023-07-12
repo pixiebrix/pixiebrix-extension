@@ -41,7 +41,7 @@ export type OptionsDefinition = {
  * An extension defined in a mod.
  * @see ModDefinition.extensionPoints
  */
-export type ExtensionDefinition = {
+export type ModComponentDefinition = {
   /**
    * The id of the ExtensionPoint.
    */
@@ -77,10 +77,10 @@ export type ExtensionDefinition = {
 };
 
 /**
- * An ExtensionDefinition with all inner definition references resolved.
+ * An ModComponentDefinition with all inner definition references resolved.
  * @see resolveDefinitions
  */
-export type ResolvedExtensionDefinition = ExtensionDefinition & {
+export type ResolvedExtensionDefinition = ModComponentDefinition & {
   // Known to be a registry id instead of an InnerDefinitionRef
   id: RegistryId;
 
@@ -98,7 +98,7 @@ export type ResolvedExtensionDefinition = ExtensionDefinition & {
  */
 export interface UnsavedModDefinition extends Definition {
   kind: "recipe";
-  extensionPoints: ExtensionDefinition[];
+  extensionPoints: ModComponentDefinition[];
   definitions?: InnerDefinitions;
   options?: OptionsDefinition;
 }

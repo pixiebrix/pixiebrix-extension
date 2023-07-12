@@ -23,6 +23,7 @@ import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { type BrickArgs, type BrickArgsContext } from "@/types/runtimeTypes";
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";
@@ -45,16 +46,16 @@ export class HeadlessModeError extends Error {
 
   public readonly blockId: RegistryId;
 
-  public readonly args: unknown;
+  public readonly args: BrickArgs;
 
-  public readonly ctxt: unknown;
+  public readonly ctxt: BrickArgsContext;
 
   public readonly loggerContext: MessageContext;
 
   constructor(
     blockId: RegistryId,
-    args: unknown, // BlockArg
-    ctxt: unknown, // BrickArgsContext
+    args: BrickArgs,
+    ctxt: BrickArgsContext,
     loggerContext: MessageContext
   ) {
     super(`${blockId} is a renderer`);

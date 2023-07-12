@@ -19,7 +19,7 @@ import {
   type MigrationManifest,
   type PersistedState,
 } from "redux-persist/es/types";
-import { type PersistedExtension } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/extensionTypes";
 import {
   type ExtensionOptionsState,
   type LegacyExtensionObjectShapeState,
@@ -67,9 +67,9 @@ export function migrateActiveExtensions<T>(
       ...x,
       active: true,
       createTimestamp:
-        (x as Partial<PersistedExtension>).createTimestamp ?? timestamp,
+        (x as Partial<ActivatedModComponent>).createTimestamp ?? timestamp,
       updateTimestamp:
-        (x as Partial<PersistedExtension>).updateTimestamp ?? timestamp,
+        (x as Partial<ActivatedModComponent>).updateTimestamp ?? timestamp,
     })),
   };
 }

@@ -42,8 +42,8 @@ import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 
 const STEPS: WizardStep[] = [
-  // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
-  // to realize it's OK to pass in a whole RecipeDefinition for something that just needs the options prop
+  // OptionsBody takes only a slice of the ModDefinition, however the types aren't set up in a way for TypeScript
+  // to realize it's OK to pass in a whole ModDefinition for something that just needs the options prop
   {
     key: "options",
     label: "Configure Mod",

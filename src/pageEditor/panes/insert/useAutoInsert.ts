@@ -10,13 +10,13 @@ import {
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
 import { reportEvent } from "@/telemetry/events";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import notify from "@/utils/notify";
 
 const { addElement, toggleInsert } = actions;
 
-export function useAutoInsert(type: ExtensionPointType): void {
+export function useAutoInsert(type: StarterBrickType): void {
   const dispatch = useDispatch();
 
   useAsyncEffect(async () => {

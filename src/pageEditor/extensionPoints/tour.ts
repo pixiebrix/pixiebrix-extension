@@ -30,7 +30,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
@@ -72,7 +72,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: TourFormState
-): ExtensionPointConfig<TourDefinition> {
+): StarterBrickConfig<TourDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, reader },

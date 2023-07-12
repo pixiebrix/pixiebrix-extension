@@ -97,8 +97,8 @@ const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
  * endpoint isn't set up to have an envelop around the package config. Therefore, we have to strip these out
  * prior to showing the YAML/JSON config, or saving the values on the server.
  *
- * @see RecipeDefinition.updated_at
- * @see RecipeDefinition.sharing
+ * @see ModDefinition.updated_at
+ * @see ModDefinition.sharing
  */
 function stripNonSchemaProps(brick: any) {
   return produce(brick, (draft: any) => {

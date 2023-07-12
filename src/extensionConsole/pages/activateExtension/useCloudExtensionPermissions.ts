@@ -18,7 +18,7 @@
 import { type ServiceDependency } from "@/types/serviceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { services as serviceLocator } from "@/background/messenger/api";
-import { type CloudExtension } from "@/types/contract";
+import { type StandaloneModDefinition } from "@/types/contract";
 import { type AsyncState } from "@/types/sliceTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
@@ -37,7 +37,7 @@ type AsyncPermissionsState = AsyncState<PermissionsStatus> & {
  * @see useRecipePermissions
  */
 function useCloudExtensionPermissions(
-  extension: CloudExtension,
+  extension: StandaloneModDefinition,
   services: ServiceDependency[]
 ): AsyncPermissionsState {
   const permissionsState = useAsyncState(

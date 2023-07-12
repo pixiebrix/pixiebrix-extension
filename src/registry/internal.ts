@@ -34,7 +34,7 @@ import {
   type ModDefinition,
   type ResolvedExtensionDefinition,
 } from "@/types/modDefinitionTypes";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
@@ -49,7 +49,7 @@ import {
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type Brick } from "@/types/brickTypes";
 
-type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
+type InnerExtensionPoint = Pick<StarterBrickConfig, "definition" | "kind">;
 type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
   UnknownObject & {
     kind: K;
@@ -173,7 +173,7 @@ async function resolveExtensionPointDefinition(
       id: internalRegistryId,
       name: "Anonymous extensionPoint",
     },
-  } as ExtensionPointConfig);
+  } as StarterBrickConfig);
 
   extensionPointRegistry.register([item], {
     source: "internal",

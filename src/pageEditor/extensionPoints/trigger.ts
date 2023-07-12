@@ -36,7 +36,7 @@ import {
   type TriggerDefinition,
   TriggerExtensionPoint,
 } from "@/extensionPoints/triggerExtension";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
@@ -81,7 +81,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: TriggerFormState
-): ExtensionPointConfig<TriggerDefinition> {
+): StarterBrickConfig<TriggerDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {

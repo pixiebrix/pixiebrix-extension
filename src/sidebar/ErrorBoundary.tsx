@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Component } from "react";
+import React, { Component, type ErrorInfo } from "react";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
 import { reloadSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
+import reportError from "@/telemetry/reportError";
 
 interface State {
   hasError: boolean;
@@ -31,8 +31,12 @@ interface State {
   stack: string;
 }
 
-class ErrorBoundary extends Component<UnknownObject, State> {
-  constructor(props: UnknownObject) {
+interface Props {
+  onError?: (error?: Error, errorInfo?: ErrorInfo) => void;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { hasError: false, errorMessage: undefined, stack: undefined };
   }
@@ -44,6 +48,11 @@ class ErrorBoundary extends Component<UnknownObject, State> {
       errorMessage: getErrorMessage(error),
       stack: error.stack,
     };
+  }
+
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    this.props.onError?.(error, errorInfo);
+    reportError(error);
   }
 
   async reloadSidebar() {

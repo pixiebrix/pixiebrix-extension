@@ -30,7 +30,7 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import {
   type ContextMenuConfig,
   ContextMenuExtensionPoint,
@@ -83,7 +83,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: ContextMenuFormState
-): ExtensionPointConfig<MenuDefinition> {
+): StarterBrickConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {

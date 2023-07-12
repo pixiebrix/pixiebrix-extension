@@ -24,8 +24,8 @@ import {
   type CustomEventOptions,
   type DebounceOptions,
   ExtensionPoint,
-  type ExtensionPointConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickConfig,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/blocks/available";
@@ -433,7 +433,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
   }
 }
 
-export interface PanelDefinition extends ExtensionPointDefinition {
+export interface PanelDefinition extends StarterBrickDefinition {
   /**
    * The trigger to refresh the panel
    *
@@ -459,9 +459,9 @@ export interface PanelDefinition extends ExtensionPointDefinition {
 class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   private readonly definition: PanelDefinition;
 
-  public readonly rawConfig: ExtensionPointConfig;
+  public readonly rawConfig: StarterBrickConfig;
 
-  constructor(config: ExtensionPointConfig) {
+  constructor(config: StarterBrickConfig) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
@@ -497,7 +497,7 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   }
 }
 
-export function fromJS(config: ExtensionPointConfig): StarterBrick {
+export function fromJS(config: StarterBrickConfig): StarterBrick {
   const { type } = config.definition;
   if (type !== "actionPanel") {
     throw new Error(`Expected type=actionPanel, got ${type}`);

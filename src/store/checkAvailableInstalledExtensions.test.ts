@@ -28,7 +28,7 @@ import {
   type MenuDefinition,
   RemoteMenuItemExtensionPoint,
 } from "@/extensionPoints/menuItemExtension";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { type Metadata } from "@/types/registryTypes";
 import {
   type QuickBarDefinition,
@@ -91,7 +91,7 @@ describe("checkAvailableInstalledExtensions", () => {
           };
         },
       }
-    ) as ExtensionPointConfig<MenuDefinition>;
+    ) as StarterBrickConfig<MenuDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
       availableButtonExtensionPointConfig
     );
@@ -115,7 +115,7 @@ describe("checkAvailableInstalledExtensions", () => {
             targetMode: "document",
           };
         },
-      }) as ExtensionPointConfig<QuickBarDefinition>;
+      }) as StarterBrickConfig<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
       availableQuickbarExtensionPointConfig
     );

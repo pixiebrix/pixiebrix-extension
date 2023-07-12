@@ -18,7 +18,7 @@
 import { validateRegistryId } from "@/types/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/blocks/types";
 import {
@@ -52,7 +52,7 @@ beforeEach(() => {
 const rootReaderId = validateRegistryId("test/root-reader");
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<ExtensionPointConfig<TriggerDefinition>>({
+  define<StarterBrickConfig<TriggerDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

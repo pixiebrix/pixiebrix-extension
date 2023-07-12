@@ -156,7 +156,7 @@ test("saves non recipe element", async () => {
   expect(createMock).toHaveBeenCalledWith({
     element,
     options: {
-      // Single IExtension, so need to push as CloudExtension an handle all permissions/notifications/reactivation
+      // Single IExtension, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
       pushToCloud: true,
       checkPermissions: true,
       notifySuccess: true,
@@ -302,7 +302,7 @@ describe("saving a Recipe Extension", () => {
     expect(createMock).toHaveBeenCalledWith({
       element: elements[1],
       options: {
-        // Single IExtension, so need to push as CloudExtension an handle all permissions/notifications/reactivation
+        // Single IExtension, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
         pushToCloud: true,
         // FIXME: verify checkPermissions should be false
         checkPermissions: false,
@@ -361,7 +361,7 @@ describe("saving a Recipe Extension", () => {
       element,
       options: {
         pushToCloud: false,
-        // New RecipeDefinition with single ExtensionDefinition, so let create handle permissions
+        // New ModDefinition with single ModComponentDefinition, so let create handle permissions
         // check/notifications/reactivation
         checkPermissions: true,
         notifySuccess: true,
