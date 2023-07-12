@@ -102,20 +102,23 @@ export async function runRendererPipeline({
   throw new BusinessError("Pipeline does not include a renderer");
 }
 
-export async function runEffectPipeline({
+/**
+ * Run a pipeline in headless mode.
+ */
+export async function runHeadlessPipeline({
   pipeline,
   context,
   options,
   meta,
   messageContext,
-}: RunPipelineParams): Promise<void> {
+}: RunPipelineParams): Promise<unknown> {
   expectContext("contentScript");
 
   if (meta.extensionId == null) {
-    throw new Error("runEffectPipeline requires meta.extensionId");
+    throw new Error("runHeadlessPipeline requires meta.extensionId");
   }
 
-  await reducePipeline(
+  return reducePipeline(
     pipeline,
     {
       input: context["@input"] ?? {},

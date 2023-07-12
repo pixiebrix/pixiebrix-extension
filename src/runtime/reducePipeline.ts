@@ -44,7 +44,10 @@ import {
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type ResolvedBrickConfig } from "@/runtime/runtimeTypes";
+import {
+  type ResolvedBrickConfig,
+  unsafeAssumeValidArg,
+} from "@/runtime/runtimeTypes";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/blocks/registry";
 import { isObject } from "@/utils";
@@ -570,7 +573,8 @@ export async function runBlock(
 
     throw new HeadlessModeError(
       block.id,
-      props.args,
+      // Call to throwIfInvalidInput above ensures args are valid for the brick
+      unsafeAssumeValidArg(props.args),
       props.context,
       logger.context
     );
