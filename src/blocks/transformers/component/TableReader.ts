@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
@@ -34,7 +34,7 @@ import { lowerCase } from "lodash";
 const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
 const TABLE_READER_ALL_ID = validateRegistryId("@pixiebrix/table-reader-all");
 
-export class TableReader extends Transformer {
+export class TableReader extends TransformerABC {
   constructor() {
     super(TABLE_READER_ID, "Table Reader", "Extract data from table");
   }
@@ -112,7 +112,7 @@ export class TableReader extends Transformer {
   }
 }
 
-export class TablesReader extends Transformer {
+export class TablesReader extends TransformerABC {
   constructor() {
     super(
       TABLE_READER_ALL_ID,

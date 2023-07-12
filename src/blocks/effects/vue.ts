@@ -17,11 +17,11 @@
 
 import { setComponentData } from "@/pageScript/messenger/api";
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
-export class SetVueValues extends Effect {
+export class SetVueValues extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/vue/set-values",

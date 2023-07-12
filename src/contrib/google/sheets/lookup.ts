@@ -23,7 +23,7 @@ import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -68,7 +68,7 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
   ["spreadsheetId", "tabName", "header", "query"]
 );
 
-export class GoogleSheetsLookup extends Transformer {
+export class GoogleSheetsLookup extends TransformerABC {
   constructor() {
     super(
       GOOGLE_SHEETS_LOOKUP_ID,

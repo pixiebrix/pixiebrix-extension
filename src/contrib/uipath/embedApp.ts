@@ -23,7 +23,7 @@ import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";
 import pTimeout from "p-timeout";
 import { type RegistryId } from "@/types/registryTypes";
-import { Renderer } from "@/types/bricks/rendererTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
@@ -70,7 +70,7 @@ async function runInFrame({
   });
 }
 
-export class UiPathAppRenderer extends Renderer {
+export class UiPathAppRenderer extends RendererABC {
   constructor() {
     super(
       "@pixiebrix/uipath/app",

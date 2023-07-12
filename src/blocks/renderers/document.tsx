@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types/bricks/rendererTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
 import DocumentViewLazy from "./documentView/DocumentViewLazy";
 import { validateRegistryId } from "@/types/helpers";
 import {
@@ -25,7 +25,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
-export class DocumentRenderer extends Renderer {
+export class DocumentRenderer extends RendererABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/document");
   constructor() {
     super(

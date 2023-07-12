@@ -28,7 +28,7 @@ import {
 import { type CustomAction } from "@/components/quickBar/quickbarTypes";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 
 type ActionConfig = {
   /**
@@ -64,7 +64,7 @@ const DEFAULT_PRIORITY = 1;
  * An effect that adds an action to the PixieBrix Quick Bar.
  * @see QuickBarProviderExtensionPoint
  */
-class AddQuickBarAction extends Effect {
+class AddQuickBarAction extends EffectABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/quickbar/add");
 
   constructor() {

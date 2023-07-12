@@ -44,7 +44,7 @@ import {
   type BrickOptions,
   type ComponentRef,
 } from "@/types/runtimeTypes";
-import { Renderer } from "@/types/bricks/rendererTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
 import cx from "classnames";
@@ -236,7 +236,7 @@ export const customFormRendererSchema = {
   required: ["schema"],
 };
 
-export class CustomFormRenderer extends Renderer {
+export class CustomFormRenderer extends RendererABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
   constructor() {
     super(

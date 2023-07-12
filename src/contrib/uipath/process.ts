@@ -16,7 +16,7 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { pollUntilTruthy } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
@@ -99,7 +99,7 @@ interface JobsResponse {
   }>;
 }
 
-export class RunProcess extends Transformer {
+export class RunProcess extends TransformerABC {
   constructor() {
     super(
       UIPATH_ID,

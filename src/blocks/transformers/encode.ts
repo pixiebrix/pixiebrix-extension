@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { propertiesToSchema } from "@/validators/generic";
 
-export class Base64Encode extends Transformer {
+export class Base64Encode extends TransformerABC {
   defaultOutputKey = "encoded";
 
   override async isPure(): Promise<boolean> {
@@ -52,7 +52,7 @@ export class Base64Encode extends Transformer {
   }
 }
 
-export class Base64Decode extends Transformer {
+export class Base64Decode extends TransformerABC {
   defaultOutputKey = "decoded";
 
   constructor() {

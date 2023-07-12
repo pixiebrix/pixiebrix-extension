@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -27,7 +27,7 @@ import { applyJq } from "@/sandbox/messenger/executor";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
-export class JQTransformer extends Transformer {
+export class JQTransformer extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
   }

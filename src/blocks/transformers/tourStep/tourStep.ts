@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -290,7 +290,7 @@ function markdownPipeline(markdown: string): PipelineExpression {
   };
 }
 
-export class TourStepTransformer extends Transformer {
+export class TourStepTransformer extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/tour/step");
 
   constructor() {

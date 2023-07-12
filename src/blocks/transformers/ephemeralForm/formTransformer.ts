@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -53,7 +53,7 @@ export async function createFrameSource(
   return frameSource;
 }
 
-export class FormTransformer extends Transformer {
+export class FormTransformer extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form-modal");
   defaultOutputKey = "form";
 

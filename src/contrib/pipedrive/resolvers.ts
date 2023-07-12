@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -36,7 +36,7 @@ interface SearchResult {
   data: { items: SearchResultItem[] };
 }
 
-export class ResolvePerson extends Transformer {
+export class ResolvePerson extends TransformerABC {
   constructor() {
     super("pipedrive/persons-search", "Search for a person in Pipedrive");
   }

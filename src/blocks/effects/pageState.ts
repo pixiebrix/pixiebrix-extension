@@ -20,7 +20,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type JsonObject } from "type-fest";
 import { getPageState, setPageState } from "@/contentScript/pageState";
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
@@ -38,7 +38,7 @@ export const namespaceOptions = [
   { const: "shared", title: "Public (formerly called shared)" },
 ] as Schema[];
 
-export class SetPageState extends Transformer {
+export class SetPageState extends TransformerABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/state/set");
 
   constructor() {
@@ -121,7 +121,7 @@ export class SetPageState extends Transformer {
   }
 }
 
-export class GetPageState extends Transformer {
+export class GetPageState extends TransformerABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/state/get");
 
   constructor() {

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types/bricks/rendererTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
 import MarkdownLazy from "@/components/MarkdownLazy";
 import { type BrickArgs, type ComponentRef } from "@/types/runtimeTypes";
 
-export class MarkdownRenderer extends Renderer {
+export class MarkdownRenderer extends RendererABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/markdown");
 
   constructor() {

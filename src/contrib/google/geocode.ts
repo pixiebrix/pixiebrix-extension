@@ -17,7 +17,7 @@
 
 import { isEmpty } from "lodash";
 import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -98,7 +98,7 @@ async function geocodeAddress(
   };
 }
 
-export class GeocodeTransformer extends Transformer {
+export class GeocodeTransformer extends TransformerABC {
   constructor() {
     super(
       "google/geocode",

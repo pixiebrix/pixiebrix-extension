@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
@@ -25,7 +25,7 @@ import {
   type ElementReference,
 } from "@/types/runtimeTypes";
 
-export class TraverseElements extends Transformer {
+export class TraverseElements extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
   }

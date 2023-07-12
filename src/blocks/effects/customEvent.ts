@@ -18,10 +18,10 @@
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { validateRegistryId } from "@/types/helpers";
 
-class CustomEventEffect extends Effect {
+class CustomEventEffect extends EffectABC {
   public static BRICK_ID = validateRegistryId("@pixiebrix/event");
 
   constructor() {

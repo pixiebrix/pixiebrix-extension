@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -58,7 +58,7 @@ export const inputProperties: Record<string, Schema> = {
   },
 };
 
-export class RemoteMethod extends Transformer {
+export class RemoteMethod extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/http");
 
   constructor() {

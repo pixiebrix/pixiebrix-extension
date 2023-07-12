@@ -26,7 +26,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
@@ -242,7 +242,7 @@ export function normalizeShape(shape: Shape, rowValues: RowValues): Entry[][] {
   }
 }
 
-export class GoogleSheetsAppend extends Effect {
+export class GoogleSheetsAppend extends EffectABC {
   constructor() {
     super(
       GOOGLE_SHEETS_APPEND_ID,

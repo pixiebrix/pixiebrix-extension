@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -24,7 +24,7 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
 
-export class HideEffect extends Effect {
+export class HideEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/hide",

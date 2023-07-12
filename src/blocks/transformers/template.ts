@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type TemplateEngine,
   type BrickArgs,
@@ -29,7 +29,7 @@ import { BusinessError } from "@/errors/businessErrors";
 /**
  * Transformer that fills a template using the current context.
  */
-export class TemplateTransformer extends Transformer {
+export class TemplateTransformer extends TransformerABC {
   defaultOutputKey = "filled";
 
   override async isPure(): Promise<boolean> {

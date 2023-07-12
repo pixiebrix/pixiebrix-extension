@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -30,7 +30,7 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
 
-class ForEachElement extends Transformer {
+class ForEachElement extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each-element");
   defaultOutputKey = "forEachResult";
 

@@ -32,7 +32,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IReader, Reader } from "@/types/bricks/readerTypes";
+import { type IReader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { ensureJsonObject, isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
@@ -88,7 +88,7 @@ export function pickEventProperties(nativeEvent: Event): JsonObject {
 /**
  * A reader "stub" for KeyboardEvent triggers
  */
-export class KeyboardEventReader extends Reader {
+export class KeyboardEventReader extends ReaderABC {
   constructor() {
     super(
       "@pixiebrix/event/keyboard",
@@ -149,7 +149,7 @@ export class KeyboardEventReader extends Reader {
 /**
  * A reader "stub" for KeyboardEvent triggers
  */
-export class SelectionChangedReader extends Reader {
+export class SelectionChangedReader extends ReaderABC {
   constructor() {
     super(
       "@pixiebrix/event/selection",
@@ -186,7 +186,7 @@ export class SelectionChangedReader extends Reader {
 /**
  * A reader "stub" for KeyboardEvent triggers
  */
-export class CustomEventReader extends Reader {
+export class CustomEventReader extends ReaderABC {
   constructor() {
     super(
       "@pixiebrix/event/custom",

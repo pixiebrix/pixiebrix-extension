@@ -16,7 +16,7 @@
  */
 /* eslint-disable unicorn/no-array-callback-reference -- $.find false positives */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -33,7 +33,7 @@ type ColorRule =
 
 const HEX_PATTERN = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
 
-export class HighlightEffect extends Effect {
+export class HighlightEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/highlight",

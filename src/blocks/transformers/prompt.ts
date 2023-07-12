@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { CancelError } from "@/errors/businessErrors";
 
-export class Prompt extends Transformer {
+export class Prompt extends TransformerABC {
   constructor() {
     super(
       "@pixiebrix/prompt",

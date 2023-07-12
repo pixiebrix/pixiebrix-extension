@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -23,7 +23,7 @@ import { runSubTour } from "@/extensionPoints/tourController";
 import { isEmpty } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 
-export class RunSubTourEffect extends Effect {
+export class RunSubTourEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/tour/run",
