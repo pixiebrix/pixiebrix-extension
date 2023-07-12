@@ -53,13 +53,14 @@ export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
 export const sheets = {
+  getAllSpreadsheets: getMethod("GOOGLE_SHEETS_GET_ALL_SPREADSHEETS", bg),
+  getSpreadsheet: getMethod("GOOGLE_SHEETS_GET_SPREADSHEET", bg),
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
   getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES", bg),
   getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
+  getRows: getMethod("GOOGLE_SHEETS_GET_ROWS", bg),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-  batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE", bg),
-  batchGet: getMethod("GOOGLE_SHEETS_BATCH_GET", bg),
 };
 
 /**

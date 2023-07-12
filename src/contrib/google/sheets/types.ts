@@ -30,3 +30,26 @@ export interface Data {
   action: string;
   docs: Doc[];
 }
+
+// GSheets API Proxy types
+export type ValueRange = gapi.client.sheets.ValueRange;
+export type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
+export type BatchUpdateSpreadsheetRequest =
+  gapi.client.sheets.BatchUpdateSpreadsheetRequest;
+export type BatchUpdateSpreadsheetResponse =
+  gapi.client.sheets.BatchUpdateSpreadsheetResponse;
+export type Spreadsheet = gapi.client.sheets.Spreadsheet;
+export type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
+
+export type File = {
+  kind: "drive#file";
+  mimeType: string;
+  id: string;
+  name: string;
+};
+export type FileList = {
+  kind: "drive#fileList";
+  incompleteSearch: boolean;
+  files: File[];
+  nextPageToken?: string;
+};

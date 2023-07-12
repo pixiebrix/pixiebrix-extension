@@ -101,9 +101,8 @@ export class GoogleSheetsLookup extends Transformer {
       typeof spreadsheetIdArg === "string"
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
-    const response = await sheets.batchGet(spreadsheetId, tabName);
-
-    const headers = response.valueRanges?.[0].values?.[0] ?? [];
+    const valueRange = await sheets.getRows(spreadsheetId, tabName);
+    const [headers, ...rows] = valueRange?.values ?? [[], []];
 
     logger.debug(`Tab ${tabName} has headers`, { headers });
 
@@ -112,7 +111,6 @@ export class GoogleSheetsLookup extends Transformer {
       throw new BusinessError(`Header ${header} not found`);
     }
 
-    const rows = response.valueRanges?.[0].values.slice(1);
     const matchData = rows.filter((x) => x.at(columnIndex) === query);
     const matchRecords = matchData.map((row) =>
       Object.fromEntries(
