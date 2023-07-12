@@ -20,7 +20,7 @@ import { castArray, compact, head, omit } from "lodash";
 import serviceRegistry from "@/services/registry";
 import {
   type SanitizedServiceConfiguration,
-  type Service,
+  type IntegrationABC,
   type ServiceDependency,
 } from "@/types/serviceTypes";
 import { containsPermissions, services } from "@/background/messenger/api";
@@ -36,7 +36,7 @@ import { type Permissions } from "webextension-polyfill";
 
 export type Dependency = {
   config: SanitizedServiceConfiguration | undefined;
-  service: Service | undefined;
+  service: IntegrationABC | undefined;
   hasPermissions: boolean;
   requestPermissions: () => void;
 };
@@ -72,7 +72,7 @@ async function lookupDependency(dependency: ServiceDependency) {
 
 const lookupFallback = {
   config: undefined as SanitizedServiceConfiguration,
-  service: undefined as Service,
+  service: undefined as IntegrationABC,
   hasPermissions: false,
   permissions: emptyPermissionsFactory() as Permissions.Permissions,
 };

@@ -28,7 +28,7 @@ import * as auth from "@/hooks/auth";
 import * as dependencyHooks from "@/services/useDependency";
 import {
   type SanitizedServiceConfiguration,
-  type Service,
+  type IntegrationABC,
 } from "@/types/serviceTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
@@ -148,7 +148,7 @@ describe("UiPath LocalProcess Options", () => {
         id: config,
         serviceId,
       } as unknown as SanitizedServiceConfiguration,
-      service: { id: serviceId } as unknown as Service,
+      service: { id: serviceId } as unknown as IntegrationABC,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });

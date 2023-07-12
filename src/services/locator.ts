@@ -35,7 +35,7 @@ import {
   type RawServiceConfiguration,
   type SanitizedConfig,
   type SanitizedServiceConfiguration,
-  type Service,
+  type IntegrationABC,
   type SecretsConfig,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -218,7 +218,7 @@ class LazyLocatorFactory {
       return [await pixieServiceFactory()];
     }
 
-    let service: Service;
+    let service: IntegrationABC;
 
     // Handle case where locateAllForService is called before service definitions are loaded. (For example, because it's
     // being called from the background page in installer.ts).

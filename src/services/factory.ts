@@ -34,7 +34,7 @@ import {
   type OAuth2AuthorizationGrantDefinition,
   type OAuth2Context,
   type SanitizedConfig,
-  Service,
+  IntegrationABC,
   type SecretsConfig,
   type ServiceDefinition,
   type TokenAuthenticationDefinition,
@@ -48,7 +48,7 @@ import { type SemVerString } from "@/types/registryTypes";
  */
 class LocalDefinedService<
   TDefinition extends ServiceDefinition = ServiceDefinition
-> extends Service {
+> extends IntegrationABC {
   private readonly _definition: TDefinition;
 
   public readonly schema: Schema;

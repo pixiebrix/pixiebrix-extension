@@ -21,7 +21,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import serviceRegistry from "@/services/registry";
 import {
   type SanitizedServiceConfiguration,
-  type Service,
+  type IntegrationABC,
 } from "@/types/serviceTypes";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
 import * as backgroundApi from "@/background/messenger/api";
@@ -101,7 +101,7 @@ describe("useDependency", () => {
     serviceRegistryMock.lookup.mockResolvedValue({
       id: registryId,
       getOrigins: () => [] as any,
-    } as unknown as Service);
+    } as unknown as IntegrationABC);
 
     const wrapper = renderHook(() => useDependency(registryId), {
       initialValues: {
@@ -130,7 +130,7 @@ describe("useDependency", () => {
     serviceRegistryMock.lookup.mockResolvedValue({
       id: registryId,
       getOrigins: () => [] as any,
-    } as unknown as Service);
+    } as unknown as IntegrationABC);
 
     const wrapper = renderHook(
       () => [useDependency(registryId), useDependency(registryId)] as const,

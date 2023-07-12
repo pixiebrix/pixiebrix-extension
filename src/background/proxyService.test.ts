@@ -28,7 +28,7 @@ import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
 import {
-  type Service,
+  type IntegrationABC,
   type RawServiceConfiguration,
   type SecretsConfig,
 } from "@/types/serviceTypes";
@@ -93,7 +93,7 @@ serviceRegistry.register([
     ) => requestConfig,
     isToken: true,
   },
-] as Service[]);
+] as IntegrationABC[]);
 
 const requestConfig: AxiosRequestConfig = {
   url: "https://www.example.com",

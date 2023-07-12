@@ -265,7 +265,7 @@ export interface Integration<
 /**
  * Abstract base class for services.
  */
-export abstract class Service<
+export abstract class IntegrationABC<
   TConfig extends ServiceConfig = ServiceConfig,
   TOAuth extends AuthData = AuthData
 > implements Integration<TConfig>
