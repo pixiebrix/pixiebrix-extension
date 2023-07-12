@@ -20,21 +20,25 @@ import axios from "axios";
 import {
   autoModUpdatesEnabled,
   collectModVersions,
+  deactivateMod,
   fetchModUpdates,
-  getActivatedMarketplaceMods,
+  getActivatedMarketplaceModMetadata,
 } from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
-import { loadOptions } from "@/store/extensionsStorage";
-import { persistedExtensionFactory } from "@/testUtils/factories/extensionFactories";
+import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import {
+  extensionFactory,
+  persistedExtensionFactory,
+} from "@/testUtils/factories/extensionFactories";
 import type { RegistryId, SemVerString, Sharing } from "@/types/registryTypes";
-import type { IExtension, PersistedExtension } from "@/types/extensionTypes";
-import { recipeMetadataFactory } from "@/testUtils/factories/recipeFactories";
+import type { IExtension, ActivatedModComponent } from "@/types/extensionTypes";
+import {
+  extensionPointDefinitionFactory,
+  recipeMetadataFactory,
+} from "@/testUtils/factories/recipeFactories";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError", () => jest.fn());
-jest.mock("@/store/extensionsStorage", () => ({
-  loadOptions: jest.fn(),
-}));
 
 describe("autoModUpdatesEnabled function", () => {
   it("should return false if flag absent", async () => {
@@ -68,15 +72,13 @@ describe("autoModUpdatesEnabled function", () => {
 });
 
 describe("getActivatedMarketplaceMods function", () => {
-  let publicActivatedMod: PersistedExtension;
-  let privateActivatedMod: PersistedExtension;
-  let publicActivatedDeployment: PersistedExtension;
-  let privateActivatedDeployment: PersistedExtension;
+  let publicActivatedMod: ActivatedModComponent;
+  let privateActivatedMod: ActivatedModComponent;
+  let publicActivatedDeployment: ActivatedModComponent;
+  let privateActivatedDeployment: ActivatedModComponent;
 
-  beforeEach(() => {
-    (loadOptions as jest.Mock).mockReturnValue({
-      extensions: [],
-    });
+  beforeEach(async () => {
+    await saveOptions({ extensions: [] });
 
     publicActivatedMod = persistedExtensionFactory({
       _recipe: {
@@ -114,12 +116,12 @@ describe("getActivatedMarketplaceMods function", () => {
   });
 
   it("should return empty list if no activated mods", async () => {
-    const result = await getActivatedMarketplaceMods();
+    const result = await getActivatedMarketplaceModMetadata();
     expect(result).toEqual([]);
   });
 
   it("should only return public mods without deployments", async () => {
-    (loadOptions as jest.Mock).mockReturnValue({
+    await saveOptions({
       extensions: [
         publicActivatedMod,
         privateActivatedMod,
@@ -128,7 +130,7 @@ describe("getActivatedMarketplaceMods function", () => {
       ],
     });
 
-    const result = await getActivatedMarketplaceMods();
+    const result = await getActivatedMarketplaceModMetadata();
     expect(result).toEqual([publicActivatedMod._recipe]);
   });
 });
@@ -204,5 +206,64 @@ describe("collectModVersions function", () => {
     const result = collectModVersions(activatedMods);
     expect(result).toEqual({ "@test/same-mod": "2.0.0" });
     expect(reportError).toHaveBeenCalled();
+  });
+});
+
+describe("deactivateMod function", () => {
+  let modToDeactivate: IExtension["_recipe"];
+
+  beforeEach(async () => {
+    modToDeactivate = recipeMetadataFactory({}) as IExtension["_recipe"];
+    const anotherMod = recipeMetadataFactory({}) as IExtension["_recipe"];
+
+    await saveOptions({
+      extensions: [
+        extensionFactory({
+          _recipe: modToDeactivate,
+        }) as ActivatedModComponent,
+        extensionFactory({
+          _recipe: modToDeactivate,
+        }) as ActivatedModComponent,
+        extensionFactory({
+          _recipe: anotherMod,
+        }) as ActivatedModComponent,
+      ],
+    });
+  });
+
+  it("should remove the mod components from the options state", async () => {
+    const priorState = await loadOptions();
+
+    const { options: resultingState, deactivatedModComponents } = deactivateMod(
+      modToDeactivate.id,
+      priorState
+    );
+
+    expect(deactivatedModComponents.length).toEqual(2);
+    expect(deactivatedModComponents[0]._recipe.id).toEqual(modToDeactivate.id);
+    expect(deactivatedModComponents[1]._recipe.id).toEqual(modToDeactivate.id);
+    expect(resultingState.extensions.length).toEqual(1);
+  });
+
+  it("should do nothing if mod id does not have any activated mod components", async () => {
+    const extensionPoint = extensionPointDefinitionFactory();
+    const extension = extensionFactory({
+      extensionPointId: extensionPoint.metadata.id,
+      _recipe: recipeMetadataFactory({}) as IExtension["_recipe"],
+    }) as ActivatedModComponent;
+
+    await saveOptions({
+      extensions: [extension],
+    });
+
+    const priorState = await loadOptions();
+
+    const { options: resultingState, deactivatedModComponents } = deactivateMod(
+      "@test/id-doesnt-exist" as RegistryId,
+      priorState
+    );
+
+    expect(deactivatedModComponents).toEqual([]);
+    expect(resultingState.extensions).toEqual(priorState.extensions);
   });
 });

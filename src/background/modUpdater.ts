@@ -19,9 +19,12 @@ import type { Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import { loadOptions } from "@/store/extensionsStorage";
-import type { IExtension } from "@/types/extensionTypes";
+import type { IExtension, UnresolvedExtension } from "@/types/extensionTypes";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
+import type { ExtensionOptionsState } from "@/store/extensionsTypes";
+import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
+import extensionsSlice from "@/store/extensionsSlice";
 
 //const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 const UPDATE_INTERVAL_MS = 60 * 1000;
@@ -72,16 +75,17 @@ export function collectModVersions(
   return modVersions;
 }
 
-export async function getActivatedMarketplaceMods(): Promise<
+export async function getActivatedMarketplaceModMetadata(): Promise<
   Array<IExtension["_recipe"]>
 > {
-  const { extensions: activatedMods } = await loadOptions();
+  const { extensions: activatedModComponents } = await loadOptions();
 
   // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
   // the deployment updater will handle the updates.
-  return activatedMods
+  return activatedModComponents
     .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
     .map((mod) => mod._recipe);
+  // TODO: maybe get rid of the _recipe part and just return the whole mod component 👆
 }
 
 export async function fetchModUpdates(
@@ -102,7 +106,7 @@ export async function fetchModUpdates(
       updates: Record<
         RegistryId,
         {
-          backwards_compatible: ModDefinition[];
+          backwards_compatible: ModDefinition;
           backwards_incompatible: boolean;
         }
       >;
@@ -119,19 +123,85 @@ export async function fetchModUpdates(
   }
 }
 
-function updateActivatedMod(mod: ModDefinition) {
-  console.log("*** updating mod", mod);
-  // Uninstall the mod
-
-  // Reinstall the mod with the updated mod definition
+function deactivateModComponent(
+  modComponent: UnresolvedExtension,
+  optionsState: ExtensionOptionsState
+  // TODO: do we also need editorState?
+  //  editorState: EditorState | undefined,
+): ExtensionOptionsState {
+  return extensionsSlice.reducer(
+    optionsState,
+    extensionsSlice.actions.removeExtension({ extensionId: modComponent.id })
+  );
 }
 
-function updateActivatedMods(
+export function deactivateMod(
+  modId: RegistryId,
+  optionsState: ExtensionOptionsState
+  // TODO: do we also need editorState?
+  //  editorState: EditorState | undefined,
+): {
+  options: ExtensionOptionsState;
+  deactivatedModComponents: UnresolvedExtension[];
+} {
+  console.log("*** uninstalling mod", modId);
+  let options = optionsState;
+
+  const activatedModComponentSelector = selectExtensionsForRecipe(modId);
+  const activatedModComponents = activatedModComponentSelector({
+    options: optionsState,
+  });
+  const deactivatedModComponents: UnresolvedExtension[] = [];
+
+  for (const activatedModComponent of activatedModComponents) {
+    options = deactivateModComponent(activatedModComponent, options);
+    deactivatedModComponents.push(activatedModComponent);
+  }
+
+  return { options, deactivatedModComponents };
+}
+
+// TODO: implement me
+// function activateMod(
+//   mod: ModDefinition,
+//   optionsState: ExtensionOptionsState,
+// ): ExtensionOptionsState {
+//   console.log("*** installing mod", mod);
+//   let options = optionsState;
+//
+//   // TODO: implement me
+//
+//   return options;
+// }
+
+function updateActivatedMod(
+  mod: ModDefinition,
+  optionsState: ExtensionOptionsState
+) {
+  console.log("*** updating mod", mod);
+
+  // Save all mod options/service configurations
+  // Which is just grabbing the services and optionsArgs from the ActivatedModComponent
+  console.log(
+    "*** saving mod options/service configurations",
+    mod,
+    optionsState.extensions
+  );
+
+  // Uninstall the mod
+  options = deactivateMod(mod.metadata.id, options);
+
+  // Reinstall the mod with the updated mod definition
+  // options = activateMod(mod, options);
+}
+
+async function updateActivatedMods(
   modUpdates: Record<
     RegistryId,
-    { backwards_compatible: ModDefinition; backwards_incompatible: false }
+    { backwards_compatible: ModDefinition; backwards_incompatible: boolean }
   >
 ) {
+  const optionsState = await loadOptions();
   console.log("*** activating mods");
   for (const { backwards_compatible } of Object.values(modUpdates)) {
     // Probably uninstall & call installRecipe from extensionsSlice?
@@ -139,7 +209,7 @@ function updateActivatedMods(
       continue;
     }
 
-    updateActivatedMod(backwards_compatible);
+    updateActivatedMod(backwards_compatible, optionsState);
   }
 }
 
@@ -153,7 +223,7 @@ async function checkForModUpdates() {
 
   console.log("*** automatic mod updates enabled :)");
 
-  const activatedMarketplaceMods = await getActivatedMarketplaceMods();
+  const activatedMarketplaceMods = await getActivatedMarketplaceModMetadata();
 
   console.log("*** activatedMarketplaceMods", activatedMarketplaceMods);
 
@@ -161,7 +231,7 @@ async function checkForModUpdates() {
   const modUpdates = await fetchModUpdates(activatedMarketplaceMods);
 
   // Use the list to update the mods
-  updateActivatedMods(modUpdates);
+  await updateActivatedMods(modUpdates);
 }
 
 export async function initModUpdater(): Promise<void> {
