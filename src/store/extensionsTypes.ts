@@ -16,7 +16,7 @@
  */
 
 import {
-  type PersistedExtension,
+  type ActivatedModComponent,
   type UnresolvedExtension,
 } from "@/types/extensionTypes";
 
@@ -34,7 +34,7 @@ export type LegacyExtensionObjectShapeState = {
 };
 
 export type ExtensionOptionsState = {
-  extensions: PersistedExtension[];
+  extensions: ActivatedModComponent[];
 };
 
 /**

@@ -28,7 +28,7 @@ import { isLinked } from "@/auth/token";
 import { refreshRegistries } from "./refreshRegistries";
 import {
   type IExtension,
-  type PersistedExtension,
+  type ActivatedModComponent,
 } from "@/types/extensionTypes";
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
@@ -225,7 +225,7 @@ describe("installStarterBlueprints", () => {
 
     const extension = extensionFactory({
       _recipe: { id: recipe.metadata.id } as IExtension["_recipe"],
-    }) as PersistedExtension;
+    }) as ActivatedModComponent;
     await saveOptions({
       extensions: [extension],
     });
@@ -248,7 +248,7 @@ describe("installStarterBlueprints", () => {
 
     const extension = extensionFactory({
       _recipe: undefined,
-    }) as PersistedExtension;
+    }) as ActivatedModComponent;
     await saveOptions({
       extensions: [extension],
     });

@@ -37,7 +37,7 @@ import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import {
   type IExtension,
-  type PersistedExtension,
+  type ActivatedModComponent,
   selectSourceRecipeMetadata,
 } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -72,7 +72,7 @@ const extensionsSlice = createSlice({
     // StandaloneModDefinition doesn't have the _recipe field
     UNSAFE_setExtensions(
       state,
-      { payload }: PayloadAction<PersistedExtension[]>
+      { payload }: PayloadAction<ActivatedModComponent[]>
     ) {
       state.extensions = cloneDeep(payload);
     },
@@ -175,7 +175,7 @@ const extensionsSlice = createSlice({
         }
 
         const extension: Except<
-          PersistedExtension,
+          ActivatedModComponent,
           "_unresolvedExtensionBrand"
         > = {
           id: extensionId,
@@ -243,7 +243,7 @@ const extensionsSlice = createSlice({
       {
         payload,
       }: PayloadAction<{
-        extension: (IExtension | PersistedExtension) & {
+        extension: (IExtension | ActivatedModComponent) & {
           createTimestamp?: string;
         };
         pushToCloud: boolean;
@@ -279,22 +279,24 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: Except<PersistedExtension, "_unresolvedExtensionBrand"> =
-        {
-          id,
-          apiVersion,
-          extensionPointId,
-          _recipe,
-          _deployment: undefined,
-          label,
-          definitions,
-          optionsArgs,
-          services,
-          config,
-          createTimestamp,
-          updateTimestamp: timestamp,
-          active: true,
-        };
+      const extension: Except<
+        ActivatedModComponent,
+        "_unresolvedExtensionBrand"
+      > = {
+        id,
+        apiVersion,
+        extensionPointId,
+        _recipe,
+        _deployment: undefined,
+        label,
+        definitions,
+        optionsArgs,
+        services,
+        config,
+        createTimestamp,
+        updateTimestamp: timestamp,
+        active: true,
+      };
 
       assertExtensionNotResolved(extension);
 
@@ -314,7 +316,7 @@ const extensionsSlice = createSlice({
     },
     updateExtension(
       state,
-      action: PayloadAction<{ id: UUID } & Partial<PersistedExtension>>
+      action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>
     ) {
       const { id, ...extensionUpdate } = action.payload;
       const index = state.extensions.findIndex((x) => x.id === id);

@@ -26,7 +26,7 @@ import {
 } from "@/extensionPoints/triggerExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type PersistedExtension } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/extensionTypes";
 import { type BrickPipeline } from "@/blocks/types";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
@@ -60,7 +60,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<PersistedExtension<TriggerConfig>>({
+const extensionFactory = define<ActivatedModComponent<TriggerConfig>>({
   apiVersion: "v3",
   id: uuidSequence,
   extensionPointId: (n: number) =>

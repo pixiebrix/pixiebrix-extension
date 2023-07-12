@@ -36,7 +36,7 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type PersistedExtension } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/extensionTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
@@ -197,7 +197,7 @@ export type RegistryPackage = Pick<
  * A personal user extension synced/saved to the cloud.
  */
 export type StandaloneModDefinition<Config extends UnknownObject = JsonObject> =
-  Except<PersistedExtension<Config>, "active"> & {
+  Except<ActivatedModComponent<Config>, "active"> & {
     _remoteUserExtensionBrand: never;
     _deployment: undefined;
     _recipe: undefined;

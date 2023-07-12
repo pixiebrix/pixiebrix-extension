@@ -18,7 +18,7 @@
 import { type Config, define, extend } from "cooky-cutter";
 import {
   type IExtension,
-  type PersistedExtension,
+  type ActivatedModComponent,
 } from "@/types/extensionTypes";
 import {
   timestampFactory,
@@ -83,15 +83,15 @@ export const extensionFactory = define<IExtension>({
   }),
   active: true,
 });
-export const persistedExtensionFactory = extend<IExtension, PersistedExtension>(
-  extensionFactory,
-  {
-    createTimestamp: timestampFactory,
-    updateTimestamp: timestampFactory,
-    _unresolvedExtensionBrand: undefined,
-    active: true,
-  }
-);
+export const persistedExtensionFactory = extend<
+  IExtension,
+  ActivatedModComponent
+>(extensionFactory, {
+  createTimestamp: timestampFactory,
+  updateTimestamp: timestampFactory,
+  _unresolvedExtensionBrand: undefined,
+  active: true,
+});
 
 // StandaloneModDefinition is a type in contract.ts. But it's really defined based on the IExtension type not the backend API.
 export const cloudExtensionFactory = (
