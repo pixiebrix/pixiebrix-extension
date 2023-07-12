@@ -249,7 +249,7 @@ export type ExtensionRef = {
 };
 
 /**
- * Select information about the RecipeDefinition used to install an IExtension
+ * Select information about the ModDefinition used to install an IExtension
  *
  * TODO: move to extensionHelpers file once we have it
  *
@@ -259,7 +259,7 @@ export function selectSourceRecipeMetadata(
   recipeDefinition: ModDefinition
 ): IExtension["_recipe"] {
   if (recipeDefinition.metadata?.id == null) {
-    throw new TypeError("Expected a RecipeDefinition");
+    throw new TypeError("Expected a ModDefinition");
   }
 
   return {

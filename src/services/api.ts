@@ -297,7 +297,7 @@ export const appApi = createApi({
       }),
       transformResponse(baseQueryReturnValue: RecipeResponse): ModDefinition {
         // Pull out sharing and updated_at from response and merge into the base
-        // response to create a RecipeDefinition
+        // response to create a ModDefinition
         const {
           sharing,
           updated_at,

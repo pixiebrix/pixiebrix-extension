@@ -113,7 +113,7 @@ type ExternalExtensionPointParams = {
 };
 
 /**
- * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
+ * Factory to create a ModDefinition that refers to a versioned extensionPoint
  */
 export const versionedExtensionPointRecipeFactory = ({
   extensionPointId,
@@ -145,7 +145,7 @@ export const versionedExtensionPointRecipeFactory = ({
     ],
   });
 /**
- * Factory to create a RecipeDefinition with a definitions section and resolved extensions
+ * Factory to create a ModDefinition with a definitions section and resolved extensions
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
   const extensionPoints: ExtensionDefinition[] = [];
@@ -192,7 +192,7 @@ type InnerExtensionPointParams = {
   extensionPointRef?: InnerDefinitionRef;
 };
 /**
- * Factory to create a factory that creates a RecipeDefinition that refers to a versioned extensionPoint
+ * Factory to create a factory that creates a ModDefinition that refers to a versioned extensionPoint
  */
 export const innerExtensionPointRecipeFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,

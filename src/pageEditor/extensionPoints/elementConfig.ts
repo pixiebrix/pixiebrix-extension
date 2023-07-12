@@ -123,7 +123,7 @@ export interface BaseFormState<
   /**
    * Information about the recipe (i.e., blueprint) options,
    * or `undefined` if the extension is not part of a recipe.
-   * @see RecipeDefinition.options
+   * @see ModDefinition.options
    */
   optionsDefinition?: OptionsDefinition;
 }
