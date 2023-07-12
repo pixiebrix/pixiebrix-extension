@@ -19,7 +19,7 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export class AddOrganization extends EffectABC {
@@ -60,7 +60,7 @@ export class AddOrganization extends EffectABC {
     }: BrickArgs<{
       name: string;
       owner_id: number;
-      pipedrive: SanitizedServiceConfiguration;
+      pipedrive: SanitizedIntegrationConfig;
     }>,
     { logger }: BrickOptions
   ): Promise<void> {
@@ -136,7 +136,7 @@ export class AddPerson extends EffectABC {
       email,
       phone,
     }: BrickArgs<{
-      pipedrive: SanitizedServiceConfiguration;
+      pipedrive: SanitizedIntegrationConfig;
       name: string;
       owner_id: number;
       email?: string;

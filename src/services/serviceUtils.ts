@@ -23,7 +23,7 @@ import { MissingConfigurationError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
-  type SanitizedServiceConfiguration,
+  type SanitizedIntegrationConfig,
   type ServiceDependency,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -84,7 +84,7 @@ async function _locateWithRetry(
   serviceId: RegistryId,
   authId: UUID,
   { retry = true }: { retry: boolean }
-): Promise<SanitizedServiceConfiguration> {
+): Promise<SanitizedIntegrationConfig> {
   try {
     return await services.locate(serviceId, authId);
   } catch (error) {

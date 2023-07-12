@@ -27,7 +27,7 @@ import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 type CellValue = string | number | null;
@@ -261,7 +261,7 @@ export class GoogleSheetsAppend extends EffectABC {
       shape = "infer",
       rowValues: rawValues = {},
     }: BrickArgs<{
-      spreadsheetId: string | SanitizedServiceConfiguration;
+      spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       shape: Shape;
       rowValues: RowValues;

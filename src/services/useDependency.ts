@@ -19,7 +19,7 @@ import { useFormikContext } from "formik";
 import { castArray, compact, head, omit } from "lodash";
 import serviceRegistry from "@/services/registry";
 import {
-  type SanitizedServiceConfiguration,
+  type SanitizedIntegrationConfig,
   type IntegrationABC,
   type ServiceDependency,
 } from "@/types/serviceTypes";
@@ -35,7 +35,7 @@ import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type Permissions } from "webextension-polyfill";
 
 export type Dependency = {
-  config: SanitizedServiceConfiguration | undefined;
+  config: SanitizedIntegrationConfig | undefined;
   service: IntegrationABC | undefined;
   hasPermissions: boolean;
   requestPermissions: () => void;
@@ -71,7 +71,7 @@ async function lookupDependency(dependency: ServiceDependency) {
 }
 
 const lookupFallback = {
-  config: undefined as SanitizedServiceConfiguration,
+  config: undefined as SanitizedIntegrationConfig,
   service: undefined as IntegrationABC,
   hasPermissions: false,
   permissions: emptyPermissionsFactory() as Permissions.Permissions,

@@ -23,7 +23,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { type AxiosRequestConfig } from "axios";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
 export const inputProperties: Record<string, Schema> = {
   url: {
@@ -77,7 +77,7 @@ export class RemoteMethod extends TransformerABC {
     service,
     ...requestConfig
   }: BrickArgs<{
-    service: SanitizedServiceConfiguration;
+    service: SanitizedIntegrationConfig;
     requestConfig: AxiosRequestConfig;
     _blockArgBrand: never;
   }>): Promise<unknown> {

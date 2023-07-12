@@ -24,7 +24,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -89,7 +89,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       query,
       multi,
     }: BrickArgs<{
-      spreadsheetId: string | SanitizedServiceConfiguration;
+      spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       header: string;
       query: string | number | boolean;

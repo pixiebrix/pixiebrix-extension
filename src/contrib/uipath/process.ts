@@ -23,7 +23,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
@@ -126,7 +126,7 @@ export class RunProcess extends TransformerABC {
       maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
       inputArguments = {},
     }: BrickArgs<{
-      uipath: SanitizedServiceConfiguration;
+      uipath: SanitizedIntegrationConfig;
       releaseKey: string;
       strategy: string;
       jobsCount: number;

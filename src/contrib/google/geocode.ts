@@ -19,7 +19,7 @@ import { isEmpty } from "lodash";
 import { proxyService } from "@/background/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 
@@ -64,7 +64,7 @@ interface GeocodeData {
 }
 
 async function geocodeAddress(
-  service: SanitizedServiceConfiguration,
+  service: SanitizedIntegrationConfig,
   address: string
 ): Promise<GeocodedAddress> {
   if (isEmpty(address)) {
@@ -123,7 +123,7 @@ export class GeocodeTransformer extends TransformerABC {
     address,
   }: BrickArgs<{
     address: string;
-    service: SanitizedServiceConfiguration;
+    service: SanitizedIntegrationConfig;
   }>): Promise<GeocodedAddress> {
     return geocodeAddress(service, address);
   }

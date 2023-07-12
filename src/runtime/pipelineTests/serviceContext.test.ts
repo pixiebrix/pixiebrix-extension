@@ -32,7 +32,7 @@ import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import {
-  type SanitizedServiceConfiguration,
+  type SanitizedIntegrationConfig,
   type ServiceDependency,
 } from "@/types/serviceTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
@@ -115,7 +115,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       config: {
         prop: "abc123",
       },
-    } as unknown as SanitizedServiceConfiguration);
+    } as unknown as SanitizedIntegrationConfig);
 
     const dependencies: ServiceDependency[] = [
       { id: serviceId, outputKey: validateOutputKey("service") },
@@ -180,7 +180,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       config: {
         prop: "abc123",
       },
-    } as unknown as SanitizedServiceConfiguration);
+    } as unknown as SanitizedIntegrationConfig);
 
     const dependencies: ServiceDependency[] = [
       { id: serviceId, outputKey: validateOutputKey("service") },
@@ -224,7 +224,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         config: {
           prop: "abc123",
         },
-      } as unknown as SanitizedServiceConfiguration);
+      } as unknown as SanitizedIntegrationConfig);
 
       const dependencies: ServiceDependency[] = [
         { id: serviceId, outputKey: validateOutputKey("service") },

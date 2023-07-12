@@ -19,7 +19,7 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { proxyService } from "@/background/messenger/api";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
 export class AddLead extends EffectABC {
   constructor() {
@@ -73,7 +73,7 @@ export class AddLead extends EffectABC {
   async effect({
     salesforce,
     ...data
-  }: BrickArgs<{ salesforce: SanitizedServiceConfiguration }>): Promise<void> {
+  }: BrickArgs<{ salesforce: SanitizedIntegrationConfig }>): Promise<void> {
     await proxyService(salesforce, {
       url: "/services/data/v49.0/sobjects/Lead/",
       method: "post",

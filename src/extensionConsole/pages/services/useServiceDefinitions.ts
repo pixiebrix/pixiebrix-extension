@@ -27,7 +27,7 @@ import { selectConfiguredServices } from "@/store/servicesSelectors";
 import { type Integration, type IntegrationConfig } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
 
-interface ServiceDefinitions {
+interface IntegrationDefinitions {
   serviceDefinitions: Integration[];
   activeConfiguration: IntegrationConfig | null;
   activeService: Integration | null;
@@ -37,7 +37,7 @@ interface ServiceDefinitions {
 
 const ZAPIER_SLUG = "zapier";
 
-function useServiceDefinitions(): ServiceDefinitions {
+function useServiceDefinitions(): IntegrationDefinitions {
   const configuredServices = useSelector<RootState, IntegrationConfig[]>(
     selectConfiguredServices
   );

@@ -34,7 +34,7 @@ import {
   type ServiceConfig,
   type IntegrationConfig,
   type SanitizedConfig,
-  type SanitizedServiceConfiguration,
+  type SanitizedIntegrationConfig,
   type IntegrationABC,
   type SecretsConfig,
 } from "@/types/serviceTypes";
@@ -69,14 +69,14 @@ function excludeSecrets(
   return result;
 }
 
-export async function pixieServiceFactory(): Promise<SanitizedServiceConfiguration> {
+export async function pixieServiceFactory(): Promise<SanitizedIntegrationConfig> {
   return {
     id: undefined,
     serviceId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
     config: {} as SanitizedConfig,
-  } as SanitizedServiceConfiguration;
+  } as SanitizedIntegrationConfig;
 }
 
 type Option = {
@@ -208,7 +208,7 @@ class LazyLocatorFactory {
 
   async locateAllForService(
     serviceId: RegistryId
-  ): Promise<SanitizedServiceConfiguration[]> {
+  ): Promise<SanitizedIntegrationConfig[]> {
     if (!this.initialized) {
       await this.refresh();
     }
@@ -247,7 +247,7 @@ class LazyLocatorFactory {
   async locate(
     serviceId: RegistryId,
     authId: UUID
-  ): Promise<SanitizedServiceConfiguration> {
+  ): Promise<SanitizedIntegrationConfig> {
     expectContext(
       "background",
       "The service locator must run in the background worker"

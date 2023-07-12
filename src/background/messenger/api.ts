@@ -23,7 +23,7 @@ import {
 } from "webext-messenger";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -101,7 +101,7 @@ export const services = {
 
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const proxyService = getMethod("PROXY", bg) as <TData>(
-  serviceConfig: SanitizedServiceConfiguration | null,
+  serviceConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 

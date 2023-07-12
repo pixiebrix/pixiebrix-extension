@@ -114,8 +114,8 @@ export type IntegrationConfig = {
   config: SecretsConfig;
 };
 
-export interface SanitizedServiceConfiguration {
-  // Nominal typing to distinguish from RawServiceConfiguration
+export interface SanitizedIntegrationConfig {
+  // Nominal typing to distinguish from IntegrationConfig
   _sanitizedServiceConfigurationBrand: null;
 
   /**

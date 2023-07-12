@@ -33,13 +33,13 @@ import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelect
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import cachePromise from "@/utils/cachePromise";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
 
 async function fetchRobots(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<Array<Option<number>>> {
   const response = await proxyService<ODataResponseData<Robot>>(config, {
     url: "/odata/Robots",
@@ -83,7 +83,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   }, [strategy, jobsCount, jobsCountHelpers, strategyHelpers]);
 
   const robotOptionsFactory = useCallback(
-    async (config: SanitizedServiceConfiguration) => {
+    async (config: SanitizedIntegrationConfig) => {
       if (config == null) {
         return [];
       }

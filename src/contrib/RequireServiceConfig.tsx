@@ -21,14 +21,14 @@ import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import { Button } from "react-bootstrap";
 import { extractServiceIds } from "@/services/serviceUtils";
 import { type Schema } from "@/types/schemaTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
 type ConfigProps = {
   serviceSchema: Schema;
   serviceFieldName: string;
   message?: React.ReactNode;
   children: (childProps: {
-    config: SanitizedServiceConfiguration;
+    config: SanitizedIntegrationConfig;
   }) => React.ReactNode;
 };
 

@@ -27,7 +27,7 @@ import {
   type ODataResponseData,
   type Release,
 } from "@/contrib/uipath/uipathContract";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { proxyService } from "@/background/messenger/api";
 import cachePromise from "@/utils/cachePromise";
 
@@ -36,7 +36,7 @@ const optionalFetchReleases = optionalFactory(fetchReleases);
 type ReleaseOption = Option & { data: Release };
 
 async function fetchReleases(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<ReleaseOption[]> {
   const response = await proxyService<ODataResponseData<Release>>(config, {
     url: "/odata/Releases",

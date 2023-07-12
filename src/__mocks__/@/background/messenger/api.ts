@@ -26,7 +26,7 @@ import {
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { uuidv4 } from "@/types/helpers";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { RegistryId } from "@/types/registryTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
@@ -111,7 +111,7 @@ export const services = {
 
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const proxyService = getMethod("PROXY", bg) as <TData>(
-  serviceConfig: SanitizedServiceConfiguration | null,
+  serviceConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 
