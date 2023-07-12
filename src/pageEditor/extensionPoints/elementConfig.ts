@@ -31,7 +31,7 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import type { Permissions } from "webextension-polyfill";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/serviceTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
@@ -101,7 +101,7 @@ export interface BaseFormState<
    */
   optionsArgs: OptionsArgs;
 
-  services: ServiceDependency[];
+  services: IntegrationDependency[];
 
   /**
    * The extra permissions required by the extension

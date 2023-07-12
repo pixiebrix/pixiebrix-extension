@@ -98,7 +98,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
     ) => {
       try {
         const configuredService = configuredServices.find(
-          (x) => x.serviceId === authServiceId
+          (x) => x.integrationId === authServiceId
         );
         let configurationId = configuredService?.id;
 

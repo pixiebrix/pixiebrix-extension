@@ -30,7 +30,7 @@ import {
   type OutputKey,
 } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/serviceTypes";
 import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
@@ -67,7 +67,7 @@ const internalFormStateFactory = define<
   uuid: uuidSequence,
   installed: true,
   optionsArgs: null as OptionsArgs,
-  services(): ServiceDependency[] {
+  services(): IntegrationDependency[] {
     return [];
   },
   recipe: null,

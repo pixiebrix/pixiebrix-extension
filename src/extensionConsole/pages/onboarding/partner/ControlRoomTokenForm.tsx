@@ -73,7 +73,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
     // an integration configured.
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/5762
     const configuredService = configuredServices.find(
-      (x) => x.serviceId === authServiceId
+      (x) => x.integrationId === authServiceId
     );
 
     const configurationId = configuredService?.id;

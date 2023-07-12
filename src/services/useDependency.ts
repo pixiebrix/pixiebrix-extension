@@ -21,7 +21,7 @@ import serviceRegistry from "@/services/registry";
 import {
   type SanitizedIntegrationConfig,
   type IntegrationABC,
-  type ServiceDependency,
+  type IntegrationDependency,
 } from "@/types/serviceTypes";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
@@ -42,9 +42,9 @@ export type Dependency = {
 };
 
 export function pickDependency(
-  services: ServiceDependency[],
+  services: IntegrationDependency[],
   serviceIds: RegistryId[]
-): ServiceDependency | null {
+): IntegrationDependency | null {
   const configuredServices = (services ?? []).filter((service) =>
     serviceIds.includes(service.id)
   );
@@ -55,7 +55,7 @@ export function pickDependency(
   return head(configuredServices);
 }
 
-async function lookupDependency(dependency: ServiceDependency) {
+async function lookupDependency(dependency: IntegrationDependency) {
   const localConfig = await services.locate(dependency.id, dependency.config);
   const service = await serviceRegistry.lookup(dependency.id);
   const origins = service.getOrigins(localConfig.config);
@@ -84,7 +84,7 @@ const lookupFallback = {
 function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
   // Listen for permissions changes
   const permissionsState = useExtensionPermissions();
-  const { values } = useFormikContext<{ services: ServiceDependency[] }>();
+  const { values } = useFormikContext<{ services: IntegrationDependency[] }>();
 
   const selected = pickDependency(
     values.services,
@@ -95,7 +95,7 @@ function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
     useDeriveAsyncState(
       permissionsState,
       valueToAsyncState(selected),
-      async (_permissions, dependency: ServiceDependency) => {
+      async (_permissions, dependency: IntegrationDependency) => {
         if (dependency?.config) {
           return lookupDependency(dependency);
         }

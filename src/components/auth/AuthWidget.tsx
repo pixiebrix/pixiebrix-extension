@@ -140,7 +140,7 @@ const AuthWidget: React.FunctionComponent<{
   const initialConfiguration: IntegrationConfig = useMemo(
     () =>
       ({
-        serviceId,
+        integrationId: serviceId,
         label: "New Configuration",
         config: {},
       } as IntegrationConfig),

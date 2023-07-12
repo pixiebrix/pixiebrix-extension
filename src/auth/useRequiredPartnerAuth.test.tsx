@@ -294,7 +294,7 @@ describe("useRequiredPartnerAuth", () => {
         ...servicesSlice.getInitialState(),
         configured: {
           [uuidv4()]: {
-            serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+            integrationId: CONTROL_ROOM_OAUTH_SERVICE_ID,
           } as IntegrationConfig,
         },
       },

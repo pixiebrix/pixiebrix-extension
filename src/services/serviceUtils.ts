@@ -24,7 +24,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   type SanitizedIntegrationConfig,
-  type ServiceDependency,
+  type IntegrationDependency,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ServiceContext } from "@/types/runtimeTypes";
@@ -117,9 +117,9 @@ export async function makeServiceContext(
   // `IExtension.services` is an optional field. Since we don't have strict-nullness checking on, calls to this method
   // are error-prone. So just be defensive in the signature
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3262
-  dependencies: ServiceDependency[] | null = []
+  dependencies: IntegrationDependency[] | null = []
 ): Promise<ServiceContext> {
-  const dependencyContext = async ({ id, config }: ServiceDependency) => {
+  const dependencyContext = async ({ id, config }: IntegrationDependency) => {
     // Should be safe to call locateWithRetry in parallel b/c the locator.refresh() method debounces/coalesces
     // the promise
     const configuredService = await locateWithRetry(id, config, {

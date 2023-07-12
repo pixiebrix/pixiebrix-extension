@@ -31,7 +31,7 @@ import {
 import { DoesNotExistError } from "@/baseRegistry";
 import {
   type Integration,
-  type ServiceConfig,
+  type IntegrationConfigArgs,
   type IntegrationConfig,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
@@ -55,7 +55,7 @@ enum ServiceLevel {
 /** Return config excluding any secrets/keys. */
 function excludeSecrets(
   service: Integration,
-  config: ServiceConfig
+  config: IntegrationConfigArgs
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
@@ -299,7 +299,7 @@ class LazyLocatorFactory {
     });
 
     return {
-      _sanitizedServiceConfigurationBrand: undefined,
+      _sanitizedIntegrationConfigBrand: undefined,
       id: authId,
       serviceId,
       proxy,

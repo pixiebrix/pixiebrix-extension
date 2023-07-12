@@ -30,7 +30,7 @@ import {
   validateSemVerString,
   validateTimestamp,
 } from "@/types/helpers";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/serviceTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { recipeMetadataFactory } from "@/testUtils/factories/recipeFactories";
 import { type StandaloneModDefinition } from "@/types/contract";
@@ -51,7 +51,7 @@ export const extensionFactory = define<IExtension>({
   _recipe: undefined,
   _deployment: undefined,
   label: "Test label",
-  services(): ServiceDependency[] {
+  services(): IntegrationDependency[] {
     return [];
   },
   config: (n: number) => ({

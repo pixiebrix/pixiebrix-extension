@@ -23,7 +23,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import { useField } from "formik";
-import { type ServiceAuthPair } from "@/types/serviceTypes";
+import { type IntegrationAuthPair } from "@/types/serviceTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
 import { joinName } from "@/utils";
@@ -58,7 +58,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     useAuthOptions(),
     emptyAuthOptions
   );
-  const [field, { error }] = useField<ServiceAuthPair[]>("services");
+  const [field, { error }] = useField<IntegrationAuthPair[]>("services");
   const { data: serviceConfigs } = useGetServicesQuery();
 
   const requiredServiceIds = useMemo(

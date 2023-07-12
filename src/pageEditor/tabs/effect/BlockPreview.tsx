@@ -46,7 +46,7 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/serviceTypes";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 /**
@@ -149,7 +149,7 @@ const BlockPreview: React.FunctionComponent<{
 
   const { values } = useFormikContext<FormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
-  const [{ value: services }] = useField<ServiceDependency[]>("services");
+  const [{ value: services }] = useField<IntegrationDependency[]>("services");
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 

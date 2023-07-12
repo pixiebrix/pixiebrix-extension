@@ -16,7 +16,7 @@
  */
 
 import { type StandaloneModDefinition } from "@/types/contract";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/serviceTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type ResolvedExtensionDefinition } from "@/types/modDefinitionTypes";
@@ -31,7 +31,7 @@ import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
  */
 export async function checkCloudExtensionPermissions(
   extension: StandaloneModDefinition,
-  services: ServiceDependency[]
+  services: IntegrationDependency[]
 ): Promise<PermissionsStatus> {
   const resolved = await resolveExtensionInnerDefinitions({
     ...extension,

@@ -67,7 +67,7 @@ function useServiceDefinitions(): IntegrationDefinitions {
     () =>
       activeConfiguration
         ? (serviceDefinitions ?? []).find(
-            (x) => x.id === activeConfiguration.serviceId
+            (x) => x.id === activeConfiguration.integrationId
           )
         : null,
     [serviceDefinitions, activeConfiguration]
