@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   type PanelEntry,
   type SidebarEntry,
@@ -122,8 +122,6 @@ const Tabs: React.FC = () => {
     dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
   };
 
-  const [testPanel, setTestPanel] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
-
   useEffect(
     () => {
       reportEvent("ViewSidePanelPanel", {
@@ -223,17 +221,6 @@ const Tabs: React.FC = () => {
               </span>
             </Nav.Link>
           )}
-
-          {testPanel.map((i) => (
-            <Nav.Link key={i} className={cx(styles.tabHeader)} eventKey={i}>
-              <span className={styles.tabTitle}>Test item {i}</span>
-              <CloseButton
-                onClick={() => {
-                  setTestPanel(testPanel.filter((item) => item !== i));
-                }}
-              />
-            </Nav.Link>
-          ))}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height bg-white">
           {staticPanels.map((staticPanel) => (
