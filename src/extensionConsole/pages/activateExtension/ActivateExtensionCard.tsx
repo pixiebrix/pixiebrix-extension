@@ -19,7 +19,7 @@ import styles from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard.m
 
 import React, { useCallback, useMemo } from "react";
 import { type AuthOption } from "@/auth/authTypes";
-import { type CloudExtension } from "@/types/contract";
+import { type StandaloneModDefinition } from "@/types/contract";
 import { type FormikProps, useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
@@ -69,7 +69,7 @@ const validationSchema = object().shape({
 });
 
 const ActivateExtensionCard: React.FunctionComponent<{
-  extension: CloudExtension;
+  extension: StandaloneModDefinition;
   authOptions: AuthOption[];
   refreshAuthOptions: () => void;
 }> = ({ extension, authOptions, refreshAuthOptions }) => {

@@ -16,7 +16,7 @@
  */
 
 import { type BrickPipeline } from "@/blocks/types";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import {
   createNewBlock,
@@ -28,9 +28,7 @@ const documentBlockId = validateRegistryId("@pixiebrix/document");
 const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
 const tourStepBlockId = validateRegistryId("@pixiebrix/tour/step");
 
-export function getExampleBlockPipeline(
-  type: ExtensionPointType
-): BrickPipeline {
+export function getExampleBlockPipeline(type: StarterBrickType): BrickPipeline {
   if (type === "actionPanel") {
     const documentBuilderBlock = createNewBlock(documentBlockId);
     return [documentBuilderBlock];

@@ -30,7 +30,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
-export type ExtensionPointType =
+export type StarterBrickType =
   | "panel"
   | "menuItem"
   | "trigger"
@@ -71,14 +71,14 @@ export type CustomEventOptions = {
   eventName: string;
 };
 
-export interface ExtensionPointDefinition {
-  type: ExtensionPointType;
+export interface StarterBrickDefinition {
+  type: StarterBrickType;
   isAvailable: Availability;
   reader: ReaderConfig;
 }
 
-export interface ExtensionPointConfig<
-  T extends ExtensionPointDefinition = ExtensionPointDefinition
+export interface StarterBrickConfig<
+  T extends StarterBrickDefinition = StarterBrickDefinition
 > {
   apiVersion?: ApiVersion;
   metadata: Metadata;
@@ -88,12 +88,12 @@ export interface ExtensionPointConfig<
 
 export function assertExtensionPointConfig(
   maybeExtensionPointConfig: unknown
-): asserts maybeExtensionPointConfig is ExtensionPointConfig {
+): asserts maybeExtensionPointConfig is StarterBrickConfig {
   const errorContext = { value: maybeExtensionPointConfig };
 
   if (typeof maybeExtensionPointConfig !== "object") {
     console.warn("Expected extension point", errorContext);
-    throw new TypeError("Expected object for ExtensionPointConfig");
+    throw new TypeError("Expected object for StarterBrickConfig");
   }
 
   const config = maybeExtensionPointConfig as Record<string, unknown>;
@@ -101,22 +101,20 @@ export function assertExtensionPointConfig(
   if (config.kind !== "extensionPoint") {
     console.warn("Expected extension point", errorContext);
     throw new TypeError(
-      "Expected kind 'extensionPoint' for ExtensionPointConfig"
+      "Expected kind 'extensionPoint' for StarterBrickConfig"
     );
   }
 
   if (typeof config.definition !== "object") {
     console.warn("Expected extension point", errorContext);
-    throw new TypeError(
-      "Expected object for definition in ExtensionPointConfig"
-    );
+    throw new TypeError("Expected object for definition in StarterBrickConfig");
   }
 
-  const definition = config.definition as ExtensionPointDefinition;
+  const definition = config.definition as StarterBrickDefinition;
 
   if (typeof definition.isAvailable !== "object") {
     console.warn("Expected object for definition.isAvailable", errorContext);
-    throw new TypeError("Invalid definition in ExtensionPointConfig");
+    throw new TypeError("Invalid definition in StarterBrickConfig");
   }
 }
 
@@ -144,7 +142,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
 
   protected readonly logger: Logger;
 
-  public abstract get kind(): ExtensionPointType;
+  public abstract get kind(): StarterBrickType;
 
   public get syncInstall() {
     return false;

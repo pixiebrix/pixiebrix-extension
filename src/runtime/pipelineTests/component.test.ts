@@ -27,6 +27,9 @@ import {
 
 import { fromJS } from "@/blocks/transformers/brickFactory";
 import { validateSemVerString } from "@/types/helpers";
+import { setContext } from "@/testUtils/detectPageMock";
+
+setContext("contentScript");
 
 beforeEach(() => {
   blockRegistry.clear();

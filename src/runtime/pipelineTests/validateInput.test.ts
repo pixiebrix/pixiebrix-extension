@@ -26,6 +26,7 @@ import {
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -107,9 +108,11 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       simpleInput({ inputArg: "hello" }),
       testOptions(apiVersion)
     );
+
     expect(result).toStrictEqual({
       "@input": { inputArg: "hello" },
       "@options": {},
+      ...extraEmptyModStateContext(apiVersion),
       "@first": { message: "First block" },
     });
   });

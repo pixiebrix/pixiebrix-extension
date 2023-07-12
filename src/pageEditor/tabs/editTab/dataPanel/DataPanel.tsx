@@ -56,6 +56,7 @@ import ConfigurationTab from "./tabs/ConfigurationTab";
 import { joinPathParts } from "@/utils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { fallbackValue } from "@/utils/asyncStateUtils";
+import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -130,7 +131,7 @@ const DataPanel: React.FC = () => {
   );
 
   const { data: showPageState } = fallbackValue(
-    useAsyncState(async () => block?.block.isPageStateAware(), [block]),
+    useAsyncState(async () => block?.block.isPageStateAware() ?? true, [block]),
     true
   );
 
@@ -240,7 +241,7 @@ const DataPanel: React.FC = () => {
               </Alert>
             )}
             <DataTabJsonTree
-              data={relevantContext}
+              data={contextAsPlainObject(relevantContext)}
               copyable
               searchable
               tabKey={DataPanelTabKey.Context}

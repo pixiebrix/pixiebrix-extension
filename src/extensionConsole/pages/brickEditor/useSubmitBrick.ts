@@ -105,7 +105,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
         void (async () => {
           try {
             if (kind === "recipe" && reinstallBlueprint) {
-              // TypeScript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
+              // TypeScript doesn't have enough information to kind === "recipe" distinguishes ModDefinition from
               // Definition
               const unsavedRecipeDefinition =
                 unsavedBrickJson as UnsavedModDefinition;

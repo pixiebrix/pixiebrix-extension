@@ -23,7 +23,7 @@ import {
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BrickConfig } from "@/blocks/types";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import {
   type AddBlockLocation,
   type EditorRootState,
@@ -123,6 +123,9 @@ export const initialState: EditorState = {
   isPendingDynamicExtensions: false,
   isModListExpanded: true,
   isDataPanelExpanded: true,
+
+  // Not persisted
+  isVariablePopoverVisible: false,
 };
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
@@ -331,7 +334,7 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    toggleInsert(state, action: PayloadAction<ExtensionPointType>) {
+    toggleInsert(state, action: PayloadAction<StarterBrickType>) {
       state.inserting = action.payload;
       state.beta = false;
       state.error = null;
@@ -879,6 +882,18 @@ export const editorSlice = createSlice({
     ) {
       state.isModListExpanded = payload.isExpanded;
     },
+    /**
+     * Mark that the variable popover is showing.
+     */
+    showVariablePopover(state) {
+      state.isVariablePopoverVisible = true;
+    },
+    /**
+     * Mark that the variable popover is not showing.
+     */
+    hideVariablePopover(state) {
+      state.isVariablePopoverVisible = false;
+    },
   },
   extraReducers(builder) {
     builder
@@ -957,4 +972,5 @@ export const persistEditorConfig = {
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
   version: 1,
+  blacklist: ["isVarPopoverVisible"],
 };

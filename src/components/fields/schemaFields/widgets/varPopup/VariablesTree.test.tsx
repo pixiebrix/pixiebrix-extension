@@ -15,12 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import testItRenders from "@/testUtils/testItRenders";
 import { noop } from "lodash";
 import VariablesTree from "./VariablesTree";
+import VarMap, {
+  ALLOW_ANY_CHILD,
+} from "@/analysis/analysisVisitors/varAnalysis/varMap";
+import { render, screen } from "@testing-library/react";
 
 testItRenders({
-  testName: "Renders the tree expanded with correct sorting",
+  testName: "Renders the tree",
   Component: VariablesTree,
   props: {
     vars: {
@@ -35,5 +40,43 @@ testItRenders({
       },
     } as any,
     onVarSelect: noop,
+    likelyVariable: null,
   },
+});
+
+describe("VariablesTree", () => {
+  test("it sorts nested variables", () => {
+    const varMap = new VarMap();
+    varMap.setExistenceFromValues({
+      source: "input",
+      values: {
+        "@input": {
+          foo: {
+            zulu: 42,
+            hotel: 42,
+            alpha: 42,
+          },
+        },
+      },
+    });
+
+    const { input: inputMap } = varMap.getMap();
+
+    (inputMap as any)["@input"].foo[ALLOW_ANY_CHILD] = true;
+
+    render(
+      <VariablesTree
+        vars={inputMap}
+        onVarSelect={noop}
+        likelyVariable="@input.foo."
+      />
+    );
+
+    const elements = screen.getAllByRole("button");
+    expect(elements[0]).toHaveTextContent("@input");
+    expect(elements[1]).toHaveTextContent("foo");
+    expect(elements[2]).toHaveTextContent("alpha");
+    expect(elements[3]).toHaveTextContent("hotel");
+    expect(elements[4]).toHaveTextContent("zulu");
+  });
 });

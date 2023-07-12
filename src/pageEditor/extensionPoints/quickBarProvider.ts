@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
@@ -80,7 +80,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: QuickBarProviderFormState
-): ExtensionPointConfig<QuickBarProviderDefinition> {
+): StarterBrickConfig<QuickBarProviderDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, documentUrlPatterns, reader },

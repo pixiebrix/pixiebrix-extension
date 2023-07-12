@@ -16,9 +16,9 @@
  */
 
 import {
-  type ExtensionPointConfig,
-  type ExtensionPointDefinition,
-  type ExtensionPointType,
+  type StarterBrickConfig,
+  type StarterBrickDefinition,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import { type Except } from "type-fest";
 import {
@@ -35,11 +35,11 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { type UUID } from "@/types/stringTypes";
 
 export interface DynamicDefinition<
-  TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
+  TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,
   TExtension extends UnknownObject = UnknownObject
 > {
-  type: ExtensionPointType;
-  extensionPointConfig: ExtensionPointConfig<TExtensionPoint>;
+  type: StarterBrickType;
+  extensionPointConfig: StarterBrickConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
 }
 

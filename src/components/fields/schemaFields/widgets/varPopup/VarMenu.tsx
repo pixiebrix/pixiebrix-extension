@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useMemo, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./VarMenu.module.scss";
 import { selectKnownVarsForActiveNode } from "./varSelectors";
 import VariablesTree from "./VariablesTree";
@@ -28,13 +28,36 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import SourceLabel from "./SourceLabel";
 import useAllBlocks from "@/blocks/hooks/useAllBlocks";
 import { useAsyncEffect } from "use-async-effect";
-import { computePosition, size, flip, offset } from "@floating-ui/dom";
+import { computePosition, flip, offset, size } from "@floating-ui/dom";
 import getMenuOptions from "./getMenuOptions";
 import { selectActiveNodeTrace } from "@/pageEditor/slices/runtimeSelectors";
+import {
+  filterOptionsByVariable,
+  filterVarMapByVariable,
+} from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import cx from "classnames";
+import VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
+import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+
+const emptyVarMap = new VarMap();
 
 type VarMenuProps = {
+  /**
+   * The underlying var or text input element.
+   */
   inputElementRef: React.MutableRefObject<HTMLElement>;
+  /**
+   * The likely variable the user is interacting with.
+   */
+  likelyVariable: string | null;
+  /**
+   * Callback to close the menu.
+   */
   onClose: () => void;
+  /**
+   * Callback to select a menu item
+   */
   onVarSelect: (selectedPath: string[]) => void;
 };
 
@@ -42,8 +65,17 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   inputElementRef,
   onClose,
   onVarSelect,
+  likelyVariable,
 }) => {
+  const dispatch = useDispatch();
   const rootElementRef = useRef<HTMLDivElement>(null);
+  const activeElement = useSelector(selectActiveElement);
+  const pipelineMap = useSelector(selectPipelineMap) ?? {};
+  const { allBlocks } = useAllBlocks();
+
+  const knownVars = useSelector(selectKnownVarsForActiveNode);
+  const trace = useSelector(selectActiveNodeTrace);
+
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
       const parent = rootElementRef.current?.parentElement;
@@ -58,19 +90,16 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     };
   }, [onClose]);
 
-  const activeElement = useSelector(selectActiveElement);
-  const pipelineMap = useSelector(selectPipelineMap) ?? {};
-  const { allBlocks } = useAllBlocks();
+  useEffect(() => {
+    dispatch(editorActions.showVariablePopover());
 
-  const knownVars = useSelector(selectKnownVarsForActiveNode);
-  const trace = useSelector(selectActiveNodeTrace);
+    return () => {
+      dispatch(editorActions.hideVariablePopover());
+    };
+  }, [dispatch]);
 
   useAsyncEffect(async () => {
-    if (
-      !inputElementRef.current ||
-      !rootElementRef.current ||
-      knownVars == null
-    ) {
+    if (!inputElementRef.current || !rootElementRef.current) {
       return;
     }
 
@@ -97,27 +126,73 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       }
     );
 
-    if (rootElementRef.current == null) {
-      return;
-    }
-
     rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
-  }, [knownVars]);
-
-  if (knownVars == null) {
-    return null;
-  }
+  }, [knownVars, dispatch]);
 
   const extensionPointLabel = activeElement?.type
     ? ADAPTERS.get(activeElement.type).label
     : "";
 
-  const options = getMenuOptions(knownVars, trace?.templateContext);
+  const { allOptions, filteredOptions } = useMemo(() => {
+    const allOptions = getMenuOptions(
+      knownVars ?? emptyVarMap,
+      trace?.templateContext
+    );
+    return {
+      allOptions,
+      filteredOptions: filterOptionsByVariable(allOptions, likelyVariable),
+    };
+  }, [knownVars, trace?.templateContext, likelyVariable]);
+
   const blocksInfo = Object.values(pipelineMap);
+
+  const { activeKeyPath } = useKeyboardNavigation({
+    inputElementRef,
+    isVisible: Boolean(rootElementRef.current),
+    likelyVariable,
+    menuOptions: filteredOptions,
+    onSelect: onVarSelect,
+  });
+
+  console.debug("activeKeyPath", activeKeyPath);
+
+  if (knownVars == null) {
+    return (
+      <div className={styles.menu} ref={rootElementRef}>
+        <div className={cx(styles.sourceItem, "text-info")}>
+          Available variables have not been computed yet.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.menu} ref={rootElementRef}>
-      {options.map(([source, vars]) => (
+      {filteredOptions.length === 0 && (
+        <>
+          <div className={cx(styles.sourceItem, "text-info")}>
+            No variables found for <span>{likelyVariable}</span>
+          </div>
+          {allOptions.map(([source, vars]) => (
+            // Show all top-level sources if no vars match
+            <div className={styles.sourceItem} key={source}>
+              <SourceLabel
+                source={source}
+                extensionPointLabel={extensionPointLabel}
+                blocksInfo={blocksInfo}
+                allBlocks={allBlocks}
+              />
+              <VariablesTree
+                vars={vars}
+                onVarSelect={onVarSelect}
+                likelyVariable={likelyVariable}
+                activeKeyPath={activeKeyPath}
+              />
+            </div>
+          ))}
+        </>
+      )}
+      {filteredOptions.map(([source, vars]) => (
         <div className={styles.sourceItem} key={source}>
           <SourceLabel
             source={source}
@@ -125,7 +200,12 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
             blocksInfo={blocksInfo}
             allBlocks={allBlocks}
           />
-          <VariablesTree vars={vars} onVarSelect={onVarSelect} />
+          <VariablesTree
+            vars={filterVarMapByVariable(vars, likelyVariable)}
+            onVarSelect={onVarSelect}
+            likelyVariable={likelyVariable}
+            activeKeyPath={activeKeyPath}
+          />
         </div>
       ))}
     </div>

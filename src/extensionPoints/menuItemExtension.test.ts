@@ -23,7 +23,7 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import blockRegistry from "@/blocks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
@@ -58,7 +58,7 @@ globalThis.requestAnimationFrame = jest.fn((callback) => {
 const rootReaderId = validateRegistryId("test/root-reader");
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<ExtensionPointConfig<MenuDefinition>>({
+  define<StarterBrickConfig<MenuDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

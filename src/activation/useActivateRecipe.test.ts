@@ -19,7 +19,7 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateRecipe from "./useActivateRecipe";
 import { validateRegistryId } from "@/types/helpers";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { type MenuDefinition } from "@/extensionPoints/contextMenu";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { reactivateEveryTab } from "@/background/messenger/api";
@@ -81,7 +81,7 @@ function setupInputs(): {
       },
       reader: [validateRegistryId("@pixiebrix/document-metadata")],
     },
-  }) as ExtensionPointConfig<MenuDefinition>;
+  }) as StarterBrickConfig<MenuDefinition>;
   extensionPointDefinition.definition.targetMode = "eventTarget";
   extensionPointDefinition.definition.contexts = ["all"];
   extensionPointDefinition.definition.documentUrlPatterns = ["*://*/*"];

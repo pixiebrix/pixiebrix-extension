@@ -50,6 +50,8 @@ import {
   isNunjucksExpression,
   isVarExpression,
 } from "@/utils/expressionUtils";
+import { type UnknownObject } from "@/types/objectTypes";
+import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -89,6 +91,10 @@ export enum KnownSources {
    * Mod options.
    */
   OPTIONS = "options",
+  /**
+   * Mod variables.
+   */
+  MOD = "mod",
   /**
    * Integration configuration.
    */
@@ -311,17 +317,26 @@ async function setOptionsVars(
     parentPath: [optionsOutputKey],
   });
 
-  // XXX: is this necessary? Should be redundant with setVarsFromSchema because user should only be providing values
-  // that are valid with respect to the schema.
-  if (!isEmpty(extension.optionsArgs)) {
-    for (const optionName of Object.keys(extension.optionsArgs)) {
-      contextVars.setExistence({
-        source,
-        path: [optionsOutputKey, optionName],
-        existence: VarExistence.DEFINITELY,
-      });
-    }
+  // Options currently only supports primitives, so don't need to recurse
+  for (const optionName of Object.keys(extension.optionsArgs ?? {})) {
+    contextVars.setExistence({
+      source,
+      path: [optionsOutputKey, optionName],
+      existence: VarExistence.DEFINITELY,
+    });
   }
+}
+
+async function setModVariables(
+  modVariables: UnknownObject,
+  contextVars: VarMap
+): Promise<void> {
+  // In the future, we'll also calculate the likely schema based on the setMod bricks
+  contextVars.setExistenceFromValues({
+    source: KnownSources.MOD,
+    values: modVariables,
+    parentPath: MOD_VARIABLE_REFERENCE,
+  });
 }
 
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
@@ -398,8 +413,12 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   /**
    * @param trace the trace for the latest run of the extension
+   * @param modState the current mod page state
    */
-  constructor(private readonly trace: TraceRecord[]) {
+  constructor(
+    private readonly trace: TraceRecord[],
+    private readonly modState: UnknownObject
+  ) {
     super();
   }
 
@@ -594,6 +613,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     // Order of the following calls will determine the order of the sources in the UI
     const contextVars = new VarMap();
     await setOptionsVars(extension, contextVars);
+    await setModVariables(this.modState, contextVars);
     await setServiceVars(extension, contextVars);
     await setInputVars(extension, contextVars);
 

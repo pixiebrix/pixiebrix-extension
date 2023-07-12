@@ -32,6 +32,10 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/blocks/transformers/controlFlow/Run";
 import { GetPageState } from "@/blocks/effects/pageState";
 import { cloneDeep } from "lodash";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { setContext } from "@/testUtils/detectPageMock";
+
+setContext("contentScript");
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -169,6 +173,7 @@ test("inner pipelines receive correct context", async () => {
       },
       customInput: "Brick Environment",
     },
+    ...extraEmptyModStateContext("v3"),
     "@options": {},
   });
 
@@ -176,6 +181,7 @@ test("inner pipelines receive correct context", async () => {
     "@input": {
       customInput: "Closure Environment",
     },
+    ...extraEmptyModStateContext("v3"),
     "@options": {},
   });
 });

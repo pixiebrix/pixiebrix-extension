@@ -22,7 +22,7 @@ import { validateTimestamp } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
-// Deployments are returned from the API, but their shape is determined by the registry and RecipeDefinition type.
+// Deployments are returned from the API, but their shape is determined by the registry and ModDefinition type.
 
 export const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,

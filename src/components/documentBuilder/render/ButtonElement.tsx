@@ -18,7 +18,7 @@
 import React, { useContext, useState } from "react";
 import { type BrickPipeline } from "@/blocks/types";
 import AsyncButton, { type AsyncButtonProps } from "@/components/AsyncButton";
-import { runEffectPipeline } from "@/contentScript/messenger/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { type Except } from "type-fest";
@@ -68,7 +68,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     const topLevelFrame = await getTopLevelFrame();
 
     try {
-      await runEffectPipeline(topLevelFrame, {
+      await runHeadlessPipeline(topLevelFrame, {
         nonce: uuidv4(),
         context: ctxt,
         pipeline: onClick,

@@ -184,27 +184,28 @@ export type UnresolvedExtension<Config extends UnknownObject = UnknownObject> =
  * @see IExtension
  * @see UserExtension
  */
-export type PersistedExtension<Config extends UnknownObject = UnknownObject> =
-  UnresolvedExtension<Config> & {
-    /**
-     * True to indicate this extension has been activated on the client.
-     */
-    active: true;
+export type ActivatedModComponent<
+  Config extends UnknownObject = UnknownObject
+> = UnresolvedExtension<Config> & {
+  /**
+   * True to indicate this extension has been activated on the client.
+   */
+  active: true;
 
-    /**
-     * Creation timestamp in ISO format with timezone.
-     *
-     * Currently, not used for anything - might be used for sorting, etc. in the future.
-     */
-    createTimestamp: string;
+  /**
+   * Creation timestamp in ISO format with timezone.
+   *
+   * Currently, not used for anything - might be used for sorting, etc. in the future.
+   */
+  createTimestamp: string;
 
-    /**
-     * Update timestamp in ISO format with timezone.
-     *
-     * Used to determine if local version is outdated compared to user's version on the server.
-     */
-    updateTimestamp: string;
-  };
+  /**
+   * Update timestamp in ISO format with timezone.
+   *
+   * Used to determine if local version is outdated compared to user's version on the server.
+   */
+  updateTimestamp: string;
+};
 
 /**
  * An `IExtension` with all inner definitions resolved.
@@ -249,7 +250,7 @@ export type ExtensionRef = {
 };
 
 /**
- * Select information about the RecipeDefinition used to install an IExtension
+ * Select information about the ModDefinition used to install an IExtension
  *
  * TODO: move to extensionHelpers file once we have it
  *
@@ -259,7 +260,7 @@ export function selectSourceRecipeMetadata(
   recipeDefinition: ModDefinition
 ): IExtension["_recipe"] {
   if (recipeDefinition.metadata?.id == null) {
-    throw new TypeError("Expected a RecipeDefinition");
+    throw new TypeError("Expected a ModDefinition");
   }
 
   return {

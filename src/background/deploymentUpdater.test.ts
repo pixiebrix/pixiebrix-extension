@@ -35,7 +35,7 @@ import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateType
 import { parsePackage } from "@/registry/localRegistry";
 import { registry } from "@/background/messenger/api";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
-import { type PersistedExtension } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/extensionTypes";
 import { type Timestamp } from "@/types/stringTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -234,7 +234,7 @@ describe("updateDeployments", () => {
     // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const extension = extensionFactory({
       extensionPointId: extensionPoint.metadata.id,
-    }) as PersistedExtension;
+    }) as ActivatedModComponent;
     delete extension._recipe;
     delete extension._deployment;
 
@@ -283,7 +283,7 @@ describe("updateDeployments", () => {
         updated_at: deployment.updated_at as Timestamp,
         sharing: sharingDefinitionFactory(),
       },
-    }) as PersistedExtension;
+    }) as ActivatedModComponent;
     delete extension._deployment;
 
     await saveOptions({
@@ -328,7 +328,7 @@ describe("updateDeployments", () => {
         updated_at: deployment.updated_at as Timestamp,
         sharing: sharingDefinitionFactory(),
       },
-    }) as PersistedExtension;
+    }) as ActivatedModComponent;
     delete extension._deployment;
 
     await saveOptions({
@@ -532,11 +532,11 @@ describe("updateDeployments", () => {
 
     const personalExtension = extensionFactory({
       extensionPointId: personalExtensionPoint.metadata.id,
-    }) as PersistedExtension;
+    }) as ActivatedModComponent;
 
     const recipeExtension = extensionFactory({
       _recipe: installedRecipeMetadataFactory(),
-    }) as PersistedExtension;
+    }) as ActivatedModComponent;
 
     const deploymentExtensionPoint = extensionPointDefinitionFactory();
     const deploymentsBrick = {
@@ -548,7 +548,7 @@ describe("updateDeployments", () => {
       extensionPointId: deploymentExtensionPoint.metadata.id,
       _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
       _recipe: installedRecipeMetadataFactory(),
-    }) as PersistedExtension;
+    }) as ActivatedModComponent;
 
     registryFindMock.mockImplementation(async (id) => {
       if (id === personalBrick.id) {

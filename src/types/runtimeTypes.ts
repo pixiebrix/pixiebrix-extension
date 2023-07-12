@@ -208,7 +208,18 @@ export type BrickArgsContext = UnknownObject & {
 };
 
 /**
- * The JSON Schema validated arguments to pass into the `run` method of an Brick.
+ * Returns an object as a BrickArgsContext, or throw a TypeError if it's not a valid context.
+ */
+export function validateBrickArgsContext(obj: UnknownObject): BrickArgsContext {
+  if (!("@input" in obj)) {
+    throw new TypeError("BrickArgsContext must have @input property");
+  }
+
+  return obj as BrickArgsContext;
+}
+
+/**
+ * The JSON Schema validated arguments to pass into the `run` method of a Brick.
  *
  * Uses `any` for values so that bricks don't have to assert/cast all their argument types. The input values
  * are validated using JSON Schema in `reducePipeline`.
@@ -225,7 +236,7 @@ export type BrickArgs<
 };
 
 /**
- * The non-validated arguments to pass into the `run` method of an Brick.
+ * The non-validated arguments to pass into the `run` method of a Brick.
  * @see BrickArgs
  */
 export type RenderedArgs = UnknownObject & {
@@ -298,8 +309,7 @@ export type BrickOptions<
       key: string;
       counter: number;
     },
-    // Should be UnknownObject, but can't use to introduce a circular dependency
-    extraContext?: Record<string, unknown>,
+    extraContext?: UnknownObject,
     root?: SelectorRoot
   ) => Promise<unknown>; // Should be PanelPayload
 

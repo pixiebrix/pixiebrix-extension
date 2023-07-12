@@ -24,8 +24,8 @@ import {
 } from "webextension-polyfill";
 import {
   ExtensionPoint,
-  type ExtensionPointConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickConfig,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
@@ -317,7 +317,7 @@ export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<Quic
 
 export type QuickBarProviderDefaultOptions = Record<string, string | string[]>;
 
-export interface QuickBarProviderDefinition extends ExtensionPointDefinition {
+export interface QuickBarProviderDefinition extends StarterBrickDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
   defaultOptions?: QuickBarProviderDefaultOptions;
 }
@@ -331,9 +331,9 @@ export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderExtens
 
   public readonly contexts: Menus.ContextType[];
 
-  public readonly rawConfig: ExtensionPointConfig<QuickBarProviderDefinition>;
+  public readonly rawConfig: StarterBrickConfig<QuickBarProviderDefinition>;
 
-  constructor(config: ExtensionPointConfig<QuickBarProviderDefinition>) {
+  constructor(config: StarterBrickConfig<QuickBarProviderDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
@@ -372,7 +372,7 @@ export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderExtens
 }
 
 export function fromJS(
-  config: ExtensionPointConfig<QuickBarProviderDefinition>
+  config: StarterBrickConfig<QuickBarProviderDefinition>
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "quickBarProvider") {

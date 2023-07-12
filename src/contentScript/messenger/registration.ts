@@ -52,7 +52,7 @@ import {
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { withDetectFrameworkVersions } from "@/pageScript/messenger/api";
 import {
-  runBlock,
+  runBlockPreview,
   resetTab,
   runRendererBlock,
 } from "@/contentScript/pageEditor";
@@ -64,7 +64,7 @@ import {
   selectElement,
 } from "@/contentScript/pageEditor/elementPicker";
 import {
-  runEffectPipeline,
+  runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
@@ -113,7 +113,7 @@ declare global {
 
     DETECT_FRAMEWORKS: typeof withDetectFrameworkVersions;
     GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
-    RUN_SINGLE_BLOCK: typeof runBlock;
+    RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
@@ -130,7 +130,7 @@ declare global {
     SELECT_ELEMENT: typeof selectElement;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
-    RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
+    RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
     RUN_MAP_ARGS: typeof runMapArgs;
 
     NOTIFY_INFO: typeof notify.info;
@@ -177,7 +177,7 @@ export default function registerMessenger(): void {
 
     DETECT_FRAMEWORKS: withDetectFrameworkVersions,
     GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
-    RUN_SINGLE_BLOCK: runBlock,
+    RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,
 
     CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
@@ -195,7 +195,7 @@ export default function registerMessenger(): void {
     SELECT_ELEMENT: selectElement,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
-    RUN_EFFECT_PIPELINE: runEffectPipeline,
+    RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
     RUN_MAP_ARGS: runMapArgs,
 
     NOTIFY_INFO: notify.info,

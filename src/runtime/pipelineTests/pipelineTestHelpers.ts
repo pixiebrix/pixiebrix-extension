@@ -20,10 +20,12 @@ import { isDeferExpression } from "@/utils/expressionUtils";
 const logger = new ConsoleLogger();
 
 export class ContextBrick extends BrickABC {
+  static BLOCK_ID = validateRegistryId("test/context");
+
   static contexts: UnknownObject[] = [];
 
   constructor() {
-    super("test/context", "Return Context");
+    super(ContextBrick.BLOCK_ID, "Return Context");
   }
 
   static clearContexts() {

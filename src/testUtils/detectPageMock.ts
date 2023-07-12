@@ -53,6 +53,10 @@ export function isWeb() {
   return _context === "web";
 }
 
+export function isContentScript() {
+  return _context === "contentScript";
+}
+
 export function getContextName(): ContextName {
   return _context;
 }

@@ -21,7 +21,7 @@ import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
 import { type SettingsRootState } from "@/store/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BrickConfig } from "@/blocks/types";
@@ -83,7 +83,7 @@ export interface EditorState {
   /**
    * The element type, if the page editor is in "insertion-mode"
    */
-  inserting: ExtensionPointType | null;
+  inserting: StarterBrickType | null;
 
   /**
    * The uuid of the active element, if an extension is selected
@@ -223,6 +223,12 @@ export interface EditorState {
    * Is mod list expanded or collapsed
    */
   isModListExpanded: boolean;
+
+  /**
+   * Is the variable popover visible?
+   * @since 1.7.34
+   */
+  isVariablePopoverVisible: boolean;
 }
 
 export type EditorRootState = {

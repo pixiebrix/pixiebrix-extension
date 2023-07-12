@@ -87,11 +87,12 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
         if (isDeferExpression(config)) {
           documentElement = (await runMapArgs(
             topLevelFrame,
-            // TODO: pass runtime version via DocumentContext instead of hard-coding it. This is be wrong for v4+
+            // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will be wrong for v4+
             {
               config: config.__value__,
               context: elementContext.options.ctxt,
               options: apiVersionOptions("v3"),
+              blueprintId: documentContext.options.logger.context.blueprintId,
             }
           )) as DocumentElement;
         } else {
