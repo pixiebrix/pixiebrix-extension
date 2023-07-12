@@ -20,7 +20,7 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "./base";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
@@ -98,7 +98,7 @@ describe("getImplicitReader", () => {
     ["trigger"],
     ["panel"],
     ["sidePanel"],
-  ])("includes metadata reader for %s", (type: ExtensionPointType) => {
+  ])("includes metadata reader for %s", (type: StarterBrickType) => {
     expect(getImplicitReader(type)).toContainEqual(
       "@pixiebrix/document-metadata"
     );
@@ -114,7 +114,7 @@ describe("getImplicitReader", () => {
     ["sidePanel"],
   ])(
     "overrides url from metadata reader with current URL from context reader",
-    (type: ExtensionPointType) => {
+    (type: StarterBrickType) => {
       const readerArray = getImplicitReader(type) as ReaderConfig[];
 
       const metadataIndex = readerArray.indexOf(
@@ -136,7 +136,7 @@ describe("getImplicitReader", () => {
     ["quickBarProvider"],
     ["contextMenu"],
     ["trigger"],
-  ])("includes element reader for %s", (type: ExtensionPointType) => {
+  ])("includes element reader for %s", (type: StarterBrickType) => {
     expect(getImplicitReader(type)).toContainEqual({
       element: "@pixiebrix/html/element",
     });
@@ -144,7 +144,7 @@ describe("getImplicitReader", () => {
 
   it.each([["panel"], ["sidePanel"]])(
     "does not include element reader for %s",
-    (type: ExtensionPointType) => {
+    (type: StarterBrickType) => {
       expect(getImplicitReader(type)).not.toContainEqual({
         element: "@pixiebrix/html/element",
       });

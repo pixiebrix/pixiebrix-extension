@@ -47,7 +47,7 @@ import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import {
   type IExtension,
-  type PersistedExtension,
+  type ActivatedModComponent,
 } from "@/types/extensionTypes";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
@@ -303,7 +303,7 @@ const useSavingWizard = () => {
   function updateExtensionRecipeLinks(
     recipeId: RegistryId,
     recipeMetadata: IExtension["_recipe"],
-    extraUpdate: Partial<PersistedExtension> = {}
+    extraUpdate: Partial<ActivatedModComponent> = {}
   ) {
     // 1) Update the extensions in the Redux optionsSlice
     const recipeExtensions = extensions.filter(

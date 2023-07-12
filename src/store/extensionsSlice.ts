@@ -16,7 +16,10 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type CloudExtension, type Deployment } from "@/types/contract";
+import {
+  type StandaloneModDefinition,
+  type Deployment,
+} from "@/types/contract";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
@@ -34,13 +37,13 @@ import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import {
   type IExtension,
-  type PersistedExtension,
+  type ActivatedModComponent,
   selectSourceRecipeMetadata,
 } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
   type ModDefinition,
-  type ExtensionDefinition,
+  type ModComponentDefinition,
 } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey, type OptionsArgs } from "@/types/runtimeTypes";
@@ -65,18 +68,18 @@ const extensionsSlice = createSlice({
   name: "extensions",
   initialState: initialExtensionsState,
   reducers: {
-    // Helper method to directly update extensions in tests. Can't use installCloudExtension because CloudExtension
-    // doesn't have the _recipe field
+    // Helper method to directly update extensions in tests. Can't use installCloudExtension because
+    // StandaloneModDefinition doesn't have the _recipe field
     UNSAFE_setExtensions(
       state,
-      { payload }: PayloadAction<PersistedExtension[]>
+      { payload }: PayloadAction<ActivatedModComponent[]>
     ) {
       state.extensions = cloneDeep(payload);
     },
 
     installCloudExtension(
       state,
-      { payload }: PayloadAction<{ extension: CloudExtension }>
+      { payload }: PayloadAction<{ extension: StandaloneModDefinition }>
     ) {
       const { extension } = payload;
 
@@ -111,7 +114,7 @@ const extensionsSlice = createSlice({
       }: PayloadAction<{
         recipe: ModDefinition;
         services?: Record<RegistryId, UUID>;
-        extensionPoints: ExtensionDefinition[];
+        extensionPoints: ModComponentDefinition[];
         optionsArgs?: OptionsArgs;
         deployment?: Deployment;
         /**
@@ -172,7 +175,7 @@ const extensionsSlice = createSlice({
         }
 
         const extension: Except<
-          PersistedExtension,
+          ActivatedModComponent,
           "_unresolvedExtensionBrand"
         > = {
           id: extensionId,
@@ -240,7 +243,7 @@ const extensionsSlice = createSlice({
       {
         payload,
       }: PayloadAction<{
-        extension: (IExtension | PersistedExtension) & {
+        extension: (IExtension | ActivatedModComponent) & {
           createTimestamp?: string;
         };
         pushToCloud: boolean;
@@ -276,22 +279,24 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: Except<PersistedExtension, "_unresolvedExtensionBrand"> =
-        {
-          id,
-          apiVersion,
-          extensionPointId,
-          _recipe,
-          _deployment: undefined,
-          label,
-          definitions,
-          optionsArgs,
-          services,
-          config,
-          createTimestamp,
-          updateTimestamp: timestamp,
-          active: true,
-        };
+      const extension: Except<
+        ActivatedModComponent,
+        "_unresolvedExtensionBrand"
+      > = {
+        id,
+        apiVersion,
+        extensionPointId,
+        _recipe,
+        _deployment: undefined,
+        label,
+        definitions,
+        optionsArgs,
+        services,
+        config,
+        createTimestamp,
+        updateTimestamp: timestamp,
+        active: true,
+      };
 
       assertExtensionNotResolved(extension);
 
@@ -311,7 +316,7 @@ const extensionsSlice = createSlice({
     },
     updateExtension(
       state,
-      action: PayloadAction<{ id: UUID } & Partial<PersistedExtension>>
+      action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>
     ) {
       const { id, ...extensionUpdate } = action.payload;
       const index = state.extensions.findIndex((x) => x.id === id);

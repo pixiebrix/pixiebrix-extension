@@ -17,7 +17,7 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/blocks/types";
@@ -39,7 +39,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 const rootReader = new RootReader();
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<ExtensionPointConfig<TourDefinition>>({
+  define<StarterBrickConfig<TourDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

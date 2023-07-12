@@ -24,7 +24,7 @@ import { fromJS as deserializeQuickBar } from "@/extensionPoints/quickBarExtensi
 import { fromJS as deserializeQuickBarProvider } from "@/extensionPoints/quickBarProviderExtension";
 import { fromJS as deserializeTour } from "@/extensionPoints/tourExtension";
 import { type StarterBrick } from "@/types/extensionPointTypes";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 
 const TYPE_MAP = {
   panel: deserializePanel,
@@ -37,7 +37,7 @@ const TYPE_MAP = {
   tour: deserializeTour,
 };
 
-export function fromJS(config: ExtensionPointConfig): StarterBrick {
+export function fromJS(config: StarterBrickConfig): StarterBrick {
   if (config.kind !== "extensionPoint") {
     // Is `never` due to check, but needed because this method is called dynamically
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

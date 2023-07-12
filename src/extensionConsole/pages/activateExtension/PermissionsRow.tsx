@@ -20,11 +20,11 @@ import React from "react";
 import { useFormikContext } from "formik";
 import UrlPermissionsList from "@/extensionConsole/pages/activateRecipe/UrlPermissionsList";
 import useCloudExtensionPermissions from "@/extensionConsole/pages/activateExtension/useCloudExtensionPermissions";
-import { type CloudExtension } from "@/types/contract";
+import { type StandaloneModDefinition } from "@/types/contract";
 import { type FormState } from "@/extensionConsole/pages/activateExtension/activateTypes";
 
 const PermissionsRow: React.FunctionComponent<{
-  extension: CloudExtension;
+  extension: StandaloneModDefinition;
 }> = ({ extension }) => {
   const { values } = useFormikContext<FormState>();
   const permissionsState = useCloudExtensionPermissions(

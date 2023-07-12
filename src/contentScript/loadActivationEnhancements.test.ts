@@ -21,7 +21,7 @@ import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { loadOptions } from "@/store/extensionsStorage";
 import { getDocument } from "@/extensionPoints/extensionPointTestUtils";
 import { validateRegistryId } from "@/types/helpers";
-import { type PersistedExtension } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/extensionTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";
@@ -111,8 +111,8 @@ describe("marketplace enhancements", () => {
       _recipe: installedRecipeMetadataFactory({
         id: recipeId1,
       }),
-    }) as PersistedExtension;
-    const extension2 = extensionFactory() as PersistedExtension;
+    }) as ActivatedModComponent;
+    const extension2 = extensionFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
       extensions: [extension1, extension2],
     });
@@ -173,8 +173,8 @@ describe("marketplace enhancements", () => {
       _recipe: installedRecipeMetadataFactory({
         id: recipeId1,
       }),
-    }) as PersistedExtension;
-    const extension2 = extensionFactory() as PersistedExtension;
+    }) as ActivatedModComponent;
+    const extension2 = extensionFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
       extensions: [extension1, extension2],
     });
@@ -196,8 +196,8 @@ describe("marketplace enhancements", () => {
       _recipe: installedRecipeMetadataFactory({
         id: recipeId1,
       }),
-    }) as PersistedExtension;
-    const extension2 = extensionFactory() as PersistedExtension;
+    }) as ActivatedModComponent;
+    const extension2 = extensionFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
       extensions: [extension1, extension2],
     });

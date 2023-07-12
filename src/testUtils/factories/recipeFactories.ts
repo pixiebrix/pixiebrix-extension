@@ -17,7 +17,7 @@
 
 import { array, define } from "cooky-cutter";
 import {
-  type ExtensionDefinition,
+  type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import {
@@ -38,9 +38,9 @@ import {
   validateTimestamp,
 } from "@/types/helpers";
 import {
-  type ExtensionPointConfig as ExtensionPointDefinition,
-  type ExtensionPointDefinition as ExtensionPointConfigDefinition,
-  type ExtensionPointType,
+  type StarterBrickConfig as ExtensionPointDefinition,
+  type StarterBrickDefinition as ExtensionPointConfigDefinition,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
@@ -58,7 +58,7 @@ export const recipeMetadataFactory = define<Metadata>({
   version: validateSemVerString("1.0.0"),
 });
 
-export const extensionPointConfigFactory = define<ExtensionDefinition>({
+export const extensionPointConfigFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
   services(): Record<OutputKey, RegistryId> {
@@ -97,7 +97,7 @@ export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
       }),
     definition(n: number) {
       const definition: ExtensionPointConfigDefinition = {
-        type: "menuItem" as ExtensionPointType,
+        type: "menuItem" as StarterBrickType,
         isAvailable: {
           matchPatterns: [`https://www.mySite${n}.com/*`],
         },
@@ -113,7 +113,7 @@ type ExternalExtensionPointParams = {
 };
 
 /**
- * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
+ * Factory to create a ModDefinition that refers to a versioned extensionPoint
  */
 export const versionedExtensionPointRecipeFactory = ({
   extensionPointId,
@@ -145,10 +145,10 @@ export const versionedExtensionPointRecipeFactory = ({
     ],
   });
 /**
- * Factory to create a RecipeDefinition with a definitions section and resolved extensions
+ * Factory to create a ModDefinition with a definitions section and resolved extensions
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
-  const extensionPoints: ExtensionDefinition[] = [];
+  const extensionPoints: ModComponentDefinition[] = [];
   for (let i = 0; i < extensionCount; i++) {
     // Don't use array(factory, count) here, because it will keep incrementing
     // the modifier number across multiple test runs and cause non-deterministic
@@ -192,7 +192,7 @@ type InnerExtensionPointParams = {
   extensionPointRef?: InnerDefinitionRef;
 };
 /**
- * Factory to create a factory that creates a RecipeDefinition that refers to a versioned extensionPoint
+ * Factory to create a factory that creates a ModDefinition that refers to a versioned extensionPoint
  */
 export const innerExtensionPointRecipeFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,

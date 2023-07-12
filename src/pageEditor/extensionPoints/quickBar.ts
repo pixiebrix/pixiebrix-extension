@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
@@ -79,7 +79,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
 
 function selectExtensionPointConfig(
   formState: QuickBarFormState
-): ExtensionPointConfig<QuickBarDefinition> {
+): StarterBrickConfig<QuickBarDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {

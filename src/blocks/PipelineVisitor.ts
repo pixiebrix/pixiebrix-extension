@@ -26,7 +26,7 @@ import {
   getRootPipelineFlavor,
   getSubPipelineFlavor,
 } from "@/blocks/blockFilterHelpers";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { isPipelineExpression } from "@/utils/expressionUtils";
@@ -76,7 +76,7 @@ export type VisitPipelineExtra = {
   pipelinePropName?: string | undefined;
 };
 type VisitRootPipelineExtra = {
-  extensionPointType: ExtensionPointType;
+  extensionPointType: StarterBrickType;
 };
 
 /**

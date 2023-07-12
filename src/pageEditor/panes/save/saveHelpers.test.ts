@@ -39,8 +39,8 @@ import {
   getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
 import {
-  type ExtensionPointConfig,
-  type ExtensionPointDefinition,
+  type StarterBrickConfig,
+  type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
@@ -607,10 +607,10 @@ describe("isRecipeEditable", () => {
 
 function selectExtensionPoints(
   recipe: UnsavedModDefinition
-): ExtensionPointConfig[] {
+): StarterBrickConfig[] {
   return recipe.extensionPoints.map(({ id }) => {
     const definition = recipe.definitions[id]
-      .definition as ExtensionPointDefinition;
+      .definition as StarterBrickDefinition;
     return {
       apiVersion: recipe.apiVersion,
       metadata: internalExtensionPointMetaFactory(),
