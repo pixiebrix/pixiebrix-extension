@@ -88,7 +88,7 @@ export interface AuthData {
 }
 
 /** Service configuration provided by a user. */
-export type RawServiceConfiguration = {
+export type IntegrationConfig = {
   // Nominal typing to distinguish from SanitizedServiceConfiguration
   _rawServiceConfigurationBrand: null;
 

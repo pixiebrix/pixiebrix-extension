@@ -37,10 +37,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import { reportEvent } from "@/telemetry/events";
-import {
-  type Integration,
-  type RawServiceConfiguration,
-} from "@/types/serviceTypes";
+import { type Integration, type IntegrationConfig } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
@@ -65,7 +62,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const [newConfigurationService, setNewConfigurationService] =
     useState<Integration>(null);
   const [newConfiguration, setNewConfiguration] =
-    useState<RawServiceConfiguration>(null);
+    useState<IntegrationConfig>(null);
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
   const {
@@ -140,7 +137,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         label: undefined,
         serviceId: service.id,
         config: {},
-      } as RawServiceConfiguration;
+      } as IntegrationConfig;
 
       setNewConfiguration(config);
       setNewConfigurationService(definition);

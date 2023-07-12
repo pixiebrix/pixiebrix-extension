@@ -29,15 +29,12 @@ import { type ServicesState } from "@/store/servicesSlice";
 import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
-import {
-  type Integration,
-  type RawServiceConfiguration,
-} from "@/types/serviceTypes";
+import { type Integration, type IntegrationConfig } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type TableData = {
   service: Integration;
-} & RawServiceConfiguration;
+} & IntegrationConfig;
 type TableColumn = Column<TableData>;
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
@@ -161,7 +158,7 @@ const dataFactory = ({
   configuredServices,
   services,
 }: {
-  configuredServices: RawServiceConfiguration[];
+  configuredServices: IntegrationConfig[];
   services: Integration[];
 }): TableData[] => [
   {
@@ -190,7 +187,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   navigate,
   initialService,
 }) => {
-  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
+  const configuredServices = useSelector<RootState, IntegrationConfig[]>(
     selectConfiguredServices,
     isEqual
   );

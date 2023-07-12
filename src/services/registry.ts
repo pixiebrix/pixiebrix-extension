@@ -19,7 +19,7 @@ import { readReduxStorage, type ReduxStorageKey } from "@/chrome";
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
 import {
-  type RawServiceConfiguration,
+  type IntegrationConfig,
   type IntegrationABC,
 } from "@/types/serviceTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -35,18 +35,16 @@ const registry = new BaseRegistry<RegistryId, IntegrationABC>(
 type PersistedServicesState = {
   // XXX: in practice, only one of these should be true. Need to better understand/document how redux-persist stores
   // each leave of state
-  configured: string | Record<string, RawServiceConfiguration>;
+  configured: string | Record<string, IntegrationConfig>;
 };
 
-export async function readRawConfigurations(): Promise<
-  RawServiceConfiguration[]
-> {
+export async function readRawConfigurations(): Promise<IntegrationConfig[]> {
   const base: PersistedServicesState = await readReduxStorage(storageKey);
 
   if (typeof base?.configured === "string") {
     // Not really sure why redux-persist stores the next level down as escaped JSON?
     return Object.values(
-      JSON.parse(base.configured) as Record<string, RawServiceConfiguration>
+      JSON.parse(base.configured) as Record<string, IntegrationConfig>
     );
   }
 

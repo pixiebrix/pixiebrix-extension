@@ -41,19 +41,16 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { getValidationErrMessages } from "@/components/fields/fieldUtils";
-import {
-  type Integration,
-  type RawServiceConfiguration,
-} from "@/types/serviceTypes";
+import { type Integration, type IntegrationConfig } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 type OwnProps = {
-  configuration: RawServiceConfiguration;
+  configuration: IntegrationConfig;
   service: Integration;
   onClose: () => void;
   onDelete?: (id: UUID) => void;
-  onSave: (config: RawServiceConfiguration) => Promise<void>;
+  onSave: (config: IntegrationConfig) => Promise<void>;
 };
 
 const FORM_RUNTIME_CONTEXT: RuntimeContext = {
@@ -70,7 +67,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 }) => {
   useTitle(`Configure ${truncate(service.name, { length: 15 })}`);
 
-  const onSubmit = useCallback<OnSubmit<RawServiceConfiguration>>(
+  const onSubmit = useCallback<OnSubmit<IntegrationConfig>>(
     async (values, helpers) => {
       helpers.setSubmitting(true);
       onClose();

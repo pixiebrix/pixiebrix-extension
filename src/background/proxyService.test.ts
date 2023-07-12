@@ -29,7 +29,7 @@ import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
 import {
   type IntegrationABC,
-  type RawServiceConfiguration,
+  type IntegrationConfig,
   type SecretsConfig,
 } from "@/types/serviceTypes";
 import { setContext } from "@/testUtils/detectPageMock";
@@ -146,9 +146,7 @@ describe("authenticated direct requests", () => {
       .mockResolvedValue(directServiceConfig);
     jest
       .spyOn(Locator.prototype, "getLocalConfig")
-      .mockResolvedValue(
-        directServiceConfig as unknown as RawServiceConfiguration
-      );
+      .mockResolvedValue(directServiceConfig as unknown as IntegrationConfig);
   });
 
   it("makes an authenticated request", async () => {
@@ -268,7 +266,7 @@ describe("Retry token request", () => {
     jest
       .spyOn(Locator.prototype, "getLocalConfig")
       .mockResolvedValue(
-        directTokenServiceConfig as unknown as RawServiceConfiguration
+        directTokenServiceConfig as unknown as IntegrationConfig
       );
   });
 

@@ -20,7 +20,7 @@ import { readRawConfigurations } from "@/services/registry";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type SanitizedAuth } from "@/types/contract";
-import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/serviceTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
@@ -67,7 +67,7 @@ function getRemoteLabel(auth: SanitizedAuth): string {
 }
 
 function mapConfigurationsToOptions(
-  localServices: RawServiceConfiguration[],
+  localServices: IntegrationConfig[],
   remoteServices: SanitizedAuth[]
 ) {
   const localOptions = sortBy(
@@ -104,7 +104,7 @@ export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
   // store to reload if it's changed on another tab
-  const localServicesState = useAsyncState<RawServiceConfiguration[]>(
+  const localServicesState = useAsyncState<IntegrationConfig[]>(
     readRawConfigurations,
     []
   );

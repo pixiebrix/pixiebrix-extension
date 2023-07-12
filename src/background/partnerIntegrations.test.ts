@@ -35,7 +35,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { syncRemotePackages } from "@/baseRegistry";
 import { type RegistryId } from "@/types/registryTypes";
-import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/serviceTypes";
 
 const serviceMap = new Map([
   [(controlRoomTokenService as any).metadata.id, controlRoomTokenService],
@@ -141,7 +141,7 @@ describe("getPartnerPrincipals", () => {
           controlRoomUrl: "https://control-room.example.com",
           username: "bot_creator",
         },
-      } as unknown as RawServiceConfiguration,
+      } as unknown as IntegrationConfig,
     ]);
 
     await serviceLocator.refreshLocal();
@@ -188,7 +188,7 @@ describe("refresh partner token", () => {
         config: {
           controlRoomUrl: "https://controlroom.com",
         },
-      } as unknown as RawServiceConfiguration,
+      } as unknown as IntegrationConfig,
     ]);
 
     axiosMock.onPost().reply(200, {
@@ -231,7 +231,7 @@ describe("refresh partner token", () => {
         config: {
           controlRoomUrl: "https://controlroom.com",
         },
-      } as unknown as RawServiceConfiguration,
+      } as unknown as IntegrationConfig,
     ]);
 
     axiosMock.onPost().reply(401);

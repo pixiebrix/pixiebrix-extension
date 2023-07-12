@@ -26,7 +26,7 @@ import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/serviceTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -39,7 +39,7 @@ describe("ServiceEditorModal", () => {
 
     render(
       <ServiceEditorModal
-        configuration={{ label: "" } as RawServiceConfiguration}
+        configuration={{ label: "" } as IntegrationConfig}
         onDelete={jest.fn()}
         onSave={jest.fn()}
         onClose={jest.fn()}
@@ -66,7 +66,7 @@ describe("ServiceEditorModal", () => {
 
     render(
       <ServiceEditorModal
-        configuration={{ label: "" } as RawServiceConfiguration}
+        configuration={{ label: "" } as IntegrationConfig}
         onDelete={jest.fn()}
         onSave={jest.fn()}
         onClose={jest.fn()}

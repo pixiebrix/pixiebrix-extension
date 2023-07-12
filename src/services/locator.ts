@@ -32,7 +32,7 @@ import { DoesNotExistError } from "@/baseRegistry";
 import {
   type Integration,
   type ServiceConfig,
-  type RawServiceConfiguration,
+  type IntegrationConfig,
   type SanitizedConfig,
   type SanitizedServiceConfiguration,
   type IntegrationABC,
@@ -98,7 +98,7 @@ let wasInitialized = false;
 class LazyLocatorFactory {
   private remote: SanitizedAuth[] = [];
 
-  private local: RawServiceConfiguration[] = [];
+  private local: IntegrationConfig[] = [];
 
   private options: Option[];
 
@@ -196,7 +196,7 @@ class LazyLocatorFactory {
    * Return the raw integration configuration with UUID authId, or return `null` if not available locally.
    * @param authId UUID of the integration configuration
    */
-  async getLocalConfig(authId: UUID): Promise<RawServiceConfiguration | null> {
+  async getLocalConfig(authId: UUID): Promise<IntegrationConfig | null> {
     // The `initialized` flag gets set from _refresh, which covers both local and remote. For performance,
     // we could split the initialized flag into two, but it's not worth it since refreshLocal is fast.
     if (!this.initialized) {
