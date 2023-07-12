@@ -18,10 +18,10 @@
 import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
-import { type ServiceDefinition } from "@/types/serviceTypes";
+import { type IntegrationDefinition } from "@/types/serviceTypes";
 
 const ServiceDescriptor: React.FunctionComponent<{
-  serviceConfigs: ServiceDefinition[];
+  serviceConfigs: IntegrationDefinition[];
   serviceId: string;
 }> = ({ serviceId, serviceConfigs }) => {
   const config = useMemo(

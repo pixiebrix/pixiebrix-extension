@@ -181,7 +181,7 @@ export type OAuth2AuthorizationGrantDefinition = {
   headers: Record<string, string>;
 };
 
-export interface ServiceDefinition<
+export interface IntegrationDefinition<
   TAuth =
     | KeyAuthenticationDefinition
     | OAuth2AuthenticationDefinition

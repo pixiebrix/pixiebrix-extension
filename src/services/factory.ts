@@ -36,7 +36,7 @@ import {
   type SanitizedConfig,
   IntegrationABC,
   type SecretsConfig,
-  type ServiceDefinition,
+  type IntegrationDefinition,
   type TokenAuthenticationDefinition,
   type TokenContext,
 } from "@/types/serviceTypes";
@@ -47,7 +47,7 @@ import { type SemVerString } from "@/types/registryTypes";
  * access to authenticate secrets.
  */
 class LocalDefinedService<
-  TDefinition extends ServiceDefinition = ServiceDefinition
+  TDefinition extends IntegrationDefinition = IntegrationDefinition
 > extends IntegrationABC {
   private readonly _definition: TDefinition;
 
@@ -163,7 +163,7 @@ class LocalDefinedService<
 
     if (this.isToken) {
       const tokenUrl = (
-        this._definition as ServiceDefinition<TokenAuthenticationDefinition>
+        this._definition as IntegrationDefinition<TokenAuthenticationDefinition>
       ).authentication.token.url;
       patterns.push(renderMustache(tokenUrl, serviceConfig));
     }
@@ -360,6 +360,6 @@ class LocalDefinedService<
   }
 }
 
-export function fromJS(component: ServiceDefinition): LocalDefinedService {
+export function fromJS(component: IntegrationDefinition): LocalDefinedService {
   return new LocalDefinedService(component);
 }
