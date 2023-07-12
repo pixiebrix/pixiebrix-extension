@@ -118,7 +118,7 @@ export function assertExtensionPointConfig(
   }
 }
 
-export abstract class ExtensionPoint<TConfig extends UnknownObject>
+export abstract class StarterBrickABC<TConfig extends UnknownObject>
   implements StarterBrick
 {
   public readonly id: RegistryId;

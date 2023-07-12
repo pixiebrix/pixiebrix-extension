@@ -34,7 +34,7 @@ import {
 import { type Metadata } from "@/types/registryTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {
-  ExtensionPoint,
+  StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
@@ -97,7 +97,7 @@ function detectLoop(timestamps: Date[]): void {
 /**
  * Extension point that adds a panel to a web page.
  */
-export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
+export abstract class PanelExtensionPoint extends StarterBrickABC<PanelConfig> {
   protected $container: JQuery;
 
   private readonly collapsedExtensions: Map<UUID, boolean>;

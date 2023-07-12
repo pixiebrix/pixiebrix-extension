@@ -24,7 +24,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import {
   type CustomEventOptions,
   type DebounceOptions,
-  ExtensionPoint,
+  StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
@@ -122,7 +122,7 @@ async function interval({
   console.debug("interval:completed");
 }
 
-export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
+export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfig> {
   abstract get trigger(): Trigger;
 
   abstract get attachMode(): AttachMode;

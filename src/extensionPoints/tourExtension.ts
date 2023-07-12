@@ -17,7 +17,7 @@
 
 import { propertiesToSchema } from "@/validators/generic";
 import {
-  ExtensionPoint,
+  StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
@@ -87,7 +87,7 @@ export interface TourDefinition extends StarterBrickDefinition {
   allowUserRun?: boolean;
 }
 
-export abstract class TourExtensionPoint extends ExtensionPoint<TourConfig> {
+export abstract class TourExtensionPoint extends StarterBrickABC<TourConfig> {
   public get kind(): "tour" {
     return "tour";
   }

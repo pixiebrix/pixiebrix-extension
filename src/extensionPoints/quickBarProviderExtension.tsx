@@ -23,7 +23,7 @@ import {
   type Permissions,
 } from "webextension-polyfill";
 import {
-  ExtensionPoint,
+  StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
@@ -90,7 +90,7 @@ export type QuickBarProviderConfig = {
   generator: BrickConfig | BrickPipeline;
 };
 
-export abstract class QuickBarProviderExtensionPoint extends ExtensionPoint<QuickBarProviderConfig> {
+export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<QuickBarProviderConfig> {
   static isQuickBarProviderExtensionPoint(
     extensionPoint: StarterBrick
   ): extensionPoint is QuickBarProviderExtensionPoint {
