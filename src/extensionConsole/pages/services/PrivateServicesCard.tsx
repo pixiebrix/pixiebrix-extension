@@ -115,7 +115,7 @@ const columnFactory = ({
   },
   {
     Header: "Type",
-    accessor: "serviceId",
+    accessor: "integrationId",
     Cell({ row }) {
       if (row.index === 0) {
         return <div className="text-muted">N/A</div>;

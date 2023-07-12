@@ -180,6 +180,7 @@ class LazyLocatorFactory {
           ...x,
           level: ServiceLevel.Private,
           local: true,
+          serviceId: x.integrationId,
         })),
         ...(this.remote ?? []).map((x) => ({
           ...x,
@@ -238,7 +239,7 @@ class LazyLocatorFactory {
       .map((match) => ({
         _sanitizedIntegrationConfigBrand: undefined,
         id: match.id,
-        serviceId,
+        integrationId: serviceId,
         proxy: service.hasAuth && !match.local,
         config: excludeSecrets(service, match.config),
       }));
