@@ -17,7 +17,7 @@
 
 import { AnalysisVisitorABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import {
-  type FormState,
+  type ComponentFormState,
   isTriggerExtensionPoint,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import { flatten, isEmpty, uniq } from "lodash";
@@ -34,7 +34,7 @@ import { DOM_EVENTS } from "@/types/browserTypes";
 class CheckEventNamesAnalysis extends AnalysisVisitorABC {
   private collectedEvents: EventNameAnalysisResult;
 
-  constructor(readonly formStates: FormState[]) {
+  constructor(readonly formStates: ComponentFormState[]) {
     super();
   }
 
@@ -46,7 +46,9 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
     return this.collectedEvents.knownNames;
   }
 
-  override visitExtensionPoint(extensionPoint: FormState["extensionPoint"]) {
+  override visitExtensionPoint(
+    extensionPoint: ComponentFormState["extensionPoint"]
+  ) {
     super.visitExtensionPoint(extensionPoint);
 
     if (
@@ -93,7 +95,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
     }
   }
 
-  override async run(extension: FormState) {
+  override async run(extension: ComponentFormState) {
     const results = this.formStates.map((x) =>
       CollectNamesVisitor.collectNames(x)
     );

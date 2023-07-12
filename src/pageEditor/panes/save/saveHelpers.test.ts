@@ -43,7 +43,7 @@ import {
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
@@ -656,7 +656,9 @@ describe("buildRecipe", () => {
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
     // Use the adapter to convert to FormState
-    const element = (await adapter.fromExtension(extension)) as FormState;
+    const element = (await adapter.fromExtension(
+      extension
+    )) as ComponentFormState;
 
     // Call the function under test
     const newRecipe = buildRecipe({
@@ -788,7 +790,7 @@ describe("buildRecipe", () => {
       );
 
       // Collect the dirty form states for any changed extensions
-      const elements: FormState[] = [];
+      const elements: ComponentFormState[] = [];
 
       if (dirtyExtensionCount > 0) {
         const extensionPoints = selectExtensionPoints(recipe);
@@ -806,7 +808,9 @@ describe("buildRecipe", () => {
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const element = (await adapter.fromExtension(extension)) as FormState;
+          const element = (await adapter.fromExtension(
+            extension
+          )) as ComponentFormState;
 
           // Edit the label
           element.label = `New Label ${i}`;

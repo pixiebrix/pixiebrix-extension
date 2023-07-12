@@ -16,7 +16,7 @@
  */
 
 import { type BrickPosition } from "@/blocks/types";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 import { type BaseAnnotation } from "@/types/annotationTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -54,7 +54,7 @@ export type AnalysisAnnotation = BaseAnnotation & {
 
 /**
  * An analysis to run against the FormState for a single IExtensions.
- * @see FormState
+ * @see ComponentFormState
  */
 export interface Analysis {
   /**
@@ -71,7 +71,7 @@ export interface Analysis {
    * Run the analysis on the given extension
    * @param extension The extension to analyze
    */
-  run(extension: FormState): void | Promise<void>;
+  run(extension: ComponentFormState): void | Promise<void>;
 }
 
 export type AnalysisState = {

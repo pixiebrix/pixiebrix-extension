@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type BrickConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
@@ -62,12 +62,14 @@ export const thisTab: Target = {
   frameId: 0,
 };
 
-export function getIdForElement(element: IExtension | FormState): UUID {
+export function getIdForElement(
+  element: IExtension | ComponentFormState
+): UUID {
   return isExtension(element) ? element.id : element.uuid;
 }
 
 export function getRecipeIdForElement(
-  element: IExtension | FormState
+  element: IExtension | ComponentFormState
 ): RegistryId {
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
 }

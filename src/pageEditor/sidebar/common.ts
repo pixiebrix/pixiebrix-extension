@@ -16,11 +16,11 @@
  */
 
 import { type IExtension } from "@/types/extensionTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
-type SidebarItem = IExtension | FormState;
+type SidebarItem = IExtension | ComponentFormState;
 
-export function getLabel(extension: FormState): string {
+export function getLabel(extension: ComponentFormState): string {
   return extension.label ?? extension.extensionPoint.metadata.name;
 }
 

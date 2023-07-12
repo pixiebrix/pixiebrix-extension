@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { useDebounce } from "use-debounce";
 import notify from "@/utils/notify";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import {
   emptyPermissionsFactory,
@@ -39,7 +39,7 @@ const fallbackState = {
 const PERMISSION_UPDATE_MILLIS = 200;
 
 const PermissionsToolbar: React.FunctionComponent<{
-  element: FormState;
+  element: ComponentFormState;
   disabled: boolean;
 }> = ({ element, disabled }) => {
   const [debouncedElement] = useDebounce(element, PERMISSION_UPDATE_MILLIS, {

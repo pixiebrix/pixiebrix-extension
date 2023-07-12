@@ -27,7 +27,7 @@ import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BrickConfig } from "@/blocks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
-import { type FormState } from "./extensionPoints/formStateTypes";
+import { type ComponentFormState } from "./extensionPoints/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
@@ -67,7 +67,7 @@ export enum ModalKey {
   ADD_BLOCK,
 }
 
-export type RecipeMetadataFormState = Pick<
+export type ModMetadataFormState = Pick<
   Metadata,
   "id" | "name" | "version" | "description"
 >;
@@ -110,7 +110,7 @@ export interface EditorState {
   /**
    * Unsaved elements
    */
-  readonly elements: FormState[];
+  readonly elements: ComponentFormState[];
 
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
@@ -151,7 +151,7 @@ export interface EditorState {
   /**
    * Unsaved, changed recipe metadata
    */
-  dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
+  dirtyRecipeMetadataById: Record<RegistryId, ModMetadataFormState>;
 
   /**
    * Which modal are we showing, if any?
@@ -177,7 +177,7 @@ export interface EditorState {
   /**
    * Unsaved extensions that have been deleted from a recipe
    */
-  deletedElementsByRecipeId: Record<RegistryId, FormState[]>;
+  deletedElementsByRecipeId: Record<RegistryId, ComponentFormState[]>;
 
   /**
    * Newly created recipes that have not been saved yet

@@ -30,7 +30,7 @@ import {
   type SanitizedIntegrationConfig,
   type IntegrationABC,
 } from "@/types/serviceTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";
@@ -93,7 +93,7 @@ function makeBaseState() {
   return baseFormState;
 }
 
-function renderOptions(formState: FormState = makeBaseState()) {
+function renderOptions(formState: ComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <LocalProcessOptions

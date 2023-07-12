@@ -26,7 +26,7 @@ import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
@@ -76,7 +76,7 @@ function useAddElement(): AddElement {
           config.asDynamicElement(initialState)
         );
 
-        dispatch(actions.addElement(initialState as FormState));
+        dispatch(actions.addElement(initialState as ComponentFormState));
         dispatch(actions.checkActiveElementAvailability());
 
         reportEvent("ExtensionAddNew", {

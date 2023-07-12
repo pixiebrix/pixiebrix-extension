@@ -23,7 +23,7 @@ import { type BrickPosition } from "@/blocks/types";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
 import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import {
@@ -50,7 +50,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.annotations;
   }
 
-  run(extension: FormState): void {
+  run(extension: ComponentFormState): void {
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });

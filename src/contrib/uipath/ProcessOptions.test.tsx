@@ -22,7 +22,7 @@ import { Formik } from "formik";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import useDependency from "@/services/useDependency";
@@ -95,7 +95,7 @@ function makeBaseState() {
   return baseFormState;
 }
 
-function renderOptions(formState: FormState = makeBaseState()) {
+function renderOptions(formState: ComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <ProcessOptions name="extension.blockPipeline.0" configKey="config" />

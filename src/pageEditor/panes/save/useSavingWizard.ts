@@ -43,7 +43,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import {
   type IExtension,
@@ -134,7 +134,7 @@ const useSavingWizard = () => {
 
     // Stripping the recipe-related data from the element
     const { recipe, optionsDefinition, ...rest } = element;
-    const personalElement: FormState = {
+    const personalElement: ComponentFormState = {
       ...rest,
       uuid: uuidv4(),
       // Detach from the recipe

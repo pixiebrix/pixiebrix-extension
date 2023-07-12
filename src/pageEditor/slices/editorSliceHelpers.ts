@@ -18,7 +18,7 @@
 import { type WritableDraft } from "immer/dist/types/types-external";
 import {
   type EditorState,
-  type RecipeMetadataFormState,
+  type ModMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -29,7 +29,7 @@ import {
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { type OptionsDefinition } from "@/types/modDefinitionTypes";
 
@@ -58,7 +58,7 @@ export function ensureNodeUIState(
 
 export function syncElementNodeUIStates(
   state: WritableDraft<EditorState>,
-  element: FormState
+  element: ComponentFormState
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
 
@@ -175,7 +175,7 @@ export function selectRecipeId(
 
 export function editRecipeMetadata(
   state: WritableDraft<EditorState>,
-  metadata: RecipeMetadataFormState
+  metadata: ModMetadataFormState
 ) {
   const recipeId = state.activeRecipeId;
   if (recipeId == null) {
@@ -199,7 +199,7 @@ export function editRecipeOptionsDefinitions(
 
 export function activateElement(
   state: WritableDraft<EditorState>,
-  element: FormState
+  element: ComponentFormState
 ) {
   state.error = null;
   state.beta = false;

@@ -54,7 +54,7 @@ import { fireTextInput } from "@/testUtils/formHelpers";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
@@ -146,7 +146,7 @@ beforeEach(() => {
 });
 afterEach(async () => clock.runAllAsync());
 
-const getPlainFormState = (): FormState =>
+const getPlainFormState = (): ComponentFormState =>
   formStateFactory(undefined, [
     brickConfigFactory({
       id: echoBrick.id,
@@ -160,7 +160,7 @@ const getPlainFormState = (): FormState =>
     }),
   ]);
 
-const getFormStateWithSubPipelines = (): FormState =>
+const getFormStateWithSubPipelines = (): ComponentFormState =>
   formStateFactory(undefined, [
     brickConfigFactory({
       id: echoBrick.id,

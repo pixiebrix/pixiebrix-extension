@@ -30,7 +30,7 @@ import { useGetEditablePackagesQuery } from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { type UUID } from "@/types/stringTypes";
@@ -96,7 +96,7 @@ type SaveOptions = {
  * @returns errorMessage an error message, or null if no error occurred
  */
 type SaveCallback = (config: {
-  element: FormState;
+  element: ComponentFormState;
   options: SaveOptions;
 }) => Promise<string | null>;
 
@@ -124,7 +124,7 @@ function useUpsertFormElement(): SaveCallback {
 
   const saveElement = useCallback(
     async (
-      element: FormState,
+      element: ComponentFormState,
       options: SaveOptions
     ): Promise<string | null> => {
       if (options.checkPermissions) {

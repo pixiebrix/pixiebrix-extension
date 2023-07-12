@@ -30,7 +30,7 @@ import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
@@ -47,7 +47,7 @@ import {
   type UnresolvedExtension,
 } from "@/types/extensionTypes";
 import { type SafeString } from "@/types/stringTypes";
-import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 
 /**
@@ -138,7 +138,7 @@ export function replaceRecipeExtension(
   sourceRecipe: ModDefinition,
   metadata: Metadata,
   installedExtensions: IExtension[],
-  element: FormState
+  element: ComponentFormState
 ): UnsavedModDefinition {
   const installedExtension = installedExtensions.find(
     (x) => x.id === element.uuid
@@ -290,9 +290,9 @@ function selectExtensionPointConfig(
 type RecipeParts = {
   sourceRecipe?: ModDefinition;
   cleanRecipeExtensions: UnresolvedExtension[];
-  dirtyRecipeElements: FormState[];
+  dirtyRecipeElements: ComponentFormState[];
   options?: OptionsDefinition;
-  metadata?: RecipeMetadataFormState;
+  metadata?: ModMetadataFormState;
 };
 
 const emptyRecipe: UnsavedModDefinition = {

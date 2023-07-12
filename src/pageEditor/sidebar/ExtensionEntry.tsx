@@ -17,7 +17,7 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";
@@ -25,7 +25,7 @@ import { type IExtension } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type ExtensionEntryProps = {
-  extension: IExtension | FormState;
+  extension: IExtension | ComponentFormState;
   recipes: ModDefinition[];
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];

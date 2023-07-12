@@ -21,7 +21,7 @@ import { render } from "@/pageEditor/testHelpers";
 import PageStateTab from "./PageStateTab";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { getPageState } from "@/contentScript/messenger/api";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
@@ -35,7 +35,7 @@ describe("PageStateTab", () => {
     });
   });
 
-  async function renderPageStateTab(formState: FormState) {
+  async function renderPageStateTab(formState: ComponentFormState) {
     const rendered = render(
       <Tab.Container activeKey={DataPanelTabKey.PageState}>
         <PageStateTab />
