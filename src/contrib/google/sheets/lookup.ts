@@ -27,6 +27,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/handlers";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"
@@ -101,9 +102,13 @@ export class GoogleSheetsLookup extends TransformerABC {
       typeof spreadsheetIdArg === "string"
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
-    const response = await sheets.batchGet(spreadsheetId, tabName);
-
-    const headers = response.valueRanges?.[0].values?.[0] ?? [];
+    const target: SpreadsheetTarget = {
+      googleAccount: null,
+      spreadsheetId,
+      tabName,
+    };
+    const valueRange = await sheets.getAllRows(target);
+    const [headers, ...rows] = valueRange?.values ?? [[], []];
 
     logger.debug(`Tab ${tabName} has headers`, { headers });
 
@@ -112,7 +117,6 @@ export class GoogleSheetsLookup extends TransformerABC {
       throw new BusinessError(`Header ${header} not found`);
     }
 
-    const rows = response.valueRanges?.[0].values.slice(1);
     const matchData = rows.filter((x) => x.at(columnIndex) === query);
     const matchRecords = matchData.map((row) =>
       Object.fromEntries(
