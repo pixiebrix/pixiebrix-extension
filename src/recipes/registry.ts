@@ -35,7 +35,7 @@ type UnnormalizedOptionsDefinition = {
   uiSchema?: UiSchema;
 };
 
-type UnnormalizedRecipeDefinition = Exclude<ModDefinition, "options"> & {
+type UnnormalizedModDefinition = Exclude<ModDefinition, "options"> & {
   options?: UnnormalizedOptionsDefinition;
 };
 
@@ -71,7 +71,7 @@ function normalizeRecipeOptions(
   return { schema, uiSchema };
 }
 
-function fromJS(rawRecipe: UnnormalizedRecipeDefinition) {
+function fromJS(rawRecipe: UnnormalizedModDefinition) {
   return produce(rawRecipe, (draft) => {
     draft.options = normalizeRecipeOptions(rawRecipe.options);
     (draft as RegistryRecipeDefinition).id = rawRecipe.metadata.id;
