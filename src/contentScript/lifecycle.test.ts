@@ -18,7 +18,7 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import {
   fromJS,
   type TriggerConfig,
@@ -41,7 +41,7 @@ let lifecycleModule: any;
 const rootReader = new RootReader();
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<ExtensionPointConfig<TriggerDefinition>>({
+  define<StarterBrickConfig<TriggerDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>

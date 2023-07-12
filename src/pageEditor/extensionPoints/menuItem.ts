@@ -36,7 +36,7 @@ import {
   type MenuItemExtensionConfig,
   MenuItemExtensionPoint,
 } from "@/extensionPoints/menuItemExtension";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -87,7 +87,7 @@ function fromNativeElement(
 
 function selectExtensionPointConfig(
   formState: ActionFormState
-): ExtensionPointConfig<MenuDefinition> {
+): StarterBrickConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
     definition: {

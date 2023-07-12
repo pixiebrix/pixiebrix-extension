@@ -77,7 +77,7 @@ export interface ExtensionPointDefinition {
   reader: ReaderConfig;
 }
 
-export interface ExtensionPointConfig<
+export interface StarterBrickConfig<
   T extends ExtensionPointDefinition = ExtensionPointDefinition
 > {
   apiVersion?: ApiVersion;
@@ -88,12 +88,12 @@ export interface ExtensionPointConfig<
 
 export function assertExtensionPointConfig(
   maybeExtensionPointConfig: unknown
-): asserts maybeExtensionPointConfig is ExtensionPointConfig {
+): asserts maybeExtensionPointConfig is StarterBrickConfig {
   const errorContext = { value: maybeExtensionPointConfig };
 
   if (typeof maybeExtensionPointConfig !== "object") {
     console.warn("Expected extension point", errorContext);
-    throw new TypeError("Expected object for ExtensionPointConfig");
+    throw new TypeError("Expected object for StarterBrickConfig");
   }
 
   const config = maybeExtensionPointConfig as Record<string, unknown>;
@@ -101,22 +101,20 @@ export function assertExtensionPointConfig(
   if (config.kind !== "extensionPoint") {
     console.warn("Expected extension point", errorContext);
     throw new TypeError(
-      "Expected kind 'extensionPoint' for ExtensionPointConfig"
+      "Expected kind 'extensionPoint' for StarterBrickConfig"
     );
   }
 
   if (typeof config.definition !== "object") {
     console.warn("Expected extension point", errorContext);
-    throw new TypeError(
-      "Expected object for definition in ExtensionPointConfig"
-    );
+    throw new TypeError("Expected object for definition in StarterBrickConfig");
   }
 
   const definition = config.definition as ExtensionPointDefinition;
 
   if (typeof definition.isAvailable !== "object") {
     console.warn("Expected object for definition.isAvailable", errorContext);
-    throw new TypeError("Invalid definition in ExtensionPointConfig");
+    throw new TypeError("Invalid definition in StarterBrickConfig");
   }
 }
 

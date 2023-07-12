@@ -20,7 +20,7 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import {
-  type ExtensionPointConfig,
+  type StarterBrickConfig,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
 import {
@@ -141,8 +141,8 @@ export interface ElementConfig<
   readonly elementType: ExtensionPointType;
 
   /**
-   * The ExtensionPointConfig class corresponding to the extension point
-   * @see ExtensionPointConfig
+   * The StarterBrickConfig class corresponding to the extension point
+   * @see StarterBrickConfig
    */
   // eslint-disable-next-line @typescript-eslint/ban-types -- we want to Ctor here for the extension point
   readonly baseClass: Function;
@@ -209,9 +209,7 @@ export interface ElementConfig<
   /**
    * Returns the extension point configuration corresponding to the FormState.
    */
-  readonly selectExtensionPointConfig: (
-    element: TState
-  ) => ExtensionPointConfig;
+  readonly selectExtensionPointConfig: (element: TState) => StarterBrickConfig;
 
   /**
    * Returns the extension configuration corresponding to the FormState.

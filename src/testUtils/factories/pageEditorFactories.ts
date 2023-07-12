@@ -32,7 +32,7 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type ServiceDependency } from "@/types/serviceTypes";
 import {
-  type ExtensionPointConfig,
+  type StarterBrickConfig,
   type ExtensionPointDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
@@ -60,7 +60,7 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
 });
 const internalFormStateFactory = define<
   FormState & {
-    extensionPoint: DerivedFunction<FormState, ExtensionPointConfig>;
+    extensionPoint: DerivedFunction<FormState, StarterBrickConfig>;
   }
 >({
   apiVersion: "v3" as ApiVersion,

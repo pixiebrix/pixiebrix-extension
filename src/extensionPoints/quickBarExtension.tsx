@@ -28,7 +28,7 @@ import {
 } from "webextension-polyfill";
 import {
   ExtensionPoint,
-  type ExtensionPointConfig,
+  type StarterBrickConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
@@ -298,9 +298,9 @@ export class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
 
   public readonly contexts: Menus.ContextType[];
 
-  public readonly rawConfig: ExtensionPointConfig<QuickBarDefinition>;
+  public readonly rawConfig: StarterBrickConfig<QuickBarDefinition>;
 
-  constructor(config: ExtensionPointConfig<QuickBarDefinition>) {
+  constructor(config: StarterBrickConfig<QuickBarDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
@@ -350,7 +350,7 @@ export class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
 }
 
 export function fromJS(
-  config: ExtensionPointConfig<QuickBarDefinition>
+  config: StarterBrickConfig<QuickBarDefinition>
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "quickBar") {

@@ -48,7 +48,7 @@ async function collectExtensionDefinitionPermissions(
 
       let inner: Permissions.Permissions = {};
       try {
-        // XXX: we don't have the types right now to type ExtensionPointConfig. In practice, the config as-is should
+        // XXX: we don't have the types right now to type StarterBrickConfig. In practice, the config as-is should
         //  provide the structure required by getBlocks. Really, the argument of extensionPermissions should be changed
         //  to not depend on irrelevant information, e.g., the uuid of the extension. This will also involve changing
         //  the type of getBlocks on the ExtensionPoint interface

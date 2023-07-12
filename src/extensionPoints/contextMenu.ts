@@ -28,7 +28,7 @@ import {
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPoint,
-  type ExtensionPointConfig,
+  type StarterBrickConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
@@ -395,9 +395,9 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
 
   public readonly contexts: Menus.ContextType[];
 
-  public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
+  public readonly rawConfig: StarterBrickConfig<MenuDefinition>;
 
-  constructor(config: ExtensionPointConfig<MenuDefinition>) {
+  constructor(config: StarterBrickConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
@@ -448,7 +448,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
 }
 
 export function fromJS(
-  config: ExtensionPointConfig<MenuDefinition>
+  config: StarterBrickConfig<MenuDefinition>
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "contextMenu") {

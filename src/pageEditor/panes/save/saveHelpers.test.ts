@@ -39,7 +39,7 @@ import {
   getMinimalUiSchema,
 } from "@/components/formBuilder/formBuilderHelpers";
 import {
-  type ExtensionPointConfig,
+  type StarterBrickConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
@@ -607,7 +607,7 @@ describe("isRecipeEditable", () => {
 
 function selectExtensionPoints(
   recipe: UnsavedModDefinition
-): ExtensionPointConfig[] {
+): StarterBrickConfig[] {
   return recipe.extensionPoints.map(({ id }) => {
     const definition = recipe.definitions[id]
       .definition as ExtensionPointDefinition;

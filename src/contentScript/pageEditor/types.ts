@@ -16,7 +16,7 @@
  */
 
 import {
-  type ExtensionPointConfig,
+  type StarterBrickConfig,
   type ExtensionPointDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
@@ -39,7 +39,7 @@ export interface DynamicDefinition<
   TExtension extends UnknownObject = UnknownObject
 > {
   type: ExtensionPointType;
-  extensionPointConfig: ExtensionPointConfig<TExtensionPoint>;
+  extensionPointConfig: StarterBrickConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
 }
 

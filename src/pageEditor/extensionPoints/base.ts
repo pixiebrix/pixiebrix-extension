@@ -23,7 +23,7 @@ import {
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
   assertExtensionPointConfig,
-  type ExtensionPointConfig,
+  type StarterBrickConfig,
   type ExtensionPointDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
@@ -212,14 +212,14 @@ export function internalExtensionPointMetaFactory(): Metadata {
  * Map availability from extension point configuration to state for the page editor.
  */
 export function selectIsAvailable(
-  extensionPoint: ExtensionPointConfig
+  extensionPoint: StarterBrickConfig
 ): NormalizedAvailability {
   assertExtensionPointConfig(extensionPoint);
 
   const availability: NormalizedAvailability = {};
 
   // All 3 fields in NormalizedAvailability are optional, so we should only set each one if
-  // the ExtensionPointConfig has a value set for that field. Normalizing here makes testing
+  // the StarterBrickConfig has a value set for that field. Normalizing here makes testing
   // harder because we then have to account for the normalized value in assertions.
   const { isAvailable } = extensionPoint.definition;
 
@@ -265,9 +265,7 @@ export async function lookupExtensionPoint<
 >(
   config: IExtension<TConfig>,
   type: TType
-): Promise<
-  ExtensionPointConfig<TDefinition> & { definition: { type: TType } }
-> {
+): Promise<StarterBrickConfig<TDefinition> & { definition: { type: TType } }> {
   if (!config) {
     throw new Error("config is required");
   }
@@ -283,7 +281,7 @@ export async function lookupExtensionPoint<
       kind: "extensionPoint",
       metadata: internalExtensionPointMetaFactory(),
       ...definition,
-    } as unknown as ExtensionPointConfig<TDefinition> & {
+    } as unknown as StarterBrickConfig<TDefinition> & {
       definition: { type: TType };
     };
 
@@ -299,19 +297,19 @@ export async function lookupExtensionPoint<
   }
 
   const extensionPoint =
-    brick.config as unknown as ExtensionPointConfig<TDefinition>;
+    brick.config as unknown as StarterBrickConfig<TDefinition>;
   if (extensionPoint.definition.type !== type) {
     throw new Error(`Expected ${type} starter brick type`);
   }
 
-  return extensionPoint as ExtensionPointConfig<TDefinition> & {
+  return extensionPoint as StarterBrickConfig<TDefinition> & {
     definition: { type: TType };
   };
 }
 
 export function baseSelectExtensionPoint(
   formState: BaseFormState
-): Except<ExtensionPointConfig, "definition"> {
+): Except<StarterBrickConfig, "definition"> {
   const { metadata } = formState.extensionPoint;
 
   return {

@@ -18,7 +18,7 @@
 import { propertiesToSchema } from "@/validators/generic";
 import {
   ExtensionPoint,
-  type ExtensionPointConfig,
+  type StarterBrickConfig,
   type ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { type Permissions } from "webextension-polyfill";
@@ -273,13 +273,13 @@ class RemoteTourExtensionPoint extends TourExtensionPoint {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: ExtensionPointConfig<TourDefinition>;
+  public readonly rawConfig: StarterBrickConfig<TourDefinition>;
 
   public override get defaultOptions(): Record<string, unknown> {
     return this._definition.defaultOptions ?? { allowUserRun: true };
   }
 
-  constructor(config: ExtensionPointConfig<TourDefinition>) {
+  constructor(config: StarterBrickConfig<TourDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
@@ -310,7 +310,7 @@ class RemoteTourExtensionPoint extends TourExtensionPoint {
 }
 
 export function fromJS(
-  config: ExtensionPointConfig<TourDefinition>
+  config: StarterBrickConfig<TourDefinition>
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "tour") {

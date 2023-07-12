@@ -38,7 +38,7 @@ import {
   validateTimestamp,
 } from "@/types/helpers";
 import {
-  type ExtensionPointConfig as ExtensionPointDefinition,
+  type StarterBrickConfig as ExtensionPointDefinition,
   type ExtensionPointDefinition as ExtensionPointConfigDefinition,
   type ExtensionPointType,
 } from "@/extensionPoints/types";
