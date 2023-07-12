@@ -20,13 +20,13 @@ import { showNotification } from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
 
 export const ALERT_PERSISTENT_OPTION = "window";
 
-export class AlertEffect extends Effect {
+export class AlertEffect extends EffectABC {
   constructor() {
     super(
       ALERT_EFFECT_ID,

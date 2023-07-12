@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -29,7 +29,7 @@ import { PropError } from "@/errors/businessErrors";
  */
 const ERROR_MAX_URL_LENGTH = 50;
 
-export class ParseDataUrl extends Transformer {
+export class ParseDataUrl extends TransformerABC {
   constructor() {
     super(
       "@pixiebrix/data-url",

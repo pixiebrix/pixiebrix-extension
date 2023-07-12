@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { $safeFindElementsWithRootMode } from "@/blocks/rootModeHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { PropError } from "@/errors/businessErrors";
 
-class PostMessageEffect extends Effect {
+class PostMessageEffect extends EffectABC {
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
 
   constructor() {

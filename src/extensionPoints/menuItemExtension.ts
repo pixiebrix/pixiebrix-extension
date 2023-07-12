@@ -31,7 +31,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import {
-  ExtensionPoint,
+  StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
@@ -177,7 +177,7 @@ async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
 
 type MenuTargetMode = "document" | "eventTarget";
 
-export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
+export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExtensionConfig> {
   /**
    * Mapping of menu container nonce UUID to the DOM element for the menu container
    * @protected

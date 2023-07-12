@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -26,7 +26,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { boolean } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";
 
-class IfElse extends Transformer {
+class IfElse extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/if-else");
   defaultOutputKey = "ifElseOutput";
 

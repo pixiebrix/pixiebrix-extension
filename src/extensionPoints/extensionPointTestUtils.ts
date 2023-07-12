@@ -16,7 +16,7 @@
  */
 
 import { JSDOM } from "jsdom";
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { type ElementReference } from "@/types/runtimeTypes";
@@ -43,7 +43,7 @@ export function getDocument(html: string): Document {
 /**
  * Reader that stores the root element passed to it. Useful for testing target modes.
  */
-export class RootReader extends Reader {
+export class RootReader extends ReaderABC {
   ref: ElementReference;
   readCount = 0;
 

@@ -19,9 +19,9 @@ import { useFormikContext } from "formik";
 import { castArray, compact, head, omit } from "lodash";
 import serviceRegistry from "@/services/registry";
 import {
-  type SanitizedServiceConfiguration,
-  type Service,
-  type ServiceDependency,
+  type SanitizedIntegrationConfig,
+  type IntegrationABC,
+  type IntegrationDependency,
 } from "@/types/serviceTypes";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
@@ -35,16 +35,16 @@ import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type Permissions } from "webextension-polyfill";
 
 export type Dependency = {
-  config: SanitizedServiceConfiguration | undefined;
-  service: Service | undefined;
+  config: SanitizedIntegrationConfig | undefined;
+  service: IntegrationABC | undefined;
   hasPermissions: boolean;
   requestPermissions: () => void;
 };
 
 export function pickDependency(
-  services: ServiceDependency[],
+  services: IntegrationDependency[],
   serviceIds: RegistryId[]
-): ServiceDependency | null {
+): IntegrationDependency | null {
   const configuredServices = (services ?? []).filter((service) =>
     serviceIds.includes(service.id)
   );
@@ -55,7 +55,7 @@ export function pickDependency(
   return head(configuredServices);
 }
 
-async function lookupDependency(dependency: ServiceDependency) {
+async function lookupDependency(dependency: IntegrationDependency) {
   const localConfig = await services.locate(dependency.id, dependency.config);
   const service = await serviceRegistry.lookup(dependency.id);
   const origins = service.getOrigins(localConfig.config);
@@ -71,8 +71,8 @@ async function lookupDependency(dependency: ServiceDependency) {
 }
 
 const lookupFallback = {
-  config: undefined as SanitizedServiceConfiguration,
-  service: undefined as Service,
+  config: undefined as SanitizedIntegrationConfig,
+  service: undefined as IntegrationABC,
   hasPermissions: false,
   permissions: emptyPermissionsFactory() as Permissions.Permissions,
 };
@@ -84,7 +84,7 @@ const lookupFallback = {
 function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
   // Listen for permissions changes
   const permissionsState = useExtensionPermissions();
-  const { values } = useFormikContext<{ services: ServiceDependency[] }>();
+  const { values } = useFormikContext<{ services: IntegrationDependency[] }>();
 
   const selected = pickDependency(
     values.services,
@@ -95,7 +95,7 @@ function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
     useDeriveAsyncState(
       permissionsState,
       valueToAsyncState(selected),
-      async (_permissions, dependency: ServiceDependency) => {
+      async (_permissions, dependency: IntegrationDependency) => {
         if (dependency?.config) {
           return lookupDependency(dependency);
         }

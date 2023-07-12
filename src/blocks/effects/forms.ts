@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { boolean } from "@/utils";
 import { findSingleElement } from "@/utils/requireSingleElement";
 import { type JsonObject, type RequireExactlyOne } from "type-fest";
@@ -173,7 +173,7 @@ async function setValue({
   );
 }
 
-export class SetInputValue extends Effect {
+export class SetInputValue extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/forms/set",
@@ -262,7 +262,7 @@ export class SetInputValue extends Effect {
   }
 }
 
-export class FormFill extends Effect {
+export class FormFill extends EffectABC {
   constructor() {
     super("@pixiebrix/form-fill", "Form Fill", "Fill out fields in a form");
   }

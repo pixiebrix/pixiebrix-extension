@@ -19,10 +19,10 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { reactivateTab } from "@/contentScript/lifecycle";
 import { expectContext } from "@/utils/expectContext";
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type JsonObject } from "type-fest";
 
-export class ReactivateEffect extends Effect {
+export class ReactivateEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/reactivate",

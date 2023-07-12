@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -40,7 +40,7 @@ const URL_PROPERTIES = [
   "pathname",
 ];
 
-export class UrlParser extends Transformer {
+export class UrlParser extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
   }

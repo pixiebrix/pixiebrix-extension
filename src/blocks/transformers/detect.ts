@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -24,7 +24,7 @@ import {
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/blocks/rootModeHelpers";
 
-export class DetectElement extends Transformer {
+export class DetectElement extends TransformerABC {
   defaultOutputKey = "match";
 
   constructor() {

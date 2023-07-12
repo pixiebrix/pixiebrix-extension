@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 /**
@@ -40,7 +40,7 @@ function getBase64Image(img: HTMLImageElement) {
   return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 }
 
-export class ImageReader extends Reader {
+export class ImageReader extends ReaderABC {
   defaultOutputKey = "image";
 
   constructor() {

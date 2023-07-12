@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import axios from "axios";
 import { type JsonObject } from "type-fest";
@@ -57,7 +57,7 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
   return response.data;
 }
 
-export class ImageExifReader extends Reader {
+export class ImageExifReader extends ReaderABC {
   defaultOutputKey = "image";
 
   constructor() {

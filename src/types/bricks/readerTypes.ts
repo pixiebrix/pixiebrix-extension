@@ -33,7 +33,7 @@ export interface IReader extends Brick {
 /**
  * Abstract base class for Readers.
  */
-export abstract class Reader extends BrickABC implements IReader {
+export abstract class ReaderABC extends BrickABC implements IReader {
   readonly inputSchema: Schema = {};
 
   override outputSchema: Schema = undefined;

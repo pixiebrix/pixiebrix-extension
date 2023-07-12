@@ -18,7 +18,7 @@
 import { type ComponentType } from "react";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type SafeHTML, type UUID } from "@/types/stringTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type Primitive } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/blocks/types";
@@ -250,8 +250,8 @@ export type RenderedArgs = UnknownObject & {
 export type ServiceContext = Record<
   ServiceVarRef,
   {
-    __service: SanitizedServiceConfiguration;
-    [prop: string]: string | SanitizedServiceConfiguration | null;
+    __service: SanitizedIntegrationConfig;
+    [prop: string]: string | SanitizedIntegrationConfig | null;
   }
 >;
 

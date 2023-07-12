@@ -29,9 +29,9 @@ import { memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
   type AuthData,
-  type IService,
+  type Integration,
   type OAuth2Context,
-  type RawServiceConfiguration,
+  type IntegrationConfig,
 } from "@/types/serviceTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -110,8 +110,8 @@ export const getToken = memoizeUntilSettled(_getToken, {
 });
 
 async function _getToken(
-  service: IService,
-  auth: RawServiceConfiguration
+  service: Integration,
+  auth: IntegrationConfig
 ): Promise<AuthData> {
   expectContext("background");
 
@@ -154,7 +154,7 @@ function parseResponseParams(url: URL): UnknownObject {
 }
 
 async function implicitGrantFlow(
-  auth: RawServiceConfiguration,
+  auth: IntegrationConfig,
   oauth2: OAuth2Context
 ): Promise<AuthData> {
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
@@ -213,7 +213,7 @@ async function implicitGrantFlow(
 }
 
 async function codeGrantFlow(
-  auth: RawServiceConfiguration,
+  auth: IntegrationConfig,
   oauth2: OAuth2Context
 ): Promise<AuthData> {
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
@@ -352,8 +352,8 @@ async function codeGrantFlow(
 }
 
 export async function launchOAuth2Flow(
-  service: IService,
-  auth: RawServiceConfiguration
+  service: Integration,
+  auth: IntegrationConfig
 ): Promise<AuthData> {
   // Reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js
   if (!service.isOAuth2) {

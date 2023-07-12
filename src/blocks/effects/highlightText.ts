@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { $safeFind } from "@/helpers";
@@ -63,7 +63,7 @@ function wrapText({
   }
 }
 
-class HighlightText extends Effect {
+class HighlightText extends EffectABC {
   constructor() {
     super(
       highlightId,

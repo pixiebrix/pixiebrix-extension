@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
-class ToggleQuickbarEffect extends Effect {
+class ToggleQuickbarEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/quickbar/toggle",

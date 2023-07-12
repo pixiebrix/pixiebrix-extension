@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFindElementsWithRootMode } from "@/blocks/rootModeHelpers";
 import { assertSingleElement } from "@/utils/requireSingleElement";
 
-export class ScrollIntoViewEffect extends Effect {
+export class ScrollIntoViewEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/dom/scroll",

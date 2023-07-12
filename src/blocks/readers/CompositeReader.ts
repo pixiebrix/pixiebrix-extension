@@ -16,10 +16,10 @@
  */
 
 import { mapValues } from "lodash";
-import { type IReader, Reader } from "@/types/bricks/readerTypes";
+import { type IReader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 
-class CompositeReader extends Reader {
+class CompositeReader extends ReaderABC {
   private readonly _readers: Record<string, IReader>;
 
   constructor(readers: Record<string, IReader>) {

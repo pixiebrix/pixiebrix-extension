@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
@@ -52,7 +52,7 @@ export const URL_INPUT_SPEC: Schema = {
   required: ["url"],
 };
 
-export class UrlParams extends Transformer {
+export class UrlParams extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
   }

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
 const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 
@@ -36,7 +36,7 @@ interface SearchResult {
   data: { items: SearchResultItem[] };
 }
 
-export class ResolvePerson extends Transformer {
+export class ResolvePerson extends TransformerABC {
   constructor() {
     super("pipedrive/persons-search", "Search for a person in Pipedrive");
   }
@@ -63,7 +63,7 @@ export class ResolvePerson extends Transformer {
     name,
     organization,
   }: BrickArgs<{
-    pipedriveService: SanitizedServiceConfiguration;
+    pipedriveService: SanitizedIntegrationConfig;
     name: string;
     organization?: number;
   }>): Promise<unknown> {

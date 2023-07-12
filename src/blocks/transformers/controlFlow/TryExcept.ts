@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { serializeError } from "serialize-error";
@@ -28,7 +28,7 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 
-class TryExcept extends Transformer {
+class TryExcept extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/try-catch");
   defaultOutputKey = "tryExceptOutput";
 

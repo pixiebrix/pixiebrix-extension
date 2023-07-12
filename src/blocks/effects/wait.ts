@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
@@ -28,7 +28,7 @@ import {
   type SelectorRoot,
 } from "@/types/runtimeTypes";
 
-export class WaitEffect extends Effect {
+export class WaitEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/wait/sleep",
@@ -104,7 +104,7 @@ export async function awaitElement({
   }
 }
 
-export class WaitElementEffect extends Effect {
+export class WaitElementEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/wait/element",

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import type { JobResult } from "@uipath/robot/dist/models";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
@@ -35,7 +35,7 @@ const UIPATH_PROPERTIES: SchemaProperties = {
   },
 };
 
-export class RunLocalProcess extends Transformer {
+export class RunLocalProcess extends TransformerABC {
   constructor() {
     super(
       UIPATH_ID,

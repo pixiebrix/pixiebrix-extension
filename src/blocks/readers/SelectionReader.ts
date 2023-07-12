@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import selectionController from "@/utils/selectionController";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 
-export class SelectionReader extends Reader {
+export class SelectionReader extends ReaderABC {
   constructor() {
     super(
       "@pixiebrix/selection",

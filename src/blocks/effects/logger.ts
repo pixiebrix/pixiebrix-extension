@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -29,7 +29,7 @@ const LEVEL_MAP = new Map<Level, typeof console.debug>([
   ["error", console.error],
 ]);
 
-export class LogEffect extends Effect {
+export class LogEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/browser/log",

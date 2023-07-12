@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { proxyService } from "@/background/messenger/api";
 import { partial } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
@@ -34,7 +34,7 @@ function makeProperties(
     }));
 }
 
-export class AddUpdateContact extends Effect {
+export class AddUpdateContact extends EffectABC {
   constructor() {
     super(
       "hubspot/create-update-contact",
@@ -149,7 +149,7 @@ export class AddUpdateContact extends Effect {
   }
 }
 
-export class AddUpdateCompany extends Effect {
+export class AddUpdateCompany extends EffectABC {
   constructor() {
     super(
       "hubspot/create-update-company",

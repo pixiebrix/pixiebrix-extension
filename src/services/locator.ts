@@ -30,12 +30,12 @@ import {
 } from "@/errors/businessErrors";
 import { DoesNotExistError } from "@/baseRegistry";
 import {
-  type IService,
-  type ServiceConfig,
-  type RawServiceConfiguration,
+  type Integration,
+  type IntegrationConfigArgs,
+  type IntegrationConfig,
   type SanitizedConfig,
-  type SanitizedServiceConfiguration,
-  type Service,
+  type SanitizedIntegrationConfig,
+  type IntegrationABC,
   type SecretsConfig,
 } from "@/types/serviceTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -54,8 +54,8 @@ enum ServiceLevel {
 
 /** Return config excluding any secrets/keys. */
 function excludeSecrets(
-  service: IService,
-  config: ServiceConfig
+  service: Integration,
+  config: IntegrationConfigArgs
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
@@ -69,14 +69,14 @@ function excludeSecrets(
   return result;
 }
 
-export async function pixieServiceFactory(): Promise<SanitizedServiceConfiguration> {
+export async function pixieServiceFactory(): Promise<SanitizedIntegrationConfig> {
   return {
     id: undefined,
     serviceId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
     config: {} as SanitizedConfig,
-  } as SanitizedServiceConfiguration;
+  } as SanitizedIntegrationConfig;
 }
 
 type Option = {
@@ -98,7 +98,7 @@ let wasInitialized = false;
 class LazyLocatorFactory {
   private remote: SanitizedAuth[] = [];
 
-  private local: RawServiceConfiguration[] = [];
+  private local: IntegrationConfig[] = [];
 
   private options: Option[];
 
@@ -180,6 +180,7 @@ class LazyLocatorFactory {
           ...x,
           level: ServiceLevel.Private,
           local: true,
+          serviceId: x.serviceId,
         })),
         ...(this.remote ?? []).map((x) => ({
           ...x,
@@ -196,7 +197,7 @@ class LazyLocatorFactory {
    * Return the raw integration configuration with UUID authId, or return `null` if not available locally.
    * @param authId UUID of the integration configuration
    */
-  async getLocalConfig(authId: UUID): Promise<RawServiceConfiguration | null> {
+  async getLocalConfig(authId: UUID): Promise<IntegrationConfig | null> {
     // The `initialized` flag gets set from _refresh, which covers both local and remote. For performance,
     // we could split the initialized flag into two, but it's not worth it since refreshLocal is fast.
     if (!this.initialized) {
@@ -208,7 +209,7 @@ class LazyLocatorFactory {
 
   async locateAllForService(
     serviceId: RegistryId
-  ): Promise<SanitizedServiceConfiguration[]> {
+  ): Promise<SanitizedIntegrationConfig[]> {
     if (!this.initialized) {
       await this.refresh();
     }
@@ -218,7 +219,7 @@ class LazyLocatorFactory {
       return [await pixieServiceFactory()];
     }
 
-    let service: Service;
+    let service: IntegrationABC;
 
     // Handle case where locateAllForService is called before service definitions are loaded. (For example, because it's
     // being called from the background page in installer.ts).
@@ -236,7 +237,7 @@ class LazyLocatorFactory {
     return this.options
       .filter((x) => x.serviceId === serviceId)
       .map((match) => ({
-        _sanitizedServiceConfigurationBrand: undefined,
+        _sanitizedIntegrationConfigBrand: undefined,
         id: match.id,
         serviceId,
         proxy: service.hasAuth && !match.local,
@@ -247,7 +248,7 @@ class LazyLocatorFactory {
   async locate(
     serviceId: RegistryId,
     authId: UUID
-  ): Promise<SanitizedServiceConfiguration> {
+  ): Promise<SanitizedIntegrationConfig> {
     expectContext(
       "background",
       "The service locator must run in the background worker"
@@ -299,7 +300,7 @@ class LazyLocatorFactory {
     });
 
     return {
-      _sanitizedServiceConfigurationBrand: undefined,
+      _sanitizedIntegrationConfigBrand: undefined,
       id: authId,
       serviceId,
       proxy,

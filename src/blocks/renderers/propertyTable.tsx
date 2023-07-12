@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Renderer } from "@/types/bricks/rendererTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { sortBy, isPlainObject } from "lodash";
 import { isValidUrl } from "@/utils";
@@ -96,7 +96,7 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
   ];
 }
 
-export class PropertyTableRenderer extends Renderer {
+export class PropertyTableRenderer extends RendererABC {
   constructor() {
     super(
       "@pixiebrix/property-table",

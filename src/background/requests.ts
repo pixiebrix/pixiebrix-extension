@@ -56,8 +56,8 @@ import {
 import safeJsonStringify from "json-stringify-safe";
 import { deserializeError, serializeError } from "serialize-error";
 import {
-  type IService,
-  type SanitizedServiceConfiguration,
+  type Integration,
+  type SanitizedIntegrationConfig,
   type SecretsConfig,
 } from "@/types/serviceTypes";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -125,7 +125,7 @@ export async function serializableAxiosRequest<T>(
 }
 
 async function authenticate(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   request: AxiosRequestConfig
 ): Promise<AxiosRequestConfig> {
   expectContext("background");
@@ -191,7 +191,7 @@ async function authenticate(
 }
 
 async function proxyRequest<T>(
-  service: SanitizedServiceConfiguration,
+  service: SanitizedIntegrationConfig,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<T>> {
   if (service == null) {
@@ -259,7 +259,7 @@ function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
 }
 
 async function performConfiguredRequest(
-  serviceConfig: SanitizedServiceConfiguration,
+  serviceConfig: SanitizedIntegrationConfig,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse> {
   if (serviceConfig.proxy) {
@@ -300,10 +300,10 @@ async function performConfiguredRequest(
 }
 
 async function getServiceMessageContext(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<MessageContext> {
   // Try resolving the service to get metadata to include with the error
-  let resolvedService: IService;
+  let resolvedService: Integration;
   try {
     resolvedService = await serviceRegistry.lookup(config.serviceId);
   } catch {
@@ -323,7 +323,7 @@ async function getServiceMessageContext(
  * @param requestConfig the unauthenticated axios request configuration
  */
 export async function proxyService<TData>(
-  serviceConfig: SanitizedServiceConfiguration | null,
+  serviceConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
   // Note: This signature is ignored by `webext-messenger`
   // so it must be copied into `background/messenger/api.ts`

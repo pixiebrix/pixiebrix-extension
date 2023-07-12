@@ -23,11 +23,11 @@ import {
 } from "@/blocks/rootModeHelpers";
 import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
-export class AttachAutocomplete extends Effect {
+export class AttachAutocomplete extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/forms/autocomplete",

@@ -18,7 +18,7 @@
 import { BrickABC } from "@/types/brickTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
-export abstract class Effect extends BrickABC {
+export abstract class EffectABC extends BrickABC {
   override async isRootAware(): Promise<boolean> {
     // Most effects don't use the root, so have them opt-in
     return false;

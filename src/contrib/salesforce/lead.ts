@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { proxyService } from "@/background/messenger/api";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
-export class AddLead extends Effect {
+export class AddLead extends EffectABC {
   constructor() {
     super(
       "salesforce/leads-create",
@@ -73,7 +73,7 @@ export class AddLead extends Effect {
   async effect({
     salesforce,
     ...data
-  }: BrickArgs<{ salesforce: SanitizedServiceConfiguration }>): Promise<void> {
+  }: BrickArgs<{ salesforce: SanitizedIntegrationConfig }>): Promise<void> {
     await proxyService(salesforce, {
       url: "/services/data/v49.0/sobjects/Lead/",
       method: "post",

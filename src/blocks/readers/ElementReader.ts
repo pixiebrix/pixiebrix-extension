@@ -17,7 +17,7 @@
 
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 
@@ -27,7 +27,7 @@ import { type Schema } from "@/types/schemaTypes";
  * To read the HTML itself, use HtmlReader
  * @see HtmlReader
  */
-export class ElementReader extends Reader {
+export class ElementReader extends ReaderABC {
   defaultOutputKey = "element";
 
   constructor() {

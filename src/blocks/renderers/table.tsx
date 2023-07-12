@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types/bricks/rendererTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank, isObject } from "@/utils";
 import makeDataTable, {
@@ -49,7 +49,7 @@ function makeLinkRenderer(href: string) {
   };
 }
 
-export class TableRenderer extends Renderer {
+export class TableRenderer extends RendererABC {
   constructor() {
     super(
       "@pixiebrix/table",

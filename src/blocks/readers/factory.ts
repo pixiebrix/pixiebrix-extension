@@ -26,7 +26,7 @@ import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { type ApiVersion, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
-import { type IReader, Reader } from "@/types/bricks/readerTypes";
+import { type IReader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type SemVerString, type Metadata } from "@/types/registryTypes";
 
 export interface ReaderTypeConfig {
@@ -94,7 +94,7 @@ export function readerFactory(component: unknown): IReader {
     throw new TypeError("definition.reader is null");
   }
 
-  class ExternalReader extends Reader {
+  class ExternalReader extends ReaderABC {
     constructor() {
       super(id, name, description);
     }

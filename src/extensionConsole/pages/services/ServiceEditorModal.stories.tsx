@@ -21,7 +21,7 @@ import ServiceEditorModal from "./ServiceEditorModal";
 import { action } from "@storybook/addon-actions";
 import { fromJS } from "@/services/factory";
 import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
-import { type ServiceDefinition } from "@/types/serviceTypes";
+import { type IntegrationDefinition } from "@/types/serviceTypes";
 
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
@@ -50,7 +50,7 @@ export default {
 const Template: Story<StoryType> = ({ fixture, ...args }) => {
   const service = fromJS(
     // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
-    loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as ServiceDefinition
+    loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as IntegrationDefinition
   );
 
   // Cheap call, just call in the render function

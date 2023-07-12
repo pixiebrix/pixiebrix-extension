@@ -23,7 +23,7 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type IExtension } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -164,7 +164,7 @@ export function selectInstalledDeployments(
  */
 export type Locate = (
   serviceId: RegistryId
-) => Promise<SanitizedServiceConfiguration[]>;
+) => Promise<SanitizedIntegrationConfig[]>;
 
 /**
  * Return local service configurations that are valid to use for the deployment.
@@ -174,7 +174,7 @@ export type Locate = (
 export async function findLocalDeploymentServiceConfigurations(
   deployment: Deployment,
   locate: Locate
-): Promise<Record<RegistryId, SanitizedServiceConfiguration[]>> {
+): Promise<Record<RegistryId, SanitizedIntegrationConfig[]>> {
   const deploymentServices = extractRecipeServiceIds(deployment.package.config);
   // Services in the deployment that are bound to a team credential
   const boundServices = new Set(
@@ -187,7 +187,7 @@ export async function findLocalDeploymentServiceConfigurations(
 
   // XXX: this is incorrect for server-based OAuth2 integrations, because they're owned by user but still show as proxy
   // because the requests need to be proxied through our server.
-  const isPersonal = (x: SanitizedServiceConfiguration) => !x.proxy;
+  const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
 
   const servicePromises = await Promise.all(
     unboundServices.map(async (serviceId: RegistryId) => {

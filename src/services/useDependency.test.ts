@@ -20,8 +20,8 @@ import useDependency from "@/services/useDependency";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import serviceRegistry from "@/services/registry";
 import {
-  type SanitizedServiceConfiguration,
-  type Service,
+  type SanitizedIntegrationConfig,
+  type IntegrationABC,
 } from "@/types/serviceTypes";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
 import * as backgroundApi from "@/background/messenger/api";
@@ -32,7 +32,7 @@ import * as backgroundApi from "@/background/messenger/api";
 
 jest.mocked(backgroundApi.services.locate).mockResolvedValue({
   serviceId: "google/sheet",
-} as SanitizedServiceConfiguration);
+} as SanitizedIntegrationConfig);
 
 const requestPermissionsMock = jest.mocked(browser.permissions.request);
 
@@ -101,7 +101,7 @@ describe("useDependency", () => {
     serviceRegistryMock.lookup.mockResolvedValue({
       id: registryId,
       getOrigins: () => [] as any,
-    } as unknown as Service);
+    } as unknown as IntegrationABC);
 
     const wrapper = renderHook(() => useDependency(registryId), {
       initialValues: {
@@ -130,7 +130,7 @@ describe("useDependency", () => {
     serviceRegistryMock.lookup.mockResolvedValue({
       id: registryId,
       getOrigins: () => [] as any,
-    } as unknown as Service);
+    } as unknown as IntegrationABC);
 
     const wrapper = renderHook(
       () => [useDependency(registryId), useDependency(registryId)] as const,

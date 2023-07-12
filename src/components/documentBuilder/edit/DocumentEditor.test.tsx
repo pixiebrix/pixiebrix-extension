@@ -28,7 +28,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/serviceTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
@@ -176,7 +176,7 @@ describe("remove element", () => {
 
   test("removes service dependency", async () => {
     // Services included in the form state
-    const services: ServiceDependency[] = [
+    const services: IntegrationDependency[] = [
       {
         id: validateRegistryId("@test/service"),
         outputKey: "serviceOutput" as OutputKey,
