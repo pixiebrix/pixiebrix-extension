@@ -26,7 +26,6 @@ import { reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
@@ -46,6 +45,7 @@ import {
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
+import ErrorBoundary from "@/sidebar/ErrorBoundary";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -68,19 +68,28 @@ const TemporaryPanelTabPane: React.FC<{
     },
     [dispatch, panel.nonce]
   );
+  const { type, extensionId, blueprintId, payload } = panel;
 
   return (
     <Tab.Pane
       className={cx("full-height flex-grow", styles.paneOverrides)}
       eventKey={eventKeyForEntry(panel)}
     >
-      <ErrorBoundary>
+      <ErrorBoundary
+        onError={() => {
+          reportEvent("ViewError", {
+            panelType: type,
+            extensionId,
+            blueprintId,
+          });
+        }}
+      >
         <PanelBody
           isRootPanel={false}
-          payload={panel.payload}
+          payload={payload}
           context={{
-            extensionId: panel.extensionId,
-            blueprintId: panel.blueprintId,
+            extensionId,
+            blueprintId,
           }}
           onAction={onAction}
         />
@@ -195,7 +204,13 @@ const Tabs: React.FC = () => {
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >
-              <ErrorBoundary>
+              <ErrorBoundary
+                onError={() => {
+                  reportEvent("ViewError", {
+                    panelType: staticPanel.type,
+                  });
+                }}
+              >
                 {getBodyForStaticPanel(staticPanel.key)}
               </ErrorBoundary>
             </Tab.Pane>
@@ -206,7 +221,15 @@ const Tabs: React.FC = () => {
               key={panel.extensionId}
               eventKey={eventKeyForEntry(panel)}
             >
-              <ErrorBoundary>
+              <ErrorBoundary
+                onError={() => {
+                  reportEvent("ViewError", {
+                    panelType: panel.type,
+                    extensionId: panel.extensionId,
+                    blueprintId: panel.blueprintId,
+                  });
+                }}
+              >
                 <PanelBody
                   isRootPanel
                   payload={panel.payload}
@@ -226,7 +249,15 @@ const Tabs: React.FC = () => {
               key={form.nonce}
               eventKey={eventKeyForEntry(form)}
             >
-              <ErrorBoundary>
+              <ErrorBoundary
+                onError={() => {
+                  reportEvent("ViewError", {
+                    panelType: form.type,
+                    extensionId: form.extensionId,
+                    blueprintId: form.blueprintId,
+                  });
+                }}
+              >
                 <FormBody form={form} />
               </ErrorBoundary>
             </Tab.Pane>
@@ -240,7 +271,14 @@ const Tabs: React.FC = () => {
               key={recipeToActivate.recipeId}
               eventKey={eventKeyForEntry(recipeToActivate)}
             >
-              <ErrorBoundary>
+              <ErrorBoundary
+                onError={() => {
+                  reportEvent("ViewError", {
+                    panelType: "activate",
+                    recipeToActivate: recipeToActivate.recipeId,
+                  });
+                }}
+              >
                 <ActivateRecipePanel recipeId={recipeToActivate.recipeId} />
               </ErrorBoundary>
             </Tab.Pane>
