@@ -576,7 +576,7 @@ export async function runBlock(
     );
   }
 
-  if (!trace) {
+  if (!selectTraceEnabled(trace)) {
     // We're currently not recording runs while using the Page Editor to develop a mod
     // Uses messenger notifier, so won't slow down execution
     recordBrickRun({
