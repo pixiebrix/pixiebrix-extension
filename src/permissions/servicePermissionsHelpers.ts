@@ -20,13 +20,13 @@ import serviceRegistry from "@/services/registry";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { locateWithRetry } from "@/services/serviceUtils";
 import { expectContext } from "@/utils/expectContext";
-import { type IntegrationAuthPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/serviceTypes";
 
 /**
  * Return origin permissions required to use a service with the given configuration.
  */
 export async function collectServiceOriginPermissions(
-  dependency: IntegrationAuthPair
+  dependency: IntegrationConfigPair
 ): Promise<Permissions.Permissions> {
   expectContext("extension");
 

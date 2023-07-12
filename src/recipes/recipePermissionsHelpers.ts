@@ -19,7 +19,7 @@ import {
   type ModDefinition,
   type ResolvedExtensionDefinition,
 } from "@/types/modDefinitionTypes";
-import { type IntegrationAuthPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/serviceTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import {
   ensurePermissionsFromUserGesture,
@@ -36,7 +36,7 @@ import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 async function collectExtensionDefinitionPermissions(
   extensionPoints: ResolvedExtensionDefinition[],
-  serviceAuths: IntegrationAuthPair[]
+  serviceAuths: IntegrationConfigPair[]
 ): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
     collectServiceOriginPermissions(serviceAuth)
@@ -85,7 +85,7 @@ async function collectExtensionDefinitionPermissions(
  */
 export async function checkRecipePermissions(
   recipe: Pick<ModDefinition, "definitions" | "extensionPoints">,
-  selectedAuths: IntegrationAuthPair[]
+  selectedAuths: IntegrationConfigPair[]
 ): Promise<PermissionsStatus> {
   const extensionDefinitions = await resolveRecipeInnerDefinitions(recipe);
   const permissions = await collectExtensionDefinitionPermissions(
@@ -116,7 +116,7 @@ export async function checkRecipePermissions(
  */
 export async function ensureRecipePermissionsFromUserGesture(
   recipe: ModDefinition,
-  selectedAuths: IntegrationAuthPair[]
+  selectedAuths: IntegrationConfigPair[]
 ): Promise<boolean> {
   // Single method to make mocking in tests easier
   return ensurePermissionsFromUserGesture(

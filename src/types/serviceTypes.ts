@@ -40,7 +40,7 @@ export interface IntegrationDependency {
   config?: UUID;
 }
 
-export type IntegrationAuthPair = {
+export type IntegrationConfigPair = {
   /**
    * The registry id of the integration.
    */

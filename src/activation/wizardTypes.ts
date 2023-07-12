@@ -18,7 +18,7 @@
 import { type Primitive } from "type-fest";
 import type React from "react";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type IntegrationAuthPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/serviceTypes";
 
 export type WizardStep = {
   key: string;
@@ -39,7 +39,7 @@ export type WizardValues = {
   /**
    * Mapping from service id to auth id.
    */
-  services: IntegrationAuthPair[];
+  services: IntegrationConfigPair[];
 
   // XXX: optionsArgs can contain periods, which will throw off formik
   optionsArgs: Record<string, Primitive>;

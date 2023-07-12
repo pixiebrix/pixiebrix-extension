@@ -23,18 +23,18 @@ import { Alert } from "react-bootstrap";
 import UrlPermissionsList from "@/extensionConsole/pages/activateRecipe/UrlPermissionsList";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type WizardValues } from "@/activation/wizardTypes";
-import { type IntegrationAuthPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/serviceTypes";
 import { useFormikContext } from "formik";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import useRecipePermissions from "./useRecipePermissions";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useAsyncState from "@/hooks/useAsyncState";
 
-function selectedAuths(values: WizardValues): IntegrationAuthPair[] {
+function selectedAuths(values: WizardValues): IntegrationConfigPair[] {
   return values.services.filter((x) => x.config);
 }
 
-export function useSelectedAuths(): IntegrationAuthPair[] {
+export function useSelectedAuths(): IntegrationConfigPair[] {
   const { values } = useFormikContext<WizardValues>();
   return useMemo(() => selectedAuths(values), [values]);
 }
