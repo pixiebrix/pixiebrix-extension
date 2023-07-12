@@ -19,7 +19,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 import {
-  type ExtensionDefinition,
+  type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import { compact, uniq } from "lodash";
@@ -62,7 +62,7 @@ export const getRequiredServiceIds = (recipe: ModDefinition): RegistryId[] =>
   );
 
 const getExtensionPointType = async (
-  extensionPoint: ExtensionDefinition,
+  extensionPoint: ModComponentDefinition,
   recipe: ModDefinition
 ): Promise<ExtensionPointType | null> => {
   // Look up the extension point in recipe inner definitions first

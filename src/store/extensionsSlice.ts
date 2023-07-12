@@ -43,7 +43,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import {
   type ModDefinition,
-  type ExtensionDefinition,
+  type ModComponentDefinition,
 } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey, type OptionsArgs } from "@/types/runtimeTypes";
@@ -114,7 +114,7 @@ const extensionsSlice = createSlice({
       }: PayloadAction<{
         recipe: ModDefinition;
         services?: Record<RegistryId, UUID>;
-        extensionPoints: ExtensionDefinition[];
+        extensionPoints: ModComponentDefinition[];
         optionsArgs?: OptionsArgs;
         deployment?: Deployment;
         /**

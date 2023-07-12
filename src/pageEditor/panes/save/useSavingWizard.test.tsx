@@ -361,7 +361,7 @@ describe("saving a Recipe Extension", () => {
       element,
       options: {
         pushToCloud: false,
-        // New ModDefinition with single ExtensionDefinition, so let create handle permissions
+        // New ModDefinition with single ModComponentDefinition, so let create handle permissions
         // check/notifications/reactivation
         checkPermissions: true,
         notifySuccess: true,

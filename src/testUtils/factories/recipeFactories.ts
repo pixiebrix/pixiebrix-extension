@@ -17,7 +17,7 @@
 
 import { array, define } from "cooky-cutter";
 import {
-  type ExtensionDefinition,
+  type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import {
@@ -58,7 +58,7 @@ export const recipeMetadataFactory = define<Metadata>({
   version: validateSemVerString("1.0.0"),
 });
 
-export const extensionPointConfigFactory = define<ExtensionDefinition>({
+export const extensionPointConfigFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
   services(): Record<OutputKey, RegistryId> {
@@ -148,7 +148,7 @@ export const versionedExtensionPointRecipeFactory = ({
  * Factory to create a ModDefinition with a definitions section and resolved extensions
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
-  const extensionPoints: ExtensionDefinition[] = [];
+  const extensionPoints: ModComponentDefinition[] = [];
   for (let i = 0; i < extensionCount; i++) {
     // Don't use array(factory, count) here, because it will keep incrementing
     // the modifier number across multiple test runs and cause non-deterministic
