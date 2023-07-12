@@ -25,6 +25,9 @@ import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ExtensionOptionsState } from "@/store/extensionsTypes";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
+import { UUID } from "@/types/stringTypes";
+import { OptionsArgs } from "@/types/runtimeTypes";
+import { isEmpty } from "lodash";
 
 //const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 const UPDATE_INTERVAL_MS = 60 * 1000;
@@ -135,6 +138,13 @@ function deactivateModComponent(
   );
 }
 
+/**
+ * Deactivates all mod components with the given mod id.
+ * @param modId the mod registry id
+ * @param optionsState the current extension options state
+ * @returns {options, deactivatedModComponents} new options state with the mod components deactivated
+ * and the mod components that were deactivated
+ */
 export function deactivateMod(
   modId: RegistryId,
   optionsState: ExtensionOptionsState
@@ -144,7 +154,6 @@ export function deactivateMod(
   options: ExtensionOptionsState;
   deactivatedModComponents: UnresolvedExtension[];
 } {
-  console.log("*** uninstalling mod", modId);
   let options = optionsState;
 
   const activatedModComponentSelector = selectExtensionsForRecipe(modId);
@@ -174,6 +183,33 @@ export function deactivateMod(
 //   return options;
 // }
 
+export function collectModConfigurations(
+  modComponents: UnresolvedExtension[]
+): {
+  services: Record<RegistryId, UUID>;
+  optionsArgs: OptionsArgs;
+} {
+  const services: Record<RegistryId, UUID> = {};
+  let optionsArgs: OptionsArgs = {};
+
+  for (const modComponent of modComponents) {
+    optionsArgs = {
+      ...optionsArgs,
+      ...modComponent.optionsArgs,
+    };
+    if (!modComponent.services || isEmpty(modComponent.services)) {
+      continue;
+    }
+
+    for (const { id, config } of modComponent.services) {
+      // eslint-disable-next-line security/detect-object-injection -- id is a registry id
+      services[id] = config;
+    }
+  }
+
+  return { services, optionsArgs };
+}
+
 function updateActivatedMod(
   mod: ModDefinition,
   optionsState: ExtensionOptionsState
@@ -188,10 +224,18 @@ function updateActivatedMod(
     optionsState.extensions
   );
 
-  // Uninstall the mod
-  options = deactivateMod(mod.metadata.id, options);
+  // Deactivate the mod
+  const { options, deactivatedModComponents } = deactivateMod(
+    mod.metadata.id,
+    optionsState
+  );
 
-  // Reinstall the mod with the updated mod definition
+  // Collect service an option configs to reinstall
+  const { services, optionsArgs } = collectModConfigurations(
+    deactivatedModComponents
+  );
+
+  // Reinstall the mod with the updated mod definition & configurations
   // options = activateMod(mod, options);
 }
 
