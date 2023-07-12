@@ -26,7 +26,7 @@ import { compact, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import type {
   StarterBrickDefinition,
-  ExtensionPointType,
+  StarterBrickType,
 } from "@/extensionPoints/types";
 import extensionPointRegistry from "@/extensionPoints/registry";
 
@@ -64,7 +64,7 @@ export const getRequiredServiceIds = (recipe: ModDefinition): RegistryId[] =>
 const getExtensionPointType = async (
   extensionPoint: ModComponentDefinition,
   recipe: ModDefinition
-): Promise<ExtensionPointType | null> => {
+): Promise<StarterBrickType | null> => {
   // Look up the extension point in recipe inner definitions first
   if (recipe.definitions?.[extensionPoint.id]) {
     const definition: StarterBrickDefinition = recipe.definitions[
@@ -82,12 +82,12 @@ const getExtensionPointType = async (
     extensionPoint.id as RegistryId
   );
 
-  return (extensionPointFromRegistry?.kind as ExtensionPointType) ?? null;
+  return (extensionPointFromRegistry?.kind as StarterBrickType) ?? null;
 };
 
 export const getContainedExtensionPointTypes = async (
   recipe: ModDefinition
-): Promise<ExtensionPointType[]> => {
+): Promise<StarterBrickType[]> => {
   const extensionPointTypes = await Promise.all(
     recipe.extensionPoints.map(async (extensionPoint) =>
       getExtensionPointType(extensionPoint, recipe)

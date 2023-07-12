@@ -34,7 +34,7 @@ import { type ServiceDependency } from "@/types/serviceTypes";
 import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
-  type ExtensionPointType,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import {
   extensionPointDefinitionFactory,
@@ -71,7 +71,7 @@ const internalFormStateFactory = define<
     return [];
   },
   recipe: null,
-  type: "panel" as ExtensionPointType,
+  type: "panel" as StarterBrickType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings

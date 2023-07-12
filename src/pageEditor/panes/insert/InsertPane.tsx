@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import { useDispatch } from "react-redux";
@@ -26,10 +26,10 @@ import { thisTab } from "@/pageEditor/utils";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 
-const InsertPane: React.FC<{ inserting: ExtensionPointType }> = ({
+const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
   inserting,
 }) => {
-  // Auto-insert if the ExtensionPointType supports it
+  // Auto-insert if the StarterBrickType supports it
   useAutoInsert(inserting);
 
   const dispatch = useDispatch();

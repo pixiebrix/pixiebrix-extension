@@ -40,7 +40,7 @@ import {
 import {
   type StarterBrickConfig as ExtensionPointDefinition,
   type StarterBrickDefinition as ExtensionPointConfigDefinition,
-  type ExtensionPointType,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
@@ -97,7 +97,7 @@ export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
       }),
     definition(n: number) {
       const definition: ExtensionPointConfigDefinition = {
-        type: "menuItem" as ExtensionPointType,
+        type: "menuItem" as StarterBrickType,
         isAvailable: {
           matchPatterns: [`https://www.mySite${n}.com/*`],
         },

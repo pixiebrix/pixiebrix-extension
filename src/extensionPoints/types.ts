@@ -30,7 +30,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
-export type ExtensionPointType =
+export type StarterBrickType =
   | "panel"
   | "menuItem"
   | "trigger"
@@ -72,7 +72,7 @@ export type CustomEventOptions = {
 };
 
 export interface StarterBrickDefinition {
-  type: ExtensionPointType;
+  type: StarterBrickType;
   isAvailable: Availability;
   reader: ReaderConfig;
 }
@@ -142,7 +142,7 @@ export abstract class ExtensionPoint<TConfig extends UnknownObject>
 
   protected readonly logger: Logger;
 
-  public abstract get kind(): ExtensionPointType;
+  public abstract get kind(): StarterBrickType;
 
   public get syncInstall() {
     return false;

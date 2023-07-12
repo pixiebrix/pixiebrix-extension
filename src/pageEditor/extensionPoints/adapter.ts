@@ -19,7 +19,7 @@ import { type IExtension } from "@/types/extensionTypes";
 import { registry } from "@/background/messenger/api";
 import {
   type StarterBrickConfig,
-  type ExtensionPointType,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import menuItemExtension from "@/pageEditor/extensionPoints/menuItem";
 import quickBarExtension from "@/pageEditor/extensionPoints/quickBar";
@@ -34,7 +34,7 @@ import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
 
-export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
+export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([
   ["trigger", triggerExtension],
   ["panel", panelExtension],
   ["contextMenu", contextMenuExtension],
@@ -47,7 +47,7 @@ export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
 
 export async function selectType(
   extension: IExtension
-): Promise<ExtensionPointType> {
+): Promise<StarterBrickType> {
   if (hasInnerExtensionPointRef(extension)) {
     return (
       extension.definitions[

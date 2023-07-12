@@ -34,7 +34,7 @@ import {
 } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { getContainedExtensionPointTypes } from "@/utils/recipeUtils";
 
@@ -324,7 +324,7 @@ export const selectExtensionsFromMod = createSelector(
       : installedExtensions.filter((x) => x.id === mod.id)
 );
 
-export const StarterBrickMap: Record<ExtensionPointType, string> = {
+export const StarterBrickMap: Record<StarterBrickType, string> = {
   panel: "Sidebar Panel",
   menuItem: "Button",
   trigger: "Trigger",
@@ -337,17 +337,17 @@ export const StarterBrickMap: Record<ExtensionPointType, string> = {
 
 const getExtensionPointType = async (
   extension: ResolvedExtension
-): Promise<ExtensionPointType> => {
+): Promise<StarterBrickType> => {
   const extensionPoint = await extensionPointRegistry.lookup(
     extension.extensionPointId
   );
 
-  return extensionPoint.kind as ExtensionPointType;
+  return extensionPoint.kind as StarterBrickType;
 };
 
 const getExtensionPointTypesContained = async (
   modViewItem: ModViewItem
-): Promise<ExtensionPointType[]> => {
+): Promise<StarterBrickType[]> => {
   if (isUnavailableMod(modViewItem.mod)) {
     return [];
   }

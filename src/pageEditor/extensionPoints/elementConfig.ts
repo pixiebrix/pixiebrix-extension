@@ -21,7 +21,7 @@ import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import {
   type StarterBrickConfig,
-  type ExtensionPointType,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import {
   type BrickPipeline,
@@ -48,7 +48,7 @@ export type SingleLayerReaderConfig =
 export type BaseExtensionPointState = {
   metadata: Metadata;
   definition: {
-    type: ExtensionPointType;
+    type: StarterBrickType;
     // We're currently not allowing users to modify readers in the page editor
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
@@ -77,7 +77,7 @@ export interface BaseFormState<
   /**
    * The type of the extensionPoint
    */
-  readonly type: ExtensionPointType;
+  readonly type: StarterBrickType;
 
   /**
    * True if the extensionPoint exists in in the registry
@@ -138,7 +138,7 @@ export interface ElementConfig<
   /**
    * The internal element type, e.g., menuItem, contextMenu, etc.
    */
-  readonly elementType: ExtensionPointType;
+  readonly elementType: StarterBrickType;
 
   /**
    * The StarterBrickConfig class corresponding to the extension point

@@ -18,7 +18,7 @@
 import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
-  type ExtensionPointType,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import { type Except } from "type-fest";
 import {
@@ -38,7 +38,7 @@ export interface DynamicDefinition<
   TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,
   TExtension extends UnknownObject = UnknownObject
 > {
-  type: ExtensionPointType;
+  type: StarterBrickType;
   extensionPointConfig: StarterBrickConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
 }

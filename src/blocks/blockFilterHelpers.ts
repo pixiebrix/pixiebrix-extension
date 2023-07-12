@@ -17,7 +17,7 @@
 
 import { type TypedBlock } from "@/blocks/registry";
 import { validateRegistryId } from "@/types/helpers";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/extensionPoints/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
 import { DocumentRenderer } from "@/blocks/renderers/document";
@@ -36,7 +36,7 @@ const alwaysShow = new Set([
 
 export type IsBlockAllowedPredicate = (block: TypedBlock) => boolean;
 
-export function getRootPipelineFlavor(extensionPointType: ExtensionPointType) {
+export function getRootPipelineFlavor(extensionPointType: StarterBrickType) {
   if (PANEL_TYPES.includes(extensionPointType)) {
     return PipelineFlavor.NoEffect;
   }

@@ -25,7 +25,7 @@ import {
   assertExtensionPointConfig,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-  type ExtensionPointType,
+  type StarterBrickType,
 } from "@/extensionPoints/types";
 import { registry } from "@/background/messenger/api";
 import type React from "react";
@@ -92,7 +92,7 @@ export function makeIsAvailable(url: string): NormalizedAvailability {
 /**
  * Return common extension properties for the Page Editor form state
  */
-export function baseFromExtension<T extends ExtensionPointType>(
+export function baseFromExtension<T extends StarterBrickType>(
   config: IExtension,
   type: T
 ): Pick<
@@ -378,7 +378,7 @@ export function removeEmptyValues<T extends object>(obj: T): T {
  * Return a composite reader to automatically include in new extensions created with the Page Editor.
  */
 export function getImplicitReader(
-  type: ExtensionPointType
+  type: StarterBrickType
 ): SingleLayerReaderConfig {
   // Reminder: when providing a composite array reader, the later entries override the earlier ones
 
