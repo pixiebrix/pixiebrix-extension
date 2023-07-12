@@ -61,7 +61,7 @@ export const sheets = {
   getTabNames: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getSheetProperties: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getHeaders: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getRows: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getAllRows: jest.fn().mockRejectedValue(new Error("Not implemented")),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
 };

@@ -58,7 +58,7 @@ export const sheets = {
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
   getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES", bg),
   getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
-  getRows: getMethod("GOOGLE_SHEETS_GET_ROWS", bg),
+  getAllRows: getMethod("GOOGLE_SHEETS_GET_ALL_ROWS", bg),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
 };

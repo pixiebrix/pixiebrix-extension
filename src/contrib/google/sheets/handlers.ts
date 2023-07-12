@@ -40,6 +40,15 @@ import {
   type ValueRange,
 } from "@/contrib/google/sheets/types";
 
+const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
+const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
+
+export type SpreadsheetTarget = {
+  googleAccount: SanitizedServiceConfiguration | null;
+  spreadsheetId: string;
+  tabName?: string;
+};
+
 /**
  * Ensure GAPI is initialized and return the Google token.
  */
@@ -97,12 +106,12 @@ export async function ensureSheetsReady({
 }
 
 export async function getAllSpreadsheets(
-  googleAccount: SanitizedServiceConfiguration | null = null
+  googleAccount: SanitizedServiceConfiguration | null
 ): Promise<FileList> {
   const token = await ensureSheetsReady({ interactive: false });
 
   const requestConfig: AxiosRequestConfig = {
-    url: "https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.spreadsheet'",
+    url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'`,
     method: "get",
   };
 
@@ -122,14 +131,13 @@ export async function getAllSpreadsheets(
 }
 
 async function batchUpdateSpreadsheet(
-  spreadsheetId: string,
-  request: BatchUpdateSpreadsheetRequest,
-  googleAccount: SanitizedServiceConfiguration | null = null
+  { googleAccount, spreadsheetId }: SpreadsheetTarget,
+  request: BatchUpdateSpreadsheetRequest
 ): Promise<BatchUpdateSpreadsheetResponse> {
   const token = await ensureSheetsReady({ interactive: false });
 
   const requestConfig: AxiosRequestConfig = {
-    url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
+    url: `${SHEETS_BASE_URL}/${spreadsheetId}:batchUpdate`,
     method: "post",
     data: request,
   };
@@ -152,11 +160,14 @@ async function batchUpdateSpreadsheet(
   }
 }
 
-export async function createTab(
-  spreadsheetId: string,
-  tabName: string,
-  googleAccount: SanitizedServiceConfiguration | null = null
-): Promise<BatchUpdateSpreadsheetResponse> {
+export async function createTab({
+  tabName,
+  ...target
+}: SpreadsheetTarget): Promise<BatchUpdateSpreadsheetResponse> {
+  if (!tabName) {
+    throw new Error("tabName is required");
+  }
+
   const batchRequest: BatchUpdateSpreadsheetRequest = {
     requests: [
       {
@@ -168,20 +179,22 @@ export async function createTab(
       },
     ],
   };
-  return batchUpdateSpreadsheet(spreadsheetId, batchRequest, googleAccount);
+  return batchUpdateSpreadsheet(target, batchRequest);
 }
 
 export async function appendRows(
-  spreadsheetId: string,
-  tabName: string,
-  values: unknown[],
-  googleAccount: SanitizedServiceConfiguration | null = null
+  { googleAccount, spreadsheetId, tabName }: SpreadsheetTarget,
+  values: unknown[][]
 ): Promise<AppendValuesResponse> {
   const token = await ensureSheetsReady({ interactive: false });
 
-  const requestConfig: AxiosRequestConfig = {
-    url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${tabName}:append?valueInputOption=USER_ENTERED`,
+  const requestConfig: AxiosRequestConfig<ValueRange> = {
+    url: `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}:append`,
     method: "post",
+    params: {
+      // See: https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption
+      valueInputOption: "USER_ENTERED",
+    },
     data: {
       majorDimension: "ROWS",
       values,
@@ -207,16 +220,21 @@ export async function appendRows(
 }
 
 async function getRows(
-  spreadsheetId: string,
-  range: string,
-  googleAccount: SanitizedServiceConfiguration | null = null
+  { googleAccount, spreadsheetId, tabName }: SpreadsheetTarget,
+  /**
+   * A1 notation of the values to retrieve.
+   * @see: https://developers.google.com/sheets/api/guides/concepts#cell
+   */
+  range = ""
 ): Promise<ValueRange> {
   const token = await ensureSheetsReady({ interactive: false });
 
-  const requestConfig: AxiosRequestConfig = {
-    url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}`,
-    method: "get",
-  };
+  let url = `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}`;
+  if (range) {
+    url += `!${range}`;
+  }
+
+  const requestConfig: AxiosRequestConfig = { url, method: "get" };
 
   if (!googleAccount) {
     // Fall-back to using the token from ensureSheetsReady
@@ -249,39 +267,25 @@ async function getRows(
 }
 
 export async function getAllRows(
-  spreadsheetId: string,
-  tabName: string,
-  googleAccount: SanitizedServiceConfiguration | null = null
+  target: SpreadsheetTarget
 ): Promise<ValueRange> {
-  return getRows(spreadsheetId, tabName, googleAccount);
+  return getRows(target);
 }
 
-export async function getHeaders({
-  spreadsheetId,
-  tabName,
+export async function getHeaders(target: SpreadsheetTarget): Promise<string[]> {
+  // Lookup the headers in the first row
+  const { values } = await getRows(target, `A1:${columnToLetter(256)}1`);
+  return values[0]?.map(String);
+}
+
+export async function getSpreadsheet({
   googleAccount,
-}: {
-  spreadsheetId: string;
-  tabName: string;
-  googleAccount?: SanitizedServiceConfiguration;
-}): Promise<string[]> {
-  // Lookup the headers in the first row so we can determine where to put the values
-  const { values } = await getRows(
-    spreadsheetId,
-    `${tabName}!A1:${columnToLetter(256)}1`,
-    googleAccount
-  );
-  return values[0].map(String);
-}
-
-export async function getSpreadsheet(
-  spreadsheetId: string,
-  googleAccount: SanitizedServiceConfiguration | null = null
-): Promise<Spreadsheet> {
+  spreadsheetId,
+}: SpreadsheetTarget): Promise<Spreadsheet> {
   const token = await ensureSheetsReady({ interactive: false });
 
   const requestConfig: AxiosRequestConfig = {
-    url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`,
+    url: `${SHEETS_BASE_URL}/${spreadsheetId}`,
     method: "get",
   };
 
