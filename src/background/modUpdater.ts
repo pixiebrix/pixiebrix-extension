@@ -119,15 +119,27 @@ export async function fetchModUpdates(
   }
 }
 
+function updateActivatedMod(mod: ModDefinition) {
+  console.log("*** updating mod", mod);
+  // Uninstall the mod
+
+  // Reinstall the mod with the updated mod definition
+}
+
 function updateActivatedMods(
   modUpdates: Record<
     RegistryId,
-    { backwards_compatible: ModDefinition[]; backwards_incompatible: false }
+    { backwards_compatible: ModDefinition; backwards_incompatible: false }
   >
 ) {
   console.log("*** activating mods");
-  for (const modUpdate in modUpdates) {
+  for (const { backwards_compatible } of Object.values(modUpdates)) {
     // Probably uninstall & call installRecipe from extensionsSlice?
+    if (!backwards_compatible) {
+      continue;
+    }
+
+    updateActivatedMod(backwards_compatible);
   }
 }
 
