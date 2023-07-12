@@ -64,7 +64,7 @@ beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockResolvedValue(
     sanitizedServiceConfigurationFactory({
-      integrationId: GOOGLE_SHEET_SERVICE_ID,
+      serviceId: GOOGLE_SHEET_SERVICE_ID,
       // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,

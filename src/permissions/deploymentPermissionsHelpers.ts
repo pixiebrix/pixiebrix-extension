@@ -49,7 +49,7 @@ export async function checkDeploymentPermissions(
   return checkRecipePermissions(
     blueprint,
     flatten(Object.values(localAuths)).map((x) => ({
-      id: x.integrationId,
+      id: x.serviceId,
       config: x.id,
     }))
   );

@@ -46,7 +46,7 @@ describe("aaApi", () => {
         folderId: null,
       } as unknown as SanitizedConfig,
       proxy: false,
-      integrationId: AUTOMATION_ANYWHERE_SERVICE_ID,
+      serviceId: AUTOMATION_ANYWHERE_SERVICE_ID,
     } as SanitizedIntegrationConfig;
 
     const privatePromise1 = cachedSearchBots(partialConfig, {

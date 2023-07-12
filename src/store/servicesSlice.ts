@@ -55,7 +55,7 @@ const servicesSlice = createSlice({
     updateServiceConfig(state, { payload: { id, serviceId, label, config } }) {
       state.configured[id] = {
         id,
-        integrationId: serviceId,
+        serviceId: serviceId,
         label,
         config,
       } as IntegrationConfig;

@@ -56,7 +56,7 @@ import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedServiceConfigurationFactory({
-    integrationId: validateRegistryId("@test/service"),
+    serviceId: validateRegistryId("@test/service"),
   })
 );
 

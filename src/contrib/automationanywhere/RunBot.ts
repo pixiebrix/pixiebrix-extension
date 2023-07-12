@@ -199,7 +199,7 @@ export class RunBot extends TransformerABC {
     let runAsUserIds: number[] = enterpriseBotArgs.runAsUserIds ?? [];
     if (
       enterpriseBotArgs.isAttended &&
-      service.integrationId === CONTROL_ROOM_OAUTH_SERVICE_ID
+      service.serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID
     ) {
       // Attended mode uses the authenticated user id as a runAsUserId
 
@@ -221,7 +221,7 @@ export class RunBot extends TransformerABC {
       enterpriseBotArgs.poolIds = [];
     } else if (
       enterpriseBotArgs.isAttended &&
-      service.integrationId === CONTROL_ROOM_TOKEN_SERVICE_ID
+      service.serviceId === CONTROL_ROOM_TOKEN_SERVICE_ID
     ) {
       // Attended mode uses the authenticated user id as a runAsUserId
 

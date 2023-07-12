@@ -115,7 +115,7 @@ const columnFactory = ({
   },
   {
     Header: "Type",
-    accessor: "integrationId",
+    accessor: "serviceId",
     Cell({ row }) {
       if (row.index === 0) {
         return <div className="text-muted">N/A</div>;
@@ -163,18 +163,16 @@ const dataFactory = ({
 }): TableData[] => [
   {
     label: "Zapier - use to connect to PixieBrix from Zapier",
-    integrationId: null,
+    serviceId: null,
     _rawIntegrationConfigBrand: null,
     id: null,
     config: null,
     service: null,
   },
   ...configuredServices.map((configuredService) => {
-    const service = services.find(
-      (x) => x.id === configuredService.integrationId
-    );
+    const service = services.find((x) => x.id === configuredService.serviceId);
     if (!service) {
-      throw new Error(`Unknown integration ${configuredService.integrationId}`);
+      throw new Error(`Unknown integration ${configuredService.serviceId}`);
     }
 
     return {

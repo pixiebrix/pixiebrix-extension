@@ -100,7 +100,7 @@ export type IntegrationConfig = {
   /**
    * Registry identifier for the integration, e.g., `@pixiebrix/api`.
    */
-  integrationId: RegistryId;
+  serviceId: RegistryId;
 
   /**
    * Human-readable label for the configuration to distinguish it from other configurations for the same integration in the
@@ -126,7 +126,7 @@ export interface SanitizedIntegrationConfig {
   /**
    * Registry identifier for the integration, e.g., @pixiebrix/api
    */
-  integrationId: RegistryId;
+  serviceId: RegistryId;
 
   /**
    * Sanitized configuration, i.e., excluding secrets and keys.

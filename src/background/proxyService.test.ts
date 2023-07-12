@@ -102,17 +102,17 @@ const requestConfig: AxiosRequestConfig = {
 
 const directServiceConfig = sanitizedServiceConfigurationFactory({
   proxy: false,
-  integrationId: EXAMPLE_SERVICE_API,
+  serviceId: EXAMPLE_SERVICE_API,
 });
 
 const directTokenServiceConfig = sanitizedServiceConfigurationFactory({
   proxy: false,
-  integrationId: EXAMPLE_SERVICE_TOKEN_API,
+  serviceId: EXAMPLE_SERVICE_TOKEN_API,
 });
 
 const proxiedServiceConfig = sanitizedServiceConfigurationFactory({
   proxy: true,
-  integrationId: EXAMPLE_SERVICE_API,
+  serviceId: EXAMPLE_SERVICE_API,
 });
 
 describe("unauthenticated direct requests", () => {

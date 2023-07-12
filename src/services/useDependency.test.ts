@@ -31,7 +31,7 @@ import * as backgroundApi from "@/background/messenger/api";
 // - requestPermissions callback
 
 jest.mocked(backgroundApi.services.locate).mockResolvedValue({
-  integrationId: "google/sheet",
+  serviceId: "google/sheet",
 } as SanitizedIntegrationConfig);
 
 const requestPermissionsMock = jest.mocked(browser.permissions.request);

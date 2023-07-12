@@ -72,7 +72,7 @@ function excludeSecrets(
 export async function pixieServiceFactory(): Promise<SanitizedIntegrationConfig> {
   return {
     id: undefined,
-    integrationId: PIXIEBRIX_SERVICE_ID,
+    serviceId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
     config: {} as SanitizedConfig,
@@ -180,7 +180,7 @@ class LazyLocatorFactory {
           ...x,
           level: ServiceLevel.Private,
           local: true,
-          serviceId: x.integrationId,
+          serviceId: x.serviceId,
         })),
         ...(this.remote ?? []).map((x) => ({
           ...x,
@@ -239,7 +239,7 @@ class LazyLocatorFactory {
       .map((match) => ({
         _sanitizedIntegrationConfigBrand: undefined,
         id: match.id,
-        integrationId: serviceId,
+        serviceId,
         proxy: service.hasAuth && !match.local,
         config: excludeSecrets(service, match.config),
       }));
@@ -302,7 +302,7 @@ class LazyLocatorFactory {
     return {
       _sanitizedIntegrationConfigBrand: undefined,
       id: authId,
-      integrationId: serviceId,
+      serviceId,
       proxy,
       config: excludeSecrets(service, match.config),
     };
