@@ -29,7 +29,7 @@ import { getUID, services } from "@/background/messenger/api";
 import { getExtensionVersion, reloadIfNewVersionIsReady } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "redux";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";
@@ -50,7 +50,7 @@ const { actions } = extensionsSlice;
  * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
  */
 async function fetchDeployments(
-  installedExtensions: IExtension[]
+  installedExtensions: ModComponentBase[]
 ): Promise<Deployment[]> {
   const client = await maybeGetLinkedApiClient();
 
@@ -74,7 +74,7 @@ async function fetchDeployments(
 async function activateDeployment(
   dispatch: Dispatch,
   deployment: Deployment,
-  installed: IExtension[]
+  installed: ModComponentBase[]
 ): Promise<void> {
   let isReinstall = false;
 
@@ -117,7 +117,7 @@ async function activateDeployment(
 async function activateDeployments(
   dispatch: Dispatch,
   deployments: Deployment[],
-  installed: IExtension[]
+  installed: ModComponentBase[]
 ): Promise<void> {
   // Activate as many as we can
   const errors = [];

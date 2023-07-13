@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { registry } from "@/background/messenger/api";
 import {
   type StarterBrickConfig,
@@ -46,7 +46,7 @@ export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([
 ]);
 
 export async function selectType(
-  extension: IExtension
+  extension: ModComponentBase
 ): Promise<StarterBrickType> {
   if (hasInnerExtensionPointRef(extension)) {
     return (
@@ -70,7 +70,7 @@ export async function selectType(
 }
 
 export async function extensionToFormState(
-  extension: IExtension
+  extension: ModComponentBase
 ): Promise<ComponentFormState> {
   const type = await selectType(extension);
   const { fromExtension } = ADAPTERS.get(type);

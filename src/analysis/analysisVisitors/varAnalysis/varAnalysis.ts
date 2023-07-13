@@ -106,7 +106,7 @@ export enum KnownSources {
 }
 
 /**
- * Set availability of variables based on the integrations used by the IExtension
+ * Set availability of variables based on the integrations used by the ModComponentBase
  * @see makeServiceContext
  */
 async function setServiceVars(

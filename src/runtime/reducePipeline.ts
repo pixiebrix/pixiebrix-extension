@@ -72,6 +72,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { ModComponentBase } from "@/types/extensionTypes";
 
 /**
  * CommonOptions for running pipelines and blocks
@@ -144,12 +145,12 @@ export type InitialValues = {
   input: UnknownObject;
   /**
    * Option values provided by the user during activation of an extension
-   * @see IExtension.optionsArgs
+   * @see ModComponentBase.optionsArgs
    */
   optionsArgs: OptionsArgs;
   /**
    * Service credentials provided by the user during activation of an extension
-   * @see IExtension.services
+   * @see ModComponentBase.services
    */
   serviceContext: ServiceContext;
   /**

@@ -92,7 +92,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
 export const initialState: EditorState = {
@@ -570,7 +570,7 @@ export const editorSlice = createSlice({
     },
     updateRecipeMetadataForElements(
       state,
-      action: PayloadAction<IExtension["_recipe"]>
+      action: PayloadAction<ModComponentBase["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeElements = state.elements.filter(
@@ -587,7 +587,7 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         elementId: UUID;
-        recipeMetadata: IExtension["_recipe"];
+        recipeMetadata: ModComponentBase["_recipe"];
         keepLocalCopy: boolean;
       }>
     ) {

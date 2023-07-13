@@ -76,7 +76,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;
@@ -84,7 +84,7 @@ const { actions: optionsActions } = extensionsSlice;
 function selectRecipeMetadata(
   unsavedRecipe: UnsavedModDefinition,
   response: PackageUpsertResponse
-): IExtension["_recipe"] {
+): ModComponentBase["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
     sharing: pick(response, ["public", "organizations"]),

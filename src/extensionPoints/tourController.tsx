@@ -74,9 +74,9 @@ export type RegisteredTour = {
 };
 
 /**
- * Registry of tours by blueprintId and IExtension.label.
+ * Registry of tours by blueprintId and ModComponentBase.label.
  * @see RunSubTourEffect
- * @see IExtension.label
+ * @see ModComponentBase.label
  */
 const blueprintTourRegistry = new Map<
   RegistryId,
@@ -313,7 +313,7 @@ export function registerTour({
 
 /**
  * Run a sub-tour by name in a blueprint. Returns a promise of tour completion.
- * @param tour the IExtension.label of the tour to run
+ * @param tour the ModComponentBase.label of the tour to run
  * @param blueprintId the blueprint id containing the tours
  * @throws BusinessError if the tour does not exist
  */

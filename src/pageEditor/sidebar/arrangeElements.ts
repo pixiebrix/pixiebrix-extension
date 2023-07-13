@@ -24,19 +24,19 @@ import {
 import { getRecipeById } from "@/pageEditor/utils";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type UUID } from "@/types/stringTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 type ArrangeElementsArgs = {
   elements: ComponentFormState[];
-  installed: IExtension[];
+  installed: ModComponentBase[];
   recipes: ModDefinition[];
   activeElementId: UUID | null;
   activeRecipeId: RegistryId | null;
   query: string;
 };
 
-type Element = IExtension | ComponentFormState;
+type Element = ModComponentBase | ComponentFormState;
 
 function arrangeElements({
   elements,
@@ -48,7 +48,7 @@ function arrangeElements({
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
 
-  const queryFilter = (item: IExtension | ComponentFormState) => {
+  const queryFilter = (item: ModComponentBase | ComponentFormState) => {
     const recipe = isFormState(item) ? item.recipe : item._recipe;
     const queryName = recipe?.name ?? item.label;
 
@@ -60,7 +60,7 @@ function arrangeElements({
     );
   };
 
-  const filteredExtensions: IExtension[] = installed
+  const filteredExtensions: ModComponentBase[] = installed
     // Note: we can take out this elementIds filter if and when we persist the editor
     // slice and remove installed extensions when they become dynamic elements
     .filter((extension) => !elementIds.has(extension.id))

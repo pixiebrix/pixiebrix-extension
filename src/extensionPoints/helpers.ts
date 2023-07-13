@@ -20,7 +20,7 @@ import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -234,12 +234,12 @@ export function selectExtensionContext(
 
 export function makeShouldRunExtensionForStateChange(
   event: Event
-): (extension: IExtension) => boolean {
+): (extension: ModComponentBase) => boolean {
   if (event instanceof CustomEvent) {
     const { detail } = event;
 
     // Ignore state changes from shared state and unrelated extensions/blueprints
-    return (extension: IExtension) =>
+    return (extension: ModComponentBase) =>
       detail?.extensionId === extension.id ||
       (extension._recipe?.id != null &&
         extension._recipe?.id === detail?.blueprintId);

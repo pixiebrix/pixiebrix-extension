@@ -28,7 +28,7 @@ import CollectNamesVisitor, {
 import { DOM_EVENTS } from "@/types/browserTypes";
 
 /**
- * Analysis visitor to collect all events fired by a single IExtension.
+ * Analysis visitor to collect all events fired by a single ModComponentBase.
  * @see CollectNamesVisitor
  */
 class CheckEventNamesAnalysis extends AnalysisVisitorABC {

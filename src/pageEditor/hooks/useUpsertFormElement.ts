@@ -72,7 +72,7 @@ function selectErrorMessage(error: unknown): string {
 
 type SaveOptions = {
   /**
-   * True to save a copy of the IExtension to the user's account
+   * True to save a copy of the ModComponentBase to the user's account
    */
   pushToCloud: boolean;
   /**
@@ -110,7 +110,7 @@ function onStepError(error: unknown, step: string): string {
 }
 
 /**
- * Hook to create/update a single IExtension defined by the Page Editor FormState.
+ * Hook to create/update a single ModComponentBase defined by the Page Editor FormState.
  */
 function useUpsertFormElement(): SaveCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't

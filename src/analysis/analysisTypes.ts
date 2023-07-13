@@ -53,7 +53,7 @@ export type AnalysisAnnotation = BaseAnnotation & {
 };
 
 /**
- * An analysis to run against the FormState for a single IExtensions.
+ * An analysis to run against the FormState for a single ModComponentBase.
  * @see ComponentFormState
  */
 export interface Analysis {
@@ -81,7 +81,7 @@ export type AnalysisState = {
   extensionAnnotations: Record<UUID, AnalysisAnnotation[]>;
 
   /**
-   * Known variables as map: IExtension Id -> block path -> VarMap
+   * Known variables as map: ModComponentBase Id -> block path -> VarMap
    * - Stored for each block by block path (string key of the Map)
    * - Within an extension (the UUID key of the Record)
    */

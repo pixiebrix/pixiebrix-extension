@@ -16,7 +16,7 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -102,7 +102,7 @@ function selectExtensionPointConfig(
 function selectExtension(
   state: SidebarFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<SidebarConfig> {
+): ModComponentBase<SidebarConfig> {
   const { extension } = state;
   const config: SidebarConfig = {
     heading: extension.heading,
@@ -125,7 +125,7 @@ function asDynamicElement(element: SidebarFormState): DynamicDefinition {
 }
 
 async function fromExtension(
-  config: IExtension<SidebarConfig>
+  config: ModComponentBase<SidebarConfig>
 ): Promise<SidebarFormState> {
   const extensionPoint = await lookupExtensionPoint<
     PanelDefinition,

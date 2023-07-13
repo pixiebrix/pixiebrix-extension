@@ -58,7 +58,7 @@ import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { isExpression } from "@/utils/expressionUtils";
@@ -93,7 +93,7 @@ export function makeIsAvailable(url: string): NormalizedAvailability {
  * Return common extension properties for the Page Editor form state
  */
 export function baseFromExtension<T extends StarterBrickType>(
-  config: IExtension,
+  config: ModComponentBase,
   type: T
 ): Pick<
   BaseFormState,
@@ -157,7 +157,7 @@ export function baseSelectExtension({
   extensionPoint,
   recipe,
 }: BaseFormState): Pick<
-  IExtension,
+  ModComponentBase,
   | "id"
   | "apiVersion"
   | "extensionPointId"
@@ -263,7 +263,7 @@ export async function lookupExtensionPoint<
   TConfig extends UnknownObject,
   TType extends string
 >(
-  config: IExtension<TConfig>,
+  config: ModComponentBase<TConfig>,
   type: TType
 ): Promise<StarterBrickConfig<TDefinition> & { definition: { type: TType } }> {
   if (!config) {
@@ -329,9 +329,9 @@ export function baseSelectExtensionPoint(
 }
 
 export function extensionWithInnerDefinitions(
-  extension: IExtension,
+  extension: ModComponentBase,
   extensionPointDefinition: StarterBrickDefinition
-): IExtension {
+): ModComponentBase {
   if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(
       DEFAULT_EXTENSION_POINT_VAR as SafeString,
@@ -347,7 +347,7 @@ export function extensionWithInnerDefinitions(
       },
     };
 
-    // XXX: we need to fix the type of IExtension.extensionPointId to support variable names
+    // XXX: we need to fix the type of ModComponentBase.extensionPointId to support variable names
     result.extensionPointId = extensionPointId as RegistryId;
 
     return result;

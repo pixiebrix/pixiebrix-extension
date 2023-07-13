@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
-type SidebarItem = IExtension | ComponentFormState;
+type SidebarItem = ModComponentBase | ComponentFormState;
 
 export function getLabel(extension: ComponentFormState): string {
   return extension.label ?? extension.extensionPoint.metadata.name;
 }
 
-export function isExtension(value: SidebarItem): value is IExtension {
+export function isExtension(value: SidebarItem): value is ModComponentBase {
   return "extensionPointId" in value;
 }

@@ -42,7 +42,7 @@ import {
   type SelectorRoot,
   type RenderedArgs,
 } from "@/types/runtimeTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -236,8 +236,8 @@ export async function selectBlockRootElement(
   return $root.get(0);
 }
 
-export function assertExtensionNotResolved<T extends IExtension>(
-  extension: IExtension
+export function assertExtensionNotResolved<T extends ModComponentBase>(
+  extension: ModComponentBase
 ): asserts extension is T & {
   _unresolvedExtensionBrand: never;
 } {

@@ -981,7 +981,7 @@ export interface MenuDefinition extends StarterBrickDefinition {
    */
   shadowDOM?: ShadowDOM;
   /**
-   * Default options for IExtensions attached to the extension point
+   * Default options for ModComponentBases attached to the extension point
    */
   defaultOptions?: MenuDefaultOptions;
   /**

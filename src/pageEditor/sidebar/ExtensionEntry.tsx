@@ -21,11 +21,11 @@ import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateT
 import { isExtension } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type ExtensionEntryProps = {
-  extension: IExtension | ComponentFormState;
+  extension: ModComponentBase | ComponentFormState;
   recipes: ModDefinition[];
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];

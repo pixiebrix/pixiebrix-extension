@@ -27,7 +27,7 @@ import axios from "axios";
 import { isLinked } from "@/auth/token";
 import { refreshRegistries } from "./refreshRegistries";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ActivatedModComponent,
 } from "@/types/extensionTypes";
 import { uuidv4 } from "@/types/helpers";
@@ -224,7 +224,7 @@ describe("installStarterBlueprints", () => {
     const recipe = recipeFactory();
 
     const extension = extensionFactory({
-      _recipe: { id: recipe.metadata.id } as IExtension["_recipe"],
+      _recipe: { id: recipe.metadata.id } as ModComponentBase["_recipe"],
     }) as ActivatedModComponent;
     await saveOptions({
       extensions: [extension],

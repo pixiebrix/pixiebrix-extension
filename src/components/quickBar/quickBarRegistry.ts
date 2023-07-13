@@ -131,7 +131,7 @@ class QuickBarRegistry {
 
   /**
    * Remove all actions added by a given extension.
-   * @param extensionId the IExtension UUID
+   * @param extensionId the ModComponentBase UUID
    */
   removeExtensionActions(extensionId: UUID): void {
     remove(this.actions, (x) => x.extensionId === extensionId);

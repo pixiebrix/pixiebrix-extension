@@ -43,7 +43,7 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import {
-  type IExtension,
+  type ModComponentBase,
   type UnresolvedExtension,
 } from "@/types/extensionTypes";
 import { type SafeString } from "@/types/stringTypes";
@@ -86,7 +86,7 @@ export function isRecipeEditable(
  */
 function findRecipeIndex(
   sourceRecipe: ModDefinition,
-  extension: IExtension
+  extension: ModComponentBase
 ): number {
   if (sourceRecipe.metadata.version !== extension._recipe.version) {
     console.warn(
@@ -137,7 +137,7 @@ function findRecipeIndex(
 export function replaceRecipeExtension(
   sourceRecipe: ModDefinition,
   metadata: Metadata,
-  installedExtensions: IExtension[],
+  installedExtensions: ModComponentBase[],
   element: ComponentFormState
 ): UnsavedModDefinition {
   const installedExtension = installedExtensions.find(
@@ -270,7 +270,7 @@ export function replaceRecipeExtension(
 }
 
 function selectExtensionPointConfig(
-  extension: IExtension
+  extension: ModComponentBase
 ): ModComponentDefinition {
   const extensionPoint: ModComponentDefinition = {
     ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
@@ -363,7 +363,7 @@ export function buildRecipe({
       );
     }
 
-    const dirtyRecipeExtensions: IExtension[] = dirtyRecipeElements.map(
+    const dirtyRecipeExtensions: ModComponentBase[] = dirtyRecipeElements.map(
       (element) => {
         const adapter = ADAPTERS.get(element.type);
         const extension = adapter.selectExtension(element);
@@ -402,7 +402,7 @@ type BuildExtensionPointsResult = {
 };
 
 function buildExtensionPoints(
-  extensions: IExtension[]
+  extensions: ModComponentBase[]
 ): BuildExtensionPointsResult {
   const innerDefinitions: InnerDefinitions = {};
   const extensionPoints: ModComponentDefinition[] = [];

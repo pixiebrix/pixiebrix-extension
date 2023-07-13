@@ -17,7 +17,7 @@
 
 import { type Config, define, extend } from "cooky-cutter";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ActivatedModComponent,
 } from "@/types/extensionTypes";
 import {
@@ -35,7 +35,9 @@ import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactorie
 import { recipeMetadataFactory } from "@/testUtils/factories/recipeFactories";
 import { type StandaloneModDefinition } from "@/types/contract";
 
-export const installedRecipeMetadataFactory = define<IExtension["_recipe"]>({
+export const installedRecipeMetadataFactory = define<
+  ModComponentBase["_recipe"]
+>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
   name: (n: number) => `Recipe ${n}`,
   description: "Recipe generated from factory",
@@ -43,7 +45,7 @@ export const installedRecipeMetadataFactory = define<IExtension["_recipe"]>({
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   sharing: sharingDefinitionFactory,
 });
-export const extensionFactory = define<IExtension>({
+export const extensionFactory = define<ModComponentBase>({
   id: uuidSequence,
   apiVersion: "v3" as ApiVersion,
   extensionPointId: (n: number) =>
@@ -84,7 +86,7 @@ export const extensionFactory = define<IExtension>({
   active: true,
 });
 export const persistedExtensionFactory = extend<
-  IExtension,
+  ModComponentBase,
   ActivatedModComponent
 >(extensionFactory, {
   createTimestamp: timestampFactory,
@@ -93,15 +95,15 @@ export const persistedExtensionFactory = extend<
   active: true,
 });
 
-// StandaloneModDefinition is a type in contract.ts. But it's really defined based on the IExtension type not the backend API.
+// StandaloneModDefinition is a type in contract.ts. But it's really defined based on the ModComponentBase type not the backend API.
 export const cloudExtensionFactory = (
   override?: Partial<Config<StandaloneModDefinition>>
 ) => {
   const extension = extensionFactory(
-    override as Config<IExtension>
+    override as Config<ModComponentBase>
   ) as StandaloneModDefinition;
 
-  // @ts-expect-error -- removing the IExtension property that is not in the StandaloneModDefinition type
+  // @ts-expect-error -- removing the ModComponentBase property that is not in the StandaloneModDefinition type
   delete extension.active;
 
   const timestamp = timestampFactory();

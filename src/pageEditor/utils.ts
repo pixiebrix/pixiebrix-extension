@@ -35,7 +35,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { type Target } from "@/types/messengerTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -63,13 +63,13 @@ export const thisTab: Target = {
 };
 
 export function getIdForElement(
-  element: IExtension | ComponentFormState
+  element: ModComponentBase | ComponentFormState
 ): UUID {
   return isExtension(element) ? element.id : element.uuid;
 }
 
 export function getRecipeIdForElement(
-  element: IExtension | ComponentFormState
+  element: ModComponentBase | ComponentFormState
 ): RegistryId {
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
 }

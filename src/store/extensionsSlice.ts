@@ -36,7 +36,7 @@ import { type Except } from "type-fest";
 import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ActivatedModComponent,
   selectSourceRecipeMetadata,
 } from "@/types/extensionTypes";
@@ -54,7 +54,7 @@ const initialExtensionsState: ExtensionOptionsState = {
 
 function selectDeploymentContext(
   deployment: Deployment
-): IExtension["_deployment"] | undefined {
+): ModComponentBase["_deployment"] | undefined {
   if (deployment) {
     return {
       id: deployment.id,
@@ -99,7 +99,7 @@ const extensionsSlice = createSlice({
         payload,
       }: PayloadAction<{
         extensionId: UUID;
-        recipeMetadata: IExtension["_recipe"];
+        recipeMetadata: ModComponentBase["_recipe"];
       }>
     ) {
       const { extensionId, recipeMetadata } = payload;
@@ -237,13 +237,13 @@ const extensionsSlice = createSlice({
         reinstall: isReinstall,
       });
     },
-    // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?
+    // XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
     saveExtension(
       state,
       {
         payload,
       }: PayloadAction<{
-        extension: (IExtension | ActivatedModComponent) & {
+        extension: (ModComponentBase | ActivatedModComponent) & {
           createTimestamp?: string;
         };
         pushToCloud: boolean;
@@ -339,7 +339,7 @@ const extensionsSlice = createSlice({
 
     updateRecipeMetadataForExtensions(
       state,
-      action: PayloadAction<IExtension["_recipe"]>
+      action: PayloadAction<ModComponentBase["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeExtensions = state.extensions.filter(

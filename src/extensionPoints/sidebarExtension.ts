@@ -56,7 +56,7 @@ import { serializeError } from "serialize-error";
 import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
 import { type Schema } from "@/types/schemaTypes";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -240,7 +240,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
   private readonly refreshPanels = async ({
     shouldRunExtension = stubTrue,
   }: {
-    shouldRunExtension?: (extension: IExtension) => boolean;
+    shouldRunExtension?: (extension: ModComponentBase) => boolean;
   }): Promise<void> => {
     const extensionsToRefresh = this.extensions.filter((extension) =>
       shouldRunExtension(extension)

@@ -114,7 +114,7 @@ export type StarterBrick = Metadata & {
   run(args: RunArgs): Promise<void>;
 
   /**
-   * Returns all blocks configured in the IExtension, including sub pipelines.
+   * Returns all blocks configured in the ModComponentBase, including sub pipelines.
    *
    * @see PipelineExpression
    */

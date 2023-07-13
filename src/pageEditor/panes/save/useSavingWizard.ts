@@ -46,7 +46,7 @@ import { pick } from "lodash";
 import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ActivatedModComponent,
 } from "@/types/extensionTypes";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
@@ -65,7 +65,7 @@ let savingDeferred: DeferredPromise<void>;
 export function selectRecipeMetadata(
   unsavedRecipe: UnsavedModDefinition,
   response: PackageUpsertResponse
-): IExtension["_recipe"] {
+): ModComponentBase["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
     sharing: pick(response, ["public", "organizations"]),
@@ -231,7 +231,7 @@ const useSavingWizard = () => {
       recipe.metadata.id,
       selectRecipeMetadata(newRecipe, createRecipeResponse.data),
       // Unlink the installed extensions from the deployment
-      { _deployment: null as IExtension["_deployment"] }
+      { _deployment: null as ModComponentBase["_deployment"] }
     );
 
     closeWizard(createExtensionError);
@@ -302,7 +302,7 @@ const useSavingWizard = () => {
 
   function updateExtensionRecipeLinks(
     recipeId: RegistryId,
-    recipeMetadata: IExtension["_recipe"],
+    recipeMetadata: ModComponentBase["_recipe"],
     extraUpdate: Partial<ActivatedModComponent> = {}
   ) {
     // 1) Update the extensions in the Redux optionsSlice
