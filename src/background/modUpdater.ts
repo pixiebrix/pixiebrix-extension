@@ -119,7 +119,6 @@ export async function fetchModUpdates(
     }>("/api/registry/updates/", {
       versions: collectModVersions(activatedMods),
     });
-
     console.log("*** updates", updates);
 
     return updates;
@@ -127,6 +126,18 @@ export async function fetchModUpdates(
     reportError(error);
     return {};
   }
+}
+
+async function getBackwardsCompatibleUpdates(
+  activatedMods: Array<IExtension["_recipe"]>
+): Promise<Record<RegistryId, ModDefinition>> {
+  const updates = await fetchModUpdates(activatedMods);
+
+  return Object.fromEntries(
+    Object.entries(updates)
+      .filter(([_, update]) => update.backwards_compatible)
+      .map(([id, update]) => [id, update.backwards_compatible])
+  );
 }
 
 function deactivateModComponent(
@@ -247,26 +258,21 @@ function updateActivatedMod(
 }
 
 async function updateActivatedMods(
-  modUpdates: Record<
-    RegistryId,
-    { backwards_compatible: ModDefinition; backwards_incompatible: boolean }
-  >
+  modUpdates: Record<RegistryId, ModDefinition>
 ) {
   let optionsState = await loadOptions();
-  console.log("*** activating mods");
-  for (const { backwards_compatible } of Object.values(modUpdates)) {
-    if (!backwards_compatible) {
-      continue;
-    }
 
-    optionsState = updateActivatedMod(backwards_compatible, optionsState);
+  console.log("*** modUpdates", modUpdates);
+
+  for (const update of Object.values(modUpdates)) {
+    optionsState = updateActivatedMod(update, optionsState);
   }
 
   await saveOptions(optionsState);
   await forEachTab(queueReactivateTab);
 }
 
-async function checkForModUpdates() {
+async function updateModsIfAvailable() {
   console.log("*** checking for mod updates");
 
   if (!(await autoModUpdatesEnabled())) {
@@ -281,13 +287,17 @@ async function checkForModUpdates() {
   console.log("*** activatedMarketplaceMods", activatedMarketplaceMods);
 
   // Send this list to the registry/updates endpoint & get back the list of updates
-  const modUpdates = await fetchModUpdates(activatedMarketplaceMods);
+  const modUpdates = await getBackwardsCompatibleUpdates(
+    activatedMarketplaceMods
+  );
+
+  console.log("*** modUpdates", modUpdates);
 
   // Use the list to update the mods
   await updateActivatedMods(modUpdates);
 }
 
 export async function initModUpdater(): Promise<void> {
-  setInterval(checkForModUpdates, UPDATE_INTERVAL_MS);
-  void checkForModUpdates();
+  setInterval(updateModsIfAvailable, UPDATE_INTERVAL_MS);
+  void updateModsIfAvailable();
 }
