@@ -73,7 +73,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const extensionFactory = define<ResolvedModComponent<TriggerConfig>>({
   apiVersion: "v3",
-  _resolvedExtensionBrand: undefined,
+  _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/extension-point-${n}`),

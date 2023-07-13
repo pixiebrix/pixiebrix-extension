@@ -177,7 +177,7 @@ export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
 export type UnresolvedModComponent<
   Config extends UnknownObject = UnknownObject
 > = ModComponentBase<Config> & {
-  _unresolvedExtensionBrand: never;
+  _unresolvedModComponentBrand: never;
 };
 
 /**
@@ -227,7 +227,7 @@ export type ResolvedModComponent<Config extends UnknownObject = UnknownObject> =
     /**
      * Brand for nominal typing.
      */
-    _resolvedExtensionBrand: never;
+    _resolvedModComponentBrand: never;
   };
 
 /**

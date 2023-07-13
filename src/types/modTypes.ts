@@ -32,7 +32,7 @@ export type UnavailableMod = Pick<
   isStub: true;
 };
 
-// XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
+// XXX: should this be UnresolvedModComponent instead of ResolvedModComponent? The old screens used ResolvedModComponent
 export type Mod = ModDefinition | ResolvedModComponent | UnavailableMod;
 
 export type SharingType = "Personal" | "Team" | "Public" | "Deployment";

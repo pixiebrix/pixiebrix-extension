@@ -91,7 +91,7 @@ export const persistedExtensionFactory = extend<
 >(extensionFactory, {
   createTimestamp: timestampFactory,
   updateTimestamp: timestampFactory,
-  _unresolvedExtensionBrand: undefined,
+  _unresolvedModComponentBrand: undefined,
   active: true,
 });
 

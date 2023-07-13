@@ -57,7 +57,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const extensionFactory = define<ResolvedModComponent<ContextMenuConfig>>({
   apiVersion: "v3",
-  _resolvedExtensionBrand: undefined,
+  _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/extension-point-${n}`),

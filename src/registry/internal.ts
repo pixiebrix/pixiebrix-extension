@@ -32,7 +32,7 @@ import { fromJS as blockFactory } from "@/blocks/transformers/brickFactory";
 import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
-  type ResolvedExtensionDefinition,
+  type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
 import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
@@ -254,11 +254,11 @@ export async function resolveExtensionInnerDefinitions<
  */
 export async function resolveRecipeInnerDefinitions(
   recipe: Pick<ModDefinition, "extensionPoints" | "definitions">
-): Promise<ResolvedExtensionDefinition[]> {
+): Promise<ResolvedModComponentDefinition[]> {
   const extensionDefinitions = recipe.extensionPoints;
 
   if (isEmpty(recipe.definitions)) {
-    return extensionDefinitions as ResolvedExtensionDefinition[];
+    return extensionDefinitions as ResolvedModComponentDefinition[];
   }
 
   const extensionPointReferences = new Set<string>(
@@ -283,7 +283,7 @@ export async function resolveRecipeInnerDefinitions(
     (definition) =>
       (definition.id in resolvedDefinitions
         ? { ...definition, id: resolvedDefinitions[definition.id].id }
-        : definition) as ResolvedExtensionDefinition
+        : definition) as ResolvedModComponentDefinition
   );
 }
 

@@ -23,7 +23,7 @@ import {
   type MenuDefaultOptions as ContextMenuDefaultOptions,
 } from "@/extensionPoints/contextMenu";
 import {
-  type MenuItemExtensionConfig,
+  type MenuItemStarterBrickConfig,
   type MenuPosition,
 } from "@/extensionPoints/menuItemExtension";
 import { type PanelConfig } from "@/extensionPoints/panelExtension";
@@ -63,7 +63,7 @@ import { type TourDefinition } from "@/extensionPoints/tourExtension";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &
-  Except<MenuItemExtensionConfig, "action">;
+  Except<MenuItemStarterBrickConfig, "action">;
 type ActionExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: StarterBrickType;

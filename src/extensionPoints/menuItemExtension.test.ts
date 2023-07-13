@@ -18,7 +18,7 @@
 import {
   fromJS,
   type MenuDefinition,
-  type MenuItemExtensionConfig,
+  type MenuItemStarterBrickConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
@@ -80,13 +80,13 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
 
 const extensionFactory = define<ResolvedModComponent>({
   apiVersion: "v3",
-  _resolvedExtensionBrand: undefined,
+  _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/extension-point-${n}`),
   _recipe: null,
   label: "Test Extension",
-  config: define<MenuItemExtensionConfig>({
+  config: define<MenuItemStarterBrickConfig>({
     caption: "Hello World",
     action: () => [] as BrickPipeline,
     synchronous: false,
