@@ -17,29 +17,34 @@
 
 @import "@/themes/colors";
 
+// Color when selected via the keyboard vs. mouse hover
+$color-active: #c7e0ff;
+$color-hover: #a9d2ff;
+
+$popover-height: 300px;
+$footer-height: 20px;
+$menu-padding-y: 4px;
+
 // Aligned with the style of react-select's menu
 .menu {
   width: 100%;
   min-width: 200px;
-  height: 300px;
-  max-height: 300px;
+  height: $popover-height;
+  max-height: $popover-height;
   z-index: 1;
   background-color: rgb(255, 255, 255);
   border-radius: 4px;
   box-shadow: #0000001a 0 0 0 1px;
 
-  padding-top: 4px;
-  padding-bottom: 4px;
-
-  max-height: 300px;
-  overflow-y: auto;
+  padding-top: $menu-padding-y;
+  padding-bottom: $menu-padding-y;
 
   position: absolute;
   top: 0;
   bottom: 0;
 
   :global(.active:not(.hover)) {
-    background-color: #c7e0ff;
+    background-color: $color-active;
 
     ul {
       background-color: white;
@@ -47,7 +52,7 @@
   }
 
   :global(.hover) {
-    background-color: #a9d2ff !important;
+    background-color: $color-hover !important;
     cursor: pointer;
 
     ul {
@@ -55,6 +60,20 @@
       cursor: none;
     }
   }
+}
+
+.body {
+  height: calc(100% - #{$footer-height} - #{$menu-padding-y} * 2);
+  overflow-y: auto;
+}
+
+.footer {
+  padding: 5px 10px;
+
+  height: $footer-height;
+  max-height: $footer-height;
+  font-size: 0.875em;
+  color: #9c9fa6;
 }
 
 .sourceItem {

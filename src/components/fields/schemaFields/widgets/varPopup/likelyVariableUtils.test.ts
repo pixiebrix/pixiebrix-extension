@@ -77,6 +77,51 @@ describe("detects the variable and returns its name", () => {
     const actual = getLikelyVariableAtPosition(template, 4).name;
     expect(actual).toEqual("@");
   });
+
+  test("clamp position on full match", () => {
+    const template = "@abc";
+    const actual = getLikelyVariableAtPosition(template, 2, {
+      clampPosition: true,
+      clampPosition: true,
+    }).name;
+    expect(actual).toEqual("@a");
+  });
+
+  test("clamp position on partial match", () => {
+    const template = "{{ @abc";
+    const actual = getLikelyVariableAtPosition(template, 5, {
+      clampPosition: true,
+      includeBoundary: true,
+    }).name;
+    expect(actual).toEqual("@a");
+  });
+
+  test("test match end boundary", () => {
+    const template = "@abc";
+    const actual = getLikelyVariableAtPosition(template, 4, {
+      includeBoundary: true,
+      clampPosition: true,
+    }).name;
+    expect(actual).toEqual("@abc");
+  });
+
+  test("test match end boundary on partial match", () => {
+    const template = "{{ @abc";
+    const actual = getLikelyVariableAtPosition(template, 7, {
+      includeBoundary: true,
+      clampPosition: true,
+    }).name;
+    expect(actual).toEqual("@abc");
+  });
+
+  test("test match start boundary", () => {
+    const template = "{{ @abc }}";
+    const actual = getLikelyVariableAtPosition(template, 3, {
+      includeBoundary: true,
+      clampPosition: true,
+    }).name;
+    expect(actual).toEqual("@");
+  });
 });
 
 describe("returns the start and end index of the variable", () => {

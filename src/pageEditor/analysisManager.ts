@@ -167,7 +167,7 @@ async function varAnalysisFactory(
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
   state: RootState
 ) {
-  const records = selectActiveElementTraces(state);
+  const trace = selectActiveElementTraces(state);
   const extension = selectActiveElement(state);
 
   const modState = await getPageState(thisTab, {
@@ -176,7 +176,7 @@ async function varAnalysisFactory(
     blueprintId: extension.recipe?.id,
   });
 
-  return new VarAnalysis(records, modState);
+  return new VarAnalysis({ trace, modState });
 }
 
 // OutputKeyAnalysis seems to be the slowest one, so we register it in the end
