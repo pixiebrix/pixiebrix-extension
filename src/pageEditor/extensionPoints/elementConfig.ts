@@ -32,8 +32,8 @@ import type { Permissions } from "webextension-polyfill";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/types/serviceTypes";
-import { type IExtension } from "@/types/extensionTypes";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
 
 /**
@@ -116,16 +116,16 @@ export interface BaseFormState<
   /**
    * Information about the recipe (i.e., blueprint) used to install the extension, or `undefined` if the extension
    * is not part of a recipe.
-   * @see IExtension._recipe
+   * @see ModComponentBase._recipe
    */
-  recipe: IExtension["_recipe"] | undefined;
+  recipe: ModComponentBase["_recipe"] | undefined;
 
   /**
    * Information about the recipe (i.e., blueprint) options,
    * or `undefined` if the extension is not part of a recipe.
    * @see ModDefinition.options
    */
-  optionsDefinition?: OptionsDefinition;
+  optionsDefinition?: ModOptionsDefinition;
 }
 
 /**
@@ -204,7 +204,7 @@ export interface ElementConfig<
   /**
    * Returns the FormState corresponding to extension
    */
-  readonly fromExtension: (extension: IExtension) => Promise<TState>;
+  readonly fromExtension: (extension: ModComponentBase) => Promise<TState>;
 
   /**
    * Returns the extension point configuration corresponding to the FormState.
@@ -220,5 +220,5 @@ export interface ElementConfig<
    * @see isInnerExtensionPoint
    * @see extensionWithInnerDefinitions
    */
-  readonly selectExtension: (element: TState) => IExtension;
+  readonly selectExtension: (element: TState) => ModComponentBase;
 }

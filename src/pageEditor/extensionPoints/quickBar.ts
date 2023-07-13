@@ -16,7 +16,7 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -106,7 +106,7 @@ function selectExtensionPointConfig(
 function selectExtension(
   state: QuickBarFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<QuickBarConfig> {
+): ModComponentBase<QuickBarConfig> {
   const { extension } = state;
   const config: QuickBarConfig = {
     title: extension.title,
@@ -122,7 +122,7 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: IExtension<QuickBarConfig>
+  config: ModComponentBase<QuickBarConfig>
 ): Promise<QuickBarFormState> {
   const extensionPoint = await lookupExtensionPoint<
     QuickBarDefinition,

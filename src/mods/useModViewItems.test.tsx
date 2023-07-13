@@ -41,7 +41,7 @@ describe("useModViewItems", () => {
     axiosMock.onGet("/api/marketplace/listings").reply(200, []);
   });
 
-  it("creates entry for IExtension", async () => {
+  it("creates entry for ModComponentBase", async () => {
     const extension = extensionFactory() as ResolvedExtension;
 
     const wrapper = renderHook(() => useModViewItems([extension]), {

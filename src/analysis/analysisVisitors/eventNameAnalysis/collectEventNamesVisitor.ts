@@ -21,7 +21,7 @@ import PipelineVisitor, {
 } from "@/blocks/PipelineVisitor";
 import CustomEventEffect from "@/blocks/effects/customEvent";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export type EventNameAnalysisResult = {
   /**
@@ -69,7 +69,9 @@ class CollectNamesVisitor extends PipelineVisitor {
     }
   }
 
-  static collectNames(formState: FormState): EventNameAnalysisResult {
+  static collectNames(
+    formState: ModComponentFormState
+  ): EventNameAnalysisResult {
     const visitor = new CollectNamesVisitor();
 
     visitor.visitRootPipeline(formState.extension.blockPipeline);

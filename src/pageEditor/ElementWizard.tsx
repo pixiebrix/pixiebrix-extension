@@ -34,7 +34,7 @@ import { upgradePipelineToV3 } from "@/pageEditor/extensionPoints/upgrade";
 import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { selectVariablePopoverVisible } from "@/pageEditor/slices/editorSelectors";
 
@@ -63,13 +63,14 @@ const WizardNavItem: React.FunctionComponent<{
  * @see RecipePane
  */
 const ElementWizard: React.FunctionComponent<{
-  element: FormState;
+  element: ModComponentFormState;
 }> = ({ element }) => {
   const [step, setStep] = useState(wizard[0].step);
 
   const isVariablePopoverVisible = useSelector(selectVariablePopoverVisible);
 
-  const { isValid, status, handleReset } = useFormikContext<FormState>();
+  const { isValid, status, handleReset } =
+    useFormikContext<ModComponentFormState>();
 
   const dispatch = useDispatch();
 
@@ -86,7 +87,7 @@ const ElementWizard: React.FunctionComponent<{
   };
 
   const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
+    useFormikContext<ModComponentFormState>();
 
   const wizardSteps = [...wizard];
 

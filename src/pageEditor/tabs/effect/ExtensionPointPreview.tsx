@@ -28,7 +28,7 @@ import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
 import {
-  type FormState,
+  type ModComponentFormState,
   type TriggerFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -67,7 +67,7 @@ const previewSlice = createSlice({
 });
 
 const ExtensionPointPreview: React.FunctionComponent<{
-  element: FormState;
+  element: ModComponentFormState;
   previewRefreshMillis?: 250;
 }> = ({ element, previewRefreshMillis }) => {
   const [{ isRunning, output, error }, dispatch] = useReducer(
@@ -75,7 +75,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
     initialState
   );
 
-  const run = useCallback(async (element: FormState) => {
+  const run = useCallback(async (element: ModComponentFormState) => {
     dispatch(previewSlice.actions.startRun());
     try {
       const { asDynamicElement: factory } = ADAPTERS.get(element.type);
@@ -102,7 +102,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
   }, []);
 
   const debouncedRun = useDebouncedCallback(
-    async (element: FormState) => run(element),
+    async (element: ModComponentFormState) => run(element),
     previewRefreshMillis,
     { trailing: true, leading: false }
   );

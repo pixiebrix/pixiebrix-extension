@@ -26,7 +26,7 @@ import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { type ApiVersion, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
-import { type IReader, ReaderABC } from "@/types/bricks/readerTypes";
+import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type SemVerString, type Metadata } from "@/types/registryTypes";
 
 export interface ReaderTypeConfig {
@@ -76,7 +76,7 @@ export function registerFactory(readerType: string, read: Read): void {
   _readerFactories.set(readerType, read);
 }
 
-export function readerFactory(component: unknown): IReader {
+export function readerFactory(component: unknown): Reader {
   validateReaderDefinition(component);
 
   // Need to `cloneDeep` because component could be a proxy object

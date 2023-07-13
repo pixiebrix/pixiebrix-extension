@@ -43,7 +43,7 @@ import {
   type RegistryId,
 } from "@/types/registryTypes";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
@@ -217,18 +217,18 @@ async function resolveInnerDefinition(
 }
 
 /**
- * Return a new copy of the IExtension with its inner references re-written.
+ * Return a new copy of the ModComponentBase with its inner references re-written.
  * TODO: resolve/map ids for other definitions (brick, service, etc.) within the extension
  */
 export async function resolveExtensionInnerDefinitions<
   T extends UnknownObject = UnknownObject
->(extension: IExtension<T>): Promise<ResolvedExtension<T>> {
+>(extension: ModComponentBase<T>): Promise<ResolvedExtension<T>> {
   if (isEmpty(extension.definitions)) {
     return extension as ResolvedExtension<T>;
   }
 
   return produce(extension, async (draft) => {
-    // The IExtension has definitions for all extensionPoints from the mod, even ones it doesn't use
+    // The ModComponentBase has definitions for all extensionPoints from the mod, even ones it doesn't use
     const relevantDefinitions = pickBy(
       draft.definitions,
       (definition, name) =>
@@ -293,8 +293,10 @@ export async function resolveRecipeInnerDefinitions(
  * @see UnresolvedExtension
  * @see ResolvedExtension
  */
-export function hasInnerExtensionPointRef(extension: IExtension): boolean {
-  // XXX: should this also check for `@internal/` scope in the referenced id? The type IExtension could receive a
+export function hasInnerExtensionPointRef(
+  extension: ModComponentBase
+): boolean {
+  // XXX: should this also check for `@internal/` scope in the referenced id? The type ModComponentBase could receive a
   // ResolvedExtension, which would have the id mapped to the internal registry id
   return extension.extensionPointId in (extension.definitions ?? {});
 }

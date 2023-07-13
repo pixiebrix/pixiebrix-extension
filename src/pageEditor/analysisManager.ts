@@ -37,7 +37,7 @@ import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { extensionToFormState } from "@/pageEditor/extensionPoints/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
@@ -54,7 +54,7 @@ const pageEditorAnalysisManager = new ReduxAnalysisManager();
  */
 export async function selectActiveModFormStates(
   state: RootState
-): Promise<FormState[]> {
+): Promise<ModComponentFormState[]> {
   const element = selectActiveElement(state);
 
   if (element?.recipe) {

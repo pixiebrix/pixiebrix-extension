@@ -21,10 +21,10 @@ import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 type ExtensionSaver = {
-  save: (element: FormState) => Promise<void>;
+  save: (element: ModComponentFormState) => Promise<void>;
   isSaving: boolean;
 };
 
@@ -33,7 +33,7 @@ function useSaveExtension(): ExtensionSaver {
   const create = useUpsertFormElement();
   const sessionId = useSelector(selectSessionId);
 
-  async function save(element: FormState): Promise<void> {
+  async function save(element: ModComponentFormState): Promise<void> {
     setIsSaving(true);
 
     try {

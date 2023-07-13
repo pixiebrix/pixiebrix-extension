@@ -43,11 +43,11 @@ import {
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
-  type OptionsDefinition,
+  type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
@@ -434,8 +434,8 @@ describe("replaceRecipeExtension round trip", () => {
 
 describe("blueprint options", () => {
   async function runReplaceRecipeExtensions(
-    recipeOptions: OptionsDefinition,
-    elementOptions: OptionsDefinition
+    recipeOptions: ModOptionsDefinition,
+    elementOptions: ModOptionsDefinition
   ) {
     const recipe = recipeFactory({
       options: recipeOptions,
@@ -481,7 +481,7 @@ describe("blueprint options", () => {
   });
 
   test("creates blueprint options", async () => {
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -503,7 +503,7 @@ describe("blueprint options", () => {
   });
 
   test("updates blueprint options", async () => {
-    const blueprintOptions: OptionsDefinition = {
+    const blueprintOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -516,7 +516,7 @@ describe("blueprint options", () => {
       uiSchema: getMinimalUiSchema(),
     };
 
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -537,7 +537,7 @@ describe("blueprint options", () => {
   });
 
   test("removes blueprint options", async () => {
-    const blueprintOptions: OptionsDefinition = {
+    const blueprintOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -550,7 +550,7 @@ describe("blueprint options", () => {
       uiSchema: getMinimalUiSchema(),
     };
 
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: getMinimalSchema(),
       uiSchema: getMinimalUiSchema(),
     };
@@ -656,7 +656,9 @@ describe("buildRecipe", () => {
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
     // Use the adapter to convert to FormState
-    const element = (await adapter.fromExtension(extension)) as FormState;
+    const element = (await adapter.fromExtension(
+      extension
+    )) as ModComponentFormState;
 
     // Call the function under test
     const newRecipe = buildRecipe({
@@ -788,7 +790,7 @@ describe("buildRecipe", () => {
       );
 
       // Collect the dirty form states for any changed extensions
-      const elements: FormState[] = [];
+      const elements: ModComponentFormState[] = [];
 
       if (dirtyExtensionCount > 0) {
         const extensionPoints = selectExtensionPoints(recipe);
@@ -806,7 +808,9 @@ describe("buildRecipe", () => {
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const element = (await adapter.fromExtension(extension)) as FormState;
+          const element = (await adapter.fromExtension(
+            extension
+          )) as ModComponentFormState;
 
           // Edit the label
           element.label = `New Label ${i}`;

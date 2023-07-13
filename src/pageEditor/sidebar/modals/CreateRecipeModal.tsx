@@ -57,7 +57,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
@@ -74,9 +74,9 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;
@@ -84,7 +84,7 @@ const { actions: optionsActions } = extensionsSlice;
 function selectRecipeMetadata(
   unsavedRecipe: UnsavedModDefinition,
   response: PackageUpsertResponse
-): IExtension["_recipe"] {
+): ModComponentBase["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
     sharing: pick(response, ["public", "organizations"]),
@@ -92,7 +92,11 @@ function selectRecipeMetadata(
   };
 }
 
-function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
+function useSaveCallbacks({
+  activeElement,
+}: {
+  activeElement: ModComponentFormState;
+}) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useUpsertFormElement();
@@ -108,7 +112,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
 
   const createRecipeFromElement = useCallback(
     // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-    (element: FormState, metadata: RecipeMetadataFormState) =>
+    (element: ModComponentFormState, metadata: ModMetadataFormState) =>
       // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ensureElementPermissionsFromUserGesture(element).then(
         async (hasPermissions) => {
@@ -164,7 +168,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   );
 
   const createRecipeFromRecipe = useCallback(
-    async (recipe: ModDefinition, metadata: RecipeMetadataFormState) => {
+    async (recipe: ModDefinition, metadata: ModMetadataFormState) => {
       const recipeId = recipe.metadata.id;
       // eslint-disable-next-line security/detect-object-injection -- recipeId
       const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
@@ -265,9 +269,9 @@ function useInitialFormState({
   activeRecipe,
   activeElement,
 }: {
-  activeElement: FormState;
+  activeElement: ModComponentFormState;
   activeRecipe: ModDefinition | null;
-}): RecipeMetadataFormState | null {
+}): ModMetadataFormState | null {
   const scope = useSelector(selectScope);
 
   const activeRecipeId =
@@ -359,10 +363,7 @@ const CreateRecipeModalBody: React.FC = () => {
     activeElement,
   });
 
-  const onSubmit: OnSubmit<RecipeMetadataFormState> = async (
-    values,
-    helpers
-  ) => {
+  const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
     try {
       // `activeRecipe` must come first. It's possible that both activeElement and activeRecipe are set because
       // activeRecipe will be the recipe of the active element if in a "Save as New" workflow for an existing recipe

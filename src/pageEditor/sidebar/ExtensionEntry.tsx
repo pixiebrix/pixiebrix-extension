@@ -17,15 +17,15 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type ExtensionEntryProps = {
-  extension: IExtension | FormState;
+  extension: ModComponentBase | ModComponentFormState;
   recipes: ModDefinition[];
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];

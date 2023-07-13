@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { registry } from "@/background/messenger/api";
 import {
   type StarterBrickConfig,
@@ -31,7 +31,7 @@ import quickBarProviderExtension from "@/pageEditor/extensionPoints/quickBarProv
 import tourExtension from "@/pageEditor/extensionPoints/tour";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
 
 export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([
@@ -46,7 +46,7 @@ export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([
 ]);
 
 export async function selectType(
-  extension: IExtension
+  extension: ModComponentBase
 ): Promise<StarterBrickType> {
   if (hasInnerExtensionPointRef(extension)) {
     return (
@@ -70,8 +70,8 @@ export async function selectType(
 }
 
 export async function extensionToFormState(
-  extension: IExtension
-): Promise<FormState> {
+  extension: ModComponentBase
+): Promise<ModComponentFormState> {
   const type = await selectType(extension);
   const { fromExtension } = ADAPTERS.get(type);
   if (!fromExtension) {
@@ -81,11 +81,11 @@ export async function extensionToFormState(
   }
 
   // FormState is the sum type of all the extension form states, so OK to cast
-  return fromExtension(extension) as Promise<FormState>;
+  return fromExtension(extension) as Promise<ModComponentFormState>;
 }
 
 export function formStateToDynamicElement(
-  formState: FormState
+  formState: ModComponentFormState
 ): DynamicDefinition {
   const elementConfig = ADAPTERS.get(formState.type);
   return elementConfig.asDynamicElement(formState);

@@ -25,7 +25,7 @@ import { type RegistryId } from "@/types/registryTypes";
 
 export type RegisteredForm = {
   /**
-   * The IExtension that created the form.
+   * The ModComponentBase that created the form.
    */
   extensionId: UUID;
   definition: FormDefinition;

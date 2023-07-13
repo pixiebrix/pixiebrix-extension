@@ -30,7 +30,7 @@ import {
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
 import blockRegistry from "@/blocks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
@@ -959,7 +959,7 @@ describe("Collecting available vars", () => {
 });
 
 describe("Invalid template", () => {
-  let extension: FormState;
+  let extension: ModComponentFormState;
   let analysis: VarAnalysis;
 
   beforeEach(() => {

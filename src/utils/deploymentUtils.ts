@@ -20,7 +20,7 @@ import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
@@ -28,10 +28,10 @@ import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
  * @since 1.4.0
- * @see IExtension._deployment
+ * @see ModComponentBase._deployment
  */
 export function isDeploymentActive(extensionLike: {
-  _deployment?: IExtension["_deployment"];
+  _deployment?: ModComponentBase["_deployment"];
 }): boolean {
   return (
     // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
@@ -56,7 +56,7 @@ export function isDeploymentActive(extensionLike: {
  * @param restricted `true` if the user is a restricted organization user (i.e., as opposed to a developer)
  */
 export const makeUpdatedFilter =
-  (installed: IExtension[], { restricted }: { restricted: boolean }) =>
+  (installed: ModComponentBase[], { restricted }: { restricted: boolean }) =>
   (deployment: Deployment) => {
     const deploymentMatch = installed.find(
       (extension) => extension._deployment?.id === deployment.id
@@ -144,7 +144,7 @@ type InstalledDeployment = {
 };
 
 export function selectInstalledDeployments(
-  extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
+  extensions: Array<Pick<ModComponentBase, "_deployment" | "_recipe">>
 ): InstalledDeployment[] {
   return uniqBy(
     extensions

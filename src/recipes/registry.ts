@@ -25,7 +25,7 @@ import {
   type UiSchema,
 } from "@/types/schemaTypes";
 import {
-  type OptionsDefinition,
+  type ModOptionsDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -47,8 +47,8 @@ type RegistryModDefinition = ModDefinition & {
  * Fix hand-crafted recipe options from the workshop
  */
 function normalizeRecipeOptions(
-  options?: OptionsDefinition
-): OptionsDefinition {
+  options?: ModOptionsDefinition
+): ModOptionsDefinition {
   if (options == null) {
     return {
       schema: {},

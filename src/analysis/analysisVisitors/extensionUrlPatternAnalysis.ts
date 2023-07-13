@@ -19,7 +19,7 @@ import {
   type Analysis,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -74,7 +74,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     });
   }
 
-  async run(extension: FormState): Promise<void> {
+  async run(extension: ModComponentFormState): Promise<void> {
     for (const fieldName of urlPatternFields) {
       const urlPatterns: unknown[] = get(extension, fieldName);
       if (urlPatterns == null || urlPatterns.length === 0) {

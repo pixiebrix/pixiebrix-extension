@@ -25,7 +25,7 @@ import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { uniqBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import type { Mod, UnavailableMod } from "@/types/modTypes";
 
 type ModsState = {
@@ -40,7 +40,9 @@ type ModsState = {
   error: unknown;
 };
 
-export function selectUnavailableRecipe(extension: IExtension): UnavailableMod {
+export function selectUnavailableRecipe(
+  extension: ModComponentBase
+): UnavailableMod {
   return {
     metadata: extension._recipe,
     kind: "recipe",

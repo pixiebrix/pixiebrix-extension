@@ -29,7 +29,7 @@ import { containsPermissions } from "@/background/messenger/api";
 import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
@@ -53,7 +53,7 @@ async function collectExtensionDefinitionPermissions(
         //  to not depend on irrelevant information, e.g., the uuid of the extension. This will also involve changing
         //  the type of getBlocks on the ExtensionPoint interface
         inner = await collectExtensionPermissions(
-          { config } as unknown as IExtension,
+          { config } as unknown as ModComponentBase,
           {
             extensionPoint,
           }

@@ -32,7 +32,7 @@ import { type OutputKey, type TemplateEngine } from "@/types/runtimeTypes";
  * A section defining which options are available during mod activation
  * @see ModDefinition.options
  */
-export type OptionsDefinition = {
+export type ModOptionsDefinition = {
   schema: Schema;
   uiSchema?: UiSchema;
 };
@@ -100,7 +100,7 @@ export interface UnsavedModDefinition extends Definition {
   kind: "recipe";
   extensionPoints: ModComponentDefinition[];
   definitions?: InnerDefinitions;
-  options?: OptionsDefinition;
+  options?: ModOptionsDefinition;
 }
 
 /**

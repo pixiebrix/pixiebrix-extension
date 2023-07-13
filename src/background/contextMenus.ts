@@ -32,7 +32,7 @@ import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
 
@@ -163,7 +163,7 @@ async function _ensureContextMenu({
 }
 
 export async function preloadContextMenus(
-  extensions: IExtension[]
+  extensions: ModComponentBase[]
 ): Promise<void> {
   expectContext("background");
   await Promise.allSettled(

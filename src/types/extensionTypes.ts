@@ -42,9 +42,9 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
  * e.g. on the ActiveBricks page.
  *
  * @see optionsSlice
- * @see IExtension._recipe
+ * @see ModComponentBase._recipe
  */
-// Don't export -- the use is clearer if it's always written as IExtension[_recipe] property
+// Don't export -- the use is clearer if it's always written as ModComponentBase[_recipe] property
 type ModMetadata = Metadata & {
   /**
    * `undefined` for recipes that were activated prior to the field being added
@@ -61,7 +61,7 @@ type ModMetadata = Metadata & {
 /**
  * Context about an automatically activated organization Deployment.
  */
-// Don't export -- context is clearer if it's always written as IExtension[_deployment] property
+// Don't export -- context is clearer if it's always written as ModComponentBase[_deployment] property
 type DeploymentMetadata = {
   /**
    * Unique id of the deployment
@@ -85,7 +85,7 @@ type DeploymentMetadata = {
 };
 
 // XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
-export type IExtension<Config extends UnknownObject = UnknownObject> = {
+export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
   /**
    * UUID of the extension.
    */
@@ -166,22 +166,22 @@ export type IExtension<Config extends UnknownObject = UnknownObject> = {
 };
 
 /**
- * An IExtension that is known not to have had its definitions resolved.
+ * An ModComponentBase that is known not to have had its definitions resolved.
  *
  * NOTE: it might be the case that the extension does not have a definitions section/inner definitions. This nominal
  * type is just tracking whether we've passed the instance through resolution yet.
  *
- * @see IExtension
+ * @see ModComponentBase
  * @see ResolvedExtension
  */
 export type UnresolvedExtension<Config extends UnknownObject = UnknownObject> =
-  IExtension<Config> & {
+  ModComponentBase<Config> & {
     _unresolvedExtensionBrand: never;
   };
 
 /**
  * An extension that has been saved locally
- * @see IExtension
+ * @see ModComponentBase
  * @see UserExtension
  */
 export type ActivatedModComponent<
@@ -208,12 +208,12 @@ export type ActivatedModComponent<
 };
 
 /**
- * An `IExtension` with all inner definitions resolved.
+ * An `ModComponentBase` with all inner definitions resolved.
  * @see resolveDefinitions
  */
 export type ResolvedExtension<Config extends UnknownObject = UnknownObject> =
   Except<
-    IExtension<Config>,
+    ModComponentBase<Config>,
     // There's no definition section after resolution
     "definitions"
   > & {
@@ -230,7 +230,7 @@ export type ResolvedExtension<Config extends UnknownObject = UnknownObject> =
   };
 
 /**
- * A reference to an IExtension.
+ * A reference to an ModComponentBase.
  */
 export type ExtensionRef = {
   /**
@@ -250,15 +250,15 @@ export type ExtensionRef = {
 };
 
 /**
- * Select information about the ModDefinition used to install an IExtension
+ * Select information about the ModDefinition used to install an ModComponentBase
  *
  * TODO: move to extensionHelpers file once we have it
  *
- * @see IExtension._recipe
+ * @see ModComponentBase._recipe
  */
 export function selectSourceRecipeMetadata(
   recipeDefinition: ModDefinition
-): IExtension["_recipe"] {
+): ModComponentBase["_recipe"] {
   if (recipeDefinition.metadata?.id == null) {
     throw new TypeError("Expected a ModDefinition");
   }

@@ -29,7 +29,7 @@ import {
   type EditorRootState,
   type EditorState,
   ModalKey,
-  type RecipeMetadataFormState,
+  type ModMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -53,7 +53,7 @@ import {
   selectNotDeletedExtensions,
 } from "./editorSelectors";
 import {
-  type FormState,
+  type ModComponentFormState,
   isQuickBarExtensionPoint,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import reportError from "@/telemetry/reportError";
@@ -91,8 +91,8 @@ import {
 } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
 export const initialState: EditorState = {
@@ -342,7 +342,7 @@ export const editorSlice = createSlice({
     markEditable(state, action: PayloadAction<RegistryId>) {
       state.knownEditable.push(action.payload);
     },
-    addElement(state, action: PayloadAction<FormState>) {
+    addElement(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       state.inserting = null;
       state.elements.push(element);
@@ -363,7 +363,7 @@ export const editorSlice = createSlice({
       state.activeElementId = uuid;
       state.selectionSeq++;
     },
-    selectInstalled(state, action: PayloadAction<FormState>) {
+    selectInstalled(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
@@ -374,7 +374,7 @@ export const editorSlice = createSlice({
 
       activateElement(state, element);
     },
-    resetInstalled(state, actions: PayloadAction<FormState>) {
+    resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
       const element = actions.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
@@ -421,7 +421,7 @@ export const editorSlice = createSlice({
      * Sync the redux state with the form state.
      * Used on by the page editor to set changed version of the element in the store.
      */
-    editElement(state, action: PayloadAction<FormState>) {
+    editElement(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
@@ -438,7 +438,7 @@ export const editorSlice = createSlice({
      */
     updateElement(
       state,
-      action: PayloadAction<{ uuid: UUID } & Partial<FormState>>
+      action: PayloadAction<{ uuid: UUID } & Partial<ModComponentFormState>>
     ) {
       const { uuid, ...elementUpdate } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
@@ -554,12 +554,12 @@ export const editorSlice = createSlice({
     },
     editRecipeOptionsDefinitions(
       state,
-      action: PayloadAction<OptionsDefinition>
+      action: PayloadAction<ModOptionsDefinition>
     ) {
       const { payload: options } = action;
       editRecipeOptionsDefinitions(state, options);
     },
-    editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
+    editRecipeMetadata(state, action: PayloadAction<ModMetadataFormState>) {
       const { payload: metadata } = action;
       editRecipeMetadata(state, metadata);
     },
@@ -570,7 +570,7 @@ export const editorSlice = createSlice({
     },
     updateRecipeMetadataForElements(
       state,
-      action: PayloadAction<IExtension["_recipe"]>
+      action: PayloadAction<ModComponentBase["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeElements = state.elements.filter(
@@ -587,7 +587,7 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         elementId: UUID;
-        recipeMetadata: IExtension["_recipe"];
+        recipeMetadata: ModComponentBase["_recipe"];
         keepLocalCopy: boolean;
       }>
     ) {
@@ -706,8 +706,8 @@ export const editorSlice = createSlice({
       action: PayloadAction<{
         oldRecipeId: RegistryId;
         newRecipeId: RegistryId;
-        metadata: RecipeMetadataFormState;
-        options: OptionsDefinition;
+        metadata: ModMetadataFormState;
+        options: ModOptionsDefinition;
       }>
     ) {
       const { oldRecipeId, newRecipeId, metadata, options } = action.payload;

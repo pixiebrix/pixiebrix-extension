@@ -144,12 +144,12 @@ export type InitialValues = {
   input: UnknownObject;
   /**
    * Option values provided by the user during activation of an extension
-   * @see IExtension.optionsArgs
+   * @see ModComponentBase.optionsArgs
    */
   optionsArgs: OptionsArgs;
   /**
    * Service credentials provided by the user during activation of an extension
-   * @see IExtension.services
+   * @see ModComponentBase.services
    */
   serviceContext: ServiceContext;
   /**

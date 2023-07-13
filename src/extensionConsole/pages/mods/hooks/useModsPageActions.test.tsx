@@ -34,7 +34,7 @@ import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import {
   cloudExtensionFactory,
   extensionFactory,
@@ -403,7 +403,7 @@ describe("actions", () => {
         sharingType: "Personal",
         status: "Active",
       });
-      (modViewItem.mod as IExtension).id = extension.id;
+      (modViewItem.mod as ModComponentBase).id = extension.id;
 
       const {
         result: {

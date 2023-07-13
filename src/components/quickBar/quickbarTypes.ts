@@ -28,8 +28,8 @@ export type CustomAction = Action & {
    */
   extensionPointId?: RegistryId;
   /**
-   * The IExtension that added the action.
-   * @see IExtension
+   * The ModComponentBase that added the action.
+   * @see ModComponentBase
    */
   extensionId?: UUID;
 };
