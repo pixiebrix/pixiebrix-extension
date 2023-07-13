@@ -33,7 +33,7 @@ import {
   type OptionsState,
 } from "@/store/extensionsTypes";
 import { type Except } from "type-fest";
-import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
+import { assertModComponentNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import {
   type ModComponentBase,
@@ -176,7 +176,7 @@ const extensionsSlice = createSlice({
 
         const extension: Except<
           ActivatedModComponent,
-          "_unresolvedExtensionBrand"
+          "_unresolvedModComponentBrand"
         > = {
           id: extensionId,
           // Default to `v1` for backward compatability
@@ -215,7 +215,7 @@ const extensionsSlice = createSlice({
           extension.templateEngine = templateEngine;
         }
 
-        assertExtensionNotResolved(extension);
+        assertModComponentNotResolved(extension);
 
         // Display name is 'StarterBrickActivate' in telemetry
         reportEvent("ExtensionActivate", selectEventData(extension));
@@ -281,7 +281,7 @@ const extensionsSlice = createSlice({
 
       const extension: Except<
         ActivatedModComponent,
-        "_unresolvedExtensionBrand"
+        "_unresolvedModComponentBrand"
       > = {
         id,
         apiVersion,
@@ -298,7 +298,7 @@ const extensionsSlice = createSlice({
         active: true,
       };
 
-      assertExtensionNotResolved(extension);
+      assertModComponentNotResolved(extension);
 
       if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
