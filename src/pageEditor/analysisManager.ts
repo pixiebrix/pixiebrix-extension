@@ -37,7 +37,7 @@ import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { extensionToFormState } from "@/pageEditor/extensionPoints/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
@@ -54,7 +54,7 @@ const pageEditorAnalysisManager = new ReduxAnalysisManager();
  */
 export async function selectActiveModFormStates(
   state: RootState
-): Promise<FormState[]> {
+): Promise<ModComponentFormState[]> {
   const element = selectActiveElement(state);
 
   if (element?.recipe) {
@@ -167,7 +167,7 @@ async function varAnalysisFactory(
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
   state: RootState
 ) {
-  const records = selectActiveElementTraces(state);
+  const trace = selectActiveElementTraces(state);
   const extension = selectActiveElement(state);
 
   const modState = await getPageState(thisTab, {
@@ -176,7 +176,7 @@ async function varAnalysisFactory(
     blueprintId: extension.recipe?.id,
   });
 
-  return new VarAnalysis(records, modState);
+  return new VarAnalysis({ trace, modState });
 }
 
 // OutputKeyAnalysis seems to be the slowest one, so we register it in the end

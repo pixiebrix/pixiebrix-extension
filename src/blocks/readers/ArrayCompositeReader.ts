@@ -16,13 +16,13 @@
  */
 
 import { zip } from "lodash";
-import { type IReader, ReaderABC } from "@/types/bricks/readerTypes";
+import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 
 class ArrayCompositeReader extends ReaderABC {
-  private readonly _readers: IReader[];
+  private readonly _readers: Reader[];
 
-  constructor(readers: IReader[]) {
+  constructor(readers: Reader[]) {
     super(
       undefined,
       "Array Composite Reader",

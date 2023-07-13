@@ -43,7 +43,7 @@ import {
   TourExtensionPoint,
 } from "@/extensionPoints/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 
 function fromNativeElement(
   url: string,
@@ -90,7 +90,7 @@ function selectExtensionPointConfig(
 function selectExtension(
   state: TourFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<TourConfig> {
+): ModComponentBase<TourConfig> {
   const { extension } = state;
   const config: TourConfig = {
     tour: options.includeInstanceIds
@@ -112,7 +112,7 @@ function asDynamicElement(element: TourFormState): DynamicDefinition {
 }
 
 async function fromExtension(
-  config: IExtension<TourConfig>
+  config: ModComponentBase<TourConfig>
 ): Promise<TourFormState> {
   const extensionPoint = await lookupExtensionPoint<
     TourDefinition,

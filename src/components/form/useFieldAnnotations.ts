@@ -27,7 +27,7 @@ import {
   type AnalysisAnnotationAction,
   AnalysisAnnotationActionType,
 } from "@/analysis/analysisTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type FormikContextType } from "formik/dist/types";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
@@ -36,7 +36,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
-  formik: FormikContextType<FormState>
+  formik: FormikContextType<ModComponentFormState>
 ): FieldAnnotationAction {
   return {
     caption: action.caption,
@@ -69,7 +69,7 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     showFieldActions,
     ignoreAnalysisIds = [],
   } = useFormErrorSettings();
-  const formik = useFormikContext<FormState>();
+  const formik = useFormikContext<ModComponentFormState>();
 
   // TODO: We can probably split this into two hooks, one for analysis and one for formik,
   //  and then it might be possible to decouple the analysis one from formik. Need to

@@ -56,14 +56,14 @@ import { serializeError } from "serialize-error";
 import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
 import { type Schema } from "@/types/schemaTypes";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type SidebarConfig = {
@@ -240,7 +240,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
   private readonly refreshPanels = async ({
     shouldRunExtension = stubTrue,
   }: {
-    shouldRunExtension?: (extension: IExtension) => boolean;
+    shouldRunExtension?: (extension: ModComponentBase) => boolean;
   }): Promise<void> => {
     const extensionsToRefresh = this.extensions.filter((extension) =>
       shouldRunExtension(extension)
@@ -475,7 +475,7 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
     return true;
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     return mergeReaders(this.definition.reader);
   }
 

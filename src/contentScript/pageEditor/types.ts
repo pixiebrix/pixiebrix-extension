@@ -30,7 +30,7 @@ import {
   type MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { type ElementInfo } from "@/pageScript/frameworks";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -40,7 +40,7 @@ export interface DynamicDefinition<
 > {
   type: StarterBrickType;
   extensionPointConfig: StarterBrickConfig<TExtensionPoint>;
-  extension: IExtension<TExtension>;
+  extension: ModComponentBase<TExtension>;
 }
 
 export type SelectMode = "element" | "container";

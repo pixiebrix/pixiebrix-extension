@@ -176,7 +176,7 @@ export class TourEffect extends EffectABC {
         );
       }
 
-      // Try to identify the tour via step name. If step name is not provided, identify via IExtension.label.
+      // Try to identify the tour via step name. If step name is not provided, identify via ModComponentBase.label.
       // The Show Tour Brick is run as part of buttons/triggers, so the label won't affect the auto-run behavior
       // for tour extensions.
       markTourStart(

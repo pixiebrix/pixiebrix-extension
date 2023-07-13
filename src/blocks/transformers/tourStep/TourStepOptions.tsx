@@ -28,7 +28,7 @@ import {
 import { useField, useFormikContext } from "formik";
 import { type Expression, type PipelineExpression } from "@/types/runtimeTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -53,7 +53,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const { setFieldValue } = useFormikContext<FormState>();
+  const { setFieldValue } = useFormikContext<ModComponentFormState>();
 
   const configName = partial(joinName, name, configKey);
   const schemaFieldProps = (...parts: string[]) => ({

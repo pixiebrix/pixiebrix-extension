@@ -15,15 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentBase } from "@/types/extensionTypes";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { useEffect } from "react";
 
-type SidebarItem = ModComponentBase | ModComponentFormState;
+/**
+ * Basic keyboard shortcut hook. If we introduce more shortcuts, we should consider using a library.
+ * @param code the key code, e.g., "F5"
+ * @param callback the callback to call when the key is pressed.
+ */
+function useKeyboardShortcut(code: string, callback: () => void): void {
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      if (event.code === code) {
+        callback();
+      }
+    };
 
-export function getLabel(extension: ModComponentFormState): string {
-  return extension.label ?? extension.extensionPoint.metadata.name;
+    document.addEventListener("keydown", handleShortcut);
+
+    return () => {
+      document.removeEventListener("keydown", handleShortcut);
+    };
+  });
 }
 
-export function isExtension(value: SidebarItem): value is ModComponentBase {
-  return "extensionPointId" in value;
-}
+export default useKeyboardShortcut;

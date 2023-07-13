@@ -44,7 +44,7 @@ import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 
 function fromNativeElement(
   url: string,
@@ -120,7 +120,7 @@ function selectExtensionPointConfig(
 function selectExtension(
   state: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<TriggerConfig> {
+): ModComponentBase<TriggerConfig> {
   const { extension } = state;
   const config: TriggerConfig = {
     action: options.includeInstanceIds
@@ -142,7 +142,7 @@ function asDynamicElement(element: TriggerFormState): DynamicDefinition {
 }
 
 async function fromExtension(
-  config: IExtension<TriggerConfig>
+  config: ModComponentBase<TriggerConfig>
 ): Promise<TriggerFormState> {
   const extensionPoint = await lookupExtensionPoint<
     TriggerDefinition,

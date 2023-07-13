@@ -26,7 +26,7 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ResolvedExtension,
 } from "@/types/extensionTypes";
 import { type BrickOptions } from "@/types/runtimeTypes";
@@ -43,7 +43,7 @@ describe("runSubTour", () => {
       extension: {
         id: uuidv4(),
         label: "Test Extension",
-        _recipe: { id: blueprintId } as IExtension["_recipe"],
+        _recipe: { id: blueprintId } as ModComponentBase["_recipe"],
       } as ResolvedExtension,
       allowUserRun: false,
       run: () => ({

@@ -19,7 +19,7 @@ import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { GetAPITransformer } from "@/blocks/transformers/httpGet";
 import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isTemplateString } from "@/pageEditor/extensionPoints/upgrade";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { isAbsoluteUrl } from "@/utils";
@@ -136,7 +136,7 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     }
   }
 
-  override async run(extension: FormState): Promise<void> {
+  override async run(extension: ModComponentFormState): Promise<void> {
     super.run(extension);
 
     // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs

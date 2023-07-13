@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { type BrickConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
@@ -35,7 +35,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { type Target } from "@/types/messengerTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -62,12 +62,14 @@ export const thisTab: Target = {
   frameId: 0,
 };
 
-export function getIdForElement(element: IExtension | FormState): UUID {
+export function getIdForElement(
+  element: ModComponentBase | ModComponentFormState
+): UUID {
   return isExtension(element) ? element.id : element.uuid;
 }
 
 export function getRecipeIdForElement(
-  element: IExtension | FormState
+  element: ModComponentBase | ModComponentFormState
 ): RegistryId {
   return isExtension(element) ? element._recipe?.id : element.recipe?.id;
 }

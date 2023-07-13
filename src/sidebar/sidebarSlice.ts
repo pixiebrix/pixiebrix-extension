@@ -176,7 +176,7 @@ export function fixActiveTabOnRemove(
       const matchingMod = panels.find(
         ({ blueprintId }) =>
           "blueprintId" in removedEntry &&
-          // Need to check for removedEntry.blueprintId to avoid switching between IExtensions that don't have blueprint ids
+          // Need to check for removedEntry.blueprintId to avoid switching between ModComponentBases that don't have blueprint ids
           blueprintId === removedEntry.blueprintId &&
           blueprintId
       );

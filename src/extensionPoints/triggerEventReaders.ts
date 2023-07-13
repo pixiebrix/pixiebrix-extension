@@ -32,7 +32,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IReader, ReaderABC } from "@/types/bricks/readerTypes";
+import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { ensureJsonObject, isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
@@ -243,7 +243,7 @@ export function getShimEventReader(trigger: Trigger): unknown {
  * Return the reader for the `event` property of the trigger's input, or null if no event data is available.
  * @param trigger the trigger type
  */
-export function getEventReader(trigger: Trigger): IReader | null {
+export function getEventReader(trigger: Trigger): Reader | null {
   if (KEYBOARD_TRIGGERS.includes(trigger)) {
     return new KeyboardEventReader();
   }

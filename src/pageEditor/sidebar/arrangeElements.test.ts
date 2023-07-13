@@ -17,7 +17,7 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
@@ -49,7 +49,7 @@ const recipeBar: ModDefinition = recipeDefinitionFactory({
 
 // Extensions
 const ID_FOO_A = uuidv4();
-const installedFooA: IExtension = extensionFactory({
+const installedFooA: ModComponentBase = extensionFactory({
   id: ID_FOO_A,
   label: "A",
   _recipe: installedRecipeMetadataFactory({
@@ -73,7 +73,7 @@ const dynamicOrphanC: ActionFormState = menuItemFormStateFactory({
 });
 
 const ID_BAR_D = uuidv4();
-const installedBarD: IExtension = extensionFactory({
+const installedBarD: ModComponentBase = extensionFactory({
   id: ID_BAR_D,
   label: "D",
   _recipe: installedRecipeMetadataFactory({
@@ -91,7 +91,7 @@ const dynamicBarE: ActionFormState = menuItemFormStateFactory({
 });
 
 const ID_BAR_F = uuidv4();
-const installedBarF: IExtension = extensionFactory({
+const installedBarF: ModComponentBase = extensionFactory({
   id: ID_BAR_F,
   label: "F",
   _recipe: installedRecipeMetadataFactory({
@@ -100,13 +100,13 @@ const installedBarF: IExtension = extensionFactory({
 });
 
 const ID_ORPHAN_G = uuidv4();
-const installedOrphanG: IExtension = extensionFactory({
+const installedOrphanG: ModComponentBase = extensionFactory({
   id: ID_ORPHAN_G,
   label: "G",
 });
 
 const ID_ORPHAN_H = uuidv4();
-const installedOrphanH: IExtension = extensionFactory({
+const installedOrphanH: ModComponentBase = extensionFactory({
   id: ID_ORPHAN_H,
   label: "H",
 });

@@ -89,10 +89,9 @@ export function isVarLike(value: string): boolean {
     isVarValue(value) ||
     // User-just started typing a variable
     value === "@" ||
-    // User is accessing a sub property.
+    // User is starting to access a sub property.
     isVarValue(trimEndOnce(value, ".")) ||
-    // User is accessing an array index, or property with whitespace.
-    // Technically, this should only trim at most one bracket
+    // User is starting to access an array index, or property with whitespace.
     isVarValue(trimEndOnce(value, "["))
   ) {
     return true;

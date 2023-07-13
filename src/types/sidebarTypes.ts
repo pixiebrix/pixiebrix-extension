@@ -117,7 +117,7 @@ type BasePanelEntry = {
 };
 
 /**
- * A panel added to the page by an IExtension.
+ * A panel added to the page by an ModComponentBase.
  *
  * @see DisplayTemporaryInfo
  * @see SidebarExtensionPoint

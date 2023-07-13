@@ -28,7 +28,7 @@ import {
 import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ResolvedExtension,
   type UnresolvedExtension,
 } from "@/types/extensionTypes";
@@ -56,7 +56,7 @@ export function isExtension(mod: Mod): mod is ResolvedExtension {
 }
 
 /**
- * Return true if the mod is an IExtension that originated from a recipe.
+ * Return true if the mod is an ModComponentBase that originated from a recipe.
  * @param mod the mod
  */
 export function isExtensionFromRecipe(mod: Mod): boolean {
@@ -119,7 +119,7 @@ export function getPackageId(mod: Mod): RegistryId | null {
  */
 export function getUpdatedAt(mod: Mod): string | null {
   return isExtension(mod)
-    ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on IExtension here
+    ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on ModComponentBase here
       mod._recipe?.updated_at ?? mod.updateTimestamp
     : mod.updated_at;
 }
@@ -128,12 +128,12 @@ function isPublic(mod: Mod): boolean {
   return isExtension(mod) ? mod._recipe?.sharing?.public : mod.sharing.public;
 }
 
-function isPersonalExtension(extension: IExtension): boolean {
+function isPersonalExtension(extension: ModComponentBase): boolean {
   return !extension._recipe && !extension._deployment;
 }
 
 function hasSourceRecipeWithScope(
-  extension: IExtension,
+  extension: ModComponentBase,
   scope: string
 ): boolean {
   return scope && extension._recipe?.id.startsWith(scope + "/");

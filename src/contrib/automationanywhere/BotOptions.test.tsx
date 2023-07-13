@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -69,7 +69,7 @@ function makeBaseState() {
   return baseFormState;
 }
 
-function renderOptions(formState: FormState = makeBaseState()) {
+function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <BotOptions name="extension.blockPipeline.0" configKey="config" />

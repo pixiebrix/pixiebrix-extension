@@ -20,9 +20,12 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
   const [kind] = source.split(":");
   let label: string;
   if (
-    [KnownSources.INPUT, KnownSources.OPTIONS, KnownSources.SERVICE].includes(
-      kind as KnownSources
-    )
+    [
+      KnownSources.INPUT,
+      KnownSources.OPTIONS,
+      KnownSources.SERVICE,
+      KnownSources.MOD,
+    ].includes(kind as KnownSources)
   ) {
     switch (kind) {
       case KnownSources.INPUT: {
@@ -32,6 +35,11 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
 
       case KnownSources.OPTIONS: {
         label = "Mod Options";
+        break;
+      }
+
+      case KnownSources.MOD: {
+        label = "Mod Variables";
         break;
       }
 

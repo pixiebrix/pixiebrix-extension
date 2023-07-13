@@ -29,9 +29,9 @@ import {
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -86,7 +86,7 @@ const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
 
 export const selectNotDeletedElements: ({
   editor,
-}: EditorRootState) => FormState[] = createSelector(
+}: EditorRootState) => ModComponentFormState[] = createSelector(
   selectElements,
   selectAllDeletedElementIds,
   (elements, deletedElementIds) =>
@@ -95,7 +95,7 @@ export const selectNotDeletedElements: ({
 
 export const selectNotDeletedExtensions: ({
   options,
-}: ExtensionsRootState) => IExtension[] = createSelector(
+}: ExtensionsRootState) => ModComponentBase[] = createSelector(
   selectExtensions,
   selectAllDeletedElementIds,
   (extensions, deletedElementIds) =>
@@ -204,10 +204,10 @@ export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,
   selectExtensions,
   (elements, extensions) => {
-    const elementRecipes: Array<IExtension["_recipe"]> = elements
+    const elementRecipes: Array<ModComponentBase["_recipe"]> = elements
       .filter((element) => Boolean(element.recipe))
       .map((element) => element.recipe);
-    const extensionRecipes: Array<IExtension["_recipe"]> = extensions
+    const extensionRecipes: Array<ModComponentBase["_recipe"]> = extensions
       .filter((extension) => Boolean(extension._recipe))
       .map((extension) => extension._recipe);
 

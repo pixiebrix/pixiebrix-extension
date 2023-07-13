@@ -16,7 +16,7 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -118,7 +118,7 @@ function selectExtensionPointConfig(
 function selectExtension(
   state: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<MenuItemExtensionConfig> {
+): ModComponentBase<MenuItemExtensionConfig> {
   const { extension } = state;
   const config: MenuItemExtensionConfig = {
     caption: extension.caption,
@@ -137,7 +137,7 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: IExtension<MenuItemExtensionConfig>
+  config: ModComponentBase<MenuItemExtensionConfig>
 ): Promise<ActionFormState> {
   const extensionPoint = await lookupExtensionPoint<
     MenuDefinition,

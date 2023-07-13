@@ -47,14 +47,14 @@ import {
   selectActiveRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
 import { type UUID } from "@/types/stringTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/extensionTypes";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
  * @see DynamicEntry
  */
 const InstalledEntry: React.FunctionComponent<{
-  extension: IExtension;
+  extension: ModComponentBase;
   recipes: ModDefinition[];
   isAvailable: boolean;
   isNested?: boolean;
@@ -76,7 +76,7 @@ const InstalledEntry: React.FunctionComponent<{
     !isActive && recipeId && extension._recipe?.id === recipeId;
 
   const selectHandler = useCallback(
-    async (extension: IExtension) => {
+    async (extension: ModComponentBase) => {
       try {
         reportEvent("PageEditorOpen", {
           sessionId,

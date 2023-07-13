@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- Formik just needed as wrapper
 import { Formik } from "formik";
@@ -34,7 +34,7 @@ function makeBaseState() {
   return baseFormState;
 }
 
-function renderOptions(formState: FormState = makeBaseState()) {
+function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <TourStepOptions name="extension.blockPipeline.0" configKey="config" />

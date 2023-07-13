@@ -57,7 +57,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
@@ -166,7 +166,7 @@ export abstract class PanelExtensionPoint extends StarterBrickABC<PanelConfig> {
     console.warn("removeExtensions not implemented for panel extensionPoint");
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     throw new Error("PanelExtensionPoint.defaultReader not implemented");
   }
 
@@ -526,7 +526,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     };
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     return mergeReaders(this._definition.reader);
   }
 

@@ -24,7 +24,7 @@ import {
   type VisitPipelineExtra,
 } from "@/blocks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
@@ -106,11 +106,11 @@ export enum KnownSources {
 }
 
 /**
- * Set availability of variables based on the integrations used by the IExtension
+ * Set availability of variables based on the integrations used by the ModComponentBase
  * @see makeServiceContext
  */
 async function setServiceVars(
-  extension: FormState,
+  extension: ModComponentFormState,
   contextVars: VarMap
 ): Promise<void> {
   // Loop through all the services so we can set the source each service variable properly
@@ -128,7 +128,7 @@ async function setServiceVars(
  * Set the input variables from the ExtensionPoint definition (aka starter brick).
  */
 async function setInputVars(
-  extension: FormState,
+  extension: ModComponentFormState,
   contextVars: VarMap
 ): Promise<void> {
   const adapter = ADAPTERS.get(extension.extensionPoint.definition.type);
@@ -293,7 +293,7 @@ function setVarsFromSchema({
  * Set the options variables from the blueprint option definitions.
  */
 async function setOptionsVars(
-  extension: FormState,
+  extension: ModComponentFormState,
   contextVars: VarMap
 ): Promise<void> {
   if (extension.recipe == null) {
@@ -340,6 +340,17 @@ async function setModVariables(
 }
 
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
+  /**
+   * The current trace, or empty if there is no trace.
+   * @private
+   */
+  private readonly trace: TraceRecord[];
+
+  /**
+   * The current mod page state
+   */
+  private readonly modState: UnknownObject;
+
   /**
    * Accumulator for known variables at each block visited. Mapping from block path to VarMap.
    * @see VarMap
@@ -415,11 +426,16 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * @param trace the trace for the latest run of the extension
    * @param modState the current mod page state
    */
-  constructor(
-    private readonly trace: TraceRecord[],
-    private readonly modState: UnknownObject
-  ) {
+  constructor({
+    trace,
+    modState,
+  }: {
+    trace: TraceRecord[];
+    modState: UnknownObject;
+  }) {
     super();
+    this.trace = trace;
+    this.modState = modState;
   }
 
   /**
@@ -449,7 +465,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         x.templateContext != null
     );
 
-    if (traceRecord != null) {
+    if (traceRecord?.templateContext != null) {
       blockKnownVars.setExistenceFromValues({
         source: KnownSources.TRACE,
         values: traceRecord.templateContext,
@@ -607,7 +623,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     this.contextStack.pop();
   }
 
-  async run(extension: FormState): Promise<void> {
+  async run(extension: ModComponentFormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();
 
     // Order of the following calls will determine the order of the sources in the UI

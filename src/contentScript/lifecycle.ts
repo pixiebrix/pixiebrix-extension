@@ -100,10 +100,10 @@ const injectPageScriptOnce = once(async (): Promise<void> => {
 });
 
 /**
- * Run an extension point and specified IExtensions.
+ * Run an extension point and specified ModComponentBases.
  * @param extensionPoint the extension point to install/run
  * @param reason the reason code for the run
- * @param extensionIds the IExtensions to run on the extension point, or undefined to run all IExtensions
+ * @param extensionIds the ModComponentBases to run on the extension point, or undefined to run all ModComponentBases
  * @param abortSignal abort signal to cancel the install/run
  */
 async function runExtensionPoint(

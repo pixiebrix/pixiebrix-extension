@@ -100,7 +100,7 @@ function useModViewItems(mods: Mod[]): {
       (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe])
     );
 
-    // Pick any IExtension from the blueprint to check for updates. All of their versions should be the same.
+    // Pick any ModComponentBase from the blueprint to check for updates. All of their versions should be the same.
     const extensionsMap = new Map(
       installedExtensions
         .filter((x) => x._recipe?.id)

@@ -23,23 +23,67 @@ type LikelyVariable = {
   endIndex: number;
 };
 
-// This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
+/**
+ * Returns the variable expression at the position in the path. Excludes characters after the cursor to allow the user
+ * to use the cursor to navigate the variable popover/refine the search.
+ * @param path the variable path.
+ * @param position the cursor position in the variable entry text control
+ */
+export function getVariableAtPosition(path: string, position: number): string {
+  return path.slice(0, position);
+}
+
+/**
+ * Returns the likely variable path at the given cursor position in the template
+ * @param template the text template
+ * @param position the cursor position in the template
+ * @param clampCursor if true, the endIndex/name will be clamped to the cursor position
+ * @param includeBoundary if true, match a variable if the cursor is at the variable boundary
+ */
 export function getLikelyVariableAtPosition(
   template: string,
-  position: number
+  position: number,
+  {
+    clampPosition = false,
+    includeBoundary = false,
+  }: { clampPosition?: boolean; includeBoundary?: boolean } = {}
 ): LikelyVariable {
+  // Cursor is at whitespace, detect if the cursor is at the end of the variable
+  const matchPosition =
+    includeBoundary && [" ", null].includes(template.at(position))
+      ? position - 1
+      : position;
+
+  // This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
   let match = varRegex.exec(template);
   while (match !== null) {
     const { varName } = match.groups;
     const startIndex = match.index;
-    const endIndex = startIndex + varName.length;
-    if (startIndex <= position && position <= endIndex) {
+    const variableEndIndex = startIndex + varName.length;
+    if (startIndex <= matchPosition && matchPosition <= variableEndIndex) {
       varRegex.lastIndex = 0;
+
+      if (clampPosition) {
+        if (startIndex === matchPosition) {
+          return {
+            name: varName.slice(0, 1),
+            startIndex,
+            endIndex: startIndex + 1,
+          };
+        }
+
+        const trimAmount = variableEndIndex - position;
+        return {
+          name: varName.slice(0, varName.length - trimAmount),
+          startIndex,
+          endIndex: Math.min(variableEndIndex, position),
+        };
+      }
 
       return {
         name: varName,
         startIndex,
-        endIndex,
+        endIndex: variableEndIndex,
       };
     }
 

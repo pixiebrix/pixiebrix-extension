@@ -25,7 +25,7 @@ import { type BrickIcon } from "@/types/iconTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -218,9 +218,9 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     }
   }
 
-  abstract defaultReader(): Promise<IReader>;
+  abstract defaultReader(): Promise<Reader>;
 
-  async previewReader(): Promise<IReader> {
+  async previewReader(): Promise<Reader> {
     return this.defaultReader();
   }
 
