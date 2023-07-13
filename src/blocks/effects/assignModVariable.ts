@@ -34,7 +34,6 @@ class AssignModVariable extends EffectABC {
       },
       value: {
         title: "Value",
-        type: ["null", "number", "string", "object"],
         description: "The value to assign to the variable.",
         additionalProperties: true,
       },
