@@ -83,7 +83,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 
 interface ShadowDOM {
@@ -1119,7 +1119,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     return document;
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     return mergeReaders(this._definition.reader);
   }
 

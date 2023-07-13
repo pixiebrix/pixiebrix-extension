@@ -63,7 +63,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
 export type SidebarConfig = {
@@ -475,7 +475,7 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
     return true;
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     return mergeReaders(this.definition.reader);
   }
 

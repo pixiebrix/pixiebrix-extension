@@ -21,7 +21,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -54,19 +54,19 @@ export type StarterBrick = Metadata & {
   permissions: Permissions.Permissions;
 
   /**
-   * Return the IReader used by the extension point. This method should only be called for calculating availability
+   * Return the Reader used by the extension point. This method should only be called for calculating availability
    * and the schema, as it may include stub readers.
    *
    * @see StarterBrick.previewReader
    */
-  defaultReader: () => Promise<IReader>;
+  defaultReader: () => Promise<Reader>;
 
   /**
-   * Return a IReader for generated an `@input` preview. The shape will correspond to defaultReader, but some
+   * Return a Reader for generated an `@input` preview. The shape will correspond to defaultReader, but some
    * properties may not be available
    * @see defaultReader
    */
-  previewReader: () => Promise<IReader>;
+  previewReader: () => Promise<Reader>;
 
   /**
    * Return true if the extension point is available on the current page. Based on:

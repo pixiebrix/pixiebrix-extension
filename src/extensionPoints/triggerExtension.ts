@@ -68,7 +68,7 @@ import {
   pickEventProperties,
 } from "@/extensionPoints/triggerEventReaders";
 import CompositeReader from "@/blocks/readers/CompositeReader";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -141,7 +141,7 @@ export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfi
 
   abstract get triggerSelector(): string | null;
 
-  abstract getBaseReader(): Promise<IReader>;
+  abstract getBaseReader(): Promise<Reader>;
 
   /**
    * Map from extension ID to elements a trigger is currently running on.
@@ -280,7 +280,7 @@ export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfi
     return selectAllBlocks(extension.config.action);
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     const eventReader = getEventReader(this.trigger);
 
     return new ArrayCompositeReader(
@@ -293,8 +293,8 @@ export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfi
     );
   }
 
-  override async previewReader(): Promise<IReader> {
-    const shim = getShimEventReader(this.trigger) as IReader;
+  override async previewReader(): Promise<Reader> {
+    const shim = getShimEventReader(this.trigger) as Reader;
 
     return new ArrayCompositeReader(
       compact([
@@ -910,7 +910,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
     return this._definition.background ?? false;
   }
 
-  override async getBaseReader(): Promise<IReader> {
+  override async getBaseReader(): Promise<Reader> {
     return mergeReaders(this._definition.reader);
   }
 

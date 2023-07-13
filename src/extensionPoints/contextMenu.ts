@@ -61,7 +61,7 @@ import {
 } from "@/extensionPoints/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -130,7 +130,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
     return true;
   }
 
-  abstract getBaseReader(): Promise<IReader>;
+  abstract getBaseReader(): Promise<Reader>;
 
   abstract get targetMode(): ContextMenuTargetMode;
 
@@ -190,17 +190,17 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
     return available;
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     return new ArrayCompositeReader([
       await this.getBaseReader(),
       new ContextMenuReader(),
     ]);
   }
 
-  override async previewReader(): Promise<IReader> {
+  override async previewReader(): Promise<Reader> {
     return new ArrayCompositeReader([
       await this.getBaseReader(),
-      contextMenuReaderShim as unknown as IReader,
+      contextMenuReaderShim as unknown as Reader,
     ]);
   }
 

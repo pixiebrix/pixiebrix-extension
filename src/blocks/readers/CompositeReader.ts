@@ -16,13 +16,13 @@
  */
 
 import { mapValues } from "lodash";
-import { type IReader, ReaderABC } from "@/types/bricks/readerTypes";
+import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 
 class CompositeReader extends ReaderABC {
-  private readonly _readers: Record<string, IReader>;
+  private readonly _readers: Record<string, Reader>;
 
-  constructor(readers: Record<string, IReader>) {
+  constructor(readers: Record<string, Reader>) {
     super(undefined, "Composite Reader", "Combination of multiple readers");
     this._readers = readers;
     this.outputSchema = {
@@ -59,7 +59,7 @@ class CompositeReader extends ReaderABC {
   }
 
   async read(root: HTMLElement | Document): Promise<JsonObject> {
-    const readOne = async (key: string, reader: IReader) => [
+    const readOne = async (key: string, reader: Reader) => [
       key,
       await reader.read(root),
     ];

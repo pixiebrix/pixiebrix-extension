@@ -56,7 +56,7 @@ import {
   quickbarQueryReaderShim,
 } from "@/extensionPoints/quickbarQueryReader";
 import { type IconConfig } from "@/types/iconTypes";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -99,7 +99,7 @@ export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<Qui
     return (extensionPoint as any)?._definition?.type === "quickBarProvider";
   }
 
-  abstract getBaseReader(): Promise<IReader>;
+  abstract getBaseReader(): Promise<Reader>;
 
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
 
@@ -167,7 +167,7 @@ export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<Qui
     return true;
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     return new ArrayCompositeReader([
       // Include QuickbarQueryReader for the outputSchema. The value gets filled in by the run method
       new QuickbarQueryReader(),
@@ -175,9 +175,9 @@ export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<Qui
     ]);
   }
 
-  override async previewReader(): Promise<IReader> {
+  override async previewReader(): Promise<Reader> {
     return new ArrayCompositeReader([
-      quickbarQueryReaderShim as unknown as IReader,
+      quickbarQueryReaderShim as unknown as Reader,
       await this.getBaseReader(),
     ]);
   }

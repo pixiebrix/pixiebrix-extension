@@ -55,7 +55,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type IconConfig } from "@/types/iconTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
-import { type IReader } from "@/types/bricks/readerTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -88,7 +88,7 @@ export abstract class QuickBarExtensionPoint extends StarterBrickABC<QuickBarCon
 
   abstract get targetMode(): QuickBarTargetMode;
 
-  abstract getBaseReader(): Promise<IReader>;
+  abstract getBaseReader(): Promise<Reader>;
 
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
 
@@ -143,7 +143,7 @@ export abstract class QuickBarExtensionPoint extends StarterBrickABC<QuickBarCon
     return true;
   }
 
-  override async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<Reader> {
     return this.getBaseReader();
   }
 

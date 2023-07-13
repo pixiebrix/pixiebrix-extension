@@ -23,7 +23,7 @@ import { type Schema } from "@/types/schemaTypes";
 /**
  * A block that can read data from a page or part of the page.
  */
-export interface IReader extends Brick {
+export interface Reader extends Brick {
   /** Return true if the Reader is for a page/element. */
   isAvailable: ($elements?: JQuery) => Promise<boolean>;
 
@@ -33,7 +33,7 @@ export interface IReader extends Brick {
 /**
  * Abstract base class for Readers.
  */
-export abstract class ReaderABC extends BrickABC implements IReader {
+export abstract class ReaderABC extends BrickABC implements Reader {
   readonly inputSchema: Schema = {};
 
   override outputSchema: Schema = undefined;

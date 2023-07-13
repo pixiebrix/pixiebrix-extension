@@ -87,7 +87,7 @@ export const clearPackages = async () => {
 /**
  * Brick registry, with remote bricks backed by IDB.
  */
-export class Registry<
+export class MemoryRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>
 > {
@@ -350,4 +350,4 @@ export class Registry<
   }
 }
 
-export default Registry;
+export default MemoryRegistry;
