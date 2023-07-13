@@ -40,7 +40,7 @@ import { type TourFormState } from "./formStateTypes";
 import {
   type TourConfig,
   type TourDefinition,
-  TourExtensionPoint,
+  TourStarterBrickABC,
 } from "@/extensionPoints/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
 import { type ModComponentBase } from "@/types/extensionTypes";
@@ -148,7 +148,7 @@ const config: ElementConfig<undefined, TourFormState> = {
   displayOrder: 8,
   elementType: "tour",
   label: "Tour",
-  baseClass: TourExtensionPoint,
+  baseClass: TourStarterBrickABC,
   flag: "pageeditor-tour",
   EditorNode: TourConfiguration,
   selectNativeElement: undefined,

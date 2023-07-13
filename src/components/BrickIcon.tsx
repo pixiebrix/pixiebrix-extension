@@ -30,11 +30,11 @@ import {
   faRandom,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
-import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
-import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
-import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
-import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
+import { TriggerStarterBrickABC } from "@/extensionPoints/triggerExtension";
+import { MenuItemStarterBrickABC } from "@/extensionPoints/menuItemExtension";
+import { ContextMenuStarterBrickABC } from "@/extensionPoints/contextMenu";
+import { PanelStarterBrickABC } from "@/extensionPoints/panelExtension";
+import { SidebarStarterBrickABC } from "@/extensionPoints/sidebarExtension";
 import { appApi } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import { useAsyncIcon } from "@/components/asyncIcon";
@@ -70,23 +70,23 @@ function getDefaultBrickIcon(brick: IBrick, blockType: BrickType): IconProp {
     }
   }
 
-  if (brick instanceof TriggerExtensionPoint) {
+  if (brick instanceof TriggerStarterBrickABC) {
     return faBolt;
   }
 
-  if (brick instanceof MenuItemExtensionPoint) {
+  if (brick instanceof MenuItemStarterBrickABC) {
     return faMousePointer;
   }
 
-  if (brick instanceof ContextMenuExtensionPoint) {
+  if (brick instanceof ContextMenuStarterBrickABC) {
     return faBars;
   }
 
-  if (brick instanceof PanelExtensionPoint) {
+  if (brick instanceof PanelStarterBrickABC) {
     return faWindowMaximize;
   }
 
-  if (brick instanceof SidebarExtensionPoint) {
+  if (brick instanceof SidebarStarterBrickABC) {
     return faColumns;
   }
 

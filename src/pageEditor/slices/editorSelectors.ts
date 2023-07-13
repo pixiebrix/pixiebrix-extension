@@ -28,7 +28,7 @@ import {
   type ElementUIState,
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
 import { type ModComponentBase } from "@/types/extensionTypes";
@@ -95,7 +95,7 @@ export const selectNotDeletedElements: ({
 
 export const selectNotDeletedExtensions: ({
   options,
-}: ExtensionsRootState) => ModComponentBase[] = createSelector(
+}: ModComponentsRootState) => ModComponentBase[] = createSelector(
   selectExtensions,
   selectAllDeletedElementIds,
   (extensions, deletedElementIds) =>

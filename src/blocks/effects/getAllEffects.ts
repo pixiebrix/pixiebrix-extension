@@ -51,6 +51,7 @@ import SubmitPanelEffect from "@/blocks/effects/submitPanel";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
 import { type Brick } from "@/types/brickTypes";
 import PostMessageEffect from "@/blocks/effects/postMessage";
+import AssignModVariable from "@/blocks/effects/assignModVariable";
 
 function getAllEffects(): Brick[] {
   return [
@@ -70,6 +71,7 @@ function getAllEffects(): Brick[] {
     new AlertEffect(),
     new GetPageState(),
     new SetPageState(),
+    new AssignModVariable(),
     new HideEffect(),
     new ExportCsv(),
     new HideSidebar(),

@@ -73,7 +73,7 @@ import { PromiseCancelled } from "@/errors/genericErrors";
 import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import {
@@ -104,7 +104,7 @@ const DATA_ATTR = "data-pb-uuid";
 
 const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1000;
 
-export type MenuItemExtensionConfig = {
+export type MenuItemStarterBrickConfig = {
   /**
    * The button caption to supply to the `caption` in the extension point template.
    * If `dynamicCaption` is true, can include template expressions.
@@ -177,7 +177,7 @@ async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
 
 type MenuTargetMode = "document" | "eventTarget";
 
-export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExtensionConfig> {
+export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemStarterBrickConfig> {
   /**
    * Mapping of menu container nonce UUID to the DOM element for the menu container
    * @protected
@@ -200,7 +200,7 @@ export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExt
   /**
    * Map from extension id to callback to cancel observers for its dependencies.
    *
-   * @see MenuItemExtensionConfig.dependencies
+   * @see MenuItemStarterBrickConfig.dependencies
    * @private
    */
   private readonly cancelDependencyObservers: Map<UUID, () => void>;
@@ -213,7 +213,7 @@ export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExt
 
   /**
    * Mapping from extension id to the set of menu items that have been clicked and still running.
-   * @see MenuItemExtensionConfig.synchronous
+   * @see MenuItemStarterBrickConfig.synchronous
    * @private
    */
   private readonly runningExtensionElements = new Map<
@@ -402,7 +402,7 @@ export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExt
   }
 
   async getBlocks(
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -566,13 +566,13 @@ export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExt
 
   protected abstract makeItem(
     html: string,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
   ): JQuery;
 
   private async runExtension(
     menu: HTMLElement,
     ctxtPromise: Promise<JsonObject>,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
   ) {
     if (!extension.id) {
       this.logger.error(`Refusing to run mod without id for ${this.id}`);
@@ -775,7 +775,7 @@ export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExt
   }
 
   watchDependencies(
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
   ): void {
     const { dependencies = [] } = extension.config;
 
@@ -991,7 +991,7 @@ export interface MenuDefinition extends StarterBrickDefinition {
   attachMode?: AttachMode;
 }
 
-export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
+export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
   private readonly _definition: MenuDefinition;
 
   public readonly permissions: Permissions.Permissions;
@@ -1141,7 +1141,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   protected makeItem(
     unsanitizedHTML: string,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
   ): JQuery {
     const sanitizedHTML = sanitize(unsanitizedHTML);
 

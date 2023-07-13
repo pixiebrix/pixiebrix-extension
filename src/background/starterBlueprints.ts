@@ -21,7 +21,7 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
-import { type ExtensionOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce, uniq } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
@@ -88,10 +88,10 @@ export async function getBuiltInAuthsByRequiredServiceIds(
 }
 
 function installBlueprint(
-  state: ExtensionOptionsState,
+  state: ModComponentOptionsState,
   blueprint: ModDefinition,
   services: Record<RegistryId, UUID>
-): ExtensionOptionsState {
+): ModComponentOptionsState {
   return reducer(
     state,
     actions.installRecipe({

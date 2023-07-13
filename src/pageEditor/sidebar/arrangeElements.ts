@@ -19,10 +19,10 @@ import { groupBy, lowerCase, sortBy } from "lodash";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   type ModComponentFormState,
-  isFormState,
+  isModComponentFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getRecipeById } from "@/pageEditor/utils";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -49,13 +49,13 @@ function arrangeElements({
   const elementIds = new Set(elements.map((formState) => formState.uuid));
 
   const queryFilter = (item: ModComponentBase | ModComponentFormState) => {
-    const recipe = isFormState(item) ? item.recipe : item._recipe;
+    const recipe = isModComponentFormState(item) ? item.recipe : item._recipe;
     const queryName = recipe?.name ?? item.label;
 
     return (
       activeRecipeId === recipe?.id ||
       query.length === 0 ||
-      (isFormState(item) && activeElementId === item.uuid) ||
+      (isModComponentFormState(item) && activeElementId === item.uuid) ||
       (query.length > 0 && lowerCase(queryName).includes(lowerCase(query)))
     );
   };
@@ -73,7 +73,9 @@ function arrangeElements({
   const grouped = groupBy(
     [...filteredExtensions, ...filteredDynamicElements],
     (extension) =>
-      isExtension(extension) ? extension._recipe?.id : extension.recipe?.id
+      isModComponentBase(extension)
+        ? extension._recipe?.id
+        : extension.recipe?.id
   );
 
   const _elementsByRecipeId = new Map<string, Element[]>(
@@ -105,7 +107,7 @@ function arrangeElements({
 
     // Look for a recipe name in the elements/extensions in case recipes are still loading
     for (const element of elements) {
-      const name = isExtension(element)
+      const name = isModComponentBase(element)
         ? element._recipe?.name
         : element.recipe?.name;
       if (name) {

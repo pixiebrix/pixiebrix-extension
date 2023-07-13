@@ -63,7 +63,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
@@ -125,7 +125,7 @@ function installMouseHandlerOnce(): void {
 /**
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
-export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextMenuConfig> {
+export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<ContextMenuConfig> {
   public override get syncInstall() {
     return true;
   }
@@ -163,7 +163,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
   );
 
   async getBlocks(
-    extension: ResolvedExtension<ContextMenuConfig>
+    extension: ResolvedModComponent<ContextMenuConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -206,7 +206,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
 
   async ensureMenu(
     extension: Pick<
-      ResolvedExtension<ContextMenuConfig>,
+      ResolvedModComponent<ContextMenuConfig>,
       "id" | "config" | "_deployment"
     >
   ): Promise<void> {
@@ -234,7 +234,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
     console.debug(
       "Registering",
       this.extensions.length,
-      "contextMenu extension points"
+      "contextMenu starter bricks"
     );
 
     const results = await Promise.allSettled(
@@ -299,7 +299,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
   }
 
   private async registerExtension(
-    extension: ResolvedExtension<ContextMenuConfig>
+    extension: ResolvedModComponent<ContextMenuConfig>
   ): Promise<void> {
     const { action: actionConfig, onSuccess = {} } = extension.config;
 
@@ -386,7 +386,7 @@ export interface MenuDefinition extends StarterBrickDefinition {
   defaultOptions?: MenuDefaultOptions;
 }
 
-class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
+class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
   private readonly _definition: MenuDefinition;
 
   public readonly permissions: Permissions.Permissions;

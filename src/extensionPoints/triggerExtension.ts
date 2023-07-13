@@ -70,7 +70,7 @@ import {
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
@@ -122,7 +122,7 @@ async function interval({
   console.debug("interval:completed");
 }
 
-export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfig> {
+export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConfig> {
   abstract get trigger(): Trigger;
 
   abstract get attachMode(): AttachMode;
@@ -275,7 +275,7 @@ export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfi
   });
 
   async getBlocks(
-    extension: ResolvedExtension<TriggerConfig>
+    extension: ResolvedModComponent<TriggerConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -306,7 +306,7 @@ export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfi
 
   private async runExtension(
     ctxt: JsonObject,
-    extension: ResolvedExtension<TriggerConfig>,
+    extension: ResolvedModComponent<TriggerConfig>,
     root: SelectorRoot
   ) {
     const extensionLogger = this.logger.childLogger(
@@ -467,7 +467,7 @@ export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfi
       x.status === "fulfilled" ? x.value : x.reason
     );
 
-    TriggerExtensionPoint.notifyErrors(errors);
+    TriggerStarterBrickABC.notifyErrors(errors);
   };
 
   /**
@@ -847,7 +847,7 @@ export interface TriggerDefinition extends StarterBrickDefinition {
   debounce?: DebounceOptions;
 }
 
-class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
+class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
   private readonly _definition: TriggerDefinition;
 
   public readonly permissions: Permissions.Permissions;

@@ -23,6 +23,7 @@ import { type Except } from "type-fest";
 import { memoizeUntilSettled } from "@/utils";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -45,19 +46,19 @@ export type Kind =
   | "extensionPoint"
   | "recipe";
 
-export type Package = {
+type PackageVersion = {
   id: string;
   version: Version;
   kind: Kind;
   scope: string;
-  config: Record<string, unknown>;
+  config: UnknownObject;
   rawConfig: string | null;
   timestamp: Date;
 };
 
-interface BrickDB extends DBSchema {
+interface RegistryDB extends DBSchema {
   [BRICK_STORE]: {
-    value: Package;
+    value: PackageVersion;
     key: [string, number, number, number];
     indexes: {
       id: string;
@@ -69,12 +70,12 @@ interface BrickDB extends DBSchema {
   };
 }
 
-async function getBrickDB() {
+async function getRegistryDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
-  let database: IDBPDatabase<BrickDB> | null = null;
+  let database: IDBPDatabase<RegistryDB> | null = null;
 
-  database = await openDB<BrickDB>(DATABASE_NAME, VERSION, {
+  database = await openDB<RegistryDB>(DATABASE_NAME, VERSION, {
     upgrade(db) {
       // Create a store of objects
       const store = db.createObjectStore(BRICK_STORE, {
@@ -106,7 +107,7 @@ async function getBrickDB() {
   return database;
 }
 
-function latestVersion(versions: Package[]): Package | null {
+function latestVersion(versions: PackageVersion[]): PackageVersion | null {
   return versions.length > 0
     ? sortBy(
         versions,
@@ -121,8 +122,8 @@ function latestVersion(versions: Package[]): Package | null {
  * Return all packages for the given kinds
  * @param kinds kinds of bricks
  */
-export async function getByKinds(kinds: Kind[]): Promise<Package[]> {
-  const db = await getBrickDB();
+export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
+  const db = await getRegistryDB();
 
   const bricks = flatten(
     await Promise.all(
@@ -139,7 +140,7 @@ export async function getByKinds(kinds: Kind[]): Promise<Package[]> {
  * Clear the brick definition registry
  */
 export async function clear(): Promise<void> {
-  const db = await getBrickDB();
+  const db = await getRegistryDB();
   await db.clear(BRICK_STORE);
 }
 
@@ -172,7 +173,7 @@ export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME);
 
   // Open the database to recreate it
-  await getBrickDB();
+  await getRegistryDB();
 
   // Re-populate the packages from the remote registry
   await syncPackages();
@@ -182,7 +183,7 @@ export async function recreateDB(): Promise<void> {
  * Return the number of records in the registry.
  */
 export async function count(): Promise<number> {
-  const db = await getBrickDB();
+  const db = await getRegistryDB();
   return db.count(BRICK_STORE);
 }
 
@@ -190,8 +191,8 @@ export async function count(): Promise<number> {
  * Replace all packages in the local database.
  * @param packages the packages to put in the database
  */
-async function replaceAll(packages: Package[]): Promise<void> {
-  const db = await getBrickDB();
+async function replaceAll(packages: PackageVersion[]): Promise<void> {
+  const db = await getRegistryDB();
   const tx = db.transaction(BRICK_STORE, "readwrite");
 
   await tx.store.clear();
@@ -202,7 +203,7 @@ async function replaceAll(packages: Package[]): Promise<void> {
 
 export function parsePackage(
   item: RegistryPackage
-): Except<Package, "timestamp"> {
+): Except<PackageVersion, "timestamp"> {
   const [major, minor, patch] = item.metadata.version
     .split(".")
     .map((x) => Number.parseInt(x, 10));
@@ -224,7 +225,7 @@ export function parsePackage(
  * Return the latest version of a brick, or null if it's not found.
  * @param id the registry id
  */
-export async function find(id: string): Promise<Package | null> {
+export async function find(id: string): Promise<PackageVersion | null> {
   if (id == null) {
     throw new Error("id is required");
   }
@@ -234,7 +235,7 @@ export async function find(id: string): Promise<Package | null> {
     throw new Error("invalid brick id");
   }
 
-  const db = await getBrickDB();
+  const db = await getRegistryDB();
   const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
   return latestVersion(versions);
 }

@@ -20,8 +20,8 @@ import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import {
-  type ExtensionOptionsState,
-  type ExtensionsRootState,
+  type ModComponentOptionsState,
+  type ModComponentsRootState,
 } from "@/store/extensionsTypes";
 import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 import { cloudExtensionFactory } from "@/testUtils/factories/extensionFactories";
@@ -56,8 +56,8 @@ test("uninstalls recipe extensions", async () => {
   });
 
   const expectedExtension = (
-    (getReduxStore().getState() as ExtensionsRootState)
-      .options as ExtensionOptionsState
+    (getReduxStore().getState() as ModComponentsRootState)
+      .options as ModComponentOptionsState
   ).extensions[0];
 
   await act(async () => reinstall(recipe));

@@ -28,7 +28,7 @@ import {
   fromJS,
   type MenuDefinition,
 } from "@/extensionPoints/contextMenu";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
@@ -55,9 +55,9 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedExtension<ContextMenuConfig>>({
+const extensionFactory = define<ResolvedModComponent<ContextMenuConfig>>({
   apiVersion: "v3",
-  _resolvedExtensionBrand: undefined,
+  _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/extension-point-${n}`),

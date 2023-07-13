@@ -51,7 +51,7 @@ export type SemVerString = string & {
 };
 
 /**
- * Metadata about a block, extension point, service, or recipe.
+ * Metadata about a Brick, StarterBrick, Integration, or recipe.
  */
 export interface Metadata {
   /**
@@ -66,7 +66,7 @@ export interface Metadata {
 
   readonly description?: string;
 
-  // Currently optional because it defaults to the browser extension version for blocks defined in JS
+  // Currently optional because it defaults to the browser extension version for bricks defined in JS
   readonly version?: SemVerString;
 
   /**
@@ -75,7 +75,7 @@ export interface Metadata {
   readonly icon?: BrickIcon;
 
   /**
-   * PixieBrix extension version required to install the brick/run the extension
+   * PixieBrix extension version required to install the brick/run the ModComponent
    * @since 1.4.0
    */
   // FIXME: this type is wrong. In practice, the value should be a semantic version range, e.g., >=1.4.0

@@ -21,9 +21,9 @@ import {
 } from "redux-persist/es/types";
 import { type ActivatedModComponent } from "@/types/extensionTypes";
 import {
-  type ExtensionOptionsState,
-  type LegacyExtensionObjectShapeState,
-  type LegacyExtensionObjectState,
+  type ModComponentOptionsState,
+  type LegacyModComponentObjectShapeState,
+  type LegacyModComponentObjectState,
   type OptionsState,
 } from "@/store/extensionsTypes";
 
@@ -31,21 +31,22 @@ export const migrations: MigrationManifest = {
   1: (state: PersistedState & OptionsState) => migrateExtensionsShape(state),
   2: (state: PersistedState & OptionsState) =>
     migrateActiveExtensions(
-      state as PersistedState & LegacyExtensionObjectState
+      state as PersistedState & LegacyModComponentObjectState
     ),
 };
 
 // Putting here because it was causing circular dependencies
 export function migrateExtensionsShape<T>(
-  state: T & (LegacyExtensionObjectShapeState | LegacyExtensionObjectState)
-): T & LegacyExtensionObjectState {
+  state: T &
+    (LegacyModComponentObjectShapeState | LegacyModComponentObjectState)
+): T & LegacyModComponentObjectState {
   if (state.extensions == null) {
     return { ...state, extensions: [] };
   }
 
   if (Array.isArray(state.extensions)) {
     // Already migrated
-    return state as T & LegacyExtensionObjectState;
+    return state as T & LegacyModComponentObjectState;
   }
 
   return {
@@ -57,8 +58,8 @@ export function migrateExtensionsShape<T>(
 }
 
 export function migrateActiveExtensions<T>(
-  state: T & (LegacyExtensionObjectState | ExtensionOptionsState)
-): T & ExtensionOptionsState {
+  state: T & (LegacyModComponentObjectState | ModComponentOptionsState)
+): T & ModComponentOptionsState {
   const timestamp = new Date().toISOString();
 
   return {

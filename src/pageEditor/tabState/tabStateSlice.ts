@@ -29,7 +29,7 @@ import {
   type TabStateRootState,
 } from "@/pageEditor/tabState/tabStateTypes";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";
@@ -64,7 +64,7 @@ const connectToContentScript = createAsyncThunk<
   FrameConnectionState,
   void,
   // We need to include these states to enable dispatching the availability async thunk actions
-  { state: TabStateRootState & EditorRootState & ExtensionsRootState }
+  { state: TabStateRootState & EditorRootState & ModComponentsRootState }
 >("tabState/connectToContentScript", async (_, thunkAPI) => {
   const uuid = uuidv4();
   const common = { ...defaultFrameState, navSequence: uuid };

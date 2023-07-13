@@ -35,8 +35,8 @@ import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type SidebarStarterBrickABC } from "@/extensionPoints/sidebarExtension";
 
 /**
  * True if handling the initial page load.
@@ -281,7 +281,7 @@ export function clearEditorExtension(
       const extensionPoint = _editorExtensions.get(extensionId);
 
       if (extensionPoint.kind === "actionPanel" && preserveSidebar) {
-        const sidebar = extensionPoint as SidebarExtensionPoint;
+        const sidebar = extensionPoint as SidebarStarterBrickABC;
         // eslint-disable-next-line new-cap -- hack for action panels
         sidebar.HACK_uninstallExceptExtension(extensionId);
       } else {
@@ -380,7 +380,7 @@ export async function runEditorExtension(
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
 function cleanUpDeactivatedExtensionPoints(
-  activeExtensionMap: Record<RegistryId, ResolvedExtension[]>
+  activeExtensionMap: Record<RegistryId, ResolvedModComponent[]>
 ): void {
   for (const extensionPoint of _activeExtensionPoints) {
     const hasActiveExtensions = Object.hasOwn(
@@ -442,7 +442,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
       Object.entries(activeExtensionMap).map(
         async ([extensionPointId, extensions]: [
           RegistryId,
-          ResolvedExtension[]
+          ResolvedModComponent[]
         ]) => {
           try {
             const extensionPoint = await extensionPointRegistry.lookup(

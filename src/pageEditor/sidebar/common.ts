@@ -24,6 +24,8 @@ export function getLabel(extension: ModComponentFormState): string {
   return extension.label ?? extension.extensionPoint.metadata.name;
 }
 
-export function isExtension(value: SidebarItem): value is ModComponentBase {
+export function isModComponentBase(
+  value: SidebarItem
+): value is ModComponentBase {
   return "extensionPointId" in value;
 }

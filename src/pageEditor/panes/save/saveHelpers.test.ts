@@ -50,7 +50,7 @@ import {
   type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/extensionTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import {
@@ -624,7 +624,7 @@ describe("buildRecipe", () => {
   test("Clean extension referencing extensionPoint registry package", async () => {
     const extension = extensionFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    }) as UnresolvedExtension;
+    }) as UnresolvedModComponent;
 
     // Call the function under test
     const newRecipe = buildRecipe({
@@ -648,7 +648,7 @@ describe("buildRecipe", () => {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       services: [{ id: serviceId, outputKey, config: null }],
       extensionPointId: extensionPoint.metadata.id,
-    }) as UnresolvedExtension;
+    }) as UnresolvedModComponent;
 
     const adapter = ADAPTERS.get(extensionPoint.definition.type);
 
@@ -684,7 +684,7 @@ describe("buildRecipe", () => {
     const extensions = extensionPoints.map((extensionPoint) => {
       const extension = extensionFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      }) as UnresolvedExtension;
+      }) as UnresolvedModComponent;
 
       extension.definitions = {
         extensionPoint: {
@@ -721,7 +721,7 @@ describe("buildRecipe", () => {
     const extensions = range(0, 2).map(() => {
       const extension = extensionFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      }) as UnresolvedExtension;
+      }) as UnresolvedModComponent;
 
       extension.definitions = {
         extensionPoint: {

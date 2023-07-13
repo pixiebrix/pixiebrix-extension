@@ -22,7 +22,7 @@ import {
 } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import {
-  assertExtensionPointConfig,
+  assertStarterBrickConfig,
   type StarterBrickConfig,
   type StarterBrickDefinition,
   type StarterBrickType,
@@ -214,7 +214,7 @@ export function internalExtensionPointMetaFactory(): Metadata {
 export function selectIsAvailable(
   extensionPoint: StarterBrickConfig
 ): NormalizedAvailability {
-  assertExtensionPointConfig(extensionPoint);
+  assertStarterBrickConfig(extensionPoint);
 
   const availability: NormalizedAvailability = {};
 
@@ -285,7 +285,7 @@ export async function lookupExtensionPoint<
       definition: { type: TType };
     };
 
-    assertExtensionPointConfig(innerExtensionPoint);
+    assertStarterBrickConfig(innerExtensionPoint);
     return innerExtensionPoint;
   }
 

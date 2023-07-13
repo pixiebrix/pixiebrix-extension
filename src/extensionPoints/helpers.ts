@@ -21,7 +21,7 @@ import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import {
   type ModComponentBase,
-  type ResolvedExtension,
+  type ResolvedModComponent,
 } from "@/types/extensionTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 
@@ -218,7 +218,7 @@ export function acquireElement(
  * Returns the MessageContext associated with `extension`.
  */
 export function selectExtensionContext(
-  extension: ResolvedExtension
+  extension: ResolvedModComponent
 ): MessageContext {
   return {
     // The step label will be re-assigned later in reducePipeline

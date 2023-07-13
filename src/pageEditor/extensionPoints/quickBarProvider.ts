@@ -42,7 +42,7 @@ import { type QuickBarProviderFormState } from "./formStateTypes";
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
-  QuickBarProviderExtensionPoint,
+  QuickBarProviderStarterBrickABC,
 } from "@/extensionPoints/quickBarProviderExtension";
 import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
 
@@ -164,7 +164,7 @@ const config: ElementConfig<undefined, QuickBarProviderFormState> = {
   displayOrder: 1,
   elementType: "quickBarProvider",
   label: "Dynamic Quick Bar",
-  baseClass: QuickBarProviderExtensionPoint,
+  baseClass: QuickBarProviderStarterBrickABC,
   EditorNode: QuickBarProviderConfiguration,
   selectNativeElement: undefined,
   icon: faPlusSquare,

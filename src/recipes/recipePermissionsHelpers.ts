@@ -17,7 +17,7 @@
 
 import {
   type ModDefinition,
-  type ResolvedExtensionDefinition,
+  type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
 import { type IntegrationConfigPair } from "@/types/serviceTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
@@ -35,7 +35,7 @@ import { collectExtensionPermissions } from "@/permissions/extensionPermissionsH
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 async function collectExtensionDefinitionPermissions(
-  extensionPoints: ResolvedExtensionDefinition[],
+  extensionPoints: ResolvedModComponentDefinition[],
   serviceAuths: IntegrationConfigPair[]
 ): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
@@ -43,7 +43,11 @@ async function collectExtensionDefinitionPermissions(
   );
 
   const extensionPointPromises = extensionPoints.map(
-    async ({ id, permissions = {}, config }: ResolvedExtensionDefinition) => {
+    async ({
+      id,
+      permissions = {},
+      config,
+    }: ResolvedModComponentDefinition) => {
       const extensionPoint = await extensionPointRegistry.lookup(id);
 
       let inner: Permissions.Permissions = {};

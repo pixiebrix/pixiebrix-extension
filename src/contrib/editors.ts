@@ -57,6 +57,8 @@ import { ALERT_EFFECT_ID } from "@/blocks/effects/alert";
 import AlertOptions from "@/pageEditor/fields/AlertOptions";
 import { JQueryReader } from "@/blocks/transformers/jquery/JQueryReader";
 import JQueryReaderOptions from "@/blocks/transformers/jquery/JQueryReaderOptions";
+import AssignModVariable from "@/blocks/effects/assignModVariable";
+import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -82,4 +84,5 @@ export default function registerEditors() {
   optionsRegistry.set(TourStepTransformer.BLOCK_ID, TourStepOptions);
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
   optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);
+  optionsRegistry.set(AssignModVariable.BRICK_ID, AssignModVariableOptions);
 }

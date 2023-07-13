@@ -25,7 +25,7 @@ import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
   type ContextMenuConfig,
-  ContextMenuExtensionPoint,
+  ContextMenuStarterBrickABC,
 } from "@/extensionPoints/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
@@ -33,7 +33,7 @@ import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
   type ModComponentBase,
-  type ResolvedExtension,
+  type ResolvedModComponent,
 } from "@/types/extensionTypes";
 
 const MENU_PREFIX = "pixiebrix-";
@@ -173,9 +173,9 @@ export async function preloadContextMenus(
       const extensionPoint = await extensionPointRegistry.lookup(
         resolved.extensionPointId
       );
-      if (extensionPoint instanceof ContextMenuExtensionPoint) {
+      if (extensionPoint instanceof ContextMenuStarterBrickABC) {
         await extensionPoint.ensureMenu(
-          definition as unknown as ResolvedExtension<ContextMenuConfig>
+          definition as unknown as ResolvedModComponent<ContextMenuConfig>
         );
       }
     })

@@ -34,7 +34,7 @@ import {
   getDefaultReportModeForTrigger,
   type TriggerConfig,
   type TriggerDefinition,
-  TriggerExtensionPoint,
+  TriggerStarterBrickABC,
 } from "@/extensionPoints/triggerExtension";
 import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
@@ -198,7 +198,7 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   displayOrder: 4,
   elementType: "trigger",
   label: "Trigger",
-  baseClass: TriggerExtensionPoint,
+  baseClass: TriggerStarterBrickABC,
   EditorNode: TriggerConfiguration,
   selectNativeElement: undefined,
   icon: faBolt,

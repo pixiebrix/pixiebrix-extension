@@ -20,7 +20,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import useExtensionPermissions, {
   type DetailedPermissions,
 } from "@/permissions/useExtensionPermissions";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/extensionTypes";
 import { compact, pick, uniqBy } from "lodash";
 import { type StorageEstimate } from "@/types/browserTypes";
 import { count as registrySize } from "@/registry/localRegistry";
@@ -35,7 +35,7 @@ async function collectDiagnostics({
   extensions,
   permissions,
 }: {
-  extensions: UnresolvedExtension[];
+  extensions: UnresolvedModComponent[];
   permissions: DetailedPermissions;
 }) {
   const manifest = browser.runtime.getManifest();

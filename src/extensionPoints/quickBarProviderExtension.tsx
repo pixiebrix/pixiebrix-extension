@@ -60,7 +60,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 
 export type QuickBarProviderConfig = {
@@ -90,10 +90,10 @@ export type QuickBarProviderConfig = {
   generator: BrickConfig | BrickPipeline;
 };
 
-export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<QuickBarProviderConfig> {
+export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<QuickBarProviderConfig> {
   static isQuickBarProviderExtensionPoint(
     extensionPoint: StarterBrick
-  ): extensionPoint is QuickBarProviderExtensionPoint {
+  ): extensionPoint is QuickBarProviderStarterBrickABC {
     // Need to a access a type specific property (QuickBarProviderExtensionPoint._definition) on a base-typed entity (StarterBrick)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (extensionPoint as any)?._definition?.type === "quickBarProvider";
@@ -132,7 +132,7 @@ export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<Qui
   );
 
   async getBlocks(
-    extension: ResolvedExtension<QuickBarProviderConfig>
+    extension: ResolvedModComponent<QuickBarProviderConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.generator);
   }
@@ -213,7 +213,7 @@ export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<Qui
    * @private
    */
   private async registerActionProvider(
-    extension: ResolvedExtension<QuickBarProviderConfig>
+    extension: ResolvedModComponent<QuickBarProviderConfig>
   ): Promise<void> {
     const { generator, rootAction } = extension.config;
 
@@ -322,7 +322,7 @@ export interface QuickBarProviderDefinition extends StarterBrickDefinition {
   defaultOptions?: QuickBarProviderDefaultOptions;
 }
 
-export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderExtensionPoint {
+export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickABC {
   private readonly _definition: QuickBarProviderDefinition;
 
   public readonly permissions: Permissions.Permissions;

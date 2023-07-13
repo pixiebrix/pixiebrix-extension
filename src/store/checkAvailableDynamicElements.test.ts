@@ -27,7 +27,7 @@ import { checkAvailable as backgroundCheckAvailable } from "@/blocks/available";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import { type Availability } from "@/blocks/types";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
@@ -46,7 +46,7 @@ describe("checkAvailableDynamicElements", () => {
     const testUrl = "https://www.myUrl.com/*";
     (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
 
-    const store = configureStore<EditorRootState & ExtensionsRootState>({
+    const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
         options: extensionsReducer,

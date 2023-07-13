@@ -32,7 +32,7 @@ import { fromJS as blockFactory } from "@/blocks/transformers/brickFactory";
 import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
-  type ResolvedExtensionDefinition,
+  type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
 import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { type ReaderConfig } from "@/blocks/types";
@@ -44,7 +44,7 @@ import {
 } from "@/types/registryTypes";
 import {
   type ModComponentBase,
-  type ResolvedExtension,
+  type ResolvedModComponent,
 } from "@/types/extensionTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -222,9 +222,9 @@ async function resolveInnerDefinition(
  */
 export async function resolveExtensionInnerDefinitions<
   T extends UnknownObject = UnknownObject
->(extension: ModComponentBase<T>): Promise<ResolvedExtension<T>> {
+>(extension: ModComponentBase<T>): Promise<ResolvedModComponent<T>> {
   if (isEmpty(extension.definitions)) {
-    return extension as ResolvedExtension<T>;
+    return extension as ResolvedModComponent<T>;
   }
 
   return produce(extension, async (draft) => {
@@ -245,7 +245,7 @@ export async function resolveExtensionInnerDefinitions<
     if (resolvedDefinitions[draft.extensionPointId] != null) {
       draft.extensionPointId = resolvedDefinitions[draft.extensionPointId].id;
     }
-  }) as Promise<ResolvedExtension<T>>;
+  }) as Promise<ResolvedModComponent<T>>;
 }
 
 /**
@@ -254,11 +254,11 @@ export async function resolveExtensionInnerDefinitions<
  */
 export async function resolveRecipeInnerDefinitions(
   recipe: Pick<ModDefinition, "extensionPoints" | "definitions">
-): Promise<ResolvedExtensionDefinition[]> {
+): Promise<ResolvedModComponentDefinition[]> {
   const extensionDefinitions = recipe.extensionPoints;
 
   if (isEmpty(recipe.definitions)) {
-    return extensionDefinitions as ResolvedExtensionDefinition[];
+    return extensionDefinitions as ResolvedModComponentDefinition[];
   }
 
   const extensionPointReferences = new Set<string>(
@@ -283,7 +283,7 @@ export async function resolveRecipeInnerDefinitions(
     (definition) =>
       (definition.id in resolvedDefinitions
         ? { ...definition, id: resolvedDefinitions[definition.id].id }
-        : definition) as ResolvedExtensionDefinition
+        : definition) as ResolvedModComponentDefinition
   );
 }
 
@@ -291,7 +291,7 @@ export async function resolveRecipeInnerDefinitions(
  * Returns true if the extension is using an InnerDefinitionRef. _Will always return false for ResolvedExtensions._
  * @see InnerDefinitionRef
  * @see UnresolvedExtension
- * @see ResolvedExtension
+ * @see ResolvedModComponent
  */
 export function hasInnerExtensionPointRef(
   extension: ModComponentBase
