@@ -104,7 +104,7 @@ const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
   <Nav.Item className={cx(styles.tabWrapper, active && styles.active)}>
     <Nav.Link
       {...props}
-      className={cx(styles.tabHeader, active && styles.active)}
+      className={cx(styles.tabHeader, { [styles.active]: active })}
     >
       {children}
     </Nav.Link>
@@ -156,7 +156,7 @@ const Tabs: React.FC = () => {
     >
       <div className="full-height">
         <Nav
-          fill
+          justify
           variant="tabs"
           className={styles.tabContainer}
           onSelect={onSelect}
