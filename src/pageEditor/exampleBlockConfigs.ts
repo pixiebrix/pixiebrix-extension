@@ -22,7 +22,10 @@ import { CustomFormRenderer } from "@/blocks/renderers/customForm";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { DocumentRenderer } from "@/blocks/renderers/document";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
+import {
+  makePipelineExpression,
+  makeTemplateExpression,
+} from "@/runtime/expressionCreators";
 import { type BrickConfig } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
@@ -158,6 +161,13 @@ export function getExampleBlockConfig(
   if (blockId === "@pixiebrix/state/get") {
     return {
       namespace: "blueprint",
+    };
+  }
+
+  if (blockId === "@pixiebrix/state/assign") {
+    return {
+      variableName: "",
+      value: makeTemplateExpression("nunjucks", ""),
     };
   }
 
