@@ -72,7 +72,6 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
-import { ModComponentBase } from "@/types/extensionTypes";
 
 /**
  * CommonOptions for running pipelines and blocks

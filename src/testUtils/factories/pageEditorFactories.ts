@@ -33,7 +33,6 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/types/serviceTypes";
 import {
   type StarterBrickConfig,
-  type StarterBrickDefinition,
   type StarterBrickType,
 } from "@/extensionPoints/types";
 import {
@@ -75,14 +74,11 @@ const internalFormStateFactory = define<
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<ComponentFormState, StarterBrickDefinition>(
-    ({ type }) => {
-      const extensionPoint = extensionPointDefinitionFactory();
-      extensionPoint.definition.type = type;
-      return extensionPoint;
-    },
-    "type"
-  ),
+  extensionPoint: derive<ComponentFormState, StarterBrickConfig>(({ type }) => {
+    const extensionPoint = extensionPointDefinitionFactory();
+    extensionPoint.definition.type = type;
+    return extensionPoint;
+  }, "type"),
 });
 
 export const formStateFactory = (
