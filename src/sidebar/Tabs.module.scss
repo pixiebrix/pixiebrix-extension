@@ -60,19 +60,30 @@
     content: "";
     background: transparent;
     height: 10px;
-    width: 20px;
+    width: 30px;
     bottom: 0;
-    z-index: 1;
   }
 
   &::after {
-    right: -20px;
+    right: -30px;
     border-bottom-left-radius: 10px;
   }
   &::before {
     // 2px left extra to account for the border that hides the left divider
-    left: -22px;
+    left: -32px;
     border-bottom-right-radius: 10px;
+  }
+
+  &:hover {
+    &::before {
+      box-shadow: 20px 0px 0px 0px $S3;
+      z-index: 1;
+    }
+
+    &::after {
+      box-shadow: -20px 0px 0px 0px $S3;
+      z-index: 1;
+    }
   }
 
   &.active {
@@ -89,11 +100,13 @@
     }
 
     &::before {
-      box-shadow: 10px 0px 0px 0px $S0;
+      box-shadow: 20px 0px 0px 0px $S0;
+      z-index: 2;
     }
 
     &::after {
-      box-shadow: -10px 0px 0px 0px $S0;
+      box-shadow: -20px 0px 0px 0px $S0;
+      z-index: 2;
     }
   }
 
