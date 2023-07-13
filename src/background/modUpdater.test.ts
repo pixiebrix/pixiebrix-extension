@@ -290,6 +290,8 @@ describe("updateModsIfUpdatesAvailable", () => {
   let publicModUpdate: ModDefinition;
 
   beforeEach(async () => {
+    axiosMock.reset();
+
     publicMod = versionedRecipeWithResolvedExtensions(2)({
       sharing: sharingDefinitionFactory({ public: true }),
     });
