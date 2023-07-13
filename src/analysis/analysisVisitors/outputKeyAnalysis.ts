@@ -39,6 +39,45 @@ class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBricksABC {
 
     let errorMessage: string;
     const { id, outputKey } = blockConfig;
+
+    switch (outputKey) {
+      case "mod": {
+        this.annotations.push({
+          position: nestedPosition(position, "outputKey"),
+          message: "Variable name 'mod' is reserved for mod variables.",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+
+        break;
+      }
+
+      case "input": {
+        this.annotations.push({
+          position: nestedPosition(position, "outputKey"),
+          message: "Variable name 'input' is reserved for the starter brick.",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+
+        break;
+      }
+
+      case "options": {
+        this.annotations.push({
+          position: nestedPosition(position, "outputKey"),
+          message: "Variable name 'options' is reserved for mod options.",
+          analysisId: this.id,
+          type: AnnotationType.Warning,
+        });
+
+        break;
+      }
+
+      // Output key is not a reserved name
+      default:
+    }
+
     const typedBlock = this.allBlocks.get(id);
     if (typedBlock == null) {
       return;
@@ -50,7 +89,7 @@ class OutputKeyAnalysis extends AnalysisVisitorWithResolvedBricksABC {
         return;
       }
 
-      errorMessage = `OutputKey must be empty for "${blockType}" block.`;
+      errorMessage = `Output variable name must be empty for "${blockType}" block.`;
     } else if (!outputKey) {
       errorMessage = "This field is required.";
     } else if (outputKeyRegex.test(outputKey)) {
