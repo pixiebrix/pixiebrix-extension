@@ -46,6 +46,28 @@
     background: $S3;
   }
 
+  position: relative;
+  &::before,
+  &::after {
+    position: absolute;
+    content: "";
+    background: transparent;
+    height: 10px;
+    width: 20px;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  &::after {
+    right: -20px;
+    border-bottom-left-radius: 10px;
+  }
+  &::before {
+    // 2px left extra to account for the border that hides the left divider
+    left: -22px;
+    border-bottom-right-radius: 10px;
+  }
+
   &.active {
     // Trickery to hide the divider on the left. Move the item over the divider,
     // then add a border to maintain the position
@@ -58,6 +80,14 @@
     &:hover {
       background: $S0;
     }
+
+    &::before {
+      box-shadow: 10px 0px 0px 0px $S0;
+    }
+
+    &::after {
+      box-shadow: -10px 0px 0px 0px $S0;
+    }
   }
 
   .tabDivider {
@@ -65,10 +95,6 @@
     width: 1px;
     margin: 10px 0;
     background: $S4;
-    &::after {
-      // Unicode for nbsp
-      content: "\a0";
-    }
   }
 
   // We don't want a divider on the far right
@@ -88,8 +114,6 @@
       display: none;
     }
   }
-
-  overflow: hidden;
 }
 
 .tabHeader {

@@ -101,11 +101,8 @@ const TemporaryPanelTabPane: React.FC<{
 TemporaryPanelTabPane.displayName = "TemporaryPanelTabPane";
 
 const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
-  <Nav.Item className={cx(styles.tabWrapper, active && styles.active)}>
-    <Nav.Link
-      {...props}
-      className={cx(styles.tabHeader, { [styles.active]: active })}
-    >
+  <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
+    <Nav.Link {...props} className={styles.tabHeader}>
       {children}
     </Nav.Link>
     <div className={styles.tabDivider} />
