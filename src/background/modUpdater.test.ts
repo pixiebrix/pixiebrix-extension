@@ -36,6 +36,7 @@ import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
+import { getEditorState } from "@/store/dynamicElementStorage";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError", () => jest.fn());
@@ -232,10 +233,16 @@ describe("deactivateMod function", () => {
   });
 
   it("should remove the mod components from the options state", async () => {
-    const priorState = await loadOptions();
+    const priorOptionsState = await loadOptions();
+    const priorEditorState = await getEditorState();
 
-    const { optionsState: resultingState, deactivatedModComponents } =
-      deactivateMod(modToDeactivate.id, priorState);
+    const {
+      reduxState: { optionsState: resultingState },
+      deactivatedModComponents,
+    } = deactivateMod(modToDeactivate.id, {
+      optionsState: priorOptionsState,
+      editorState: priorEditorState,
+    });
 
     expect(deactivatedModComponents.length).toEqual(2);
     expect(deactivatedModComponents[0]._recipe.id).toEqual(modToDeactivate.id);
@@ -254,12 +261,18 @@ describe("deactivateMod function", () => {
       extensions: [extension],
     });
 
-    const priorState = await loadOptions();
+    const priorOptionsState = await loadOptions();
+    const priorEditorState = await getEditorState();
 
-    const { optionsState: resultingState, deactivatedModComponents } =
-      deactivateMod("@test/id-doesnt-exist" as RegistryId, priorState);
+    const {
+      reduxState: { optionsState: resultingState },
+      deactivatedModComponents,
+    } = deactivateMod("@test/id-doesnt-exist" as RegistryId, {
+      optionsState: priorOptionsState,
+      editorState: priorEditorState,
+    });
 
     expect(deactivatedModComponents).toEqual([]);
-    expect(resultingState.extensions).toEqual(priorState.extensions);
+    expect(resultingState.extensions).toEqual(priorOptionsState.extensions);
   });
 });

@@ -30,6 +30,9 @@ import type { OptionsArgs } from "@/types/runtimeTypes";
 import { isEmpty } from "lodash";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
+import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
+import type { EditorState } from "@/pageEditor/pageEditorTypes";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
 
 // TODO: replace me
 //  const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
@@ -142,49 +145,75 @@ async function getBackwardsCompatibleUpdates(
 
 function deactivateModComponent(
   modComponent: UnresolvedExtension,
-  optionsState: ExtensionOptionsState
-  // TODO: do we also need editorState?
-  //  editorState: EditorState | undefined,
-): ExtensionOptionsState {
-  return extensionsSlice.reducer(
-    optionsState,
+  reduxState: {
+    optionsState: ExtensionOptionsState;
+    editorState: EditorState;
+  }
+): { optionsState: ExtensionOptionsState; editorState: EditorState } {
+  let { optionsState: newOptionsState, editorState: newEditorState } =
+    reduxState;
+
+  newOptionsState = extensionsSlice.reducer(
+    newOptionsState,
     extensionsSlice.actions.removeExtension({ extensionId: modComponent.id })
   );
+
+  newEditorState = editorSlice.reducer(
+    newEditorState,
+    editorSlice.actions.removeElement(modComponent.id)
+  );
+
+  return {
+    optionsState: newOptionsState,
+    editorState: newEditorState,
+  };
 }
 
 /**
  * Deactivates all mod components with the given mod id.
  * @param modId the mod registry id
- * @param optionsState the current extension options state
- * @returns {options, deactivatedModComponents} new options state with the mod components deactivated
+ * @param reduxState the current state of the extension and editor redux stores
+ * @returns {reduxState, deactivatedModComponents} new redux state with the mod components deactivated
  * and the mod components that were deactivated
  */
 export function deactivateMod(
   modId: RegistryId,
-  optionsState: ExtensionOptionsState
-  // TODO: do we also need editorState?
-  //  editorState: EditorState | undefined,
+  reduxState: {
+    optionsState: ExtensionOptionsState;
+    editorState: EditorState;
+  }
 ): {
-  optionsState: ExtensionOptionsState;
+  reduxState: {
+    optionsState: ExtensionOptionsState;
+    editorState: EditorState;
+  };
   deactivatedModComponents: UnresolvedExtension[];
 } {
+  let { optionsState: newOptionsState, editorState: newEditorState } =
+    reduxState;
+
   const activatedModComponentSelector = selectExtensionsForRecipe(modId);
   const activatedModComponents = activatedModComponentSelector({
-    options: optionsState,
+    options: newOptionsState,
   });
-  const deactivatedModComponents: UnresolvedExtension[] = [];
 
-  let newOptionsState = optionsState;
+  const deactivatedModComponents: UnresolvedExtension[] = [];
   for (const activatedModComponent of activatedModComponents) {
-    newOptionsState = deactivateModComponent(
-      activatedModComponent,
-      newOptionsState
-    );
+    const { optionsState: nextOptionsState, editorState: nextEditorState } =
+      deactivateModComponent(activatedModComponent, {
+        optionsState: newOptionsState,
+        editorState: newEditorState,
+      });
+    newOptionsState = nextOptionsState;
+    newEditorState = nextEditorState;
+
     deactivatedModComponents.push(activatedModComponent);
   }
 
-  console.log("*** options state after deactivate mod", newOptionsState);
-  return { optionsState: newOptionsState, deactivatedModComponents };
+  return {
+    reduxState: { optionsState: newOptionsState, editorState: newEditorState },
+    deactivatedModComponents,
+  };
 }
 
 function reactivateMod(
@@ -248,15 +277,28 @@ export function collectModConfigurations(
 
 function updateMod(
   mod: ModDefinition,
-  optionsState: ExtensionOptionsState
-): ExtensionOptionsState {
+  reduxState: {
+    optionsState: ExtensionOptionsState;
+    editorState: EditorState;
+  }
+): { optionsState: ExtensionOptionsState; editorState: EditorState } {
   console.log("*** updating mod", mod);
-  let newOptionsState = optionsState;
+  let { optionsState: newOptionsState, editorState: newEditorState } =
+    reduxState;
 
   // Deactivate the mod
-  const { optionsState: deactivatedOptionsState, deactivatedModComponents } =
-    deactivateMod(mod.metadata.id, newOptionsState);
-  newOptionsState = deactivatedOptionsState;
+  const {
+    reduxState: {
+      optionsState: nextOptionsState,
+      editorState: nextEditorState,
+    },
+    deactivatedModComponents,
+  } = deactivateMod(mod.metadata.id, {
+    optionsState: newOptionsState,
+    editorState: newEditorState,
+  });
+  newOptionsState = nextOptionsState;
+  newEditorState = nextEditorState;
 
   // Collect service an option configs to reinstall
   const { services, optionsArgs } = collectModConfigurations(
@@ -264,17 +306,29 @@ function updateMod(
   );
 
   // Reactivate the mod with the updated mod definition & configurations
-  return reactivateMod(mod, services, optionsArgs, newOptionsState);
+  newOptionsState = reactivateMod(mod, services, optionsArgs, newOptionsState);
+
+  return {
+    optionsState: newOptionsState,
+    editorState: newEditorState,
+  };
 }
 
 async function updateMods(modUpdates: Record<RegistryId, ModDefinition>) {
-  let optionsState = await loadOptions();
+  let newOptionsState = await loadOptions();
+  let newEditorState = await getEditorState();
 
   for (const update of Object.values(modUpdates)) {
-    optionsState = updateMod(update, optionsState);
+    const { optionsState, editorState } = updateMod(update, {
+      optionsState: newOptionsState,
+      editorState: newEditorState,
+    });
+    newOptionsState = optionsState;
+    newEditorState = editorState;
   }
 
-  await saveOptions(optionsState);
+  await saveOptions(newOptionsState);
+  await saveEditorState(newEditorState);
   await forEachTab(queueReactivateTab);
 }
 
