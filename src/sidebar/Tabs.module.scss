@@ -26,10 +26,6 @@
   display: flex;
   justify-content: space-evenly;
   flex-wrap: nowrap;
-
-  & > * {
-    flex: 1;
-  }
 }
 
 .tabWrapper {
@@ -37,6 +33,8 @@
   align-items: stretch;
   // Copying bootstraps alignment rule for Nav.Link
   margin-bottom: -1px;
+
+  flex: 1;
 
   // Only show first 8 items
   display: none;
