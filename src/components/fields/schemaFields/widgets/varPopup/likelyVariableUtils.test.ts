@@ -82,7 +82,7 @@ describe("detects the variable and returns its name", () => {
     const template = "@abc";
     const actual = getLikelyVariableAtPosition(template, 2, {
       clampPosition: true,
-      clampPosition: true,
+      includeBoundary: true,
     }).name;
     expect(actual).toEqual("@a");
   });
@@ -96,7 +96,7 @@ describe("detects the variable and returns its name", () => {
     expect(actual).toEqual("@a");
   });
 
-  test("test match end boundary", () => {
+  test("match end boundary", () => {
     const template = "@abc";
     const actual = getLikelyVariableAtPosition(template, 4, {
       includeBoundary: true,
@@ -105,7 +105,7 @@ describe("detects the variable and returns its name", () => {
     expect(actual).toEqual("@abc");
   });
 
-  test("test match end boundary on partial match", () => {
+  test("match end boundary on partial match", () => {
     const template = "{{ @abc";
     const actual = getLikelyVariableAtPosition(template, 7, {
       includeBoundary: true,
@@ -114,7 +114,7 @@ describe("detects the variable and returns its name", () => {
     expect(actual).toEqual("@abc");
   });
 
-  test("test match start boundary", () => {
+  test("match start boundary", () => {
     const template = "{{ @abc }}";
     const actual = getLikelyVariableAtPosition(template, 3, {
       includeBoundary: true,
