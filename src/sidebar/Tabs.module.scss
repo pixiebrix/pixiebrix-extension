@@ -46,6 +46,13 @@
     background: $S3;
   }
 
+  // We had to remove overflow:hidden to show the outer corner
+  // decorations but that broke the clamping. By setting the width
+  // to 0 we can rely on the flex justify-content property to size
+  // the tabs equally
+  width: 0;
+
+  // Position relative so the outside decorations can be positioned
   position: relative;
   &::before,
   &::after {
