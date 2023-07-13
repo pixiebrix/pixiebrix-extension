@@ -36,7 +36,7 @@
 
   // Only show first 8 items
   display: none;
-  &:nth-child(-n + 8) {
+  &:nth-child(-n + 1) {
     display: flex;
   }
   border-radius: 0.5rem 0.5rem 0 0;
@@ -143,7 +143,7 @@
 
   border: none !important;
   background: transparent !important;
-  padding: 0.5rem 0.75rem !important;
+  padding: 0.5rem 0.5rem 0.7rem !important;
 
   // Add padding between each item without padding the outside
   & > * {
@@ -162,8 +162,13 @@
   :global .close {
     // The close icon is the actual letter "X" so this thins the icon
     font-weight: 400;
+    font-size: 20px;
+    border-radius: 4px;
+    padding: 0 2px 2px;
+    text-align: center;
+    line-height: 11px;
     &:hover {
-      background: rgba(0, 0, 0, 10%);
+      background: $S4;
     }
   }
 }
