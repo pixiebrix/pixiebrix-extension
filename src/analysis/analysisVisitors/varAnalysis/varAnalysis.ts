@@ -341,6 +341,17 @@ async function setModVariables(
 
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   /**
+   * The current trace, or empty if there is no trace.
+   * @private
+   */
+  private readonly trace: TraceRecord[];
+
+  /**
+   * The current mod page state
+   */
+  private readonly modState: UnknownObject;
+
+  /**
    * Accumulator for known variables at each block visited. Mapping from block path to VarMap.
    * @see VarMap
    * @private
@@ -415,11 +426,16 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * @param trace the trace for the latest run of the extension
    * @param modState the current mod page state
    */
-  constructor(
-    private readonly trace: TraceRecord[],
-    private readonly modState: UnknownObject
-  ) {
+  constructor({
+    trace,
+    modState,
+  }: {
+    trace: TraceRecord[];
+    modState: UnknownObject;
+  }) {
     super();
+    this.trace = trace;
+    this.modState = modState;
   }
 
   /**
@@ -449,7 +465,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
         x.templateContext != null
     );
 
-    if (traceRecord != null) {
+    if (traceRecord?.templateContext != null) {
       blockKnownVars.setExistenceFromValues({
         source: KnownSources.TRACE,
         values: traceRecord.templateContext,

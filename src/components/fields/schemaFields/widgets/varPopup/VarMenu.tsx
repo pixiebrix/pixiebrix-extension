@@ -39,6 +39,10 @@ import cx from "classnames";
 import VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import useAsyncState from "@/hooks/useAsyncState";
+import { getPageState } from "@/contentScript/messenger/api";
+import { thisTab } from "@/pageEditor/utils";
+import { isEmpty } from "lodash";
 
 const emptyVarMap = new VarMap();
 
@@ -75,6 +79,15 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
 
   const knownVars = useSelector(selectKnownVarsForActiveNode);
   const trace = useSelector(selectActiveNodeTrace);
+  const { data: modVariables } = useAsyncState(
+    async () =>
+      getPageState(thisTab, {
+        namespace: "blueprint",
+        extensionId: null,
+        blueprintId: activeElement.recipe?.id,
+      }),
+    []
+  );
 
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
@@ -134,15 +147,18 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     : "";
 
   const { allOptions, filteredOptions } = useMemo(() => {
-    const allOptions = getMenuOptions(
-      knownVars ?? emptyVarMap,
-      trace?.templateContext
-    );
+    const values = { ...trace?.templateContext };
+    if (!isEmpty(modVariables)) {
+      values["@mod"] = modVariables;
+    }
+
+    const allOptions = getMenuOptions(knownVars ?? emptyVarMap, values);
+
     return {
       allOptions,
       filteredOptions: filterOptionsByVariable(allOptions, likelyVariable),
     };
-  }, [knownVars, trace?.templateContext, likelyVariable]);
+  }, [knownVars, trace?.templateContext, likelyVariable, modVariables]);
 
   const blocksInfo = Object.values(pipelineMap);
 
@@ -153,8 +169,6 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     menuOptions: filteredOptions,
     onSelect: onVarSelect,
   });
-
-  console.debug("activeKeyPath", activeKeyPath);
 
   if (knownVars == null) {
     return (
@@ -168,46 +182,51 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
 
   return (
     <div className={styles.menu} ref={rootElementRef}>
-      {filteredOptions.length === 0 && (
-        <>
-          <div className={cx(styles.sourceItem, "text-info")}>
-            No variables found for <span>{likelyVariable}</span>
-          </div>
-          {allOptions.map(([source, vars]) => (
-            // Show all top-level sources if no vars match
-            <div className={styles.sourceItem} key={source}>
-              <SourceLabel
-                source={source}
-                extensionPointLabel={extensionPointLabel}
-                blocksInfo={blocksInfo}
-                allBlocks={allBlocks}
-              />
-              <VariablesTree
-                vars={vars}
-                onVarSelect={onVarSelect}
-                likelyVariable={likelyVariable}
-                activeKeyPath={activeKeyPath}
-              />
+      <div className={styles.body}>
+        {filteredOptions.length === 0 && (
+          <>
+            <div className={cx(styles.sourceItem, "text-info")}>
+              No variables found for <span>{likelyVariable}</span>
             </div>
-          ))}
-        </>
-      )}
-      {filteredOptions.map(([source, vars]) => (
-        <div className={styles.sourceItem} key={source}>
-          <SourceLabel
-            source={source}
-            extensionPointLabel={extensionPointLabel}
-            blocksInfo={blocksInfo}
-            allBlocks={allBlocks}
-          />
-          <VariablesTree
-            vars={filterVarMapByVariable(vars, likelyVariable)}
-            onVarSelect={onVarSelect}
-            likelyVariable={likelyVariable}
-            activeKeyPath={activeKeyPath}
-          />
-        </div>
-      ))}
+            {allOptions.map(([source, vars]) => (
+              // Show all top-level sources if no vars match
+              <div className={styles.sourceItem} key={source}>
+                <SourceLabel
+                  source={source}
+                  extensionPointLabel={extensionPointLabel}
+                  blocksInfo={blocksInfo}
+                  allBlocks={allBlocks}
+                />
+                <VariablesTree
+                  vars={vars}
+                  onVarSelect={onVarSelect}
+                  likelyVariable={likelyVariable}
+                  activeKeyPath={activeKeyPath}
+                />
+              </div>
+            ))}
+          </>
+        )}
+        {filteredOptions.map(([source, vars]) => (
+          <div className={styles.sourceItem} key={source}>
+            <SourceLabel
+              source={source}
+              extensionPointLabel={extensionPointLabel}
+              blocksInfo={blocksInfo}
+              allBlocks={allBlocks}
+            />
+            <VariablesTree
+              vars={filterVarMapByVariable(vars, likelyVariable)}
+              onVarSelect={onVarSelect}
+              likelyVariable={likelyVariable}
+              activeKeyPath={activeKeyPath}
+            />
+          </div>
+        ))}
+      </div>
+      <div className={styles.footer}>
+        Use up/down keys to navigate, tab to select
+      </div>
     </div>
   );
 };

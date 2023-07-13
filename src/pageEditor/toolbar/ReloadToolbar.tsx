@@ -26,6 +26,7 @@ import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formSta
 import { reportEvent } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -107,6 +108,8 @@ const ReloadToolbar: React.FunctionComponent<{
 
     await run();
   };
+
+  useKeyboardShortcut("F5", manualRun);
 
   const debouncedRun = useDebouncedCallback(run, refreshMillis, {
     // If we could distinguish between types of edits, it might be reasonable to set leading: true. But in
