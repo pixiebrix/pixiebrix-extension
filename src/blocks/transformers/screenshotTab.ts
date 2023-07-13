@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { captureTab } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 
-export class ScreenshotTab extends Transformer {
+export class ScreenshotTab extends TransformerABC {
   constructor() {
     super(
       "@pixiebrix/browser/screenshot",

@@ -47,7 +47,7 @@ import {
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
 import { type AxiosRequestConfig } from "axios";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room
@@ -72,7 +72,7 @@ const SORT_BY_NAME = {
  * @param maxPages maximum number of pages to fetch, defaults to all pages
  */
 async function fetchPages<TData>(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   requestConfig: AxiosRequestConfig,
   { maxPages = Number.MAX_SAFE_INTEGER }: { maxPages?: number } = {}
 ): Promise<TData[]> {
@@ -126,7 +126,7 @@ async function fetchPages<TData>(
  * Return information about a bot in a Control Room.
  */
 async function fetchBotFile(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   fileId: string
 ): Promise<Bot> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
@@ -146,7 +146,7 @@ export const cachedFetchBotFile = cachePromiseMethod(
  * Return information about a bot in a Control Room.
  */
 async function fetchFolder(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   folderId: string
 ): Promise<Folder> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
@@ -163,7 +163,7 @@ export const cachedFetchFolder = cachePromiseMethod(
 );
 
 async function searchBots(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   options: { workspaceType: WorkspaceType; query: string; value: string | null }
 ): Promise<Option[]> {
   if (isNullOrBlank(options.workspaceType)) {
@@ -253,7 +253,7 @@ export const cachedSearchBots = cachePromiseMethod(
 );
 
 async function fetchDevices(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<Option[]> {
   const devices = await fetchPages<Device>(config, {
     url: "/v2/devices/list",
@@ -281,7 +281,7 @@ export const cachedFetchDevices = cachePromiseMethod(
 );
 
 async function fetchDevicePools(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<Option[]> {
   const devicePools = await fetchPages<DevicePool>(config, {
     url: "/v2/devices/pools/list",
@@ -300,7 +300,7 @@ export const cachedFetchDevicePools = cachePromiseMethod(
 );
 
 async function fetchRunAsUsers(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<Option[]> {
   const users = await fetchPages<RunAsUser>(config, {
     url: "/v1/devices/runasusers/list",
@@ -318,10 +318,7 @@ export const cachedFetchRunAsUsers = cachePromiseMethod(
   fetchRunAsUsers
 );
 
-async function fetchSchema(
-  config: SanitizedServiceConfiguration,
-  fileId: string
-) {
+async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
   if (config && fileId) {
     const response = await proxyService<Interface>(config, {
       url: `/v1/filecontent/${fileId}/interface`,
@@ -388,7 +385,7 @@ export async function pollEnterpriseResult({
   logger,
   maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
 }: {
-  service: SanitizedServiceConfiguration;
+  service: SanitizedIntegrationConfig;
   deploymentId: string;
   logger: Logger;
   maxWaitMillis?: number;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -23,7 +23,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { type AxiosRequestConfig } from "axios";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 
 export const inputProperties: Record<string, Schema> = {
   url: {
@@ -58,7 +58,7 @@ export const inputProperties: Record<string, Schema> = {
   },
 };
 
-export class RemoteMethod extends Transformer {
+export class RemoteMethod extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/http");
 
   constructor() {
@@ -77,7 +77,7 @@ export class RemoteMethod extends Transformer {
     service,
     ...requestConfig
   }: BrickArgs<{
-    service: SanitizedServiceConfiguration;
+    service: SanitizedIntegrationConfig;
     requestConfig: AxiosRequestConfig;
     _blockArgBrand: never;
   }>): Promise<unknown> {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
@@ -28,7 +28,7 @@ import { type SelectorRoot } from "@/types/runtimeTypes";
  *
  * @see ElementReader
  */
-export class HtmlReader extends Reader {
+export class HtmlReader extends ReaderABC {
   defaultOutputKey = "html";
 
   constructor() {

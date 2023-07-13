@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -31,7 +31,7 @@ function isCheckbox(
   return element.type === "checkbox";
 }
 
-export class FormData extends Transformer {
+export class FormData extends TransformerABC {
   defaultOutputKey = "form";
 
   constructor() {

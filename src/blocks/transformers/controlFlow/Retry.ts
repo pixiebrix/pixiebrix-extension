@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -27,7 +27,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 
-class Retry extends Transformer {
+class Retry extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/retry");
   defaultOutputKey = "retryOutput";
 

@@ -16,11 +16,11 @@
  */
 
 import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 
 export function optionalFactory(factory: OptionsFactory): OptionsFactory {
-  return async (config: SanitizedServiceConfiguration) => {
+  return async (config: SanitizedIntegrationConfig) => {
     if (config) {
       return factory(config);
     }

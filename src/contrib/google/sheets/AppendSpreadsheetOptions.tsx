@@ -36,6 +36,7 @@ import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/handlers";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -57,10 +58,13 @@ const PropertiesField: React.FunctionComponent<{
           };
         }
 
-        const headers = await sheets.getHeaders({
+        const target: SpreadsheetTarget = {
+          googleAccount: null,
           spreadsheetId,
           tabName,
-        });
+        };
+        const headers = await sheets.getHeaders(target);
+
         return {
           type: "object",
           properties: Object.fromEntries(

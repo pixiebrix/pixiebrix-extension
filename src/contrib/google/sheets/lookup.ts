@@ -23,10 +23,11 @@ import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
-import { Transformer } from "@/types/bricks/transformerTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/handlers";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"
@@ -68,7 +69,7 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
   ["spreadsheetId", "tabName", "header", "query"]
 );
 
-export class GoogleSheetsLookup extends Transformer {
+export class GoogleSheetsLookup extends TransformerABC {
   constructor() {
     super(
       GOOGLE_SHEETS_LOOKUP_ID,
@@ -89,7 +90,7 @@ export class GoogleSheetsLookup extends Transformer {
       query,
       multi,
     }: BrickArgs<{
-      spreadsheetId: string | SanitizedServiceConfiguration;
+      spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       header: string;
       query: string | number | boolean;
@@ -101,9 +102,13 @@ export class GoogleSheetsLookup extends Transformer {
       typeof spreadsheetIdArg === "string"
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
-    const response = await sheets.batchGet(spreadsheetId, tabName);
-
-    const headers = response.valueRanges?.[0].values?.[0] ?? [];
+    const target: SpreadsheetTarget = {
+      googleAccount: null,
+      spreadsheetId,
+      tabName,
+    };
+    const valueRange = await sheets.getAllRows(target);
+    const [headers, ...rows] = valueRange?.values ?? [[], []];
 
     logger.debug(`Tab ${tabName} has headers`, { headers });
 
@@ -112,7 +117,6 @@ export class GoogleSheetsLookup extends Transformer {
       throw new BusinessError(`Header ${header} not found`);
     }
 
-    const rows = response.valueRanges?.[0].values.slice(1);
     const matchData = rows.filter((x) => x.at(columnIndex) === query);
     const matchRecords = matchData.map((row) =>
       Object.fromEntries(

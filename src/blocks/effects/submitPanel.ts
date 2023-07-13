@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import { SubmitPanelAction } from "@/blocks/errors";
 
-export class SubmitPanelEffect extends Effect {
+export class SubmitPanelEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/display/action",

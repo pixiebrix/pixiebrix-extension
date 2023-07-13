@@ -16,12 +16,12 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { boolean } from "@/utils";
 
-export class SendSimpleSlackMessage extends Effect {
+export class SendSimpleSlackMessage extends EffectABC {
   constructor() {
     super(
       "slack/simple-message",
@@ -89,7 +89,7 @@ export class SendSimpleSlackMessage extends Effect {
   }
 }
 
-export class SendAdvancedSlackMessage extends Effect {
+export class SendAdvancedSlackMessage extends EffectABC {
   constructor() {
     super(
       "slack/advanced-message",

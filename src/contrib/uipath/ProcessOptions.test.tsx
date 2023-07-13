@@ -28,7 +28,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 import useDependency from "@/services/useDependency";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type IService } from "@/types/serviceTypes";
+import { type Integration } from "@/types/serviceTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";
@@ -122,7 +122,7 @@ describe("UiPath Options", () => {
     (useDependency as jest.Mock).mockReturnValue({
       // Values not needed here, just need to return something non-null
       config: {},
-      service: {} as IService,
+      service: {} as Integration,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });
@@ -147,7 +147,7 @@ describe("UiPath Options", () => {
     (useDependency as jest.Mock).mockReturnValue({
       // Values not needed here, just need to return something non-null
       config: {},
-      service: {} as IService,
+      service: {} as Integration,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });

@@ -31,7 +31,7 @@ import {
   type TemplateEngine,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/serviceTypes";
 import { pick } from "lodash";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 
@@ -145,7 +145,7 @@ export type IExtension<Config extends UnknownObject = UnknownObject> = {
   /**
    * Configured services/integrations for the extension.
    */
-  services?: ServiceDependency[];
+  services?: IntegrationDependency[];
 
   /**
    * Options the end-user has configured (i.e., during blueprint activation)

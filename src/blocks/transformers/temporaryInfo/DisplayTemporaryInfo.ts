@@ -55,7 +55,7 @@ import { AbortPanelAction, ClosePanelAction } from "@/blocks/errors";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type Except, type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/extensionPointTypes";
 
@@ -321,7 +321,7 @@ export async function displayTemporaryInfo({
   return {};
 }
 
-class DisplayTemporaryInfo extends Transformer {
+class DisplayTemporaryInfo extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/display");
   defaultOutputKey = "infoOutput";
 

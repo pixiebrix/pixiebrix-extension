@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -25,7 +25,7 @@ import {
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
-export class DisableEffect extends Effect {
+export class DisableEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/disable",

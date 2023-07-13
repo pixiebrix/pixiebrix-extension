@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { random } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 
-export class RandomNumber extends Transformer {
+export class RandomNumber extends TransformerABC {
   constructor() {
     super(
       "@pixiebrix/random",

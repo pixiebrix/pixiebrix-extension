@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -49,7 +49,7 @@ type Step = {
     | "auto";
 };
 
-export class TourEffect extends Effect {
+export class TourEffect extends EffectABC {
   static readonly BLOCK_ID = validateRegistryId("@pixiebrix/tour");
 
   constructor() {

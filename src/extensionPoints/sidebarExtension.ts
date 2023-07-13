@@ -23,7 +23,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import {
   type CustomEventOptions,
   type DebounceOptions,
-  ExtensionPoint,
+  StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
@@ -83,7 +83,7 @@ export type Trigger =
   // A custom event configured by the user
   | "custom";
 
-export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig> {
+export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
 
   abstract get debounceOptions(): DebounceOptions;

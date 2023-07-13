@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
 
-export class ParseCsv extends Transformer {
+export class ParseCsv extends TransformerABC {
   constructor() {
     super(
       "@pixiebrix/parse/csv",

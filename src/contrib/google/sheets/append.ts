@@ -26,9 +26,10 @@ import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { Effect } from "@/types/bricks/effectTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/handlers";
 
 type CellValue = string | number | null;
 
@@ -242,7 +243,7 @@ export function normalizeShape(shape: Shape, rowValues: RowValues): Entry[][] {
   }
 }
 
-export class GoogleSheetsAppend extends Effect {
+export class GoogleSheetsAppend extends EffectABC {
   constructor() {
     super(
       GOOGLE_SHEETS_APPEND_ID,
@@ -261,7 +262,7 @@ export class GoogleSheetsAppend extends Effect {
       shape = "infer",
       rowValues: rawValues = {},
     }: BrickArgs<{
-      spreadsheetId: string | SanitizedServiceConfiguration;
+      spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       shape: Shape;
       rowValues: RowValues;
@@ -272,6 +273,11 @@ export class GoogleSheetsAppend extends Effect {
       typeof spreadsheetIdArg === "string"
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
+    const target: SpreadsheetTarget = {
+      googleAccount: null,
+      spreadsheetId,
+      tabName,
+    };
     const rows = normalizeShape(shape, rawValues);
     const valueHeaders = uniq(
       rows.flatMap((row) => row.map((x: Entry) => x.header))
@@ -279,7 +285,7 @@ export class GoogleSheetsAppend extends Effect {
 
     let currentHeaders: string[];
     try {
-      currentHeaders = await sheets.getHeaders({ spreadsheetId, tabName });
+      currentHeaders = await sheets.getHeaders(target);
       console.debug(
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );
@@ -292,18 +298,17 @@ export class GoogleSheetsAppend extends Effect {
       }
 
       logger.info(`Creating tab ${tabName}`);
-      await sheets.createTab(spreadsheetId, tabName);
+      await sheets.createTab(target);
     }
 
     if (!currentHeaders || currentHeaders.every((x) => isNullOrBlank(x))) {
       logger.info(`Writing header row for ${tabName}`);
-      await sheets.appendRows(spreadsheetId, tabName, [valueHeaders]);
+      await sheets.appendRows(target, [valueHeaders]);
       currentHeaders = valueHeaders;
     }
 
     await sheets.appendRows(
-      spreadsheetId,
-      tabName,
+      target,
       rows.map((row) => makeRowCells(currentHeaders, row))
     );
   }

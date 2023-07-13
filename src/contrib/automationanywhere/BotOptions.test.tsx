@@ -28,7 +28,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { uuidv4 } from "@/types/helpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type IService } from "@/types/serviceTypes";
+import { type Integration } from "@/types/serviceTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -98,7 +98,7 @@ describe("BotOptions", () => {
           controlRoomUrl: "https://control.room.com",
         },
       },
-      service: {} as IService,
+      service: {} as Integration,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });
@@ -130,7 +130,7 @@ describe("BotOptions", () => {
             "https://community2.cloud-2.automationanywhere.digital",
         },
       },
-      service: {} as IService,
+      service: {} as Integration,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });
@@ -162,7 +162,7 @@ describe("BotOptions", () => {
           controlRoomUrl: "https://control.room.com",
         },
       },
-      service: {} as IService,
+      service: {} as Integration,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });
@@ -195,7 +195,7 @@ describe("BotOptions", () => {
           controlRoomUrl: "https://control.room.com",
         },
       },
-      service: {} as IService,
+      service: {} as Integration,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });
@@ -229,7 +229,7 @@ describe("BotOptions", () => {
           controlRoomUrl: "https://control.room.com",
         },
       },
-      service: {} as IService,
+      service: {} as Integration,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });

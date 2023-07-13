@@ -16,7 +16,7 @@
  */
 
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/serviceTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
@@ -40,7 +40,7 @@ describe("inferRecipeAuths", () => {
   it("handles same service", () => {
     const service = validateRegistryId("foo/bar");
     const config = uuidv4();
-    const dependency: ServiceDependency = {
+    const dependency: IntegrationDependency = {
       id: service,
       outputKey: validateOutputKey("foo"),
       config,
@@ -56,7 +56,7 @@ describe("inferRecipeAuths", () => {
   it("throw on mismatch", () => {
     const service = validateRegistryId("foo/bar");
     const config = uuidv4();
-    const dependency: ServiceDependency = {
+    const dependency: IntegrationDependency = {
       id: service,
       outputKey: validateOutputKey("foo"),
       config,
@@ -72,7 +72,7 @@ describe("inferRecipeAuths", () => {
 
   it("throw on missing config", () => {
     const service = validateRegistryId("foo/bar");
-    const dependency: ServiceDependency = {
+    const dependency: IntegrationDependency = {
       id: service,
       outputKey: validateOutputKey("foo"),
     };

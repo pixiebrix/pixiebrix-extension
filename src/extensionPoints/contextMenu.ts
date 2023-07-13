@@ -27,7 +27,7 @@ import {
 } from "webextension-polyfill";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
-  ExtensionPoint,
+  StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
@@ -125,7 +125,7 @@ function installMouseHandlerOnce(): void {
 /**
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
-export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMenuConfig> {
+export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextMenuConfig> {
   public override get syncInstall() {
     return true;
   }

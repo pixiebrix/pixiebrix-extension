@@ -18,7 +18,7 @@
 import { BrickABC } from "@/types/brickTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
-export abstract class Transformer extends BrickABC {
+export abstract class TransformerABC extends BrickABC {
   override async isRootAware(): Promise<boolean> {
     // Most transformers don't use the root, so have them opt-in
     return false;

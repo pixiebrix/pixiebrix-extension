@@ -35,7 +35,7 @@ import { isEmpty, set } from "lodash";
 import { Stylesheets } from "@/components/Stylesheets";
 import { getTopLevelFrame } from "webext-messenger";
 import { type UUID } from "@/types/stringTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -44,7 +44,7 @@ import {
   type BrickOptions,
   type ComponentRef,
 } from "@/types/runtimeTypes";
-import { Renderer } from "@/types/bricks/rendererTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
 import cx from "classnames";
@@ -73,7 +73,7 @@ export type Storage =
   | {
       type: "database";
       databaseId: UUID;
-      service: SanitizedServiceConfiguration;
+      service: SanitizedIntegrationConfig;
     }
   | StateStorage;
 
@@ -236,7 +236,7 @@ export const customFormRendererSchema = {
   required: ["schema"],
 };
 
-export class CustomFormRenderer extends Renderer {
+export class CustomFormRenderer extends RendererABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
   constructor() {
     super(

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -36,7 +36,7 @@ const POSITION_MAP = new Map<Position, InsertPosition>([
   ["after", "afterend"],
 ]);
 
-class InsertHtml extends Effect {
+class InsertHtml extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/html/insert",

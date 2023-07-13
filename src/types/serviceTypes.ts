@@ -23,9 +23,9 @@ import { type BrickIcon } from "@/types/iconTypes";
 import { type JsonObject, type JsonValue } from "type-fest";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
-export interface ServiceDependency {
+export interface IntegrationDependency {
   /**
-   * The registry id of the service.
+   * The registry id of the integration.
    */
   id: RegistryId;
 
@@ -35,75 +35,75 @@ export interface ServiceDependency {
   outputKey: OutputKey;
 
   /**
-   * The UUID of the service configuration.
+   * The UUID of the integration configuration.
    */
   config?: UUID;
 }
 
-export type ServiceAuthPair = {
+export type IntegrationConfigPair = {
   /**
-   * The registry id of the service.
+   * The registry id of the integration.
    */
   id: RegistryId;
 
   /**
-   * UUID of the service configuration.
+   * UUID of the integration configuration.
    */
   config: UUID;
 };
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 
-type SecretBrand = { _serviceConfigBrand: null };
+type SecretBrand = { _integrationConfigBrand: null };
 
 /**
- * A one-level deep service config that might have already been sanitized.
+ * A one-level deep integration config that might have already been sanitized.
  */
-export type ServiceConfig = Record<string, string | null>;
+export type IntegrationConfigArgs = Record<string, string | null>;
 
 /**
- * Nominal typing to distinguish from `ServiceConfig`
+ * Nominal typing to distinguish from `IntegrationConfig`
  * @see SecretsConfig
  */
-export type SanitizedConfig = ServiceConfig & SanitizedBrand;
+export type SanitizedConfig = IntegrationConfigArgs & SanitizedBrand;
 
 /**
  * Nominal typing to distinguish from `SanitizedConfig`
  * @see SanitizedConfig
  */
-export type SecretsConfig = ServiceConfig & SecretBrand;
+export type SecretsConfig = IntegrationConfigArgs & SecretBrand;
 
 /**
- * Data received from the 3rd-party service during an OAuth or token-exchange flow.
+ * Data received from the 3rd-party integration during an OAuth or token-exchange flow.
  *
  * @see setCachedAuthData
  * @see getCachedAuthData
  */
 export interface AuthData {
   /**
-   * Nominal typing to distinguish from `SanitizedConfig` and `ServiceConfig`
+   * Nominal typing to distinguish from `SanitizedConfig` and `IntegrationConfigArgs`
    */
   _oauthBrand: null;
   [key: string]: unknown;
 }
 
-/** Service configuration provided by a user. */
-export type RawServiceConfiguration = {
-  // Nominal typing to distinguish from SanitizedServiceConfiguration
-  _rawServiceConfigurationBrand: null;
+/** Integration configuration provided by a user. */
+export type IntegrationConfig = {
+  // Nominal typing to distinguish from SanitizedIntegrationConfig
+  _rawIntegrationConfigBrand: null;
 
   /**
-   * UUID of the service configuration
+   * UUID of the integration configuration
    */
   id: UUID | undefined;
 
   /**
-   * Registry identifier for the service, e.g., `@pixiebrix/api`.
+   * Registry identifier for the integration, e.g., `@pixiebrix/api`.
    */
   serviceId: RegistryId;
 
   /**
-   * Human-readable label for the configuration to distinguish it from other configurations for the same service in the
+   * Human-readable label for the configuration to distinguish it from other configurations for the same integration in the
    * interface.
    */
   label: string | undefined;
@@ -114,17 +114,17 @@ export type RawServiceConfiguration = {
   config: SecretsConfig;
 };
 
-export interface SanitizedServiceConfiguration {
-  // Nominal typing to distinguish from RawServiceConfiguration
-  _sanitizedServiceConfigurationBrand: null;
+export interface SanitizedIntegrationConfig {
+  // Nominal typing to distinguish from IntegrationConfig
+  _sanitizedIntegrationConfigBrand: null;
 
   /**
-   * UUID of the service configuration.
+   * UUID of the integration configuration.
    */
   id?: UUID;
 
   /**
-   * Registry identifier for the service, e.g., @pixiebrix/api
+   * Registry identifier for the integration, e.g., @pixiebrix/api
    */
   serviceId: RegistryId;
 
@@ -134,7 +134,7 @@ export interface SanitizedServiceConfiguration {
   config: SanitizedConfig;
 
   /**
-   * True if the service must be proxied for remote configs, e.g., because it has a secret it needs
+   * True if the integration must be proxied for remote configs, e.g., because it has a secret it needs
    * to use to authenticate.
    */
   proxy: boolean;
@@ -181,7 +181,7 @@ export type OAuth2AuthorizationGrantDefinition = {
   headers: Record<string, string>;
 };
 
-export interface ServiceDefinition<
+export interface IntegrationDefinition<
   TAuth =
     | KeyAuthenticationDefinition
     | OAuth2AuthenticationDefinition
@@ -219,20 +219,20 @@ export type OAuth2Context = {
 };
 
 /**
- * A service that can be dependency injected and used to authenticate external requests.
+ * A integration that can be dependency injected and used to authenticate external requests.
  *
  * The input/output schema is the same since it's directly user configured.
  */
-export interface IService<
-  TConfig extends ServiceConfig = ServiceConfig,
+export interface Integration<
+  TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,
   TSanitized = TConfig & { _sanitizedConfigBrand: null },
-  TSecret = TConfig & { _serviceConfigBrand: null },
+  TSecret = TConfig & { _integrationConfigBrand: null },
   TOAuth extends AuthData = AuthData
 > extends Metadata {
   schema: Schema;
 
   /**
-   * A uiSchema for the service configuration.
+   * A uiSchema for the integration configuration.
    * @since 1.7.16
    */
   uiSchema?: UiSchema;
@@ -244,31 +244,31 @@ export interface IService<
   isToken: boolean;
 
   /**
-   * True if service uses basic access authentication to authenticate
+   * True if integration uses basic access authentication to authenticate
    * https://en.wikipedia.org/wiki/Basic_access_authentication
    */
   isBasicHttpAuth: boolean;
 
-  getOrigins: (serviceConfig: TSanitized) => string[];
+  getOrigins: (integrationConfig: TSanitized) => string[];
 
-  getOAuth2Context: (serviceConfig: TSecret) => OAuth2Context;
+  getOAuth2Context: (integrationConfig: TSecret) => OAuth2Context;
 
-  getTokenContext: (serviceConfig: TSecret) => TokenContext;
+  getTokenContext: (integrationConfig: TSecret) => TokenContext;
 
   authenticateRequest: (
-    serviceConfig: TSecret,
+    integrationConfig: TSecret,
     requestConfig: AxiosRequestConfig,
     oauthConfig?: TOAuth
   ) => AxiosRequestConfig;
 }
 
 /**
- * Abstract base class for services.
+ * Abstract base class for integrations.
  */
-export abstract class Service<
-  TConfig extends ServiceConfig = ServiceConfig,
+export abstract class IntegrationABC<
+  TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,
   TOAuth extends AuthData = AuthData
-> implements IService<TConfig>
+> implements Integration<TConfig>
 {
   abstract schema: Schema;
 
@@ -291,16 +291,18 @@ export abstract class Service<
     // No body necessary https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties
   }
 
-  abstract getOrigins(serviceConfig: TConfig & SanitizedBrand): string[];
+  abstract getOrigins(integrationConfig: TConfig & SanitizedBrand): string[];
 
   abstract getOAuth2Context(
-    serviceConfig: TConfig & SecretBrand
+    integrationConfig: TConfig & SecretBrand
   ): OAuth2Context;
 
-  abstract getTokenContext(serviceConfig: TConfig & SecretBrand): TokenContext;
+  abstract getTokenContext(
+    integrationConfig: TConfig & SecretBrand
+  ): TokenContext;
 
   abstract authenticateRequest(
-    serviceConfig: TConfig & SecretBrand,
+    integrationConfig: TConfig & SecretBrand,
     requestConfig: AxiosRequestConfig,
     authConfig?: TOAuth
   ): AxiosRequestConfig;

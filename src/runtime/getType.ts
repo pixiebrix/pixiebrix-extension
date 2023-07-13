@@ -19,7 +19,7 @@ import { type BrickType } from "@/runtime/runtimeTypes";
 import { type IBrick } from "@/types/brickInstanceTypes";
 
 export default async function getType(
-  // HACK: including IService and StarterBrick here is a hack to fix some call-sites. This method can only return
+  // HACK: including Integration and StarterBrick here is a hack to fix some call-sites. This method can only return
   // block types
   block: IBrick
 ): Promise<BrickType | null> {

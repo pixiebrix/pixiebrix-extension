@@ -37,6 +37,7 @@ import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/handlers";
 
 const HeaderField: React.FunctionComponent<{
   name: string;
@@ -52,10 +53,12 @@ const HeaderField: React.FunctionComponent<{
   const [headers, loading, error] = useAsyncState<string[]>(
     async () => {
       if (spreadsheetId && tabName && !isExpression(tabName)) {
-        return sheets.getHeaders({
+        const target: SpreadsheetTarget = {
+          googleAccount: null,
           spreadsheetId,
           tabName,
-        });
+        };
+        return sheets.getHeaders(target);
       }
 
       return [];

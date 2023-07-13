@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
 
-export class PageSemanticReader extends Reader {
+export class PageSemanticReader extends ReaderABC {
   defaultOutputKey = "metadata";
 
   constructor() {

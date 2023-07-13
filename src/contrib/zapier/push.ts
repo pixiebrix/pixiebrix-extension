@@ -24,7 +24,7 @@ import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
@@ -46,7 +46,7 @@ export const ZAPIER_PERMISSIONS: Permissions.Permissions = {
   origins: ["https://hooks.zapier.com/hooks/*"],
 };
 
-export class PushZap extends Effect {
+export class PushZap extends EffectABC {
   constructor() {
     super(ZAPIER_ID, "Push data to Zapier", "Push data to Zapier");
   }

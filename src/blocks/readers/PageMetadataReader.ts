@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 
-export class PageMetadataReader extends Reader {
+export class PageMetadataReader extends ReaderABC {
   defaultOutputKey = "metadata";
 
   constructor() {

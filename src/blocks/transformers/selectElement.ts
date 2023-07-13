@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 
-export class SelectElement extends Transformer {
+export class SelectElement extends TransformerABC {
   constructor() {
     super(
       "@pixiebrix/html/select",

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { readJQuery, type SelectorConfigMap } from "@/blocks/readers/jquery";
@@ -24,7 +24,7 @@ import { mapValues } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { isExpression } from "@/utils/expressionUtils";
 
-export class JQueryReader extends Transformer {
+export class JQueryReader extends TransformerABC {
   public static BRICK_ID = validateRegistryId("@pixiebrix/jquery-reader");
 
   constructor() {

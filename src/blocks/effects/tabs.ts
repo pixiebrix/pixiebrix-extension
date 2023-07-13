@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { activateTab, closeTab } from "@/background/messenger/api";
 
-export class ActivateTabEffect extends Effect {
+export class ActivateTabEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/browser/activate-tab",
@@ -36,7 +36,7 @@ export class ActivateTabEffect extends Effect {
   }
 }
 
-export class CloseTabEffect extends Effect {
+export class CloseTabEffect extends EffectABC {
   constructor() {
     super("@pixiebrix/browser/close-tab", "Close browser tab", "Close the tab");
   }

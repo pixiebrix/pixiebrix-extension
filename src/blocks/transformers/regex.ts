@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -33,7 +33,7 @@ export function extractNamedCaptureGroups(pattern: string): string[] {
   return [...pattern.matchAll(namedCapturedGroupRegex)].map((x) => x[1]);
 }
 
-export class RegexTransformer extends Transformer {
+export class RegexTransformer extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
   }

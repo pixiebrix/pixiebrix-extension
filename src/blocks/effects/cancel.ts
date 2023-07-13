@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { CancelError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 
-export class CancelEffect extends Effect {
+export class CancelEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/cancel",

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Permissions } from "webextension-polyfill";
@@ -28,7 +28,7 @@ import {
   writeToClipboard,
 } from "@/utils/clipboardUtils";
 
-export class CopyToClipboard extends Effect {
+export class CopyToClipboard extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/clipboard/copy",

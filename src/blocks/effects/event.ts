@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import {
@@ -24,7 +24,7 @@ import {
 } from "@/blocks/rootModeHelpers";
 import { DOM_EVENTS } from "@/types/browserTypes";
 
-export class ElementEvent extends Effect {
+export class ElementEvent extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/dom/trigger-event",
