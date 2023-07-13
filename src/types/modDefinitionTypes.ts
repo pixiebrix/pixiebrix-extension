@@ -38,40 +38,40 @@ export type ModOptionsDefinition = {
 };
 
 /**
- * An extension defined in a mod.
+ * An ModComponent defined in a mod.
  * @see ModDefinition.extensionPoints
  */
 export type ModComponentDefinition = {
   /**
-   * The id of the ExtensionPoint.
+   * The id of the StarterBrick.
    */
   id: RegistryId | InnerDefinitionRef;
 
   /**
-   * Human-readable name for the extension to display in the UI.
+   * Human-readable name for the ModComponent to display in the UI.
    */
   label: string;
 
   /**
-   * Additional permissions required by the configured extension. This section will generally be missing/blank unless
-   * the permissions need to be declared to account for dynamic URLs accessed by the extension.
+   * Additional permissions required by the configured ModComponent. This section will generally be missing/blank unless
+   * the permissions need to be declared to account for dynamic URLs accessed by the ModComponent.
    */
   permissions?: Permissions.Permissions;
 
   /**
-   * Services to make available to the extension. During activation, the user will be prompted to select a credential
+   * Services to make available to the ModComponent. During activation, the user will be prompted to select a credential
    * for each service entry.
    */
   services?: Record<OutputKey, RegistryId>;
 
   /**
-   * The default template engine for the extension.
+   * The default template engine for the ModComponent.
    * @deprecated in apiVersion v3 the expression engine is controlled explicitly
    */
   templateEngine?: TemplateEngine;
 
   /**
-   * The extension configuration.
+   * The ModComponent configuration.
    */
   config: UnknownObject;
 };
@@ -80,11 +80,11 @@ export type ModComponentDefinition = {
  * An ModComponentDefinition with all inner definition references resolved.
  * @see resolveDefinitions
  */
-export type ResolvedExtensionDefinition = ModComponentDefinition & {
+export type ResolvedModComponentDefinition = ModComponentDefinition & {
   // Known to be a registry id instead of an InnerDefinitionRef
   id: RegistryId;
 
-  _resolvedExtensionDefinitionBrand: never;
+  _resolvedModComponentDefinitionBrand: never;
 };
 
 /**
@@ -120,7 +120,7 @@ type SharingDefinition = {
 };
 
 /**
- * Config of a Package returned from the PixieBrix API. Used to install extensions.
+ * Config of a Package returned from the PixieBrix API. Used to install ModComponents.
  *
  * If you are creating a mod definition locally, you probably want UnsavedModDefinition, which doesn't include
  * the `sharing` and `updated_at` fields which aren't stored on the YAML/JSON, but are added by the server on responses.

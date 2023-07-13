@@ -70,19 +70,19 @@ import {
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
 import {
@@ -162,7 +162,7 @@ type AvailableInstalled = {
 const checkAvailableInstalledExtensions = createAsyncThunk<
   AvailableInstalled,
   void,
-  { state: EditorRootState & ExtensionsRootState }
+  { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
   const elements = selectNotDeletedElements(thunkAPI.getState());
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
@@ -185,7 +185,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
       }
 
       // QuickBar is installed on every page, need to filter by the documentUrlPatterns
-      if (QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)) {
+      if (QuickBarStarterBrickABC.isQuickBarExtensionPoint(extensionPoint)) {
         return testMatchPatterns(extensionPoint.documentUrlPatterns, tabUrl);
       }
 
@@ -263,7 +263,7 @@ const checkActiveElementAvailability = createAsyncThunk<
     unavailableDynamicCount: number;
   },
   void,
-  { state: EditorRootState & ExtensionsRootState }
+  { state: EditorRootState & ModComponentsRootState }
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentURL();
   const state = thunkAPI.getState();
@@ -303,7 +303,7 @@ const checkActiveElementAvailability = createAsyncThunk<
     installedExtensions,
     dynamicElements,
     (extensionOrElement) => {
-      if (isExtension(extensionOrElement)) {
+      if (isModComponentBase(extensionOrElement)) {
         return extensionOrElement.id;
       }
 

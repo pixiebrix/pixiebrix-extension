@@ -36,7 +36,7 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -71,9 +71,9 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedExtension<TriggerConfig>>({
+const extensionFactory = define<ResolvedModComponent<TriggerConfig>>({
   apiVersion: "v3",
-  _resolvedExtensionBrand: undefined,
+  _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/extension-point-${n}`),

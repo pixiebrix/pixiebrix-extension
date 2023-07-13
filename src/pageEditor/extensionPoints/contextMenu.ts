@@ -33,7 +33,7 @@ import {
 import { type StarterBrickConfig } from "@/extensionPoints/types";
 import {
   type ContextMenuConfig,
-  ContextMenuExtensionPoint,
+  ContextMenuStarterBrickABC,
   type MenuDefinition,
 } from "@/extensionPoints/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
@@ -175,7 +175,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   displayOrder: 1,
   elementType: "contextMenu",
   label: "Context Menu",
-  baseClass: ContextMenuExtensionPoint,
+  baseClass: ContextMenuStarterBrickABC,
   EditorNode: ContextMenuConfiguration,
   selectNativeElement: undefined,
   icon: faBars,

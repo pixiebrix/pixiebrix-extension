@@ -31,7 +31,7 @@ import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ExtensionRef } from "@/types/extensionTypes";
+import { type ModComponentRef } from "@/types/extensionTypes";
 import type {
   ActivatePanelOptions,
   ActivateModPanelEntry,
@@ -350,7 +350,7 @@ export function removeExtensionPoint(
 /**
  * Create placeholder panels showing loading indicators
  */
-export function reservePanels(refs: ExtensionRef[]): void {
+export function reservePanels(refs: ModComponentRef[]): void {
   if (refs.length === 0) {
     return;
   }
@@ -408,7 +408,7 @@ export function updateHeading(extensionId: UUID, heading: string): void {
 }
 
 export function upsertPanel(
-  { extensionId, extensionPointId, blueprintId }: ExtensionRef,
+  { extensionId, extensionPointId, blueprintId }: ModComponentRef,
   heading: string,
   payload: PanelPayload
 ): void {

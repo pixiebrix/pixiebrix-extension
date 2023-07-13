@@ -21,7 +21,7 @@ import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
 import { boolean } from "@/utils";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import servicesSlice, {
   persistServicesConfig,
   type ServicesRootState,
@@ -69,7 +69,7 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 export type RootState = AuthRootState &
   LogRootState &
   ModsPageRootState &
-  ExtensionsRootState &
+  ModComponentsRootState &
   ServicesRootState &
   SettingsRootState &
   WorkshopRootState &

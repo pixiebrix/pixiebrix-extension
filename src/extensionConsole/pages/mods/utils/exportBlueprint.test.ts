@@ -17,12 +17,12 @@
 
 import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBlueprint";
 import { validateRegistryId } from "@/types/helpers";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/extensionTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 
 describe("makeBlueprint", () => {
   it("smoke test", () => {
-    const result = makeBlueprint(extensionFactory() as UnresolvedExtension, {
+    const result = makeBlueprint(extensionFactory() as UnresolvedModComponent, {
       id: validateRegistryId("test/blueprint"),
       name: "test",
     });
@@ -39,7 +39,7 @@ describe("makeBlueprint", () => {
       optionsArgs: {
         foo: "hello world!",
       },
-    }) as UnresolvedExtension;
+    }) as UnresolvedModComponent;
 
     const result = makeBlueprint(extension, {
       id: validateRegistryId("test/blueprint"),

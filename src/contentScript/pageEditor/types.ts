@@ -27,7 +27,7 @@ import {
 } from "@/extensionPoints/panelExtension";
 import {
   type MenuDefinition,
-  type MenuItemExtensionConfig,
+  type MenuItemStarterBrickConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { type ElementInfo } from "@/pageScript/frameworks";
 import { type ModComponentBase } from "@/types/extensionTypes";
@@ -55,12 +55,12 @@ export type PanelSelectionResult = {
 };
 export type ButtonDefinition = DynamicDefinition<
   MenuDefinition,
-  MenuItemExtensionConfig
+  MenuItemStarterBrickConfig
 >;
 export type ButtonSelectionResult = {
   uuid: UUID;
   menu: Except<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
-  item: Pick<MenuItemExtensionConfig, "caption">;
+  item: Pick<MenuItemStarterBrickConfig, "caption">;
   containerInfo: ElementInfo;
 };
 

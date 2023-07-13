@@ -26,7 +26,7 @@ import {
 } from "@/extensionPoints/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 
 describe("tourController", () => {
   test("ad-hoc tour", () => {
@@ -74,7 +74,7 @@ describe("tourController", () => {
         id: uuidv4(),
         label: "Test Tour",
         _recipe: null,
-      } as ResolvedExtension,
+      } as ResolvedModComponent,
       allowUserRun: false,
       run: () => ({
         promise: tourPromise.promise,

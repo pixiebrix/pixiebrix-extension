@@ -22,7 +22,7 @@ import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type BrickIcon } from "@/types/iconTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
@@ -86,17 +86,17 @@ export interface StarterBrickConfig<
   kind: "extensionPoint";
 }
 
-export function assertExtensionPointConfig(
-  maybeExtensionPointConfig: unknown
-): asserts maybeExtensionPointConfig is StarterBrickConfig {
-  const errorContext = { value: maybeExtensionPointConfig };
+export function assertStarterBrickConfig(
+  maybeStarterBrickConfig: unknown
+): asserts maybeStarterBrickConfig is StarterBrickConfig {
+  const errorContext = { value: maybeStarterBrickConfig };
 
-  if (typeof maybeExtensionPointConfig !== "object") {
+  if (typeof maybeStarterBrickConfig !== "object") {
     console.warn("Expected extension point", errorContext);
     throw new TypeError("Expected object for StarterBrickConfig");
   }
 
-  const config = maybeExtensionPointConfig as Record<string, unknown>;
+  const config = maybeStarterBrickConfig as Record<string, unknown>;
 
   if (config.kind !== "extensionPoint") {
     console.warn("Expected extension point", errorContext);
@@ -134,7 +134,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   public readonly description: string;
 
-  protected readonly extensions: Array<ResolvedExtension<TConfig>> = [];
+  protected readonly extensions: Array<ResolvedModComponent<TConfig>> = [];
 
   protected readonly template?: string;
 
@@ -180,7 +180,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     extensionIds: UUID[]
   ): void;
 
-  syncExtensions(extensions: Array<ResolvedExtension<TConfig>>): void {
+  syncExtensions(extensions: Array<ResolvedModComponent<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
 
     const updatedIds = new Set(extensions.map((x) => x.id));
@@ -204,7 +204,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     this.syncExtensions(this.extensions.filter((x) => x.id !== extensionId));
   }
 
-  addExtension(extension: ResolvedExtension<TConfig>): void {
+  addExtension(extension: ResolvedModComponent<TConfig>): void {
     const index = this.extensions.findIndex((x) => x.id === extension.id);
     if (index >= 0) {
       console.warn(
@@ -224,7 +224,9 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     return this.defaultReader();
   }
 
-  abstract getBlocks(extension: ResolvedExtension<TConfig>): Promise<Brick[]>;
+  abstract getBlocks(
+    extension: ResolvedModComponent<TConfig>
+  ): Promise<Brick[]>;
 
   abstract isAvailable(): Promise<boolean>;
 

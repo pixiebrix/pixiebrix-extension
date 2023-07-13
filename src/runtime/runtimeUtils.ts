@@ -236,12 +236,12 @@ export async function selectBlockRootElement(
   return $root.get(0);
 }
 
-export function assertExtensionNotResolved<T extends ModComponentBase>(
+export function assertModComponentNotResolved<T extends ModComponentBase>(
   extension: ModComponentBase
 ): asserts extension is T & {
-  _unresolvedExtensionBrand: never;
+  _unresolvedModComponentBrand: never;
 } {
   if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
-    throw new Error("Expected UnresolvedExtension");
+    throw new Error("Expected UnresolvedModComponent");
   }
 }

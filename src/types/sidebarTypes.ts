@@ -24,7 +24,7 @@ import {
   type RendererRunPayload,
 } from "@/types/rendererTypes";
 import { type MessageContext } from "@/types/loggerTypes";
-import { type ExtensionOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 
 /**
  * Entry types supported by the sidebar.
@@ -120,15 +120,15 @@ type BasePanelEntry = {
  * A panel added to the page by an ModComponentBase.
  *
  * @see DisplayTemporaryInfo
- * @see SidebarExtensionPoint
+ * @see SidebarStarterBrickABC
  */
-export type BaseExtensionPanelEntry = BasePanelEntry & {
+export type BaseModComponentPanelEntry = BasePanelEntry & {
   /**
-   * The id of the extension that added the panel
+   * The id of the ModComponent that added the panel
    */
   extensionId: UUID;
   /**
-   * The blueprint associated with the extension that added the panel.
+   * The blueprint associated with the ModComponent that added the panel.
    *
    * Used to:
    * - Give preference to blueprint side panels when using the "Show Sidebar" brick.
@@ -152,21 +152,21 @@ export type BaseExtensionPanelEntry = BasePanelEntry & {
   actions?: PanelButton[];
 };
 
-export function isBaseExtensionPanelEntry(
+export function isBaseModComponentPanelEntry(
   panel: unknown
-): panel is BaseExtensionPanelEntry {
-  return (panel as BaseExtensionPanelEntry)?.extensionId != null;
+): panel is BaseModComponentPanelEntry {
+  return (panel as BaseModComponentPanelEntry)?.extensionId != null;
 }
 
 /**
- * A panel added by an extension attached to an SidebarExtensionPoint
- * @see SidebarExtensionPoint
+ * A panel added by an ModComponent attached to an SidebarStarterBrickABC
+ * @see SidebarStarterBrickABC
  */
-export type PanelEntry = BaseExtensionPanelEntry & {
+export type PanelEntry = BaseModComponentPanelEntry & {
   type: "panel";
   /**
    * The sidebar extension point
-   * @see SidebarExtensionPoint
+   * @see SidebarStarterBrickABC
    */
   extensionPointId: RegistryId;
 };
@@ -178,7 +178,7 @@ export function isPanelEntry(panel: unknown): panel is PanelEntry {
 /**
  * An ephemeral panel to show in the sidebar. Only one temporary panel can be shown from an extension at a time.
  */
-export type TemporaryPanelEntry = BaseExtensionPanelEntry & {
+export type TemporaryPanelEntry = BaseModComponentPanelEntry & {
   type: "temporaryPanel";
   /**
    * Unique identifier for the temporary panel instance. Used to correlate panel-close action.
@@ -327,6 +327,6 @@ export type SidebarState = SidebarEntries & {
 };
 
 export interface SidebarRootState {
-  options: ExtensionOptionsState;
+  options: ModComponentOptionsState;
   sidebar: SidebarState;
 }

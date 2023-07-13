@@ -70,7 +70,7 @@ const extensionFactory = define<ActivatedModComponent<TriggerConfig>>({
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,
   }),
-  _unresolvedExtensionBrand: null,
+  _unresolvedModComponentBrand: null,
   createTimestamp: new Date().toISOString(),
   updateTimestamp: new Date().toISOString(),
   active: true,

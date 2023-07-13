@@ -18,7 +18,11 @@
 import { type ModViewItem } from "@/types/modTypes";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDeleteCloudExtensionMutation } from "@/services/api";
-import { getLabel, isExtension, isModDefinition } from "@/utils/modUtils";
+import {
+  getLabel,
+  isResolvedModComponent,
+  isModDefinition,
+} from "@/utils/modUtils";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
 
@@ -29,7 +33,7 @@ function useDeleteExtensionAction(modViewItem: ModViewItem): () => void | null {
   const isActive = status === "Active" || status === "Paused";
 
   const isCloudExtension =
-    isExtension(mod) &&
+    isResolvedModComponent(mod) &&
     sharing.source.type === "Personal" &&
     // If the status is active, there is still likely a copy of the extension saved on our server. But the point
     // this check is for extensions that aren't also installed locally

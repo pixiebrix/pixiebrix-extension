@@ -16,7 +16,7 @@
  */
 
 import {
-  isBaseExtensionPanelEntry,
+  isBaseModComponentPanelEntry,
   type SidebarRootState,
 } from "@/types/sidebarTypes";
 import { isEmpty } from "lodash";
@@ -68,7 +68,7 @@ export const selectExtensionFromEventKey =
       (entry) => eventKeyForEntry(entry) === eventKey
     );
 
-    if (!isBaseExtensionPanelEntry(sidebarEntry)) {
+    if (!isBaseModComponentPanelEntry(sidebarEntry)) {
       return;
     }
 

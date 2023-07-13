@@ -18,7 +18,7 @@
 import { getCurrentURL } from "@/pageEditor/utils";
 import { configureStore } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateRegistryId } from "@/types/helpers";
@@ -47,7 +47,7 @@ describe("checkActiveElementAvailability", () => {
     const testUrl = "https://www.myUrl.com/*";
     (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
 
-    const store = configureStore<EditorRootState & ExtensionsRootState>({
+    const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
         options: extensionsReducer,

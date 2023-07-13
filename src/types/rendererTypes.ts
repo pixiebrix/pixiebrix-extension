@@ -25,11 +25,11 @@ type BaseRendererPayload = {
    */
   key: string;
   /**
-   * The extension the produced the payload.
+   * The ModComponent that produced the payload.
    */
   extensionId: UUID;
   /**
-   * The extension run that produced the payload
+   * The ModComponent run that produced the payload
    * @since 1.7.0
    */
   runId: UUID;

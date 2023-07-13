@@ -28,7 +28,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 
 /**
@@ -122,9 +122,9 @@ export function getCurrentTour(): TourRun | null {
 export function markTourStart(
   nonce: UUID,
   extension: {
-    id: ResolvedExtension["id"];
-    label: ResolvedExtension["label"];
-    _recipe?: Pick<ResolvedExtension["_recipe"], "id">;
+    id: ResolvedModComponent["id"];
+    label: ResolvedModComponent["label"];
+    _recipe?: Pick<ResolvedModComponent["_recipe"], "id">;
   },
   {
     promise,
@@ -254,7 +254,7 @@ export function registerTour({
   run,
 }: {
   blueprintId: RegistryId;
-  extension: ResolvedExtension;
+  extension: ResolvedModComponent;
   allowUserRun?: boolean;
   run: () => { promise: Promise<void>; abortController: AbortController };
 }): RegisteredTour {

@@ -44,7 +44,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import {
   type ModComponentBase,
-  type UnresolvedExtension,
+  type UnresolvedModComponent,
 } from "@/types/extensionTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
@@ -289,7 +289,7 @@ function selectExtensionPointConfig(
 
 type RecipeParts = {
   sourceRecipe?: ModDefinition;
-  cleanRecipeExtensions: UnresolvedExtension[];
+  cleanRecipeExtensions: UnresolvedModComponent[];
   dirtyRecipeElements: ModComponentFormState[];
   options?: ModOptionsDefinition;
   metadata?: ModMetadataFormState;

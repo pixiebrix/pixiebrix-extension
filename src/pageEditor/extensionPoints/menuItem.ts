@@ -33,8 +33,8 @@ import {
 import { omitEditorMetadata } from "./pipelineMapping";
 import {
   type MenuDefinition,
-  type MenuItemExtensionConfig,
-  MenuItemExtensionPoint,
+  type MenuItemStarterBrickConfig,
+  MenuItemStarterBrickABC,
 } from "@/extensionPoints/menuItemExtension";
 import { type StarterBrickConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
@@ -118,9 +118,9 @@ function selectExtensionPointConfig(
 function selectExtension(
   state: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
-): ModComponentBase<MenuItemExtensionConfig> {
+): ModComponentBase<MenuItemStarterBrickConfig> {
   const { extension } = state;
-  const config: MenuItemExtensionConfig = {
+  const config: MenuItemStarterBrickConfig = {
     caption: extension.caption,
     icon: extension.icon,
     action: options.includeInstanceIds
@@ -137,11 +137,11 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: ModComponentBase<MenuItemExtensionConfig>
+  config: ModComponentBase<MenuItemStarterBrickConfig>
 ): Promise<ActionFormState> {
   const extensionPoint = await lookupExtensionPoint<
     MenuDefinition,
-    MenuItemExtensionConfig,
+    MenuItemStarterBrickConfig,
     "menuItem"
   >(config, "menuItem");
 
@@ -183,7 +183,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   elementType: "menuItem",
   label: "Button",
   icon: faMousePointer,
-  baseClass: MenuItemExtensionPoint,
+  baseClass: MenuItemStarterBrickABC,
   EditorNode: MenuItemConfiguration,
   selectNativeElement: insertButton,
   fromNativeElement,

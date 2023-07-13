@@ -35,7 +35,7 @@ import { type StarterBrickConfig } from "@/extensionPoints/types";
 import {
   type PanelDefinition,
   type SidebarConfig,
-  SidebarExtensionPoint,
+  SidebarStarterBrickABC,
 } from "@/extensionPoints/sidebarExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
@@ -169,7 +169,7 @@ const config: ElementConfig<never, SidebarFormState> = {
   displayOrder: 3,
   elementType: "actionPanel",
   label: "Sidebar Panel",
-  baseClass: SidebarExtensionPoint,
+  baseClass: SidebarStarterBrickABC,
   selectNativeElement: undefined,
   icon: faColumns,
   fromNativeElement,

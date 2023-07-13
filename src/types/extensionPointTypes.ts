@@ -18,7 +18,7 @@
 import { type Permissions } from "webextension-polyfill";
 import { type Schema } from "@/types/schemaTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
@@ -34,12 +34,12 @@ export type Location =
 
 export type StarterBrick = Metadata & {
   /**
-   * The kind of extension point.
+   * The kind of StarterBrick.
    */
   kind: string;
 
   /**
-   * The input schema for extension point-specific configuration.
+   * The input schema for StarterBrick-specific configuration.
    */
   inputSchema: Schema;
 
@@ -49,12 +49,12 @@ export type StarterBrick = Metadata & {
   defaultOptions: UnknownObject;
 
   /**
-   * Permissions required to use the extension point.
+   * Permissions required to use the StarterBrick.
    */
   permissions: Permissions.Permissions;
 
   /**
-   * Return the Reader used by the extension point. This method should only be called for calculating availability
+   * Return the Reader used by the StarterBrick. This method should only be called for calculating availability
    * and the schema, as it may include stub readers.
    *
    * @see StarterBrick.previewReader
@@ -69,7 +69,7 @@ export type StarterBrick = Metadata & {
   previewReader: () => Promise<Reader>;
 
   /**
-   * Return true if the extension point is available on the current page. Based on:
+   * Return true if the StarterBrick is available on the current page. Based on:
    *
    * - URL match patterns
    * - URL pattern rules
@@ -78,38 +78,38 @@ export type StarterBrick = Metadata & {
   isAvailable: () => Promise<boolean>;
 
   /**
-   * True iff the extension point must be installed before the page can be considered ready
+   * True if the StarterBrick must be installed before the page can be considered ready
    */
   syncInstall: boolean;
 
   /**
-   * Install/add the extension point to the page.
+   * Install/add the StarterBrick to the page.
    */
   install(): Promise<boolean>;
 
   /**
-   * Remove the extension point and installed extensions from the page.
+   * Remove the StarterBrick and installed ModComponents from the page.
    */
   uninstall(options?: { global?: boolean }): void;
 
   /**
-   * Remove the extension from the extension point.
+   * Remove the ModComponent from the StarterBrick.
    */
-  removeExtension(extensionId: UUID): void;
+  removeExtension(modComponentId: UUID): void;
 
   /**
-   * Register an extension with the extension point. Does not actually install/run the extension.
+   * Register an ModComponent with the StarterBrick. Does not actually install/run the ModComponent.
    */
-  addExtension(extension: ResolvedExtension): void;
+  addExtension(modComponent: ResolvedModComponent): void;
 
   /**
-   * Sync registered extensions, removing any extensions that aren't provided here. Does not actually install/run
-   * the extensions.
+   * Sync registered ModComponents, removing any ModComponents that aren't provided here. Does not actually install/run
+   * the ModComponents.
    */
-  syncExtensions(extensions: ResolvedExtension[]): void;
+  syncExtensions(modComponents: ResolvedModComponent[]): void;
 
   /**
-   * Run the installed extensions for extension point.
+   * Run the installed ModComponents for StarterBrick.
    */
   run(args: RunArgs): Promise<void>;
 
@@ -118,5 +118,5 @@ export type StarterBrick = Metadata & {
    *
    * @see PipelineExpression
    */
-  getBlocks: (extension: ResolvedExtension) => Promise<Brick[]>;
+  getBlocks: (modComponent: ResolvedModComponent) => Promise<Brick[]>;
 };

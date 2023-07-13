@@ -35,7 +35,7 @@ import { type StarterBrickConfig } from "@/extensionPoints/types";
 import {
   type PanelConfig,
   type PanelDefinition,
-  PanelExtensionPoint,
+  PanelStarterBrickABC,
 } from "@/extensionPoints/panelExtension";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
@@ -175,7 +175,7 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   elementType: "panel",
   label: "Panel",
   icon: faWindowMaximize,
-  baseClass: PanelExtensionPoint,
+  baseClass: PanelStarterBrickABC,
   selectNativeElement: insertPanel,
   flag: "page-editor-extension-panel",
   EditorNode: PanelConfiguration,

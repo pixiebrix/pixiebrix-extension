@@ -17,7 +17,7 @@
 
 import { type AuthRootState } from "@/auth/authTypes";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
 import { type SettingsRootState } from "@/store/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
@@ -237,7 +237,7 @@ export type EditorRootState = {
 
 export type RootState = AuthRootState &
   LogRootState &
-  ExtensionsRootState &
+  ModComponentsRootState &
   AnalysisRootState &
   EditorRootState &
   RecipesRootState &
