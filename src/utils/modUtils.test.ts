@@ -17,7 +17,7 @@
 
 import {
   getSharingType,
-  isResolvedExtension,
+  isResolvedModComponent,
   isUnavailableMod,
 } from "./modUtils";
 import { uuidv4 } from "@/types/helpers";
@@ -143,12 +143,12 @@ describe("getSharingType", () => {
 describe("isExtension", () => {
   it("returns true for an extension", () => {
     const mod = extensionFactory() as ResolvedModComponent;
-    expect(isResolvedExtension(mod)).toBe(true);
+    expect(isResolvedModComponent(mod)).toBe(true);
   });
 
   it("returns false for a recipe", () => {
     const mod = recipeDefinitionFactory();
-    expect(isResolvedExtension(mod)).toBe(false);
+    expect(isResolvedModComponent(mod)).toBe(false);
   });
 });
 

@@ -51,7 +51,7 @@ export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
  * Returns true if the mod is a ResolvedExtension, instead of a mod definition.
  * @param mod the mod
  */
-export function isResolvedExtension(mod: Mod): mod is ResolvedModComponent {
+export function isResolvedModComponent(mod: Mod): mod is ResolvedModComponent {
   return "extensionPointId" in mod;
 }
 
@@ -59,8 +59,8 @@ export function isResolvedExtension(mod: Mod): mod is ResolvedModComponent {
  * Return true if the mod is an ModComponentBase that originated from a recipe.
  * @param mod the mod
  */
-export function isExtensionFromRecipe(mod: Mod): boolean {
-  return isResolvedExtension(mod) && Boolean(mod._recipe);
+export function isModComponentFromRecipe(mod: Mod): boolean {
+  return isResolvedModComponent(mod) && Boolean(mod._recipe);
 }
 
 /**
@@ -70,7 +70,7 @@ export function isExtensionFromRecipe(mod: Mod): boolean {
 export function isModDefinition(
   mod: Mod
 ): mod is ModDefinition | UnavailableMod {
-  return !isResolvedExtension(mod);
+  return !isResolvedModComponent(mod);
 }
 
 /**
@@ -78,7 +78,7 @@ export function isModDefinition(
  * @param mod the mod
  */
 export function getUniqueId(mod: Mod): UUID | RegistryId {
-  return isResolvedExtension(mod) ? mod.id : mod.metadata.id;
+  return isResolvedModComponent(mod) ? mod.id : mod.metadata.id;
 }
 
 /**
@@ -86,7 +86,7 @@ export function getUniqueId(mod: Mod): UUID | RegistryId {
  * @param mod the mod
  */
 export function getLabel(mod: Mod): string {
-  return isResolvedExtension(mod) ? mod.label : mod.metadata.name;
+  return isResolvedModComponent(mod) ? mod.label : mod.metadata.name;
 }
 
 /**
@@ -94,11 +94,11 @@ export function getLabel(mod: Mod): string {
  * @param mod the mod
  */
 export const getDescription = (mod: Mod): string => {
-  const description = isResolvedExtension(mod)
+  const description = isResolvedModComponent(mod)
     ? mod._recipe?.description
     : mod.metadata.description;
 
-  if (!description && isResolvedExtension(mod)) {
+  if (!description && isResolvedModComponent(mod)) {
     return "Created in the Page Editor";
   }
 
@@ -110,7 +110,7 @@ export const getDescription = (mod: Mod): string => {
  * @param mod the mod
  */
 export function getPackageId(mod: Mod): RegistryId | null {
-  return isResolvedExtension(mod) ? mod._recipe?.id : mod.metadata.id;
+  return isResolvedModComponent(mod) ? mod._recipe?.id : mod.metadata.id;
 }
 
 /**
@@ -118,19 +118,19 @@ export function getPackageId(mod: Mod): RegistryId | null {
  * @param mod the mod
  */
 export function getUpdatedAt(mod: Mod): string | null {
-  return isResolvedExtension(mod)
+  return isResolvedModComponent(mod)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on ModComponentBase here
       mod._recipe?.updated_at ?? mod.updateTimestamp
     : mod.updated_at;
 }
 
 function isPublic(mod: Mod): boolean {
-  return isResolvedExtension(mod)
+  return isResolvedModComponent(mod)
     ? mod._recipe?.sharing?.public
     : mod.sharing.public;
 }
 
-function isPersonalExtension(extension: ModComponentBase): boolean {
+function isPersonalModComponent(extension: ModComponentBase): boolean {
   return !extension._recipe && !extension._deployment;
 }
 
@@ -151,8 +151,10 @@ function hasRecipeScope(recipe: ModDefinition | UnavailableMod, scope: string) {
  * @param userScope the user's scope, or null if it's not set
  */
 function isPersonal(mod: Mod, userScope: string | null) {
-  if (isResolvedExtension(mod)) {
-    return isPersonalExtension(mod) || hasSourceRecipeWithScope(mod, userScope);
+  if (isResolvedModComponent(mod)) {
+    return (
+      isPersonalModComponent(mod) || hasSourceRecipeWithScope(mod, userScope)
+    );
   }
 
   return hasRecipeScope(mod, userScope);
@@ -162,7 +164,7 @@ export function getInstalledVersionNumber(
   installedExtensions: UnresolvedModComponent[],
   mod: Mod
 ): string | null {
-  if (isResolvedExtension(mod)) {
+  if (isResolvedModComponent(mod)) {
     return mod._recipe?.version;
   }
 
@@ -178,7 +180,7 @@ export function isDeployment(
   mod: Mod,
   installedExtensions: UnresolvedModComponent[]
 ): boolean {
-  if (isResolvedExtension(mod)) {
+  if (isResolvedModComponent(mod)) {
     return Boolean(mod._deployment);
   }
 
@@ -300,7 +302,9 @@ function getOrganization(
   mod: Mod,
   organizations: Organization[]
 ): Organization {
-  const sharing = isResolvedExtension(mod) ? mod._recipe?.sharing : mod.sharing;
+  const sharing = isResolvedModComponent(mod)
+    ? mod._recipe?.sharing
+    : mod.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
     return null;
