@@ -237,11 +237,11 @@ describe("deactivateMod function", () => {
     const priorEditorState = await getEditorState();
 
     const {
-      reduxState: { optionsState: resultingState },
+      reduxState: { options: resultingState },
       deactivatedModComponents,
     } = deactivateMod(modToDeactivate.id, {
-      optionsState: priorOptionsState,
-      editorState: priorEditorState,
+      options: priorOptionsState,
+      editor: priorEditorState,
     });
 
     expect(deactivatedModComponents.length).toEqual(2);
@@ -265,11 +265,11 @@ describe("deactivateMod function", () => {
     const priorEditorState = await getEditorState();
 
     const {
-      reduxState: { optionsState: resultingState },
+      reduxState: { options: resultingState },
       deactivatedModComponents,
     } = deactivateMod("@test/id-doesnt-exist" as RegistryId, {
-      optionsState: priorOptionsState,
-      editorState: priorEditorState,
+      options: priorOptionsState,
+      editor: priorEditorState,
     });
 
     expect(deactivatedModComponents).toEqual([]);

@@ -38,6 +38,11 @@ import { editorSlice } from "@/pageEditor/slices/editorSlice";
 //  const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 const UPDATE_INTERVAL_MS = 60 * 1000;
 
+type ActivatedModState = {
+  options: ExtensionOptionsState;
+  editor: EditorState;
+};
+
 // TODO: we should consider start extracting this request pattern into an api of some
 //  kind that the background script can use
 export async function autoModUpdatesEnabled(): Promise<boolean> {
@@ -145,13 +150,9 @@ async function getBackwardsCompatibleUpdates(
 
 function deactivateModComponent(
   modComponent: UnresolvedExtension,
-  reduxState: {
-    optionsState: ExtensionOptionsState;
-    editorState: EditorState;
-  }
-): { optionsState: ExtensionOptionsState; editorState: EditorState } {
-  let { optionsState: newOptionsState, editorState: newEditorState } =
-    reduxState;
+  reduxState: ActivatedModState
+): ActivatedModState {
+  let { options: newOptionsState, editor: newEditorState } = reduxState;
 
   newOptionsState = extensionsSlice.reducer(
     newOptionsState,
@@ -164,8 +165,8 @@ function deactivateModComponent(
   );
 
   return {
-    optionsState: newOptionsState,
-    editorState: newEditorState,
+    options: newOptionsState,
+    editor: newEditorState,
   };
 }
 
@@ -178,19 +179,12 @@ function deactivateModComponent(
  */
 export function deactivateMod(
   modId: RegistryId,
-  reduxState: {
-    optionsState: ExtensionOptionsState;
-    editorState: EditorState;
-  }
+  reduxState: ActivatedModState
 ): {
-  reduxState: {
-    optionsState: ExtensionOptionsState;
-    editorState: EditorState;
-  };
+  reduxState: ActivatedModState;
   deactivatedModComponents: UnresolvedExtension[];
 } {
-  let { optionsState: newOptionsState, editorState: newEditorState } =
-    reduxState;
+  let { options: newOptionsState, editor: newEditorState } = reduxState;
 
   const activatedModComponentSelector = selectExtensionsForRecipe(modId);
   const activatedModComponents = activatedModComponentSelector({
@@ -199,10 +193,10 @@ export function deactivateMod(
 
   const deactivatedModComponents: UnresolvedExtension[] = [];
   for (const activatedModComponent of activatedModComponents) {
-    const { optionsState: nextOptionsState, editorState: nextEditorState } =
+    const { options: nextOptionsState, editor: nextEditorState } =
       deactivateModComponent(activatedModComponent, {
-        optionsState: newOptionsState,
-        editorState: newEditorState,
+        options: newOptionsState,
+        editor: newEditorState,
       });
     newOptionsState = nextOptionsState;
     newEditorState = nextEditorState;
@@ -211,7 +205,7 @@ export function deactivateMod(
   }
 
   return {
-    reduxState: { optionsState: newOptionsState, editorState: newEditorState },
+    reduxState: { options: newOptionsState, editor: newEditorState },
     deactivatedModComponents,
   };
 }
@@ -277,25 +271,18 @@ export function collectModConfigurations(
 
 function updateMod(
   mod: ModDefinition,
-  reduxState: {
-    optionsState: ExtensionOptionsState;
-    editorState: EditorState;
-  }
-): { optionsState: ExtensionOptionsState; editorState: EditorState } {
+  reduxState: ActivatedModState
+): ActivatedModState {
   console.log("*** updating mod", mod);
-  let { optionsState: newOptionsState, editorState: newEditorState } =
-    reduxState;
+  let { options: newOptionsState, editor: newEditorState } = reduxState;
 
   // Deactivate the mod
   const {
-    reduxState: {
-      optionsState: nextOptionsState,
-      editorState: nextEditorState,
-    },
+    reduxState: { options: nextOptionsState, editor: nextEditorState },
     deactivatedModComponents,
   } = deactivateMod(mod.metadata.id, {
-    optionsState: newOptionsState,
-    editorState: newEditorState,
+    options: newOptionsState,
+    editor: newEditorState,
   });
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
@@ -309,8 +296,8 @@ function updateMod(
   newOptionsState = reactivateMod(mod, services, optionsArgs, newOptionsState);
 
   return {
-    optionsState: newOptionsState,
-    editorState: newEditorState,
+    options: newOptionsState,
+    editor: newEditorState,
   };
 }
 
@@ -319,12 +306,12 @@ async function updateMods(modUpdates: Record<RegistryId, ModDefinition>) {
   let newEditorState = await getEditorState();
 
   for (const update of Object.values(modUpdates)) {
-    const { optionsState, editorState } = updateMod(update, {
-      optionsState: newOptionsState,
-      editorState: newEditorState,
+    const { options, editor } = updateMod(update, {
+      options: newOptionsState,
+      editor: newEditorState,
     });
-    newOptionsState = optionsState;
-    newEditorState = editorState;
+    newOptionsState = options;
+    newEditorState = editor;
   }
 
   await saveOptions(newOptionsState);
