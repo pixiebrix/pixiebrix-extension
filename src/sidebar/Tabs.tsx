@@ -24,7 +24,7 @@ import {
 import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
 import { reportEvent } from "@/telemetry/events";
-import { CloseButton, Nav, Tab } from "react-bootstrap";
+import { CloseButton, Nav, type NavLinkProps, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import PanelBody from "@/sidebar/PanelBody";
@@ -100,6 +100,18 @@ const TemporaryPanelTabPane: React.FC<{
 });
 TemporaryPanelTabPane.displayName = "TemporaryPanelTabPane";
 
+const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
+  <Nav.Item className={cx(styles.tabWrapper, active && styles.active)}>
+    <Nav.Link
+      {...props}
+      className={cx(styles.tabHeader, active && styles.active)}
+    >
+      {children}
+    </Nav.Link>
+    <div className={styles.tabDivider} />
+  </Nav.Item>
+);
+
 const Tabs: React.FC = () => {
   const dispatch = useDispatch();
   const activeKey = useSelector(selectSidebarActiveTabKey);
@@ -150,54 +162,42 @@ const Tabs: React.FC = () => {
           onSelect={onSelect}
         >
           {staticPanels.map((staticPanel) => (
-            <Nav.Link
+            <TabWithDivider
               key={staticPanel.key}
-              className={cx(
-                styles.tabHeader,
-                isPanelActive(staticPanel) && styles.active
-              )}
+              active={isPanelActive(staticPanel)}
               eventKey={eventKeyForEntry(staticPanel)}
             >
               <span className={styles.tabTitle}>{staticPanel.heading}</span>
-            </Nav.Link>
+            </TabWithDivider>
           ))}
           {panels.map((panel) => (
-            <Nav.Link
+            <TabWithDivider
               key={panel.extensionId}
+              active={isPanelActive(panel)}
               eventKey={eventKeyForEntry(panel)}
-              className={cx(
-                styles.tabHeader,
-                isPanelActive(panel) && styles.active
-              )}
             >
               <span className={styles.tabTitle}>
                 {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
               </span>
-            </Nav.Link>
+            </TabWithDivider>
           ))}
           {forms.map((form) => (
-            <Nav.Link
+            <TabWithDivider
               key={form.extensionId}
+              active={isPanelActive(form)}
               eventKey={eventKeyForEntry(form)}
-              className={cx(
-                styles.tabHeader,
-                isPanelActive(form) && styles.active
-              )}
             >
               <span className={styles.tabTitle}>
                 {form.form.schema.title ?? "Form"}
               </span>
-            </Nav.Link>
+            </TabWithDivider>
           ))}
 
           {temporaryPanels.map((panel) => (
-            <Nav.Link
+            <TabWithDivider
               key={panel.nonce}
+              active={isPanelActive(panel)}
               eventKey={eventKeyForEntry(panel)}
-              className={cx(
-                styles.tabHeader,
-                isPanelActive(panel) && styles.active
-              )}
             >
               <span className={styles.tabTitle}>{panel.heading}</span>
               <CloseButton
@@ -205,21 +205,18 @@ const Tabs: React.FC = () => {
                   onCloseTemporaryTab(panel.nonce);
                 }}
               />
-            </Nav.Link>
+            </TabWithDivider>
           ))}
           {recipeToActivate && (
-            <Nav.Link
+            <TabWithDivider
               key={recipeToActivate.recipeId}
+              active={isPanelActive(recipeToActivate)}
               eventKey={eventKeyForEntry(recipeToActivate)}
-              className={cx(
-                styles.tabHeader,
-                isPanelActive(recipeToActivate) && styles.active
-              )}
             >
               <span className={styles.tabTitle}>
                 {recipeToActivate.heading}
               </span>
-            </Nav.Link>
+            </TabWithDivider>
           )}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height bg-white">
