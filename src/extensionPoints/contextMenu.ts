@@ -125,7 +125,7 @@ function installMouseHandlerOnce(): void {
 /**
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
-export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextMenuConfig> {
+export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<ContextMenuConfig> {
   public override get syncInstall() {
     return true;
   }
@@ -234,7 +234,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
     console.debug(
       "Registering",
       this.extensions.length,
-      "contextMenu extension points"
+      "contextMenu starter bricks"
     );
 
     const results = await Promise.allSettled(
@@ -386,7 +386,7 @@ export interface MenuDefinition extends StarterBrickDefinition {
   defaultOptions?: MenuDefaultOptions;
 }
 
-class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
+class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
   private readonly _definition: MenuDefinition;
 
   public readonly permissions: Permissions.Permissions;

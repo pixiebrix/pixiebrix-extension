@@ -77,7 +77,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
@@ -185,7 +185,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
       }
 
       // QuickBar is installed on every page, need to filter by the documentUrlPatterns
-      if (QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)) {
+      if (QuickBarStarterBrickABC.isQuickBarExtensionPoint(extensionPoint)) {
         return testMatchPatterns(extensionPoint.documentUrlPatterns, tabUrl);
       }
 

@@ -87,7 +87,7 @@ export interface TourDefinition extends StarterBrickDefinition {
   allowUserRun?: boolean;
 }
 
-export abstract class TourExtensionPoint extends StarterBrickABC<TourConfig> {
+export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   public get kind(): "tour" {
     return "tour";
   }
@@ -270,7 +270,7 @@ export abstract class TourExtensionPoint extends StarterBrickABC<TourConfig> {
   }
 }
 
-class RemoteTourExtensionPoint extends TourExtensionPoint {
+class RemoteTourExtensionPoint extends TourStarterBrickABC {
   private readonly _definition: TourDefinition;
 
   public readonly permissions: Permissions.Permissions;

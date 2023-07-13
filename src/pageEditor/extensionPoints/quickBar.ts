@@ -40,7 +40,7 @@ import {
 import {
   type QuickBarConfig,
   type QuickBarDefinition,
-  QuickBarExtensionPoint,
+  QuickBarStarterBrickABC,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
@@ -172,7 +172,7 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
   elementType: "quickBar",
   label: "Quick Bar Action",
-  baseClass: QuickBarExtensionPoint,
+  baseClass: QuickBarStarterBrickABC,
   EditorNode: QuickBarConfiguration,
   selectNativeElement: undefined,
   icon: faThLarge,

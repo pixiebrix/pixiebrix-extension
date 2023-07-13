@@ -25,7 +25,7 @@ import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
   type ContextMenuConfig,
-  ContextMenuExtensionPoint,
+  ContextMenuStarterBrickABC,
 } from "@/extensionPoints/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
@@ -173,7 +173,7 @@ export async function preloadContextMenus(
       const extensionPoint = await extensionPointRegistry.lookup(
         resolved.extensionPointId
       );
-      if (extensionPoint instanceof ContextMenuExtensionPoint) {
+      if (extensionPoint instanceof ContextMenuStarterBrickABC) {
         await extensionPoint.ensureMenu(
           definition as unknown as ResolvedModComponent<ContextMenuConfig>
         );

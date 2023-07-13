@@ -77,10 +77,10 @@ export type QuickBarConfig = {
   action: BrickConfig | BrickPipeline;
 };
 
-export abstract class QuickBarExtensionPoint extends StarterBrickABC<QuickBarConfig> {
+export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarConfig> {
   static isQuickBarExtensionPoint(
     extensionPoint: StarterBrick
-  ): extensionPoint is QuickBarExtensionPoint {
+  ): extensionPoint is QuickBarStarterBrickABC {
     // Need to a access a type specific property (QuickBarExtensionPoint._definition) on a base-typed entity (StarterBrick)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (extensionPoint as any)?._definition?.type === "quickBar";
@@ -289,7 +289,7 @@ export interface QuickBarDefinition extends StarterBrickDefinition {
   defaultOptions?: QuickBarDefaultOptions;
 }
 
-export class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
+export class RemoteQuickBarExtensionPoint extends QuickBarStarterBrickABC {
   private readonly _definition: QuickBarDefinition;
 
   public readonly permissions: Permissions.Permissions;

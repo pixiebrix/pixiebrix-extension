@@ -122,7 +122,7 @@ async function interval({
   console.debug("interval:completed");
 }
 
-export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfig> {
+export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConfig> {
   abstract get trigger(): Trigger;
 
   abstract get attachMode(): AttachMode;
@@ -467,7 +467,7 @@ export abstract class TriggerExtensionPoint extends StarterBrickABC<TriggerConfi
       x.status === "fulfilled" ? x.value : x.reason
     );
 
-    TriggerExtensionPoint.notifyErrors(errors);
+    TriggerStarterBrickABC.notifyErrors(errors);
   };
 
   /**
@@ -847,7 +847,7 @@ export interface TriggerDefinition extends StarterBrickDefinition {
   debounce?: DebounceOptions;
 }
 
-class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
+class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
   private readonly _definition: TriggerDefinition;
 
   public readonly permissions: Permissions.Permissions;

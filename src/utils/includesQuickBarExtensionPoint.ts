@@ -16,8 +16,8 @@
  */
 
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
-import { QuickBarProviderExtensionPoint } from "@/extensionPoints/quickBarProviderExtension";
+import { QuickBarStarterBrickABC } from "@/extensionPoints/quickBarExtension";
+import { QuickBarProviderStarterBrickABC } from "@/extensionPoints/quickBarProviderExtension";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 
@@ -36,8 +36,8 @@ export default async function includesQuickBarExtensionPoint(
     // eslint-disable-next-line no-await-in-loop -- can break when we find one
     const extensionPoint = await extensionPointRegistry.lookup(id);
     if (
-      QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint) ||
-      QuickBarProviderExtensionPoint.isQuickBarProviderExtensionPoint(
+      QuickBarStarterBrickABC.isQuickBarExtensionPoint(extensionPoint) ||
+      QuickBarProviderStarterBrickABC.isQuickBarProviderExtensionPoint(
         extensionPoint
       )
     ) {

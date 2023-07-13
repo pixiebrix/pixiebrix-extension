@@ -97,7 +97,7 @@ function detectLoop(timestamps: Date[]): void {
 /**
  * Extension point that adds a panel to a web page.
  */
-export abstract class PanelExtensionPoint extends StarterBrickABC<PanelConfig> {
+export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> {
   protected $container: JQuery;
 
   private readonly collapsedExtensions: Map<UUID, boolean>;
@@ -497,7 +497,7 @@ export interface PanelDefinition extends StarterBrickDefinition {
   defaultOptions?: PanelDefaultOptions;
 }
 
-class RemotePanelExtensionPoint extends PanelExtensionPoint {
+class RemotePanelExtensionPoint extends PanelStarterBrickABC {
   private readonly _definition: PanelDefinition;
 
   public readonly permissions: Permissions.Permissions;

@@ -83,7 +83,7 @@ export type Trigger =
   // A custom event configured by the user
   | "custom";
 
-export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfig> {
+export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
 
   abstract get debounceOptions(): DebounceOptions;
@@ -139,7 +139,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
     this.clearExtensionInterfaceAndEvents();
     removeExtensionPoint(this.id);
     console.debug(
-      "SidebarExtensionPoint:uninstall: stop listening for sidebarShowEvents"
+      "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents"
     );
     sidebarShowEvents.remove(this.run);
     this.cancelListeners();
@@ -154,7 +154,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
     this.clearExtensionInterfaceAndEvents();
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
     console.debug(
-      "SidebarExtensionPoint:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
+      "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
     );
     sidebarShowEvents.remove(this.run);
   }
@@ -280,7 +280,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
   };
 
   /**
-   * Refresh all panels for the extension point
+   * Refresh all panels for the StarterBrick
    * @private
    */
   private debouncedRefreshPanels = this.refreshPanels; // Default to un-debounced
@@ -330,7 +330,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
   run = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
       console.debug(
-        "SidebarExtensionPoint:run calling sidebarController:removeExtensionPoint because extension point is not available for URL",
+        "SidebarStarterBrick:run calling sidebarController:removeExtensionPoint because StarterBrick is not available for URL",
         this.id
       );
 
@@ -341,7 +341,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
 
     if (this.extensions.length === 0) {
       console.debug(
-        "SidebarExtensionPoint:run Sidebar extension point %s has no installed extensions",
+        "SidebarStarterBrick:run Sidebar StarterBrick %s has no installed extensions",
         this.id
       );
 
@@ -360,7 +360,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
 
     if (!isSidebarFrameVisible()) {
       console.debug(
-        "SidebarExtensionPoint:run Skipping run for %s because sidebar is not visible",
+        "SidebarStarterBrick:run Skipping run for %s because sidebar is not visible",
         this.id
       );
       return;
@@ -413,7 +413,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
 
       // Add event listener so content for the panel is calculated/loaded when the sidebar opens
       console.debug(
-        "SidebarExtensionPoint:install: listen for sidebarShowEvents"
+        "SidebarStarterBrick:install: listen for sidebarShowEvents"
       );
       sidebarShowEvents.add(this.run);
     } else {
@@ -456,7 +456,7 @@ export interface PanelDefinition extends StarterBrickDefinition {
   debounce?: DebounceOptions;
 }
 
-class RemotePanelExtensionPoint extends SidebarExtensionPoint {
+class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
   private readonly definition: PanelDefinition;
 
   public readonly rawConfig: StarterBrickConfig;
