@@ -348,7 +348,7 @@ export async function updateModsIfUpdatesAvailable() {
   await updateMods(modUpdates);
 }
 
-export async function initModUpdater(): Promise<void> {
+export function initModUpdater(): void {
   setInterval(updateModsIfUpdatesAvailable, UPDATE_INTERVAL_MS);
   void updateModsIfUpdatesAvailable();
 }
