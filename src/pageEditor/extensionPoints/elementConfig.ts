@@ -33,7 +33,7 @@ import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/types/serviceTypes";
 import { type IExtension } from "@/types/extensionTypes";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
 
 /**
@@ -125,7 +125,7 @@ export interface BaseFormState<
    * or `undefined` if the extension is not part of a recipe.
    * @see ModDefinition.options
    */
-  optionsDefinition?: OptionsDefinition;
+  optionsDefinition?: ModOptionsDefinition;
 }
 
 /**

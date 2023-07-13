@@ -38,7 +38,7 @@ import {
 import { type Except } from "type-fest";
 import {
   type ModComponentDefinition,
-  type OptionsDefinition,
+  type ModOptionsDefinition,
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
@@ -291,7 +291,7 @@ type RecipeParts = {
   sourceRecipe?: ModDefinition;
   cleanRecipeExtensions: UnresolvedExtension[];
   dirtyRecipeElements: ComponentFormState[];
-  options?: OptionsDefinition;
+  options?: ModOptionsDefinition;
   metadata?: ModMetadataFormState;
 };
 

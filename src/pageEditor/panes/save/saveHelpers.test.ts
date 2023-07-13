@@ -47,7 +47,7 @@ import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateT
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
-  type OptionsDefinition,
+  type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type UnresolvedExtension } from "@/types/extensionTypes";
@@ -434,8 +434,8 @@ describe("replaceRecipeExtension round trip", () => {
 
 describe("blueprint options", () => {
   async function runReplaceRecipeExtensions(
-    recipeOptions: OptionsDefinition,
-    elementOptions: OptionsDefinition
+    recipeOptions: ModOptionsDefinition,
+    elementOptions: ModOptionsDefinition
   ) {
     const recipe = recipeFactory({
       options: recipeOptions,
@@ -481,7 +481,7 @@ describe("blueprint options", () => {
   });
 
   test("creates blueprint options", async () => {
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -503,7 +503,7 @@ describe("blueprint options", () => {
   });
 
   test("updates blueprint options", async () => {
-    const blueprintOptions: OptionsDefinition = {
+    const blueprintOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -516,7 +516,7 @@ describe("blueprint options", () => {
       uiSchema: getMinimalUiSchema(),
     };
 
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -537,7 +537,7 @@ describe("blueprint options", () => {
   });
 
   test("removes blueprint options", async () => {
-    const blueprintOptions: OptionsDefinition = {
+    const blueprintOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -550,7 +550,7 @@ describe("blueprint options", () => {
       uiSchema: getMinimalUiSchema(),
     };
 
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: getMinimalSchema(),
       uiSchema: getMinimalUiSchema(),
     };

@@ -31,7 +31,7 @@ import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
@@ -187,7 +187,7 @@ export function editRecipeMetadata(
 
 export function editRecipeOptionsDefinitions(
   state: WritableDraft<EditorState>,
-  options: OptionsDefinition
+  options: ModOptionsDefinition
 ) {
   const recipeId = state.activeRecipeId;
   if (recipeId == null) {

@@ -38,7 +38,7 @@ import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
 import {
@@ -166,7 +166,7 @@ test("saves non recipe element", async () => {
 });
 
 describe("saving a Recipe Extension", () => {
-  const recipeOptions: OptionsDefinition = {
+  const recipeOptions: ModOptionsDefinition = {
     schema: {
       type: "object",
       properties: {

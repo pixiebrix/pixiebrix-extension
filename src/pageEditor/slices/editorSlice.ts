@@ -91,7 +91,7 @@ import {
 } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type IExtension } from "@/types/extensionTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
@@ -554,7 +554,7 @@ export const editorSlice = createSlice({
     },
     editRecipeOptionsDefinitions(
       state,
-      action: PayloadAction<OptionsDefinition>
+      action: PayloadAction<ModOptionsDefinition>
     ) {
       const { payload: options } = action;
       editRecipeOptionsDefinitions(state, options);
@@ -707,7 +707,7 @@ export const editorSlice = createSlice({
         oldRecipeId: RegistryId;
         newRecipeId: RegistryId;
         metadata: ModMetadataFormState;
-        options: OptionsDefinition;
+        options: ModOptionsDefinition;
       }>
     ) {
       const { oldRecipeId, newRecipeId, metadata, options } = action.payload;

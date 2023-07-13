@@ -33,7 +33,7 @@ import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -146,7 +146,7 @@ export interface EditorState {
   /**
    * Unsaved, changed recipe options definitions
    */
-  dirtyRecipeOptionsById: Record<RegistryId, OptionsDefinition>;
+  dirtyRecipeOptionsById: Record<RegistryId, ModOptionsDefinition>;
 
   /**
    * Unsaved, changed recipe metadata

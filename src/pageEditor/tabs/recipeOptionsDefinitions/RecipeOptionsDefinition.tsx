@@ -43,7 +43,7 @@ import {
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -79,7 +79,7 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
-export const EMPTY_RECIPE_OPTIONS_DEFINITION: OptionsDefinition = {
+export const EMPTY_RECIPE_OPTIONS_DEFINITION: ModOptionsDefinition = {
   schema: getMinimalSchema(),
   uiSchema: getMinimalUiSchema(),
 };
@@ -101,7 +101,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
-    (options: OptionsDefinition) => {
+    (options: ModOptionsDefinition) => {
       dispatch(actions.editRecipeOptionsDefinitions(options));
     },
     [dispatch]
