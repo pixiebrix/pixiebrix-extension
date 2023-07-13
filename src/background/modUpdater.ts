@@ -305,6 +305,8 @@ async function updateMods(modUpdates: Record<RegistryId, ModDefinition>) {
   let newOptionsState = await loadOptions();
   let newEditorState = await getEditorState();
 
+  console.log("*** state before update mods", newOptionsState);
+
   for (const update of Object.values(modUpdates)) {
     const { options, editor } = updateMod(update, {
       options: newOptionsState,
@@ -317,10 +319,16 @@ async function updateMods(modUpdates: Record<RegistryId, ModDefinition>) {
   await saveOptions(newOptionsState);
   await saveEditorState(newEditorState);
   await forEachTab(queueReactivateTab);
+
+  console.log("*** state after update mods", newOptionsState);
 }
 
-async function updateModsIfUpdatesAvailable() {
+// TODO: updateModsIfForceUpdatesAvailable?
+export async function updateModsIfUpdatesAvailable() {
   console.log("*** checking for mod updates");
+
+  const optionsState = await loadOptions();
+  console.log("*** options state", optionsState);
 
   if (!(await autoModUpdatesEnabled())) {
     return;

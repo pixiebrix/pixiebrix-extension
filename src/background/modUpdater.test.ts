@@ -23,6 +23,7 @@ import {
   deactivateMod,
   fetchModUpdates,
   getActivatedMarketplaceModMetadata,
+  updateModsIfUpdatesAvailable,
 } from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
@@ -35,11 +36,18 @@ import type { IExtension, ActivatedModComponent } from "@/types/extensionTypes";
 import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
+  versionedRecipeWithResolvedExtensions,
 } from "@/testUtils/factories/recipeFactories";
 import { getEditorState } from "@/store/dynamicElementStorage";
+import extensionsSlice from "@/store/extensionsSlice";
+import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError", () => jest.fn());
+jest.mock("@/background/activeTab", () => ({
+  forEachTab: jest.fn().mockResolvedValue(undefined),
+}));
 
 describe("autoModUpdatesEnabled function", () => {
   it("should return false if flag absent", async () => {
@@ -274,5 +282,112 @@ describe("deactivateMod function", () => {
 
     expect(deactivatedModComponents).toEqual([]);
     expect(resultingState.extensions).toEqual(priorOptionsState.extensions);
+  });
+});
+
+describe("updateModsIfUpdatesAvailable", () => {
+  let publicMod: ModDefinition;
+  let publicModUpdate: ModDefinition;
+
+  beforeEach(async () => {
+    publicMod = versionedRecipeWithResolvedExtensions(2)({
+      sharing: sharingDefinitionFactory({ public: true }),
+    });
+
+    publicModUpdate = {
+      ...publicMod,
+      metadata: {
+        ...publicMod.metadata,
+        version: "2.0.1" as SemVerString,
+      },
+    };
+
+    const optionsState = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe: publicMod,
+        extensionPoints: publicMod.extensionPoints,
+        screen: "marketplace",
+        isReinstall: false,
+      })
+    );
+
+    await saveOptions(optionsState);
+  });
+
+  it("should do nothing if no feature flag", async () => {
+    const priorOptionsState = await loadOptions();
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(200, {
+      updates: [
+        {
+          [publicMod.metadata.id]: {
+            backwards_compatible: null,
+            backwards_incompatible: false,
+          },
+        },
+      ],
+    });
+
+    await updateModsIfUpdatesAvailable();
+
+    const resultingOptionsState = await loadOptions();
+
+    expect(resultingOptionsState).toEqual(priorOptionsState);
+    expect(axiosMock.history.get.length).toBe(1);
+  });
+
+  it("should not update if no updates available", async () => {
+    const priorOptionsState = await loadOptions();
+
+    axiosMock.onGet().reply(200, {
+      flags: ["automatic-mod-updates"],
+    });
+
+    axiosMock.onPost().reply(200, {
+      updates: [
+        {
+          [publicMod.metadata.id]: {
+            backwards_compatible: null,
+            backwards_incompatible: false,
+          },
+        },
+      ],
+    });
+
+    await updateModsIfUpdatesAvailable();
+
+    const resultingOptionsState = await loadOptions();
+    expect(resultingOptionsState).toEqual(priorOptionsState);
+  });
+
+  it("should update the mod if updates available", async () => {
+    axiosMock.onGet().reply(200, {
+      flags: ["automatic-mod-updates"],
+    });
+
+    axiosMock.onPost().reply(200, {
+      updates: {
+        [publicMod.metadata.id]: {
+          backwards_compatible: publicModUpdate,
+          backwards_incompatible: false,
+        },
+      },
+    });
+
+    await updateModsIfUpdatesAvailable();
+
+    const resultingOptionsState = await loadOptions();
+    expect(resultingOptionsState.extensions.length).toEqual(2);
+    expect(resultingOptionsState.extensions[0]._recipe.version).toEqual(
+      "2.0.1"
+    );
+    expect(resultingOptionsState.extensions[1]._recipe.version).toEqual(
+      "2.0.1"
+    );
   });
 });
