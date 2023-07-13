@@ -234,10 +234,8 @@ describe("deactivateMod function", () => {
   it("should remove the mod components from the options state", async () => {
     const priorState = await loadOptions();
 
-    const { options: resultingState, deactivatedModComponents } = deactivateMod(
-      modToDeactivate.id,
-      priorState
-    );
+    const { optionsState: resultingState, deactivatedModComponents } =
+      deactivateMod(modToDeactivate.id, priorState);
 
     expect(deactivatedModComponents.length).toEqual(2);
     expect(deactivatedModComponents[0]._recipe.id).toEqual(modToDeactivate.id);
@@ -258,10 +256,8 @@ describe("deactivateMod function", () => {
 
     const priorState = await loadOptions();
 
-    const { options: resultingState, deactivatedModComponents } = deactivateMod(
-      "@test/id-doesnt-exist" as RegistryId,
-      priorState
-    );
+    const { optionsState: resultingState, deactivatedModComponents } =
+      deactivateMod("@test/id-doesnt-exist" as RegistryId, priorState);
 
     expect(deactivatedModComponents).toEqual([]);
     expect(resultingState.extensions).toEqual(priorState.extensions);

@@ -18,18 +18,21 @@
 import type { Me } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
-import { loadOptions } from "@/store/extensionsStorage";
+import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import type { IExtension, UnresolvedExtension } from "@/types/extensionTypes";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ExtensionOptionsState } from "@/store/extensionsTypes";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
-import { UUID } from "@/types/stringTypes";
-import { OptionsArgs } from "@/types/runtimeTypes";
+import type { UUID } from "@/types/stringTypes";
+import type { OptionsArgs } from "@/types/runtimeTypes";
 import { isEmpty } from "lodash";
+import { forEachTab } from "@/background/activeTab";
+import { queueReactivateTab } from "@/contentScript/messenger/api";
 
-//const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
+// TODO: replace me
+//  const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 const UPDATE_INTERVAL_MS = 60 * 1000;
 
 // TODO: we should consider start extracting this request pattern into an api of some
@@ -151,37 +154,49 @@ export function deactivateMod(
   // TODO: do we also need editorState?
   //  editorState: EditorState | undefined,
 ): {
-  options: ExtensionOptionsState;
+  optionsState: ExtensionOptionsState;
   deactivatedModComponents: UnresolvedExtension[];
 } {
-  let options = optionsState;
-
   const activatedModComponentSelector = selectExtensionsForRecipe(modId);
   const activatedModComponents = activatedModComponentSelector({
     options: optionsState,
   });
   const deactivatedModComponents: UnresolvedExtension[] = [];
 
+  let newOptionsState = optionsState;
   for (const activatedModComponent of activatedModComponents) {
-    options = deactivateModComponent(activatedModComponent, options);
+    newOptionsState = deactivateModComponent(
+      activatedModComponent,
+      newOptionsState
+    );
     deactivatedModComponents.push(activatedModComponent);
   }
 
-  return { options, deactivatedModComponents };
+  console.log("*** options state after deactivate mod", newOptionsState);
+  return { optionsState: newOptionsState, deactivatedModComponents };
 }
 
-// TODO: implement me
-// function activateMod(
-//   mod: ModDefinition,
-//   optionsState: ExtensionOptionsState,
-// ): ExtensionOptionsState {
-//   console.log("*** installing mod", mod);
-//   let options = optionsState;
-//
-//   // TODO: implement me
-//
-//   return options;
-// }
+function reactivateMod(
+  mod: ModDefinition,
+  services: Record<RegistryId, UUID>,
+  optionsArgs: OptionsArgs,
+  optionsState: ExtensionOptionsState
+): ExtensionOptionsState {
+  console.log("*** installing mod", mod);
+  console.log("*** options state before reactivate mod", optionsState);
+  return extensionsSlice.reducer(
+    optionsState,
+    extensionsSlice.actions.installRecipe({
+      recipe: mod,
+      services,
+      extensionPoints: mod.extensionPoints,
+      optionsArgs,
+      screen: "background",
+      // TODO: activate mod alone should probably pass reinstall
+      isReinstall: true,
+    })
+  );
+}
 
 export function collectModConfigurations(
   modComponents: UnresolvedExtension[]
@@ -213,22 +228,14 @@ export function collectModConfigurations(
 function updateActivatedMod(
   mod: ModDefinition,
   optionsState: ExtensionOptionsState
-) {
+): ExtensionOptionsState {
   console.log("*** updating mod", mod);
-
-  // Save all mod options/service configurations
-  // Which is just grabbing the services and optionsArgs from the ActivatedModComponent
-  console.log(
-    "*** saving mod options/service configurations",
-    mod,
-    optionsState.extensions
-  );
+  let newOptionsState = optionsState;
 
   // Deactivate the mod
-  const { options, deactivatedModComponents } = deactivateMod(
-    mod.metadata.id,
-    optionsState
-  );
+  const { optionsState: deactivatedOptionsState, deactivatedModComponents } =
+    deactivateMod(mod.metadata.id, newOptionsState);
+  newOptionsState = deactivatedOptionsState;
 
   // Collect service an option configs to reinstall
   const { services, optionsArgs } = collectModConfigurations(
@@ -236,7 +243,7 @@ function updateActivatedMod(
   );
 
   // Reinstall the mod with the updated mod definition & configurations
-  // options = activateMod(mod, options);
+  return reactivateMod(mod, services, optionsArgs, newOptionsState);
 }
 
 async function updateActivatedMods(
@@ -245,16 +252,18 @@ async function updateActivatedMods(
     { backwards_compatible: ModDefinition; backwards_incompatible: boolean }
   >
 ) {
-  const optionsState = await loadOptions();
+  let optionsState = await loadOptions();
   console.log("*** activating mods");
   for (const { backwards_compatible } of Object.values(modUpdates)) {
-    // Probably uninstall & call installRecipe from extensionsSlice?
     if (!backwards_compatible) {
       continue;
     }
 
-    updateActivatedMod(backwards_compatible, optionsState);
+    optionsState = updateActivatedMod(backwards_compatible, optionsState);
   }
+
+  await saveOptions(optionsState);
+  await forEachTab(queueReactivateTab);
 }
 
 async function checkForModUpdates() {

@@ -57,7 +57,7 @@ function grok(msobserver) {
 var MutationSelectorObserver = function (selector, callback, options) {
   this.selector = selector.trim();
   this.callback = callback;
-  this.options = options;
+  this.optionsState = options;
 
   grok(this);
 };
