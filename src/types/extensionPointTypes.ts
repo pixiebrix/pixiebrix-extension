@@ -32,7 +32,7 @@ export type Location =
   // Sidebar panel. ephemeralForm uses `sidebar` as the location for the sidebar
   "panel" | "modal" | "popover";
 
-export type StarterBrick = Metadata & {
+export interface StarterBrick extends Metadata {
   /**
    * The kind of StarterBrick.
    */
@@ -119,4 +119,4 @@ export type StarterBrick = Metadata & {
    * @see PipelineExpression
    */
   getBlocks: (modComponent: ResolvedModComponent) => Promise<Brick[]>;
-};
+}

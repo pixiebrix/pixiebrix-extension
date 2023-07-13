@@ -41,9 +41,12 @@ import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
-import { type IBrick } from "@/types/brickInstanceTypes";
+import { type Metadata } from "@/types/registryTypes";
 
-function getDefaultBrickIcon(brick: IBrick, blockType: BrickType): IconProp {
+function getDefaultBrickIcon<T extends Metadata>(
+  brick: T,
+  blockType: BrickType
+): IconProp {
   if ("schema" in brick) {
     return faCloud;
   }
@@ -95,12 +98,8 @@ function getDefaultBrickIcon(brick: IBrick, blockType: BrickType): IconProp {
 
 const SIZE_REGEX = /^(?<size>\d)x$/i;
 
-/**
- * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
- * listing and searches all the listings.
- */
-const BrickIcon: React.FunctionComponent<{
-  brick: IBrick;
+type BrickIconProps<T extends Metadata> = {
+  brick: T;
   size?: "1x" | "2x";
 
   /**
@@ -115,7 +114,18 @@ const BrickIcon: React.FunctionComponent<{
    * color schemes.
    */
   inheritColor?: boolean;
-}> = ({ brick, size = "1x", faIconClass = "", inheritColor = false }) => {
+};
+
+/**
+ * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
+ * listing and searches all the listings.
+ */
+const BrickIcon = <T extends Metadata>({
+  brick,
+  size = "1x",
+  faIconClass = "",
+  inheritColor = false,
+}: BrickIconProps<T>) => {
   const { data: listings = {} } =
     // BrickIcon only gets the data from the store. The API query must be issued by a parent component.
     appApi.endpoints.getMarketplaceListings.useQueryState();

@@ -39,11 +39,11 @@ import { fetch } from "@/hooks/fetch";
 import { type EditablePackageMetadata } from "@/types/contract";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import notify from "@/utils/notify";
-import { type ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/extensionConsole/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import { isMac } from "@/utils";
 import LogCard from "@/components/logViewer/LogCard";
+import { type Metadata } from "@/types/registryTypes";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -87,10 +87,10 @@ function useOpenEditorTab() {
   }, []);
 }
 
-const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
+const Editor = ({ showLogs = true }: OwnProps) => {
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState<number>();
-  const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
+  const [selectedReference, setSelectedReference] = useState<Metadata>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
   const { id: brickId } = useParams<{ id: UUID }>();
 
