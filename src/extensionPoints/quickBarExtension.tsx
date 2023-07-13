@@ -57,7 +57,7 @@ import { type IconConfig } from "@/types/iconTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -116,7 +116,7 @@ export abstract class QuickBarExtensionPoint extends StarterBrickABC<QuickBarCon
   );
 
   async getBlocks(
-    extension: ResolvedExtension<QuickBarConfig>
+    extension: ResolvedModComponent<QuickBarConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -193,7 +193,7 @@ export abstract class QuickBarExtensionPoint extends StarterBrickABC<QuickBarCon
    * @private
    */
   private async registerExtensionAction(
-    extension: ResolvedExtension<QuickBarConfig>
+    extension: ResolvedModComponent<QuickBarConfig>
   ): Promise<void> {
     const {
       title: name,

@@ -63,7 +63,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 
@@ -163,7 +163,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
   );
 
   async getBlocks(
-    extension: ResolvedExtension<ContextMenuConfig>
+    extension: ResolvedModComponent<ContextMenuConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -206,7 +206,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
 
   async ensureMenu(
     extension: Pick<
-      ResolvedExtension<ContextMenuConfig>,
+      ResolvedModComponent<ContextMenuConfig>,
       "id" | "config" | "_deployment"
     >
   ): Promise<void> {
@@ -299,7 +299,7 @@ export abstract class ContextMenuExtensionPoint extends StarterBrickABC<ContextM
   }
 
   private async registerExtension(
-    extension: ResolvedExtension<ContextMenuConfig>
+    extension: ResolvedModComponent<ContextMenuConfig>
   ): Promise<void> {
     const { action: actionConfig, onSuccess = {} } = extension.config;
 

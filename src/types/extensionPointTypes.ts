@@ -18,7 +18,7 @@
 import { type Permissions } from "webextension-polyfill";
 import { type Schema } from "@/types/schemaTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
@@ -100,13 +100,13 @@ export type StarterBrick = Metadata & {
   /**
    * Register an extension with the extension point. Does not actually install/run the extension.
    */
-  addExtension(extension: ResolvedExtension): void;
+  addExtension(extension: ResolvedModComponent): void;
 
   /**
    * Sync registered extensions, removing any extensions that aren't provided here. Does not actually install/run
    * the extensions.
    */
-  syncExtensions(extensions: ResolvedExtension[]): void;
+  syncExtensions(extensions: ResolvedModComponent[]): void;
 
   /**
    * Run the installed extensions for extension point.
@@ -118,5 +118,5 @@ export type StarterBrick = Metadata & {
    *
    * @see PipelineExpression
    */
-  getBlocks: (extension: ResolvedExtension) => Promise<Brick[]>;
+  getBlocks: (extension: ResolvedModComponent) => Promise<Brick[]>;
 };

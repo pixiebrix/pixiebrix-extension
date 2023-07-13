@@ -23,7 +23,7 @@ import {
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeExtensionForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -37,7 +37,7 @@ import { type UUID } from "@/types/stringTypes";
  */
 export async function uninstallRecipe(
   recipeId: RegistryId,
-  recipeExtensions: UnresolvedExtension[],
+  recipeExtensions: UnresolvedModComponent[],
   dispatch: Dispatch<unknown>
 ): Promise<void> {
   const dynamicElementsToUninstall = await removeDynamicElementsForRecipe(

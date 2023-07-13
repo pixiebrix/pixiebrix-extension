@@ -17,7 +17,7 @@
 
 import {
   type ActivatedModComponent,
-  type UnresolvedExtension,
+  type UnresolvedModComponent,
 } from "@/types/extensionTypes";
 
 /**
@@ -28,7 +28,7 @@ export type LegacyExtensionObjectShapeState = {
   extensions: {
     // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
     [extensionPointId: string]: {
-      [extensionId: string]: UnresolvedExtension;
+      [extensionId: string]: UnresolvedModComponent;
     };
   };
 };
@@ -41,7 +41,7 @@ export type ExtensionOptionsState = {
  * @deprecated use ExtensionOptionsState - this is only used in a migration
  */
 export type LegacyExtensionObjectState = {
-  extensions: UnresolvedExtension[];
+  extensions: UnresolvedModComponent[];
 };
 
 export type OptionsState =

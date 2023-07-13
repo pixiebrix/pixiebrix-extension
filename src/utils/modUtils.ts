@@ -29,8 +29,8 @@ import { createSelector } from "reselect";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
   type ModComponentBase,
-  type ResolvedExtension,
-  type UnresolvedExtension,
+  type ResolvedModComponent,
+  type UnresolvedModComponent,
 } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -51,7 +51,7 @@ export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
  * Returns true if the mod is a ResolvedExtension, instead of a mod definition.
  * @param mod the mod
  */
-export function isExtension(mod: Mod): mod is ResolvedExtension {
+export function isResolvedExtension(mod: Mod): mod is ResolvedModComponent {
   return "extensionPointId" in mod;
 }
 
@@ -60,7 +60,7 @@ export function isExtension(mod: Mod): mod is ResolvedExtension {
  * @param mod the mod
  */
 export function isExtensionFromRecipe(mod: Mod): boolean {
-  return isExtension(mod) && Boolean(mod._recipe);
+  return isResolvedExtension(mod) && Boolean(mod._recipe);
 }
 
 /**
@@ -70,7 +70,7 @@ export function isExtensionFromRecipe(mod: Mod): boolean {
 export function isModDefinition(
   mod: Mod
 ): mod is ModDefinition | UnavailableMod {
-  return !isExtension(mod);
+  return !isResolvedExtension(mod);
 }
 
 /**
@@ -78,7 +78,7 @@ export function isModDefinition(
  * @param mod the mod
  */
 export function getUniqueId(mod: Mod): UUID | RegistryId {
-  return isExtension(mod) ? mod.id : mod.metadata.id;
+  return isResolvedExtension(mod) ? mod.id : mod.metadata.id;
 }
 
 /**
@@ -86,7 +86,7 @@ export function getUniqueId(mod: Mod): UUID | RegistryId {
  * @param mod the mod
  */
 export function getLabel(mod: Mod): string {
-  return isExtension(mod) ? mod.label : mod.metadata.name;
+  return isResolvedExtension(mod) ? mod.label : mod.metadata.name;
 }
 
 /**
@@ -94,11 +94,11 @@ export function getLabel(mod: Mod): string {
  * @param mod the mod
  */
 export const getDescription = (mod: Mod): string => {
-  const description = isExtension(mod)
+  const description = isResolvedExtension(mod)
     ? mod._recipe?.description
     : mod.metadata.description;
 
-  if (!description && isExtension(mod)) {
+  if (!description && isResolvedExtension(mod)) {
     return "Created in the Page Editor";
   }
 
@@ -110,7 +110,7 @@ export const getDescription = (mod: Mod): string => {
  * @param mod the mod
  */
 export function getPackageId(mod: Mod): RegistryId | null {
-  return isExtension(mod) ? mod._recipe?.id : mod.metadata.id;
+  return isResolvedExtension(mod) ? mod._recipe?.id : mod.metadata.id;
 }
 
 /**
@@ -118,14 +118,16 @@ export function getPackageId(mod: Mod): RegistryId | null {
  * @param mod the mod
  */
 export function getUpdatedAt(mod: Mod): string | null {
-  return isExtension(mod)
+  return isResolvedExtension(mod)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on ModComponentBase here
       mod._recipe?.updated_at ?? mod.updateTimestamp
     : mod.updated_at;
 }
 
 function isPublic(mod: Mod): boolean {
-  return isExtension(mod) ? mod._recipe?.sharing?.public : mod.sharing.public;
+  return isResolvedExtension(mod)
+    ? mod._recipe?.sharing?.public
+    : mod.sharing.public;
 }
 
 function isPersonalExtension(extension: ModComponentBase): boolean {
@@ -149,7 +151,7 @@ function hasRecipeScope(recipe: ModDefinition | UnavailableMod, scope: string) {
  * @param userScope the user's scope, or null if it's not set
  */
 function isPersonal(mod: Mod, userScope: string | null) {
-  if (isExtension(mod)) {
+  if (isResolvedExtension(mod)) {
     return isPersonalExtension(mod) || hasSourceRecipeWithScope(mod, userScope);
   }
 
@@ -157,15 +159,15 @@ function isPersonal(mod: Mod, userScope: string | null) {
 }
 
 export function getInstalledVersionNumber(
-  installedExtensions: UnresolvedExtension[],
+  installedExtensions: UnresolvedModComponent[],
   mod: Mod
 ): string | null {
-  if (isExtension(mod)) {
+  if (isResolvedExtension(mod)) {
     return mod._recipe?.version;
   }
 
   const installedExtension = installedExtensions.find(
-    (extension: UnresolvedExtension) =>
+    (extension: UnresolvedModComponent) =>
       extension._recipe?.id === mod.metadata.id
   );
 
@@ -174,9 +176,9 @@ export function getInstalledVersionNumber(
 
 export function isDeployment(
   mod: Mod,
-  installedExtensions: UnresolvedExtension[]
+  installedExtensions: UnresolvedModComponent[]
 ): boolean {
-  if (isExtension(mod)) {
+  if (isResolvedExtension(mod)) {
     return Boolean(mod._deployment);
   }
 
@@ -207,7 +209,7 @@ export function getSharingType({
   mod: Mod;
   organizations: Organization[];
   scope: string;
-  installedExtensions: UnresolvedExtension[];
+  installedExtensions: UnresolvedModComponent[];
 }): SharingSource {
   let sharingType: SharingType = null;
   const organization = getOrganization(mod, organizations);
@@ -243,7 +245,7 @@ export function getSharingType({
 
 export function updateAvailable(
   availableRecipes: Map<RegistryId, ModDefinition>,
-  installedExtensions: Map<RegistryId, UnresolvedExtension>,
+  installedExtensions: Map<RegistryId, UnresolvedModComponent>,
   mod: Mod
 ): boolean {
   if (isUnavailableMod(mod)) {
@@ -251,7 +253,7 @@ export function updateAvailable(
     return false;
   }
 
-  const installedExtension: ResolvedExtension | UnresolvedExtension =
+  const installedExtension: ResolvedModComponent | UnresolvedModComponent =
     isModDefinition(mod) ? installedExtensions.get(mod.metadata.id) : mod;
 
   if (!installedExtension?._recipe) {
@@ -298,7 +300,7 @@ function getOrganization(
   mod: Mod,
   organizations: Organization[]
 ): Organization {
-  const sharing = isExtension(mod) ? mod._recipe?.sharing : mod.sharing;
+  const sharing = isResolvedExtension(mod) ? mod._recipe?.sharing : mod.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
     return null;
@@ -336,7 +338,7 @@ export const StarterBrickMap: Record<StarterBrickType, string> = {
 };
 
 const getExtensionPointType = async (
-  extension: ResolvedExtension
+  extension: ResolvedModComponent
 ): Promise<StarterBrickType> => {
   const extensionPoint = await extensionPointRegistry.lookup(
     extension.extensionPointId

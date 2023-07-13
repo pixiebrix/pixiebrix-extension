@@ -16,7 +16,7 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type BrickConfig } from "@/blocks/types";
 import ForEach from "@/blocks/transformers/controlFlow/ForEach";
 import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
@@ -65,13 +65,13 @@ export const thisTab: Target = {
 export function getIdForElement(
   element: ModComponentBase | ModComponentFormState
 ): UUID {
-  return isExtension(element) ? element.id : element.uuid;
+  return isModComponentBase(element) ? element.id : element.uuid;
 }
 
 export function getRecipeIdForElement(
   element: ModComponentBase | ModComponentFormState
 ): RegistryId {
-  return isExtension(element) ? element._recipe?.id : element.recipe?.id;
+  return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
 }
 
 export function getRecipeById(

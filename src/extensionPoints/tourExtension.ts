@@ -54,7 +54,7 @@ import {
 import { getAll } from "@/tours/tourRunDatabase";
 import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
@@ -129,12 +129,14 @@ export abstract class TourExtensionPoint extends StarterBrickABC<TourConfig> {
     },
   });
 
-  async getBlocks(extension: ResolvedExtension<TourConfig>): Promise<Brick[]> {
+  async getBlocks(
+    extension: ResolvedModComponent<TourConfig>
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.tour);
   }
 
   private async runExtensionTour(
-    extension: ResolvedExtension<TourConfig>,
+    extension: ResolvedModComponent<TourConfig>,
     abortController: AbortController
   ): Promise<void> {
     const reader = await this.defaultReader();
@@ -164,7 +166,7 @@ export abstract class TourExtensionPoint extends StarterBrickABC<TourConfig> {
    * @param extension the tour extension
    * @private
    */
-  private registerTour(extension: ResolvedExtension<TourConfig>): void {
+  private registerTour(extension: ResolvedModComponent<TourConfig>): void {
     const tour = registerTour({
       blueprintId: extension._recipe?.id,
       extension,
@@ -189,7 +191,7 @@ export abstract class TourExtensionPoint extends StarterBrickABC<TourConfig> {
    *
    * @see autoRunSchedule
    */
-  async decideAutoRunTour(): Promise<ResolvedExtension<TourConfig>> {
+  async decideAutoRunTour(): Promise<ResolvedModComponent<TourConfig>> {
     const extensionIds = new Set(this.extensions.map((x) => x.id));
 
     const runs = await getAll();

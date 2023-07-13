@@ -55,7 +55,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type IconConfig } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
@@ -157,7 +157,9 @@ export abstract class PanelExtensionPoint extends StarterBrickABC<PanelConfig> {
     return "panel";
   }
 
-  async getBlocks(extension: ResolvedExtension<PanelConfig>): Promise<Brick[]> {
+  async getBlocks(
+    extension: ResolvedModComponent<PanelConfig>
+  ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 
@@ -263,7 +265,7 @@ export abstract class PanelExtensionPoint extends StarterBrickABC<PanelConfig> {
 
   private async runExtension(
     readerOutput: JsonObject,
-    extension: ResolvedExtension<PanelConfig>
+    extension: ResolvedModComponent<PanelConfig>
   ) {
     if (this.uninstalled) {
       throw new Error("panelExtension has already been destroyed");

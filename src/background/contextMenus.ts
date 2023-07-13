@@ -33,7 +33,7 @@ import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
   type ModComponentBase,
-  type ResolvedExtension,
+  type ResolvedModComponent,
 } from "@/types/extensionTypes";
 
 const MENU_PREFIX = "pixiebrix-";
@@ -175,7 +175,7 @@ export async function preloadContextMenus(
       );
       if (extensionPoint instanceof ContextMenuExtensionPoint) {
         await extensionPoint.ensureMenu(
-          definition as unknown as ResolvedExtension<ContextMenuConfig>
+          definition as unknown as ResolvedModComponent<ContextMenuConfig>
         );
       }
     })

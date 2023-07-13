@@ -82,7 +82,7 @@ import { testMatchPatterns } from "@/blocks/available";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
 import {
@@ -303,7 +303,7 @@ const checkActiveElementAvailability = createAsyncThunk<
     installedExtensions,
     dynamicElements,
     (extensionOrElement) => {
-      if (isExtension(extensionOrElement)) {
+      if (isModComponentBase(extensionOrElement)) {
         return extensionOrElement.id;
       }
 

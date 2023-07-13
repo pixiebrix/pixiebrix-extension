@@ -35,7 +35,7 @@ import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 
 /**
@@ -380,7 +380,7 @@ export async function runEditorExtension(
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
 function cleanUpDeactivatedExtensionPoints(
-  activeExtensionMap: Record<RegistryId, ResolvedExtension[]>
+  activeExtensionMap: Record<RegistryId, ResolvedModComponent[]>
 ): void {
   for (const extensionPoint of _activeExtensionPoints) {
     const hasActiveExtensions = Object.hasOwn(
@@ -442,7 +442,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
       Object.entries(activeExtensionMap).map(
         async ([extensionPointId, extensions]: [
           RegistryId,
-          ResolvedExtension[]
+          ResolvedModComponent[]
         ]) => {
           try {
             const extensionPoint = await extensionPointRegistry.lookup(

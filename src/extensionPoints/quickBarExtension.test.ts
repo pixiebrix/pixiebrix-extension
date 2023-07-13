@@ -38,7 +38,7 @@ import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -68,7 +68,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedExtension<QuickBarConfig>>({
+const extensionFactory = define<ResolvedModComponent<QuickBarConfig>>({
   apiVersion: "v3",
   _resolvedExtensionBrand: undefined,
   id: uuidSequence,

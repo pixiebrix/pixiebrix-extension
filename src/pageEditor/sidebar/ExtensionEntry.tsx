@@ -18,7 +18,7 @@
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isExtension } from "./common";
+import { isModComponentBase } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";
 import { type ModComponentBase } from "@/types/extensionTypes";
@@ -39,7 +39,7 @@ const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
   availableDynamicIds,
   isNested = false,
 }) =>
-  isExtension(extension) ? (
+  isModComponentBase(extension) ? (
     <InstalledEntry
       key={`installed-${extension.id}`}
       extension={extension}

@@ -38,7 +38,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 /**
  * ModMetadata that includes sharing information.
  *
- * We created this type as an alternative to Metadata in order to include information about the origin of an extension,
+ * We created this type as an alternative to Metadata in order to include information about the origin of a ModComponent,
  * e.g. on the ActiveBricks page.
  *
  * @see optionsSlice
@@ -87,7 +87,7 @@ type DeploymentMetadata = {
 // XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
 export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
   /**
-   * UUID of the extension.
+   * UUID of the ModComponent.
    */
   id: UUID;
 
@@ -98,29 +98,29 @@ export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
   apiVersion: ApiVersion;
 
   /**
-   * Registry id of the extension point, or a reference to the definitions section.
+   * Registry id of the StarterBrick, or a reference to the definitions section.
    */
   extensionPointId: RegistryId | InnerDefinitionRef;
 
   /**
-   * Metadata about the deployment used to install the extension, or `undefined` if the extension was not installed
+   * Metadata about the deployment used to install the ModComponent, or `undefined` if the ModComponent was not installed
    * via a deployment.
    */
   _deployment?: DeploymentMetadata;
 
   /**
-   * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension
+   * Metadata about the recipe used to install the ModComponent, or `undefined` if the user created this ModComponent
    * directly
    */
   _recipe: ModMetadata | undefined;
 
   /**
-   * A human-readable label for the extension.
+   * A human-readable label for the ModComponent.
    */
   label: string | null;
 
   /**
-   * Default template engine when running the extension.
+   * Default template engine when running the ModComponent.
    * @deprecated not used in v3 of the runtime
    */
   templateEngine?: TemplateEngine;
@@ -131,19 +131,19 @@ export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
   permissions?: Permissions.Permissions;
 
   /**
-   * Inner/anonymous definitions used by the extension.
+   * Inner/anonymous definitions used by the ModComponent.
    *
    * Supported definitions:
-   * - extension points
+   * - StarterBricks
    * - components
    * - readers
    *
-   * @see ResolvedExtension
+   * @see ResolvedModComponent
    */
   definitions?: InnerDefinitions;
 
   /**
-   * Configured services/integrations for the extension.
+   * Configured services/integrations for the ModComponent.
    */
   services?: IntegrationDependency[];
 
@@ -153,14 +153,14 @@ export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
   optionsArgs?: OptionsArgs;
 
   /**
-   * The extension configuration for the extension point.
+   * The ModComponent configuration for the StarterBrick.
    */
   config: Config;
 
   /**
-   * True iff the extension is activated in the client
+   * True if the ModComponent is activated in the client
    *
-   * For extensions on the server, but not activated on the client, this will be false.
+   * For ModComponents on the server, but not activated on the client, this will be false.
    */
   active?: boolean;
 };
@@ -168,27 +168,28 @@ export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
 /**
  * An ModComponentBase that is known not to have had its definitions resolved.
  *
- * NOTE: it might be the case that the extension does not have a definitions section/inner definitions. This nominal
+ * NOTE: it might be the case that the ModComponent does not have a definitions section/inner definitions. This nominal
  * type is just tracking whether we've passed the instance through resolution yet.
  *
  * @see ModComponentBase
- * @see ResolvedExtension
+ * @see ResolvedModComponent
  */
-export type UnresolvedExtension<Config extends UnknownObject = UnknownObject> =
-  ModComponentBase<Config> & {
-    _unresolvedExtensionBrand: never;
-  };
+export type UnresolvedModComponent<
+  Config extends UnknownObject = UnknownObject
+> = ModComponentBase<Config> & {
+  _unresolvedExtensionBrand: never;
+};
 
 /**
- * An extension that has been saved locally
+ * A ModComponent that has been saved locally
  * @see ModComponentBase
  * @see UserExtension
  */
 export type ActivatedModComponent<
   Config extends UnknownObject = UnknownObject
-> = UnresolvedExtension<Config> & {
+> = UnresolvedModComponent<Config> & {
   /**
-   * True to indicate this extension has been activated on the client.
+   * True to indicate this ModComponent has been activated on the client.
    */
   active: true;
 
@@ -211,14 +212,14 @@ export type ActivatedModComponent<
  * An `ModComponentBase` with all inner definitions resolved.
  * @see resolveDefinitions
  */
-export type ResolvedExtension<Config extends UnknownObject = UnknownObject> =
+export type ResolvedModComponent<Config extends UnknownObject = UnknownObject> =
   Except<
     ModComponentBase<Config>,
     // There's no definition section after resolution
     "definitions"
   > & {
     /**
-     * The registry id of the extension point (will be an `@internal` scope, if the extension point was originally defined
+     * The registry id of the StarterBrick (will be an `@internal` scope, if the StarterBrick was originally defined
      * internally.
      */
     extensionPointId: RegistryId;
@@ -232,19 +233,19 @@ export type ResolvedExtension<Config extends UnknownObject = UnknownObject> =
 /**
  * A reference to an ModComponentBase.
  */
-export type ExtensionRef = {
+export type ModComponentRef = {
   /**
-   * UUID of the extension.
+   * UUID of the ModComponent.
    */
   extensionId: UUID;
 
   /**
-   * Registry id of the extension point.
+   * Registry id of the StarterBrick.
    */
   extensionPointId: RegistryId;
 
   /**
-   * Blueprint the extension is from.
+   * Mod the ModComponent is from.
    */
   blueprintId: RegistryId | null;
 };
@@ -252,7 +253,7 @@ export type ExtensionRef = {
 /**
  * Select information about the ModDefinition used to install an ModComponentBase
  *
- * TODO: move to extensionHelpers file once we have it
+ * TODO: move to modComponentHelpers file once we have it
  *
  * @see ModComponentBase._recipe
  */

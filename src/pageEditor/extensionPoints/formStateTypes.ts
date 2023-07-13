@@ -290,7 +290,7 @@ export type ModComponentFormState =
   | QuickBarProviderFormState
   | TourFormState;
 
-export function isFormState(
+export function isModComponentFormState(
   formState: unknown
 ): formState is ModComponentFormState {
   if (

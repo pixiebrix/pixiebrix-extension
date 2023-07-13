@@ -36,7 +36,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import defaultActions from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -57,7 +57,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedExtension<QuickBarProviderConfig>>({
+const extensionFactory = define<ResolvedModComponent<QuickBarProviderConfig>>({
   apiVersion: "v3",
   _resolvedExtensionBrand: undefined,
   id: uuidSequence,

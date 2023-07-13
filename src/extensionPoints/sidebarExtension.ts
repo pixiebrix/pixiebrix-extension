@@ -57,7 +57,7 @@ import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite"
 import { type Schema } from "@/types/schemaTypes";
 import {
   type ModComponentBase,
-  type ResolvedExtension,
+  type ResolvedModComponent,
 } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
@@ -126,7 +126,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
   }
 
   async getBlocks(
-    extension: ResolvedExtension<SidebarConfig>
+    extension: ResolvedModComponent<SidebarConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
@@ -161,7 +161,7 @@ export abstract class SidebarExtensionPoint extends StarterBrickABC<SidebarConfi
 
   private async runExtension(
     readerContext: JsonObject,
-    extension: ResolvedExtension<SidebarConfig>
+    extension: ResolvedModComponent<SidebarConfig>
   ) {
     // Generate our own run id so that we know it (to pass to upsertPanel)
     const runId = uuidv4();

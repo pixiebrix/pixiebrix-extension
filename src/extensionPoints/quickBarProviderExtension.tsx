@@ -60,7 +60,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 
 export type QuickBarProviderConfig = {
@@ -132,7 +132,7 @@ export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<Qui
   );
 
   async getBlocks(
-    extension: ResolvedExtension<QuickBarProviderConfig>
+    extension: ResolvedModComponent<QuickBarProviderConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.generator);
   }
@@ -213,7 +213,7 @@ export abstract class QuickBarProviderExtensionPoint extends StarterBrickABC<Qui
    * @private
    */
   private async registerActionProvider(
-    extension: ResolvedExtension<QuickBarProviderConfig>
+    extension: ResolvedModComponent<QuickBarProviderConfig>
   ): Promise<void> {
     const { generator, rootAction } = extension.config;
 

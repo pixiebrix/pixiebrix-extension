@@ -19,7 +19,7 @@
 import useModViewItems from "@/mods/useModViewItems";
 import {
   type ActivatedModComponent,
-  type ResolvedExtension,
+  type ResolvedModComponent,
   selectSourceRecipeMetadata,
 } from "@/types/extensionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -42,7 +42,7 @@ describe("useModViewItems", () => {
   });
 
   it("creates entry for ModComponentBase", async () => {
-    const extension = extensionFactory() as ResolvedExtension;
+    const extension = extensionFactory() as ResolvedModComponent;
 
     const wrapper = renderHook(() => useModViewItems([extension]), {
       setupRedux(dispatch) {

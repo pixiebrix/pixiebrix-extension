@@ -17,7 +17,7 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 /**
@@ -33,7 +33,7 @@ export type UnavailableMod = Pick<
 };
 
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
-export type Mod = ModDefinition | ResolvedExtension | UnavailableMod;
+export type Mod = ModDefinition | ResolvedModComponent | UnavailableMod;
 
 export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
 export type SharingSource = {

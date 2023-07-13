@@ -73,7 +73,7 @@ import { PromiseCancelled } from "@/errors/genericErrors";
 import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import {
@@ -402,7 +402,7 @@ export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExt
   }
 
   async getBlocks(
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemExtensionConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -566,13 +566,13 @@ export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExt
 
   protected abstract makeItem(
     html: string,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemExtensionConfig>
   ): JQuery;
 
   private async runExtension(
     menu: HTMLElement,
     ctxtPromise: Promise<JsonObject>,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemExtensionConfig>
   ) {
     if (!extension.id) {
       this.logger.error(`Refusing to run mod without id for ${this.id}`);
@@ -775,7 +775,7 @@ export abstract class MenuItemExtensionPoint extends StarterBrickABC<MenuItemExt
   }
 
   watchDependencies(
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemExtensionConfig>
   ): void {
     const { dependencies = [] } = extension.config;
 
@@ -1141,7 +1141,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   protected makeItem(
     unsanitizedHTML: string,
-    extension: ResolvedExtension<MenuItemExtensionConfig>
+    extension: ResolvedModComponent<MenuItemExtensionConfig>
   ): JQuery {
     const sanitizedHTML = sanitize(unsanitizedHTML);
 

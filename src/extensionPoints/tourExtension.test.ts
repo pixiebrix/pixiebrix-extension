@@ -31,7 +31,7 @@ import blockRegistry from "@/blocks/registry";
 import { isTourInProgress } from "@/extensionPoints/tourController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import defaultActions from "@/components/quickBar/defaultActions";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/extensionTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -57,7 +57,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedExtension<TourConfig>>({
+const extensionFactory = define<ResolvedModComponent<TourConfig>>({
   apiVersion: "v3",
   _resolvedExtensionBrand: undefined,
   id: uuidSequence,

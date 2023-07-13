@@ -28,7 +28,7 @@ import {
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import hash from "object-hash";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
@@ -151,7 +151,7 @@ const SidebarExpanded: React.FunctionComponent<{
         firstElement == null
           ? // If there's no extensions in the Blueprint (empty Blueprint?), use the Blueprint's version
             recipe?.metadata?.version
-          : isExtension(firstElement)
+          : isModComponentBase(firstElement)
           ? firstElement._recipe.version
           : firstElement.recipe.version;
 

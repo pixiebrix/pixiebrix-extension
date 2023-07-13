@@ -17,13 +17,13 @@
 
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
 import { createSelector } from "reselect";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty } from "lodash";
 
 export function selectExtensions({
   options,
-}: ExtensionsRootState): UnresolvedExtension[] {
+}: ExtensionsRootState): UnresolvedModComponent[] {
   if (!Array.isArray(options.extensions)) {
     console.warn("state migration has not been applied yet", {
       options,
