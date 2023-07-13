@@ -193,7 +193,18 @@ function reactivateMod(
   optionsArgs: OptionsArgs,
   optionsState: ExtensionOptionsState
 ): ExtensionOptionsState {
-  console.log("*** installing mod", mod);
+  const alreadyActivated = optionsState.extensions.find(
+    (activatedModComponent) =>
+      activatedModComponent._recipe?.id === mod.metadata.id
+  );
+
+  if (alreadyActivated) {
+    console.error(
+      `Mod ${mod.metadata.id} already activated, skipping reactivation`
+    );
+    return optionsState;
+  }
+
   console.log("*** options state before reactivate mod", optionsState);
   return extensionsSlice.reducer(
     optionsState,
@@ -203,7 +214,6 @@ function reactivateMod(
       extensionPoints: mod.extensionPoints,
       optionsArgs,
       screen: "background",
-      // TODO: activate mod alone should probably pass reinstall
       isReinstall: true,
     })
   );
@@ -236,7 +246,7 @@ export function collectModConfigurations(
   return { services, optionsArgs };
 }
 
-function updateActivatedMod(
+function updateMod(
   mod: ModDefinition,
   optionsState: ExtensionOptionsState
 ): ExtensionOptionsState {
@@ -253,51 +263,43 @@ function updateActivatedMod(
     deactivatedModComponents
   );
 
-  // Reinstall the mod with the updated mod definition & configurations
+  // Reactivate the mod with the updated mod definition & configurations
   return reactivateMod(mod, services, optionsArgs, newOptionsState);
 }
 
-async function updateActivatedMods(
-  modUpdates: Record<RegistryId, ModDefinition>
-) {
+async function updateMods(modUpdates: Record<RegistryId, ModDefinition>) {
   let optionsState = await loadOptions();
 
-  console.log("*** modUpdates", modUpdates);
-
   for (const update of Object.values(modUpdates)) {
-    optionsState = updateActivatedMod(update, optionsState);
+    optionsState = updateMod(update, optionsState);
   }
 
   await saveOptions(optionsState);
   await forEachTab(queueReactivateTab);
 }
 
-async function updateModsIfAvailable() {
+async function updateModsIfUpdatesAvailable() {
   console.log("*** checking for mod updates");
 
   if (!(await autoModUpdatesEnabled())) {
-    console.log("*** automatic mod updates disabled");
     return;
   }
 
-  console.log("*** automatic mod updates enabled :)");
-
   const activatedMarketplaceMods = await getActivatedMarketplaceModMetadata();
 
-  console.log("*** activatedMarketplaceMods", activatedMarketplaceMods);
-
-  // Send this list to the registry/updates endpoint & get back the list of updates
   const modUpdates = await getBackwardsCompatibleUpdates(
     activatedMarketplaceMods
   );
 
-  console.log("*** modUpdates", modUpdates);
+  if (isEmpty(modUpdates)) {
+    console.debug("No automatic mod updates found");
+    return;
+  }
 
-  // Use the list to update the mods
-  await updateActivatedMods(modUpdates);
+  await updateMods(modUpdates);
 }
 
 export async function initModUpdater(): Promise<void> {
-  setInterval(updateModsIfAvailable, UPDATE_INTERVAL_MS);
-  void updateModsIfAvailable();
+  setInterval(updateModsIfUpdatesAvailable, UPDATE_INTERVAL_MS);
+  void updateModsIfUpdatesAvailable();
 }
