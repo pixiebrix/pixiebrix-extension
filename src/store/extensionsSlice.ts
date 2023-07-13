@@ -28,8 +28,8 @@ import { cloneDeep, partition } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
-  type ExtensionOptionsState,
-  type LegacyExtensionObjectState,
+  type ModComponentOptionsState,
+  type LegacyModComponentObjectState,
   type OptionsState,
 } from "@/store/extensionsTypes";
 import { type Except } from "type-fest";
@@ -48,7 +48,7 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey, type OptionsArgs } from "@/types/runtimeTypes";
 
-const initialExtensionsState: ExtensionOptionsState = {
+const initialExtensionsState: ModComponentOptionsState = {
   extensions: [],
 };
 
@@ -393,7 +393,7 @@ const extensionsSlice = createSlice({
  */
 function requireLatestState(
   state: OptionsState
-): asserts state is LegacyExtensionObjectState | ExtensionOptionsState {
+): asserts state is LegacyModComponentObjectState | ModComponentOptionsState {
   if (!Array.isArray(state.extensions)) {
     throw new TypeError("redux state has not been migrated");
   }

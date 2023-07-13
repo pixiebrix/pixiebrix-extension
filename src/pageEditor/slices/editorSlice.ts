@@ -70,7 +70,7 @@ import {
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
   getInstalledExtensionPoints,
@@ -162,7 +162,7 @@ type AvailableInstalled = {
 const checkAvailableInstalledExtensions = createAsyncThunk<
   AvailableInstalled,
   void,
-  { state: EditorRootState & ExtensionsRootState }
+  { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
   const elements = selectNotDeletedElements(thunkAPI.getState());
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
@@ -263,7 +263,7 @@ const checkActiveElementAvailability = createAsyncThunk<
     unavailableDynamicCount: number;
   },
   void,
-  { state: EditorRootState & ExtensionsRootState }
+  { state: EditorRootState & ModComponentsRootState }
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentURL();
   const state = thunkAPI.getState();
