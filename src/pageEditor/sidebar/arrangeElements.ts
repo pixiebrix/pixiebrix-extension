@@ -18,7 +18,7 @@
 import { groupBy, lowerCase, sortBy } from "lodash";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
-  type ComponentFormState,
+  type ModComponentFormState,
   isFormState,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getRecipeById } from "@/pageEditor/utils";
@@ -28,7 +28,7 @@ import { type ModComponentBase } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 type ArrangeElementsArgs = {
-  elements: ComponentFormState[];
+  elements: ModComponentFormState[];
   installed: ModComponentBase[];
   recipes: ModDefinition[];
   activeElementId: UUID | null;
@@ -36,7 +36,7 @@ type ArrangeElementsArgs = {
   query: string;
 };
 
-type Element = ModComponentBase | ComponentFormState;
+type Element = ModComponentBase | ModComponentFormState;
 
 function arrangeElements({
   elements,
@@ -48,7 +48,7 @@ function arrangeElements({
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
 
-  const queryFilter = (item: ModComponentBase | ComponentFormState) => {
+  const queryFilter = (item: ModComponentBase | ModComponentFormState) => {
     const recipe = isFormState(item) ? item.recipe : item._recipe;
     const queryName = recipe?.name ?? item.label;
 
@@ -66,7 +66,7 @@ function arrangeElements({
     .filter((extension) => !elementIds.has(extension.id))
     .filter((extension) => queryFilter(extension));
 
-  const filteredDynamicElements: ComponentFormState[] = elements.filter(
+  const filteredDynamicElements: ModComponentFormState[] = elements.filter(
     (element) => queryFilter(element)
   );
 

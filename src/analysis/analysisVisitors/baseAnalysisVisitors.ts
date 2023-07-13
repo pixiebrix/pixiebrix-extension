@@ -20,7 +20,7 @@ import {
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
 import PipelineVisitor from "@/blocks/PipelineVisitor";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 
 /**
@@ -32,7 +32,7 @@ export abstract class AnalysisVisitorABC
 {
   abstract readonly id: string;
 
-  protected extension: ComponentFormState;
+  protected extension: ModComponentFormState;
 
   protected readonly annotations: AnalysisAnnotation[] = [];
   getAnnotations(): AnalysisAnnotation[] {
@@ -44,12 +44,12 @@ export abstract class AnalysisVisitorABC
    * @param extensionPoint
    */
   visitExtensionPoint(
-    extensionPoint: ComponentFormState["extensionPoint"]
+    extensionPoint: ModComponentFormState["extensionPoint"]
   ): void {
     // NOP
   }
 
-  run(extension: ComponentFormState): void {
+  run(extension: ModComponentFormState): void {
     this.extension = extension;
 
     this.visitExtensionPoint(extension.extensionPoint);
@@ -63,7 +63,7 @@ export abstract class AnalysisVisitorABC
 export abstract class AnalysisVisitorWithResolvedBricksABC extends AnalysisVisitorABC {
   protected allBlocks: TypedBlockMap;
 
-  override async run(extension: ComponentFormState): Promise<void> {
+  override async run(extension: ModComponentFormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();
 
     super.run(extension);

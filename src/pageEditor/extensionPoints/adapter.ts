@@ -31,7 +31,7 @@ import quickBarProviderExtension from "@/pageEditor/extensionPoints/quickBarProv
 import tourExtension from "@/pageEditor/extensionPoints/tour";
 import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
 
 export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([
@@ -71,7 +71,7 @@ export async function selectType(
 
 export async function extensionToFormState(
   extension: ModComponentBase
-): Promise<ComponentFormState> {
+): Promise<ModComponentFormState> {
   const type = await selectType(extension);
   const { fromExtension } = ADAPTERS.get(type);
   if (!fromExtension) {
@@ -81,11 +81,11 @@ export async function extensionToFormState(
   }
 
   // FormState is the sum type of all the extension form states, so OK to cast
-  return fromExtension(extension) as Promise<ComponentFormState>;
+  return fromExtension(extension) as Promise<ModComponentFormState>;
 }
 
 export function formStateToDynamicElement(
-  formState: ComponentFormState
+  formState: ModComponentFormState
 ): DynamicDefinition {
   const elementConfig = ADAPTERS.get(formState.type);
   return elementConfig.asDynamicElement(formState);

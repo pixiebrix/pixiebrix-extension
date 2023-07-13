@@ -43,7 +43,7 @@ import {
   type StarterBrickDefinition,
 } from "@/extensionPoints/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
@@ -658,7 +658,7 @@ describe("buildRecipe", () => {
     // Use the adapter to convert to FormState
     const element = (await adapter.fromExtension(
       extension
-    )) as ComponentFormState;
+    )) as ModComponentFormState;
 
     // Call the function under test
     const newRecipe = buildRecipe({
@@ -790,7 +790,7 @@ describe("buildRecipe", () => {
       );
 
       // Collect the dirty form states for any changed extensions
-      const elements: ComponentFormState[] = [];
+      const elements: ModComponentFormState[] = [];
 
       if (dirtyExtensionCount > 0) {
         const extensionPoints = selectExtensionPoints(recipe);
@@ -810,7 +810,7 @@ describe("buildRecipe", () => {
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
           const element = (await adapter.fromExtension(
             extension
-          )) as ComponentFormState;
+          )) as ModComponentFormState;
 
           // Edit the label
           element.label = `New Label ${i}`;

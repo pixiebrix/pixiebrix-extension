@@ -280,7 +280,7 @@ export interface TourFormState
  * @deprecated We want to deconstruct ComponentFormState and using reducers instead of
  * useEffect/useAsyncEffect for defaulting, cleaning up integration configurations, etc.
  */
-export type ComponentFormState =
+export type ModComponentFormState =
   | ActionFormState
   | TriggerFormState
   | SidebarFormState
@@ -292,7 +292,7 @@ export type ComponentFormState =
 
 export function isFormState(
   formState: unknown
-): formState is ComponentFormState {
+): formState is ModComponentFormState {
   if (
     typeof formState !== "object" ||
     formState === null ||

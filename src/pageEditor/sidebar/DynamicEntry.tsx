@@ -36,7 +36,7 @@ import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   selectActiveElement,
   selectActiveRecipeId,
@@ -49,7 +49,7 @@ import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 
 type DynamicEntryProps = {
-  extension: ComponentFormState;
+  extension: ModComponentFormState;
   isAvailable: boolean;
   isNested?: boolean;
 };

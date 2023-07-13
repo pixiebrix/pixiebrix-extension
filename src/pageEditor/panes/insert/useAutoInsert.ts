@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { useAsyncEffect } from "use-async-effect";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
@@ -37,7 +37,7 @@ export function useAutoInsert(type: StarterBrickType): void {
         metadata,
         undefined,
         []
-      ) as ComponentFormState;
+      ) as ModComponentFormState;
 
       formState.extension.blockPipeline = getExampleBlockPipeline(
         formState.type

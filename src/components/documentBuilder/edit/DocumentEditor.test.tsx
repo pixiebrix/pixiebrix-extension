@@ -23,7 +23,7 @@ import DocumentEditor from "./DocumentEditor";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { toExpression } from "@/testUtils/testHelpers";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -143,7 +143,7 @@ describe("remove element", () => {
    * @returns Rendered result and reference to the current Formik state.
    */
   function renderDocumentEditorWithFormState(
-    formState: ComponentFormState,
+    formState: ModComponentFormState,
     initialActiveElement: string = null
   ) {
     const formikStateRef = {
@@ -151,7 +151,7 @@ describe("remove element", () => {
     };
 
     const WrappedEditor = () => {
-      const { values } = useFormikContext<ComponentFormState>();
+      const { values } = useFormikContext<ModComponentFormState>();
       formikStateRef.current = values;
 
       return (

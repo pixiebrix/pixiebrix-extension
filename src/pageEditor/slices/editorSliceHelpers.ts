@@ -29,7 +29,7 @@ import {
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 
@@ -58,7 +58,7 @@ export function ensureNodeUIState(
 
 export function syncElementNodeUIStates(
   state: WritableDraft<EditorState>,
-  element: ComponentFormState
+  element: ModComponentFormState
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
 
@@ -199,7 +199,7 @@ export function editRecipeOptionsDefinitions(
 
 export function activateElement(
   state: WritableDraft<EditorState>,
-  element: ComponentFormState
+  element: ModComponentFormState
 ) {
   state.error = null;
   state.beta = false;

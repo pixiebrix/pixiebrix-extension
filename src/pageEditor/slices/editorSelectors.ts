@@ -29,7 +29,7 @@ import {
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { type ExtensionsRootState } from "@/store/extensionsTypes";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { deserializeError } from "serialize-error";
 import { type ModComponentBase } from "@/types/extensionTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -86,7 +86,7 @@ const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
 
 export const selectNotDeletedElements: ({
   editor,
-}: EditorRootState) => ComponentFormState[] = createSelector(
+}: EditorRootState) => ModComponentFormState[] = createSelector(
   selectElements,
   selectAllDeletedElementIds,
   (elements, deletedElementIds) =>

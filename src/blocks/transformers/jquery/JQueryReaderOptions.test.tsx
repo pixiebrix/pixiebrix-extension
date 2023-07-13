@@ -21,7 +21,7 @@ import JQueryReaderOptions, {
   inferActiveTypeOption,
   typeOptionsFactory,
 } from "@/blocks/transformers/jquery/JQueryReaderOptions";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 // eslint-disable-next-line no-restricted-imports -- using to simplify Formik state for test
 import { Formik } from "formik";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -57,7 +57,7 @@ function baseStateFactory() {
   return baseFormState;
 }
 
-function renderOptions(formState: ComponentFormState = baseStateFactory()) {
+function renderOptions(formState: ModComponentFormState = baseStateFactory()) {
   return render(
     <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
       <Formik onSubmit={jest.fn()} initialValues={formState}>

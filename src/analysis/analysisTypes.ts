@@ -16,7 +16,7 @@
  */
 
 import { type BrickPosition } from "@/blocks/types";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 import { type BaseAnnotation } from "@/types/annotationTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -54,7 +54,7 @@ export type AnalysisAnnotation = BaseAnnotation & {
 
 /**
  * An analysis to run against the FormState for a single ModComponentBase.
- * @see ComponentFormState
+ * @see ModComponentFormState
  */
 export interface Analysis {
   /**
@@ -71,7 +71,7 @@ export interface Analysis {
    * Run the analysis on the given extension
    * @param extension The extension to analyze
    */
-  run(extension: ComponentFormState): void | Promise<void>;
+  run(extension: ModComponentFormState): void | Promise<void>;
 }
 
 export type AnalysisState = {

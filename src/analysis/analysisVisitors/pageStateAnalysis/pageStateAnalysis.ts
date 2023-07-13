@@ -19,7 +19,7 @@ import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/blocks/types";
 import { AnalysisVisitorWithResolvedBricksABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import { GetPageState, SetPageState } from "@/blocks/effects/pageState";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import {
   CustomFormRenderer,
@@ -93,7 +93,7 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
     }
   }
 
-  override async run(extension: ComponentFormState): Promise<void> {
+  override async run(extension: ModComponentFormState): Promise<void> {
     this.isInMod = Boolean(extension.recipe);
     await super.run(extension);
   }

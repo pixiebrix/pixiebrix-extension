@@ -27,7 +27,7 @@ import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BrickConfig } from "@/blocks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
-import { type ComponentFormState } from "./extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "./extensionPoints/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
@@ -110,7 +110,7 @@ export interface EditorState {
   /**
    * Unsaved elements
    */
-  readonly elements: ComponentFormState[];
+  readonly elements: ModComponentFormState[];
 
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
@@ -177,7 +177,7 @@ export interface EditorState {
   /**
    * Unsaved extensions that have been deleted from a recipe
    */
-  deletedElementsByRecipeId: Record<RegistryId, ComponentFormState[]>;
+  deletedElementsByRecipeId: Record<RegistryId, ModComponentFormState[]>;
 
   /**
    * Newly created recipes that have not been saved yet

@@ -57,7 +57,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
@@ -95,7 +95,7 @@ function selectRecipeMetadata(
 function useSaveCallbacks({
   activeElement,
 }: {
-  activeElement: ComponentFormState;
+  activeElement: ModComponentFormState;
 }) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
@@ -112,7 +112,7 @@ function useSaveCallbacks({
 
   const createRecipeFromElement = useCallback(
     // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-    (element: ComponentFormState, metadata: ModMetadataFormState) =>
+    (element: ModComponentFormState, metadata: ModMetadataFormState) =>
       // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ensureElementPermissionsFromUserGesture(element).then(
         async (hasPermissions) => {
@@ -269,7 +269,7 @@ function useInitialFormState({
   activeRecipe,
   activeElement,
 }: {
-  activeElement: ComponentFormState;
+  activeElement: ModComponentFormState;
   activeRecipe: ModDefinition | null;
 }): ModMetadataFormState | null {
   const scope = useSelector(selectScope);

@@ -19,7 +19,7 @@ import { define, derive, type FactoryConfig } from "cooky-cutter";
 import {
   type ActionFormState,
   type ContextMenuFormState,
-  type ComponentFormState,
+  type ModComponentFormState,
   type QuickBarFormState,
   type SidebarFormState,
   type TriggerFormState,
@@ -58,8 +58,8 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 const internalFormStateFactory = define<
-  ComponentFormState & {
-    extensionPoint: DerivedFunction<ComponentFormState, StarterBrickConfig>;
+  ModComponentFormState & {
+    extensionPoint: DerivedFunction<ModComponentFormState, StarterBrickConfig>;
   }
 >({
   apiVersion: "v3" as ApiVersion,
@@ -74,17 +74,20 @@ const internalFormStateFactory = define<
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<ComponentFormState, StarterBrickConfig>(({ type }) => {
-    const extensionPoint = extensionPointDefinitionFactory();
-    extensionPoint.definition.type = type;
-    return extensionPoint;
-  }, "type"),
+  extensionPoint: derive<ModComponentFormState, StarterBrickConfig>(
+    ({ type }) => {
+      const extensionPoint = extensionPointDefinitionFactory();
+      extensionPoint.definition.type = type;
+      return extensionPoint;
+    },
+    "type"
+  ),
 });
 
 export const formStateFactory = (
-  override?: FactoryConfig<ComponentFormState>,
+  override?: FactoryConfig<ModComponentFormState>,
   pipelineOverride?: BrickPipeline
-): ComponentFormState => {
+): ModComponentFormState => {
   if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,
@@ -114,7 +117,7 @@ export const triggerFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ComponentFormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as TriggerFormState;
 };
@@ -137,7 +140,7 @@ export const sidebarPanelFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ComponentFormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as SidebarFormState;
 };
@@ -159,7 +162,7 @@ export const contextMenuFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ComponentFormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as ContextMenuFormState;
 };
@@ -181,7 +184,7 @@ export const quickbarFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ComponentFormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as QuickBarFormState;
 };
@@ -207,7 +210,7 @@ export const menuItemFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<ComponentFormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as ActionFormState;
 };
@@ -227,15 +230,15 @@ const foundationOutputFactory = define<JsonObject>({
 });
 
 export const formStateWithTraceDataFactory = define<{
-  formState: ComponentFormState;
+  formState: ModComponentFormState;
   records: TraceRecord[];
 }>({
-  formState(): ComponentFormState {
+  formState(): ModComponentFormState {
     return formStateFactory();
   },
   records: derive<
     {
-      formState: ComponentFormState;
+      formState: ModComponentFormState;
       records: TraceRecord[];
     },
     TraceRecord[]

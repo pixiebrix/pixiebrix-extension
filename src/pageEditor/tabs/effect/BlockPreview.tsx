@@ -47,7 +47,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/types/serviceTypes";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -147,7 +147,7 @@ const BlockPreview: React.FunctionComponent<{
     outputKey: blockConfig.outputKey,
   });
 
-  const { values } = useFormikContext<ComponentFormState>();
+  const { values } = useFormikContext<ModComponentFormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: services }] = useField<IntegrationDependency[]>("services");
 

@@ -43,7 +43,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import {
   type ModComponentBase,
@@ -134,7 +134,7 @@ const useSavingWizard = () => {
 
     // Stripping the recipe-related data from the element
     const { recipe, optionsDefinition, ...rest } = element;
-    const personalElement: ComponentFormState = {
+    const personalElement: ModComponentFormState = {
       ...rest,
       uuid: uuidv4(),
       // Detach from the recipe

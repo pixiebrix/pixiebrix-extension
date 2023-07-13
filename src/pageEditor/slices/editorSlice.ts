@@ -53,7 +53,7 @@ import {
   selectNotDeletedExtensions,
 } from "./editorSelectors";
 import {
-  type ComponentFormState,
+  type ModComponentFormState,
   isQuickBarExtensionPoint,
 } from "@/pageEditor/extensionPoints/formStateTypes";
 import reportError from "@/telemetry/reportError";
@@ -342,7 +342,7 @@ export const editorSlice = createSlice({
     markEditable(state, action: PayloadAction<RegistryId>) {
       state.knownEditable.push(action.payload);
     },
-    addElement(state, action: PayloadAction<ComponentFormState>) {
+    addElement(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       state.inserting = null;
       state.elements.push(element);
@@ -363,7 +363,7 @@ export const editorSlice = createSlice({
       state.activeElementId = uuid;
       state.selectionSeq++;
     },
-    selectInstalled(state, action: PayloadAction<ComponentFormState>) {
+    selectInstalled(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
@@ -374,7 +374,7 @@ export const editorSlice = createSlice({
 
       activateElement(state, element);
     },
-    resetInstalled(state, actions: PayloadAction<ComponentFormState>) {
+    resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
       const element = actions.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
@@ -421,7 +421,7 @@ export const editorSlice = createSlice({
      * Sync the redux state with the form state.
      * Used on by the page editor to set changed version of the element in the store.
      */
-    editElement(state, action: PayloadAction<ComponentFormState>) {
+    editElement(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
@@ -438,7 +438,7 @@ export const editorSlice = createSlice({
      */
     updateElement(
       state,
-      action: PayloadAction<{ uuid: UUID } & Partial<ComponentFormState>>
+      action: PayloadAction<{ uuid: UUID } & Partial<ModComponentFormState>>
     ) {
       const { uuid, ...elementUpdate } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);

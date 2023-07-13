@@ -32,7 +32,7 @@ import {
   type Shortcut,
   type UrlMatchPatternWidgetProps,
 } from "./urlMatchPatternWidgetTypes";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -72,7 +72,7 @@ const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
     addButtonCaption = "Add Site",
   } = props;
 
-  const { values: formState } = useFormikContext<ComponentFormState>();
+  const { values: formState } = useFormikContext<ModComponentFormState>();
   const [{ value }, , { setValue }] = useField<string[]>(name);
 
   return (

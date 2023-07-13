@@ -24,7 +24,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
-import { type ComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   contextMenuFormStateFactory,
@@ -52,7 +52,7 @@ afterEach(() => {
 
 function renderBlockConfiguration(
   element: React.ReactElement,
-  initialValues: ComponentFormState
+  initialValues: ModComponentFormState
 ) {
   return render(element, {
     initialValues,
