@@ -6,6 +6,10 @@ import { type JsonObject } from "type-fest";
 import { setPageState } from "@/contentScript/pageState";
 import { EffectABC } from "@/types/bricks/effectTypes";
 
+/**
+ * A simple brick to assign a value to a Mod Variable.
+ * @since 1.7.34
+ */
 class AssignModVariable extends EffectABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/state/assign");
 

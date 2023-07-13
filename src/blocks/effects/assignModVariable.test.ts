@@ -22,9 +22,19 @@ import AssignModVariable from "@/blocks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { getPageState, setPageState } from "@/contentScript/pageState";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { validateInput } from "@/validators/generic";
 
 const extensionId = autoUUIDSequence();
 const blueprintId = validateRegistryId("test/123");
+
+const brick = new AssignModVariable();
+
+const logger = new ConsoleLogger({
+  extensionId,
+  blueprintId,
+});
+
+const brickOptions = { logger } as BrickOptions;
 
 beforeEach(() => {
   setPageState({
@@ -38,20 +48,14 @@ beforeEach(() => {
 
 describe("@pixiebrix/state/assign", () => {
   test("replaces value", async () => {
-    const logger = new ConsoleLogger({
-      extensionId,
-      blueprintId,
-    });
-
-    const brick = new AssignModVariable();
-
     await brick.run(
       unsafeAssumeValidArg({ variableName: "foo", value: { foo: 42 } }),
-      { logger } as BrickOptions
+      brickOptions
     );
+
     await brick.run(
       unsafeAssumeValidArg({ variableName: "foo", value: { bar: 42 } }),
-      { logger } as BrickOptions
+      brickOptions
     );
 
     expect(
@@ -59,20 +63,43 @@ describe("@pixiebrix/state/assign", () => {
     ).toEqual({ foo: { bar: 42 } });
   });
 
-  test("only sets variable", async () => {
-    const logger = new ConsoleLogger({
-      extensionId,
-      blueprintId,
+  test("null is valid input", async () => {
+    await expect(
+      validateInput(brick.inputSchema, { variableName: "foo", value: null })
+    ).resolves.toStrictEqual({
+      errors: [],
+      valid: true,
     });
+  });
 
-    const brick = new AssignModVariable();
+  test("sets null on the state", async () => {
+    // Null is valid. Currently, to pass it in the interface you have to use JQ or a brick output because you can't
+    // create null with the input toggle interface.
 
-    await brick.run(unsafeAssumeValidArg({ variableName: "foo", value: 42 }), {
-      logger,
-    } as BrickOptions);
-    await brick.run(unsafeAssumeValidArg({ variableName: "bar", value: 0 }), {
-      logger,
-    } as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ variableName: "foo", value: 42 }),
+      brickOptions
+    );
+    await brick.run(
+      unsafeAssumeValidArg({ variableName: "foo", value: null }),
+      brickOptions
+    );
+
+    expect(
+      getPageState({ namespace: "blueprint", blueprintId, extensionId })
+    ).toEqual({ foo: null });
+  });
+
+  test("only sets variable", async () => {
+    await brick.run(
+      unsafeAssumeValidArg({ variableName: "foo", value: 42 }),
+      brickOptions
+    );
+
+    await brick.run(
+      unsafeAssumeValidArg({ variableName: "bar", value: 0 }),
+      brickOptions
+    );
 
     expect(
       getPageState({ namespace: "blueprint", blueprintId, extensionId })
