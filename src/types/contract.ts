@@ -26,7 +26,7 @@ import {
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
-import { type SanitizedConfig } from "@/types/serviceTypes";
+import { type SanitizedConfig, type SecretsConfig } from "@/types/serviceTypes";
 import {
   type RegistryId,
   type SemVerString,
@@ -124,21 +124,27 @@ export type PackageUpsertResponse = Except<
   updated_at: Timestamp;
 };
 
-export type SanitizedAuthService = Except<
-  components["schemas"]["SanitizedAuth"]["service"],
-  "config"
-> & { config: { metadata: Metadata } };
-
-export type SanitizedAuth = Except<
+/**
+ * An integration configuration stored on the PixieBrix server.
+ */
+export type RemoteIntegrationConfig = Except<
   components["schemas"]["SanitizedAuth"],
   "config"
 > & {
-  // XXX: update serialize to required id in response type
   id: UUID;
-  // Specialized to `SanitizedConfig` to get nominal typing
-  config: SanitizedConfig;
+
+  /**
+   * The configuration for the integration. As of 1.7.34, this may include sensitive information if pushdown is enabled.
+   */
+  // Specialized to get nominal typing
+  config: SanitizedConfig | SecretsConfig;
+
   // XXX: update serializer to include proper metadata child serializer
-  service: SanitizedAuthService;
+  service: Except<
+    components["schemas"]["SanitizedAuth"]["service"],
+    "config"
+  > & { config: { metadata: Metadata } };
+
   user?: UUID;
 };
 

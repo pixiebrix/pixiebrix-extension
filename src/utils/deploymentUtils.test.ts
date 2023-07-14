@@ -40,7 +40,7 @@ import {
   extensionPointConfigFactory,
   recipeDefinitionFactory,
 } from "@/testUtils/factories/recipeFactories";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 import {
   deploymentFactory,
   deploymentPackageFactory,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SanitizedAuth } from "@/types/contract";
+import { type RemoteIntegrationConfig } from "@/types/contract";
 import { sortBy, isEmpty } from "lodash";
 import registry, { readRawConfigurations } from "@/services/registry";
 import { inputProperties } from "@/helpers";
@@ -46,7 +46,7 @@ const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key",
 ];
 
-enum ServiceLevel {
+enum Visibility {
   Private = 0,
   Team,
   BuiltIn,
@@ -80,10 +80,30 @@ export async function pixieServiceFactory(): Promise<SanitizedIntegrationConfig>
 }
 
 type Option = {
+  /**
+   * The configuration id.
+   */
   id: UUID;
+  /**
+   * The registry id of the integration definition package.
+   */
   serviceId: RegistryId;
-  level: ServiceLevel;
+  /**
+   * Visibility/provenance of the integration configuration.
+   */
+  level: Visibility;
+  /**
+   * The provenance of the configuration option. True if the integration was configured in the Extension Console.
+   */
   local: boolean;
+  /**
+   * True if the integration configuration uses the API Gateway.
+   * @since 1.7.34
+   */
+  proxy: boolean;
+  /**
+   * The configuration, including secrets for locally-defined and pushdown integration configurations.
+   */
   config: SecretsConfig | SanitizedConfig;
 };
 
@@ -96,7 +116,7 @@ let wasInitialized = false;
  * `services.registry` file.
  */
 class LazyLocatorFactory {
-  private remote: SanitizedAuth[] = [];
+  private remote: RemoteIntegrationConfig[] = [];
 
   private local: IntegrationConfig[] = [];
 
@@ -130,8 +150,9 @@ class LazyLocatorFactory {
       // As of https://github.com/pixiebrix/pixiebrix-app/issues/562, the API gradually handles unauthenticated calls
       // to this endpoint. However, there's no need to pull the built-in services since the user can't call them
       // without being authenticated
-      this.remote = await fetch<SanitizedAuth[]>(
-        "/api/services/shared/?meta=1",
+      this.remote = await fetch<RemoteIntegrationConfig[]>(
+        // Fetch full configurations, including credentials for configurations with pushdown
+        "/api/services/shared/",
         { requireLinked: true }
       );
       console.debug(`Fetched ${this.remote.length} remote service auth(s)`);
@@ -178,14 +199,16 @@ class LazyLocatorFactory {
       [
         ...this.local.map((x) => ({
           ...x,
-          level: ServiceLevel.Private,
+          level: Visibility.Private,
           local: true,
+          proxy: false,
           serviceId: x.serviceId,
         })),
         ...(this.remote ?? []).map((x) => ({
           ...x,
-          level: x.organization ? ServiceLevel.Team : ServiceLevel.BuiltIn,
+          level: x.organization ? Visibility.Team : Visibility.BuiltIn,
           local: false,
+          proxy: !x.pushdown,
           serviceId: validateRegistryId(x.service.name),
         })),
       ],
@@ -240,7 +263,7 @@ class LazyLocatorFactory {
         _sanitizedIntegrationConfigBrand: undefined,
         id: match.id,
         serviceId,
-        proxy: service.hasAuth && !match.local,
+        proxy: service.hasAuth && match.proxy,
         config: excludeSecrets(service, match.config),
       }));
   }

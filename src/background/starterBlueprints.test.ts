@@ -40,7 +40,7 @@ import {
   recipeFactory,
 } from "@/testUtils/factories/recipeFactories";
 import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
-import { sanitizedAuthFactory } from "@/testUtils/factories/serviceFactories";
+import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -90,13 +90,13 @@ describe("installStarterBlueprints", () => {
   });
 
   test("getBuiltInServiceAuths", async () => {
-    axiosMock
-      .onGet("/api/services/shared/?meta=1")
-      .reply(200, [
-        sanitizedAuthFactory(),
-        sanitizedAuthFactory({ organization: userOrganizationFactory() }),
-        sanitizedAuthFactory({ user: uuidv4() }),
-      ]);
+    axiosMock.onGet("/api/services/shared/?meta=1").reply(200, [
+      remoteIntegrationConfigurationFactory(),
+      remoteIntegrationConfigurationFactory({
+        organization: userOrganizationFactory(),
+      }),
+      remoteIntegrationConfigurationFactory({ user: uuidv4() }),
+    ]);
 
     let builtInServiceAuths = await getBuiltInServiceAuths();
     expect(builtInServiceAuths.length).toBe(1);

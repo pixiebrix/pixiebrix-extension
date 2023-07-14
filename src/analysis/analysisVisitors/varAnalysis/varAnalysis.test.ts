@@ -51,7 +51,7 @@ import {
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import { recipeFactory } from "@/testUtils/factories/recipeFactories";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 jest.mocked(services.locate).mockResolvedValue(

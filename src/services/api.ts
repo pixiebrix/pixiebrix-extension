@@ -35,7 +35,7 @@ import {
   type PackageVersion,
   type PendingInvitation,
   type RecipeResponse,
-  type SanitizedAuth,
+  type RemoteIntegrationConfig,
   UserRole,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
@@ -186,7 +186,7 @@ export const appApi = createApi({
       }),
       providesTags: ["Services"],
     }),
-    getServiceAuths: builder.query<SanitizedAuth[], void>({
+    getServiceAuths: builder.query<RemoteIntegrationConfig[], void>({
       query: () => ({
         url: "/api/services/shared/",
         method: "get",

@@ -34,7 +34,7 @@ import {
 } from "@/contrib/google/initGoogle";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");

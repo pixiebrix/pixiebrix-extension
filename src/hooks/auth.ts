@@ -19,7 +19,7 @@ import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
 import { readRawConfigurations } from "@/services/registry";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
-import { type SanitizedAuth } from "@/types/contract";
+import { type RemoteIntegrationConfig } from "@/types/contract";
 import { type IntegrationConfig } from "@/types/serviceTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -33,7 +33,7 @@ function defaultLabel(label: string): string {
   return normalized === "" ? "Default" : normalized;
 }
 
-export function getSharingType(auth: SanitizedAuth): AuthSharing {
+export function getSharingType(auth: RemoteIntegrationConfig): AuthSharing {
   if (auth.organization?.name) {
     return "shared";
   }
@@ -45,7 +45,7 @@ export function getSharingType(auth: SanitizedAuth): AuthSharing {
   return "built-in";
 }
 
-const getVisibilityLabel = (auth: SanitizedAuth): string => {
+const getVisibilityLabel = (auth: RemoteIntegrationConfig): string => {
   const sharingType = getSharingType(auth);
   switch (sharingType) {
     case "shared": {
@@ -62,13 +62,13 @@ const getVisibilityLabel = (auth: SanitizedAuth): string => {
   }
 };
 
-function getRemoteLabel(auth: SanitizedAuth): string {
+function getRemoteLabel(auth: RemoteIntegrationConfig): string {
   return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
 }
 
 function mapConfigurationsToOptions(
   localServices: IntegrationConfig[],
-  remoteServices: SanitizedAuth[]
+  remoteServices: RemoteIntegrationConfig[]
 ) {
   const localOptions = sortBy(
     localServices.map((serviceConfiguration) => ({

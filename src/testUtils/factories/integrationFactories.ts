@@ -22,10 +22,7 @@ import {
 } from "@/types/serviceTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
-import {
-  type SanitizedAuth,
-  type SanitizedAuthService,
-} from "@/types/contract";
+import { type RemoteIntegrationConfig } from "@/types/contract";
 
 export const sanitizedServiceConfigurationFactory =
   define<SanitizedIntegrationConfig>({
@@ -34,21 +31,26 @@ export const sanitizedServiceConfigurationFactory =
     serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedIntegrationConfig);
-export const sanitizedAuthServiceFactory = define<SanitizedAuthService>({
+
+export const remoteIntegrationServiceFactory = define<
+  RemoteIntegrationConfig["service"]
+>({
   config: (n: number) => ({
     metadata: {
-      id: validateRegistryId(`@test/service-${n}`),
-      name: `Test Service ${n}`,
+      id: validateRegistryId(`@test/integration-${n}`),
+      name: `Test Integration ${n}`,
     },
   }),
-  name: (n: number) => `Test Service ${n}`,
+  name: (n: number) => `Test Integration ${n}`,
 });
-export const sanitizedAuthFactory = define<SanitizedAuth>({
-  id: uuidSequence,
-  organization: null,
-  label: (n: number) => `Auth ${n}`,
-  config: {
-    _sanitizedConfigBrand: null,
-  },
-  service: sanitizedAuthServiceFactory,
-});
+
+export const remoteIntegrationConfigurationFactory =
+  define<RemoteIntegrationConfig>({
+    id: uuidSequence,
+    organization: null,
+    label: (n: number) => `Configuration ${n}`,
+    config: {
+      _sanitizedConfigBrand: null,
+    },
+    service: remoteIntegrationServiceFactory,
+  });

@@ -33,7 +33,7 @@ import {
   type SecretsConfig,
 } from "@/types/serviceTypes";
 import { setContext } from "@/testUtils/detectPageMock";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 
 jest.unmock("@/services/apiClient");
 setContext("background");

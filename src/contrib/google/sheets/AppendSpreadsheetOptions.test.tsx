@@ -35,7 +35,7 @@ import { services, sheets } from "@/background/messenger/api";
 import { selectSchemaFieldType } from "@/testUtils/formHelpers";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const OTHER_TEST_SPREADSHEET_ID = uuidSequence(2);
