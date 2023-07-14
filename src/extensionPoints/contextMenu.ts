@@ -66,7 +66,6 @@ import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedExtension } from "@/types/extensionTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
-import { UUID } from "@/types/stringTypes";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -179,9 +178,8 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     }
   }
 
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearExtensionInterfaceAndEvents(): void {
     // Don't need to do any cleanup since context menu registration is handled globally
-    console.log("*** clearExtensionInterfaceAndEvents", extensionIds);
   }
 
   async install(): Promise<boolean> {
