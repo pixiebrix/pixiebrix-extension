@@ -34,9 +34,7 @@ import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 
-// TODO: replace me
-//  const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
-const UPDATE_INTERVAL_MS = 60 * 1000;
+const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
 type ActivatedModState = {
   options: ExtensionOptionsState;
