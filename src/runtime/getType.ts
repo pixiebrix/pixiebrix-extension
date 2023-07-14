@@ -16,12 +16,12 @@
  */
 
 import { type BrickType } from "@/runtime/runtimeTypes";
-import { type IBrick } from "@/types/brickInstanceTypes";
+import { type Metadata } from "@/types/registryTypes";
 
-export default async function getType(
+export default async function getType<T extends Metadata>(
   // HACK: including Integration and StarterBrick here is a hack to fix some call-sites. This method can only return
   // block types
-  block: IBrick
+  block: T
 ): Promise<BrickType | null> {
   if ("inferType" in block) {
     // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.

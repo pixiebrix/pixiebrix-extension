@@ -29,12 +29,12 @@ import {
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
-import { type ReferenceEntry } from "@/extensionConsole/pages/brickEditor/brickEditorTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BrickIcon from "@/components/BrickIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
+import { type Metadata } from "@/types/registryTypes";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -69,12 +69,23 @@ function makeArgumentYaml(schema: Schema): string {
   return result;
 }
 
-const BrickDetail: React.FunctionComponent<{
-  brick: ReferenceEntry;
+type BrickDetailProps<T extends Metadata> = {
+  brick: T;
   brickConfig: string;
   isBrickConfigLoading: boolean;
-}> = ({ brick, brickConfig, isBrickConfigLoading }) => {
-  const schema = "schema" in brick ? brick.schema : brick.inputSchema;
+};
+
+const BrickDetail = <T extends Metadata>({
+  brick,
+  brickConfig,
+  isBrickConfigLoading,
+}: BrickDetailProps<T>) => {
+  const schema =
+    "schema" in brick
+      ? brick.schema
+      : "inputSchema" in brick
+      ? brick.inputSchema
+      : {};
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const outputSchema = (brick as any).outputSchema as Schema;
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
