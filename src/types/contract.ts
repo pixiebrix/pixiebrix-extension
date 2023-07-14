@@ -143,7 +143,10 @@ export type RemoteIntegrationConfig = Except<
   service: Except<
     components["schemas"]["SanitizedAuth"]["service"],
     "config"
-  > & { config: { metadata: Metadata } };
+  > & {
+    name: RegistryId;
+    config: { metadata: Metadata };
+  };
 
   user?: UUID;
 };

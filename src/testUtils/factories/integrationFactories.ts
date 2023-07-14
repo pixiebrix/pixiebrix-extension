@@ -40,8 +40,11 @@ export const remoteIntegrationServiceFactory = define<
       id: validateRegistryId(`@test/integration-${n}`),
       name: `Test Integration ${n}`,
     },
+    inputSchema: {
+      properties: {},
+    },
   }),
-  name: (n: number) => `Test Integration ${n}`,
+  name: (n: number) => validateRegistryId(`@test/integration-${n}`),
 });
 
 export const remoteIntegrationConfigurationFactory =
