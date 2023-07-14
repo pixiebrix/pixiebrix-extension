@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import nytimes from "@contrib/blocks/nytimes-org.yaml";
+import nytimes from "@contrib/bricks/nytimes-org.yaml";
 import trelloReader from "@contrib/readers/trello-card-reader.yaml";
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";

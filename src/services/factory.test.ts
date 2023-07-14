@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import automationAnywhere from "@contrib/services/automation-anywhere.yaml";
-import automationAnywhereOAuth2 from "@contrib/services/automation-anywhere-oauth2.yaml";
-import greenhouse from "@contrib/services/greenhouse.yaml";
+import automationAnywhere from "@contrib/integrations/automation-anywhere.yaml";
+import automationAnywhereOAuth2 from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import greenhouse from "@contrib/integrations/greenhouse.yaml";
 import { fromJS } from "@/services/factory";
 import { BusinessError } from "@/errors/businessErrors";
 import {

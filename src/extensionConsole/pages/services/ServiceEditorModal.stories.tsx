@@ -23,8 +23,8 @@ import { fromJS } from "@/services/factory";
 import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
 import { type IntegrationDefinition } from "@/types/integrationTypes";
 
-import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
-import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
+import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
+import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml?loadAsText";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";

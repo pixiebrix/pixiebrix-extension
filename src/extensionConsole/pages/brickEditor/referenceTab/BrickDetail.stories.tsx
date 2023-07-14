@@ -20,7 +20,7 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/bricks/renderers/table";
 import { fromJS } from "@/bricks/transformers/brickFactory";
-import amazonSearch from "@contrib/blocks/amazon-search.yaml";
+import amazonSearch from "@contrib/bricks/amazon-search.yaml";
 import { brickToYaml } from "@/utils/objToYaml";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
