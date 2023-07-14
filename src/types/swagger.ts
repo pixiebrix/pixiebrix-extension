@@ -1561,6 +1561,8 @@ export interface components {
       service: string;
       /** Format: date-time */
       updated_at?: string;
+      /** @description True to push down configuration secrets to the client */
+      pushdown?: boolean;
       editable?: string;
     };
     Settings: {
