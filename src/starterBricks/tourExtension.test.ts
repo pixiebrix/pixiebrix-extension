@@ -38,7 +38,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const rootReader = new RootReader();
 
-const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
+const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<TourDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
@@ -81,28 +81,28 @@ beforeEach(() => {
 
 describe("tourExtension", () => {
   test("install tour via Page Editor", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(starterBrickFactory()());
 
-    extensionPoint.addExtension(
+    starterBrick.addExtension(
       extensionFactory({
-        extensionPointId: extensionPoint.id,
+        extensionPointId: starterBrick.id,
       })
     );
 
-    await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.PAGE_EDITOR });
+    await starterBrick.install();
+    await starterBrick.run({ reason: RunReason.PAGE_EDITOR });
 
     await tick();
 
     expect(isTourInProgress()).toBe(false);
     expect(rootReader.readCount).toBe(1);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   test("register tour with quick bar", async () => {
     const extensionPoint = fromJS(
-      extensionPointFactory({ allowUserRun: true, autoRunSchedule: "never" })()
+      starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })()
     );
 
     extensionPoint.addExtension(

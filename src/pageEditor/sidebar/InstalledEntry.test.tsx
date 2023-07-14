@@ -44,10 +44,10 @@ afterAll(() => {
 
 describe("InstalledEntry", () => {
   test("it renders not active element", async () => {
-    const extension = modComponentFactory();
+    const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const rendered = render(
-      <InstalledEntry extension={extension} recipes={[]} isAvailable />,
+      <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -69,10 +69,10 @@ describe("InstalledEntry", () => {
   });
 
   test("it renders active element", async () => {
-    const extension = modComponentFactory();
+    const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const rendered = render(
-      <InstalledEntry extension={extension} recipes={[]} isAvailable />,
+      <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {

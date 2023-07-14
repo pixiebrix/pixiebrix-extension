@@ -118,12 +118,12 @@ describe("installStarterBlueprints", () => {
       service2: "@pixiebrix/service2",
     } as Record<OutputKey, RegistryId>;
 
-    const extensionPointDefinition = modComponentDefinitionFactory({
+    const starterBrickDefinition = modComponentDefinitionFactory({
       services: extensionServices,
     });
 
     const recipe = recipeFactory({
-      extensionPoints: [extensionPointDefinition],
+      extensionPoints: [starterBrickDefinition],
     });
 
     // It works on an array of one recipe
@@ -223,16 +223,16 @@ describe("installStarterBlueprints", () => {
 
     const recipe = recipeFactory();
 
-    const extension = modComponentFactory({
+    const modComponent = modComponentFactory({
       _recipe: { id: recipe.metadata.id } as ModComponentBase["_recipe"],
     }) as ActivatedModComponent;
     await saveOptions({
-      extensions: [extension],
+      extensions: [modComponent],
     });
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
       {
-        extensionPoints: [extension],
+        extensionPoints: [modComponent],
         ...recipe,
       },
     ]);
@@ -246,11 +246,11 @@ describe("installStarterBlueprints", () => {
   test("extension with no _recipe doesn't throw undefined error", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const extension = modComponentFactory({
+    const modComponent = modComponentFactory({
       _recipe: undefined,
     }) as ActivatedModComponent;
     await saveOptions({
-      extensions: [extension],
+      extensions: [modComponent],
     });
 
     axiosMock

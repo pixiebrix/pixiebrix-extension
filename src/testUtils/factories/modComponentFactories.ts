@@ -97,16 +97,16 @@ export const activatedModComponentFactory = extend<
 export const standaloneModDefinitionFactory = (
   override?: Partial<Config<StandaloneModDefinition>>
 ) => {
-  const extension = modComponentFactory(
+  const modComponent = modComponentFactory(
     override as Config<ModComponentBase>
   ) as StandaloneModDefinition;
 
   // @ts-expect-error -- removing the ModComponentBase property that is not in the StandaloneModDefinition type
-  delete extension.active;
+  delete modComponent.active;
 
   const timestamp = timestampFactory();
-  extension.createTimestamp = timestamp;
-  extension.updateTimestamp = timestamp;
+  modComponent.createTimestamp = timestamp;
+  modComponent.updateTimestamp = timestamp;
 
-  return extension;
+  return modComponent;
 };

@@ -100,8 +100,8 @@ describe("ActivateRecipeCard", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("activate recipe with missing required recipe options", async () => {
-    const recipe = modDefinitionFactory({
+  test("activate mod definition with missing required mod definition options", async () => {
+    const modDefinition = modDefinitionFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "Mod with Required Options",
@@ -126,7 +126,7 @@ describe("ActivateRecipeCard", () => {
         }),
       ],
     });
-    setupRecipe(recipe);
+    setupRecipe(modDefinition);
 
     const rendered = render(<RecipeCard />);
     await waitForEffect();
@@ -135,8 +135,8 @@ describe("ActivateRecipeCard", () => {
     expect(screen.getByText("Database is a required field")).not.toBeNull();
   });
 
-  test("activate recipe permissions", async () => {
-    const recipe = modDefinitionFactory({
+  test("activate mod defintiion permissions", async () => {
+    const modDefinition = modDefinitionFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
@@ -147,7 +147,7 @@ describe("ActivateRecipeCard", () => {
         }),
       ],
     });
-    setupRecipe(recipe);
+    setupRecipe(modDefinition);
 
     const rendered = render(<RecipeCard />);
     await waitForEffect();
@@ -160,7 +160,7 @@ describe("ActivateRecipeCard", () => {
         optionsArgs: {},
         services: [],
       },
-      recipe
+      modDefinition
     );
   });
 
@@ -170,7 +170,7 @@ describe("ActivateRecipeCard", () => {
       error: "You must accept browser permissions to activate",
     });
 
-    const recipe = modDefinitionFactory({
+    const modDefinition = modDefinitionFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
@@ -181,7 +181,7 @@ describe("ActivateRecipeCard", () => {
         }),
       ],
     });
-    setupRecipe(recipe);
+    setupRecipe(modDefinition);
 
     const rendered = render(<RecipeCard />);
     await waitForEffect();

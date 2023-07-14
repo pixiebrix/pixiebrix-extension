@@ -187,8 +187,8 @@ describe("useMods", () => {
   it("handles active cloud extension", async () => {
     appApiMock.reset();
 
-    const cloudExtension = standaloneModDefinitionFactory();
-    appApiMock.onGet("/api/extensions/").reply(200, [cloudExtension]);
+    const standaloneModDefinition = standaloneModDefinitionFactory();
+    appApiMock.onGet("/api/extensions/").reply(200, [standaloneModDefinition]);
 
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
@@ -196,7 +196,7 @@ describe("useMods", () => {
           // eslint-disable-next-line new-cap -- test setup
           extensionsSlice.actions.UNSAFE_setExtensions([
             // Content doesn't matter, just need to match the ID
-            activatedModComponentFactory({ id: cloudExtension.id }),
+            activatedModComponentFactory({ id: standaloneModDefinition.id }),
           ])
         );
       },

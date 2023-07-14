@@ -61,10 +61,10 @@ describe("contextMenus", () => {
     expect(createMenuMock).not.toHaveBeenCalled();
   });
 
-  it("don't fail on missing extension point", async () => {
-    // Unknown extension point
-    const menuExtension = modComponentFactory();
-    await preloadContextMenus([menuExtension]);
+  it("don't fail on missing starter brick", async () => {
+    // Unknown starter brick
+    const menuModComponent = modComponentFactory();
+    await preloadContextMenus([menuModComponent]);
     expect(updateMenuMock).not.toHaveBeenCalled();
     expect(createMenuMock).not.toHaveBeenCalled();
   });
@@ -79,12 +79,12 @@ describe("contextMenus", () => {
 
     extensionPointRegistry.register([fromJS(extensionPoint)]);
 
-    const menuExtension = modComponentFactory({
+    const menuModComponent = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,
     }) as ModComponentBase<ContextMenuConfig>;
-    menuExtension.config.title = "Test Menu";
+    menuModComponent.config.title = "Test Menu";
 
-    await preloadContextMenus([menuExtension]);
+    await preloadContextMenus([menuModComponent]);
     expect(updateMenuMock).toHaveBeenCalledWith(
       expect.stringMatching(/pixiebrix-\S+/),
       {

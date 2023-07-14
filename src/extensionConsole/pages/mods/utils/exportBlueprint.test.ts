@@ -37,14 +37,14 @@ describe("makeBlueprint", () => {
     );
   });
 
-  it("infers blueprint options", () => {
-    const extension = modComponentFactory({
+  it("infers mod options", () => {
+    const modComponent = modComponentFactory({
       optionsArgs: {
         foo: "hello world!",
       },
     }) as UnresolvedModComponent;
 
-    const result = makeBlueprint(extension, {
+    const result = makeBlueprint(modComponent, {
       id: validateRegistryId("test/blueprint"),
       name: "test",
     });

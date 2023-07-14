@@ -146,23 +146,23 @@ export const versionedStarterBrickRecipeFactory = ({
  * Factory to create a ModDefinition with a definitions section and resolved extensions
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
-  const extensionPoints: ModComponentDefinition[] = [];
+  const modComponents: ModComponentDefinition[] = [];
   for (let i = 0; i < extensionCount; i++) {
     // Don't use array(factory, count) here, because it will keep incrementing
     // the modifier number across multiple test runs and cause non-deterministic
     // test execution behavior.
-    const extensionPoint = modComponentDefinitionFactory();
-    const ids = extensionPoints.map((x) => x.id);
+    const modComponent = modComponentDefinitionFactory();
+    const ids = modComponents.map((x) => x.id);
     const id = freshIdentifier(DEFAULT_EXTENSION_POINT_VAR as SafeString, ids);
-    extensionPoints.push({
-      ...extensionPoint,
+    modComponents.push({
+      ...modComponent,
       id: id as InnerDefinitionRef,
     });
   }
 
   const definitions: InnerDefinitions = {};
 
-  for (const extensionPoint of extensionPoints) {
+  for (const extensionPoint of modComponents) {
     definitions[extensionPoint.id] = {
       kind: "extensionPoint",
       definition: starterBrickConfigFactory().definition,
@@ -182,7 +182,7 @@ export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions,
     options: undefined,
-    extensionPoints,
+    extensionPoints: modComponents,
   });
 };
 
@@ -230,12 +230,12 @@ export const getRecipeWithBuiltInServiceAuths = () => {
     service2: "@pixiebrix/service2",
   } as Record<OutputKey, RegistryId>;
 
-  const extensionPointDefinition = modComponentDefinitionFactory({
+  const modComponentDefintion = modComponentDefinitionFactory({
     services: extensionServices,
   });
 
   const recipe = recipeFactory({
-    extensionPoints: [extensionPointDefinition],
+    extensionPoints: [modComponentDefintion],
   });
 
   const builtInServiceAuths = [

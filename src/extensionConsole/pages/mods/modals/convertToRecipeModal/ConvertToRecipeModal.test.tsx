@@ -61,19 +61,19 @@ afterEach(() => {
 
 describe("it renders", () => {
   test("default state", () => {
-    const extension = standaloneModDefinitionFactory();
+    const standaloneModDefinition = standaloneModDefinitionFactory();
 
     const rendered = render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
           extensionsSlice.actions.installCloudExtension({
-            extension,
+            extension: standaloneModDefinition,
           })
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
-            extensionId: extension.id,
+            extensionId: standaloneModDefinition.id,
           })
         );
       },
@@ -84,19 +84,19 @@ describe("it renders", () => {
   });
 
   test("requires user scope", async () => {
-    const extension = standaloneModDefinitionFactory();
+    const standaloneModDefinition = standaloneModDefinitionFactory();
 
     const rendered = render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(anonAuth));
         dispatch(
           extensionsSlice.actions.installCloudExtension({
-            extension,
+            extension: standaloneModDefinition,
           })
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
-            extensionId: extension.id,
+            extensionId: standaloneModDefinition.id,
           })
         );
       },
@@ -137,7 +137,7 @@ describe("it renders", () => {
         }),
       ]);
 
-      const extension = standaloneModDefinitionFactory();
+      const standaloneModDefinition = standaloneModDefinitionFactory();
 
       const rendered = render(
         <div>
@@ -148,12 +148,12 @@ describe("it renders", () => {
             dispatch(authSlice.actions.setAuth(authStateFactory()));
             dispatch(
               extensionsSlice.actions.installCloudExtension({
-                extension,
+                extension: standaloneModDefinition,
               })
             );
             dispatch(
               sharingAction({
-                extensionId: extension.id,
+                extensionId: standaloneModDefinition.id,
               })
             );
           },
@@ -175,11 +175,11 @@ describe("it renders", () => {
     }
   );
 
-  test("converts cloud extension", async () => {
-    const extension = standaloneModDefinitionFactory();
+  test("converts cloud mod component", async () => {
+    const standaloneModDefinition = standaloneModDefinitionFactory();
 
     (api.useGetAllCloudExtensionsQuery as jest.Mock).mockReturnValue({
-      data: [extension],
+      data: [standaloneModDefinition],
     });
     (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([
       jest.fn().mockReturnValue({ unwrap: jest.fn().mockResolvedValue({}) }),
@@ -197,7 +197,7 @@ describe("it renders", () => {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
           modModalsSlice.actions.setShareContext({
-            extensionId: extension.id,
+            extensionId: standaloneModDefinition.id,
           })
         );
       },

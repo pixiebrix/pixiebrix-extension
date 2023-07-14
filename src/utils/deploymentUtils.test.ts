@@ -50,9 +50,9 @@ describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
     "unmatched deployment",
     ({ restricted }) => {
-      const extensions = [modComponentFactory()];
+      const modComponents = [modComponentFactory()];
 
-      const filter = makeUpdatedFilter(extensions, { restricted });
+      const filter = makeUpdatedFilter(modComponents, { restricted });
       expect(filter(deploymentFactory())).toBeTrue();
     }
   );
@@ -167,7 +167,7 @@ describe("isDeploymentActive", () => {
   test("legacy deployment", () => {
     const deployment = deploymentFactory();
 
-    const extension = modComponentFactory({
+    const modComponent = modComponentFactory({
       _deployment: {
         id: deployment.id,
         timestamp: deployment.updated_at,
@@ -175,7 +175,7 @@ describe("isDeploymentActive", () => {
       },
     });
 
-    expect(isDeploymentActive(extension)).toBeTrue();
+    expect(isDeploymentActive(modComponent)).toBeTrue();
   });
 
   test.each([[{ active: true }, { active: false }]])(
@@ -183,7 +183,7 @@ describe("isDeploymentActive", () => {
     ({ active }) => {
       const deployment = deploymentFactory();
 
-      const extension = modComponentFactory({
+      const modComponent = modComponentFactory({
         _deployment: {
           id: deployment.id,
           timestamp: deployment.updated_at,
@@ -191,7 +191,7 @@ describe("isDeploymentActive", () => {
         },
       });
 
-      expect(isDeploymentActive(extension)).toBe(active);
+      expect(isDeploymentActive(modComponent)).toBe(active);
     }
   );
 });

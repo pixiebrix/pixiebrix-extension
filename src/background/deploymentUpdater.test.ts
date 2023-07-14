@@ -224,28 +224,28 @@ describe("updateDeployments", () => {
   test("ignore other user extensions", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const extensionPoint = starterBrickConfigFactory();
+    const starterBrick = starterBrickConfigFactory();
     const brick = {
-      ...parsePackage(extensionPoint as unknown as RegistryPackage),
+      ...parsePackage(starterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
     };
     registryFindMock.mockResolvedValue(brick);
 
     // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const extension = modComponentFactory({
-      extensionPointId: extensionPoint.metadata.id,
+    const modComponent = modComponentFactory({
+      extensionPointId: starterBrick.metadata.id,
     }) as ActivatedModComponent;
-    delete extension._recipe;
-    delete extension._deployment;
+    delete modComponent._recipe;
+    delete modComponent._deployment;
 
     await saveOptions({
-      extensions: [extension],
+      extensions: [modComponent],
     });
 
     let editorState = initialEditorState;
     const element = (await ADAPTERS.get(
-      extensionPoint.definition.type
-    ).fromExtension(extension)) as ActionFormState;
+      starterBrick.definition.type
+    ).fromExtension(modComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addElement(element)
@@ -269,13 +269,13 @@ describe("updateDeployments", () => {
     expect(elements).toBeArrayOfSize(1);
   });
 
-  test("uninstall existing recipe extension with no dynamic elements", async () => {
+  test("uninstall existing recipe mod component with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const deployment = deploymentFactory();
 
-    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const extension = modComponentFactory({
+    // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
+    const modComponent = modComponentFactory({
       _recipe: {
         id: deployment.package.package_id,
         name: deployment.package.name,
@@ -284,10 +284,10 @@ describe("updateDeployments", () => {
         sharing: sharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
-    delete extension._deployment;
+    delete modComponent._deployment;
 
     await saveOptions({
-      extensions: [extension],
+      extensions: [modComponent],
     });
 
     axiosMock.onGet().reply(200, {
@@ -306,21 +306,21 @@ describe("updateDeployments", () => {
     expect(extensions[0]._recipe.version).toBe(deployment.package.version);
   });
 
-  test("uninstall existing recipe extension with dynamic element", async () => {
+  test("uninstall existing recipe mod component with dynamic element", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const deployment = deploymentFactory();
 
-    const extensionPoint = starterBrickConfigFactory();
+    const starterBrick = starterBrickConfigFactory();
     const brick = {
-      ...parsePackage(extensionPoint as unknown as RegistryPackage),
+      ...parsePackage(starterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
     };
     registryFindMock.mockResolvedValue(brick);
 
-    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const extension = modComponentFactory({
-      extensionPointId: extensionPoint.metadata.id,
+    // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
+    const modComponent = modComponentFactory({
+      extensionPointId: starterBrick.metadata.id,
       _recipe: {
         id: deployment.package.package_id,
         name: deployment.package.name,
@@ -329,15 +329,15 @@ describe("updateDeployments", () => {
         sharing: sharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
-    delete extension._deployment;
+    delete modComponent._deployment;
 
     await saveOptions({
-      extensions: [extension],
+      extensions: [modComponent],
     });
 
     let editorState = initialEditorState;
     const element = (await ADAPTERS.get("menuItem").fromExtension(
-      extension
+      modComponent
     )) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
@@ -524,28 +524,28 @@ describe("updateDeployments", () => {
   });
 
   test("can uninstall all deployments", async () => {
-    const personalExtensionPoint = starterBrickConfigFactory();
+    const personalStarterBrick = starterBrickConfigFactory();
     const personalBrick = {
-      ...parsePackage(personalExtensionPoint as unknown as RegistryPackage),
+      ...parsePackage(personalStarterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 
-    const personalExtension = modComponentFactory({
-      extensionPointId: personalExtensionPoint.metadata.id,
+    const personalModComponent = modComponentFactory({
+      extensionPointId: personalStarterBrick.metadata.id,
     }) as ActivatedModComponent;
 
-    const recipeExtension = modComponentFactory({
+    const recipeModComponent = modComponentFactory({
       _recipe: modComponentRecipeFactory(),
     }) as ActivatedModComponent;
 
-    const deploymentExtensionPoint = starterBrickConfigFactory();
+    const deploymentStarterBrick = starterBrickConfigFactory();
     const deploymentsBrick = {
-      ...parsePackage(deploymentExtensionPoint as unknown as RegistryPackage),
+      ...parsePackage(deploymentStarterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 
-    const deploymentExtension = modComponentFactory({
-      extensionPointId: deploymentExtensionPoint.metadata.id,
+    const deploymentModComponent = modComponentFactory({
+      extensionPointId: deploymentStarterBrick.metadata.id,
       _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
       _recipe: modComponentRecipeFactory(),
     }) as ActivatedModComponent;
@@ -561,23 +561,27 @@ describe("updateDeployments", () => {
     let editorState = initialEditorState;
 
     const personalElement = (await ADAPTERS.get(
-      personalExtensionPoint.definition.type
-    ).fromExtension(personalExtension)) as ActionFormState;
+      personalStarterBrick.definition.type
+    ).fromExtension(personalModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addElement(personalElement)
     );
 
     const deploymentElement = (await ADAPTERS.get(
-      deploymentExtensionPoint.definition.type
-    ).fromExtension(deploymentExtension)) as ActionFormState;
+      deploymentStarterBrick.definition.type
+    ).fromExtension(deploymentModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addElement(deploymentElement)
     );
 
     await saveOptions({
-      extensions: [personalExtension, deploymentExtension, recipeExtension],
+      extensions: [
+        personalModComponent,
+        deploymentModComponent,
+        recipeModComponent,
+      ],
     });
     await saveEditorState(editorState);
 
@@ -591,8 +595,8 @@ describe("updateDeployments", () => {
     expect(extensions.length).toBe(2);
 
     const installedIds = extensions.map((x) => x.id);
-    expect(installedIds).toContain(personalExtension.id);
-    expect(installedIds).toContain(recipeExtension.id);
+    expect(installedIds).toContain(personalModComponent.id);
+    expect(installedIds).toContain(recipeModComponent.id);
 
     const { elements } = await getEditorState();
     expect(elements).toBeArrayOfSize(1);

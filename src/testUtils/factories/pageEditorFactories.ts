@@ -76,9 +76,9 @@ const internalFormStateFactory = define<
   // @ts-expect-error -- TODO: verify typings
   extensionPoint: derive<ModComponentFormState, StarterBrickConfig>(
     ({ type }) => {
-      const extensionPoint = starterBrickConfigFactory();
-      extensionPoint.definition.type = type;
-      return extensionPoint;
+      const starterBrick = starterBrickConfigFactory();
+      starterBrick.definition.type = type;
+      return starterBrick;
     },
     "type"
   ),

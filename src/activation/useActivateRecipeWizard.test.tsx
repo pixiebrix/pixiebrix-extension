@@ -109,7 +109,7 @@ describe("useActivateRecipeWizard", () => {
         format: "preview",
       },
     });
-    const recipe = modDefinitionFactory({
+    const modDefinition = modDefinitionFactory({
       options: {
         schema: optionSchema,
       },
@@ -117,10 +117,10 @@ describe("useActivateRecipeWizard", () => {
     useDatabaseOptionsMock.mockReturnValue(
       valueToAsyncState([{ label: "Database2", value: uuidSequence(2) }])
     );
-    const { result } = renderHook(() => useActivateRecipeWizard(recipe));
+    const { result } = renderHook(() => useActivateRecipeWizard(modDefinition));
 
     expect(result.current.data.initialValues.optionsArgs).toEqual({
-      [name]: makeDatabasePreviewName(recipe, optionSchema, name),
+      [name]: makeDatabasePreviewName(modDefinition, optionSchema, name),
     });
   });
 
@@ -133,7 +133,7 @@ describe("useActivateRecipeWizard", () => {
         format: "preview",
       },
     });
-    const recipe = modDefinitionFactory({
+    const modDefinition = modDefinitionFactory({
       options: {
         schema: optionSchema,
       },
@@ -143,7 +143,7 @@ describe("useActivateRecipeWizard", () => {
       valueToAsyncState([
         {
           label: `${makeDatabasePreviewName(
-            recipe,
+            modDefinition,
             optionSchema,
             name
           )} - Private`,
@@ -152,7 +152,7 @@ describe("useActivateRecipeWizard", () => {
         { label: "Database2", value: uuidSequence(2) },
       ])
     );
-    const { result } = renderHook(() => useActivateRecipeWizard(recipe));
+    const { result } = renderHook(() => useActivateRecipeWizard(modDefinition));
 
     expect(result.current.data.initialValues.optionsArgs).toEqual({
       [name]: databaseId,

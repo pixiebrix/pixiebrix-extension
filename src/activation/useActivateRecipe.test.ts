@@ -64,10 +64,10 @@ function setupInputs(): {
   };
 
   const extensionPointId = validateRegistryId("test/extension-point-1");
-  const extensionPoint = modComponentDefinitionFactory({
+  const modComponentDefinition = modComponentDefinitionFactory({
     id: extensionPointId,
   });
-  const extensionPointDefinition = starterBrickConfigFactory({
+  const starterBrickConfig = starterBrickConfigFactory({
     metadata: recipeMetadataFactory({
       id: extensionPointId,
       name: "Text Extension Point 1",
@@ -82,20 +82,20 @@ function setupInputs(): {
       reader: [validateRegistryId("@pixiebrix/document-metadata")],
     },
   }) as StarterBrickConfig<MenuDefinition>;
-  extensionPointDefinition.definition.targetMode = "eventTarget";
-  extensionPointDefinition.definition.contexts = ["all"];
-  extensionPointDefinition.definition.documentUrlPatterns = ["*://*/*"];
+  starterBrickConfig.definition.targetMode = "eventTarget";
+  starterBrickConfig.definition.contexts = ["all"];
+  starterBrickConfig.definition.documentUrlPatterns = ["*://*/*"];
 
-  const recipe = modDefinitionFactory({
-    extensionPoints: [extensionPoint],
+  const modDefinition = modDefinitionFactory({
+    extensionPoints: [modComponentDefinition],
     definitions: {
-      [extensionPointId]: extensionPointDefinition,
+      [extensionPointId]: starterBrickConfig,
     } as unknown as InnerDefinitions,
   });
 
   return {
     formValues,
-    recipe,
+    recipe: modDefinition,
   };
 }
 

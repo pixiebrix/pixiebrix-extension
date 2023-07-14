@@ -107,14 +107,14 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
-    const extension1 = modComponentFactory({
+    const modComponent1 = modComponentFactory({
       _recipe: modComponentRecipeFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;
-    const extension2 = modComponentFactory() as ActivatedModComponent;
+    const modComponent2 = modComponentFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
-      extensions: [extension1, extension2],
+      extensions: [modComponent1, modComponent2],
     });
 
     await loadActivationEnhancements();
@@ -169,14 +169,14 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
-    const extension1 = modComponentFactory({
+    const modComponent1 = modComponentFactory({
       _recipe: modComponentRecipeFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;
-    const extension2 = modComponentFactory() as ActivatedModComponent;
+    const modComponent2 = modComponentFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
-      extensions: [extension1, extension2],
+      extensions: [modComponent1, modComponent2],
     });
 
     await loadActivationEnhancements();
@@ -192,14 +192,14 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
-    const extension1 = modComponentFactory({
+    const modComponent1 = modComponentFactory({
       _recipe: modComponentRecipeFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;
-    const extension2 = modComponentFactory() as ActivatedModComponent;
+    const modComponent2 = modComponentFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
-      extensions: [extension1, extension2],
+      extensions: [modComponent1, modComponent2],
     });
 
     await loadActivationEnhancements();

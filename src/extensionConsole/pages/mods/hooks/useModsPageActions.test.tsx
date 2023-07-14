@@ -103,9 +103,9 @@ afterEach(() => {
 });
 
 describe("useModsPageActions", () => {
-  test("cloud extension", () => {
+  test("cloud mod component", () => {
     mockHooks();
-    const cloudExtensionItem = modViewItemFactory({
+    const cloudModComponent = modViewItemFactory({
       isExtension: true,
       sharingType: "Personal",
       status: "Inactive",
@@ -113,16 +113,16 @@ describe("useModsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModsPageActions(cloudExtensionItem));
+    } = renderHook(() => useModsPageActions(cloudModComponent));
     expectActions(
       ["viewPublish", "viewShare", "activate", "deleteExtension"],
       actions
     );
   });
 
-  test("active personal extension", () => {
+  test("active personal mod component", () => {
     mockHooks();
-    const personalExtensionItem = modViewItemFactory({
+    const personalModComponent = modViewItemFactory({
       isExtension: true,
       sharingType: "Personal",
       status: "Active",
@@ -130,16 +130,16 @@ describe("useModsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModsPageActions(personalExtensionItem));
+    } = renderHook(() => useModsPageActions(personalModComponent));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs"],
       actions
     );
   });
 
-  test("active personal blueprint", () => {
+  test("active personal mod", () => {
     mockHooks();
-    const personalBlueprintItem = modViewItemFactory({
+    const personalMod = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Active",
@@ -147,16 +147,16 @@ describe("useModsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModsPageActions(personalBlueprintItem));
+    } = renderHook(() => useModsPageActions(personalMod));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
     );
   });
 
-  test("inactive personal blueprint", () => {
+  test("inactive personal mod", () => {
     mockHooks();
-    const personalBlueprintItem = modViewItemFactory({
+    const personalMod = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Inactive",
@@ -164,13 +164,13 @@ describe("useModsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModsPageActions(personalBlueprintItem));
+    } = renderHook(() => useModsPageActions(personalMod));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
-  test("active team blueprint", () => {
+  test("active team mod", () => {
     mockHooks();
-    const teamBlueprintItem = modViewItemFactory({
+    const teamMod = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Active",
@@ -178,16 +178,16 @@ describe("useModsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModsPageActions(teamBlueprintItem));
+    } = renderHook(() => useModsPageActions(teamMod));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
       actions
     );
   });
 
-  test("inactive team blueprint", () => {
+  test("inactive team mod", () => {
     mockHooks();
-    const teamBlueprintItem = modViewItemFactory({
+    const teamMod = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Inactive",
@@ -195,13 +195,13 @@ describe("useModsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModsPageActions(teamBlueprintItem));
+    } = renderHook(() => useModsPageActions(teamMod));
     expectActions(["viewPublish", "viewShare", "activate"], actions);
   });
 
-  test("public blueprint", () => {
+  test("public mod", () => {
     mockHooks();
-    const publicBlueprintItem = modViewItemFactory({
+    const publicMod = modViewItemFactory({
       isExtension: false,
       sharingType: "Personal",
       status: "Active",
@@ -209,7 +209,7 @@ describe("useModsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModsPageActions(publicBlueprintItem));
+    } = renderHook(() => useModsPageActions(publicMod));
     expectActions(
       ["viewPublish", "viewShare", "reactivate", "viewLogs", "deactivate"],
       actions
@@ -268,9 +268,9 @@ describe("useModsPageActions", () => {
     );
   });
 
-  test("blueprint with access revoked", () => {
+  test("mod with access revoked", () => {
     mockHooks();
-    const blueprintItem = modViewItemFactory({
+    const modItem = modViewItemFactory({
       isExtension: false,
       sharingType: "Team",
       status: "Active",
@@ -279,7 +279,7 @@ describe("useModsPageActions", () => {
 
     const {
       result: { current: actions },
-    } = renderHook(() => useModsPageActions(blueprintItem));
+    } = renderHook(() => useModsPageActions(modItem));
     expectActions(["deactivate", "viewLogs"], actions);
   });
 
@@ -393,17 +393,17 @@ describe("actions", () => {
       expect(uninstallExtensions).not.toHaveBeenCalled();
     });
 
-    test("calls uninstallExtensions for an extension", () => {
+    test("calls uninstallExtensions for an mod component", () => {
       mockHooks();
 
-      const extension = standaloneModDefinitionFactory();
+      const standaloneModDefinition = standaloneModDefinitionFactory();
 
       const modViewItem = modViewItemFactory({
         isExtension: true,
         sharingType: "Personal",
         status: "Active",
       });
-      (modViewItem.mod as ModComponentBase).id = extension.id;
+      (modViewItem.mod as ModComponentBase).id = standaloneModDefinition.id;
 
       const {
         result: {
@@ -411,7 +411,11 @@ describe("actions", () => {
         },
       } = renderHook(() => useModsPageActions(modViewItem), {
         setupRedux(dispatch) {
-          dispatch(extensionActions.installCloudExtension({ extension }));
+          dispatch(
+            extensionActions.installCloudExtension({
+              extension: standaloneModDefinition,
+            })
+          );
           dispatch(
             extensionActions.installCloudExtension({
               extension: standaloneModDefinitionFactory(),
@@ -424,7 +428,7 @@ describe("actions", () => {
 
       expect(uninstallRecipe).not.toHaveBeenCalled();
       expect(uninstallExtensions).toHaveBeenCalledWith(
-        [extension.id],
+        [standaloneModDefinition.id],
         expect.any(Function)
       );
     });

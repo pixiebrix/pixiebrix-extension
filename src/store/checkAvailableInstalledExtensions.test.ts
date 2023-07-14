@@ -72,7 +72,7 @@ describe("checkAvailableInstalledExtensions", () => {
       extensionPointId: unavailableQbId,
     });
 
-    const availableButtonExtensionPointConfig = starterBrickConfigFactory({
+    const availableButtonStarterBrickConfig = starterBrickConfigFactory({
       metadata(): Metadata {
         return recipeMetadataFactory({
           id: availableButtonId,
@@ -91,10 +91,10 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     }) as StarterBrickConfig<MenuDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
-      availableButtonExtensionPointConfig
+      availableButtonStarterBrickConfig
     );
 
-    const availableQuickbarExtensionPointConfig = starterBrickConfigFactory({
+    const availableQuickbarStarterBrickConfig = starterBrickConfigFactory({
       metadata(): Metadata {
         return recipeMetadataFactory({
           id: availableQbId,
@@ -114,7 +114,7 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     }) as StarterBrickConfig<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
-      availableQuickbarExtensionPointConfig
+      availableQuickbarStarterBrickConfig
     );
     (getInstalledExtensionPoints as jest.Mock).mockResolvedValue([
       availableButtonExtensionPoint,

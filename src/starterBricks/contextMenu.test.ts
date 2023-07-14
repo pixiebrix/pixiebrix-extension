@@ -80,20 +80,20 @@ beforeEach(() => {
 
 describe("contextMenuExtension", () => {
   it("should add extension", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const extension = extensionFactory();
-    extensionPoint.addExtension(extension);
+    const starterBrick = fromJS(extensionPointFactory()());
+    const modComponent = extensionFactory();
+    starterBrick.addExtension(modComponent);
   });
 
   it("should include context menu props in schema", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const reader = await extensionPoint.defaultReader();
+    const starterBrick = fromJS(extensionPointFactory()());
+    const reader = await starterBrick.defaultReader();
     expect(reader.outputSchema.properties).toHaveProperty("selectionText");
   });
 
   it("should include context menu props in preview", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const reader = await extensionPoint.previewReader();
+    const starterBrick = fromJS(extensionPointFactory()());
+    const reader = await starterBrick.previewReader();
     const value = await reader.read(document);
     expect(value).toHaveProperty("selectionText");
   });

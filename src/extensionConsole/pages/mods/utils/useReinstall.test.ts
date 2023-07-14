@@ -30,15 +30,15 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test("uninstalls recipe extensions", async () => {
-  const recipe = modDefinitionFactory();
-  const recipeExtension = standaloneModDefinitionFactory({
+test("uninstalls recipe mod components", async () => {
+  const modDefinition = modDefinitionFactory();
+  const standaloneModDefinition = standaloneModDefinitionFactory({
     _recipe: {
-      id: recipe.metadata.id,
+      id: modDefinition.metadata.id,
     } as any,
   });
 
-  const anotherExtension = standaloneModDefinitionFactory();
+  const anotherStandaloneModDefinition = standaloneModDefinitionFactory();
 
   const {
     result: { current: reinstall },
@@ -47,10 +47,14 @@ test("uninstalls recipe extensions", async () => {
   } = renderHook(() => useReinstall(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.installCloudExtension({ extension: recipeExtension })
+        extensionActions.installCloudExtension({
+          extension: standaloneModDefinition,
+        })
       );
       dispatch(
-        extensionActions.installCloudExtension({ extension: anotherExtension })
+        extensionActions.installCloudExtension({
+          extension: anotherStandaloneModDefinition,
+        })
       );
     },
   });
@@ -60,10 +64,10 @@ test("uninstalls recipe extensions", async () => {
       .options as ModComponentOptionsState
   ).extensions[0];
 
-  await act(async () => reinstall(recipe));
+  await act(async () => reinstall(modDefinition));
 
   expect(uninstallRecipe).toHaveBeenCalledWith(
-    recipe.metadata.id,
+    modDefinition.metadata.id,
     [expectedExtension],
     expect.any(Function)
   );
@@ -72,10 +76,10 @@ test("uninstalls recipe extensions", async () => {
 test("dispatches install recipe action", async () => {
   jest.spyOn(extensionActions, "installRecipe");
 
-  const recipe = modDefinitionFactory();
-  const recipeExtension = standaloneModDefinitionFactory({
+  const modDefinition = modDefinitionFactory();
+  const standaloneModDefinition = standaloneModDefinitionFactory({
     _recipe: {
-      id: recipe.metadata.id,
+      id: modDefinition.metadata.id,
     } as any,
   });
 
@@ -85,12 +89,14 @@ test("dispatches install recipe action", async () => {
   } = renderHook(() => useReinstall(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.installCloudExtension({ extension: recipeExtension })
+        extensionActions.installCloudExtension({
+          extension: standaloneModDefinition,
+        })
       );
     },
   });
 
-  await act(async () => reinstall(recipe));
+  await act(async () => reinstall(modDefinition));
 
   expect(extensionActions.installRecipe).toHaveBeenCalled();
 });

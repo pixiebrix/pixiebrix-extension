@@ -38,14 +38,14 @@ beforeAll(() => {
 
 describe("RecipeOptionsDefinitions", () => {
   it("shows google sheets, and both database field type options", async () => {
-    const recipe = modDefinitionFactory();
+    const modDefinition = modDefinitionFactory();
 
     render(<RecipeOptionsDefinition />, {
       setupRedux(dispatch) {
         dispatch(
           extensionsSlice.actions.installRecipe({
-            recipe,
-            extensionPoints: recipe.extensionPoints,
+            recipe: modDefinition,
+            extensionPoints: modDefinition.extensionPoints,
             screen: "pageEditor",
             isReinstall: false,
           })

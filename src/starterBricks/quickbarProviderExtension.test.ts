@@ -45,7 +45,7 @@ import { starterBrickConfigFactory as genericExtensionPointFactory } from "@/tes
 const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
-const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
+const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   genericExtensionPointFactory({
     definition: define<QuickBarProviderDefinition>({
       type: "quickBarProvider",
@@ -92,19 +92,19 @@ describe("quickBarProviderExtension", () => {
   it("quick bar provider adds root action instantly", async () => {
     const user = userEvent.setup();
 
-    const extensionPoint = fromJS(extensionPointFactory());
+    const starterBrick = fromJS(starterBrickFactory());
 
-    extensionPoint.addExtension(
+    starterBrick.addExtension(
       extensionFactory({
-        extensionPointId: extensionPoint.id,
+        extensionPointId: starterBrick.id,
       })
     );
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS
     );
-    await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.run({ reason: RunReason.MANUAL });
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS + 1
@@ -126,7 +126,7 @@ describe("quickBarProviderExtension", () => {
     // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
     // TODO: add quickbar visibility assertion
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS
@@ -140,19 +140,19 @@ describe("quickBarProviderExtension", () => {
   it("runs the generator on query change", async () => {
     const user = userEvent.setup();
 
-    const extensionPoint = fromJS(extensionPointFactory());
+    const starterBrick = fromJS(starterBrickFactory());
 
-    extensionPoint.addExtension(
+    starterBrick.addExtension(
       extensionFactory({
-        extensionPointId: extensionPoint.id,
+        extensionPointId: starterBrick.id,
         config: {
           generator: [] as BrickPipeline,
         },
       })
     );
 
-    await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.run({ reason: RunReason.MANUAL });
 
     await tick();
 
@@ -188,7 +188,7 @@ describe("quickBarProviderExtension", () => {
 
     expect(rootReader.readCount).toBe(1);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS
@@ -199,14 +199,14 @@ describe("quickBarProviderExtension", () => {
   });
 
   it("includes query in the schema", async () => {
-    const extensionPoint = fromJS(extensionPointFactory());
-    const reader = await extensionPoint.defaultReader();
+    const starterBrick = fromJS(starterBrickFactory());
+    const reader = await starterBrick.defaultReader();
     expect(reader.outputSchema.properties).toHaveProperty("query");
   });
 
   it("includes query in preview", async () => {
-    const extensionPoint = fromJS(extensionPointFactory());
-    const reader = await extensionPoint.previewReader();
+    const starterBrick = fromJS(starterBrickFactory());
+    const reader = await starterBrick.previewReader();
     const value = await reader.read(document);
     expect(value).toHaveProperty("query");
   });
