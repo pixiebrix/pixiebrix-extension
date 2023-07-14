@@ -36,7 +36,7 @@
 
   // Only show first 8 items
   display: none;
-  &:nth-child(-n + 1) {
+  &:nth-child(-n + 8) {
     display: flex;
   }
   border-radius: 0.5rem 0.5rem 0 0;
