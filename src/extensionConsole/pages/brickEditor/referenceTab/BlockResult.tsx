@@ -20,7 +20,6 @@ import styles from "./BlockResult.module.scss";
 import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import cx from "classnames";
-import { type ReferenceEntry } from "@/extensionConsole/pages/brickEditor/brickEditorTypes";
 import { OfficialBadge } from "@/components/OfficialBadge";
 import BrickIcon from "@/components/BrickIcon";
 import {
@@ -33,12 +32,17 @@ import { find } from "@/registry/localRegistry";
 import { useAsyncState } from "@/hooks/common";
 import { type Organization } from "@/types/contract";
 import { type UUID } from "@/types/stringTypes";
-import { type Sharing } from "@/types/registryTypes";
+import { type Metadata, type Sharing } from "@/types/registryTypes";
 
-const SharingTag: React.FunctionComponent<{
-  block: ReferenceEntry;
+type SharingTagProps<T extends Metadata> = {
+  block: T;
   organizations: Organization[];
-}> = ({ block, organizations }) => {
+};
+
+const SharingTag = <T extends Metadata>({
+  block,
+  organizations,
+}: SharingTagProps<T>) => {
   const [sharing] = useAsyncState(async () => {
     const brickPackage = await find(block.id);
     if (brickPackage?.config) {
@@ -91,12 +95,19 @@ const SharingTag: React.FunctionComponent<{
   );
 };
 
-const BlockResult: React.FunctionComponent<{
-  block: ReferenceEntry;
+type BlockResultProps<T extends Metadata> = {
+  block: T;
   active?: boolean;
   onSelect: () => void;
   organizations: Organization[];
-}> = ({ block, onSelect, active, organizations }) => (
+};
+
+const BlockResult = <T extends Metadata>({
+  block,
+  onSelect,
+  active,
+  organizations,
+}: BlockResultProps<T>) => (
   <ListGroup.Item
     onClick={onSelect}
     className={cx(styles.root, { [styles.active]: active, active })}

@@ -50,17 +50,16 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
-import { type RegistryId } from "@/types/registryTypes";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
-import { type IBrick } from "@/types/brickInstanceTypes";
 
-type BrickOption<T extends IBrick = Brick> = {
+type BrickOption<T extends Metadata = Brick> = {
   data: T;
   value: RegistryId;
   label: string;
 };
 
-function makeBlockOption<T extends IBrick>(brick: T): BrickOption<T> {
+function makeBlockOption<T extends Metadata>(brick: T): BrickOption<T> {
   return {
     value: brick.id,
     label: brick.name,
@@ -68,7 +67,7 @@ function makeBlockOption<T extends IBrick>(brick: T): BrickOption<T> {
   };
 }
 
-function useSearch<T extends IBrick>(
+function useSearch<T extends Metadata>(
   bricks: T[],
   query: string
 ): Array<BrickOption<T>> {
@@ -101,7 +100,7 @@ function useSearch<T extends IBrick>(
   );
 }
 
-type ModalProps<T extends IBrick = Brick> = {
+type ModalProps<T extends Metadata = Brick> = {
   bricks: T[];
   onSelect: (brick: T) => void;
   selectCaption?: React.ReactNode;
@@ -115,18 +114,18 @@ type ButtonProps = {
   renderButton?: (onClick: () => void) => React.ReactNode;
 };
 
-type ItemType = {
-  searchResults: BrickOption[];
-  setDetailBrick: (brick: IBrick) => void;
+type ItemType<T extends Metadata> = {
+  searchResults: Array<BrickOption<T>>;
+  setDetailBrick: (brick: T) => void;
   selectCaption: React.ReactNode;
-  onSelect: (brick: IBrick) => void;
+  onSelect: (brick: T) => void;
   close: () => void;
-  activeBrick: IBrick | null;
+  activeBrick: T | null;
 };
 
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
-const ItemRenderer = ({
+const ItemRenderer = <T extends Metadata>({
   index,
   style,
   data: {
@@ -140,7 +139,7 @@ const ItemRenderer = ({
 }: {
   index: number;
   style: CSSProperties;
-  data: ItemType;
+  data: ItemType<T>;
 }) => {
   const { data: brick } = searchResults.at(index);
   return (
@@ -163,7 +162,10 @@ const ItemRenderer = ({
 
 // Need to provide a key because we reorder elements on search
 // See https://react-window.vercel.app/#/api/FixedSizeList
-function itemKey(index: number, { searchResults }: ItemType): RegistryId {
+function itemKey<T extends Metadata>(
+  index: number,
+  { searchResults }: ItemType<T>
+): RegistryId {
   // Find the item at the specified index.
   // In this case "data" is an Array that was passed to List as "itemData".
   const item = searchResults.at(index);
@@ -179,7 +181,7 @@ const defaultAddCaption = (
   </span>
 );
 
-function ActualModal<T extends IBrick>({
+function ActualModal<T extends Metadata>({
   bricks = [],
   close,
   onSelect,
@@ -269,7 +271,7 @@ function ActualModal<T extends IBrick>({
                           selectCaption,
                           onSelect,
                           close,
-                        } as ItemType
+                        } as ItemType<T>
                       }
                     >
                       {ItemRenderer}
@@ -296,8 +298,7 @@ function ActualModal<T extends IBrick>({
               ) : (
                 <QuickAdd
                   onSelect={(brick) => {
-                    // XXX: need to rewrite the signature of QuickAdd to work with generics
-                    onSelect(brick as T);
+                    onSelect(brick);
                     close();
                   }}
                   recommendations={recommendedBricks}
@@ -311,7 +312,7 @@ function ActualModal<T extends IBrick>({
   );
 }
 
-function BrickModal<T extends IBrick>({
+function BrickModal<T extends Metadata>({
   caption = "Select a Brick",
   renderButton,
   ...modalProps
