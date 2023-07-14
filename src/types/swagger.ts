@@ -1627,19 +1627,6 @@ export interface components {
       user_agent_extension_versions: string[];
       request_urls: string[];
     };
-    PackageVersionUpdates: {
-      updates: {
-        backwards_compatible: {
-          apiVersion: string;
-          kind: string;
-          metadata: {
-            [key: string]: unknown;
-          };
-        };
-        name: string;
-        backwards_incompatible: boolean;
-      }[];
-    };
     DatabaseExportRequest: {
       name: string;
       databases: string[];
@@ -5199,17 +5186,17 @@ export interface operations {
   createPackageVersionUpdates: {
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["PackageVersionUpdates"];
-        "application/x-www-form-urlencoded": components["schemas"]["PackageVersionUpdates"];
-        "multipart/form-data": components["schemas"]["PackageVersionUpdates"];
+        "application/json": unknown;
+        "application/x-www-form-urlencoded": unknown;
+        "multipart/form-data": unknown;
       };
     };
     responses: {
       201: {
         headers: {};
         content: {
-          "application/json; version=1.0": components["schemas"]["PackageVersionUpdates"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PackageVersionUpdates"];
+          "application/json; version=1.0": unknown;
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
         };
       };
     };
