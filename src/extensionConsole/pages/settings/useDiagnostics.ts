@@ -23,7 +23,7 @@ import useExtensionPermissions, {
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { compact, pick, uniqBy } from "lodash";
 import { type StorageEstimate } from "@/types/browserTypes";
-import { count as registrySize } from "@/registry/localRegistry";
+import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
 import { count as eventsSize } from "@/background/telemetry";

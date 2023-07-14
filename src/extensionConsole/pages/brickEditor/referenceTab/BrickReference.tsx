@@ -34,7 +34,7 @@ import BrickDetail from "./BrickDetail";
 import BlockResult from "./BlockResult";
 import { isOfficial } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
-import { find } from "@/registry/localRegistry";
+import { find } from "@/registry/packageRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/services/api";
 import { type Metadata } from "@/types/registryTypes";

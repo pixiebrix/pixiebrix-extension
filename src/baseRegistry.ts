@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Kind } from "@/registry/localRegistry";
+import { type Kind } from "@/registry/packageRegistry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";

@@ -18,7 +18,7 @@
 import bricksRegistry from "@/blocks/registry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { parsePackage } from "@/registry/localRegistry";
+import { parsePackage } from "@/registry/packageRegistry";
 import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 import { brickFactory } from "@/testUtils/factories/brickFactories";
 

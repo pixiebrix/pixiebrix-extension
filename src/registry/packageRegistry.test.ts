@@ -20,7 +20,7 @@ import {
   getByKinds,
   syncPackages,
   find,
-} from "@/registry/localRegistry";
+} from "@/registry/packageRegistry";
 import { produce } from "immer";
 import { type SemVerString } from "@/types/registryTypes";
 import { appApiMock } from "@/testUtils/appApiMock";

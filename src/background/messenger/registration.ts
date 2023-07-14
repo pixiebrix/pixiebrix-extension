@@ -35,7 +35,7 @@ import {
   requestRunInTop,
   waitForTargetByUrl,
 } from "@/background/executor";
-import * as registry from "@/registry/localRegistry";
+import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
