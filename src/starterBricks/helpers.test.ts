@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getDocument, tick } from "@/extensionPoints/extensionPointTestUtils";
-import { awaitElementOnce } from "@/extensionPoints/helpers";
+import { getDocument, tick } from "@/starterBricks/extensionPointTestUtils";
+import { awaitElementOnce } from "@/starterBricks/helpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
 
 beforeAll(() => {

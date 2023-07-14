@@ -11,7 +11,7 @@ import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidge
 import { useField, useFormikContext } from "formik";
 import { joinName } from "@/utils";
 import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type DebounceOptions } from "@/extensionPoints/types";
+import { type DebounceOptions } from "@/starterBricks/types";
 
 const DebounceFieldSet: React.FC<{
   isLocked: boolean;

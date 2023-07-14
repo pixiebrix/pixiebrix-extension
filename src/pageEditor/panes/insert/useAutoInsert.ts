@@ -10,7 +10,7 @@ import {
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
 import { reportEvent } from "@/telemetry/events";
-import { type StarterBrickType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/starterBricks/types";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import notify from "@/utils/notify";
 

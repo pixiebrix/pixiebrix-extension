@@ -30,7 +30,7 @@ import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
@@ -41,7 +41,7 @@ import notify, {
 } from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/blocks/util";

@@ -15,16 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  isTourInProgress,
-  registerTour,
-} from "@/extensionPoints/tourController";
+import { isTourInProgress, registerTour } from "@/starterBricks/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { RunSubTourEffect } from "@/blocks/effects/runSubTour";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import { tick } from "@/starterBricks/extensionPointTestUtils";
 import {
   type ModComponentBase,
   type ResolvedModComponent,

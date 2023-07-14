@@ -25,16 +25,16 @@ import {
   pick,
   pickBy,
 } from "lodash";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import blockRegistry from "@/blocks/registry";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
+import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
 import { fromJS as blockFactory } from "@/blocks/transformers/brickFactory";
 import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
   type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type ReaderConfig } from "@/blocks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import {

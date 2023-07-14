@@ -19,18 +19,18 @@ import {
   clearEditorExtension,
   runEditorExtension,
 } from "@/contentScript/lifecycle";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
+import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
 import Overlay from "@/vendors/Overlay";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
 import { $safeFind } from "@/helpers";
-import { type TriggerDefinition } from "@/extensionPoints/triggerExtension";
+import { type TriggerDefinition } from "@/starterBricks/triggerExtension";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import {
   activateExtensionPanel,
   ensureSidebar,
 } from "@/contentScript/sidebarController";
-import { type TourDefinition } from "@/extensionPoints/tourExtension";
+import { type TourDefinition } from "@/starterBricks/tourExtension";
 import { type JsonObject } from "type-fest";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";

@@ -30,16 +30,16 @@ import {
   awaitElementOnce,
   onNodeRemoved,
   selectExtensionContext,
-} from "@/extensionPoints/helpers";
+} from "@/starterBricks/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { render } from "@/extensionPoints/dom";
+import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";

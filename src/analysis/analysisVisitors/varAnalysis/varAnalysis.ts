@@ -40,7 +40,7 @@ import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
 import { joinPathParts } from "@/utils";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { fromJS } from "@/extensionPoints/factory";
+import { fromJS } from "@/starterBricks/factory";
 import { type Schema } from "@/types/schemaTypes";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";

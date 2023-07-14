@@ -26,7 +26,7 @@ import {
   getRootPipelineFlavor,
   getSubPipelineFlavor,
 } from "@/blocks/blockFilterHelpers";
-import { type StarterBrickType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/starterBricks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { isPipelineExpression } from "@/utils/expressionUtils";

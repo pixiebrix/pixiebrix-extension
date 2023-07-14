@@ -26,7 +26,7 @@ import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/blocks/available";
 import notify from "@/utils/notify";
@@ -43,7 +43,7 @@ import { HeadlessModeError } from "@/blocks/errors";
 import {
   makeShouldRunExtensionForStateChange,
   selectExtensionContext,
-} from "@/extensionPoints/helpers";
+} from "@/starterBricks/helpers";
 import { cloneDeep, debounce, stubTrue } from "lodash";
 import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";

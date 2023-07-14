@@ -19,11 +19,11 @@ import {
   fromJS,
   type MenuDefinition,
   type MenuItemStarterBrickConfig,
-} from "@/extensionPoints/menuItemExtension";
+} from "@/starterBricks/menuItemExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import blockRegistry from "@/blocks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
@@ -31,7 +31,7 @@ import {
   getDocument,
   RootReader,
   tick,
-} from "@/extensionPoints/extensionPointTestUtils";
+} from "@/starterBricks/extensionPointTestUtils";
 import { type BrickPipeline } from "@/blocks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";

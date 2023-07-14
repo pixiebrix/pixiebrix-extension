@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromJS as deserializePanel } from "@/extensionPoints/panelExtension";
-import { fromJS as deserializeMenuItem } from "@/extensionPoints/menuItemExtension";
-import { fromJS as deserializeTrigger } from "@/extensionPoints/triggerExtension";
-import { fromJS as deserializeContextMenu } from "@/extensionPoints/contextMenu";
-import { fromJS as deserializeSidebar } from "@/extensionPoints/sidebarExtension";
-import { fromJS as deserializeQuickBar } from "@/extensionPoints/quickBarExtension";
-import { fromJS as deserializeQuickBarProvider } from "@/extensionPoints/quickBarProviderExtension";
-import { fromJS as deserializeTour } from "@/extensionPoints/tourExtension";
+import { fromJS as deserializePanel } from "@/starterBricks/panelExtension";
+import { fromJS as deserializeMenuItem } from "@/starterBricks/menuItemExtension";
+import { fromJS as deserializeTrigger } from "@/starterBricks/triggerExtension";
+import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu";
+import { fromJS as deserializeSidebar } from "@/starterBricks/sidebarExtension";
+import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBarExtension";
+import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarProviderExtension";
+import { fromJS as deserializeTour } from "@/starterBricks/tourExtension";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 
 const TYPE_MAP = {
   panel: deserializePanel,

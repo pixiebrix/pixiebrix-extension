@@ -19,16 +19,16 @@ import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/extensionPoints/panelExtension";
+} from "@/starterBricks/panelExtension";
 import {
   type MenuDefinition,
   type MenuItemStarterBrickConfig,
-} from "@/extensionPoints/menuItemExtension";
+} from "@/starterBricks/menuItemExtension";
 import { type ElementInfo } from "@/pageScript/frameworks";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UnknownObject } from "@/types/objectTypes";

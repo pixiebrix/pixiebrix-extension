@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromJS } from "@/extensionPoints/factory";
+import { fromJS } from "@/starterBricks/factory";
 import BaseRegistry from "@/baseRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";

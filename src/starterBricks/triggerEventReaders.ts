@@ -40,7 +40,7 @@ import selectionController from "@/utils/selectionController";
 import {
   KEYBOARD_TRIGGERS,
   type Trigger,
-} from "@/extensionPoints/triggerExtensionTypes";
+} from "@/starterBricks/triggerExtensionTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 export function pickEventProperties(nativeEvent: Event): JsonObject {

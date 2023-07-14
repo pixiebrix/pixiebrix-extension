@@ -34,7 +34,7 @@ import BrickReference from "@/extensionConsole/pages/brickEditor/referenceTab/Br
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import { fetch } from "@/hooks/fetch";
 import { type EditablePackageMetadata } from "@/types/contract";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";

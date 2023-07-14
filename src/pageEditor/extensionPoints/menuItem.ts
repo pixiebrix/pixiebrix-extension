@@ -35,8 +35,8 @@ import {
   type MenuDefinition,
   type MenuItemStarterBrickConfig,
   MenuItemStarterBrickABC,
-} from "@/extensionPoints/menuItemExtension";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+} from "@/starterBricks/menuItemExtension";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";

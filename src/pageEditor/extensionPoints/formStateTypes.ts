@@ -21,32 +21,32 @@ import {
   type ContextMenuConfig,
   type ContextMenuTargetMode,
   type MenuDefaultOptions as ContextMenuDefaultOptions,
-} from "@/extensionPoints/contextMenu";
+} from "@/starterBricks/contextMenu";
 import {
   type MenuItemStarterBrickConfig,
   type MenuPosition,
-} from "@/extensionPoints/menuItemExtension";
-import { type PanelConfig } from "@/extensionPoints/panelExtension";
+} from "@/starterBricks/menuItemExtension";
+import { type PanelConfig } from "@/starterBricks/panelExtension";
 import {
   type QuickBarConfig,
   type QuickBarDefaultOptions,
   type QuickBarTargetMode,
-} from "@/extensionPoints/quickBarExtension";
+} from "@/starterBricks/quickBarExtension";
 import {
   type SidebarConfig,
   type Trigger as SidebarTrigger,
-} from "@/extensionPoints/sidebarExtension";
+} from "@/starterBricks/sidebarExtension";
 import {
   type AttachMode,
   type ReportMode,
   type TargetMode,
   type Trigger as TriggerTrigger,
-} from "@/extensionPoints/triggerExtensionTypes";
+} from "@/starterBricks/triggerExtensionTypes";
 import {
   type CustomEventOptions,
   type DebounceOptions,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
 import {
@@ -58,8 +58,8 @@ import {
 import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
-} from "@/extensionPoints/quickBarProviderExtension";
-import { type TourDefinition } from "@/extensionPoints/tourExtension";
+} from "@/starterBricks/quickBarProviderExtension";
+import { type TourDefinition } from "@/starterBricks/tourExtension";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &

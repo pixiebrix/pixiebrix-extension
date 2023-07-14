@@ -35,8 +35,8 @@ import {
   type TriggerConfig,
   type TriggerDefinition,
   TriggerStarterBrickABC,
-} from "@/extensionPoints/triggerExtension";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+} from "@/starterBricks/triggerExtension";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";

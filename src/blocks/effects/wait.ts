@@ -16,7 +16,7 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { awaitElementOnce } from "@/extensionPoints/helpers";
+import { awaitElementOnce } from "@/starterBricks/helpers";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import pTimeout, { TimeoutError } from "p-timeout";

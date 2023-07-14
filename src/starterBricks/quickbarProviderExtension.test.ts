@@ -23,13 +23,13 @@ import {
   fromJS,
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
-} from "@/extensionPoints/quickBarProviderExtension";
+} from "@/starterBricks/quickBarProviderExtension";
 import { type BrickPipeline } from "@/blocks/types";
 import {
   getDocument,
   RootReader,
   tick,
-} from "@/extensionPoints/extensionPointTestUtils";
+} from "@/starterBricks/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";

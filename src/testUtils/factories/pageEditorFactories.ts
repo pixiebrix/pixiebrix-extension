@@ -34,7 +34,7 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import {
   type StarterBrickConfig,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,

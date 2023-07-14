@@ -41,7 +41,7 @@ import {
   type StarterBrickConfig,
   type StarterBrickType,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 import { type SafeString } from "@/types/stringTypes";

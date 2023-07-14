@@ -30,7 +30,7 @@ import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import {
@@ -47,7 +47,7 @@ import notify, {
 } from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -58,7 +58,7 @@ import { guessSelectedElement } from "@/utils/selectionController";
 import {
   ContextMenuReader,
   contextMenuReaderShim,
-} from "@/extensionPoints/contextMenuReader";
+} from "@/starterBricks/contextMenuReader";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";

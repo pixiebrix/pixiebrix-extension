@@ -20,7 +20,7 @@ import { registry } from "@/background/messenger/api";
 import {
   type StarterBrickConfig,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import menuItemExtension from "@/pageEditor/extensionPoints/menuItem";
 import quickBarExtension from "@/pageEditor/extensionPoints/quickBar";
 import triggerExtension from "@/pageEditor/extensionPoints/trigger";

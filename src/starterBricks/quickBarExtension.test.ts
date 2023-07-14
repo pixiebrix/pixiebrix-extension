@@ -15,31 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { validateRegistryId } from "@/types/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
-import { validateRegistryId } from "@/types/helpers";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/blocks/types";
 import {
-  type TourConfig,
-  type TourDefinition,
-  fromJS,
-} from "@/extensionPoints/tourExtension";
-import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
+  getDocument,
+  RootReader,
+  tick,
+} from "@/starterBricks/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
-import { isTourInProgress } from "@/extensionPoints/tourController";
+import {
+  fromJS,
+  type QuickBarConfig,
+  type QuickBarDefinition,
+} from "@/starterBricks/quickBarExtension";
+import { Menus } from "webextension-polyfill";
+import ContextType = Menus.ContextType;
+import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import defaultActions from "@/components/quickBar/defaultActions";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
+import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
-const rootReader = new RootReader();
+const rootReaderId = validateRegistryId("test/root-reader");
+
+mockAnimationsApi();
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
-  define<StarterBrickConfig<TourDefinition>>({
+  define<StarterBrickConfig<QuickBarDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
@@ -47,17 +56,19 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
         id: validateRegistryId(`test/extension-point-${n}`),
         name: "Test Extension Point",
       } as Metadata),
-    definition: define<TourDefinition>({
-      type: "tour",
+    definition: define<QuickBarDefinition>({
+      type: "quickBar",
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
-      reader: () => [rootReader.id],
+      contexts: () => ["all"] as ContextType[],
+      targetMode: "eventTarget",
+      reader: () => [rootReaderId],
       ...definitionOverrides,
     }),
   });
 
-const extensionFactory = define<ResolvedModComponent<TourConfig>>({
+const extensionFactory = define<ResolvedModComponent<QuickBarConfig>>({
   apiVersion: "v3",
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
@@ -65,10 +76,13 @@ const extensionFactory = define<ResolvedModComponent<TourConfig>>({
     validateRegistryId(`test/extension-point-${n}`),
   _recipe: null,
   label: "Test Extension",
-  config: define<TourConfig>({
-    tour: () => [] as BrickPipeline,
+  config: define<QuickBarConfig>({
+    title: "Test Action",
+    action: () => [] as BrickPipeline,
   }),
 });
+
+const rootReader = new RootReader();
 
 beforeEach(() => {
   window.document.body.innerHTML = "";
@@ -79,8 +93,14 @@ beforeEach(() => {
   rootReader.ref = undefined;
 });
 
-describe("tourExtension", () => {
-  test("install tour via Page Editor", async () => {
+const NUM_DEFAULT_QUICKBAR_ACTIONS = 5;
+
+describe("quickBarExtension", () => {
+  it("quick bar smoke test", async () => {
+    const user = userEvent.setup();
+
+    document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
+
     const extensionPoint = fromJS(extensionPointFactory()());
 
     extensionPoint.addExtension(
@@ -89,41 +109,32 @@ describe("tourExtension", () => {
       })
     );
 
-    await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.PAGE_EDITOR });
-
-    await tick();
-
-    expect(isTourInProgress()).toBe(false);
-    expect(rootReader.readCount).toBe(1);
-
-    extensionPoint.uninstall();
-  });
-
-  test("register tour with quick bar", async () => {
-    const extensionPoint = fromJS(
-      extensionPointFactory({ allowUserRun: true, autoRunSchedule: "never" })()
+    expect(quickBarRegistry.currentActions).toHaveLength(
+      NUM_DEFAULT_QUICKBAR_ACTIONS
     );
-
-    extensionPoint.addExtension(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
-      })
-    );
-
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.INITIAL_LOAD });
-
-    await tick();
-
-    // Shouldn't be run because autoRunSchedule: never
-    expect(isTourInProgress()).toBe(false);
-    expect(rootReader.readCount).toBe(0);
+    await extensionPoint.run({ reason: RunReason.MANUAL });
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      defaultActions.length + 1
+      NUM_DEFAULT_QUICKBAR_ACTIONS + 1
     );
+
+    expect(rootReader.readCount).toBe(0);
+
+    // QuickBar adds another div to the body
+    expect(document.body.innerHTML).toEqual(
+      '<div id="pixiebrix-quickbar-container"></div><div></div>'
+    );
+
+    // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
+    await user.keyboard("[Ctrl] k");
+    toggleQuickBar();
+
+    await tick();
+
+    // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
+    expect(document.body.innerHTML).not.toEqual("<div></div><div></div>");
+
     extensionPoint.uninstall();
-    expect(quickBarRegistry.currentActions).toHaveLength(defaultActions.length);
   });
 });

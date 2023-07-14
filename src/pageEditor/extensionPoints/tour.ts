@@ -30,7 +30,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
@@ -41,7 +41,7 @@ import {
   type TourConfig,
   type TourDefinition,
   TourStarterBrickABC,
-} from "@/extensionPoints/tourExtension";
+} from "@/starterBricks/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 

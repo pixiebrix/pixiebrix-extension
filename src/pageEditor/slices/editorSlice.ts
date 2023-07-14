@@ -23,7 +23,7 @@ import {
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BrickConfig } from "@/blocks/types";
-import { type StarterBrickType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/starterBricks/types";
 import {
   type AddBlockLocation,
   type EditorRootState,
@@ -77,7 +77,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/extensionPoints/quickBarExtension";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";

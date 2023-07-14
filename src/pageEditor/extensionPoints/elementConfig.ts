@@ -22,7 +22,7 @@ import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import {
   type StarterBrickConfig,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import {
   type BrickPipeline,
   type NormalizedAvailability,

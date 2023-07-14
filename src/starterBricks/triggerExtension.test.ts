@@ -18,20 +18,20 @@
 import { validateRegistryId } from "@/types/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/blocks/types";
 import {
   getDocument,
   RootReader,
   tick,
-} from "@/extensionPoints/extensionPointTestUtils";
+} from "@/starterBricks/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 import {
   fromJS,
   type TriggerConfig,
   type TriggerDefinition,
-} from "@/extensionPoints/triggerExtension";
+} from "@/starterBricks/triggerExtension";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";

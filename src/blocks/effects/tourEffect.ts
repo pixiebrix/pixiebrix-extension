@@ -30,7 +30,7 @@ import {
   markTourEnd,
   markTourStart,
   markTourStep,
-} from "@/extensionPoints/tourController";
+} from "@/starterBricks/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 

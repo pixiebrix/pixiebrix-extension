@@ -26,13 +26,13 @@ import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
-import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
@@ -54,7 +54,7 @@ import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   QuickbarQueryReader,
   quickbarQueryReaderShim,
-} from "@/extensionPoints/quickbarQueryReader";
+} from "@/starterBricks/quickbarQueryReader";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";

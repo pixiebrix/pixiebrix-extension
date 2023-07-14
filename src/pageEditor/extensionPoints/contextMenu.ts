@@ -30,12 +30,12 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import {
   type ContextMenuConfig,
   ContextMenuStarterBrickABC,
   type MenuDefinition,
-} from "@/extensionPoints/contextMenu";
+} from "@/starterBricks/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,

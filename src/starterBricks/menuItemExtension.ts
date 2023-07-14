@@ -29,12 +29,12 @@ import {
   awaitElementOnce,
   onNodeRemoved,
   selectExtensionContext,
-} from "@/extensionPoints/helpers";
+} from "@/starterBricks/helpers";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { propertiesToSchema } from "@/validators/generic";

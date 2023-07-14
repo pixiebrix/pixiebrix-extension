@@ -17,17 +17,17 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/blocks/types";
-import { RootReader } from "@/extensionPoints/extensionPointTestUtils";
+import { RootReader } from "@/starterBricks/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";
 import {
   type ContextMenuConfig,
   fromJS,
   type MenuDefinition,
-} from "@/extensionPoints/contextMenu";
+} from "@/starterBricks/contextMenu";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";

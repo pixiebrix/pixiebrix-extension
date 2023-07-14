@@ -16,7 +16,7 @@
  */
 
 import { loadOptions } from "@/store/extensionsStorage";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { logPromiseDuration, pollUntilTruthy } from "@/utils";
@@ -36,7 +36,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-import { type SidebarStarterBrickABC } from "@/extensionPoints/sidebarExtension";
+import { type SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
 
 /**
  * True if handling the initial page load.

@@ -20,11 +20,8 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type BrickOptions } from "@/types/runtimeTypes";
-import {
-  cancelAllTours,
-  markTourStart,
-} from "@/extensionPoints/tourController";
-import { tick } from "@/extensionPoints/extensionPointTestUtils";
+import { cancelAllTours, markTourStart } from "@/starterBricks/tourController";
+import { tick } from "@/starterBricks/extensionPointTestUtils";
 import { MultipleElementsFoundError } from "@/errors/businessErrors";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { showPopover } from "@/blocks/transformers/temporaryInfo/popoverUtils";

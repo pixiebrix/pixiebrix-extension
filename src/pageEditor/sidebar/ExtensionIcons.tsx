@@ -23,7 +23,7 @@ import {
   faEyeSlash,
   faPuzzlePiece,
 } from "@fortawesome/free-solid-svg-icons";
-import { type StarterBrickType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/starterBricks/types";
 import Icon from "@/icons/Icon";
 
 export const ExtensionIcon: React.FunctionComponent<{

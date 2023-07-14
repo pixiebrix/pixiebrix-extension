@@ -27,7 +27,7 @@ import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
@@ -36,7 +36,7 @@ import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
   selectExtensionContext,
-} from "@/extensionPoints/helpers";
+} from "@/starterBricks/helpers";
 import notify from "@/utils/notify";
 import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
@@ -61,12 +61,12 @@ import {
   type TargetMode,
   type Trigger,
   USER_ACTION_TRIGGERS,
-} from "@/extensionPoints/triggerExtensionTypes";
+} from "@/starterBricks/triggerExtensionTypes";
 import {
   getEventReader,
   getShimEventReader,
   pickEventProperties,
-} from "@/extensionPoints/triggerEventReaders";
+} from "@/starterBricks/triggerEventReaders";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type UUID } from "@/types/stringTypes";

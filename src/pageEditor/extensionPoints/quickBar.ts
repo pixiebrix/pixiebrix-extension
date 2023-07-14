@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
@@ -41,7 +41,7 @@ import {
   type QuickBarConfig,
   type QuickBarDefinition,
   QuickBarStarterBrickABC,
-} from "@/extensionPoints/quickBarExtension";
+} from "@/starterBricks/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarFormState } from "./formStateTypes";

@@ -20,7 +20,7 @@ import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import {
   castArray,
@@ -37,7 +37,7 @@ import { selectAllBlocks } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import "@/vendors/hoverintent/hoverintent";
-import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { selectExtensionContext } from "@/starterBricks/helpers";
 import {
   type InitialValues,
   reduceExtensionPipeline,
@@ -50,7 +50,7 @@ import {
   type RegisteredTour,
   registerTour,
   unregisterTours,
-} from "@/extensionPoints/tourController";
+} from "@/starterBricks/tourController";
 import { getAll } from "@/tours/tourRunDatabase";
 import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";

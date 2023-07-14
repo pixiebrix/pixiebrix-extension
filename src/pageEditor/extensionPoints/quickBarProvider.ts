@@ -31,7 +31,7 @@ import {
   selectIsAvailable,
 } from "@/pageEditor/extensionPoints/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
@@ -43,7 +43,7 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
   QuickBarProviderStarterBrickABC,
-} from "@/extensionPoints/quickBarProviderExtension";
+} from "@/starterBricks/quickBarProviderExtension";
 import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
 
 function fromNativeElement(

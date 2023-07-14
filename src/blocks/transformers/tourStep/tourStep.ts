@@ -38,7 +38,7 @@ import {
   type TemporaryPanelEntryMetadata,
 } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelButton, type PanelPayload } from "@/types/sidebarTypes";
-import { getCurrentTour, markTourStep } from "@/extensionPoints/tourController";
+import { getCurrentTour, markTourStep } from "@/starterBricks/tourController";
 import { $safeFind } from "@/helpers";
 import { addOverlay } from "@/blocks/transformers/tourStep/overlay";
 import { cancelTemporaryPanels } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
