@@ -159,10 +159,16 @@ describe("fetchModUpdates function", () => {
     const payload = JSON.parse(String(axiosMock.history.post[0].data));
 
     expect(payload).toEqual({
-      versions: {
-        [activatedMods[0].id]: activatedMods[0].version,
-        [activatedMods[1].id]: activatedMods[1].version,
-      },
+      versions: [
+        {
+          name: activatedMods[0].id,
+          version: activatedMods[0].version,
+        },
+        {
+          name: activatedMods[1].id,
+          version: activatedMods[1].version,
+        },
+      ],
     });
   });
 
@@ -182,9 +188,9 @@ describe("fetchModUpdates function", () => {
 });
 
 describe("collectModVersions function", () => {
-  it("returns empty object if no activated mods", () => {
+  it("returns empty array if no activated mods", () => {
     const result = collectModVersions([]);
-    expect(result).toEqual({});
+    expect(result).toEqual([]);
   });
 
   it("returns expected object with registry id keys and version number values", () => {
@@ -194,10 +200,16 @@ describe("collectModVersions function", () => {
     ];
 
     const result = collectModVersions(activatedMods);
-    expect(result).toEqual({
-      [activatedMods[0].id]: activatedMods[0].version,
-      [activatedMods[1].id]: activatedMods[1].version,
-    });
+    expect(result).toEqual([
+      {
+        name: activatedMods[0].id,
+        version: activatedMods[0].version,
+      },
+      {
+        name: activatedMods[1].id,
+        version: activatedMods[1].version,
+      },
+    ]);
   });
 
   it("reports error and returns object if same mod has multiple versions", async () => {
@@ -213,7 +225,7 @@ describe("collectModVersions function", () => {
     ];
 
     const result = collectModVersions(activatedMods);
-    expect(result).toEqual({ "@test/same-mod": "2.0.0" });
+    expect(result).toEqual([{ name: "@test/same-mod", version: "1.0.0" }]);
     expect(reportError).toHaveBeenCalled();
   });
 });

@@ -67,23 +67,33 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
   }
 }
 
+/**
+ * Produces an array of mods by registry id and currently installed versions. For use
+ * with the payload of the `api/registry/updates` endpoint.
+ * @param mods the mod components to collect versions for
+ * @returns modVersions a unique list of mod registry ids and their versions
+ * and the mod components that were deactivated
+ */
 export function collectModVersions(
   mods: Array<IExtension["_recipe"]>
-): Record<RegistryId, SemVerString> {
-  const modVersions: Record<RegistryId, SemVerString> = {};
+): Array<{ name: RegistryId; version: SemVerString }> {
+  const modVersions: Array<{ name: RegistryId; version: SemVerString }> = [];
 
   for (const { id, version } of mods) {
-    // eslint-disable-next-line security/detect-object-injection -- id is a registry id
-    if (modVersions[id] && modVersions[id] !== version) {
+    const existingModVersion = modVersions.find((mod) => mod.name === id);
+    if (existingModVersion && existingModVersion.version !== version) {
       reportError(
         new Error(
-          `Found two different mod versions activated for the same mod: ${id} (${modVersions[id]}, ${version}).`
+          `Found two different mod versions activated for the same mod: ${id} (${existingModVersion.version}, ${version}).`
         )
       );
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- id is a registry id
-    modVersions[id] = version;
+    if (existingModVersion) {
+      continue;
+    }
+
+    modVersions.push({ name: id, version });
   }
 
   return modVersions;
