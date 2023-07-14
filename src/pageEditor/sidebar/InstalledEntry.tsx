@@ -41,7 +41,7 @@ import {
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import {
   selectActiveElement,
   selectActiveRecipeId,
@@ -78,7 +78,7 @@ const InstalledEntry: React.FunctionComponent<{
   const selectHandler = useCallback(
     async (extension: ModComponentBase) => {
       try {
-        reportEvent("PageEditorOpen", {
+        reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
           extensionId: extension.id,
         });

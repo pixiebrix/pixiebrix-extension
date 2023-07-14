@@ -39,7 +39,7 @@ import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import notify, {
   DEFAULT_ACTION_RESULTS,
   type MessageConfig,
@@ -696,7 +696,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
         console.debug("Run menu item", this.logger.context);
 
-        reportEvent("MenuItemClick", selectEventData(extension));
+        reportEvent(Events.MENU_ITEM_CLICK, selectEventData(extension));
 
         try {
           // Read the latest state at the time of the action

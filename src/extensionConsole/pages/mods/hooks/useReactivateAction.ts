@@ -19,7 +19,7 @@ import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import useFlags from "@/hooks/useFlags";
 import { isModComponentFromRecipe, isModDefinition } from "@/utils/modUtils";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
 
@@ -39,7 +39,7 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
         ? mod.metadata.id
         : mod._recipe.id;
 
-      reportEvent("StartInstallBlueprint", {
+      reportEvent(Events.START_MOD_ACTIVATE, {
         blueprintId,
         screen: "extensionConsole",
         reinstall: true,

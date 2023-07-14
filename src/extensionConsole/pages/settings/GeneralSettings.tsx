@@ -22,7 +22,7 @@ import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 
 const GeneralSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ const GeneralSettings: React.FunctionComponent = () => {
               offlabel=" "
               checked={isFloatingActionButtonEnabled}
               onChange={(enable) => {
-                reportEvent("ToggleFloatingQuickBarButtonSetting", {
+                reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING, {
                   enabled: enable,
                 });
                 dispatch(

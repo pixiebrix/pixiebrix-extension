@@ -22,7 +22,7 @@ import {
   mergePermissionsStatuses,
 } from "@/permissions/permissionsUtils";
 import { useDispatch, useSelector } from "react-redux";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
@@ -109,7 +109,7 @@ async function activateDeployment(
     })
   );
 
-  reportEvent("DeploymentActivate", {
+  reportEvent(Events.DEPLOYMENT_ACTIVATE, {
     deployment: deployment.id,
   });
 }
@@ -247,13 +247,13 @@ function useDeployments(): DeploymentsState {
       notify.warning(
         "You must update the PixieBrix browser extension to activate the deployment"
       );
-      reportEvent("DeploymentRejectVersion");
+      reportEvent(Events.DEPLOYMENT_REJECT_VERSION);
       return;
     }
 
     if (!accepted) {
       notify.warning("You declined the permissions");
-      reportEvent("DeploymentRejectPermissions");
+      reportEvent(Events.DEPLOYMENT_REJECT_PERMISSIONS);
       return;
     }
 

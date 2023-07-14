@@ -34,7 +34,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
@@ -122,7 +122,7 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
       }
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={() => {
-        reportEvent("PageEditorOpen", {
+        reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
           extensionId: extension.uuid,
         });

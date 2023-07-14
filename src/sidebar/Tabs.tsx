@@ -23,7 +23,7 @@ import {
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { CloseButton, Nav, type NavLinkProps, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -78,7 +78,7 @@ const TemporaryPanelTabPane: React.FC<{
     >
       <ErrorBoundary
         onError={() => {
-          reportEvent("ViewError", {
+          reportEvent(Events.VIEW_ERROR, {
             panelType: type,
             extensionId,
             blueprintId,
@@ -120,7 +120,7 @@ const Tabs: React.FC = () => {
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
 
   const onSelect = (eventKey: string) => {
-    reportEvent("ViewSidePanelPanel", {
+    reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
     });
@@ -133,7 +133,7 @@ const Tabs: React.FC = () => {
 
   useEffect(
     () => {
-      reportEvent("ViewSidePanelPanel", {
+      reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
         ...selectEventData(getExtensionFromEventKey(activeKey)),
         initialLoad: true,
       });
@@ -225,7 +225,7 @@ const Tabs: React.FC = () => {
             >
               <ErrorBoundary
                 onError={() => {
-                  reportEvent("ViewError", {
+                  reportEvent(Events.VIEW_ERROR, {
                     panelType: staticPanel.type,
                   });
                 }}
@@ -242,7 +242,7 @@ const Tabs: React.FC = () => {
             >
               <ErrorBoundary
                 onError={() => {
-                  reportEvent("ViewError", {
+                  reportEvent(Events.VIEW_ERROR, {
                     panelType: panel.type,
                     extensionId: panel.extensionId,
                     blueprintId: panel.blueprintId,
@@ -270,7 +270,7 @@ const Tabs: React.FC = () => {
             >
               <ErrorBoundary
                 onError={() => {
-                  reportEvent("ViewError", {
+                  reportEvent(Events.VIEW_ERROR, {
                     panelType: form.type,
                     extensionId: form.extensionId,
                     blueprintId: form.blueprintId,
@@ -292,7 +292,7 @@ const Tabs: React.FC = () => {
             >
               <ErrorBoundary
                 onError={() => {
-                  reportEvent("ViewError", {
+                  reportEvent(Events.VIEW_ERROR, {
                     panelType: "activate",
                     recipeToActivate: recipeToActivate.recipeId,
                   });

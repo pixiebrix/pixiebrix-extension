@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import settingsSlice from "@/store/settingsSlice";
 import notify from "@/utils/notify";
 import { useUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { selectAuth } from "@/auth/authSelectors";
 import { noop } from "lodash";
 import { selectUpdatePromptState } from "@/store/settingsSelectors";
@@ -173,7 +173,7 @@ const DeploymentModal: React.FC<
   const snooze = useCallback(
     (durationMillis: number) => {
       notify.success("Snoozed extension and deployment updates");
-      reportEvent("SnoozeUpdates", {
+      reportEvent(Events.SNOOZE_UPDATES, {
         durationMillis,
       });
       dispatch(settingsSlice.actions.snoozeUpdates({ durationMillis }));

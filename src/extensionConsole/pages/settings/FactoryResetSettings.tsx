@@ -23,7 +23,7 @@ import { clearPackages } from "@/baseRegistry";
 import { clearLogs, reactivateEveryTab } from "@/background/messenger/api";
 import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import AsyncButton from "@/components/AsyncButton";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { useModals } from "@/components/ConfirmationModal";
 import { type Permissions } from "webextension-polyfill";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
@@ -72,7 +72,7 @@ const FactoryResetSettings: React.FunctionComponent = () => {
               return;
             }
 
-            reportEvent("FactoryReset");
+            reportEvent(Events.FACTORY_RESET);
 
             try {
               // Reset all persisted state -- see optionsStore.ts

@@ -29,7 +29,7 @@ import {
   setActivatingBlueprint,
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { getInstalledRecipeIds } from "@/contentScript/loadActivationEnhancements";
 import { isLoadedInIframe } from "@/iframeUtils";
 
@@ -90,7 +90,7 @@ function addActivateRecipeListener() {
 
       const installedRecipeIds = await getInstalledRecipeIds();
 
-      reportEvent("StartInstallBlueprint", {
+      reportEvent(Events.START_MOD_ACTIVATE, {
         blueprintId: recipeId,
         screen: "marketplace",
         reinstall: installedRecipeIds.has(recipeId),

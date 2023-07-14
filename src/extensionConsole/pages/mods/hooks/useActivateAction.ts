@@ -18,7 +18,7 @@
 import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import { isModDefinition } from "@/utils/modUtils";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { push } from "connected-react-router";
 
 function useActivateAction(modViewItem: ModViewItem): () => void | null {
@@ -26,7 +26,7 @@ function useActivateAction(modViewItem: ModViewItem): () => void | null {
   const { mod, status } = modViewItem;
   const activate = () => {
     if (isModDefinition(mod)) {
-      reportEvent("StartInstallBlueprint", {
+      reportEvent(Events.START_MOD_ACTIVATE, {
         blueprintId: mod.metadata.id,
         screen: "extensionConsole",
         reinstall: false,
@@ -36,7 +36,7 @@ function useActivateAction(modViewItem: ModViewItem): () => void | null {
         push(`/marketplace/activate/${encodeURIComponent(mod.metadata.id)}`)
       );
     } else {
-      reportEvent("StartInstallBlueprint", {
+      reportEvent(Events.START_MOD_ACTIVATE, {
         blueprintId: null,
         screen: "extensionConsole",
         reinstall: false,

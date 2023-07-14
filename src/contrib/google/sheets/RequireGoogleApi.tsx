@@ -24,7 +24,7 @@ import initGoogle, {
 } from "@/contrib/google/initGoogle";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { detectBrowser } from "@/vendors/mixpanel";
 
 /**
@@ -47,11 +47,11 @@ export const RequireGoogleApi: React.FC = ({ children }) => {
   // Report to help provide customer support
   useEffect(() => {
     if (!isSupported) {
-      reportEvent("UnsupportedBrowserGateView", {
+      reportEvent(Events.UNSUPPORTED_BROWSER_GATE_VIEW, {
         $browser: detectBrowser(navigator.userAgent, navigator.vendor),
       });
     } else if (!isInitialized) {
-      reportEvent("UninitializedGAPIGateView", {
+      reportEvent(Events.UNINITIALIZED_GAPI_GATE_VIEW, {
         $browser: detectBrowser(navigator.userAgent, navigator.vendor),
       });
     }

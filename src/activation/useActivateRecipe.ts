@@ -21,7 +21,7 @@ import { useCallback } from "react";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -86,7 +86,7 @@ function useActivateRecipe(
         // was created. It refers to the mod-list part of the extension
         // console, to distinguish that from the workshop.
         // It's being kept to keep our metrics history clean.
-        reportEvent("MarketplaceActivate", {
+        reportEvent(Events.MARKETPLACE_ACTIVATE, {
           ...selectActivateEventData(recipe),
           reactivate: isReactivate,
         });
@@ -110,7 +110,7 @@ function useActivateRecipe(
             // was created. It refers to the mod-list part of the extension
             // console, to distinguish that from the workshop.
             // It's being kept like this so our metrics history stays clean.
-            reportEvent("MarketplaceRejectPermissions", {
+            reportEvent(Events.MARKETPLACE_REJECT_PERMISSIONS, {
               ...selectActivateEventData(recipe),
               reactivate: isReactivate,
             });

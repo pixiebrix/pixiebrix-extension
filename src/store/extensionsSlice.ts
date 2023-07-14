@@ -20,7 +20,7 @@ import {
   type StandaloneModDefinition,
   type Deployment,
 } from "@/types/contract";
-import { reportEvent } from "@/telemetry/events";
+import { reportEvent, Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
@@ -83,7 +83,10 @@ const extensionsSlice = createSlice({
     ) {
       const { extension } = payload;
 
-      reportEvent("ExtensionCloudActivate", selectEventData(extension));
+      reportEvent(
+        Events.MOD_COMPONENT_CLOUD_ACTIVATE,
+        selectEventData(extension)
+      );
 
       // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
       // or activate the deployment again
@@ -218,7 +221,7 @@ const extensionsSlice = createSlice({
         assertModComponentNotResolved(extension);
 
         // Display name is 'StarterBrickActivate' in telemetry
-        reportEvent("ExtensionActivate", selectEventData(extension));
+        reportEvent(Events.STARTER_BRICK_ACTIVATE, selectEventData(extension));
 
         // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
         // or activate the deployment again
@@ -229,7 +232,7 @@ const extensionsSlice = createSlice({
       }
 
       // Display name is 'ModActivate' in telemetry
-      reportEvent("InstallBlueprint", {
+      reportEvent(Events.MOD_ACTIVATE, {
         blueprintId: recipe.metadata.id,
         blueprintVersion: recipe.metadata.version,
         deploymentId: deployment?.id,

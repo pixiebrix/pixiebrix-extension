@@ -25,7 +25,7 @@ import { type BrickValidationResult, validateSchema } from "./validate";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
 import notify from "@/utils/notify";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import {
   clearServiceCache,
   reactivateEveryTab,
@@ -79,7 +79,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
       }
 
       notify.success("Deleted brick");
-      reportEvent("BrickDelete");
+      reportEvent(Events.BRICK_DELETE);
 
       dispatch(push("/workshop"));
     },

@@ -18,7 +18,7 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
 import { PropError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
@@ -72,7 +72,7 @@ export class TelemetryEffect extends EffectABC {
       logger.warn(message);
     }
 
-    reportEvent("CustomUserEvent", {
+    reportEvent(Events.CUSTOM_USER_EVENT, {
       $eventName: eventName,
       ...data,
     });

@@ -18,7 +18,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
@@ -85,12 +85,12 @@ const EditorContent: React.FC = () => {
   useGetMarketplaceListingsQuery();
 
   useEffect(() => {
-    reportEvent("PageEditorSessionStart", {
+    reportEvent(Events.PAGE_EDITOR_SESSION_START, {
       sessionId,
     });
 
     return () => {
-      reportEvent("PageEditorSessionEnd", {
+      reportEvent(Events.PAGE_EDITOR_SESSION_END, {
         sessionId,
       });
     };

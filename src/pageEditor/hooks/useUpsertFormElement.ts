@@ -22,7 +22,7 @@ import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { reportEvent } from "@/telemetry/events";
+import { Events, reportEvent } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
@@ -170,7 +170,7 @@ function useUpsertFormElement(): SaveCallback {
         }
       }
 
-      reportEvent("PageEditorCreate", {
+      reportEvent(Events.PAGE_EDITOR_CREATE, {
         sessionId,
         type: element.type,
       });
