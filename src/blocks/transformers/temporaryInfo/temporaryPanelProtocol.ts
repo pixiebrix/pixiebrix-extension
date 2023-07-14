@@ -25,7 +25,7 @@ import {
 import { ClosePanelAction } from "@/blocks/errors";
 import { CancelError } from "@/errors/businessErrors";
 import { type Except } from "type-fest";
-import { type Location } from "@/types/extensionPointTypes";
+import { type Location } from "@/types/starterBrickTypes";
 
 export type RegisteredPanel = {
   /**

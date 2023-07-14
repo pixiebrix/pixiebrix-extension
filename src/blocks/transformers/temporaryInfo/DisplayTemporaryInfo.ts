@@ -57,7 +57,7 @@ import { type Except, type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type Location } from "@/types/extensionPointTypes";
+import { type Location } from "@/types/starterBrickTypes";
 
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";

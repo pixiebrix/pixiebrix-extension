@@ -31,7 +31,7 @@ import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";

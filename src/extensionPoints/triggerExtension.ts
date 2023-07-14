@@ -75,7 +75,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 
 export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;

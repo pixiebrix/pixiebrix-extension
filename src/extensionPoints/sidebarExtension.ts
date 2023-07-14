@@ -64,7 +64,7 @@ import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 
 export type SidebarConfig = {
   heading: string;

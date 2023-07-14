@@ -57,7 +57,7 @@ import {
 } from "@/extensionPoints/quickbarQueryReader";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";

@@ -60,7 +60,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 
 export type PanelConfig = {
   heading?: string;

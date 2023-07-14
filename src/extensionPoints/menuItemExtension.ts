@@ -81,7 +81,7 @@ import {
   RunReason,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";

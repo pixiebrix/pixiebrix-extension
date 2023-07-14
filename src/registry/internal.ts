@@ -46,7 +46,7 @@ import {
   type ModComponentBase,
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Brick } from "@/types/brickTypes";
 
 type InnerExtensionPoint = Pick<StarterBrickConfig, "definition" | "kind">;
