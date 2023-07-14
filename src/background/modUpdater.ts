@@ -95,6 +95,11 @@ export function collectModVersions(
   return modVersions;
 }
 
+/**
+ * Gets a list of activated Marketplace mod metadata, assuming that Marketplace mods are
+ * any public mods that are not deployments.
+ * @returns a list of mod metadata for activated Marketplace mods
+ */
 export async function getActivatedMarketplaceModMetadata(): Promise<
   Array<IExtension["_recipe"]>
 > {
@@ -138,6 +143,13 @@ export async function fetchModUpdates(
   }
 }
 
+/**
+ * The api/registry/updates endpoints returns information about "force updates" for mods, including
+ * backwards compatible and backwards incompatible updates. This function fetches updates for the mods and
+ * filters out only the updates that are backwards compatible.
+ * @param activatedMods mods that are currently activated
+ * @returns a list of backwards compatible mod updates
+ */
 async function getBackwardsCompatibleUpdates(
   activatedMods: Array<IExtension["_recipe"]>
 ): Promise<PackageVersionUpdates["updates"]> {
@@ -145,6 +157,12 @@ async function getBackwardsCompatibleUpdates(
   return updates.filter(({ backwards_compatible }) => backwards_compatible);
 }
 
+/**
+ * Deactivates the mod component from the extensions and editor redux stores.
+ * @param modComponent the mod component to deactivate
+ * @param reduxState the current state of the extension and editor redux stores
+ * @returns {reduxState, deactivatedModComponents} new redux state with the mod component deactivated
+ */
 function deactivateModComponent(
   modComponent: UnresolvedExtension,
   reduxState: ActivatedModState
@@ -207,6 +225,10 @@ export function deactivateMod(
   };
 }
 
+/**
+ * Activates the mod assuming it has been deactivated. Also assumes that
+ * services and optionsArgs are the same as when the mod was deactivated.
+ */
 function reactivateMod(
   mod: ModDefinition,
   services: Record<RegistryId, UUID>,
@@ -226,6 +248,10 @@ function reactivateMod(
   );
 }
 
+/**
+ * Compiles a unique list of all mod configurations from the given mod components, for use
+ * in reactivating the mod.
+ */
 export function collectModConfigurations(
   modComponents: UnresolvedExtension[]
 ): {
@@ -253,13 +279,19 @@ export function collectModConfigurations(
   return { services, optionsArgs };
 }
 
+/**
+ * We currently don't have a way to "update" activated mods directly in the extension and editor redux stores.
+ * Therefore, to update the mod, we deactivate and reactivate the mod with all the same configurations.
+ * @param mod the mod to update
+ * @param reduxState the current state of the extension and editor redux stores
+ * @returns new redux state with the mod updated
+ */
 function updateMod(
   mod: ModDefinition,
   reduxState: ActivatedModState
 ): ActivatedModState {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
-  // Deactivate the mod
   const {
     reduxState: { options: nextOptionsState, editor: nextEditorState },
     deactivatedModComponents,
@@ -270,12 +302,10 @@ function updateMod(
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  // Collect service and option configs to reinstall
   const { services, optionsArgs } = collectModConfigurations(
     deactivatedModComponents
   );
 
-  // Reactivate the mod with the updated mod definition & prior configurations
   newOptionsState = reactivateMod(mod, services, optionsArgs, newOptionsState);
 
   return {
