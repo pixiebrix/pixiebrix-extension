@@ -17,7 +17,7 @@
 
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { sortBy, isEmpty } from "lodash";
-import registry, { readRawConfigurations } from "@/services/registry";
+import servicesRegistry, { readRawConfigurations } from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
@@ -147,8 +147,8 @@ class LazyLocatorFactory {
 
   async refreshRemote(): Promise<void> {
     try {
-      // As of https://github.com/pixiebrix/pixiebrix-app/issues/562, the API gradually handles unauthenticated calls
-      // to this endpoint. However, there's no need to pull the built-in services since the user can't call them
+      // As of https://github.com/pixiebrix/pixiebrix-app/issues/562, the API gracefully handles unauthenticated calls
+      // to this endpoint. However, there's no need to pull the built-in services because the user can't call them
       // without being authenticated
       this.remote = await fetch<RemoteIntegrationConfig[]>(
         // Fetch full configurations, including credentials for configurations with pushdown
@@ -172,6 +172,9 @@ class LazyLocatorFactory {
     this.initializeOptions();
   }
 
+  /**
+   * Refreshes the local and remote integration configurations.
+   */
   async refresh(): Promise<void> {
     // Avoid multiple concurrent requests. Could potentially replace with debouncer with both leading/trailing: true
     // For example: https://github.com/sindresorhus/promise-fun/issues/15
@@ -227,7 +230,7 @@ class LazyLocatorFactory {
     // The `initialized` flag gets set from _refresh, which covers both local and remote. For performance,
     // we could split the initialized flag into two, but it's not worth it since refreshLocal is fast.
     if (!this.initialized) {
-      await this.refreshLocal();
+      await this.refresh();
     }
 
     const remote = this.remote
@@ -264,7 +267,7 @@ class LazyLocatorFactory {
     // being called from the background page in installer.ts).
     // In the future, we may want to expose an option on the method to control this behavior.
     try {
-      service = await registry.lookup(serviceId);
+      service = await servicesRegistry.lookup(serviceId);
     } catch (error) {
       if (error instanceof DoesNotExistError) {
         return [];
@@ -309,7 +312,7 @@ class LazyLocatorFactory {
       );
     }
 
-    const service = await registry.lookup(serviceId);
+    const service = await servicesRegistry.lookup(serviceId);
 
     const match = this.options.find(
       (x) => x.serviceId === serviceId && x.id === authId
