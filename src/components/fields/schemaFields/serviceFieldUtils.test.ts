@@ -274,7 +274,7 @@ describe("selectVariables", () => {
           id: validateRegistryId(
             "@internal/52d42d87-4382-4c78-b00e-bbdd21d75000"
           ),
-          name: "Temporary extension point",
+          name: "Temporary starter brick",
         },
         definition: {
           type: "actionPanel",

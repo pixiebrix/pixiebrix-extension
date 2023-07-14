@@ -63,14 +63,14 @@ function setupInputs(): {
     optionsArgs: {},
   };
 
-  const extensionPointId = validateRegistryId("test/extension-point-1");
+  const extensionPointId = validateRegistryId("test/starter-brick-1");
   const modComponentDefinition = modComponentDefinitionFactory({
     id: extensionPointId,
   });
   const starterBrickConfig = starterBrickConfigFactory({
     metadata: recipeMetadataFactory({
       id: extensionPointId,
-      name: "Text Extension Point 1",
+      name: "Text Starter Brick 1",
     }),
     definition: {
       type: "contextMenu",

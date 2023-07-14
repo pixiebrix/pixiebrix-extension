@@ -40,8 +40,8 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     kind: "extensionPoint",
     metadata: (n: number) =>
       ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: "Test Starter Brick",
       } as Metadata),
     definition: define<MenuDefinition>({
       type: "contextMenu",
@@ -60,7 +60,7 @@ const extensionFactory = define<ResolvedModComponent<ContextMenuConfig>>({
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<ContextMenuConfig>({

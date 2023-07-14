@@ -128,7 +128,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
   });
 
-  test("does not modify other extension point", async () => {
+  test("does not modify other starter brick", async () => {
     const starterBrick = starterBrickConfigFactory();
 
     const recipe = versionedStarterBrickRecipeFactory({
@@ -174,7 +174,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
   });
 
-  test("single extension point with innerDefinition", async () => {
+  test("single starter brick with innerDefinition", async () => {
     const recipe = innerStarterBrickRecipeFactory()();
 
     const state = extensionsSlice.reducer(
@@ -193,7 +193,7 @@ describe("replaceRecipeExtension round trip", () => {
       ...recipe.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
-        name: "Internal Extension Point",
+        name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
     });
@@ -245,7 +245,7 @@ describe("replaceRecipeExtension round trip", () => {
       ...recipe.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
-        name: "Internal Extension Point",
+        name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
     });
@@ -307,7 +307,7 @@ describe("replaceRecipeExtension round trip", () => {
       ...recipe.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(recipe.definitions.extensionPoint),
-        name: "Internal Extension Point",
+        name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
     });

@@ -62,7 +62,7 @@ const extensionFactory = define<ResolvedModComponent<QuickBarProviderConfig>>({
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<QuickBarProviderConfig>({

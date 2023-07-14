@@ -122,7 +122,7 @@ describe("ActivateRecipeCard", () => {
       },
       extensionPoints: [
         modComponentDefinitionFactory({
-          label: "Extension Point for Mod with Required Options",
+          label: "Starter Brick for Mod with Required Options",
         }),
       ],
     });
@@ -143,7 +143,7 @@ describe("ActivateRecipeCard", () => {
       }),
       extensionPoints: [
         modComponentDefinitionFactory({
-          label: "A Extension Point for Mod",
+          label: "A Starter Brick for Mod",
         }),
       ],
     });
@@ -177,7 +177,7 @@ describe("ActivateRecipeCard", () => {
       }),
       extensionPoints: [
         modComponentDefinitionFactory({
-          label: "A Extension Point for Mod",
+          label: "A Starter Brick for Mod",
         }),
       ],
     });
