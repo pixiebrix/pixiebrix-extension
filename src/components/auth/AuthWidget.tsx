@@ -36,7 +36,7 @@ import styles from "./AuthWidget.module.scss";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type IntegrationConfig } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 
 const { updateServiceConfig } = servicesSlice.actions;
 

@@ -29,7 +29,7 @@ import {
   getUserData,
 } from "@/background/messenger/api";
 import { type BrickOptions } from "@/types/runtimeTypes";
-import { type AuthData } from "@/types/serviceTypes";
+import { type AuthData } from "@/types/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 

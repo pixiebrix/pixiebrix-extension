@@ -30,7 +30,7 @@ import {
   validateSemVerString,
   validateTimestamp,
 } from "@/types/helpers";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { recipeMetadataFactory } from "@/testUtils/factories/recipeFactories";
 import { type StandaloneModDefinition } from "@/types/contract";

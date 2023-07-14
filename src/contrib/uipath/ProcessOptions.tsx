@@ -33,7 +33,7 @@ import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelect
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import cachePromise from "@/utils/cachePromise";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";

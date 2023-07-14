@@ -46,7 +46,7 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 /**

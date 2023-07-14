@@ -16,7 +16,7 @@
  */
 
 import { type ServicesState } from "@/store/servicesSlice";
-import { type IntegrationConfig } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 
 export const selectConfiguredServices = ({
   services,

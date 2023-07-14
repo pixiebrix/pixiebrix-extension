@@ -39,7 +39,7 @@ import {
   type IntegrationDefinition,
   type TokenAuthenticationDefinition,
   type TokenContext,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
 
 /**

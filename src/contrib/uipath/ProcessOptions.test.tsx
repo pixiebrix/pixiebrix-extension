@@ -28,7 +28,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 import useDependency from "@/services/useDependency";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type Integration } from "@/types/serviceTypes";
+import { type Integration } from "@/types/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";

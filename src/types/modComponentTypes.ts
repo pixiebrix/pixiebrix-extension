@@ -31,7 +31,7 @@ import {
   type TemplateEngine,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { pick } from "lodash";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 

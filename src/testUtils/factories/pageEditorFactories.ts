@@ -30,7 +30,7 @@ import {
   type OutputKey,
 } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import {
   type StarterBrickConfig,
   type StarterBrickType,

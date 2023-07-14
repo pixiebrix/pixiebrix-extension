@@ -19,7 +19,7 @@ import {
   type ModDefinition,
   type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type IntegrationConfigPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import {
   ensurePermissionsFromUserGesture,

@@ -22,7 +22,7 @@ import {
   type SanitizedIntegrationConfig,
   type IntegrationABC,
   type IntegrationDependency,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";

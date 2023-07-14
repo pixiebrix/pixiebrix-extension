@@ -16,7 +16,7 @@
  */
 
 import { type StandaloneModDefinition } from "@/types/contract";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type ResolvedModComponentDefinition } from "@/types/modDefinitionTypes";

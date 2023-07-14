@@ -34,7 +34,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 import {
   type SanitizedIntegrationConfig,
   type IntegrationDependency,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {

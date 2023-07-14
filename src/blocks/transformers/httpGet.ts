@@ -23,7 +23,7 @@ import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
 
 export class GetAPITransformer extends TransformerABC {

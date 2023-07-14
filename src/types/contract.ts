@@ -26,7 +26,7 @@ import {
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
-import { type SanitizedConfig } from "@/types/serviceTypes";
+import { type SanitizedConfig } from "@/types/integrationTypes";
 import {
   type RegistryId,
   type SemVerString,

@@ -28,7 +28,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {

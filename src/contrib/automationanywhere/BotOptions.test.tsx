@@ -28,7 +28,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { uuidv4 } from "@/types/helpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type Integration } from "@/types/serviceTypes";
+import { type Integration } from "@/types/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";

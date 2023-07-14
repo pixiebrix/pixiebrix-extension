@@ -29,7 +29,7 @@ import * as dependencyHooks from "@/services/useDependency";
 import {
   type SanitizedIntegrationConfig,
   type IntegrationABC,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";

@@ -59,7 +59,7 @@ import {
   type Integration,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the

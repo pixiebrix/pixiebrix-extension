@@ -35,7 +35,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { syncRemotePackages } from "@/baseRegistry";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IntegrationConfig } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 
 const serviceMap = new Map([
   [(controlRoomTokenService as any).metadata.id, controlRoomTokenService],

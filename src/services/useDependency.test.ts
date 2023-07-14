@@ -22,7 +22,7 @@ import serviceRegistry from "@/services/registry";
 import {
   type SanitizedIntegrationConfig,
   type IntegrationABC,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
 import * as backgroundApi from "@/background/messenger/api";
 

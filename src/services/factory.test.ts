@@ -24,7 +24,7 @@ import {
   type SanitizedConfig,
   type SecretsConfig,
   type IntegrationDefinition,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 
 describe("LocalDefinedService", () => {
   test("includes version", () => {

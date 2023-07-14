@@ -18,7 +18,7 @@
 import styles from "./ServicesBody.module.scss";
 
 import React, { useMemo } from "react";
-import { type IntegrationDefinition } from "@/types/serviceTypes";
+import { type IntegrationDefinition } from "@/types/integrationTypes";
 
 const ServiceDescriptor: React.FunctionComponent<{
   serviceConfigs: IntegrationDefinition[];
