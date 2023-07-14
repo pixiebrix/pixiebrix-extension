@@ -20,7 +20,7 @@ import styles from "@/extensionConsole/pages/activateRecipe/ServicesBody.module.
 import React from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";

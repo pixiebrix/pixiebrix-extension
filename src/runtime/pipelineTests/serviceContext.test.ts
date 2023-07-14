@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
@@ -34,7 +34,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 import {
   type SanitizedIntegrationConfig,
   type IntegrationDependency,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {

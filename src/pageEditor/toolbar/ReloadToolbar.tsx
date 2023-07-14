@@ -17,12 +17,12 @@
 
 import React, { useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import ToggleField from "@/pageEditor/components/ToggleField";
 import { Button } from "react-bootstrap";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { reportEvent } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";

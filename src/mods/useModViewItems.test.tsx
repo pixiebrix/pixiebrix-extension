@@ -21,7 +21,7 @@ import {
   type ActivatedModComponent,
   type ResolvedModComponent,
   selectSourceRecipeMetadata,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";

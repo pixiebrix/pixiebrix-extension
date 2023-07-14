@@ -16,7 +16,7 @@
  */
 
 import { propertiesToSchema } from "@/validators/generic";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,

@@ -21,7 +21,7 @@ import {
   type IntermediateState,
   type ReduceOptions,
 } from "@/runtime/reducePipeline";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
@@ -36,12 +36,12 @@ import {
 } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
 import { type PanelPayload } from "@/types/sidebarTypes";
-import { HeadlessModeError } from "@/blocks/errors";
+import { HeadlessModeError } from "@/bricks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
-import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
-import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
+import { createFrameSource } from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { waitForTemporaryPanel } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";

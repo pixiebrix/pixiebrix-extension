@@ -33,7 +33,7 @@ import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   PIXIEBRIX_SERVICE_ID,
 } from "@/services/constants";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import {

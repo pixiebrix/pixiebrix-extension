@@ -22,7 +22,7 @@ import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import bricksRegistry from "@/blocks/registry";
+import bricksRegistry from "@/bricks/registry";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 

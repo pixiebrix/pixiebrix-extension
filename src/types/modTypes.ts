@@ -17,7 +17,7 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 /**

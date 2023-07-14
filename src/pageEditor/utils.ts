@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
-import { type BrickConfig } from "@/blocks/types";
-import ForEach from "@/blocks/transformers/controlFlow/ForEach";
-import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
+import { type BrickConfig } from "@/bricks/types";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import {
   type DocumentElement,
   isButtonElement,
@@ -27,15 +27,15 @@ import {
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { joinPathParts } from "@/utils";
-import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
+import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { expectContext } from "@/utils/expectContext";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
+import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { type Target } from "@/types/messengerTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";

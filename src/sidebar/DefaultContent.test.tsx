@@ -23,7 +23,7 @@ import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
-import { type ActivatedModComponent } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 
 function optionsStore(initialState?: {

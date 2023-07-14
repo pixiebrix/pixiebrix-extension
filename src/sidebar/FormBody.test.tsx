@@ -21,7 +21,7 @@ import FormBody from "@/sidebar/FormBody";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { formEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
-jest.mock("@/blocks/transformers/ephemeralForm/formTransformer", () => ({
+jest.mock("@/bricks/transformers/ephemeralForm/formTransformer", () => ({
   createFrameSource: jest.fn(() => new URL("https://www.testUrl.com")),
 }));
 

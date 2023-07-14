@@ -26,7 +26,7 @@ import {
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { uuidv4 } from "@/types/helpers";
-import { SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { RegistryId } from "@/types/registryTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely

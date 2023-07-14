@@ -57,7 +57,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
@@ -76,7 +76,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;

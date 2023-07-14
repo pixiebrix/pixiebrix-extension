@@ -25,7 +25,7 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type UnresolvedModComponent } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 /**

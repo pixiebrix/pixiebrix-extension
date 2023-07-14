@@ -37,9 +37,9 @@ import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { extensionToFormState } from "@/pageEditor/extensionPoints/adapter";
+import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 

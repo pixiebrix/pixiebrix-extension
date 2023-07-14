@@ -21,7 +21,7 @@ import { fromJS } from "@/services/factory";
 import {
   type IntegrationConfig,
   type IntegrationABC,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 const storageKey = "persist:servicesOptions" as ReduxStorageKey;

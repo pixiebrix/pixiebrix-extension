@@ -25,7 +25,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import {
   type SanitizedIntegrationConfig,
   type IntegrationDependency,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ServiceContext } from "@/types/runtimeTypes";
 

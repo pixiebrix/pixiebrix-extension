@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import {
   ensurePermissionsFromUserGesture,

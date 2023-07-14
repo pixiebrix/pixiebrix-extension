@@ -40,7 +40,7 @@ import {
   selectActiveRecipeId,
   selectDirtyOptionDefinitionsForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
+import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";

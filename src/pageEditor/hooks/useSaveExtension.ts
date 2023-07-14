@@ -21,7 +21,7 @@ import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 type ExtensionSaver = {
   save: (element: ModComponentFormState) => Promise<void>;

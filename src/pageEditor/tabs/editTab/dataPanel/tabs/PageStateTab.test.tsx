@@ -21,7 +21,7 @@ import { render } from "@/pageEditor/testHelpers";
 import PageStateTab from "./PageStateTab";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { getPageState } from "@/contentScript/messenger/api";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";

@@ -23,7 +23,7 @@ import { Alert } from "react-bootstrap";
 import UrlPermissionsList from "@/extensionConsole/pages/activateRecipe/UrlPermissionsList";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type WizardValues } from "@/activation/wizardTypes";
-import { type IntegrationConfigPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { useFormikContext } from "formik";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import useRecipePermissions from "./useRecipePermissions";

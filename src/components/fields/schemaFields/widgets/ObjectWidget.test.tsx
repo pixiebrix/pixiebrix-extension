@@ -21,7 +21,7 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import userEvent from "@testing-library/user-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
+import { stringToExpression } from "@/pageEditor/starterBricks/upgrade";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 
 const fieldName = "testField";

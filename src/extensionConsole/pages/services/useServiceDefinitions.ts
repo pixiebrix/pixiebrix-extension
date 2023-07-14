@@ -24,7 +24,10 @@ import registry from "@/services/registry";
 import { useAsyncState } from "@/hooks/common";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
-import { type Integration, type IntegrationConfig } from "@/types/serviceTypes";
+import {
+  type Integration,
+  type IntegrationConfig,
+} from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 
 interface IntegrationDefinitions {

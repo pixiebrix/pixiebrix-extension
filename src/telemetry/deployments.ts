@@ -1,4 +1,4 @@
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type JsonObject } from "type-fest";
 
 /**

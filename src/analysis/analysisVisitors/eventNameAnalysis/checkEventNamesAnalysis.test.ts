@@ -20,7 +20,7 @@ import {
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
-import CustomEventEffect from "@/blocks/effects/customEvent";
+import CustomEventEffect from "@/bricks/effects/customEvent";
 import { AnnotationType } from "@/types/annotationTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 

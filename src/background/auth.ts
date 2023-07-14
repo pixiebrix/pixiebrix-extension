@@ -32,7 +32,7 @@ import {
   type Integration,
   type OAuth2Context,
   type IntegrationConfig,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;

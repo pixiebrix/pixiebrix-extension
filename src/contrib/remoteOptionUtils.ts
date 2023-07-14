@@ -16,7 +16,7 @@
  */
 
 import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 
 export function optionalFactory(factory: OptionsFactory): OptionsFactory {

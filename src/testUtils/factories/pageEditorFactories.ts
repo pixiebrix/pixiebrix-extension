@@ -23,34 +23,34 @@ import {
   type QuickBarFormState,
   type SidebarFormState,
   type TriggerFormState,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 import {
   type ApiVersion,
   type OptionsArgs,
   type OutputKey,
 } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import {
   type StarterBrickConfig,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
-import { type BrickPipeline } from "@/blocks/types";
-import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
+import { type BrickPipeline } from "@/bricks/types";
+import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
-import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import menuItem from "@/pageEditor/starterBricks/menuItem";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
-import quickBar from "@/pageEditor/extensionPoints/quickBar";
-import trigger from "@/pageEditor/extensionPoints/trigger";
+import quickBar from "@/pageEditor/starterBricks/quickBar";
+import trigger from "@/pageEditor/starterBricks/trigger";
 import { type TraceRecord } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
-import sidebar from "@/pageEditor/extensionPoints/sidebar";
+import sidebar from "@/pageEditor/starterBricks/sidebar";
 import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
-import { type BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BaseExtensionState } from "@/pageEditor/starterBricks/elementConfig";
 import { pipelineFactory } from "@/testUtils/factories/brickFactories";
 import { type DerivedFunction } from "cooky-cutter/dist/derive";
 

@@ -27,7 +27,7 @@ import {
   type AnalysisAnnotationAction,
   AnalysisAnnotationActionType,
 } from "@/analysis/analysisTypes";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type FormikContextType } from "formik/dist/types";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";

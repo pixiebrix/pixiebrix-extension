@@ -24,7 +24,7 @@ import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import bricksRegistry from "@/blocks/registry";
+import bricksRegistry from "@/bricks/registry";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";

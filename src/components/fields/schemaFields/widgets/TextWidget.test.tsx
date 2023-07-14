@@ -24,7 +24,7 @@ import TextWidget, {
   isVarValue,
 } from "@/components/fields/schemaFields/widgets/TextWidget";
 import userEvent from "@testing-library/user-event";
-import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
+import { stringToExpression } from "@/pageEditor/starterBricks/upgrade";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";

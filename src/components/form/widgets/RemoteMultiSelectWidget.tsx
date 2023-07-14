@@ -19,7 +19,7 @@ import React from "react";
 import { useField } from "formik";
 import Select from "react-select";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import {
   type OptionsFactory,
   useOptionsResolver,

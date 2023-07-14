@@ -16,7 +16,7 @@
  */
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
+import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { type JsonObject } from "type-fest";
 import {
   type RendererErrorPayload,

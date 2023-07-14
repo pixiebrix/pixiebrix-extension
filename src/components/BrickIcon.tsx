@@ -30,11 +30,11 @@ import {
   faRandom,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { TriggerStarterBrickABC } from "@/extensionPoints/triggerExtension";
-import { MenuItemStarterBrickABC } from "@/extensionPoints/menuItemExtension";
-import { ContextMenuStarterBrickABC } from "@/extensionPoints/contextMenu";
-import { PanelStarterBrickABC } from "@/extensionPoints/panelExtension";
-import { SidebarStarterBrickABC } from "@/extensionPoints/sidebarExtension";
+import { TriggerStarterBrickABC } from "@/starterBricks/triggerExtension";
+import { MenuItemStarterBrickABC } from "@/starterBricks/menuItemExtension";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
+import { PanelStarterBrickABC } from "@/starterBricks/panelExtension";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
 import { appApi } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import { useAsyncIcon } from "@/components/asyncIcon";

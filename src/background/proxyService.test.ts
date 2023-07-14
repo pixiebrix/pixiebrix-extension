@@ -31,7 +31,7 @@ import {
   type IntegrationABC,
   type IntegrationConfig,
   type SecretsConfig,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { setContext } from "@/testUtils/detectPageMock";
 import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 

@@ -17,14 +17,14 @@
 
 import PipelineExpressionVisitor, {
   type VisitDocumentElementArgs,
-} from "@/blocks/PipelineExpressionVisitor";
+} from "@/bricks/PipelineExpressionVisitor";
 import {
   nestedPosition,
   type VisitBlockExtra,
   type VisitPipelineExtra,
-} from "@/blocks/PipelineVisitor";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/bricks/PipelineVisitor";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
@@ -36,11 +36,11 @@ import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/recipes/registry";
-import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
+import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { joinPathParts } from "@/utils";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { fromJS } from "@/extensionPoints/factory";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { fromJS } from "@/starterBricks/factory";
 import { type Schema } from "@/types/schemaTypes";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";

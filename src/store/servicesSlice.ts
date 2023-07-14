@@ -19,7 +19,7 @@ import { localStorage } from "redux-persist-webextension-storage";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { revertAll } from "@/store/commonActions";
-import { type IntegrationConfig } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 
 export interface ServicesState {

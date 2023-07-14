@@ -26,7 +26,10 @@ import {
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
-import { type SanitizedConfig, type SecretsConfig } from "@/types/serviceTypes";
+import {
+  type SanitizedConfig,
+  type SecretsConfig,
+} from "@/types/integrationTypes";
 import {
   type RegistryId,
   type SemVerString,
@@ -36,7 +39,7 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type ActivatedModComponent } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 

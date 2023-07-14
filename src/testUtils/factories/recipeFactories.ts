@@ -30,7 +30,7 @@ import {
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Permissions } from "webextension-polyfill";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import {
   validateRegistryId,
@@ -41,9 +41,9 @@ import {
   type StarterBrickConfig,
   type StarterBrickType,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { freshIdentifier } from "@/utils";
-import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
+import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 
 import {

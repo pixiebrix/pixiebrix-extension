@@ -27,7 +27,7 @@ import registerMessenger from "@/sidebar/messenger/registration";
 import App from "@/sidebar/SidebarApp";
 import ReactDOM from "react-dom";
 import React from "react";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { initToaster } from "@/utils/notify";
 import initGoogle from "@/contrib/google/initGoogle";

@@ -22,11 +22,11 @@ import {
   type BrickConfig,
   type BrickPipeline,
   type BrickPosition,
-} from "@/blocks/types";
+} from "@/bricks/types";
 import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import PipelineVisitor, {
   type VisitBlockExtra,
-} from "@/blocks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type SafeString } from "@/types/stringTypes";

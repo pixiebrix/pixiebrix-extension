@@ -37,7 +37,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import { reportEvent } from "@/telemetry/events";
-import { type Integration, type IntegrationConfig } from "@/types/serviceTypes";
+import {
+  type Integration,
+  type IntegrationConfig,
+} from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 

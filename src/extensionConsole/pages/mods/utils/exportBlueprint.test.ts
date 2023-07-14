@@ -17,7 +17,7 @@
 
 import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBlueprint";
 import { validateRegistryId } from "@/types/helpers";
-import { type UnresolvedModComponent } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 
 describe("makeBlueprint", () => {

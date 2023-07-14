@@ -21,9 +21,9 @@ import {
   castSchema,
 } from "@/components/fields/schemaFields/schemaUtils";
 import { boolean, excludeUndefined } from "@/utils";
-import { InputValidationError, OutputValidationError } from "@/blocks/errors";
+import { InputValidationError, OutputValidationError } from "@/bricks/errors";
 import { isEmpty } from "lodash";
-import { type BrickConfig, type BrickWindow } from "@/blocks/types";
+import { type BrickConfig, type BrickWindow } from "@/bricks/types";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
@@ -42,7 +42,7 @@ import {
   type SelectorRoot,
   type RenderedArgs,
 } from "@/types/runtimeTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick

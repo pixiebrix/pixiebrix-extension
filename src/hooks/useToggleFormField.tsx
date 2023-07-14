@@ -25,7 +25,7 @@ import {
 import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { type Schema } from "@/types/schemaTypes";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export function removeField(parent: unknown, fieldName: string): void {

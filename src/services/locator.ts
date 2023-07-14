@@ -37,7 +37,7 @@ import {
   type SanitizedIntegrationConfig,
   type IntegrationABC,
   type SecretsConfig,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 

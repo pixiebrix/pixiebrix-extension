@@ -19,7 +19,7 @@ import { AnalysisVisitorABC } from "@/analysis/analysisVisitors/baseAnalysisVisi
 import {
   type ModComponentFormState,
   isTriggerExtensionPoint,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 import { flatten, isEmpty, uniq } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
 import CollectNamesVisitor, {

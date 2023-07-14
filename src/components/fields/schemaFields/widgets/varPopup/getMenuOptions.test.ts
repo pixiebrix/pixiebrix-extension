@@ -28,7 +28,7 @@ import getMenuOptions from "./getMenuOptions";
 import { type JsonObject } from "type-fest";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 
 beforeAll(() => {
   registerBuiltinBlocks();

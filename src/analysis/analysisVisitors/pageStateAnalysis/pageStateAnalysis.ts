@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { AnalysisVisitorWithResolvedBricksABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
-import { GetPageState, SetPageState } from "@/blocks/effects/pageState";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import {
   CustomFormRenderer,
   type StateStorage,
   type Storage,
-} from "@/blocks/renderers/customForm";
+} from "@/bricks/renderers/customForm";
 
 const fallbackMessage =
   "This brick is not in a Mod. It will fall back to Public state, which other Mods can read and overwrite.";

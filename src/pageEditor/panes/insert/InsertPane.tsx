@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import { type StarterBrickType } from "@/extensionPoints/types";
+import { type StarterBrickType } from "@/starterBricks/types";
 import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import { useDispatch } from "react-redux";

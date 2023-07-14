@@ -20,7 +20,7 @@ import { readRawConfigurations } from "@/services/registry";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type RemoteIntegrationConfig } from "@/types/contract";
-import { type IntegrationConfig } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";

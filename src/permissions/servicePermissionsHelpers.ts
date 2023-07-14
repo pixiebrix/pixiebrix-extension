@@ -20,7 +20,7 @@ import serviceRegistry from "@/services/registry";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { locateWithRetry } from "@/services/serviceUtils";
 import { expectContext } from "@/utils/expectContext";
-import { type IntegrationConfigPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/integrationTypes";
 
 /**
  * Return origin permissions required to use a service with the given configuration.

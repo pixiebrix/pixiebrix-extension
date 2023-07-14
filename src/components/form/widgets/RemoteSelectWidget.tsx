@@ -20,7 +20,7 @@ import SelectWidget, {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";

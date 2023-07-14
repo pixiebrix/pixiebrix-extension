@@ -35,7 +35,7 @@ import {
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
 import { selectActiveElement } from "./slices/editorSelectors";
-import { formStateToDynamicElement } from "./extensionPoints/adapter";
+import { formStateToDynamicElement } from "./starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,

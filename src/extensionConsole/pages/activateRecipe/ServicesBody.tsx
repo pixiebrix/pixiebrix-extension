@@ -23,7 +23,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import { useField } from "formik";
-import { type IntegrationConfigPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
 import { joinName } from "@/utils";

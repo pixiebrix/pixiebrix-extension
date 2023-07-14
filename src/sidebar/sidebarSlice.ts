@@ -36,7 +36,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
-import { type SubmitPanelAction } from "@/blocks/errors";
+import { type SubmitPanelAction } from "@/bricks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import { castDraft } from "immer";
 

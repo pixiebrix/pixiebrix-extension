@@ -19,7 +19,7 @@ import { define } from "cooky-cutter";
 import {
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RemoteIntegrationConfig } from "@/types/contract";

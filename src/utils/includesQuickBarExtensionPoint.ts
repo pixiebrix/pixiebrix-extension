@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import extensionPointRegistry from "@/extensionPoints/registry";
-import { QuickBarStarterBrickABC } from "@/extensionPoints/quickBarExtension";
-import { QuickBarProviderStarterBrickABC } from "@/extensionPoints/quickBarProviderExtension";
+import extensionPointRegistry from "@/starterBricks/registry";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
+import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProviderExtension";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 

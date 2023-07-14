@@ -17,11 +17,11 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isModComponentBase } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type ExtensionEntryProps = {

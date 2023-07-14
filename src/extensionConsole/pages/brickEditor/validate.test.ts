@@ -17,7 +17,7 @@
 
 import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";
 import trelloBlueprint from "@contrib/recipes/trello-slack.yaml";
-import amazonBrick from "@contrib/blocks/amazon-search.yaml";
+import amazonBrick from "@contrib/bricks/amazon-search.yaml";
 import v3Blueprint from "@contrib/recipes/v3-example.txt";
 import { objToYaml } from "@/utils/objToYaml";
 

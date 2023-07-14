@@ -19,7 +19,7 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { proxyService } from "@/background/messenger/api";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 
 export class AddLead extends EffectABC {
   constructor() {

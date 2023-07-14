@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { InputValidationError, OutputValidationError } from "@/blocks/errors";
+import { InputValidationError, OutputValidationError } from "@/bricks/errors";
 import {
   getErrorMessageWithCauses,
   selectSpecificError,

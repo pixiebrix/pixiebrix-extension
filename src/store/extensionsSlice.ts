@@ -39,7 +39,7 @@ import {
   type ModComponentBase,
   type ActivatedModComponent,
   selectSourceRecipeMetadata,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
   type ModDefinition,

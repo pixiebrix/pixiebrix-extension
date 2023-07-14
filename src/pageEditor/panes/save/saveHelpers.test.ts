@@ -22,17 +22,17 @@ import {
   replaceRecipeExtension,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
-import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
+import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
   internalExtensionPointMetaFactory,
   lookupExtensionPoint,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
-import { type MenuDefinition } from "@/extensionPoints/menuItemExtension";
+import { type MenuDefinition } from "@/starterBricks/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   getMinimalSchema,
@@ -41,16 +41,16 @@ import {
 import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/starterBricks/types";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
   type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type UnresolvedModComponent } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import {
@@ -64,9 +64,9 @@ import {
 
 jest.mock("@/background/contextMenus");
 
-jest.mock("@/pageEditor/extensionPoints/base", () => ({
+jest.mock("@/pageEditor/starterBricks/base", () => ({
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Wrong
-  ...(jest.requireActual("@/pageEditor/extensionPoints/base") as UnknownObject),
+  ...(jest.requireActual("@/pageEditor/starterBricks/base") as UnknownObject),
   lookupExtensionPoint: jest.fn(),
 }));
 

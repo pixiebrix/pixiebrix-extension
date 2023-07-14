@@ -19,9 +19,9 @@ import {
   type Analysis,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import PipelineVisitor from "@/blocks/PipelineVisitor";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
+import PipelineVisitor from "@/bricks/PipelineVisitor";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 
 /**
  * A base class for creating analysis visitors.

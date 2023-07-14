@@ -22,7 +22,7 @@ import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
 import useFlags from "@/hooks/useFlags";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { useSelector } from "react-redux";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
