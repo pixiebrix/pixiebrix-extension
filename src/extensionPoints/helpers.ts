@@ -22,7 +22,7 @@ import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import {
   type ModComponentBase,
   type ResolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 
 function getAncestors(node: Node): Node[] {

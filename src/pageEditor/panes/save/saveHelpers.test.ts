@@ -50,7 +50,7 @@ import {
   type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type UnresolvedModComponent } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import {

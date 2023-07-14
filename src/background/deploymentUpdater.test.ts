@@ -35,7 +35,7 @@ import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateType
 import { parsePackage } from "@/registry/localRegistry";
 import { registry } from "@/background/messenger/api";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
-import { type ActivatedModComponent } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Timestamp } from "@/types/stringTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";

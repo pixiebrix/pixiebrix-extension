@@ -58,7 +58,7 @@ import { type Schema } from "@/types/schemaTypes";
 import {
   type ModComponentBase,
   type ResolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";

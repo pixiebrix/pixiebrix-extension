@@ -22,7 +22,7 @@ import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type BrickIcon } from "@/types/iconTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
 import { type Reader } from "@/types/bricks/readerTypes";

@@ -25,7 +25,7 @@ import { selectScope } from "@/auth/authSelectors";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { uniqBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import type { Mod, UnavailableMod } from "@/types/modTypes";
 
 type ModsState = {

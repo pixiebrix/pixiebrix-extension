@@ -34,7 +34,7 @@ import { type UUID } from "@/types/stringTypes";
 import {
   type ModComponentBase,
   type ResolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 
 const MENU_PREFIX = "pixiebrix-";
 

@@ -19,7 +19,7 @@ import { type Config, define, extend } from "cooky-cutter";
 import {
   type ModComponentBase,
   type ActivatedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import {
   timestampFactory,
   uuidSequence,

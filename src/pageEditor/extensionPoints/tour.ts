@@ -43,7 +43,7 @@ import {
   TourStarterBrickABC,
 } from "@/extensionPoints/tourExtension";
 import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
 function fromNativeElement(
   url: string,

@@ -28,7 +28,7 @@ import {
   fromJS,
   type MenuDefinition,
 } from "@/extensionPoints/contextMenu";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 

@@ -29,7 +29,7 @@ import { containsPermissions } from "@/background/messenger/api";
 import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";

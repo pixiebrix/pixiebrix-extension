@@ -60,7 +60,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 
 export type QuickBarProviderConfig = {

@@ -21,7 +21,7 @@ import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formSta
 import { isModComponentBase } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type ExtensionEntryProps = {

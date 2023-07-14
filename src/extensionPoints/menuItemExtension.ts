@@ -73,7 +73,7 @@ import { PromiseCancelled } from "@/errors/genericErrors";
 import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import {

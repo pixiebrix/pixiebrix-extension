@@ -19,7 +19,7 @@ import {
   type MigrationManifest,
   type PersistedState,
 } from "redux-persist/es/types";
-import { type ActivatedModComponent } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import {
   type ModComponentOptionsState,
   type LegacyModComponentObjectShapeState,

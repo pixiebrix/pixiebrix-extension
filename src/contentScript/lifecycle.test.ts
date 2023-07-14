@@ -26,7 +26,7 @@ import {
 } from "@/extensionPoints/triggerExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type ActivatedModComponent } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type BrickPipeline } from "@/blocks/types";
 import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
 import blockRegistry from "@/blocks/registry";

@@ -24,7 +24,7 @@ import {
 import { getRecipeById } from "@/pageEditor/utils";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type UUID } from "@/types/stringTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 type ArrangeElementsArgs = {

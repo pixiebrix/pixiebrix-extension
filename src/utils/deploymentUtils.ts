@@ -20,7 +20,7 @@ import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";

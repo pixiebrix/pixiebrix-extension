@@ -45,7 +45,7 @@ import {
 import {
   type ModComponentBase,
   type UnresolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type EditablePackageMetadata } from "@/types/contract";

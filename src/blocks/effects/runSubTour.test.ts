@@ -28,7 +28,7 @@ import { tick } from "@/extensionPoints/extensionPointTestUtils";
 import {
   type ModComponentBase,
   type ResolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type BrickOptions } from "@/types/runtimeTypes";
 
 describe("runSubTour", () => {

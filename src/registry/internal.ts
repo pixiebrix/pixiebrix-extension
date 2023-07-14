@@ -45,7 +45,7 @@ import {
 import {
   type ModComponentBase,
   type ResolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type Brick } from "@/types/brickTypes";
 

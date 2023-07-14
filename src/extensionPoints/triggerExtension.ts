@@ -70,7 +70,7 @@ import {
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";

@@ -34,7 +34,7 @@ import {
 } from "@/extensionPoints/extensionPointTestUtils";
 import { type BrickPipeline } from "@/blocks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";

@@ -42,7 +42,7 @@ import {
   type SelectorRoot,
   type RenderedArgs,
 } from "@/types/runtimeTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick

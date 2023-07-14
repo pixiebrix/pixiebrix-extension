@@ -30,7 +30,7 @@ import {
   type MenuItemStarterBrickConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { type ElementInfo } from "@/pageScript/frameworks";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type UUID } from "@/types/stringTypes";
 

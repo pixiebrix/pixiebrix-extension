@@ -38,7 +38,7 @@ import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";

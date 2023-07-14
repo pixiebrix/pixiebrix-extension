@@ -56,7 +56,7 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { type UUID } from "@/types/stringTypes";
-import { type UnresolvedModComponent } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";

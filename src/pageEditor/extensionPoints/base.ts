@@ -58,7 +58,7 @@ import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { isExpression } from "@/utils/expressionUtils";

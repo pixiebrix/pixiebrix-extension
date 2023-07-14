@@ -31,7 +31,7 @@ import {
   type ModComponentBase,
   type ResolvedModComponent,
   type UnresolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type StarterBrickType } from "@/extensionPoints/types";

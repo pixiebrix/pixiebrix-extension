@@ -36,7 +36,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import defaultActions from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";

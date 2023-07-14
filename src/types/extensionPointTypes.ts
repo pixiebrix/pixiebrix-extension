@@ -18,7 +18,7 @@
 import { type Permissions } from "webextension-polyfill";
 import { type Schema } from "@/types/schemaTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";

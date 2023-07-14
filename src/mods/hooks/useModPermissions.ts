@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { checkExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import useAsyncState from "@/hooks/useAsyncState";

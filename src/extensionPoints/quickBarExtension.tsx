@@ -57,7 +57,7 @@ import { type IconConfig } from "@/types/iconTypes";
 import { type StarterBrick } from "@/types/extensionPointTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 

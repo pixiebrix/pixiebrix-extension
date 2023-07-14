@@ -76,7 +76,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 const { actions: optionsActions } = extensionsSlice;

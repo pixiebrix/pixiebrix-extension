@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 type SidebarItem = ModComponentBase | ModComponentFormState;

@@ -44,7 +44,7 @@ import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
 function fromNativeElement(
   url: string,

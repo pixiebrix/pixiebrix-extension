@@ -27,7 +27,7 @@ import {
 } from "@/extensionPoints/contextMenu";
 import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickConfig } from "@/extensionPoints/types";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
 import { setContext } from "@/testUtils/detectPageMock";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";

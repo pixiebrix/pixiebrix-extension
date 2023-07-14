@@ -35,7 +35,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
 import { type Target } from "@/types/messengerTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";

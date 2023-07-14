@@ -31,7 +31,7 @@ import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ModComponentRef } from "@/types/extensionTypes";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 import type {
   ActivatePanelOptions,
   ActivateModPanelEntry,

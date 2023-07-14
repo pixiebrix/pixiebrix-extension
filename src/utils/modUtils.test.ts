@@ -23,7 +23,7 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";

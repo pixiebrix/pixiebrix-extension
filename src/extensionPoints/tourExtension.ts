@@ -54,7 +54,7 @@ import {
 import { getAll } from "@/tours/tourRunDatabase";
 import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";

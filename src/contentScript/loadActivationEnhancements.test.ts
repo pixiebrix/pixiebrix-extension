@@ -21,7 +21,7 @@ import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { loadOptions } from "@/store/extensionsStorage";
 import { getDocument } from "@/extensionPoints/extensionPointTestUtils";
 import { validateRegistryId } from "@/types/helpers";
-import { type ActivatedModComponent } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";

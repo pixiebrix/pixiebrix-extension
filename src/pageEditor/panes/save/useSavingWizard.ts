@@ -48,7 +48,7 @@ import { useAllRecipes } from "@/recipes/recipesHooks";
 import {
   type ModComponentBase,
   type ActivatedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions: optionsActions } = extensionsSlice;

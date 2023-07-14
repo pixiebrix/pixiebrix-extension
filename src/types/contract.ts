@@ -36,7 +36,7 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type ActivatedModComponent } from "@/types/extensionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 

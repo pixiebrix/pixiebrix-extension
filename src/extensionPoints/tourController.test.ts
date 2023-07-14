@@ -26,7 +26,7 @@ import {
 } from "@/extensionPoints/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 
 describe("tourController", () => {
   test("ad-hoc tour", () => {

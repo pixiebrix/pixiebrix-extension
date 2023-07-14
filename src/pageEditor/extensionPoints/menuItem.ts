@@ -16,7 +16,7 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
   baseFromExtension,
   baseSelectExtension,
