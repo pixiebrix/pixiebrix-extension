@@ -26,7 +26,7 @@ import * as localRegistry from "@/registry/packageRegistry";
 import pDefer from "p-defer";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/components/ConfirmationModal", () => ({
   ...jest.requireActual("@/components/ConfirmationModal"),
@@ -43,7 +43,7 @@ beforeAll(() => {
 // It verifies the proper API calls and the recipe schema "sent" to the server
 test("load recipes and save one", async () => {
   // This is the shape of a recipe that we get from the API /api/recipes/ endpoint
-  const sourceRecipe = recipeDefinitionFactory();
+  const sourceRecipe = modDefinitionFactory();
 
   const packageId = uuidv4();
   const recipeId = validateRegistryId(sourceRecipe.metadata.id);

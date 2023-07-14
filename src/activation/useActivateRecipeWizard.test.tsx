@@ -25,7 +25,7 @@ import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/components/auth/AuthWidget", () => {});
 jest.mock("react-redux");
@@ -55,7 +55,7 @@ describe("useActivateRecipeWizard", () => {
 
     const { result } = renderHook(() =>
       useActivateRecipeWizard(
-        recipeDefinitionFactory({
+        modDefinitionFactory({
           // Page Editor produces normalized form
           options: {
             schema: propertiesToSchema({
@@ -77,7 +77,7 @@ describe("useActivateRecipeWizard", () => {
     spy.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      useActivateRecipeWizard(recipeDefinitionFactory())
+      useActivateRecipeWizard(modDefinitionFactory())
     );
 
     const {
@@ -91,7 +91,7 @@ describe("useActivateRecipeWizard", () => {
     spy.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      useActivateRecipeWizard(recipeDefinitionFactory())
+      useActivateRecipeWizard(modDefinitionFactory())
     );
 
     const {
@@ -109,7 +109,7 @@ describe("useActivateRecipeWizard", () => {
         format: "preview",
       },
     });
-    const recipe = recipeDefinitionFactory({
+    const recipe = modDefinitionFactory({
       options: {
         schema: optionSchema,
       },
@@ -133,7 +133,7 @@ describe("useActivateRecipeWizard", () => {
         format: "preview",
       },
     });
-    const recipe = recipeDefinitionFactory({
+    const recipe = modDefinitionFactory({
       options: {
         schema: optionSchema,
       },

@@ -24,7 +24,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/extensionConsole/testHelpers";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
-import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -127,7 +127,7 @@ describe("ServicesBody", () => {
   it("renders with one service and no options and does not render title", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={recipeDefinitionFactory()} />, {
+    render(<ServicesBody blueprint={modDefinitionFactory()} />, {
       initialValues: {
         services: [{ id: serviceId1, config: null }],
       },
@@ -144,14 +144,11 @@ describe("ServicesBody", () => {
   it("renders own title properly", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
-    render(
-      <ServicesBody blueprint={recipeDefinitionFactory()} showOwnTitle />,
-      {
-        initialValues: {
-          services: [{ id: serviceId1, config: null }],
-        },
-      }
-    );
+    render(<ServicesBody blueprint={modDefinitionFactory()} showOwnTitle />, {
+      initialValues: {
+        services: [{ id: serviceId1, config: null }],
+      },
+    });
     await waitForEffect();
     // Ensure Integrations title is shown
     expect(screen.getByRole("heading", { name: "Integrations" })).toBeVisible();
@@ -164,7 +161,7 @@ describe("ServicesBody", () => {
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
-        blueprint={recipeDefinitionFactory()}
+        blueprint={modDefinitionFactory()}
         hideBuiltInServiceIntegrations
       />,
       {
@@ -185,7 +182,7 @@ describe("ServicesBody", () => {
       valueToAsyncState([sharedOption1a, sharedOption1b])
     );
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={recipeDefinitionFactory()} />, {
+    render(<ServicesBody blueprint={modDefinitionFactory()} />, {
       initialValues: {
         services: [{ id: serviceId1, config: sharedOption1a.value }],
       },
@@ -202,7 +199,7 @@ describe("ServicesBody", () => {
       valueToAsyncState([sharedOption1a, sharedOption1b])
     );
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={recipeDefinitionFactory()} />, {
+    render(<ServicesBody blueprint={modDefinitionFactory()} />, {
       initialValues: {
         services: [{ id: serviceId1, config: sharedOption1a.value }],
       },
@@ -231,7 +228,7 @@ describe("ServicesBody", () => {
       ])
     );
     getRequiredServiceIdsMock.mockReturnValue([serviceId1, serviceId2]);
-    render(<ServicesBody blueprint={recipeDefinitionFactory()} />, {
+    render(<ServicesBody blueprint={modDefinitionFactory()} />, {
       initialValues: {
         services: [
           { id: serviceId1, config: sharedOption1a.value },
@@ -254,7 +251,7 @@ describe("ServicesBody", () => {
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
-        blueprint={recipeDefinitionFactory()}
+        blueprint={modDefinitionFactory()}
         hideBuiltInServiceIntegrations
       />,
       {
@@ -282,7 +279,7 @@ describe("ServicesBody", () => {
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
-        blueprint={recipeDefinitionFactory()}
+        blueprint={modDefinitionFactory()}
         hideBuiltInServiceIntegrations
       />,
       {
@@ -310,7 +307,7 @@ describe("ServicesBody", () => {
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
-        blueprint={recipeDefinitionFactory()}
+        blueprint={modDefinitionFactory()}
         hideBuiltInServiceIntegrations
       />,
       {
@@ -333,7 +330,7 @@ describe("ServicesBody", () => {
     getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
-        blueprint={recipeDefinitionFactory()}
+        blueprint={modDefinitionFactory()}
         hideBuiltInServiceIntegrations
       />,
       {
@@ -367,7 +364,7 @@ describe("ServicesBody", () => {
     getRequiredServiceIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(
       <ServicesBody
-        blueprint={recipeDefinitionFactory()}
+        blueprint={modDefinitionFactory()}
         hideBuiltInServiceIntegrations
       />,
       {
@@ -400,7 +397,7 @@ describe("ServicesBody", () => {
     getRequiredServiceIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(
       <ServicesBody
-        blueprint={recipeDefinitionFactory()}
+        blueprint={modDefinitionFactory()}
         hideBuiltInServiceIntegrations
       />,
       {

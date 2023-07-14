@@ -40,7 +40,7 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { extensionPointDefinitionFactory as genericExtensionPointFactory } from "@/testUtils/factories/recipeFactories";
+import { starterBrickConfigFactory as genericExtensionPointFactory } from "@/testUtils/factories/recipeFactories";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 

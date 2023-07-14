@@ -29,7 +29,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 
-const activateRecipeEntryFactory = define<ActivateModPanelEntry>({
+const activateModPanelEntryFactory = define<ActivateModPanelEntry>({
   type: "activateRecipe",
   recipeId: (n: number) =>
     validateRegistryId(`@test/activate-recipe-test-${n}`),
@@ -100,7 +100,7 @@ export function sidebarEntryFactory<T = SidebarEntry>(
   override?: FactoryConfig<T>
 ): SidebarEntry {
   if (type === "activateRecipe") {
-    return activateRecipeEntryFactory(
+    return activateModPanelEntryFactory(
       override as FactoryConfig<ActivateModPanelEntry>
     );
   }

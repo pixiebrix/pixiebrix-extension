@@ -18,14 +18,17 @@
 import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBlueprint";
 import { validateRegistryId } from "@/types/helpers";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
-import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("makeBlueprint", () => {
   it("smoke test", () => {
-    const result = makeBlueprint(extensionFactory() as UnresolvedModComponent, {
-      id: validateRegistryId("test/blueprint"),
-      name: "test",
-    });
+    const result = makeBlueprint(
+      modComponentFactory() as UnresolvedModComponent,
+      {
+        id: validateRegistryId("test/blueprint"),
+        name: "test",
+      }
+    );
 
     expect(result).toEqual(
       expect.objectContaining({
@@ -35,7 +38,7 @@ describe("makeBlueprint", () => {
   });
 
   it("infers blueprint options", () => {
-    const extension = extensionFactory({
+    const extension = modComponentFactory({
       optionsArgs: {
         foo: "hello world!",
       },

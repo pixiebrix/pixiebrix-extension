@@ -36,9 +36,9 @@ import { actions as extensionActions } from "@/store/extensionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
-  cloudExtensionFactory,
-  extensionFactory,
-} from "@/testUtils/factories/extensionFactories";
+  standaloneModDefinitionFactory,
+  modComponentFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
@@ -88,7 +88,7 @@ const modViewItemFactory = ({
   unavailable?: boolean;
 }) =>
   ({
-    mod: isExtension ? extensionFactory() : recipeFactory(),
+    mod: isExtension ? modComponentFactory() : recipeFactory(),
     sharing: {
       source: {
         type: sharingType,
@@ -396,7 +396,7 @@ describe("actions", () => {
     test("calls uninstallExtensions for an extension", () => {
       mockHooks();
 
-      const extension = cloudExtensionFactory();
+      const extension = standaloneModDefinitionFactory();
 
       const modViewItem = modViewItemFactory({
         isExtension: true,
@@ -414,7 +414,7 @@ describe("actions", () => {
           dispatch(extensionActions.installCloudExtension({ extension }));
           dispatch(
             extensionActions.installCloudExtension({
-              extension: cloudExtensionFactory(),
+              extension: standaloneModDefinitionFactory(),
             })
           );
         },

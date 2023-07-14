@@ -41,11 +41,11 @@ import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsH
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { setContext } from "@/testUtils/detectPageMock";
 import {
-  extensionFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories/extensionFactories";
+  modComponentFactory,
+  modComponentRecipeFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/recipeFactories";
 
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { type RegistryPackage } from "@/types/contract";
@@ -224,7 +224,7 @@ describe("updateDeployments", () => {
   test("ignore other user extensions", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const extensionPoint = extensionPointDefinitionFactory();
+    const extensionPoint = starterBrickConfigFactory();
     const brick = {
       ...parsePackage(extensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
@@ -232,7 +232,7 @@ describe("updateDeployments", () => {
     registryFindMock.mockResolvedValue(brick);
 
     // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const extension = extensionFactory({
+    const extension = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,
     }) as ActivatedModComponent;
     delete extension._recipe;
@@ -275,7 +275,7 @@ describe("updateDeployments", () => {
     const deployment = deploymentFactory();
 
     // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const extension = extensionFactory({
+    const extension = modComponentFactory({
       _recipe: {
         id: deployment.package.package_id,
         name: deployment.package.name,
@@ -311,7 +311,7 @@ describe("updateDeployments", () => {
 
     const deployment = deploymentFactory();
 
-    const extensionPoint = extensionPointDefinitionFactory();
+    const extensionPoint = starterBrickConfigFactory();
     const brick = {
       ...parsePackage(extensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
@@ -319,7 +319,7 @@ describe("updateDeployments", () => {
     registryFindMock.mockResolvedValue(brick);
 
     // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const extension = extensionFactory({
+    const extension = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,
       _recipe: {
         id: deployment.package.package_id,
@@ -524,30 +524,30 @@ describe("updateDeployments", () => {
   });
 
   test("can uninstall all deployments", async () => {
-    const personalExtensionPoint = extensionPointDefinitionFactory();
+    const personalExtensionPoint = starterBrickConfigFactory();
     const personalBrick = {
       ...parsePackage(personalExtensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 
-    const personalExtension = extensionFactory({
+    const personalExtension = modComponentFactory({
       extensionPointId: personalExtensionPoint.metadata.id,
     }) as ActivatedModComponent;
 
-    const recipeExtension = extensionFactory({
-      _recipe: installedRecipeMetadataFactory(),
+    const recipeExtension = modComponentFactory({
+      _recipe: modComponentRecipeFactory(),
     }) as ActivatedModComponent;
 
-    const deploymentExtensionPoint = extensionPointDefinitionFactory();
+    const deploymentExtensionPoint = starterBrickConfigFactory();
     const deploymentsBrick = {
       ...parsePackage(deploymentExtensionPoint as unknown as RegistryPackage),
       timestamp: new Date(),
     };
 
-    const deploymentExtension = extensionFactory({
+    const deploymentExtension = modComponentFactory({
       extensionPointId: deploymentExtensionPoint.metadata.id,
       _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
-      _recipe: installedRecipeMetadataFactory(),
+      _recipe: modComponentRecipeFactory(),
     }) as ActivatedModComponent;
 
     registryFindMock.mockImplementation(async (id) => {

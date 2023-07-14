@@ -24,13 +24,13 @@ import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("getSharingType", () => {
   test("personal extension", () => {
-    const mod: Mod = extensionFactory() as any;
+    const mod: Mod = modComponentFactory() as any;
     const { type, label } = getSharingType({
       mod,
       organizations: [],
@@ -43,7 +43,7 @@ describe("getSharingType", () => {
   });
 
   test("public deployment", () => {
-    const mod: Mod = extensionFactory({
+    const mod: Mod = modComponentFactory({
       _deployment: {
         id: uuidv4(),
         active: true,
@@ -63,7 +63,7 @@ describe("getSharingType", () => {
 
   test("organization deployment", () => {
     const orgId = uuidv4();
-    const mod: Mod = extensionFactory({
+    const mod: Mod = modComponentFactory({
       _deployment: {
         id: orgId,
         active: true,
@@ -99,7 +99,7 @@ describe("getSharingType", () => {
   });
 
   test("team mod", () => {
-    const mod = recipeDefinitionFactory();
+    const mod = modDefinitionFactory();
     const orgId = uuidv4();
 
     mod.sharing.organizations = [orgId];
@@ -124,7 +124,7 @@ describe("getSharingType", () => {
   });
 
   test("public mod", () => {
-    const mod: Mod = recipeDefinitionFactory({
+    const mod: Mod = modDefinitionFactory({
       sharing: sharingDefinitionFactory({ public: true }),
     }) as any;
 
@@ -142,19 +142,19 @@ describe("getSharingType", () => {
 
 describe("isExtension", () => {
   it("returns true for an extension", () => {
-    const mod = extensionFactory() as ResolvedModComponent;
+    const mod = modComponentFactory() as ResolvedModComponent;
     expect(isResolvedModComponent(mod)).toBe(true);
   });
 
   it("returns false for a recipe", () => {
-    const mod = recipeDefinitionFactory();
+    const mod = modDefinitionFactory();
     expect(isResolvedModComponent(mod)).toBe(false);
   });
 });
 
 describe("isUnavailableMod", () => {
   it("returns false for a recipe definition", () => {
-    const mod = recipeDefinitionFactory();
+    const mod = modDefinitionFactory();
     expect(isUnavailableMod(mod)).toBe(false);
   });
 
@@ -166,7 +166,7 @@ describe("isUnavailableMod", () => {
   });
 
   it("returns false for an extension", () => {
-    const mod = extensionFactory() as ResolvedModComponent;
+    const mod = modComponentFactory() as ResolvedModComponent;
     expect(isUnavailableMod(mod)).toBe(false);
   });
 });

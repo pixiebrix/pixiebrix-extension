@@ -23,22 +23,22 @@ import {
   type ModComponentOptionsState,
   type ModComponentsRootState,
 } from "@/store/extensionsTypes";
-import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
-import { cloudExtensionFactory } from "@/testUtils/factories/extensionFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
 beforeEach(() => {
   jest.resetAllMocks();
 });
 
 test("uninstalls recipe extensions", async () => {
-  const recipe = recipeDefinitionFactory();
-  const recipeExtension = cloudExtensionFactory({
+  const recipe = modDefinitionFactory();
+  const recipeExtension = standaloneModDefinitionFactory({
     _recipe: {
       id: recipe.metadata.id,
     } as any,
   });
 
-  const anotherExtension = cloudExtensionFactory();
+  const anotherExtension = standaloneModDefinitionFactory();
 
   const {
     result: { current: reinstall },
@@ -72,8 +72,8 @@ test("uninstalls recipe extensions", async () => {
 test("dispatches install recipe action", async () => {
   jest.spyOn(extensionActions, "installRecipe");
 
-  const recipe = recipeDefinitionFactory();
-  const recipeExtension = cloudExtensionFactory({
+  const recipe = modDefinitionFactory();
+  const recipeExtension = standaloneModDefinitionFactory({
     _recipe: {
       id: recipe.metadata.id,
     } as any,

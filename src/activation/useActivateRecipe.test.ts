@@ -31,9 +31,9 @@ import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
 import {
-  extensionPointConfigFactory,
-  extensionPointDefinitionFactory,
-  recipeDefinitionFactory,
+  modComponentDefinitionFactory,
+  starterBrickConfigFactory,
+  modDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
 
@@ -64,10 +64,10 @@ function setupInputs(): {
   };
 
   const extensionPointId = validateRegistryId("test/extension-point-1");
-  const extensionPoint = extensionPointConfigFactory({
+  const extensionPoint = modComponentDefinitionFactory({
     id: extensionPointId,
   });
-  const extensionPointDefinition = extensionPointDefinitionFactory({
+  const extensionPointDefinition = starterBrickConfigFactory({
     metadata: recipeMetadataFactory({
       id: extensionPointId,
       name: "Text Extension Point 1",
@@ -86,7 +86,7 @@ function setupInputs(): {
   extensionPointDefinition.definition.contexts = ["all"];
   extensionPointDefinition.definition.documentUrlPatterns = ["*://*/*"];
 
-  const recipe = recipeDefinitionFactory({
+  const recipe = modDefinitionFactory({
     extensionPoints: [extensionPoint],
     definitions: {
       [extensionPointId]: extensionPointDefinition,

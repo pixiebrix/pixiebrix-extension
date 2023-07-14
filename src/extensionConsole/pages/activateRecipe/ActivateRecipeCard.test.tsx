@@ -31,8 +31,8 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { validateRegistryId } from "@/types/helpers";
 import { type RecipeResponse } from "@/types/contract";
 import {
-  extensionPointConfigFactory,
-  recipeDefinitionFactory,
+  modComponentDefinitionFactory,
+  modDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
 
@@ -94,14 +94,14 @@ const RecipeCard: React.FC = () => {
 
 describe("ActivateRecipeCard", () => {
   test("renders", async () => {
-    setupRecipe(recipeDefinitionFactory());
+    setupRecipe(modDefinitionFactory());
     const rendered = render(<RecipeCard />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("activate recipe with missing required recipe options", async () => {
-    const recipe = recipeDefinitionFactory({
+    const recipe = modDefinitionFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "Mod with Required Options",
@@ -121,7 +121,7 @@ describe("ActivateRecipeCard", () => {
         uiSchema: {},
       },
       extensionPoints: [
-        extensionPointConfigFactory({
+        modComponentDefinitionFactory({
           label: "Extension Point for Mod with Required Options",
         }),
       ],
@@ -136,13 +136,13 @@ describe("ActivateRecipeCard", () => {
   });
 
   test("activate recipe permissions", async () => {
-    const recipe = recipeDefinitionFactory({
+    const recipe = modDefinitionFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
       }),
       extensionPoints: [
-        extensionPointConfigFactory({
+        modComponentDefinitionFactory({
           label: "A Extension Point for Mod",
         }),
       ],
@@ -170,13 +170,13 @@ describe("ActivateRecipeCard", () => {
       error: "You must accept browser permissions to activate",
     });
 
-    const recipe = recipeDefinitionFactory({
+    const recipe = modDefinitionFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
       }),
       extensionPoints: [
-        extensionPointConfigFactory({
+        modComponentDefinitionFactory({
           label: "A Extension Point for Mod",
         }),
       ],

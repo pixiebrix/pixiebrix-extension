@@ -33,14 +33,14 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
-  extensionPointConfigFactory,
+  modComponentDefinitionFactory,
   getRecipeWithBuiltInServiceAuths,
   recipeFactory,
 } from "@/testUtils/factories/recipeFactories";
 import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
-import { sanitizedAuthFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedAuthFactory } from "@/testUtils/factories/integrationFactories";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -118,7 +118,7 @@ describe("installStarterBlueprints", () => {
       service2: "@pixiebrix/service2",
     } as Record<OutputKey, RegistryId>;
 
-    const extensionPointDefinition = extensionPointConfigFactory({
+    const extensionPointDefinition = modComponentDefinitionFactory({
       services: extensionServices,
     });
 
@@ -223,7 +223,7 @@ describe("installStarterBlueprints", () => {
 
     const recipe = recipeFactory();
 
-    const extension = extensionFactory({
+    const extension = modComponentFactory({
       _recipe: { id: recipe.metadata.id } as ModComponentBase["_recipe"],
     }) as ActivatedModComponent;
     await saveOptions({
@@ -246,7 +246,7 @@ describe("installStarterBlueprints", () => {
   test("extension with no _recipe doesn't throw undefined error", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const extension = extensionFactory({
+    const extension = modComponentFactory({
       _recipe: undefined,
     }) as ActivatedModComponent;
     await saveOptions({

@@ -20,7 +20,7 @@ import {
   getContainedExtensionPointTypes,
 } from "./recipeUtils";
 import {
-  extensionPointConfigFactory,
+  modComponentDefinitionFactory,
   recipeFactory,
 } from "@/testUtils/factories/recipeFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
@@ -61,8 +61,8 @@ describe("getContainedExtensionPointTypes", () => {
     const result = await getContainedExtensionPointTypes(
       recipeFactory({
         extensionPoints: [
-          extensionPointConfigFactory(),
-          extensionPointConfigFactory(),
+          modComponentDefinitionFactory(),
+          modComponentDefinitionFactory(),
         ],
       })
     );
@@ -76,7 +76,7 @@ describe("getContainedExtensionPointTypes", () => {
 
     const result = await getContainedExtensionPointTypes(
       recipeFactory({
-        extensionPoints: [extensionPointConfigFactory()],
+        extensionPoints: [modComponentDefinitionFactory()],
         definitions: undefined,
       })
     );
@@ -89,7 +89,7 @@ describe("getContainedExtensionPointTypes", () => {
 
     const result = await getContainedExtensionPointTypes(
       recipeFactory({
-        extensionPoints: [extensionPointConfigFactory()],
+        extensionPoints: [modComponentDefinitionFactory()],
         definitions: undefined,
       })
     );
@@ -102,7 +102,7 @@ describe("getContainedExtensionPointTypes", () => {
 
     const result = await getContainedExtensionPointTypes(
       recipeFactory({
-        extensionPoints: [extensionPointConfigFactory()],
+        extensionPoints: [modComponentDefinitionFactory()],
         definitions: {},
       })
     );

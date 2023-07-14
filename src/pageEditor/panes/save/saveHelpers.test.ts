@@ -52,13 +52,13 @@ import {
 } from "@/types/modDefinitionTypes";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
-import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
-  extensionPointConfigFactory,
-  extensionPointDefinitionFactory,
-  innerExtensionPointRecipeFactory,
+  modComponentDefinitionFactory,
+  starterBrickConfigFactory,
+  innerStarterBrickRecipeFactory,
   recipeFactory,
-  versionedExtensionPointRecipeFactory,
+  versionedStarterBrickRecipeFactory,
   versionedRecipeWithResolvedExtensions,
 } from "@/testUtils/factories/recipeFactories";
 
@@ -89,8 +89,8 @@ describe("generatePersonalBrickId", () => {
 
 describe("replaceRecipeExtension round trip", () => {
   test("single extension with versioned extensionPoint", async () => {
-    const extensionPoint = extensionPointDefinitionFactory();
-    const recipe = versionedExtensionPointRecipeFactory({
+    const extensionPoint = starterBrickConfigFactory();
+    const recipe = versionedStarterBrickRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })();
 
@@ -129,9 +129,9 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("does not modify other extension point", async () => {
-    const extensionPoint = extensionPointDefinitionFactory();
+    const extensionPoint = starterBrickConfigFactory();
 
-    const recipe = versionedExtensionPointRecipeFactory({
+    const recipe = versionedStarterBrickRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })();
 
@@ -175,7 +175,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("single extension point with innerDefinition", async () => {
-    const recipe = innerExtensionPointRecipeFactory()();
+    const recipe = innerStarterBrickRecipeFactory()();
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
@@ -222,7 +222,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("generate fresh identifier definition changed", async () => {
-    const recipe = innerExtensionPointRecipeFactory()();
+    const recipe = innerStarterBrickRecipeFactory()();
 
     recipe.extensionPoints.push({
       ...recipe.extensionPoints[0],
@@ -284,7 +284,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("reuse identifier definition for multiple if extensionPoint not modified", async () => {
-    const recipe = innerExtensionPointRecipeFactory()();
+    const recipe = innerStarterBrickRecipeFactory()();
 
     recipe.extensionPoints.push({
       ...recipe.extensionPoints[0],
@@ -336,12 +336,12 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("updates Recipe API version with single extension", async () => {
-    const extensionPoint = extensionPointDefinitionFactory({
+    const extensionPoint = starterBrickConfigFactory({
       apiVersion: "v2",
     });
 
     const extensionPointId = extensionPoint.metadata.id;
-    const recipe = innerExtensionPointRecipeFactory({
+    const recipe = innerStarterBrickRecipeFactory({
       extensionPointRef: extensionPointId as any,
     })({
       apiVersion: "v2",
@@ -388,16 +388,16 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("throws when API version mismatch and cannot update recipe", async () => {
-    const extensionPoint = extensionPointDefinitionFactory();
-    const recipe = versionedExtensionPointRecipeFactory({
+    const extensionPoint = starterBrickConfigFactory();
+    const recipe = versionedStarterBrickRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })({
       apiVersion: "v2",
       extensionPoints: [
-        extensionPointConfigFactory({
+        modComponentDefinitionFactory({
           id: extensionPoint.metadata.id,
         }),
-        extensionPointConfigFactory(),
+        modComponentDefinitionFactory(),
       ],
     });
 
@@ -622,7 +622,7 @@ function selectExtensionPoints(
 
 describe("buildRecipe", () => {
   test("Clean extension referencing extensionPoint registry package", async () => {
-    const extension = extensionFactory({
+    const extension = modComponentFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     }) as UnresolvedModComponent;
 
@@ -642,9 +642,9 @@ describe("buildRecipe", () => {
     const outputKey = validateOutputKey("pixiebrix");
 
     // Load the adapter for this extension
-    const extensionPoint = extensionPointDefinitionFactory();
+    const extensionPoint = starterBrickConfigFactory();
 
-    const extension = extensionFactory({
+    const extension = modComponentFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       services: [{ id: serviceId, outputKey, config: null }],
       extensionPointId: extensionPoint.metadata.id,
@@ -677,12 +677,12 @@ describe("buildRecipe", () => {
   test("Preserve distinct extensionPoint definitions", async () => {
     // Load the adapter for this extension
     const extensionPoints = [
-      extensionPointDefinitionFactory().definition,
-      extensionPointDefinitionFactory().definition,
+      starterBrickConfigFactory().definition,
+      starterBrickConfigFactory().definition,
     ];
 
     const extensions = extensionPoints.map((extensionPoint) => {
-      const extension = extensionFactory({
+      const extension = modComponentFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       }) as UnresolvedModComponent;
 
@@ -716,10 +716,10 @@ describe("buildRecipe", () => {
 
   test("Coalesce duplicate extensionPoint definitions", async () => {
     // Load the adapter for this extension
-    const extensionPoint = extensionPointDefinitionFactory().definition;
+    const extensionPoint = starterBrickConfigFactory().definition;
 
     const extensions = range(0, 2).map(() => {
-      const extension = extensionFactory({
+      const extension = modComponentFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       }) as UnresolvedModComponent;
 

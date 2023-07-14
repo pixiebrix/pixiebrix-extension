@@ -30,7 +30,7 @@ import {
 } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { type RootState } from "@/store/optionsStore";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
-import { cloudExtensionFactory } from "@/testUtils/factories/extensionFactories";
+import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useAllRecipes: jest.fn().mockReturnValue({ refetch: jest.fn() }),
@@ -61,7 +61,7 @@ afterEach(() => {
 
 describe("it renders", () => {
   test("default state", () => {
-    const extension = cloudExtensionFactory();
+    const extension = standaloneModDefinitionFactory();
 
     const rendered = render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {
@@ -84,7 +84,7 @@ describe("it renders", () => {
   });
 
   test("requires user scope", async () => {
-    const extension = cloudExtensionFactory();
+    const extension = standaloneModDefinitionFactory();
 
     const rendered = render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {
@@ -137,7 +137,7 @@ describe("it renders", () => {
         }),
       ]);
 
-      const extension = cloudExtensionFactory();
+      const extension = standaloneModDefinitionFactory();
 
       const rendered = render(
         <div>
@@ -176,7 +176,7 @@ describe("it renders", () => {
   );
 
   test("converts cloud extension", async () => {
-    const extension = cloudExtensionFactory();
+    const extension = standaloneModDefinitionFactory();
 
     (api.useGetAllCloudExtensionsQuery as jest.Mock).mockReturnValue({
       data: [extension],

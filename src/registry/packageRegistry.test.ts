@@ -24,7 +24,7 @@ import {
 import { produce } from "immer";
 import { type SemVerString } from "@/types/registryTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
 describe("localRegistry", () => {
   beforeEach(() => {
@@ -38,7 +38,7 @@ describe("localRegistry", () => {
   it("should sync packages for empty db", async () => {
     appApiMock
       .onGet("/api/registry/bricks/")
-      .reply(200, [recipeDefinitionFactory()]);
+      .reply(200, [modDefinitionFactory()]);
     await syncPackages();
     const recipes = await getByKinds(["recipe"]);
     expect(recipes).toHaveLength(1);
@@ -48,7 +48,7 @@ describe("localRegistry", () => {
   it("should sync packages", async () => {
     appApiMock
       .onGet("/api/registry/bricks/")
-      .replyOnce(200, [recipeDefinitionFactory()]);
+      .replyOnce(200, [modDefinitionFactory()]);
 
     await syncPackages();
 
@@ -61,7 +61,7 @@ describe("localRegistry", () => {
   });
 
   it("should return latest version", async () => {
-    const definition = recipeDefinitionFactory();
+    const definition = modDefinitionFactory();
     const updated = produce(definition, (draft) => {
       draft.metadata.version = "9.9.9" as SemVerString;
     });

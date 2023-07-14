@@ -21,18 +21,18 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
-  extensionFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories/extensionFactories";
+  modComponentFactory,
+  modComponentRecipeFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import {
-  recipeDefinitionFactory,
+  modDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Recipes
 const ID_FOO = validateRegistryId("test/recipe-foo");
-const recipeFoo: ModDefinition = recipeDefinitionFactory({
+const recipeFoo: ModDefinition = modDefinitionFactory({
   metadata: recipeMetadataFactory({
     id: ID_FOO,
     name: "Foo Recipe",
@@ -40,7 +40,7 @@ const recipeFoo: ModDefinition = recipeDefinitionFactory({
 });
 
 const ID_BAR = validateRegistryId("test/recipe-bar");
-const recipeBar: ModDefinition = recipeDefinitionFactory({
+const recipeBar: ModDefinition = modDefinitionFactory({
   metadata: recipeMetadataFactory({
     id: ID_BAR,
     name: "Bar Recipe",
@@ -49,10 +49,10 @@ const recipeBar: ModDefinition = recipeDefinitionFactory({
 
 // Extensions
 const ID_FOO_A = uuidv4();
-const installedFooA: ModComponentBase = extensionFactory({
+const installedFooA: ModComponentBase = modComponentFactory({
   id: ID_FOO_A,
   label: "A",
-  _recipe: installedRecipeMetadataFactory({
+  _recipe: modComponentRecipeFactory({
     id: ID_FOO,
   }),
 });
@@ -61,7 +61,7 @@ const ID_FOO_B = uuidv4();
 const dynamicFooB: ActionFormState = menuItemFormStateFactory({
   uuid: ID_FOO_B,
   label: "B",
-  recipe: installedRecipeMetadataFactory({
+  recipe: modComponentRecipeFactory({
     id: ID_FOO,
   }),
 });
@@ -73,10 +73,10 @@ const dynamicOrphanC: ActionFormState = menuItemFormStateFactory({
 });
 
 const ID_BAR_D = uuidv4();
-const installedBarD: ModComponentBase = extensionFactory({
+const installedBarD: ModComponentBase = modComponentFactory({
   id: ID_BAR_D,
   label: "D",
-  _recipe: installedRecipeMetadataFactory({
+  _recipe: modComponentRecipeFactory({
     id: ID_BAR,
   }),
 });
@@ -85,28 +85,28 @@ const ID_BAR_E = uuidv4();
 const dynamicBarE: ActionFormState = menuItemFormStateFactory({
   uuid: ID_BAR_E,
   label: "E",
-  recipe: installedRecipeMetadataFactory({
+  recipe: modComponentRecipeFactory({
     id: ID_BAR,
   }),
 });
 
 const ID_BAR_F = uuidv4();
-const installedBarF: ModComponentBase = extensionFactory({
+const installedBarF: ModComponentBase = modComponentFactory({
   id: ID_BAR_F,
   label: "F",
-  _recipe: installedRecipeMetadataFactory({
+  _recipe: modComponentRecipeFactory({
     id: ID_BAR,
   }),
 });
 
 const ID_ORPHAN_G = uuidv4();
-const installedOrphanG: ModComponentBase = extensionFactory({
+const installedOrphanG: ModComponentBase = modComponentFactory({
   id: ID_ORPHAN_G,
   label: "G",
 });
 
 const ID_ORPHAN_H = uuidv4();
-const installedOrphanH: ModComponentBase = extensionFactory({
+const installedOrphanH: ModComponentBase = modComponentFactory({
   id: ID_ORPHAN_H,
   label: "H",
 });

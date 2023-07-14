@@ -33,7 +33,7 @@ import {
   type SecretsConfig,
 } from "@/types/integrationTypes";
 import { setContext } from "@/testUtils/detectPageMock";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 
 jest.unmock("@/services/apiClient");
 setContext("background");
@@ -100,17 +100,17 @@ const requestConfig: AxiosRequestConfig = {
   method: "get",
 };
 
-const directServiceConfig = sanitizedServiceConfigurationFactory({
+const directServiceConfig = sanitizedIntegrationConfigFactory({
   proxy: false,
   serviceId: EXAMPLE_SERVICE_API,
 });
 
-const directTokenServiceConfig = sanitizedServiceConfigurationFactory({
+const directTokenServiceConfig = sanitizedIntegrationConfigFactory({
   proxy: false,
   serviceId: EXAMPLE_SERVICE_TOKEN_API,
 });
 
-const proxiedServiceConfig = sanitizedServiceConfigurationFactory({
+const proxiedServiceConfig = sanitizedIntegrationConfigFactory({
   proxy: true,
   serviceId: EXAMPLE_SERVICE_API,
 });

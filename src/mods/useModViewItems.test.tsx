@@ -29,9 +29,9 @@ import { type UnavailableMod } from "@/types/modTypes";
 import { selectUnavailableRecipe } from "@/mods/useMods";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
-  extensionFactory,
-  persistedExtensionFactory,
-} from "@/testUtils/factories/extensionFactories";
+  modComponentFactory,
+  activatedModComponentFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import { recipeFactory } from "@/testUtils/factories/recipeFactories";
 
 const axiosMock = new MockAdapter(axios);
@@ -42,7 +42,7 @@ describe("useModViewItems", () => {
   });
 
   it("creates entry for ModComponentBase", async () => {
-    const extension = extensionFactory() as ResolvedModComponent;
+    const extension = modComponentFactory() as ResolvedModComponent;
 
     const wrapper = renderHook(() => useModViewItems([extension]), {
       setupRedux(dispatch) {
@@ -64,7 +64,7 @@ describe("useModViewItems", () => {
 
   it("creates entry for recipe", async () => {
     const recipe = recipeFactory();
-    const extension = persistedExtensionFactory({
+    const extension = activatedModComponentFactory({
       _recipe: selectSourceRecipeMetadata(recipe),
     });
 
@@ -84,7 +84,7 @@ describe("useModViewItems", () => {
 
   it("creates for unavailable recipe", async () => {
     const recipe = recipeFactory();
-    const extension = persistedExtensionFactory({
+    const extension = activatedModComponentFactory({
       _recipe: selectSourceRecipeMetadata(recipe),
     });
 

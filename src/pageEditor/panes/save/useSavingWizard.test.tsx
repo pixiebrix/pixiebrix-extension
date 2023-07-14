@@ -40,7 +40,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
-import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
   menuItemFormStateFactory,
@@ -95,7 +95,7 @@ test("maintains wizard open state", () => {
     isLoading: false,
   });
 
-  const recipeMetadata = installedRecipeMetadataFactory(recipe.metadata);
+  const recipeMetadata = modComponentRecipeFactory(recipe.metadata);
   const element = formStateFactory({
     recipe: recipeMetadata,
   });
