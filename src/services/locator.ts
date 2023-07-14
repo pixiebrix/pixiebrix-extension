@@ -307,10 +307,8 @@ class LazyLocatorFactory {
       );
     }
 
-    const proxy = service.hasAuth && !match.local;
-
-    // Proxy configurations have their secrets removed, so can be empty on the client-side
-    if (isEmpty(match.config) && !proxy) {
+    // Proxied configurations have their secrets removed, so can be empty on the client-side
+    if (isEmpty(match.config) && !match.proxy && service.hasAuth) {
       console.warn(`Config ${authId} for service ${serviceId} is empty`);
     }
 
@@ -318,15 +316,14 @@ class LazyLocatorFactory {
       currentTimestamp: Date.now(),
       updateTimestamp: this.updateTimestamp,
       id: authId,
-      config: match.config,
-      proxy,
+      proxy: match.proxy,
     });
 
     return {
       _sanitizedIntegrationConfigBrand: undefined,
       id: authId,
       serviceId,
-      proxy,
+      proxy: match.proxy,
       config: excludeSecrets(service, match.config),
     };
   }

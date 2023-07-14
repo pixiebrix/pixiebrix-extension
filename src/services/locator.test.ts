@@ -18,23 +18,48 @@
 import { appApiMock } from "@/testUtils/appApiMock";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 import LazyLocatorFactory from "@/services/locator";
-import serviceRegistry from "@/services/registry";
-import { Integration } from "@/types/serviceTypes";
+import controlRoomTokenService from "@contrib/services/automation-anywhere.yaml";
 import { fromJS } from "@/services/factory";
+import serviceRegistry from "@/services/registry";
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- test file
+const integration = fromJS(controlRoomTokenService as any);
+const locator = new LazyLocatorFactory();
+
+jest.mock("@/background/messenger/api", () => {
+  const actual = jest.requireActual("@/background/messenger/api");
+  return {
+    ...actual,
+    registry: {
+      find: jest.fn().mockRejectedValue(new Error("Implement mock in test")),
+    },
+  };
+});
 
 beforeEach(() => {
   appApiMock.reset();
+  serviceRegistry.clear();
 });
 
 describe("locator", () => {
   it("sets proxy: true for remote configurations", async () => {
-    const config = remoteIntegrationConfigurationFactory({ pushdown: false });
+    serviceRegistry.register([integration]);
 
-    serviceRegistry.register([fromJS(config.service)]);
+    const config = remoteIntegrationConfigurationFactory({
+      service: {
+        name: integration.id,
+        config: {
+          metadata: {
+            id: integration.id,
+            name: integration.name,
+          },
+        },
+      },
+      pushdown: false,
+    });
 
     appApiMock.onGet("/api/services/shared/").reply(200, [config]);
 
-    const locator = new LazyLocatorFactory();
     await locator.refreshRemote();
 
     const option = await locator.locate(config.service.name, config.id);
@@ -42,17 +67,30 @@ describe("locator", () => {
   });
 
   it("sets proxy: false for remote pushdown configurations", async () => {
-    const config = remoteIntegrationConfigurationFactory({ pushdown: true });
+    serviceRegistry.register([integration]);
+
+    const config = remoteIntegrationConfigurationFactory({
+      service: {
+        name: integration.id,
+        config: {
+          metadata: {
+            id: integration.id,
+            name: integration.name,
+          },
+        },
+      },
+      pushdown: true,
+    });
 
     appApiMock.onGet("/api/services/shared/").reply(200, [config]);
 
-    const locator = new LazyLocatorFactory();
     await locator.refreshRemote();
 
     const option = await locator.locate(
       config.service.config.metadata.id,
       config.id
     );
+
     expect(option.proxy).toBe(false);
   });
 });

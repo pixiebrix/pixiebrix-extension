@@ -40,9 +40,6 @@ export const remoteIntegrationServiceFactory = define<
       id: validateRegistryId(`@test/integration-${n}`),
       name: `Test Integration ${n}`,
     },
-    inputSchema: {
-      properties: {},
-    },
   }),
   name: (n: number) => validateRegistryId(`@test/integration-${n}`),
 });
@@ -52,8 +49,9 @@ export const remoteIntegrationConfigurationFactory =
     id: uuidSequence,
     organization: null,
     label: (n: number) => `Configuration ${n}`,
-    config: {
-      _sanitizedConfigBrand: null,
-    },
+    config: () =>
+      ({
+        _sanitizedConfigBrand: null,
+      } as SanitizedConfig),
     service: remoteIntegrationServiceFactory,
   });

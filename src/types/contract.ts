@@ -145,6 +145,7 @@ export type RemoteIntegrationConfig = Except<
     "config"
   > & {
     name: RegistryId;
+    // Only pick relevant types for the extension
     config: { metadata: Metadata };
   };
 
