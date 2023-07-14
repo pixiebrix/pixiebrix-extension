@@ -17,7 +17,7 @@
 
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { createSelector } from "reselect";
-import { type UnresolvedModComponent } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty } from "lodash";
 

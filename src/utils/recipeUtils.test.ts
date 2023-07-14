@@ -23,7 +23,7 @@ import {
   extensionPointConfigFactory,
   recipeFactory,
 } from "@/testUtils/factories/recipeFactories";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 
 extensionPointRegistry.lookup = jest.fn();
 

@@ -19,7 +19,7 @@ import {
   type Analysis,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";

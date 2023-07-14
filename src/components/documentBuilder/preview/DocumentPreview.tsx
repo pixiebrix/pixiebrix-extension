@@ -37,7 +37,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 
 type DocumentPreviewProps = {

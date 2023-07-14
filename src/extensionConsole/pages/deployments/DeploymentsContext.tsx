@@ -29,7 +29,7 @@ import { getUID, services } from "@/background/messenger/api";
 import { getExtensionVersion, reloadIfNewVersionIsReady } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "redux";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";

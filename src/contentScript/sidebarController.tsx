@@ -31,7 +31,7 @@ import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ModComponentRef } from "@/types/extensionTypes";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 import type {
   ActivatePanelOptions,
   ActivateModPanelEntry,
@@ -40,7 +40,7 @@ import type {
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { getTemporaryPanelSidebarEntries } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
 
 export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";

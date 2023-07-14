@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { echoBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
 import { type ApiVersion } from "@/types/runtimeTypes";

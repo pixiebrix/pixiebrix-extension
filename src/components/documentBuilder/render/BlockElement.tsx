@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from "react";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { useAsyncState } from "@/hooks/common";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";

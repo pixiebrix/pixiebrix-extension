@@ -22,7 +22,7 @@ import "@/extensionContext";
 // Normal imports
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";

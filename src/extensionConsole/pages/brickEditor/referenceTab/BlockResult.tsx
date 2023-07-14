@@ -28,7 +28,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { find } from "@/registry/localRegistry";
+import { find } from "@/registry/packageRegistry";
 import { useAsyncState } from "@/hooks/common";
 import { type Organization } from "@/types/contract";
 import { type UUID } from "@/types/stringTypes";

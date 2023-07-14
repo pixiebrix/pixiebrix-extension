@@ -20,7 +20,7 @@ import { proxyService } from "@/background/messenger/api";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 
 const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 

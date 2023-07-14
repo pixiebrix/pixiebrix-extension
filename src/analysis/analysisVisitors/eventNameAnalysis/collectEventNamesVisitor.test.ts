@@ -16,7 +16,7 @@
  */
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import CustomEventEffect from "@/blocks/effects/customEvent";
+import CustomEventEffect from "@/bricks/effects/customEvent";
 import CollectNamesVisitor from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 

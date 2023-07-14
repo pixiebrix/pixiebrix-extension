@@ -22,11 +22,11 @@ import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import {
   type ContextMenuConfig,
   ContextMenuStarterBrickABC,
-} from "@/extensionPoints/contextMenu";
+} from "@/starterBricks/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { allSettledValues, memoizeUntilSettled } from "@/utils";
@@ -34,7 +34,7 @@ import { type UUID } from "@/types/stringTypes";
 import {
   type ModComponentBase,
   type ResolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 
 const MENU_PREFIX = "pixiebrix-";
 

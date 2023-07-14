@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import PipelineVisitor, {
   type VisitBlockExtra,
-} from "@/blocks/PipelineVisitor";
-import CustomEventEffect from "@/blocks/effects/customEvent";
+} from "@/bricks/PipelineVisitor";
+import CustomEventEffect from "@/bricks/effects/customEvent";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 export type EventNameAnalysisResult = {
   /**

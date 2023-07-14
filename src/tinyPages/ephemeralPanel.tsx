@@ -22,10 +22,10 @@ import "@/extensionContext";
 
 import React from "react";
 import { render } from "react-dom";
-import EphemeralPanel from "@/blocks/transformers/temporaryInfo/EphemeralPanel";
+import EphemeralPanel from "@/bricks/transformers/temporaryInfo/EphemeralPanel";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerMessenger from "@/blocks/transformers/temporaryInfo/messenger/registration";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerMessenger from "@/bricks/transformers/temporaryInfo/messenger/registration";
 import "iframe-resizer/js/iframeResizer.contentWindow";
 
 function init(): void {

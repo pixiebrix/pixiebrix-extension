@@ -20,7 +20,7 @@ import { useMemo, useState } from "react";
 import genericOptionsFactory, {
   type BlockOptionProps,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { useAsyncEffect } from "use-async-effect";
 import reportError from "@/telemetry/reportError";
 import optionsRegistry from "@/components/fields/optionsRegistry";

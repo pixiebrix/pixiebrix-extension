@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -28,7 +28,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { uuidv4 } from "@/types/helpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type Integration } from "@/types/serviceTypes";
+import { type Integration } from "@/types/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";

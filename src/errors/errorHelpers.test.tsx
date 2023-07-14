@@ -29,7 +29,7 @@ import {
 } from "@/errors/errorHelpers";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
-import { InputValidationError, OutputValidationError } from "@/blocks/errors";
+import { InputValidationError, OutputValidationError } from "@/bricks/errors";
 import { configureStore, isPlainObject } from "@reduxjs/toolkit";
 import axios, { type AxiosError } from "axios";
 import {

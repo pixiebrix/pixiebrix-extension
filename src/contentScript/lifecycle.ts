@@ -16,12 +16,12 @@
  */
 
 import { loadOptions } from "@/store/extensionsStorage";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { logPromiseDuration, pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
-import { testMatchPatterns } from "@/blocks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
 import { compact, groupBy, intersection, once, uniq } from "lodash";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
@@ -31,12 +31,12 @@ import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
-import { type ResolvedModComponent } from "@/types/extensionTypes";
-import { type SidebarStarterBrickABC } from "@/extensionPoints/sidebarExtension";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
 
 /**
  * True if handling the initial page load.

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPosition } from "@/blocks/types";
+import { type BrickPosition } from "@/bricks/types";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import { validateRegistryId } from "@/types/helpers";
-import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 
 const position: BrickPosition = {
   path: "test.path",

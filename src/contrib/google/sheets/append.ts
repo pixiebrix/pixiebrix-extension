@@ -27,7 +27,7 @@ import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/handlers";
 

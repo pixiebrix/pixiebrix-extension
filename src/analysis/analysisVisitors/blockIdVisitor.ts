@@ -17,9 +17,9 @@
 
 import PipelineVisitor, {
   type VisitBlockExtra,
-} from "@/blocks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { castArray } from "lodash";
 
 /**

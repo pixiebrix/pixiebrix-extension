@@ -29,7 +29,7 @@ import {
 } from "@/pageEditor/uiState/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 

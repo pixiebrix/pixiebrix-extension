@@ -20,7 +20,7 @@ import {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import AsyncSelect from "react-select/async";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { type UnknownObject } from "@/types/objectTypes";

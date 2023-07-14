@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Permissions } from "webextension-polyfill";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { containsPermissions } from "@/background/messenger/api";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";

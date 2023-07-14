@@ -25,7 +25,7 @@ import { isIDBConnectionError, isIDBQuotaError } from "@/utils/idbUtils";
 import useUserAction from "@/hooks/useUserAction";
 import { clearLogs, recreateDB as recreateLogDB } from "@/telemetry/logging";
 import { clearTraces, recreateDB as recreateTraceDB } from "@/telemetry/trace";
-import { recreateDB as recreateBrickDB } from "@/registry/localRegistry";
+import { recreateDB as recreateBrickDB } from "@/registry/packageRegistry";
 import {
   recreateDB as recreateEventDB,
   clear as clearEvents,

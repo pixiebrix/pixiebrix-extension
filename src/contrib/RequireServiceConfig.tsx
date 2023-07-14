@@ -21,7 +21,7 @@ import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import { Button } from "react-bootstrap";
 import { extractServiceIds } from "@/services/serviceUtils";
 import { type Schema } from "@/types/schemaTypes";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 
 type ConfigProps = {
   serviceSchema: Schema;

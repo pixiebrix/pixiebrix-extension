@@ -17,9 +17,9 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
-import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   extensionFactory,
   installedRecipeMetadataFactory,

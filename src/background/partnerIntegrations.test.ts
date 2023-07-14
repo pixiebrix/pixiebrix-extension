@@ -21,8 +21,8 @@ import {
 } from "@/background/partnerIntegrations";
 import { readRawConfigurations } from "@/services/registry";
 import { fetch } from "@/hooks/fetch";
-import controlRoomTokenService from "@contrib/services/automation-anywhere.yaml";
-import controlRoomOAuthService from "@contrib/services/automation-anywhere-oauth2.yaml";
+import controlRoomTokenService from "@contrib/integrations/automation-anywhere.yaml";
+import controlRoomOAuthService from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { locator as serviceLocator } from "@/background/locator";
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
@@ -35,7 +35,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { syncRemotePackages } from "@/baseRegistry";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IntegrationConfig } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 
 const serviceMap = new Map([
   [(controlRoomTokenService as any).metadata.id, controlRoomTokenService],

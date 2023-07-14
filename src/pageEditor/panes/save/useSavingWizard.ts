@@ -43,12 +43,12 @@ import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import {
   type ModComponentBase,
   type ActivatedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions: optionsActions } = extensionsSlice;

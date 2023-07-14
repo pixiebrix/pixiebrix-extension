@@ -25,8 +25,8 @@ import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
-jest.mock("@/pageEditor/extensionPoints/adapter", () => {
-  const actual = jest.requireActual("@/pageEditor/extensionPoints/adapter");
+jest.mock("@/pageEditor/starterBricks/adapter", () => {
+  const actual = jest.requireActual("@/pageEditor/starterBricks/adapter");
   return {
     ...actual,
     selectType: jest.fn().mockResolvedValue("menuItem"),

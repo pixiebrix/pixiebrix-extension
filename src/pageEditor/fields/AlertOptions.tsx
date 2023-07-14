@@ -21,7 +21,7 @@ import { joinName } from "@/utils";
 import { partial } from "lodash";
 import { useField } from "formik";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { ALERT_PERSISTENT_OPTION, AlertEffect } from "@/blocks/effects/alert";
+import { ALERT_PERSISTENT_OPTION, AlertEffect } from "@/bricks/effects/alert";
 import { type Schema } from "@/types/schemaTypes";
 
 const AlertOptions: React.FC<BlockOptionProps> = ({ name, configKey }) => {

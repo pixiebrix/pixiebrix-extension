@@ -29,7 +29,7 @@ import { refreshRegistries } from "./refreshRegistries";
 import {
   type ModComponentBase,
   type ActivatedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";

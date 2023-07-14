@@ -26,13 +26,13 @@ import {
   type EditorState,
 } from "@/pageEditor/pageEditorTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import {
   echoBrick,
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { defaultBlockConfig } from "@/blocks/util";
+import { defaultBlockConfig } from "@/bricks/util";
 import { validateRegistryId } from "@/types/helpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 

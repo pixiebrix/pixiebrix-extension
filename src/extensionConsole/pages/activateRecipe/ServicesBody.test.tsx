@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useAuthOptions } from "@/hooks/auth";
-import { type IntegrationDefinition } from "@/types/serviceTypes";
+import { type IntegrationDefinition } from "@/types/integrationTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";

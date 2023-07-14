@@ -18,7 +18,7 @@
 import useAsyncState from "@/hooks/useAsyncState";
 import { services as serviceLocator } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type IntegrationConfigPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type AsyncState } from "@/types/sliceTypes";

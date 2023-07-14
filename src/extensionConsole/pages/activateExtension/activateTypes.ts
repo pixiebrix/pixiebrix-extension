@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
 export type FormState = {
   services: IntegrationDependency[];

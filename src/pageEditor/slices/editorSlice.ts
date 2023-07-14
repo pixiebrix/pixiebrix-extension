@@ -22,8 +22,8 @@ import {
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type BrickConfig } from "@/blocks/types";
-import { type StarterBrickType } from "@/extensionPoints/types";
+import { type BrickConfig } from "@/bricks/types";
+import { type StarterBrickType } from "@/starterBricks/types";
 import {
   type AddBlockLocation,
   type EditorRootState,
@@ -55,7 +55,7 @@ import {
 import {
   type ModComponentFormState,
   isQuickBarExtensionPoint,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
   activateElement,
@@ -69,7 +69,7 @@ import {
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
-import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
+import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
@@ -77,9 +77,9 @@ import {
 } from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/extensionPoints/quickBarExtension";
-import { testMatchPatterns } from "@/blocks/available";
-import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
+import { testMatchPatterns } from "@/bricks/available";
+import { type BaseExtensionPointState } from "@/pageEditor/starterBricks/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
@@ -92,7 +92,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
 export const initialState: EditorState = {

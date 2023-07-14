@@ -27,8 +27,8 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import type {
   StarterBrickDefinition,
   StarterBrickType,
-} from "@/extensionPoints/types";
-import extensionPointRegistry from "@/extensionPoints/registry";
+} from "@/starterBricks/types";
+import extensionPointRegistry from "@/starterBricks/registry";
 
 /**
  * Return a valid recipe id, or empty string in case of error.

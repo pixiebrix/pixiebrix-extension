@@ -24,7 +24,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/handlers";

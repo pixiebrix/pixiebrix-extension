@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { AddUpdateCompany, AddUpdateContact } from "./hubspot/upsert";
 import { AddOrganization, AddPerson } from "./pipedrive/create";
 import { ResolvePerson } from "./pipedrive/resolvers";

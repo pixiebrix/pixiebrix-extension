@@ -23,7 +23,7 @@ import {
 } from "@/testUtils/factories/stringFactories";
 import objectHash from "object-hash";
 import { type RenderedArgs } from "@/types/runtimeTypes";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
 
 const TEST_BLOCK_ID = validateRegistryId("testing/block-id");

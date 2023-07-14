@@ -18,7 +18,7 @@
 import {
   type ActivatedModComponent,
   type UnresolvedModComponent,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 
 /**
  * @deprecated use PersistedOptionsState - this is only used in the migration

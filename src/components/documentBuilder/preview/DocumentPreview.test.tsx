@@ -25,15 +25,15 @@ import { fireEvent } from "@testing-library/react";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import userEvent from "@testing-library/user-event";
 import { render } from "@/pageEditor/testHelpers";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 

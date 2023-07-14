@@ -17,7 +17,7 @@
 
 import { compact, groupBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";

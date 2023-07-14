@@ -18,18 +18,18 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import {
   fromJS,
   type TriggerConfig,
   type TriggerDefinition,
-} from "@/extensionPoints/triggerExtension";
+} from "@/starterBricks/triggerExtension";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type ActivatedModComponent } from "@/types/extensionTypes";
-import { type BrickPipeline } from "@/blocks/types";
-import { RootReader, tick } from "@/extensionPoints/extensionPointTestUtils";
-import blockRegistry from "@/blocks/registry";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { type BrickPipeline } from "@/bricks/types";
+import { RootReader, tick } from "@/starterBricks/extensionPointTestUtils";
+import blockRegistry from "@/bricks/registry";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -86,7 +86,7 @@ describe("lifecycle", () => {
       }));
 
       lifecycleModule = require("@/contentScript/lifecycle");
-      extensionPointRegistry = require("@/extensionPoints/registry").default;
+      extensionPointRegistry = require("@/starterBricks/registry").default;
       loadOptionsMock = require("@/store/extensionsStorage").loadOptions;
     });
 

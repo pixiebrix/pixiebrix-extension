@@ -50,7 +50,7 @@ import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { selectSourceRecipeMetadata } from "@/types/extensionTypes";
+import { selectSourceRecipeMetadata } from "@/types/modComponentTypes";
 
 type ConvertModFormState = {
   blueprintId: RegistryId;

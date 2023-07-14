@@ -17,14 +17,14 @@
 
 import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   contextMenuFormStateFactory,

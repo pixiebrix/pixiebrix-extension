@@ -25,17 +25,17 @@ import {
   pick,
   pickBy,
 } from "lodash";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import blockRegistry from "@/blocks/registry";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { fromJS as blockFactory } from "@/blocks/transformers/brickFactory";
+import extensionPointRegistry from "@/starterBricks/registry";
+import blockRegistry from "@/bricks/registry";
+import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
+import { fromJS as blockFactory } from "@/bricks/transformers/brickFactory";
 import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
   type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
-import { type ReaderConfig } from "@/blocks/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type ReaderConfig } from "@/bricks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
   INNER_SCOPE,
@@ -45,8 +45,8 @@ import {
 import {
   type ModComponentBase,
   type ResolvedModComponent,
-} from "@/types/extensionTypes";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+} from "@/types/modComponentTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Brick } from "@/types/brickTypes";
 
 type InnerExtensionPoint = Pick<StarterBrickConfig, "definition" | "kind">;

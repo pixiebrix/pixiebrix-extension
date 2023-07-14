@@ -26,7 +26,7 @@ import {
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
 import { type UnknownObject } from "@/types/objectTypes";
-import { defaultBlockConfig } from "@/blocks/util";
+import { defaultBlockConfig } from "@/bricks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import styles from "./ArrayWidget.module.scss";

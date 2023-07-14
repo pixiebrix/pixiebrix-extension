@@ -19,7 +19,7 @@ import axios, { type AxiosInstance } from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getAuthHeaders } from "@/auth/token";
 import { isAbsoluteUrl } from "@/utils";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,

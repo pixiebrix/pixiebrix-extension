@@ -41,7 +41,10 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { getValidationErrMessages } from "@/components/fields/fieldUtils";
-import { type Integration, type IntegrationConfig } from "@/types/serviceTypes";
+import {
+  type Integration,
+  type IntegrationConfig,
+} from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 

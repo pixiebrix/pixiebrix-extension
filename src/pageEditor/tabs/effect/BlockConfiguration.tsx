@@ -29,14 +29,14 @@ import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BrickConfig, type BrickWindow } from "@/blocks/types";
+import { type BrickConfig, type BrickWindow } from "@/bricks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getType from "@/runtime/getType";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { inputProperties } from "@/helpers";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 

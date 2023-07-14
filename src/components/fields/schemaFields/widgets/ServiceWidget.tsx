@@ -47,7 +47,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
-import { type IntegrationDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 
 export type ServiceWidgetProps = SchemaFieldProps & {

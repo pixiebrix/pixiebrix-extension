@@ -27,13 +27,13 @@ import { validateRegistryId } from "@/types/helpers";
 import {
   type MenuDefinition,
   RemoteMenuItemExtensionPoint,
-} from "@/extensionPoints/menuItemExtension";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+} from "@/starterBricks/menuItemExtension";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import {
   type QuickBarDefinition,
   RemoteQuickBarExtensionPoint,
-} from "@/extensionPoints/quickBarExtension";
+} from "@/starterBricks/quickBarExtension";
 import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,

@@ -17,7 +17,7 @@
 
 import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
-import { testMatchPatterns } from "@/blocks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
 import { type AxiosRequestConfig } from "axios";
@@ -39,7 +39,7 @@ import {
   type IntegrationDefinition,
   type TokenAuthenticationDefinition,
   type TokenContext,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
 
 /**

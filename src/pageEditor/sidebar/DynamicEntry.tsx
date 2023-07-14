@@ -36,7 +36,7 @@ import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveElement,
   selectActiveRecipeId,

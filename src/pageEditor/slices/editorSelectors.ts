@@ -29,9 +29,9 @@ import {
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { deserializeError } from "serialize-error";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";

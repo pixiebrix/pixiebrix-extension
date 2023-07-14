@@ -23,7 +23,7 @@ import {
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeExtensionForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
-import { type UnresolvedModComponent } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 

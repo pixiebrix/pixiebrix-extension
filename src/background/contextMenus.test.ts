@@ -19,15 +19,15 @@ import {
   preloadContextMenus,
   ensureContextMenu,
 } from "@/background/contextMenus";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import {
   type ContextMenuConfig,
   fromJS,
   type MenuDefinition,
-} from "@/extensionPoints/contextMenu";
+} from "@/starterBricks/contextMenu";
 import * as backgroundApi from "@/background/messenger/api";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
-import { type ModComponentBase } from "@/types/extensionTypes";
+import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
 import { setContext } from "@/testUtils/detectPageMock";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";

@@ -17,7 +17,7 @@
 
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";

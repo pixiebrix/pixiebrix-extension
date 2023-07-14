@@ -17,7 +17,7 @@
 
 import React from "react";
 import BrickDetail from "./BrickDetail";
-import { TableRenderer } from "@/blocks/renderers/table";
+import { TableRenderer } from "@/bricks/renderers/table";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";

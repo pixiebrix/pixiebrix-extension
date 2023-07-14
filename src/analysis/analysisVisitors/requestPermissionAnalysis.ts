@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { GetAPITransformer } from "@/blocks/transformers/httpGet";
-import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isTemplateString } from "@/pageEditor/extensionPoints/upgrade";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { GetAPITransformer } from "@/bricks/transformers/httpGet";
+import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { isTemplateString } from "@/pageEditor/starterBricks/upgrade";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";

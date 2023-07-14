@@ -32,7 +32,7 @@ import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
-import { type SubmitPanelAction } from "@/blocks/errors";
+import { type SubmitPanelAction } from "@/bricks/errors";
 import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
 import { useDispatch, useSelector } from "react-redux";
 import {

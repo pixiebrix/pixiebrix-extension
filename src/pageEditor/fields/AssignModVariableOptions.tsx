@@ -25,8 +25,8 @@ import { type Schema } from "@/types/schemaTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getPageState } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import AssignModVariable from "@/blocks/effects/assignModVariable";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { type UnknownObject } from "@/types/objectTypes";
 
 const AssignModVariableOptions: React.FC<BlockOptionProps> = ({

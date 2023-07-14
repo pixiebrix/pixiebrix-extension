@@ -17,7 +17,7 @@
 
 import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import EmotionShadowRoot from "react-shadow/emotion";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import {
@@ -34,7 +34,7 @@ import { useAsyncEffect } from "use-async-effect";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { type SubmitPanelAction } from "@/blocks/errors";
+import { type SubmitPanelAction } from "@/bricks/errors";
 import { type RegistryId } from "@/types/registryTypes";
 import { type RendererOutput } from "@/types/runtimeTypes";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";

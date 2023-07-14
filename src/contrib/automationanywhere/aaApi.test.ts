@@ -23,7 +23,7 @@ import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/con
 import {
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn(),

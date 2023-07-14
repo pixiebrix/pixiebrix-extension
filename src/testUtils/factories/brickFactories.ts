@@ -17,7 +17,7 @@
 
 import { define, derive, type FactoryConfig } from "cooky-cutter";
 import { type Brick } from "@/types/brickTypes";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";

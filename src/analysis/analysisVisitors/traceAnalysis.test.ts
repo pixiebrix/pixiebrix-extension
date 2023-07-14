@@ -18,7 +18,7 @@
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import { serializeError } from "serialize-error";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
-import { JQTransformer } from "@/blocks/transformers/jq";
+import { JQTransformer } from "@/bricks/transformers/jq";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RenderedArgs } from "@/types/runtimeTypes";
 

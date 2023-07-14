@@ -47,7 +47,7 @@ import {
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
 import { type AxiosRequestConfig } from "axios";
-import { type SanitizedIntegrationConfig } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room

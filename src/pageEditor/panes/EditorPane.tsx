@@ -28,7 +28,7 @@ import { Formik } from "formik";
 import Effect from "@/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";
 import { logActions } from "@/components/logViewer/logSlice";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveElement,
   selectSelectionSeq,

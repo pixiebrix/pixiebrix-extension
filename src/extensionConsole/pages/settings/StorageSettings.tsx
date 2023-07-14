@@ -21,7 +21,7 @@ import { round } from "lodash";
 import {
   count as registrySize,
   recreateDB as recreateBrickDB,
-} from "@/registry/localRegistry";
+} from "@/registry/packageRegistry";
 import {
   clearLogs,
   count as logSize,

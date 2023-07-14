@@ -22,7 +22,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import {
   type RendererErrorPayload,

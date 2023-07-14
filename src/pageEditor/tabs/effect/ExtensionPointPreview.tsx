@@ -22,7 +22,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { runExtensionPointReader } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,7 +30,7 @@ import AsyncButton from "@/components/AsyncButton";
 import {
   type ModComponentFormState,
   type TriggerFormState,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 

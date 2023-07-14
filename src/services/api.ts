@@ -43,7 +43,7 @@ import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { serializeError } from "serialize-error";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { type IntegrationDefinition } from "@/types/serviceTypes";
+import { type IntegrationDefinition } from "@/types/integrationTypes";
 import {
   type ModDefinition,
   type UnsavedModDefinition,
