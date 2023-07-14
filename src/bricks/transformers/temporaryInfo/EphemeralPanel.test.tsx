@@ -29,7 +29,7 @@ import {
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 jest.mock(
-  "@/blocks/transformers/temporaryInfo/useTemporaryPanelDefinition",
+  "@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition",
   () => ({
     __esModule: true,
     default: jest.fn(),

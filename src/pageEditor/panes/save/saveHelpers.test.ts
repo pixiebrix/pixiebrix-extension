@@ -64,9 +64,9 @@ import {
 
 jest.mock("@/background/contextMenus");
 
-jest.mock("@/pageEditor/extensionPoints/base", () => ({
+jest.mock("@/pageEditor/starterBricks/base", () => ({
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Wrong
-  ...(jest.requireActual("@/pageEditor/extensionPoints/base") as UnknownObject),
+  ...(jest.requireActual("@/pageEditor/starterBricks/base") as UnknownObject),
   lookupExtensionPoint: jest.fn(),
 }));
 

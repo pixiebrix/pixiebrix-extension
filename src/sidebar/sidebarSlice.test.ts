@@ -39,7 +39,7 @@ jest.mock("@/contentScript/messenger/api", () => ({
   cancelForm: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock("@/blocks/transformers/temporaryInfo/messenger/api", () => ({
+jest.mock("@/bricks/transformers/temporaryInfo/messenger/api", () => ({
   updateTemporaryPanel: jest.fn().mockResolvedValue(undefined),
 }));
 

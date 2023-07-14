@@ -61,7 +61,7 @@ import { unary } from "lodash";
   (path) => `chrome-extension://abc/${path}`
 );
 
-jest.mock("@/blocks/transformers/ephemeralForm/modalUtils", () => ({
+jest.mock("@/bricks/transformers/ephemeralForm/modalUtils", () => ({
   showModal: jest.fn(),
 }));
 const showModalMock = jest.mocked(showModal);
@@ -76,7 +76,7 @@ const updateTemporarySidebarPanelMock = jest.mocked(
   updateTemporarySidebarPanel
 );
 
-jest.mock("@/blocks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
+jest.mock("@/bricks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
   registerEmptyTemporaryPanel: jest.fn(),
   waitForTemporaryPanel: jest.fn(),
   stopWaitingForTemporaryPanels: jest.fn(),

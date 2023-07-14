@@ -60,7 +60,7 @@ jest.mocked(services.locate).mockResolvedValue(
   })
 );
 
-jest.mock("@/blocks/registry", () => ({
+jest.mock("@/bricks/registry", () => ({
   __esModule: true,
   default: {
     lookup: jest.fn().mockResolvedValue({
@@ -370,7 +370,7 @@ describe("Collecting available vars", () => {
             extension.extension.blockPipeline[0].id,
             {
               block: {
-                // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
+                // HtmlReader's output schema, see @/bricks/readers/HtmlReader.ts
                 outputSchema,
               },
             },
@@ -385,7 +385,7 @@ describe("Collecting available vars", () => {
 
     test("reads output schema of a block when defined", async () => {
       const secondBlockKnownVars = await runAnalysisWithOutputSchema(
-        // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
+        // HtmlReader's output schema, see @/bricks/readers/HtmlReader.ts
         {
           $schema: "https://json-schema.org/draft/2019-09/schema#",
           type: "object",
@@ -419,7 +419,7 @@ describe("Collecting available vars", () => {
 
     test("supports output schema with no properties", async () => {
       const secondBlockKnownVars = await runAnalysisWithOutputSchema(
-        // FormData's output schema, see @/blocks/transformers/FormData.ts
+        // FormData's output schema, see @/bricks/transformers/FormData.ts
         {
           $schema: "https://json-schema.org/draft/2019-09/schema#",
           type: "object",
@@ -480,7 +480,7 @@ describe("Collecting available vars", () => {
 
     test("supports array of objects", async () => {
       const secondBlockKnownVars = await runAnalysisWithOutputSchema(
-        // PageSemanticReader's output schema, see @/blocks/readers/PageSemanticReader.ts
+        // PageSemanticReader's output schema, see @/bricks/readers/PageSemanticReader.ts
         {
           $schema: "https://json-schema.org/draft/2019-09/schema#",
           type: "object",

@@ -86,7 +86,7 @@ describe("lifecycle", () => {
       }));
 
       lifecycleModule = require("@/contentScript/lifecycle");
-      extensionPointRegistry = require("@/extensionPoints/registry").default;
+      extensionPointRegistry = require("@/starterBricks/registry").default;
       loadOptionsMock = require("@/store/extensionsStorage").loadOptions;
     });
 
