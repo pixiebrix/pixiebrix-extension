@@ -444,9 +444,6 @@ export interface paths {
     /** @description Endpoint for recording custom user telemetry via service account, e.g., from Zapier. */
     post: operations["createExternalEvent"];
   };
-  "/api/organizations/{organization_pk}/compliance-auth-token/": {
-    put: operations["complianceAuthTokenOrganization"];
-  };
   "/api/deployments/{deployment_pk}/groups/{id}/": {
     delete: operations["destroyDeploymentPermission"];
   };
@@ -492,7 +489,9 @@ export interface components {
         label?: string;
       };
       action_type: string;
-      data?: Record<string, unknown> | null;
+      data?: {
+        [key: string]: unknown;
+      } | null;
       /** Format: date-time */
       timestamp?: string;
     };
@@ -784,7 +783,9 @@ export interface components {
         readonly version?: string;
         readonly package_id: string;
         readonly name: string;
-        readonly config?: string;
+        readonly config?: {
+          [key: string]: unknown;
+        };
       };
       bindings?: readonly {
         /** Format: uuid */
@@ -831,7 +832,9 @@ export interface components {
         readonly version?: string;
         readonly package_id: string;
         readonly name: string;
-        readonly config?: string;
+        readonly config?: {
+          [key: string]: unknown;
+        };
       };
       bindings?: readonly {
         /** Format: uuid */
@@ -1102,6 +1105,7 @@ export interface components {
         listing: string;
         /** @description A plain-text caption for the asset */
         caption?: string | null;
+        /** Format: uri */
         url?: string;
         /** @description The order in which the asset will appear in the listing */
         order?: number;
@@ -1623,6 +1627,19 @@ export interface components {
       user_agent_extension_versions: string[];
       request_urls: string[];
     };
+    PackageVersionUpdates: {
+      updates: {
+        backwards_compatible: {
+          apiVersion: string;
+          kind: string;
+          metadata: {
+            [key: string]: unknown;
+          };
+        };
+        name: string;
+        backwards_incompatible: boolean;
+      }[];
+    };
     DatabaseExportRequest: {
       name: string;
       databases: string[];
@@ -1836,9 +1853,16 @@ export interface operations {
     };
     responses: {
       200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/audit/groups/{id}/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/audit/groups/{id}/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/audit/groups/{id}/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/audit/groups/{id}/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
         content: {
-          "application/json": components["schemas"]["AuditEvent"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["AuditEvent"][];
+          "application/json; version=2.0": components["schemas"]["AuditEvent"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["AuditEvent"][];
         };
       };
     };
@@ -1857,9 +1881,16 @@ export interface operations {
     };
     responses: {
       200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/audit/deployments/{id}/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/audit/deployments/{id}/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/audit/deployments/{id}/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/audit/deployments/{id}/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
         content: {
-          "application/json": components["schemas"]["AuditEvent"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["AuditEvent"][];
+          "application/json; version=2.0": components["schemas"]["AuditEvent"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["AuditEvent"][];
         };
       };
     };
@@ -1989,9 +2020,16 @@ export interface operations {
     };
     responses: {
       200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/extension-points/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/extension-points/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/extension-points/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/extension-points/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
         content: {
-          "application/json": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"][];
+          "application/json; version=2.0": components["schemas"]["PackageConfigList"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageConfigList"][];
         };
       };
     };
@@ -2014,9 +2052,16 @@ export interface operations {
     };
     responses: {
       200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/recipes/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/recipes/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/recipes/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/recipes/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
         content: {
-          "application/json": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"][];
+          "application/json; version=2.0": components["schemas"]["PackageConfigList"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageConfigList"][];
         };
       };
     };
@@ -2064,9 +2109,16 @@ export interface operations {
     };
     responses: {
       200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/services/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/services/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/services/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/services/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
         content: {
-          "application/json": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"][];
+          "application/json; version=2.0": components["schemas"]["PackageConfigList"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageConfigList"][];
         };
       };
     };
@@ -4198,9 +4250,16 @@ export interface operations {
     };
     responses: {
       200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/bricks/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/bricks/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/bricks/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/bricks/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
         content: {
-          "application/json": components["schemas"]["PackageMeta"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageMeta"][];
+          "application/json; version=2.0": components["schemas"]["PackageMeta"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageMeta"][];
         };
       };
     };
@@ -5140,17 +5199,17 @@ export interface operations {
   createPackageVersionUpdates: {
     requestBody?: {
       content: {
-        "application/json": unknown;
-        "application/x-www-form-urlencoded": unknown;
-        "multipart/form-data": unknown;
+        "application/json": components["schemas"]["PackageVersionUpdates"];
+        "application/x-www-form-urlencoded": components["schemas"]["PackageVersionUpdates"];
+        "multipart/form-data": components["schemas"]["PackageVersionUpdates"];
       };
     };
     responses: {
       201: {
         headers: {};
         content: {
-          "application/json; version=1.0": unknown;
-          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
+          "application/json; version=1.0": components["schemas"]["PackageVersionUpdates"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PackageVersionUpdates"];
         };
       };
     };
@@ -5505,29 +5564,6 @@ export interface operations {
         content: {
           "application/json; version=1.0": components["schemas"]["ExternalEvent"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ExternalEvent"];
-        };
-      };
-    };
-  };
-  complianceAuthTokenOrganization: {
-    parameters: {
-      path: {
-        organization_pk: string;
-      };
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["Organization"];
-        "application/x-www-form-urlencoded": components["schemas"]["Organization"];
-        "multipart/form-data": components["schemas"]["Organization"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {};
-        content: {
-          "application/json; version=2.0": components["schemas"]["Organization"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
         };
       };
     };

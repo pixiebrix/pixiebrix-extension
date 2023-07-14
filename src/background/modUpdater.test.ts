@@ -182,7 +182,7 @@ describe("fetchModUpdates function", () => {
 
     const result = await fetchModUpdates(activatedMods);
 
-    expect(result).toEqual({});
+    expect(result).toEqual([]);
     expect(reportError).toHaveBeenCalled();
   });
 });

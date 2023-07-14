@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Me } from "@/types/contract";
+import type { Me, PackageVersionUpdates } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
@@ -112,29 +112,27 @@ export async function getActivatedMarketplaceModMetadata(): Promise<
   // TODO: maybe get rid of the _recipe part and just return the whole mod component 👆
 }
 
+/**
+ * Given a list of currently activated mods, fetches information about "force updates"
+ * for those mods.
+ * @param activatedMods mods that are currently activated
+ * @returns a list of mods with information about updates available
+ */
 export async function fetchModUpdates(
   activatedMods: Array<IExtension["_recipe"]>
-) {
+): Promise<PackageVersionUpdates["updates"]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
       "Skipping automatic mod updates because the extension is not linked to the PixieBrix service"
     );
-    return {};
+    return [];
   }
 
   try {
     const {
       data: { updates },
-    } = await client.post<{
-      updates: Record<
-        RegistryId,
-        {
-          backwards_compatible: ModDefinition;
-          backwards_incompatible: boolean;
-        }
-      >;
-    }>("/api/registry/updates/", {
+    } = await client.post<PackageVersionUpdates>("/api/registry/updates/", {
       versions: collectModVersions(activatedMods),
     });
     console.log("*** updates", updates);
@@ -142,7 +140,7 @@ export async function fetchModUpdates(
     return updates;
   } catch (error) {
     reportError(error);
-    return {};
+    return [];
   }
 }
 

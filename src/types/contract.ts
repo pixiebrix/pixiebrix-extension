@@ -266,3 +266,7 @@ export type ErrorItem = Except<
   organization: UUID | null;
   user_agent_extension_version: SemVerString;
 };
+
+// TODO: I think updates.backwards_compatible should be ModDefinition
+export type PackageVersionUpdates =
+  components["schemas"]["PackageVersionUpdates"];
