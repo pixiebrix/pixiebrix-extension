@@ -24,7 +24,7 @@ import {
   type VisitPipelineExtra,
 } from "@/bricks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { isEmpty } from "lodash";
@@ -39,7 +39,7 @@ import recipesRegistry from "@/recipes/registry";
 import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { joinPathParts } from "@/utils";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS } from "@/starterBricks/factory";
 import { type Schema } from "@/types/schemaTypes";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";

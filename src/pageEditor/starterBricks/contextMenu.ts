@@ -29,7 +29,7 @@ import {
   makeIsAvailable,
   removeEmptyValues,
   selectIsAvailable,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import {
   type ContextMenuConfig,
@@ -40,7 +40,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
   type SingleLayerReaderConfig,
-} from "@/pageEditor/extensionPoints/elementConfig";
+} from "@/pageEditor/starterBricks/elementConfig";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";

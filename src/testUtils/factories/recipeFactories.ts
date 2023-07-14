@@ -43,7 +43,7 @@ import {
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { freshIdentifier } from "@/utils";
-import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
+import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 
 import {

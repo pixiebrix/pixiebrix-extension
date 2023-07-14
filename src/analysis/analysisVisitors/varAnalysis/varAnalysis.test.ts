@@ -30,7 +30,7 @@ import {
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
 import blockRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";

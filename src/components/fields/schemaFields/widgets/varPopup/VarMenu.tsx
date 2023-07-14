@@ -24,7 +24,7 @@ import {
   selectActiveElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import SourceLabel from "./SourceLabel";
 import useAllBlocks from "@/bricks/hooks/useAllBlocks";
 import { useAsyncEffect } from "use-async-effect";

@@ -21,7 +21,7 @@ import PipelineVisitor, {
 } from "@/bricks/PipelineVisitor";
 import CustomEventEffect from "@/bricks/effects/customEvent";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 export type EventNameAnalysisResult = {
   /**

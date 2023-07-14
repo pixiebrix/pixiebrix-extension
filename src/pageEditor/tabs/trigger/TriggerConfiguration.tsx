@@ -20,7 +20,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
-import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getDefaultReportModeForTrigger } from "@/starterBricks/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";

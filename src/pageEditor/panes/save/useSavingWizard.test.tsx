@@ -33,7 +33,7 @@ import {
 } from "@/services/api";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
-import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import menuItem from "@/pageEditor/starterBricks/menuItem";
 import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";

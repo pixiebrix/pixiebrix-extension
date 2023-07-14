@@ -20,7 +20,7 @@ import { selectCopiedBlock } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
+import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 
 function usePasteBlock():
   | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)

@@ -28,7 +28,7 @@ import {
 import { useField, useFormikContext } from "formik";
 import { type Expression, type PipelineExpression } from "@/types/runtimeTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";

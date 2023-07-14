@@ -21,7 +21,7 @@ import JQueryReaderOptions, {
   inferActiveTypeOption,
   typeOptionsFactory,
 } from "@/bricks/transformers/jquery/JQueryReaderOptions";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 // eslint-disable-next-line no-restricted-imports -- using to simplify Formik state for test
 import { Formik } from "formik";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";

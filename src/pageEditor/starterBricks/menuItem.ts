@@ -29,7 +29,7 @@ import {
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import {
   type MenuDefinition,
@@ -40,7 +40,7 @@ import { type StarterBrickConfig } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import {

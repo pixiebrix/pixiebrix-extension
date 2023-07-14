@@ -23,7 +23,7 @@ import { useAsyncState } from "@/hooks/common";
 import {
   extensionToFormState,
   selectType,
-} from "@/pageEditor/extensionPoints/adapter";
+} from "@/pageEditor/starterBricks/adapter";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import reportError from "@/telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
@@ -32,7 +32,7 @@ import {
   ExtensionIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
+import { initRecipeOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
 import {
   disableOverlay,
   enableOverlay,

@@ -36,7 +36,7 @@ import AdvancedLinks, {
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getType from "@/runtime/getType";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { inputProperties } from "@/helpers";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- Formik just needed as wrapper
 import { Formik } from "formik";

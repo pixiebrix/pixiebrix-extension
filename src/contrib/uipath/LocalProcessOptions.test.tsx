@@ -30,7 +30,7 @@ import {
   type SanitizedIntegrationConfig,
   type IntegrationABC,
 } from "@/types/integrationTypes";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";

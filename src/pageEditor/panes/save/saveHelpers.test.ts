@@ -22,13 +22,13 @@ import {
   replaceRecipeExtension,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
-import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
+import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
   internalExtensionPointMetaFactory,
   lookupExtensionPoint,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
@@ -42,8 +42,8 @@ import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {

@@ -19,7 +19,7 @@ import {
   isTemplateString,
   stringToExpression,
   upgradePipelineToV3,
-} from "@/pageEditor/extensionPoints/upgrade";
+} from "@/pageEditor/starterBricks/upgrade";
 import blockRegistry from "@/bricks/registry";
 import { BrickABC } from "@/types/brickTypes";
 import { propertiesToSchema } from "@/validators/generic";

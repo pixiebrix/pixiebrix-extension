@@ -27,7 +27,7 @@ import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
-import { type ModComponentFormState } from "./extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "./starterBricks/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { type RecipesRootState } from "@/recipes/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";

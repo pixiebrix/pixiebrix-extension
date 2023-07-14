@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type BrickConfig } from "@/bricks/types";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";

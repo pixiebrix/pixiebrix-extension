@@ -32,7 +32,7 @@ import {
   type Storage,
 } from "@/bricks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { type Options } from "react-select";

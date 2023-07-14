@@ -28,39 +28,48 @@ import {
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
+import {
+  getDefaultReportModeForTrigger,
+  type TriggerConfig,
+  type TriggerDefinition,
+  TriggerStarterBrickABC,
+} from "@/starterBricks/triggerExtension";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
-import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { faBolt } from "@fortawesome/free-solid-svg-icons";
+import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
-import { type TourFormState } from "./formStateTypes";
-import {
-  type TourConfig,
-  type TourDefinition,
-  TourStarterBrickABC,
-} from "@/starterBricks/tourExtension";
-import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
+import { type TriggerFormState } from "./formStateTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 
 function fromNativeElement(
   url: string,
   metadata: Metadata,
   _element: null
-): TourFormState {
+): TriggerFormState {
   return {
-    type: "tour",
-    label: `My ${getDomain(url)} tour`,
+    type: "trigger",
+    label: `My ${getDomain(url)} trigger`,
     ...makeInitialBaseState(),
     extensionPoint: {
       metadata,
       definition: {
-        type: "tour",
-        allowUserRun: true,
-        autoRunSchedule: "never",
-        reader: getImplicitReader("tour"),
+        type: "trigger",
+        trigger: "load",
+        rootSelector: null,
+        attachMode: null,
+        targetMode: null,
+        // Use "once" for reportMode, since the default is "load"
+        reportMode: "once",
+        intervalMillis: null,
+        background: null,
+        debounce: null,
+        customEvent: null,
+        reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
     },
@@ -71,29 +80,50 @@ function fromNativeElement(
 }
 
 function selectExtensionPointConfig(
-  formState: TourFormState
-): StarterBrickConfig<TourDefinition> {
+  formState: TriggerFormState
+): StarterBrickConfig<TriggerDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, reader },
+    definition: {
+      isAvailable,
+      rootSelector,
+      attachMode,
+      targetMode,
+      reportMode,
+      debounce,
+      customEvent,
+      intervalMillis,
+      background,
+      reader,
+      trigger,
+    },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
-      type: "tour",
+      type: "trigger",
       reader,
       isAvailable: pickBy(isAvailable, identity),
+      trigger,
+      debounce,
+      customEvent,
+      intervalMillis,
+      background,
+      attachMode,
+      targetMode,
+      reportMode: reportMode ?? getDefaultReportModeForTrigger(trigger),
+      rootSelector,
     },
   });
 }
 
 function selectExtension(
-  state: TourFormState,
+  state: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {}
-): ModComponentBase<TourConfig> {
+): ModComponentBase<TriggerConfig> {
   const { extension } = state;
-  const config: TourConfig = {
-    tour: options.includeInstanceIds
+  const config: TriggerConfig = {
+    action: options.includeInstanceIds
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
   };
@@ -103,29 +133,40 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: TourFormState): DynamicDefinition {
+function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   return {
-    type: "tour",
+    type: "trigger",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
 async function fromExtension(
-  config: ModComponentBase<TourConfig>
-): Promise<TourFormState> {
+  config: ModComponentBase<TriggerConfig>
+): Promise<TriggerFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    TourDefinition,
-    TourConfig,
-    "tour"
-  >(config, "tour");
+    TriggerDefinition,
+    TriggerConfig,
+    "trigger"
+  >(config, "trigger");
 
-  const { reader } = extensionPoint.definition;
+  const {
+    rootSelector,
+    attachMode,
+    targetMode,
+    reportMode,
+    trigger,
+    reader,
+    background,
+    intervalMillis,
+    debounce,
+    customEvent,
+  } = extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "tour"
+    "action"
   );
 
   return {
@@ -136,7 +177,16 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        ...extensionPoint.definition,
+        type: extensionPoint.definition.type,
+        rootSelector,
+        trigger,
+        attachMode,
+        targetMode,
+        reportMode,
+        customEvent,
+        debounce,
+        background,
+        intervalMillis,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
@@ -144,15 +194,14 @@ async function fromExtension(
   };
 }
 
-const config: ElementConfig<undefined, TourFormState> = {
-  displayOrder: 8,
-  elementType: "tour",
-  label: "Tour",
-  baseClass: TourStarterBrickABC,
-  flag: "pageeditor-tour",
-  EditorNode: TourConfiguration,
+const config: ElementConfig<undefined, TriggerFormState> = {
+  displayOrder: 4,
+  elementType: "trigger",
+  label: "Trigger",
+  baseClass: TriggerStarterBrickABC,
+  EditorNode: TriggerConfiguration,
   selectNativeElement: undefined,
-  icon: faMapSigns,
+  icon: faBolt,
   fromNativeElement,
   asDynamicElement,
   selectExtensionPointConfig,

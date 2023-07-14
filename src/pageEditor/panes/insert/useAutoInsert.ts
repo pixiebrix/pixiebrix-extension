@@ -1,8 +1,8 @@
 import { useDispatch } from "react-redux";
 import { useAsyncEffect } from "use-async-effect";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
-import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { internalExtensionPointMetaFactory } from "@/pageEditor/starterBricks/base";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { reportEvent } from "@/telemetry/events";
 import { type StarterBrickType } from "@/starterBricks/types";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
 
 const { addElement, toggleInsert } = actions;

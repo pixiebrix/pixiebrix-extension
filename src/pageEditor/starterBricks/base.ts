@@ -34,7 +34,7 @@ import {
   type BaseExtensionState,
   type BaseFormState,
   type SingleLayerReaderConfig,
-} from "@/pageEditor/extensionPoints/elementConfig";
+} from "@/pageEditor/starterBricks/elementConfig";
 import { type Except } from "type-fest";
 import {
   isInnerDefinitionRegistryId,

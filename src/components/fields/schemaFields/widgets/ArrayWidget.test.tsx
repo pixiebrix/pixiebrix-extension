@@ -20,7 +20,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type Schema } from "@/types/schemaTypes";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import userEvent from "@testing-library/user-event";
-import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
+import { stringToExpression } from "@/pageEditor/starterBricks/upgrade";
 import { render, screen } from "@/pageEditor/testHelpers";
 
 const fieldName = "testField";

@@ -28,7 +28,7 @@ import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isInputValidationError } from "@/bricks/errors";
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type ErrorObject } from "serialize-error";
 import { AnnotationType } from "@/types/annotationTypes";
 

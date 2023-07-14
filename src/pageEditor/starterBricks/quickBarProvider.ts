@@ -29,14 +29,14 @@ import {
   makeIsAvailable,
   removeEmptyValues,
   selectIsAvailable,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   type ElementConfig,
   type SingleLayerReaderConfig,
-} from "@/pageEditor/extensionPoints/elementConfig";
+} from "@/pageEditor/starterBricks/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarProviderFormState } from "./formStateTypes";
 import {

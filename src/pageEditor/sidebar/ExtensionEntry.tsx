@@ -17,7 +17,7 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isModComponentBase } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";

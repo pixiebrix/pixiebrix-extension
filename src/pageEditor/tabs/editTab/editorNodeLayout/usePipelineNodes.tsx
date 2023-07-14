@@ -69,7 +69,7 @@ import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";

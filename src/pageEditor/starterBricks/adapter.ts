@@ -21,17 +21,17 @@ import {
   type StarterBrickConfig,
   type StarterBrickType,
 } from "@/starterBricks/types";
-import menuItemExtension from "@/pageEditor/extensionPoints/menuItem";
-import quickBarExtension from "@/pageEditor/extensionPoints/quickBar";
-import triggerExtension from "@/pageEditor/extensionPoints/trigger";
-import panelExtension from "@/pageEditor/extensionPoints/panel";
-import contextMenuExtension from "@/pageEditor/extensionPoints/contextMenu";
-import sidebarExtension from "@/pageEditor/extensionPoints/sidebar";
-import quickBarProviderExtension from "@/pageEditor/extensionPoints/quickBarProvider";
-import tourExtension from "@/pageEditor/extensionPoints/tour";
-import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import menuItemExtension from "@/pageEditor/starterBricks/menuItem";
+import quickBarExtension from "@/pageEditor/starterBricks/quickBar";
+import triggerExtension from "@/pageEditor/starterBricks/trigger";
+import panelExtension from "@/pageEditor/starterBricks/panel";
+import contextMenuExtension from "@/pageEditor/starterBricks/contextMenu";
+import sidebarExtension from "@/pageEditor/starterBricks/sidebar";
+import quickBarProviderExtension from "@/pageEditor/starterBricks/quickBarProvider";
+import tourExtension from "@/pageEditor/starterBricks/tour";
+import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DynamicDefinition } from "@/contentScript/pageEditor/types";
 
 export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import config from "@/pageEditor/extensionPoints/contextMenu";
-import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
+import config from "@/pageEditor/starterBricks/contextMenu";
+import { internalExtensionPointMetaFactory } from "@/pageEditor/starterBricks/base";
 
 describe("contextMenu", () => {
   it("smoke test", () => {

@@ -16,7 +16,7 @@
  */
 
 import { getIn, useFormikContext } from "formik";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";

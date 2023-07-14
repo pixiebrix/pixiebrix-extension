@@ -25,7 +25,7 @@ import { joinName } from "@/utils";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { type Trigger } from "@/starterBricks/sidebarExtension";
 import { useField, useFormikContext } from "formik";
-import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DebounceOptions } from "@/starterBricks/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 

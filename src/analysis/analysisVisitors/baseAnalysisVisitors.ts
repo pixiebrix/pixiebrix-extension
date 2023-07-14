@@ -20,7 +20,7 @@ import {
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
 import PipelineVisitor from "@/bricks/PipelineVisitor";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 
 /**

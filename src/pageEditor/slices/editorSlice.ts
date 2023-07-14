@@ -55,7 +55,7 @@ import {
 import {
   type ModComponentFormState,
   isQuickBarExtensionPoint,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
   activateElement,
@@ -69,7 +69,7 @@ import {
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
-import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
+import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
@@ -79,7 +79,7 @@ import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
-import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BaseExtensionPointState } from "@/pageEditor/starterBricks/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";

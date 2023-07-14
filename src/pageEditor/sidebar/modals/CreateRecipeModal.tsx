@@ -57,7 +57,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";

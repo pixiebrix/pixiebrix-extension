@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { flagOn } from "@/auth/token";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

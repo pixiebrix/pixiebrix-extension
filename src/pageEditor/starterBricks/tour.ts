@@ -16,7 +16,6 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -29,84 +28,72 @@ import {
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import {
-  type PanelDefinition,
-  type SidebarConfig,
-  SidebarStarterBrickABC,
-} from "@/starterBricks/sidebarExtension";
+import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
-import { faColumns } from "@fortawesome/free-solid-svg-icons";
-import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
-import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
+import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
-import { type SidebarFormState } from "./formStateTypes";
+import { type TourFormState } from "./formStateTypes";
+import {
+  type TourConfig,
+  type TourDefinition,
+  TourStarterBrickABC,
+} from "@/starterBricks/tourExtension";
+import TourConfiguration from "@/pageEditor/tabs/tour/TourConfiguration";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
-function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
-  const base = makeInitialBaseState();
-
-  const heading = `${getDomain(url)} side panel`;
-
+function fromNativeElement(
+  url: string,
+  metadata: Metadata,
+  _element: null
+): TourFormState {
   return {
-    type: "actionPanel",
-    label: heading,
-    ...base,
+    type: "tour",
+    label: `My ${getDomain(url)} tour`,
+    ...makeInitialBaseState(),
     extensionPoint: {
       metadata,
-
       definition: {
-        type: "actionPanel",
+        type: "tour",
+        allowUserRun: true,
+        autoRunSchedule: "never",
+        reader: getImplicitReader("tour"),
         isAvailable: makeIsAvailable(url),
-        reader: getImplicitReader("actionPanel"),
-
-        trigger: "load",
-
-        debounce: {
-          waitMillis: 250,
-          leading: false,
-          trailing: true,
-        },
-
-        customEvent: null,
       },
     },
     extension: {
-      heading,
       blockPipeline: [],
     },
   };
 }
 
 function selectExtensionPointConfig(
-  formState: SidebarFormState
-): StarterBrickConfig {
+  formState: TourFormState
+): StarterBrickConfig<TourDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, reader, trigger, debounce, customEvent },
+    definition: { isAvailable, reader },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
-      type: "actionPanel",
+      type: "tour",
       reader,
-      isAvailable,
-      trigger,
-      debounce,
-      customEvent,
+      isAvailable: pickBy(isAvailable, identity),
     },
   });
 }
 
 function selectExtension(
-  state: SidebarFormState,
+  state: TourFormState,
   options: { includeInstanceIds?: boolean } = {}
-): ModComponentBase<SidebarConfig> {
+): ModComponentBase<TourConfig> {
   const { extension } = state;
-  const config: SidebarConfig = {
-    heading: extension.heading,
-    body: options.includeInstanceIds
+  const config: TourConfig = {
+    tour: options.includeInstanceIds
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),
   };
@@ -116,35 +103,30 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: SidebarFormState): DynamicDefinition {
+function asDynamicElement(element: TourFormState): DynamicDefinition {
   return {
-    type: "actionPanel",
+    type: "tour",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPointConfig: selectExtensionPointConfig(element),
   };
 }
 
 async function fromExtension(
-  config: ModComponentBase<SidebarConfig>
-): Promise<SidebarFormState> {
+  config: ModComponentBase<TourConfig>
+): Promise<TourFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    PanelDefinition,
-    SidebarConfig,
-    "actionPanel"
-  >(config, "actionPanel");
+    TourDefinition,
+    TourConfig,
+    "tour"
+  >(config, "tour");
+
+  const { reader } = extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "body"
+    "tour"
   );
-
-  const {
-    trigger = "load",
-    debounce,
-    customEvent,
-    reader,
-  } = extensionPoint.definition;
 
   return {
     ...base,
@@ -155,9 +137,6 @@ async function fromExtension(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        trigger,
-        debounce,
-        customEvent,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
@@ -165,19 +144,20 @@ async function fromExtension(
   };
 }
 
-const config: ElementConfig<never, SidebarFormState> = {
-  displayOrder: 3,
-  elementType: "actionPanel",
-  label: "Sidebar Panel",
-  baseClass: SidebarStarterBrickABC,
+const config: ElementConfig<undefined, TourFormState> = {
+  displayOrder: 8,
+  elementType: "tour",
+  label: "Tour",
+  baseClass: TourStarterBrickABC,
+  flag: "pageeditor-tour",
+  EditorNode: TourConfiguration,
   selectNativeElement: undefined,
-  icon: faColumns,
+  icon: faMapSigns,
   fromNativeElement,
   asDynamicElement,
   selectExtensionPointConfig,
   selectExtension,
   fromExtension,
-  EditorNode: SidebarConfiguration,
 };
 
 export default config;

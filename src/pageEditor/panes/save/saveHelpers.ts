@@ -28,13 +28,13 @@ import {
 } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { freshIdentifier } from "@/utils";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { type Except } from "type-fest";
 import {
   type ModComponentDefinition,

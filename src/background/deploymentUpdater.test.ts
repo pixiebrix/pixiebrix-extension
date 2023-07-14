@@ -30,8 +30,8 @@ import {
   editorSlice,
   initialState as initialEditorState,
 } from "@/pageEditor/slices/editorSlice";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { parsePackage } from "@/registry/packageRegistry";
 import { registry } from "@/background/messenger/api";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";

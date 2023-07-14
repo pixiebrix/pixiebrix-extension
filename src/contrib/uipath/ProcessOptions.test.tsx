@@ -22,7 +22,7 @@ import { Formik } from "formik";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import useDependency from "@/services/useDependency";
