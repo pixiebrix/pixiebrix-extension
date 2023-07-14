@@ -145,7 +145,7 @@ describe("authenticated direct requests", () => {
       .spyOn(Locator.prototype, "locate")
       .mockResolvedValue(directServiceConfig);
     jest
-      .spyOn(Locator.prototype, "getLocalConfig")
+      .spyOn(Locator.prototype, "getSecretConfig")
       .mockResolvedValue(directServiceConfig as unknown as IntegrationConfig);
   });
 
@@ -156,7 +156,7 @@ describe("authenticated direct requests", () => {
   });
 
   it("throws on missing local config", async () => {
-    jest.spyOn(Locator.prototype, "getLocalConfig").mockResolvedValue(null);
+    jest.spyOn(Locator.prototype, "getSecretConfig").mockResolvedValue(null);
 
     await expect(async () =>
       proxyService(directServiceConfig, requestConfig)
@@ -264,7 +264,7 @@ describe("Retry token request", () => {
       .spyOn(Locator.prototype, "locate")
       .mockResolvedValue(directTokenServiceConfig);
     jest
-      .spyOn(Locator.prototype, "getLocalConfig")
+      .spyOn(Locator.prototype, "getSecretConfig")
       .mockResolvedValue(
         directTokenServiceConfig as unknown as IntegrationConfig
       );

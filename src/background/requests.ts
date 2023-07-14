@@ -155,7 +155,7 @@ async function authenticate(
     });
   }
 
-  const localConfig = await locator.getLocalConfig(config.id);
+  const localConfig = await locator.getSecretConfig(config.id);
 
   if (!localConfig) {
     // Is an application error because PixieBrix should not have reached here in the first place.

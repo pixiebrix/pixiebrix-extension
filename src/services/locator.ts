@@ -217,17 +217,33 @@ class LazyLocatorFactory {
   }
 
   /**
-   * Return the raw integration configuration with UUID authId, or return `null` if not available locally.
+   * Return the corresponding integration configuration, including secrets. Returns `null` if not available.
+   *
+   * Prior to 1.7.34, only could return locally-defined configurations. Now also returns remote pushdown configurations.
+   *
    * @param authId UUID of the integration configuration
    */
-  async getLocalConfig(authId: UUID): Promise<IntegrationConfig | null> {
+  async getSecretConfig(authId: UUID): Promise<IntegrationConfig | null> {
     // The `initialized` flag gets set from _refresh, which covers both local and remote. For performance,
     // we could split the initialized flag into two, but it's not worth it since refreshLocal is fast.
     if (!this.initialized) {
       await this.refreshLocal();
     }
 
-    return this.local.find((x) => x.id === authId);
+    const remote = this.remote
+      .filter((x) => x.pushdown)
+      .map(
+        (x) =>
+          ({
+            id: x.id,
+            serviceId: x.service.name,
+            label: x.label,
+            config: x.config,
+            // `config` will contain secrets because we filtered for pushdown configurations
+          } as IntegrationConfig)
+      );
+
+    return [...this.local, ...remote].find((x) => x.id === authId);
   }
 
   async locateAllForService(
