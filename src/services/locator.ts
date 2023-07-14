@@ -227,8 +227,6 @@ class LazyLocatorFactory {
    * @param authId UUID of the integration configuration
    */
   async findIntegrationConfig(authId: UUID): Promise<IntegrationConfig | null> {
-    // The `initialized` flag gets set from _refresh, which covers both local and remote. For performance,
-    // we could split the initialized flag into two, but it's not worth it since refreshLocal is fast.
     if (!this.initialized) {
       await this.refresh();
     }
