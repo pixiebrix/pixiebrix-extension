@@ -26,7 +26,7 @@ import {
   type TourDefinition,
   fromJS,
 } from "@/starterBricks/tourExtension";
-import { RootReader, tick } from "@/starterBricks/extensionPointTestUtils";
+import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import { isTourInProgress } from "@/starterBricks/tourController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";

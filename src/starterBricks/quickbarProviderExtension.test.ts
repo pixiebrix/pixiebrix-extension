@@ -29,7 +29,7 @@ import {
   getDocument,
   RootReader,
   tick,
-} from "@/starterBricks/extensionPointTestUtils";
+} from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";

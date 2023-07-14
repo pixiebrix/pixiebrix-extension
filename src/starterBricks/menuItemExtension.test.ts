@@ -31,7 +31,7 @@ import {
   getDocument,
   RootReader,
   tick,
-} from "@/starterBricks/extensionPointTestUtils";
+} from "@/starterBricks/starterBrickTestUtils";
 import { type BrickPipeline } from "@/bricks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
