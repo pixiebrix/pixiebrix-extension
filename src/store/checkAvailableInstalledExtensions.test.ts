@@ -19,7 +19,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { getCurrentURL } from "@/pageEditor/utils";
@@ -27,13 +27,13 @@ import { validateRegistryId } from "@/types/helpers";
 import {
   type MenuDefinition,
   RemoteMenuItemExtensionPoint,
-} from "@/extensionPoints/menuItemExtension";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
+} from "@/starterBricks/menuItemExtension";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import {
   type QuickBarDefinition,
   RemoteQuickBarExtensionPoint,
-} from "@/extensionPoints/quickBarExtension";
+} from "@/starterBricks/quickBarExtension";
 import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
@@ -124,7 +124,7 @@ describe("checkAvailableInstalledExtensions", () => {
       availableQuickbarExtensionPoint,
     ]);
 
-    const store = configureStore<EditorRootState & ExtensionsRootState>({
+    const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
         options: extensionsReducer,

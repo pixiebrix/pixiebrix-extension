@@ -27,12 +27,12 @@ import { useField, useFormikContext } from "formik";
 import { LinkButton } from "@/components/LinkButton";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
+import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 import {
   type Shortcut,
   type UrlMatchPatternWidgetProps,
 } from "./urlMatchPatternWidgetTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -72,7 +72,7 @@ const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
     addButtonCaption = "Add Site",
   } = props;
 
-  const { values: formState } = useFormikContext<FormState>();
+  const { values: formState } = useFormikContext<ModComponentFormState>();
   const [{ value }, , { setValue }] = useField<string[]>(name);
 
   return (

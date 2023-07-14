@@ -29,7 +29,7 @@ import {
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import { joinPathParts } from "@/utils";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";

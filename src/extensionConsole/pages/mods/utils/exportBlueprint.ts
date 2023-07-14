@@ -21,17 +21,17 @@ import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
-  type OptionsDefinition,
+  type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 /**
  * Infer optionsSchema from the options provided to the extension.
  */
-function inferOptionsSchema(optionsArgs: OptionsArgs): OptionsDefinition {
+function inferOptionsSchema(optionsArgs: OptionsArgs): ModOptionsDefinition {
   if (isEmpty(optionsArgs)) {
     return undefined;
   }
@@ -45,7 +45,7 @@ function inferOptionsSchema(optionsArgs: OptionsArgs): OptionsDefinition {
 }
 
 export function makeBlueprint(
-  extension: UnresolvedExtension,
+  extension: UnresolvedModComponent,
   metadata: Metadata
 ): UnsavedModDefinition {
   const {

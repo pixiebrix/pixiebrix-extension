@@ -20,7 +20,7 @@ import styles from "@/extensionConsole/pages/activateRecipe/ServicesBody.module.
 import React from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
@@ -35,7 +35,7 @@ const ServicesRow: React.FunctionComponent<{
   authOptions: AuthOption[];
   refreshAuthOptions: () => void;
 }> = ({ authOptions, refreshAuthOptions }) => {
-  const [field, { error }] = useField<ServiceDependency[]>("services");
+  const [field, { error }] = useField<IntegrationDependency[]>("services");
 
   const { data: serviceConfigs } = useGetServicesQuery();
 

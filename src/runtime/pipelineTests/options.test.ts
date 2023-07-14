@@ -16,7 +16,7 @@
  */
 
 import { type ApiVersion } from "@/types/runtimeTypes";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,

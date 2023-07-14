@@ -31,7 +31,7 @@ import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
-import { type ExtensionOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
@@ -51,12 +51,12 @@ import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { type UUID } from "@/types/stringTypes";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
@@ -67,17 +67,19 @@ const locateAllForService = locator.locateAllForService.bind(locator);
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
-async function setExtensionsState(state: ExtensionOptionsState): Promise<void> {
+async function setExtensionsState(
+  state: ModComponentOptionsState
+): Promise<void> {
   await saveOptions(state);
   await forEachTab(queueReactivateTab);
 }
 
 function uninstallExtensionFromStates(
-  optionsState: ExtensionOptionsState,
+  optionsState: ModComponentOptionsState,
   editorState: EditorState | undefined,
   extensionId: UUID
 ): {
-  options: ExtensionOptionsState;
+  options: ModComponentOptionsState;
   editor: EditorState;
 } {
   const options = optionsReducer(
@@ -91,11 +93,11 @@ function uninstallExtensionFromStates(
 }
 
 async function uninstallExtensionsAndSaveState(
-  toUninstall: UnresolvedExtension[],
+  toUninstall: UnresolvedModComponent[],
   {
     editorState,
     optionsState,
-  }: { editorState: EditorState; optionsState: ExtensionOptionsState }
+  }: { editorState: EditorState; optionsState: ModComponentOptionsState }
 ): Promise<void> {
   // Uninstall existing versions of the extensions
   for (const extension of toUninstall) {
@@ -182,11 +184,11 @@ async function uninstallUnmatchedDeployments(
 }
 
 async function uninstallRecipe(
-  optionsState: ExtensionOptionsState,
+  optionsState: ModComponentOptionsState,
   editorState: EditorState | undefined,
   recipeId: RegistryId
 ): Promise<{
-  options: ExtensionOptionsState;
+  options: ModComponentOptionsState;
   editor: EditorState | undefined;
 }> {
   let options = optionsState;
@@ -206,11 +208,11 @@ async function uninstallRecipe(
 }
 
 async function installDeployment(
-  optionsState: ExtensionOptionsState,
+  optionsState: ModComponentOptionsState,
   editorState: EditorState | undefined,
   deployment: Deployment
 ): Promise<{
-  options: ExtensionOptionsState;
+  options: ModComponentOptionsState;
   editor: EditorState | undefined;
 }> {
   let options = optionsState;

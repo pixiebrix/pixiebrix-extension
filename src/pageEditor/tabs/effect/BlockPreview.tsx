@@ -16,9 +16,9 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
 import Loader from "@/components/Loader";
@@ -32,7 +32,7 @@ import {
 import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
-import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
+import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useField, useFormikContext } from "formik";
@@ -40,14 +40,14 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
-import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BaseExtensionPointState } from "@/pageEditor/starterBricks/elementConfig";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
-import { type ServiceDependency } from "@/types/serviceTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -147,9 +147,9 @@ const BlockPreview: React.FunctionComponent<{
     outputKey: blockConfig.outputKey,
   });
 
-  const { values } = useFormikContext<FormState>();
+  const { values } = useFormikContext<ModComponentFormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
-  const [{ value: services }] = useField<ServiceDependency[]>("services");
+  const [{ value: services }] = useField<IntegrationDependency[]>("services");
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 

@@ -28,7 +28,7 @@ import { Formik } from "formik";
 import Effect from "@/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";
 import { logActions } from "@/components/logViewer/logSlice";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveElement,
   selectSelectionSeq,
@@ -40,13 +40,13 @@ const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
 const EditorPaneContent: React.VoidFunctionComponent<{
-  element: FormState;
+  element: ModComponentFormState;
 }> = ({ element }) => {
   const dispatch = useDispatch();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
-    (values: FormState) => {
+    (values: ModComponentFormState) => {
       dispatch(editorActions.editElement(values));
       dispatch(actions.checkActiveElementAvailability());
     },

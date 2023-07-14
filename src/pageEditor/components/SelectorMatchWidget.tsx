@@ -19,8 +19,8 @@ import React from "react";
 import { useFormikContext } from "formik";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Schema } from "@/types/schemaTypes";
 
@@ -32,7 +32,7 @@ const selectorMatchItemSchema: Schema = {
 };
 
 const SelectorMatchWidget: React.VFC<SchemaFieldProps> = (props) => {
-  const { values: formState } = useFormikContext<FormState>();
+  const { values: formState } = useFormikContext<ModComponentFormState>();
 
   return (
     <FieldRuntimeContext.Provider

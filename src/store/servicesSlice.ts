@@ -19,11 +19,11 @@ import { localStorage } from "redux-persist-webextension-storage";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { revertAll } from "@/store/commonActions";
-import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 
 export interface ServicesState {
-  configured: Record<string, RawServiceConfiguration>;
+  configured: Record<string, IntegrationConfig>;
 }
 
 export type ServicesRootState = {
@@ -58,7 +58,7 @@ const servicesSlice = createSlice({
         serviceId,
         label,
         config,
-      } as RawServiceConfiguration;
+      } as IntegrationConfig;
     },
   },
   extraReducers(builder) {

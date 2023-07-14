@@ -22,7 +22,7 @@ import { Col, Row } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
@@ -56,7 +56,7 @@ const EditorNodeConfigPanel: React.FC = () => {
   );
   const outputDescription = isOutputDisabled
     ? "Effect and renderer bricks do not produce outputs"
-    : "Provide an output key to refer to the outputs of this block later.";
+    : "Provide an output variable name to refer to the outputs of this brick later.";
 
   const PopoverOutputLabel = (
     <PopoverInfoLabel

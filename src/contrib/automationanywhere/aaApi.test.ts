@@ -22,8 +22,8 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
 import {
   type SanitizedConfig,
-  type SanitizedServiceConfiguration,
-} from "@/types/serviceTypes";
+  type SanitizedIntegrationConfig,
+} from "@/types/integrationTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   proxyService: jest.fn(),
@@ -47,7 +47,7 @@ describe("aaApi", () => {
       } as unknown as SanitizedConfig,
       proxy: false,
       serviceId: AUTOMATION_ANYWHERE_SERVICE_ID,
-    } as SanitizedServiceConfiguration;
+    } as SanitizedIntegrationConfig;
 
     const privatePromise1 = cachedSearchBots(partialConfig, {
       workspaceType: "private",

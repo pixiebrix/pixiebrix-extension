@@ -18,7 +18,7 @@
 import { getCurrentURL } from "@/pageEditor/utils";
 import { configureStore } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateRegistryId } from "@/types/helpers";
@@ -26,8 +26,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
-import { type Availability } from "@/blocks/types";
-import { checkAvailable as backgroundCheckAvailable } from "@/blocks/available";
+import { type Availability } from "@/bricks/types";
+import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -47,7 +47,7 @@ describe("checkActiveElementAvailability", () => {
     const testUrl = "https://www.myUrl.com/*";
     (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
 
-    const store = configureStore<EditorRootState & ExtensionsRootState>({
+    const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
         options: extensionsReducer,

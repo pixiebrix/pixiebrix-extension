@@ -17,11 +17,11 @@
 
 import React from "react";
 import BrickDetail from "./BrickDetail";
-import { TableRenderer } from "@/blocks/renderers/table";
-import { type ReferenceEntry } from "@/extensionConsole/pages/brickEditor/brickEditorTypes";
+import { TableRenderer } from "@/bricks/renderers/table";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
+import { type Metadata } from "@/types/registryTypes";
 
 mockAllApiEndpoints();
 
@@ -30,7 +30,7 @@ test.each([
   ["@pixiebrix/table", new TableRenderer()],
 ])(
   "renders %s brick in loading state",
-  async (brickName: string, brick: ReferenceEntry) => {
+  async (brickName: string, brick: Metadata) => {
     const rendered = render(
       <BrickDetail brick={brick} brickConfig={null} isBrickConfigLoading />
     );

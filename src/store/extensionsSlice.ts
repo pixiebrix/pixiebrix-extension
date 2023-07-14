@@ -28,18 +28,18 @@ import { cloneDeep, partition } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
-  type ExtensionOptionsState,
-  type LegacyExtensionObjectState,
+  type ModComponentOptionsState,
+  type LegacyModComponentObjectState,
   type OptionsState,
 } from "@/store/extensionsTypes";
 import { type Except } from "type-fest";
-import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
+import { assertModComponentNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import {
-  type IExtension,
+  type ModComponentBase,
   type ActivatedModComponent,
   selectSourceRecipeMetadata,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
   type ModDefinition,
@@ -48,13 +48,13 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type OutputKey, type OptionsArgs } from "@/types/runtimeTypes";
 
-const initialExtensionsState: ExtensionOptionsState = {
+const initialExtensionsState: ModComponentOptionsState = {
   extensions: [],
 };
 
 function selectDeploymentContext(
   deployment: Deployment
-): IExtension["_deployment"] | undefined {
+): ModComponentBase["_deployment"] | undefined {
   if (deployment) {
     return {
       id: deployment.id,
@@ -99,7 +99,7 @@ const extensionsSlice = createSlice({
         payload,
       }: PayloadAction<{
         extensionId: UUID;
-        recipeMetadata: IExtension["_recipe"];
+        recipeMetadata: ModComponentBase["_recipe"];
       }>
     ) {
       const { extensionId, recipeMetadata } = payload;
@@ -176,7 +176,7 @@ const extensionsSlice = createSlice({
 
         const extension: Except<
           ActivatedModComponent,
-          "_unresolvedExtensionBrand"
+          "_unresolvedModComponentBrand"
         > = {
           id: extensionId,
           // Default to `v1` for backward compatability
@@ -215,7 +215,7 @@ const extensionsSlice = createSlice({
           extension.templateEngine = templateEngine;
         }
 
-        assertExtensionNotResolved(extension);
+        assertModComponentNotResolved(extension);
 
         // Display name is 'StarterBrickActivate' in telemetry
         reportEvent("ExtensionActivate", selectEventData(extension));
@@ -237,13 +237,13 @@ const extensionsSlice = createSlice({
         reinstall: isReinstall,
       });
     },
-    // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?
+    // XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
     saveExtension(
       state,
       {
         payload,
       }: PayloadAction<{
-        extension: (IExtension | ActivatedModComponent) & {
+        extension: (ModComponentBase | ActivatedModComponent) & {
           createTimestamp?: string;
         };
         pushToCloud: boolean;
@@ -281,7 +281,7 @@ const extensionsSlice = createSlice({
 
       const extension: Except<
         ActivatedModComponent,
-        "_unresolvedExtensionBrand"
+        "_unresolvedModComponentBrand"
       > = {
         id,
         apiVersion,
@@ -298,7 +298,7 @@ const extensionsSlice = createSlice({
         active: true,
       };
 
-      assertExtensionNotResolved(extension);
+      assertModComponentNotResolved(extension);
 
       if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
@@ -339,7 +339,7 @@ const extensionsSlice = createSlice({
 
     updateRecipeMetadataForExtensions(
       state,
-      action: PayloadAction<IExtension["_recipe"]>
+      action: PayloadAction<ModComponentBase["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeExtensions = state.extensions.filter(
@@ -393,7 +393,7 @@ const extensionsSlice = createSlice({
  */
 function requireLatestState(
   state: OptionsState
-): asserts state is LegacyExtensionObjectState | ExtensionOptionsState {
+): asserts state is LegacyModComponentObjectState | ModComponentOptionsState {
   if (!Array.isArray(state.extensions)) {
     throw new TypeError("redux state has not been migrated");
   }

@@ -19,9 +19,9 @@
 import useModViewItems from "@/mods/useModViewItems";
 import {
   type ActivatedModComponent,
-  type ResolvedExtension,
+  type ResolvedModComponent,
   selectSourceRecipeMetadata,
-} from "@/types/extensionTypes";
+} from "@/types/modComponentTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -41,8 +41,8 @@ describe("useModViewItems", () => {
     axiosMock.onGet("/api/marketplace/listings").reply(200, []);
   });
 
-  it("creates entry for IExtension", async () => {
-    const extension = extensionFactory() as ResolvedExtension;
+  it("creates entry for ModComponentBase", async () => {
+    const extension = extensionFactory() as ResolvedModComponent;
 
     const wrapper = renderHook(() => useModViewItems([extension]), {
       setupRedux(dispatch) {

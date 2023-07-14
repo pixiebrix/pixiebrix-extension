@@ -31,21 +31,25 @@ import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import Loader from "@/components/Loader";
 import BrickDetail from "./BrickDetail";
-import { type ReferenceEntry } from "@/extensionConsole/pages/brickEditor/brickEditorTypes";
 import BlockResult from "./BlockResult";
-import { isOfficial } from "@/blocks/util";
+import { isOfficial } from "@/bricks/util";
 import { useAsyncState } from "@/hooks/common";
-import { find } from "@/registry/localRegistry";
+import { find } from "@/registry/packageRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/services/api";
-import { type IBrick } from "@/types/brickInstanceTypes";
+import { type Metadata } from "@/types/registryTypes";
 
-const BrickReference: React.FunctionComponent<{
-  bricks: ReferenceEntry[];
-  initialSelected?: ReferenceEntry;
-}> = ({ bricks, initialSelected }) => {
+type BrickReferenceProps<T extends Metadata> = {
+  bricks: T[];
+  initialSelected?: T;
+};
+
+const BrickReference = ({
+  bricks,
+  initialSelected,
+}: BrickReferenceProps<Metadata>) => {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<ReferenceEntry>(initialSelected);
+  const [selected, setSelected] = useState<Metadata>(initialSelected);
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const sortedBricks = useMemo(
@@ -78,7 +82,7 @@ const BrickReference: React.FunctionComponent<{
     return null;
   }, [selected]);
 
-  const fuse: Fuse<IBrick> = useMemo(
+  const fuse: Fuse<Metadata> = useMemo(
     () =>
       new Fuse(sortedBricks, {
         // Prefer name, then id

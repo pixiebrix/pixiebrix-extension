@@ -17,7 +17,7 @@
 
 import { useEffect, useReducer } from "react";
 import { usePreviewInfo } from "@/pageEditor/tabs/effect/BlockPreview";
-import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
+import { isTriggerExtensionPoint } from "@/pageEditor/starterBricks/formStateTypes";
 import { useSelector } from "react-redux";
 import {
   selectActiveElement,
@@ -30,7 +30,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
+import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { useAsyncState } from "@/hooks/common";

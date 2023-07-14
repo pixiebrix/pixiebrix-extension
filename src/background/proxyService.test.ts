@@ -28,10 +28,10 @@ import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import { getToken } from "@/background/auth";
 import {
-  type Service,
-  type RawServiceConfiguration,
+  type IntegrationABC,
+  type IntegrationConfig,
   type SecretsConfig,
-} from "@/types/serviceTypes";
+} from "@/types/integrationTypes";
 import { setContext } from "@/testUtils/detectPageMock";
 import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
 
@@ -93,7 +93,7 @@ serviceRegistry.register([
     ) => requestConfig,
     isToken: true,
   },
-] as Service[]);
+] as IntegrationABC[]);
 
 const requestConfig: AxiosRequestConfig = {
   url: "https://www.example.com",
@@ -146,9 +146,7 @@ describe("authenticated direct requests", () => {
       .mockResolvedValue(directServiceConfig);
     jest
       .spyOn(Locator.prototype, "getLocalConfig")
-      .mockResolvedValue(
-        directServiceConfig as unknown as RawServiceConfiguration
-      );
+      .mockResolvedValue(directServiceConfig as unknown as IntegrationConfig);
   });
 
   it("makes an authenticated request", async () => {
@@ -268,7 +266,7 @@ describe("Retry token request", () => {
     jest
       .spyOn(Locator.prototype, "getLocalConfig")
       .mockResolvedValue(
-        directTokenServiceConfig as unknown as RawServiceConfiguration
+        directTokenServiceConfig as unknown as IntegrationConfig
       );
   });
 

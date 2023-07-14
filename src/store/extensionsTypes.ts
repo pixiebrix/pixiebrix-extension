@@ -17,38 +17,38 @@
 
 import {
   type ActivatedModComponent,
-  type UnresolvedExtension,
-} from "@/types/extensionTypes";
+  type UnresolvedModComponent,
+} from "@/types/modComponentTypes";
 
 /**
  * @deprecated use PersistedOptionsState - this is only used in the migration
  */
-export type LegacyExtensionObjectShapeState = {
+export type LegacyModComponentObjectShapeState = {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
   extensions: {
     // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
     [extensionPointId: string]: {
-      [extensionId: string]: UnresolvedExtension;
+      [extensionId: string]: UnresolvedModComponent;
     };
   };
 };
 
-export type ExtensionOptionsState = {
+export type ModComponentOptionsState = {
   extensions: ActivatedModComponent[];
 };
 
 /**
- * @deprecated use ExtensionOptionsState - this is only used in a migration
+ * @deprecated use ModComponentOptionsState - this is only used in a migration
  */
-export type LegacyExtensionObjectState = {
-  extensions: UnresolvedExtension[];
+export type LegacyModComponentObjectState = {
+  extensions: UnresolvedModComponent[];
 };
 
 export type OptionsState =
-  | LegacyExtensionObjectShapeState
-  | LegacyExtensionObjectState
-  | ExtensionOptionsState;
+  | LegacyModComponentObjectShapeState
+  | LegacyModComponentObjectState
+  | ModComponentOptionsState;
 
-export type ExtensionsRootState = {
+export type ModComponentsRootState = {
   options: OptionsState;
 };

@@ -22,7 +22,7 @@ import {
   type RendererOutput,
 } from "@/types/runtimeTypes";
 
-export abstract class Renderer extends BrickABC {
+export abstract class RendererABC extends BrickABC {
   abstract render(
     inputs: BrickArgs,
     options: BrickOptions

@@ -15,11 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSharingType, isExtension, isUnavailableMod } from "./modUtils";
+import {
+  getSharingType,
+  isResolvedModComponent,
+  isUnavailableMod,
+} from "./modUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
@@ -138,13 +142,13 @@ describe("getSharingType", () => {
 
 describe("isExtension", () => {
   it("returns true for an extension", () => {
-    const mod = extensionFactory() as ResolvedExtension;
-    expect(isExtension(mod)).toBe(true);
+    const mod = extensionFactory() as ResolvedModComponent;
+    expect(isResolvedModComponent(mod)).toBe(true);
   });
 
   it("returns false for a recipe", () => {
     const mod = recipeDefinitionFactory();
-    expect(isExtension(mod)).toBe(false);
+    expect(isResolvedModComponent(mod)).toBe(false);
   });
 });
 
@@ -162,7 +166,7 @@ describe("isUnavailableMod", () => {
   });
 
   it("returns false for an extension", () => {
-    const mod = extensionFactory() as ResolvedExtension;
+    const mod = extensionFactory() as ResolvedModComponent;
     expect(isUnavailableMod(mod)).toBe(false);
   });
 });

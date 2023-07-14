@@ -22,21 +22,21 @@ import VarAnalysis, {
 } from "./varAnalysis";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import IfElse from "@/blocks/transformers/controlFlow/IfElse";
-import ForEach from "@/blocks/transformers/controlFlow/ForEach";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
   makeTemplateExpression,
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
-import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
-import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
+import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import {
   type ButtonDocumentElement,
@@ -60,7 +60,7 @@ jest.mocked(services.locate).mockResolvedValue(
   })
 );
 
-jest.mock("@/blocks/registry", () => ({
+jest.mock("@/bricks/registry", () => ({
   __esModule: true,
   default: {
     lookup: jest.fn().mockResolvedValue({
@@ -101,7 +101,7 @@ describe("Collecting available vars", () => {
 
   describe("general", () => {
     beforeEach(() => {
-      analysis = new VarAnalysis([], {});
+      analysis = new VarAnalysis({ trace: [], modState: {} });
     });
 
     test("collects the context vars", async () => {
@@ -205,7 +205,7 @@ describe("Collecting available vars", () => {
 
   describe("mod variables", () => {
     it("collects actual mod variables", async () => {
-      const analysis = new VarAnalysis([], { foo: 42 });
+      const analysis = new VarAnalysis({ trace: [], modState: { foo: 42 } });
 
       const extension = formStateFactory({}, [brickConfigFactory()]);
 
@@ -223,7 +223,7 @@ describe("Collecting available vars", () => {
 
   describe("blueprint @options", () => {
     beforeEach(() => {
-      analysis = new VarAnalysis([], {});
+      analysis = new VarAnalysis({ trace: [], modState: {} });
     });
 
     test.each([{}, null, undefined])("no options", async (optionsSchema) => {
@@ -370,7 +370,7 @@ describe("Collecting available vars", () => {
             extension.extension.blockPipeline[0].id,
             {
               block: {
-                // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
+                // HtmlReader's output schema, see @/bricks/readers/HtmlReader.ts
                 outputSchema,
               },
             },
@@ -385,7 +385,7 @@ describe("Collecting available vars", () => {
 
     test("reads output schema of a block when defined", async () => {
       const secondBlockKnownVars = await runAnalysisWithOutputSchema(
-        // HtmlReader's output schema, see @/blocks/readers/HtmlReader.ts
+        // HtmlReader's output schema, see @/bricks/readers/HtmlReader.ts
         {
           $schema: "https://json-schema.org/draft/2019-09/schema#",
           type: "object",
@@ -419,7 +419,7 @@ describe("Collecting available vars", () => {
 
     test("supports output schema with no properties", async () => {
       const secondBlockKnownVars = await runAnalysisWithOutputSchema(
-        // FormData's output schema, see @/blocks/transformers/FormData.ts
+        // FormData's output schema, see @/bricks/transformers/FormData.ts
         {
           $schema: "https://json-schema.org/draft/2019-09/schema#",
           type: "object",
@@ -480,7 +480,7 @@ describe("Collecting available vars", () => {
 
     test("supports array of objects", async () => {
       const secondBlockKnownVars = await runAnalysisWithOutputSchema(
-        // PageSemanticReader's output schema, see @/blocks/readers/PageSemanticReader.ts
+        // PageSemanticReader's output schema, see @/bricks/readers/PageSemanticReader.ts
         {
           $schema: "https://json-schema.org/draft/2019-09/schema#",
           type: "object",
@@ -700,7 +700,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(undefined, [documentRendererBrick]);
 
-      analysis = new VarAnalysis([], {});
+      analysis = new VarAnalysis({ trace: [], modState: {} });
       await analysis.run(extension);
     });
 
@@ -762,7 +762,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(undefined, [documentRendererBrick]);
 
-      analysis = new VarAnalysis([], {});
+      analysis = new VarAnalysis({ trace: [], modState: {} });
       await analysis.run(extension);
     });
 
@@ -812,7 +812,7 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      analysis = new VarAnalysis([], {});
+      analysis = new VarAnalysis({ trace: [], modState: {} });
       await analysis.run(extension);
     });
 
@@ -852,7 +852,7 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      analysis = new VarAnalysis([], {});
+      analysis = new VarAnalysis({ trace: [], modState: {} });
       await analysis.run(extension);
     });
 
@@ -888,7 +888,7 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      analysis = new VarAnalysis([], {});
+      analysis = new VarAnalysis({ trace: [], modState: {} });
       await analysis.run(extension);
     });
 
@@ -959,7 +959,7 @@ describe("Collecting available vars", () => {
 });
 
 describe("Invalid template", () => {
-  let extension: FormState;
+  let extension: ModComponentFormState;
   let analysis: VarAnalysis;
 
   beforeEach(() => {
@@ -984,7 +984,7 @@ describe("Invalid template", () => {
 
     extension = formStateFactory(undefined, [invalidEchoBlock, validEchoBlock]);
 
-    analysis = new VarAnalysis([], {});
+    analysis = new VarAnalysis({ trace: [], modState: {} });
   });
 
   test("analysis doesn't throw", async () => {
@@ -1017,7 +1017,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis([], {});
+    const analysis = new VarAnalysis({ trace: [], modState: {} });
     await analysis.run(extension);
 
     expect(analysis.getAnnotations()).toHaveLength(0);
@@ -1033,7 +1033,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis([], {});
+    const analysis = new VarAnalysis({ trace: [], modState: {} });
     await analysis.run(extension);
 
     expect(analysis.getAnnotations()).toHaveLength(0);
@@ -1049,7 +1049,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis([], {});
+    const analysis = new VarAnalysis({ trace: [], modState: {} });
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1069,7 +1069,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis([], {});
+    const analysis = new VarAnalysis({ trace: [], modState: {} });
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1087,7 +1087,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis([], {});
+    const analysis = new VarAnalysis({ trace: [], modState: {} });
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1112,7 +1112,7 @@ describe("var analysis integration tests", () => {
 
     extension.extensionPoint.definition.trigger = "keypress";
 
-    const analysis = new VarAnalysis([], {});
+    const analysis = new VarAnalysis({ trace: [], modState: {} });
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1134,7 +1134,7 @@ describe("var analysis integration tests", () => {
 
     extension.extensionPoint.definition.trigger = "custom";
 
-    const analysis = new VarAnalysis([], {});
+    const analysis = new VarAnalysis({ trace: [], modState: {} });
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1157,7 +1157,7 @@ describe("var analysis integration tests", () => {
 
     extension.extensionPoint.definition.trigger = "selectionchange";
 
-    const analysis = new VarAnalysis([], {});
+    const analysis = new VarAnalysis({ trace: [], modState: {} });
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();

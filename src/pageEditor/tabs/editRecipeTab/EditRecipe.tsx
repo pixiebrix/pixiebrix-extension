@@ -38,7 +38,7 @@ import Alert from "@/components/Alert";
 import { createSelector } from "reselect";
 import { lt } from "semver";
 import { useOptionalRecipe } from "@/recipes/recipesHooks";
-import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -81,7 +81,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
   const savedMetadata = recipe?.metadata;
   const metadata = dirtyMetadata ?? savedMetadata;
 
-  const initialFormState: RecipeMetadataFormState = {
+  const initialFormState: ModMetadataFormState = {
     id: metadata?.id,
     name: metadata?.name,
     version: metadata?.version,
@@ -90,7 +90,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
-    (metadata: RecipeMetadataFormState) => {
+    (metadata: ModMetadataFormState) => {
       dispatch(actions.editRecipeMetadata(metadata));
     },
     [dispatch]

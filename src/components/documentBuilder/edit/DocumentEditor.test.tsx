@@ -23,12 +23,12 @@ import DocumentEditor from "./DocumentEditor";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { toExpression } from "@/testUtils/testHelpers";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
@@ -143,7 +143,7 @@ describe("remove element", () => {
    * @returns Rendered result and reference to the current Formik state.
    */
   function renderDocumentEditorWithFormState(
-    formState: FormState,
+    formState: ModComponentFormState,
     initialActiveElement: string = null
   ) {
     const formikStateRef = {
@@ -151,7 +151,7 @@ describe("remove element", () => {
     };
 
     const WrappedEditor = () => {
-      const { values } = useFormikContext<FormState>();
+      const { values } = useFormikContext<ModComponentFormState>();
       formikStateRef.current = values;
 
       return (
@@ -176,7 +176,7 @@ describe("remove element", () => {
 
   test("removes service dependency", async () => {
     // Services included in the form state
-    const services: ServiceDependency[] = [
+    const services: IntegrationDependency[] = [
       {
         id: validateRegistryId("@test/service"),
         outputKey: "serviceOutput" as OutputKey,

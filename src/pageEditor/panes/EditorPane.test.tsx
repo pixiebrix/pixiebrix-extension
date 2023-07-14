@@ -27,7 +27,7 @@ import {
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import brickRegistry from "@/blocks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   type EditorRootState,
   PipelineFlavor,
@@ -36,13 +36,13 @@ import {
   echoBrick,
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { defaultBlockConfig } from "@/blocks/util";
+import { defaultBlockConfig } from "@/bricks/util";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import { JQTransformer } from "@/blocks/transformers/jq";
-import { AlertEffect } from "@/blocks/effects/alert";
-import ForEach from "@/blocks/transformers/controlFlow/ForEach";
+import { JQTransformer } from "@/bricks/transformers/jq";
+import { AlertEffect } from "@/bricks/effects/alert";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
   makeTemplateExpression,
@@ -51,10 +51,10 @@ import { type OutputKey, type PipelineExpression } from "@/types/runtimeTypes";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
-import { MarkdownRenderer } from "@/blocks/renderers/markdown";
+import { MarkdownRenderer } from "@/bricks/renderers/markdown";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
@@ -146,7 +146,7 @@ beforeEach(() => {
 });
 afterEach(async () => clock.runAllAsync());
 
-const getPlainFormState = (): FormState =>
+const getPlainFormState = (): ModComponentFormState =>
   formStateFactory(undefined, [
     brickConfigFactory({
       id: echoBrick.id,
@@ -160,7 +160,7 @@ const getPlainFormState = (): FormState =>
     }),
   ]);
 
-const getFormStateWithSubPipelines = (): FormState =>
+const getFormStateWithSubPipelines = (): ModComponentFormState =>
   formStateFactory(undefined, [
     brickConfigFactory({
       id: echoBrick.id,

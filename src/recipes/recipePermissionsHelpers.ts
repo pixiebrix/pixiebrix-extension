@@ -17,9 +17,9 @@
 
 import {
   type ModDefinition,
-  type ResolvedExtensionDefinition,
+  type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type ServiceAuthPair } from "@/types/serviceTypes";
+import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import {
   ensurePermissionsFromUserGesture,
@@ -28,22 +28,26 @@ import {
 import { containsPermissions } from "@/background/messenger/api";
 import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import { type IExtension } from "@/types/extensionTypes";
+import extensionPointRegistry from "@/starterBricks/registry";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 async function collectExtensionDefinitionPermissions(
-  extensionPoints: ResolvedExtensionDefinition[],
-  serviceAuths: ServiceAuthPair[]
+  extensionPoints: ResolvedModComponentDefinition[],
+  serviceAuths: IntegrationConfigPair[]
 ): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
     collectServiceOriginPermissions(serviceAuth)
   );
 
   const extensionPointPromises = extensionPoints.map(
-    async ({ id, permissions = {}, config }: ResolvedExtensionDefinition) => {
+    async ({
+      id,
+      permissions = {},
+      config,
+    }: ResolvedModComponentDefinition) => {
       const extensionPoint = await extensionPointRegistry.lookup(id);
 
       let inner: Permissions.Permissions = {};
@@ -53,7 +57,7 @@ async function collectExtensionDefinitionPermissions(
         //  to not depend on irrelevant information, e.g., the uuid of the extension. This will also involve changing
         //  the type of getBlocks on the ExtensionPoint interface
         inner = await collectExtensionPermissions(
-          { config } as unknown as IExtension,
+          { config } as unknown as ModComponentBase,
           {
             extensionPoint,
           }
@@ -85,7 +89,7 @@ async function collectExtensionDefinitionPermissions(
  */
 export async function checkRecipePermissions(
   recipe: Pick<ModDefinition, "definitions" | "extensionPoints">,
-  selectedAuths: ServiceAuthPair[]
+  selectedAuths: IntegrationConfigPair[]
 ): Promise<PermissionsStatus> {
   const extensionDefinitions = await resolveRecipeInnerDefinitions(recipe);
   const permissions = await collectExtensionDefinitionPermissions(
@@ -116,7 +120,7 @@ export async function checkRecipePermissions(
  */
 export async function ensureRecipePermissionsFromUserGesture(
   recipe: ModDefinition,
-  selectedAuths: ServiceAuthPair[]
+  selectedAuths: IntegrationConfigPair[]
 ): Promise<boolean> {
   // Single method to make mocking in tests easier
   return ensurePermissionsFromUserGesture(

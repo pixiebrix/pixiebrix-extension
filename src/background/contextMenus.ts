@@ -22,19 +22,19 @@ import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import {
   type ContextMenuConfig,
-  ContextMenuExtensionPoint,
-} from "@/extensionPoints/contextMenu";
+  ContextMenuStarterBrickABC,
+} from "@/starterBricks/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
-  type IExtension,
-  type ResolvedExtension,
-} from "@/types/extensionTypes";
+  type ModComponentBase,
+  type ResolvedModComponent,
+} from "@/types/modComponentTypes";
 
 const MENU_PREFIX = "pixiebrix-";
 
@@ -163,7 +163,7 @@ async function _ensureContextMenu({
 }
 
 export async function preloadContextMenus(
-  extensions: IExtension[]
+  extensions: ModComponentBase[]
 ): Promise<void> {
   expectContext("background");
   await Promise.allSettled(
@@ -173,9 +173,9 @@ export async function preloadContextMenus(
       const extensionPoint = await extensionPointRegistry.lookup(
         resolved.extensionPointId
       );
-      if (extensionPoint instanceof ContextMenuExtensionPoint) {
+      if (extensionPoint instanceof ContextMenuStarterBrickABC) {
         await extensionPoint.ensureMenu(
-          definition as unknown as ResolvedExtension<ContextMenuConfig>
+          definition as unknown as ResolvedModComponent<ContextMenuConfig>
         );
       }
     })

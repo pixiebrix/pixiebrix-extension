@@ -29,7 +29,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { type Expression } from "@/types/runtimeTypes";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { isFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { isModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
@@ -58,7 +58,7 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
       // This widget is also used outside the Edit tab of the Page Editor,
       // so this won't always be FormState. We only need to clean up services
       // when it is FormState.
-      if (!isFormState(formState)) {
+      if (!isModComponentFormState(formState)) {
         return;
       }
 

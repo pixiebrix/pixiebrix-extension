@@ -31,7 +31,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import FormBuilder from "./FormBuilder";
 import { type RJSFSchema } from "./formBuilderTypes";
 import userEvent from "@testing-library/user-event";
-import { CustomFormRenderer } from "@/blocks/renderers/customForm";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 
 let exampleFormSchema: RJSFSchema;
 let defaultFieldName: string;

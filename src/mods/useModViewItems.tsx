@@ -29,7 +29,7 @@ import {
   getSharingType,
   getUpdatedAt,
   isDeployment,
-  isExtension,
+  isResolvedModComponent,
   isUnavailableMod,
   updateAvailable,
 } from "@/utils/modUtils";
@@ -64,7 +64,7 @@ function useModViewItems(mods: Mod[]): {
 
   const isActive = useCallback(
     (mod: Mod) => {
-      if (isExtension(mod)) {
+      if (isResolvedModComponent(mod)) {
         return installedExtensionIds.has(mod.id);
       }
 
@@ -76,7 +76,7 @@ function useModViewItems(mods: Mod[]): {
   const getStatus = useCallback(
     (mod: Mod): ModStatus => {
       if (isDeployment(mod, installedExtensions)) {
-        if (isExtension(mod)) {
+        if (isResolvedModComponent(mod)) {
           return isDeploymentActive(mod) ? "Active" : "Paused";
         }
 
@@ -100,7 +100,7 @@ function useModViewItems(mods: Mod[]): {
       (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe])
     );
 
-    // Pick any IExtension from the blueprint to check for updates. All of their versions should be the same.
+    // Pick any ModComponentBase from the blueprint to check for updates. All of their versions should be the same.
     const extensionsMap = new Map(
       installedExtensions
         .filter((x) => x._recipe?.id)

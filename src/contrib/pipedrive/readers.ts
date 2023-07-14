@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { startCase, mapValues } from "lodash";
 import { withReadWindow } from "@/pageScript/messenger/api";
-import { type PathSpec } from "@/blocks/readers/window";
+import { type PathSpec } from "@/bricks/readers/window";
 import { type JsonObject } from "type-fest";
 
 export async function checkRoute(expectedRoute: string): Promise<boolean> {
@@ -28,7 +28,7 @@ export async function checkRoute(expectedRoute: string): Promise<boolean> {
   return route === expectedRoute;
 }
 
-export class PipedriveReader extends Reader {
+export class PipedriveReader extends ReaderABC {
   private get ROOT_PATH() {
     return "app.router.currentView.model.attributes";
   }

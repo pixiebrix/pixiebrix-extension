@@ -217,6 +217,11 @@ class VarMap {
     values,
     parentPath = "",
   }: SetExistenceFromValuesArgs): void {
+    if (values == null) {
+      console.warn(`setExistenceFromValues: values null for source: ${source}`);
+      return;
+    }
+
     for (const [key, value] of Object.entries(values)) {
       if (typeof value === "object") {
         this.setExistenceFromValues({

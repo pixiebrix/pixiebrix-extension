@@ -20,7 +20,7 @@ import {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import AsyncSelect from "react-select/async";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -43,7 +43,7 @@ export type AsyncOptionsFactory<
   Args extends DefaultFactoryArgs = DefaultFactoryArgs,
   T = unknown
 > = (
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   factoryArgs?: Args
 ) => Promise<Array<Option<T>>>;
 
@@ -53,7 +53,7 @@ type AsyncRemoteSelectWidgetProps<
 > = CustomFieldWidgetProps<T, SelectLike<Option<T>>> & {
   isClearable?: boolean;
   optionsFactory: AsyncOptionsFactory<Args, T>;
-  config: SanitizedServiceConfiguration | null;
+  config: SanitizedIntegrationConfig | null;
   factoryArgs?: UnknownObject;
   loadingMessage?: React.FC<{ inputValue: string }>;
   defaultOptions?: boolean | Array<Option<T>>;

@@ -20,10 +20,10 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import useExtensionPermissions, {
   type DetailedPermissions,
 } from "@/permissions/useExtensionPermissions";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { compact, pick, uniqBy } from "lodash";
 import { type StorageEstimate } from "@/types/browserTypes";
-import { count as registrySize } from "@/registry/localRegistry";
+import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
 import { count as eventsSize } from "@/background/telemetry";
@@ -35,7 +35,7 @@ async function collectDiagnostics({
   extensions,
   permissions,
 }: {
-  extensions: UnresolvedExtension[];
+  extensions: UnresolvedModComponent[];
   permissions: DetailedPermissions;
 }) {
   const manifest = browser.runtime.getManifest();

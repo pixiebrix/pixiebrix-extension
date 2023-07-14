@@ -21,10 +21,10 @@ import ServiceEditorModal from "./ServiceEditorModal";
 import { action } from "@storybook/addon-actions";
 import { fromJS } from "@/services/factory";
 import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
-import { type ServiceDefinition } from "@/types/serviceTypes";
+import { type IntegrationDefinition } from "@/types/integrationTypes";
 
-import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
-import automationAnywhereYaml from "@contrib/services/automation-anywhere.yaml?loadAsText";
+import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
+import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml?loadAsText";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
@@ -50,7 +50,7 @@ export default {
 const Template: Story<StoryType> = ({ fixture, ...args }) => {
   const service = fromJS(
     // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
-    loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as ServiceDefinition
+    loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as IntegrationDefinition
   );
 
   // Cheap call, just call in the render function

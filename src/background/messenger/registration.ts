@@ -21,21 +21,21 @@ import { expectContext } from "@/utils/expectContext";
 import * as sheets from "@/contrib/google/sheets/handlers";
 import {
   ensureContextMenu,
-  uninstallContextMenu,
   preloadContextMenus,
+  uninstallContextMenu,
 } from "@/background/contextMenus";
 import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
   activateTab,
   closeTab,
   openTab,
+  requestRunInBroadcast,
   requestRunInOpener,
   requestRunInTarget,
-  requestRunInBroadcast,
-  waitForTargetByUrl,
   requestRunInTop,
+  waitForTargetByUrl,
 } from "@/background/executor";
-import * as registry from "@/registry/localRegistry";
+import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
@@ -80,13 +80,14 @@ expectContext("background");
 
 declare global {
   interface MessengerMethods {
+    GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: typeof sheets.getAllSpreadsheets;
+    GOOGLE_SHEETS_GET_SPREADSHEET: typeof sheets.getSpreadsheet;
     GOOGLE_SHEETS_GET_TAB_NAMES: typeof sheets.getTabNames;
     GOOGLE_SHEETS_GET_SHEET_PROPERTIES: typeof sheets.getSheetProperties;
     GOOGLE_SHEETS_GET_HEADERS: typeof sheets.getHeaders;
+    GOOGLE_SHEETS_GET_ALL_ROWS: typeof sheets.getAllRows;
     GOOGLE_SHEETS_CREATE_TAB: typeof sheets.createTab;
     GOOGLE_SHEETS_APPEND_ROWS: typeof sheets.appendRows;
-    GOOGLE_SHEETS_BATCH_UPDATE: typeof sheets.batchUpdate;
-    GOOGLE_SHEETS_BATCH_GET: typeof sheets.batchGet;
 
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     INJECT_SCRIPT: typeof ensureContentScript;
@@ -156,13 +157,14 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
+    GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: sheets.getAllSpreadsheets,
+    GOOGLE_SHEETS_GET_SPREADSHEET: sheets.getSpreadsheet,
     GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,
     GOOGLE_SHEETS_GET_SHEET_PROPERTIES: sheets.getSheetProperties,
     GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
+    GOOGLE_SHEETS_GET_ALL_ROWS: sheets.getAllRows,
     GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
     GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
-    GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
-    GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
 
     ACTIVATE_PARTNER_THEME: initPartnerTheme,
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,

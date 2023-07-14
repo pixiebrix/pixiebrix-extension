@@ -10,8 +10,8 @@ import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget"
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { useField, useFormikContext } from "formik";
 import { joinName } from "@/utils";
-import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type DebounceOptions } from "@/extensionPoints/types";
+import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type DebounceOptions } from "@/starterBricks/types";
 
 const DebounceFieldSet: React.FC<{
   isLocked: boolean;

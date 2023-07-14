@@ -27,10 +27,10 @@ import {
   type BrickConfig,
   type BrickPipeline,
   type Branch,
-} from "@/blocks/types";
+} from "@/bricks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
   getBlockAnnotations,
   getDocumentPipelinePaths,
@@ -53,7 +53,7 @@ import {
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
-import useAllBlocks from "@/blocks/hooks/useAllBlocks";
+import useAllBlocks from "@/bricks/hooks/useAllBlocks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
@@ -61,7 +61,7 @@ import {
   selectActiveNodeId,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import { getRootPipelineFlavor } from "@/blocks/blockFilterHelpers";
+import { getRootPipelineFlavor } from "@/bricks/blockFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -69,7 +69,7 @@ import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";

@@ -17,7 +17,7 @@
 
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { selectServiceVariables } from "./serviceFieldUtils";
@@ -194,7 +194,7 @@ describe("selectVariables", () => {
 
   test("document with Form with database storage", () => {
     // This is a sample of an actual form state with Custom form inside a Document
-    const formState: FormState = {
+    const formState: ModComponentFormState = {
       uuid: "a98f5c19-96a2-4c69-89ed-c8e9b7059000" as UUID,
       apiVersion: "v3",
       installed: true,

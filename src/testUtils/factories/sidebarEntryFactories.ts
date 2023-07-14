@@ -27,7 +27,7 @@ import {
 } from "@/types/sidebarTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
+import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 
 const activateRecipeEntryFactory = define<ActivateModPanelEntry>({
   type: "activateRecipe",

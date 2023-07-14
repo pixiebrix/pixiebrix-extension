@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produce } from "immer";
 import {
   type Expression,
@@ -29,7 +29,10 @@ import {
   isVarExpression,
 } from "@/utils/expressionUtils";
 
-export type ServiceSlice = Pick<FormState, "services" | "extension">;
+export type ServiceSlice = Pick<
+  ModComponentFormState,
+  "services" | "extension"
+>;
 
 /**
  * Regex matching identifiers generated via defaultOutputKey
@@ -68,7 +71,7 @@ function deepFindServiceVariables(obj: unknown, variables: Set<string>) {
  * Return set of service variables referenced by the extension. Variables include the `@`-prefix
  */
 export function selectServiceVariables(
-  state: Pick<FormState, "extension">
+  state: Pick<ModComponentFormState, "extension">
 ): Set<string> {
   const variables = new Set<string>();
   deepFindServiceVariables(state.extension.blockPipeline, variables);

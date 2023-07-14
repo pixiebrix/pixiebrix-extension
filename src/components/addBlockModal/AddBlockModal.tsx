@@ -44,7 +44,7 @@ import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import useAllBlocks from "@/blocks/hooks/useAllBlocks";
+import useAllBlocks from "@/bricks/hooks/useAllBlocks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
 import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";

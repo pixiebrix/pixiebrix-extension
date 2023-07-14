@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
@@ -32,9 +32,9 @@ import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import {
-  type SanitizedServiceConfiguration,
-  type ServiceDependency,
-} from "@/types/serviceTypes";
+  type SanitizedIntegrationConfig,
+  type IntegrationDependency,
+} from "@/types/integrationTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
@@ -50,7 +50,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         .fn()
         .mockResolvedValue(pixieServiceFactory());
 
-      const dependencies: ServiceDependency[] = [
+      const dependencies: IntegrationDependency[] = [
         { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
       ];
 
@@ -84,7 +84,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       .fn()
       .mockResolvedValue(pixieServiceFactory());
 
-    const dependencies: ServiceDependency[] = [
+    const dependencies: IntegrationDependency[] = [
       { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
     ];
 
@@ -115,9 +115,9 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       config: {
         prop: "abc123",
       },
-    } as unknown as SanitizedServiceConfiguration);
+    } as unknown as SanitizedIntegrationConfig);
 
-    const dependencies: ServiceDependency[] = [
+    const dependencies: IntegrationDependency[] = [
       { id: serviceId, outputKey: validateOutputKey("service") },
     ];
 
@@ -144,7 +144,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       .fn()
       .mockResolvedValue(pixieServiceFactory());
 
-    const dependencies: ServiceDependency[] = [
+    const dependencies: IntegrationDependency[] = [
       { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
     ];
 
@@ -180,9 +180,9 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       config: {
         prop: "abc123",
       },
-    } as unknown as SanitizedServiceConfiguration);
+    } as unknown as SanitizedIntegrationConfig);
 
-    const dependencies: ServiceDependency[] = [
+    const dependencies: IntegrationDependency[] = [
       { id: serviceId, outputKey: validateOutputKey("service") },
     ];
 
@@ -224,9 +224,9 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         config: {
           prop: "abc123",
         },
-      } as unknown as SanitizedServiceConfiguration);
+      } as unknown as SanitizedIntegrationConfig);
 
-      const dependencies: ServiceDependency[] = [
+      const dependencies: IntegrationDependency[] = [
         { id: serviceId, outputKey: validateOutputKey("service") },
       ];
 

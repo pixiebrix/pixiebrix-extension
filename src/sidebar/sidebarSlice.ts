@@ -36,7 +36,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
-import { type SubmitPanelAction } from "@/blocks/errors";
+import { type SubmitPanelAction } from "@/bricks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import { castDraft } from "immer";
 
@@ -176,7 +176,7 @@ export function fixActiveTabOnRemove(
       const matchingMod = panels.find(
         ({ blueprintId }) =>
           "blueprintId" in removedEntry &&
-          // Need to check for removedEntry.blueprintId to avoid switching between IExtensions that don't have blueprint ids
+          // Need to check for removedEntry.blueprintId to avoid switching between ModComponentBases that don't have blueprint ids
           blueprintId === removedEntry.blueprintId &&
           blueprintId
       );

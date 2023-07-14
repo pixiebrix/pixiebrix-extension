@@ -22,14 +22,14 @@ import {
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type BrickConfig } from "@/blocks/types";
-import { type StarterBrickType } from "@/extensionPoints/types";
+import { type BrickConfig } from "@/bricks/types";
+import { type StarterBrickType } from "@/starterBricks/types";
 import {
   type AddBlockLocation,
   type EditorRootState,
   type EditorState,
   ModalKey,
-  type RecipeMetadataFormState,
+  type ModMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -53,9 +53,9 @@ import {
   selectNotDeletedExtensions,
 } from "./editorSelectors";
 import {
-  type FormState,
+  type ModComponentFormState,
   isQuickBarExtensionPoint,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
   activateElement,
@@ -69,20 +69,20 @@ import {
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
-import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
-import { testMatchPatterns } from "@/blocks/available";
-import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
+import { testMatchPatterns } from "@/bricks/available";
+import { type BaseExtensionPointState } from "@/pageEditor/starterBricks/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
 import {
@@ -91,8 +91,8 @@ import {
 } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
 export const initialState: EditorState = {
@@ -162,7 +162,7 @@ type AvailableInstalled = {
 const checkAvailableInstalledExtensions = createAsyncThunk<
   AvailableInstalled,
   void,
-  { state: EditorRootState & ExtensionsRootState }
+  { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
   const elements = selectNotDeletedElements(thunkAPI.getState());
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
@@ -185,7 +185,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
       }
 
       // QuickBar is installed on every page, need to filter by the documentUrlPatterns
-      if (QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)) {
+      if (QuickBarStarterBrickABC.isQuickBarExtensionPoint(extensionPoint)) {
         return testMatchPatterns(extensionPoint.documentUrlPatterns, tabUrl);
       }
 
@@ -263,7 +263,7 @@ const checkActiveElementAvailability = createAsyncThunk<
     unavailableDynamicCount: number;
   },
   void,
-  { state: EditorRootState & ExtensionsRootState }
+  { state: EditorRootState & ModComponentsRootState }
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentURL();
   const state = thunkAPI.getState();
@@ -303,7 +303,7 @@ const checkActiveElementAvailability = createAsyncThunk<
     installedExtensions,
     dynamicElements,
     (extensionOrElement) => {
-      if (isExtension(extensionOrElement)) {
+      if (isModComponentBase(extensionOrElement)) {
         return extensionOrElement.id;
       }
 
@@ -342,7 +342,7 @@ export const editorSlice = createSlice({
     markEditable(state, action: PayloadAction<RegistryId>) {
       state.knownEditable.push(action.payload);
     },
-    addElement(state, action: PayloadAction<FormState>) {
+    addElement(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       state.inserting = null;
       state.elements.push(element);
@@ -363,7 +363,7 @@ export const editorSlice = createSlice({
       state.activeElementId = uuid;
       state.selectionSeq++;
     },
-    selectInstalled(state, action: PayloadAction<FormState>) {
+    selectInstalled(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
@@ -374,7 +374,7 @@ export const editorSlice = createSlice({
 
       activateElement(state, element);
     },
-    resetInstalled(state, actions: PayloadAction<FormState>) {
+    resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
       const element = actions.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
@@ -421,7 +421,7 @@ export const editorSlice = createSlice({
      * Sync the redux state with the form state.
      * Used on by the page editor to set changed version of the element in the store.
      */
-    editElement(state, action: PayloadAction<FormState>) {
+    editElement(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
@@ -438,7 +438,7 @@ export const editorSlice = createSlice({
      */
     updateElement(
       state,
-      action: PayloadAction<{ uuid: UUID } & Partial<FormState>>
+      action: PayloadAction<{ uuid: UUID } & Partial<ModComponentFormState>>
     ) {
       const { uuid, ...elementUpdate } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
@@ -554,12 +554,12 @@ export const editorSlice = createSlice({
     },
     editRecipeOptionsDefinitions(
       state,
-      action: PayloadAction<OptionsDefinition>
+      action: PayloadAction<ModOptionsDefinition>
     ) {
       const { payload: options } = action;
       editRecipeOptionsDefinitions(state, options);
     },
-    editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
+    editRecipeMetadata(state, action: PayloadAction<ModMetadataFormState>) {
       const { payload: metadata } = action;
       editRecipeMetadata(state, metadata);
     },
@@ -570,7 +570,7 @@ export const editorSlice = createSlice({
     },
     updateRecipeMetadataForElements(
       state,
-      action: PayloadAction<IExtension["_recipe"]>
+      action: PayloadAction<ModComponentBase["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeElements = state.elements.filter(
@@ -587,7 +587,7 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         elementId: UUID;
-        recipeMetadata: IExtension["_recipe"];
+        recipeMetadata: ModComponentBase["_recipe"];
         keepLocalCopy: boolean;
       }>
     ) {
@@ -706,8 +706,8 @@ export const editorSlice = createSlice({
       action: PayloadAction<{
         oldRecipeId: RegistryId;
         newRecipeId: RegistryId;
-        metadata: RecipeMetadataFormState;
-        options: OptionsDefinition;
+        metadata: ModMetadataFormState;
+        options: ModOptionsDefinition;
       }>
     ) {
       const { oldRecipeId, newRecipeId, metadata, options } = action.payload;

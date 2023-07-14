@@ -35,7 +35,7 @@ import {
 import { cloneDeep } from "lodash";
 import { getCachedAuthData, getUserData } from "@/background/messenger/api";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
-import { Transformer } from "@/types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
@@ -114,7 +114,7 @@ const ENTERPRISE_EDITION_PUBLIC_PROPERTIES: SchemaProperties = {
   },
 };
 
-export class RunBot extends Transformer {
+export class RunBot extends TransformerABC {
   constructor() {
     super(
       AUTOMATION_ANYWHERE_RUN_BOT_ID,

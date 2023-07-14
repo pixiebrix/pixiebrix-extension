@@ -30,9 +30,9 @@ import { partial } from "lodash";
 import {
   customFormRendererSchema,
   type Storage,
-} from "@/blocks/renderers/customForm";
+} from "@/bricks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { type Options } from "react-select";
@@ -52,7 +52,7 @@ const databaseIdSchema: Schema = {
 
 function usePruneUnusedServiceDependencies() {
   const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
+    useFormikContext<ModComponentFormState>();
 
   return useCallback(() => {
     const nextState = produceExcludeUnusedDependencies(formState);

@@ -9,7 +9,7 @@ const restrictedZones = [
   // All of these files cannot import `from` (exclude self-imports)
   target:
     exporter === "contentScript"
-      ? `./src/!(${exporter}|blocks|extensionPoints)/**/*` // Temporary: Blocks and extensionPoints are implicitly run from CS
+      ? `./src/!(${exporter}|bricks|starterBricks)/**/*` // Temporary: Bricks and starterBricks are implicitly run from CS
       : `./src/!(${exporter})/**/*`,
 
   // The files above cannot import `from` this folder

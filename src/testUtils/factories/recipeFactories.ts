@@ -30,7 +30,7 @@ import {
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Permissions } from "webextension-polyfill";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import {
   validateRegistryId,
@@ -38,12 +38,12 @@ import {
   validateTimestamp,
 } from "@/types/helpers";
 import {
-  type StarterBrickConfig as ExtensionPointDefinition,
-  type StarterBrickDefinition as ExtensionPointConfigDefinition,
+  type StarterBrickConfig,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+  type StarterBrickDefinition,
+} from "@/starterBricks/types";
 import { freshIdentifier } from "@/utils";
-import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
+import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 
 import {
@@ -86,27 +86,25 @@ export const recipeDefinitionFactory = define<ModDefinition>({
   extensionPoints: array(extensionPointConfigFactory, 1),
 });
 
-export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
-  {
-    kind: "extensionPoint",
-    apiVersion: "v3",
-    metadata: (n: number) =>
-      recipeMetadataFactory({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: `Extension Point ${n}`,
-      }),
-    definition(n: number) {
-      const definition: ExtensionPointConfigDefinition = {
-        type: "menuItem" as StarterBrickType,
-        isAvailable: {
-          matchPatterns: [`https://www.mySite${n}.com/*`],
-        },
-        reader: validateRegistryId("@pixiebrix/document-context"),
-      };
-      return definition;
-    },
-  }
-);
+export const extensionPointDefinitionFactory = define<StarterBrickConfig>({
+  kind: "extensionPoint",
+  apiVersion: "v3",
+  metadata: (n: number) =>
+    recipeMetadataFactory({
+      id: validateRegistryId(`test/extension-point-${n}`),
+      name: `Extension Point ${n}`,
+    }),
+  definition(n: number) {
+    const definition: StarterBrickDefinition = {
+      type: "menuItem" as StarterBrickType,
+      isAvailable: {
+        matchPatterns: [`https://www.mySite${n}.com/*`],
+      },
+      reader: validateRegistryId("@pixiebrix/document-context"),
+    };
+    return definition;
+  },
+});
 
 type ExternalExtensionPointParams = {
   extensionPointId?: RegistryId;

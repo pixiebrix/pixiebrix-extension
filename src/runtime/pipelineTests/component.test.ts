@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import {
   contextBrick,
   echoBrick,
@@ -25,7 +25,7 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 
-import { fromJS } from "@/blocks/transformers/brickFactory";
+import { fromJS } from "@/bricks/transformers/brickFactory";
 import { validateSemVerString } from "@/types/helpers";
 import { setContext } from "@/testUtils/detectPageMock";
 

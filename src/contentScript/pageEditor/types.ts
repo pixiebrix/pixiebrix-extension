@@ -19,18 +19,18 @@ import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/extensionPoints/panelExtension";
+} from "@/starterBricks/panelExtension";
 import {
   type MenuDefinition,
-  type MenuItemExtensionConfig,
-} from "@/extensionPoints/menuItemExtension";
+  type MenuItemStarterBrickConfig,
+} from "@/starterBricks/menuItemExtension";
 import { type ElementInfo } from "@/pageScript/frameworks";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -40,7 +40,7 @@ export interface DynamicDefinition<
 > {
   type: StarterBrickType;
   extensionPointConfig: StarterBrickConfig<TExtensionPoint>;
-  extension: IExtension<TExtension>;
+  extension: ModComponentBase<TExtension>;
 }
 
 export type SelectMode = "element" | "container";
@@ -55,12 +55,12 @@ export type PanelSelectionResult = {
 };
 export type ButtonDefinition = DynamicDefinition<
   MenuDefinition,
-  MenuItemExtensionConfig
+  MenuItemStarterBrickConfig
 >;
 export type ButtonSelectionResult = {
   uuid: UUID;
   menu: Except<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
-  item: Pick<MenuItemExtensionConfig, "caption">;
+  item: Pick<MenuItemStarterBrickConfig, "caption">;
   containerInfo: ElementInfo;
 };
 

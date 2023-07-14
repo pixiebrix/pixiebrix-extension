@@ -43,7 +43,7 @@ import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { serializeError } from "serialize-error";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { type ServiceDefinition } from "@/types/serviceTypes";
+import { type IntegrationDefinition } from "@/types/integrationTypes";
 import {
   type ModDefinition,
   type UnsavedModDefinition,
@@ -177,7 +177,7 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Databases"],
     }),
-    getServices: builder.query<ServiceDefinition[], void>({
+    getServices: builder.query<IntegrationDefinition[], void>({
       query: () => ({
         url: "/api/services/",
         method: "get",

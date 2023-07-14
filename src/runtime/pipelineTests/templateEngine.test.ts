@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import {
   contextBrick,
   echoBrick,

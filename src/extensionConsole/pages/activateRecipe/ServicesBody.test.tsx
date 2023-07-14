@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useAuthOptions } from "@/hooks/auth";
-import { type ServiceDefinition } from "@/types/serviceTypes";
+import { type IntegrationDefinition } from "@/types/integrationTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -95,20 +95,20 @@ const service1 = {
     id: serviceId1,
     name: "Test Service 1",
   },
-} as ServiceDefinition;
+} as IntegrationDefinition;
 const service2 = {
   metadata: {
     id: serviceId2,
     name: "Test Service 2",
   },
-} as ServiceDefinition;
+} as IntegrationDefinition;
 
 beforeAll(() => {
   // These are only used for the service names in the descriptors
   appApiMock.onGet("/api/services/").reply(200, [service1, service2]);
 });
 
-function expectServiceDescriptorVisible(service: ServiceDefinition) {
+function expectServiceDescriptorVisible(service: IntegrationDefinition) {
   expect(screen.getByText(service.metadata.name)).toBeVisible();
   expect(screen.getByText(service.metadata.id)).toBeVisible();
 }

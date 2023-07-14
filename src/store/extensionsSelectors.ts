@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { createSelector } from "reselect";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty } from "lodash";
 
 export function selectExtensions({
   options,
-}: ExtensionsRootState): UnresolvedExtension[] {
+}: ModComponentsRootState): UnresolvedModComponent[] {
   if (!Array.isArray(options.extensions)) {
     console.warn("state migration has not been applied yet", {
       options,
@@ -36,15 +36,15 @@ export function selectExtensions({
 
 const extensionsForRecipeSelector = createSelector(
   selectExtensions,
-  (state: ExtensionsRootState, recipeId: RegistryId) => recipeId,
+  (state: ModComponentsRootState, recipeId: RegistryId) => recipeId,
   (extensions, recipeId) =>
     extensions.filter((extension) => extension._recipe?.id === recipeId)
 );
 
 export const selectExtensionsForRecipe =
-  (recipeId: RegistryId) => (state: ExtensionsRootState) =>
+  (recipeId: RegistryId) => (state: ModComponentsRootState) =>
     extensionsForRecipeSelector(state, recipeId);
 
 export const selectRecipeHasAnyExtensionsInstalled =
-  (recipeId: RegistryId) => (state: ExtensionsRootState) =>
+  (recipeId: RegistryId) => (state: ModComponentsRootState) =>
     !isEmpty(extensionsForRecipeSelector(state, recipeId));

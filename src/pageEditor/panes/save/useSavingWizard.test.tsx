@@ -33,12 +33,12 @@ import {
 } from "@/services/api";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
-import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import menuItem from "@/pageEditor/starterBricks/menuItem";
 import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
-import { type OptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
 import {
@@ -156,7 +156,7 @@ test("saves non recipe element", async () => {
   expect(createMock).toHaveBeenCalledWith({
     element,
     options: {
-      // Single IExtension, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
+      // Single ModComponentBase, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
       pushToCloud: true,
       checkPermissions: true,
       notifySuccess: true,
@@ -166,7 +166,7 @@ test("saves non recipe element", async () => {
 });
 
 describe("saving a Recipe Extension", () => {
-  const recipeOptions: OptionsDefinition = {
+  const recipeOptions: ModOptionsDefinition = {
     schema: {
       type: "object",
       properties: {
@@ -302,7 +302,7 @@ describe("saving a Recipe Extension", () => {
     expect(createMock).toHaveBeenCalledWith({
       element: elements[1],
       options: {
-        // Single IExtension, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
+        // Single ModComponentBase, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
         pushToCloud: true,
         // FIXME: verify checkPermissions should be false
         checkPermissions: false,

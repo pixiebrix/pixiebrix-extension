@@ -16,7 +16,7 @@
  */
 
 import { getIn, useFormikContext } from "formik";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
@@ -26,7 +26,7 @@ import { useDispatch } from "react-redux";
 
 function useDeleteElement(documentBodyName: string) {
   const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
+    useFormikContext<ModComponentFormState>();
 
   const dispatch = useDispatch();
 

@@ -46,11 +46,11 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
-import { CustomFormRenderer } from "@/blocks/renderers/customForm";
-import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
-import useAllBlocks from "@/blocks/hooks/useAllBlocks";
+import useAllBlocks from "@/bricks/hooks/useAllBlocks";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
 import { joinPathParts } from "@/utils";

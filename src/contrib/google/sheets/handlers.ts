@@ -23,17 +23,31 @@ import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
 import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/sheetsConstants";
 import { expectContext } from "@/utils/expectContext";
 import initGoogle, {
-  isGoogleInitialized,
   isGAPISupported,
+  isGoogleInitialized,
   markGoogleInvalidated,
 } from "@/contrib/google/initGoogle";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type AxiosRequestConfig } from "axios";
+import { proxyService } from "@/background/messenger/api";
+import {
+  type AppendValuesResponse,
+  type BatchUpdateSpreadsheetRequest,
+  type BatchUpdateSpreadsheetResponse,
+  type FileList,
+  type Spreadsheet,
+  type SpreadsheetProperties,
+  type ValueRange,
+} from "@/contrib/google/sheets/types";
 
-type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
-type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
-type BatchUpdateSpreadsheetResponse =
-  gapi.client.sheets.BatchUpdateSpreadsheetResponse;
-type Spreadsheet = gapi.client.sheets.Spreadsheet;
-type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
+const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
+const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
+
+export type SpreadsheetTarget = {
+  googleAccount: SanitizedIntegrationConfig | null;
+  spreadsheetId: string;
+  tabName?: string;
+};
 
 /**
  * Ensure GAPI is initialized and return the Google token.
@@ -91,78 +105,146 @@ export async function ensureSheetsReady({
   throw lastError;
 }
 
-export async function createTab(spreadsheetId: string, tabName: string) {
+export async function getAllSpreadsheets(
+  googleAccount: SanitizedIntegrationConfig | null
+): Promise<FileList> {
   const token = await ensureSheetsReady({ interactive: false });
 
+  const requestConfig: AxiosRequestConfig = {
+    url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'`,
+    method: "get",
+  };
+
+  if (!googleAccount) {
+    // Fall-back to using the token from ensureSheetsReady
+    requestConfig.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
   try {
-    return (await gapi.client.sheets.spreadsheets.batchUpdate({
-      spreadsheetId,
-      resource: {
-        requests: [
-          {
-            addSheet: {
-              properties: {
-                title: tabName,
-              },
-            },
-          },
-        ],
-      },
-    })) as BatchUpdateSpreadsheetResponse;
+    const { data } = await proxyService<FileList>(googleAccount, requestConfig);
+    return data;
   } catch (error) {
     throw await handleGoogleRequestRejection(token, error);
   }
+}
+
+async function batchUpdateSpreadsheet(
+  { googleAccount, spreadsheetId }: SpreadsheetTarget,
+  request: BatchUpdateSpreadsheetRequest
+): Promise<BatchUpdateSpreadsheetResponse> {
+  const token = await ensureSheetsReady({ interactive: false });
+
+  const requestConfig: AxiosRequestConfig<BatchUpdateSpreadsheetRequest> = {
+    url: `${SHEETS_BASE_URL}/${spreadsheetId}:batchUpdate`,
+    method: "post",
+    data: request,
+  };
+
+  if (!googleAccount) {
+    // Fall-back to using the token from ensureSheetsReady
+    requestConfig.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  try {
+    const { data } = await proxyService<BatchUpdateSpreadsheetResponse>(
+      googleAccount,
+      requestConfig
+    );
+    return data;
+  } catch (error) {
+    throw await handleGoogleRequestRejection(token, error);
+  }
+}
+
+export async function createTab({
+  tabName,
+  ...target
+}: SpreadsheetTarget): Promise<BatchUpdateSpreadsheetResponse> {
+  if (!tabName) {
+    throw new Error("tabName is required");
+  }
+
+  const batchRequest: BatchUpdateSpreadsheetRequest = {
+    requests: [
+      {
+        addSheet: {
+          properties: {
+            title: tabName,
+          },
+        },
+      },
+    ],
+  };
+  return batchUpdateSpreadsheet(target, batchRequest);
 }
 
 export async function appendRows(
-  spreadsheetId: string,
-  tabName: string,
-  values: any[]
-) {
+  { googleAccount, spreadsheetId, tabName }: SpreadsheetTarget,
+  values: unknown[][]
+): Promise<AppendValuesResponse> {
   const token = await ensureSheetsReady({ interactive: false });
 
-  try {
-    return (await gapi.client.sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: tabName,
+  const requestConfig: AxiosRequestConfig<ValueRange> = {
+    url: `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}:append`,
+    method: "post",
+    params: {
+      // See: https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption
       valueInputOption: "USER_ENTERED",
-      resource: {
-        majorDimension: "ROWS",
-        values,
-      },
-    })) as AppendValuesResponse;
+    },
+    data: {
+      majorDimension: "ROWS",
+      values,
+    },
+  };
+
+  if (!googleAccount) {
+    // Fall-back to using the token from ensureSheetsReady
+    requestConfig.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  try {
+    const { data } = await proxyService<AppendValuesResponse>(
+      googleAccount,
+      requestConfig
+    );
+    return data;
   } catch (error) {
     throw await handleGoogleRequestRejection(token, error);
   }
 }
 
-export async function batchUpdate(spreadsheetId: string, requests: any[]) {
+async function getRows(
+  { googleAccount, spreadsheetId, tabName }: SpreadsheetTarget,
+  /**
+   * A1 notation of the values to retrieve.
+   * @see: https://developers.google.com/sheets/api/guides/concepts#cell
+   */
+  range = ""
+): Promise<ValueRange> {
   const token = await ensureSheetsReady({ interactive: false });
 
-  try {
-    return (await gapi.client.sheets.spreadsheets.batchUpdate({
-      spreadsheetId,
-      resource: {
-        requests,
-      },
-    })) as BatchUpdateSpreadsheetResponse;
-  } catch (error) {
-    throw await handleGoogleRequestRejection(token, error);
+  let url = `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}`;
+  if (range) {
+    url += `!${range}`;
   }
-}
 
-export async function batchGet(
-  spreadsheetId: string,
-  ranges: string | string[]
-) {
-  const token = await ensureSheetsReady({ interactive: false });
+  const requestConfig: AxiosRequestConfig = { url, method: "get" };
 
-  try {
-    const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
-      spreadsheetId,
-      ranges,
-    });
-    return await new Promise<BatchGetValuesResponse>((resolve, reject) => {
+  if (!googleAccount) {
+    // Fall-back to using the token from ensureSheetsReady
+    requestConfig.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  /* Example of old error handling, not sure if needed:
+  return await new Promise<BatchGetValuesResponse>((resolve, reject) => {
       sheetRequest.execute((r) => {
         if (r.status >= 300 || (r as any).code >= 300) {
           reject(r);
@@ -171,11 +253,63 @@ export async function batchGet(
         }
       });
     });
+   */
+
+  try {
+    const { data } = await proxyService<ValueRange>(
+      googleAccount,
+      requestConfig
+    );
+    return data;
   } catch (error) {
     throw await handleGoogleRequestRejection(token, error);
   }
 }
 
+export async function getAllRows(
+  target: SpreadsheetTarget
+): Promise<ValueRange> {
+  return getRows(target);
+}
+
+export async function getHeaders(target: SpreadsheetTarget): Promise<string[]> {
+  // Lookup the headers in the first row
+  const { values } = await getRows(target, `A1:${columnToLetter(256)}1`);
+  return values[0]?.map(String);
+}
+
+export async function getSpreadsheet({
+  googleAccount,
+  spreadsheetId,
+}: SpreadsheetTarget): Promise<Spreadsheet> {
+  const token = await ensureSheetsReady({ interactive: false });
+
+  const requestConfig: AxiosRequestConfig = {
+    url: `${SHEETS_BASE_URL}/${spreadsheetId}`,
+    method: "get",
+  };
+
+  if (!googleAccount) {
+    // Fall-back to using the token from ensureSheetsReady
+    requestConfig.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  try {
+    const { data } = await proxyService<Spreadsheet>(
+      googleAccount,
+      requestConfig
+    );
+    return data;
+  } catch (error) {
+    throw await handleGoogleRequestRejection(token, error);
+  }
+}
+
+/**
+ * @deprecated use getAllSpreadsheets() or getSpreadsheet() instead
+ */
 export async function getSheetProperties(
   spreadsheetId: string
 ): Promise<SpreadsheetProperties> {
@@ -215,6 +349,9 @@ export async function getSheetProperties(
   }
 }
 
+/**
+ * @deprecated use getAllSpreadsheets() or getSpreadsheet() instead
+ */
 export async function getTabNames(spreadsheetId: string): Promise<string[]> {
   const token = await ensureSheetsReady({ interactive: false });
 
@@ -249,19 +386,4 @@ export async function getTabNames(spreadsheetId: string): Promise<string[]> {
   } catch (error) {
     throw await handleGoogleRequestRejection(token, error);
   }
-}
-
-export async function getHeaders({
-  spreadsheetId,
-  tabName,
-}: {
-  spreadsheetId: string;
-  tabName: string;
-}): Promise<string[]> {
-  // Lookup the headers in the first row so we can determine where to put the values
-  const response = await batchGet(
-    spreadsheetId,
-    `${tabName}!A1:${columnToLetter(256)}1`
-  );
-  return response.valueRanges?.[0].values?.[0] ?? [];
 }

@@ -20,17 +20,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { reportEvent } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
-import { extensionWithInnerDefinitions } from "@/pageEditor/extensionPoints/base";
+import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import { useGetEditablePackagesQuery } from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { type UUID } from "@/types/stringTypes";
@@ -72,7 +72,7 @@ function selectErrorMessage(error: unknown): string {
 
 type SaveOptions = {
   /**
-   * True to save a copy of the IExtension to the user's account
+   * True to save a copy of the ModComponentBase to the user's account
    */
   pushToCloud: boolean;
   /**
@@ -96,7 +96,7 @@ type SaveOptions = {
  * @returns errorMessage an error message, or null if no error occurred
  */
 type SaveCallback = (config: {
-  element: FormState;
+  element: ModComponentFormState;
   options: SaveOptions;
 }) => Promise<string | null>;
 
@@ -110,7 +110,7 @@ function onStepError(error: unknown, step: string): string {
 }
 
 /**
- * Hook to create/update a single IExtension defined by the Page Editor FormState.
+ * Hook to create/update a single ModComponentBase defined by the Page Editor FormState.
  */
 function useUpsertFormElement(): SaveCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
@@ -124,7 +124,7 @@ function useUpsertFormElement(): SaveCallback {
 
   const saveElement = useCallback(
     async (
-      element: FormState,
+      element: ModComponentFormState,
       options: SaveOptions
     ): Promise<string | null> => {
       if (options.checkPermissions) {

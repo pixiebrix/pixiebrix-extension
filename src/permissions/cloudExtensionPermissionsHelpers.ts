@@ -16,10 +16,10 @@
  */
 
 import { type StandaloneModDefinition } from "@/types/contract";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { type ResolvedExtensionDefinition } from "@/types/modDefinitionTypes";
+import { type ResolvedModComponentDefinition } from "@/types/modDefinitionTypes";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 
 // Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with recipePermissionsHelpers.ts
@@ -31,7 +31,7 @@ import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
  */
 export async function checkCloudExtensionPermissions(
   extension: StandaloneModDefinition,
-  services: ServiceDependency[]
+  services: IntegrationDependency[]
 ): Promise<PermissionsStatus> {
   const resolved = await resolveExtensionInnerDefinitions({
     ...extension,
@@ -49,7 +49,7 @@ export async function checkCloudExtensionPermissions(
         services: Object.fromEntries(
           services.map((service) => [service.outputKey, service.id])
         ),
-      } as ResolvedExtensionDefinition,
+      } as ResolvedModComponentDefinition,
     ],
   };
 

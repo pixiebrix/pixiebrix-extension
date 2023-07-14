@@ -36,7 +36,7 @@ import styles from "./AuthWidget.module.scss";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -80,7 +80,7 @@ const AuthWidget: React.FunctionComponent<{
   };
 
   const save = useCallback(
-    async (values: RawServiceConfiguration) => {
+    async (values: IntegrationConfig) => {
       const id = uuidv4();
 
       dispatch(
@@ -137,13 +137,13 @@ const AuthWidget: React.FunctionComponent<{
     [setShowServiceModal, launchAuthorizationGrantFlow, serviceDefinition]
   );
 
-  const initialConfiguration: RawServiceConfiguration = useMemo(
+  const initialConfiguration: IntegrationConfig = useMemo(
     () =>
       ({
         serviceId,
         label: "New Configuration",
         config: {},
-      } as RawServiceConfiguration),
+      } as IntegrationConfig),
     [serviceId]
   );
 

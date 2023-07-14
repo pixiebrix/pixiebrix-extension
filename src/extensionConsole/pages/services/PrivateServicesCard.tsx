@@ -30,22 +30,22 @@ import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
 import {
-  type IService,
-  type RawServiceConfiguration,
-} from "@/types/serviceTypes";
+  type Integration,
+  type IntegrationConfig,
+} from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type TableData = {
-  service: IService;
-} & RawServiceConfiguration;
+  service: Integration;
+} & IntegrationConfig;
 type TableColumn = Column<TableData>;
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
 
 type OwnProps = {
-  services: IService[];
+  services: Integration[];
   navigate: (url: string) => void;
-  initialService?: IService;
+  initialService?: Integration;
 };
 
 const Actions: React.VoidFunctionComponent<{
@@ -161,13 +161,13 @@ const dataFactory = ({
   configuredServices,
   services,
 }: {
-  configuredServices: RawServiceConfiguration[];
-  services: IService[];
+  configuredServices: IntegrationConfig[];
+  services: Integration[];
 }): TableData[] => [
   {
     label: "Zapier - use to connect to PixieBrix from Zapier",
     serviceId: null,
-    _rawServiceConfigurationBrand: null,
+    _rawIntegrationConfigBrand: null,
     id: null,
     config: null,
     service: null,
@@ -175,7 +175,7 @@ const dataFactory = ({
   ...configuredServices.map((configuredService) => {
     const service = services.find((x) => x.id === configuredService.serviceId);
     if (!service) {
-      throw new Error(`Unknown service ${configuredService.serviceId}`);
+      throw new Error(`Unknown integration ${configuredService.serviceId}`);
     }
 
     return {
@@ -190,7 +190,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   navigate,
   initialService,
 }) => {
-  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
+  const configuredServices = useSelector<RootState, IntegrationConfig[]>(
     selectConfiguredServices,
     isEqual
   );
@@ -213,7 +213,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   );
 
   const initialRecord: (x: unknown) => boolean = useMemo(
-    () => (initialService ? (x: IService) => x.id === initialService.id : null),
+    () =>
+      initialService ? (x: Integration) => x.id === initialService.id : null,
     [initialService]
   );
 

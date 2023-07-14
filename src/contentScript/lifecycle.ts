@@ -16,12 +16,12 @@
  */
 
 import { loadOptions } from "@/store/extensionsStorage";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { logPromiseDuration, pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
-import { testMatchPatterns } from "@/blocks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
 import { compact, groupBy, intersection, once, uniq } from "lodash";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
@@ -31,12 +31,12 @@ import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
-import { type ResolvedExtension } from "@/types/extensionTypes";
-import { type SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
+import { type SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
 
 /**
  * True if handling the initial page load.
@@ -100,10 +100,10 @@ const injectPageScriptOnce = once(async (): Promise<void> => {
 });
 
 /**
- * Run an extension point and specified IExtensions.
+ * Run an extension point and specified ModComponentBases.
  * @param extensionPoint the extension point to install/run
  * @param reason the reason code for the run
- * @param extensionIds the IExtensions to run on the extension point, or undefined to run all IExtensions
+ * @param extensionIds the ModComponentBases to run on the extension point, or undefined to run all ModComponentBases
  * @param abortSignal abort signal to cancel the install/run
  */
 async function runExtensionPoint(
@@ -281,7 +281,7 @@ export function clearEditorExtension(
       const extensionPoint = _editorExtensions.get(extensionId);
 
       if (extensionPoint.kind === "actionPanel" && preserveSidebar) {
-        const sidebar = extensionPoint as SidebarExtensionPoint;
+        const sidebar = extensionPoint as SidebarStarterBrickABC;
         // eslint-disable-next-line new-cap -- hack for action panels
         sidebar.HACK_uninstallExceptExtension(extensionId);
       } else {
@@ -380,7 +380,7 @@ export async function runEditorExtension(
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
 function cleanUpDeactivatedExtensionPoints(
-  activeExtensionMap: Record<RegistryId, ResolvedExtension[]>
+  activeExtensionMap: Record<RegistryId, ResolvedModComponent[]>
 ): void {
   for (const extensionPoint of _activeExtensionPoints) {
     const hasActiveExtensions = Object.hasOwn(
@@ -442,7 +442,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
       Object.entries(activeExtensionMap).map(
         async ([extensionPointId, extensions]: [
           RegistryId,
-          ResolvedExtension[]
+          ResolvedModComponent[]
         ]) => {
           try {
             const extensionPoint = await extensionPointRegistry.lookup(

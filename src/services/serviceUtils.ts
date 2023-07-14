@@ -23,9 +23,9 @@ import { MissingConfigurationError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
-  type SanitizedServiceConfiguration,
-  type ServiceDependency,
-} from "@/types/serviceTypes";
+  type SanitizedIntegrationConfig,
+  type IntegrationDependency,
+} from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ServiceContext } from "@/types/runtimeTypes";
 
@@ -84,7 +84,7 @@ async function _locateWithRetry(
   serviceId: RegistryId,
   authId: UUID,
   { retry = true }: { retry: boolean }
-): Promise<SanitizedServiceConfiguration> {
+): Promise<SanitizedIntegrationConfig> {
   try {
     return await services.locate(serviceId, authId);
   } catch (error) {
@@ -114,12 +114,12 @@ export const locateWithRetry = memoizeUntilSettled(_locateWithRetry, {
 
 /** Build the service context by locating the dependencies */
 export async function makeServiceContext(
-  // `IExtension.services` is an optional field. Since we don't have strict-nullness checking on, calls to this method
+  // `ModComponentBase.services` is an optional field. Since we don't have strict-nullness checking on, calls to this method
   // are error-prone. So just be defensive in the signature
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3262
-  dependencies: ServiceDependency[] | null = []
+  dependencies: IntegrationDependency[] | null = []
 ): Promise<ServiceContext> {
-  const dependencyContext = async ({ id, config }: ServiceDependency) => {
+  const dependencyContext = async ({ id, config }: IntegrationDependency) => {
     // Should be safe to call locateWithRetry in parallel b/c the locator.refresh() method debounces/coalesces
     // the promise
     const configuredService = await locateWithRetry(id, config, {

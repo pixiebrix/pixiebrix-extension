@@ -22,17 +22,17 @@ import {
   replaceRecipeExtension,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
-import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
+import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
   internalExtensionPointMetaFactory,
   lookupExtensionPoint,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep, range, uniq } from "lodash";
-import { type MenuDefinition } from "@/extensionPoints/menuItemExtension";
+import { type MenuDefinition } from "@/starterBricks/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
   getMinimalSchema,
@@ -41,16 +41,16 @@ import {
 import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
-} from "@/extensionPoints/types";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/starterBricks/types";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type InnerDefinitionRef } from "@/types/registryTypes";
 import {
-  type OptionsDefinition,
+  type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type UnresolvedExtension } from "@/types/extensionTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { extensionFactory } from "@/testUtils/factories/extensionFactories";
 import {
@@ -64,9 +64,9 @@ import {
 
 jest.mock("@/background/contextMenus");
 
-jest.mock("@/pageEditor/extensionPoints/base", () => ({
+jest.mock("@/pageEditor/starterBricks/base", () => ({
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Wrong
-  ...(jest.requireActual("@/pageEditor/extensionPoints/base") as UnknownObject),
+  ...(jest.requireActual("@/pageEditor/starterBricks/base") as UnknownObject),
   lookupExtensionPoint: jest.fn(),
 }));
 
@@ -434,8 +434,8 @@ describe("replaceRecipeExtension round trip", () => {
 
 describe("blueprint options", () => {
   async function runReplaceRecipeExtensions(
-    recipeOptions: OptionsDefinition,
-    elementOptions: OptionsDefinition
+    recipeOptions: ModOptionsDefinition,
+    elementOptions: ModOptionsDefinition
   ) {
     const recipe = recipeFactory({
       options: recipeOptions,
@@ -481,7 +481,7 @@ describe("blueprint options", () => {
   });
 
   test("creates blueprint options", async () => {
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -503,7 +503,7 @@ describe("blueprint options", () => {
   });
 
   test("updates blueprint options", async () => {
-    const blueprintOptions: OptionsDefinition = {
+    const blueprintOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -516,7 +516,7 @@ describe("blueprint options", () => {
       uiSchema: getMinimalUiSchema(),
     };
 
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -537,7 +537,7 @@ describe("blueprint options", () => {
   });
 
   test("removes blueprint options", async () => {
-    const blueprintOptions: OptionsDefinition = {
+    const blueprintOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -550,7 +550,7 @@ describe("blueprint options", () => {
       uiSchema: getMinimalUiSchema(),
     };
 
-    const elementOptions: OptionsDefinition = {
+    const elementOptions: ModOptionsDefinition = {
       schema: getMinimalSchema(),
       uiSchema: getMinimalUiSchema(),
     };
@@ -624,7 +624,7 @@ describe("buildRecipe", () => {
   test("Clean extension referencing extensionPoint registry package", async () => {
     const extension = extensionFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    }) as UnresolvedExtension;
+    }) as UnresolvedModComponent;
 
     // Call the function under test
     const newRecipe = buildRecipe({
@@ -648,7 +648,7 @@ describe("buildRecipe", () => {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       services: [{ id: serviceId, outputKey, config: null }],
       extensionPointId: extensionPoint.metadata.id,
-    }) as UnresolvedExtension;
+    }) as UnresolvedModComponent;
 
     const adapter = ADAPTERS.get(extensionPoint.definition.type);
 
@@ -656,7 +656,9 @@ describe("buildRecipe", () => {
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
 
     // Use the adapter to convert to FormState
-    const element = (await adapter.fromExtension(extension)) as FormState;
+    const element = (await adapter.fromExtension(
+      extension
+    )) as ModComponentFormState;
 
     // Call the function under test
     const newRecipe = buildRecipe({
@@ -682,7 +684,7 @@ describe("buildRecipe", () => {
     const extensions = extensionPoints.map((extensionPoint) => {
       const extension = extensionFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      }) as UnresolvedExtension;
+      }) as UnresolvedModComponent;
 
       extension.definitions = {
         extensionPoint: {
@@ -719,7 +721,7 @@ describe("buildRecipe", () => {
     const extensions = range(0, 2).map(() => {
       const extension = extensionFactory({
         apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      }) as UnresolvedExtension;
+      }) as UnresolvedModComponent;
 
       extension.definitions = {
         extensionPoint: {
@@ -788,7 +790,7 @@ describe("buildRecipe", () => {
       );
 
       // Collect the dirty form states for any changed extensions
-      const elements: FormState[] = [];
+      const elements: ModComponentFormState[] = [];
 
       if (dirtyExtensionCount > 0) {
         const extensionPoints = selectExtensionPoints(recipe);
@@ -806,7 +808,9 @@ describe("buildRecipe", () => {
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const element = (await adapter.fromExtension(extension)) as FormState;
+          const element = (await adapter.fromExtension(
+            extension
+          )) as ModComponentFormState;
 
           // Edit the label
           element.label = `New Label ${i}`;

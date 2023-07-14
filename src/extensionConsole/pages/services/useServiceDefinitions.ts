@@ -25,23 +25,23 @@ import { useAsyncState } from "@/hooks/common";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import {
-  type IService,
-  type RawServiceConfiguration,
-} from "@/types/serviceTypes";
+  type Integration,
+  type IntegrationConfig,
+} from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 
-interface ServiceDefinitions {
-  serviceDefinitions: IService[];
-  activeConfiguration: RawServiceConfiguration | null;
-  activeService: IService | null;
+interface IntegrationDefinitions {
+  serviceDefinitions: Integration[];
+  activeConfiguration: IntegrationConfig | null;
+  activeService: Integration | null;
   isPending: boolean;
   showZapier: boolean;
 }
 
 const ZAPIER_SLUG = "zapier";
 
-function useServiceDefinitions(): ServiceDefinitions {
-  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
+function useServiceDefinitions(): IntegrationDefinitions {
+  const configuredServices = useSelector<RootState, IntegrationConfig[]>(
     selectConfiguredServices
   );
   const { id: configurationId } = useParams<{ id: UUID }>();

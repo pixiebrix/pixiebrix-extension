@@ -22,13 +22,13 @@ import {
   type TraceError,
   type TraceRecord,
 } from "@/telemetry/trace";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type UUID } from "@/types/stringTypes";
 import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isInputValidationError } from "@/blocks/errors";
-import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { isInputValidationError } from "@/bricks/errors";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type ErrorObject } from "serialize-error";
 import { AnnotationType } from "@/types/annotationTypes";
 
@@ -132,7 +132,7 @@ class TraceAnalysis extends AnalysisVisitorABC {
     this.annotations.push(...this.mapErrorAnnotations(position, traceError));
   }
 
-  override run(extension: FormState): void {
+  override run(extension: ModComponentFormState): void {
     if (this.traceErrorMap.size === 0) {
       return;
     }

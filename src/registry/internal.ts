@@ -25,17 +25,17 @@ import {
   pick,
   pickBy,
 } from "lodash";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import blockRegistry from "@/blocks/registry";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { fromJS as blockFactory } from "@/blocks/transformers/brickFactory";
+import extensionPointRegistry from "@/starterBricks/registry";
+import blockRegistry from "@/bricks/registry";
+import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
+import { fromJS as blockFactory } from "@/bricks/transformers/brickFactory";
 import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
-  type ResolvedExtensionDefinition,
+  type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type StarterBrickConfig } from "@/extensionPoints/types";
-import { type ReaderConfig } from "@/blocks/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type ReaderConfig } from "@/bricks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
   INNER_SCOPE,
@@ -43,10 +43,10 @@ import {
   type RegistryId,
 } from "@/types/registryTypes";
 import {
-  type IExtension,
-  type ResolvedExtension,
-} from "@/types/extensionTypes";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+  type ModComponentBase,
+  type ResolvedModComponent,
+} from "@/types/modComponentTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Brick } from "@/types/brickTypes";
 
 type InnerExtensionPoint = Pick<StarterBrickConfig, "definition" | "kind">;
@@ -217,18 +217,18 @@ async function resolveInnerDefinition(
 }
 
 /**
- * Return a new copy of the IExtension with its inner references re-written.
+ * Return a new copy of the ModComponentBase with its inner references re-written.
  * TODO: resolve/map ids for other definitions (brick, service, etc.) within the extension
  */
 export async function resolveExtensionInnerDefinitions<
   T extends UnknownObject = UnknownObject
->(extension: IExtension<T>): Promise<ResolvedExtension<T>> {
+>(extension: ModComponentBase<T>): Promise<ResolvedModComponent<T>> {
   if (isEmpty(extension.definitions)) {
-    return extension as ResolvedExtension<T>;
+    return extension as ResolvedModComponent<T>;
   }
 
   return produce(extension, async (draft) => {
-    // The IExtension has definitions for all extensionPoints from the mod, even ones it doesn't use
+    // The ModComponentBase has definitions for all extensionPoints from the mod, even ones it doesn't use
     const relevantDefinitions = pickBy(
       draft.definitions,
       (definition, name) =>
@@ -245,7 +245,7 @@ export async function resolveExtensionInnerDefinitions<
     if (resolvedDefinitions[draft.extensionPointId] != null) {
       draft.extensionPointId = resolvedDefinitions[draft.extensionPointId].id;
     }
-  }) as Promise<ResolvedExtension<T>>;
+  }) as Promise<ResolvedModComponent<T>>;
 }
 
 /**
@@ -254,11 +254,11 @@ export async function resolveExtensionInnerDefinitions<
  */
 export async function resolveRecipeInnerDefinitions(
   recipe: Pick<ModDefinition, "extensionPoints" | "definitions">
-): Promise<ResolvedExtensionDefinition[]> {
+): Promise<ResolvedModComponentDefinition[]> {
   const extensionDefinitions = recipe.extensionPoints;
 
   if (isEmpty(recipe.definitions)) {
-    return extensionDefinitions as ResolvedExtensionDefinition[];
+    return extensionDefinitions as ResolvedModComponentDefinition[];
   }
 
   const extensionPointReferences = new Set<string>(
@@ -283,7 +283,7 @@ export async function resolveRecipeInnerDefinitions(
     (definition) =>
       (definition.id in resolvedDefinitions
         ? { ...definition, id: resolvedDefinitions[definition.id].id }
-        : definition) as ResolvedExtensionDefinition
+        : definition) as ResolvedModComponentDefinition
   );
 }
 
@@ -291,10 +291,12 @@ export async function resolveRecipeInnerDefinitions(
  * Returns true if the extension is using an InnerDefinitionRef. _Will always return false for ResolvedExtensions._
  * @see InnerDefinitionRef
  * @see UnresolvedExtension
- * @see ResolvedExtension
+ * @see ResolvedModComponent
  */
-export function hasInnerExtensionPointRef(extension: IExtension): boolean {
-  // XXX: should this also check for `@internal/` scope in the referenced id? The type IExtension could receive a
+export function hasInnerExtensionPointRef(
+  extension: ModComponentBase
+): boolean {
+  // XXX: should this also check for `@internal/` scope in the referenced id? The type ModComponentBase could receive a
   // ResolvedExtension, which would have the id mapped to the internal registry id
   return extension.extensionPointId in (extension.definitions ?? {});
 }

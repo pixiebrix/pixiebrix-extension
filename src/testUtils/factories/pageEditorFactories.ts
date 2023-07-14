@@ -19,39 +19,38 @@ import { define, derive, type FactoryConfig } from "cooky-cutter";
 import {
   type ActionFormState,
   type ContextMenuFormState,
-  type FormState,
+  type ModComponentFormState,
   type QuickBarFormState,
   type SidebarFormState,
   type TriggerFormState,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 import {
   type ApiVersion,
   type OptionsArgs,
   type OutputKey,
 } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import {
   type StarterBrickConfig,
-  type StarterBrickDefinition,
   type StarterBrickType,
-} from "@/extensionPoints/types";
+} from "@/starterBricks/types";
 import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
-import { type BrickPipeline } from "@/blocks/types";
-import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
+import { type BrickPipeline } from "@/bricks/types";
+import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
-import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import menuItem from "@/pageEditor/starterBricks/menuItem";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
-import quickBar from "@/pageEditor/extensionPoints/quickBar";
-import trigger from "@/pageEditor/extensionPoints/trigger";
+import quickBar from "@/pageEditor/starterBricks/quickBar";
+import trigger from "@/pageEditor/starterBricks/trigger";
 import { type TraceRecord } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
-import sidebar from "@/pageEditor/extensionPoints/sidebar";
+import sidebar from "@/pageEditor/starterBricks/sidebar";
 import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
-import { type BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BaseExtensionState } from "@/pageEditor/starterBricks/elementConfig";
 import { pipelineFactory } from "@/testUtils/factories/brickFactories";
 import { type DerivedFunction } from "cooky-cutter/dist/derive";
 
@@ -59,15 +58,15 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 const internalFormStateFactory = define<
-  FormState & {
-    extensionPoint: DerivedFunction<FormState, StarterBrickConfig>;
+  ModComponentFormState & {
+    extensionPoint: DerivedFunction<ModComponentFormState, StarterBrickConfig>;
   }
 >({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
   optionsArgs: null as OptionsArgs,
-  services(): ServiceDependency[] {
+  services(): IntegrationDependency[] {
     return [];
   },
   recipe: null,
@@ -75,17 +74,20 @@ const internalFormStateFactory = define<
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   // @ts-expect-error -- TODO: verify typings
-  extensionPoint: derive<FormState, StarterBrickDefinition>(({ type }) => {
-    const extensionPoint = extensionPointDefinitionFactory();
-    extensionPoint.definition.type = type;
-    return extensionPoint;
-  }, "type"),
+  extensionPoint: derive<ModComponentFormState, StarterBrickConfig>(
+    ({ type }) => {
+      const extensionPoint = extensionPointDefinitionFactory();
+      extensionPoint.definition.type = type;
+      return extensionPoint;
+    },
+    "type"
+  ),
 });
 
 export const formStateFactory = (
-  override?: FactoryConfig<FormState>,
+  override?: FactoryConfig<ModComponentFormState>,
   pipelineOverride?: BrickPipeline
-): FormState => {
+): ModComponentFormState => {
   if (pipelineOverride) {
     return internalFormStateFactory({
       ...override,
@@ -115,7 +117,7 @@ export const triggerFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<FormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as TriggerFormState;
 };
@@ -138,7 +140,7 @@ export const sidebarPanelFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<FormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as SidebarFormState;
 };
@@ -160,7 +162,7 @@ export const contextMenuFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<FormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as ContextMenuFormState;
 };
@@ -182,7 +184,7 @@ export const quickbarFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<FormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as QuickBarFormState;
 };
@@ -208,7 +210,7 @@ export const menuItemFormStateFactory = (
     {
       ...defaultTriggerProps,
       ...override,
-    } as FactoryConfig<FormState>,
+    } as FactoryConfig<ModComponentFormState>,
     pipelineOverride
   ) as ActionFormState;
 };
@@ -228,15 +230,15 @@ const foundationOutputFactory = define<JsonObject>({
 });
 
 export const formStateWithTraceDataFactory = define<{
-  formState: FormState;
+  formState: ModComponentFormState;
   records: TraceRecord[];
 }>({
-  formState(): FormState {
+  formState(): ModComponentFormState {
     return formStateFactory();
   },
   records: derive<
     {
-      formState: FormState;
+      formState: ModComponentFormState;
       records: TraceRecord[];
     },
     TraceRecord[]

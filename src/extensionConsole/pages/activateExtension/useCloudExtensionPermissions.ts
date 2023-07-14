@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { services as serviceLocator } from "@/background/messenger/api";
 import { type StandaloneModDefinition } from "@/types/contract";
@@ -38,7 +38,7 @@ type AsyncPermissionsState = AsyncState<PermissionsStatus> & {
  */
 function useCloudExtensionPermissions(
   extension: StandaloneModDefinition,
-  services: ServiceDependency[]
+  services: IntegrationDependency[]
 ): AsyncPermissionsState {
   const permissionsState = useAsyncState(
     async () => {

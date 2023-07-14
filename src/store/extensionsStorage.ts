@@ -28,7 +28,7 @@ import {
   migrateExtensionsShape,
   migrations,
 } from "@/store/extensionsMigrations";
-import { type ExtensionOptionsState } from "./extensionsTypes";
+import { type ModComponentOptionsState } from "./extensionsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
 
 const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
@@ -44,7 +44,7 @@ async function getOptionsState(): Promise<PersistedOptionsState> {
 /**
  * Read extension options from local storage (without going through redux-persistor).
  */
-export async function loadOptions(): Promise<ExtensionOptionsState> {
+export async function loadOptions(): Promise<ModComponentOptionsState> {
   const base = await getOptionsState();
   // The redux persist layer persists the extensions value as JSON-string.
   // Also apply the upgradeExtensionsState migration here because the migration in store might not have run yet.
@@ -58,7 +58,9 @@ export async function loadOptions(): Promise<ExtensionOptionsState> {
 /**
  * Save extension options to local storage (without going through redux-persistor).
  */
-export async function saveOptions(state: ExtensionOptionsState): Promise<void> {
+export async function saveOptions(
+  state: ModComponentOptionsState
+): Promise<void> {
   const base = await getOptionsState();
   await setReduxStorage(STORAGE_KEY, {
     ...base,

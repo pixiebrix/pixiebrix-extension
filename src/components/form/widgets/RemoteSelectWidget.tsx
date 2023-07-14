@@ -20,7 +20,7 @@ import SelectWidget, {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";
@@ -32,7 +32,7 @@ import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export type OptionsFactory<T = unknown> = (
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   factoryArgs?: UnknownObject
 ) => Promise<Array<Option<T>>>;
 
@@ -42,13 +42,13 @@ type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
 > & {
   isClearable?: boolean;
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
-  config: SanitizedServiceConfiguration | null;
+  config: SanitizedIntegrationConfig | null;
   factoryArgs?: UnknownObject;
   loadingMessage?: string;
 };
 
 export function useOptionsResolver<T>(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>,
   factoryArgs: UnknownObject
 ): AsyncState<Array<Option<T>>> {

@@ -18,25 +18,25 @@
 import { groupBy, lowerCase, sortBy } from "lodash";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
-  type FormState,
-  isFormState,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+  type ModComponentFormState,
+  isModComponentFormState,
+} from "@/pageEditor/starterBricks/formStateTypes";
 import { getRecipeById } from "@/pageEditor/utils";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type UUID } from "@/types/stringTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 type ArrangeElementsArgs = {
-  elements: FormState[];
-  installed: IExtension[];
+  elements: ModComponentFormState[];
+  installed: ModComponentBase[];
   recipes: ModDefinition[];
   activeElementId: UUID | null;
   activeRecipeId: RegistryId | null;
   query: string;
 };
 
-type Element = IExtension | FormState;
+type Element = ModComponentBase | ModComponentFormState;
 
 function arrangeElements({
   elements,
@@ -48,32 +48,34 @@ function arrangeElements({
 }: ArrangeElementsArgs): Array<Element | [RegistryId, Element[]]> {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
 
-  const queryFilter = (item: IExtension | FormState) => {
-    const recipe = isFormState(item) ? item.recipe : item._recipe;
+  const queryFilter = (item: ModComponentBase | ModComponentFormState) => {
+    const recipe = isModComponentFormState(item) ? item.recipe : item._recipe;
     const queryName = recipe?.name ?? item.label;
 
     return (
       activeRecipeId === recipe?.id ||
       query.length === 0 ||
-      (isFormState(item) && activeElementId === item.uuid) ||
+      (isModComponentFormState(item) && activeElementId === item.uuid) ||
       (query.length > 0 && lowerCase(queryName).includes(lowerCase(query)))
     );
   };
 
-  const filteredExtensions: IExtension[] = installed
+  const filteredExtensions: ModComponentBase[] = installed
     // Note: we can take out this elementIds filter if and when we persist the editor
     // slice and remove installed extensions when they become dynamic elements
     .filter((extension) => !elementIds.has(extension.id))
     .filter((extension) => queryFilter(extension));
 
-  const filteredDynamicElements: FormState[] = elements.filter((element) =>
-    queryFilter(element)
+  const filteredDynamicElements: ModComponentFormState[] = elements.filter(
+    (element) => queryFilter(element)
   );
 
   const grouped = groupBy(
     [...filteredExtensions, ...filteredDynamicElements],
     (extension) =>
-      isExtension(extension) ? extension._recipe?.id : extension.recipe?.id
+      isModComponentBase(extension)
+        ? extension._recipe?.id
+        : extension.recipe?.id
   );
 
   const _elementsByRecipeId = new Map<string, Element[]>(
@@ -105,7 +107,7 @@ function arrangeElements({
 
     // Look for a recipe name in the elements/extensions in case recipes are still loading
     for (const element of elements) {
-      const name = isExtension(element)
+      const name = isModComponentBase(element)
         ? element._recipe?.name
         : element.recipe?.name;
       if (name) {

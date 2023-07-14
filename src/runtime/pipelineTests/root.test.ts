@@ -16,7 +16,7 @@
  */
 
 import { propertiesToSchema } from "@/validators/generic";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
@@ -24,7 +24,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { Reader } from "@/types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import {
   type ApiVersion,
   type BrickArgs,
@@ -53,7 +53,7 @@ class RootAwareBlock extends BrickABC {
   }
 }
 
-class RootAwareReader extends Reader {
+class RootAwareReader extends ReaderABC {
   constructor() {
     super("reader/root-aware", "Root Aware Reader");
   }

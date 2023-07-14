@@ -47,7 +47,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
-import { type ServiceDependency } from "@/types/serviceTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 
 export type ServiceWidgetProps = SchemaFieldProps & {
@@ -79,10 +79,10 @@ export function defaultOutputKey(
 /**
  * Return the auth id corresponding to a service variable usage
  * @see AuthOption.value
- * @see ServiceDependency.config
+ * @see IntegrationDependency.config
  */
 function lookupAuthId(
-  dependencies: ServiceDependency[],
+  dependencies: IntegrationDependency[],
   authOptions: AuthOption[],
   value: ServiceVarRef
 ): UUID {
@@ -169,7 +169,7 @@ const NO_AUTH_OPTIONS = Object.freeze([] as AuthOption[]);
 
 /**
  * A schema-driven Service Selector that automatically maintains the services form state (and output keys)
- * @see ServiceDependency
+ * @see IntegrationDependency
  */
 const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   detectDefault = true,

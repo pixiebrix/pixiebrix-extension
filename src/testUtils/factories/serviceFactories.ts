@@ -18,8 +18,8 @@
 import { define } from "cooky-cutter";
 import {
   type SanitizedConfig,
-  type SanitizedServiceConfiguration,
-} from "@/types/serviceTypes";
+  type SanitizedIntegrationConfig,
+} from "@/types/integrationTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import {
@@ -28,12 +28,12 @@ import {
 } from "@/types/contract";
 
 export const sanitizedServiceConfigurationFactory =
-  define<SanitizedServiceConfiguration>({
+  define<SanitizedIntegrationConfig>({
     id: uuidSequence,
     proxy: false,
     serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
     config: () => ({} as SanitizedConfig),
-  } as unknown as SanitizedServiceConfiguration);
+  } as unknown as SanitizedIntegrationConfig);
 export const sanitizedAuthServiceFactory = define<SanitizedAuthService>({
   config: (n: number) => ({
     metadata: {

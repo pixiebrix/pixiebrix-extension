@@ -1,11 +1,11 @@
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type JsonObject } from "type-fest";
 
 /**
  * Select data to report to the team admins for the deployment
  */
 export function selectEventData(
-  extension: IExtension | null | undefined
+  extension: ModComponentBase | null | undefined
 ): JsonObject {
   if (extension == null) {
     return {};

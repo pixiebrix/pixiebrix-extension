@@ -21,7 +21,7 @@ import VarMenu from "@/components/fields/schemaFields/widgets/varPopup/VarMenu";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import analysisSlice from "@/analysis/analysisSlice";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 
@@ -98,7 +98,7 @@ describe("VarMenu", () => {
           );
 
           // Run analysis directly
-          const analysis = new VarAnalysis([], {});
+          const analysis = new VarAnalysis({ trace: [], modState: {} });
           await analysis.run(formState);
 
           dispatch(
@@ -142,7 +142,7 @@ describe("VarMenu", () => {
           );
 
           // Run analysis directly
-          const analysis = new VarAnalysis([], {});
+          const analysis = new VarAnalysis({ trace: [], modState: {} });
           await analysis.run(formState);
 
           dispatch(

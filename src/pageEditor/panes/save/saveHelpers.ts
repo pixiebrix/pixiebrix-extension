@@ -28,26 +28,26 @@ import {
 } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { freshIdentifier } from "@/utils";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { type Except } from "type-fest";
 import {
   type ModComponentDefinition,
-  type OptionsDefinition,
+  type ModOptionsDefinition,
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import {
-  type IExtension,
-  type UnresolvedExtension,
-} from "@/types/extensionTypes";
+  type ModComponentBase,
+  type UnresolvedModComponent,
+} from "@/types/modComponentTypes";
 import { type SafeString } from "@/types/stringTypes";
-import { type RecipeMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 
 /**
@@ -86,7 +86,7 @@ export function isRecipeEditable(
  */
 function findRecipeIndex(
   sourceRecipe: ModDefinition,
-  extension: IExtension
+  extension: ModComponentBase
 ): number {
   if (sourceRecipe.metadata.version !== extension._recipe.version) {
     console.warn(
@@ -137,8 +137,8 @@ function findRecipeIndex(
 export function replaceRecipeExtension(
   sourceRecipe: ModDefinition,
   metadata: Metadata,
-  installedExtensions: IExtension[],
-  element: FormState
+  installedExtensions: ModComponentBase[],
+  element: ModComponentFormState
 ): UnsavedModDefinition {
   const installedExtension = installedExtensions.find(
     (x) => x.id === element.uuid
@@ -270,7 +270,7 @@ export function replaceRecipeExtension(
 }
 
 function selectExtensionPointConfig(
-  extension: IExtension
+  extension: ModComponentBase
 ): ModComponentDefinition {
   const extensionPoint: ModComponentDefinition = {
     ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
@@ -289,10 +289,10 @@ function selectExtensionPointConfig(
 
 type RecipeParts = {
   sourceRecipe?: ModDefinition;
-  cleanRecipeExtensions: UnresolvedExtension[];
-  dirtyRecipeElements: FormState[];
-  options?: OptionsDefinition;
-  metadata?: RecipeMetadataFormState;
+  cleanRecipeExtensions: UnresolvedModComponent[];
+  dirtyRecipeElements: ModComponentFormState[];
+  options?: ModOptionsDefinition;
+  metadata?: ModMetadataFormState;
 };
 
 const emptyRecipe: UnsavedModDefinition = {
@@ -363,7 +363,7 @@ export function buildRecipe({
       );
     }
 
-    const dirtyRecipeExtensions: IExtension[] = dirtyRecipeElements.map(
+    const dirtyRecipeExtensions: ModComponentBase[] = dirtyRecipeElements.map(
       (element) => {
         const adapter = ADAPTERS.get(element.type);
         const extension = adapter.selectExtension(element);
@@ -402,7 +402,7 @@ type BuildExtensionPointsResult = {
 };
 
 function buildExtensionPoints(
-  extensions: IExtension[]
+  extensions: ModComponentBase[]
 ): BuildExtensionPointsResult {
   const innerDefinitions: InnerDefinitions = {};
   const extensionPoints: ModComponentDefinition[] = [];

@@ -16,10 +16,10 @@
  */
 
 import { type ServicesState } from "@/store/servicesSlice";
-import { type RawServiceConfiguration } from "@/types/serviceTypes";
+import { type IntegrationConfig } from "@/types/integrationTypes";
 
 export const selectConfiguredServices = ({
   services,
 }: {
   services: ServicesState;
-}): RawServiceConfiguration[] => Object.values(services.configured);
+}): IntegrationConfig[] => Object.values(services.configured);

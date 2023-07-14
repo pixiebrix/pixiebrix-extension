@@ -16,11 +16,11 @@
  */
 
 import { AnalysisVisitorWithResolvedBricksABC } from "./baseAnalysisVisitors";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import {
   nestedPosition,
   type VisitPipelineExtra,
-} from "@/blocks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 

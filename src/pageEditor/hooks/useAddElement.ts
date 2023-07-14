@@ -19,14 +19,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
+import { internalExtensionPointMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
@@ -76,7 +76,7 @@ function useAddElement(): AddElement {
           config.asDynamicElement(initialState)
         );
 
-        dispatch(actions.addElement(initialState as FormState));
+        dispatch(actions.addElement(initialState as ModComponentFormState));
         dispatch(actions.checkActiveElementAvailability());
 
         reportEvent("ExtensionAddNew", {

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Permissions } from "webextension-polyfill";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
-import { type StarterBrick } from "@/types/extensionPointTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
 import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { containsPermissions } from "@/background/messenger/api";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
@@ -44,18 +44,18 @@ type PermissionOptions = {
 };
 
 /**
- * Returns browser permissions required to run the IExtension
+ * Returns browser permissions required to run the ModComponentBase
  * - Extension
  * - Blocks
  * - Services (optional, default=true)
  * - Extension point (optional, default=true)
  *
- * @see IExtension.permissions
+ * @see ModComponentBase.permissions
  * @see StarterBrick.permissions
  * @see checkExtensionPermissions
  */
 export async function collectExtensionPermissions(
-  extension: IExtension,
+  extension: ModComponentBase,
   options: PermissionOptions = {}
 ): Promise<Permissions.Permissions> {
   const { includeExtensionPoint = true, includeServices = true } = options;
@@ -91,11 +91,11 @@ export async function collectExtensionPermissions(
 }
 
 /**
- * Check the status of permissions for one or more IExtensions.
+ * Check the status of permissions for one or more ModComponentBases.
  * @param extensionOrExtensions the extension or extensions to check
  */
 export async function checkExtensionPermissions(
-  extensionOrExtensions: IExtension | IExtension[]
+  extensionOrExtensions: ModComponentBase | ModComponentBase[]
 ): Promise<PermissionsStatus> {
   const permissions = mergePermissions(
     await Promise.all(

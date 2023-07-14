@@ -26,7 +26,7 @@ import {
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { uuidv4 } from "@/types/helpers";
-import { SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { RegistryId } from "@/types/registryTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
@@ -56,13 +56,14 @@ export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 export const sheets = {
+  getAllSpreadsheets: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getSpreadsheet: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getTabNames: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getSheetProperties: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getHeaders: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getAllRows: jest.fn().mockRejectedValue(new Error("Not implemented")),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-  batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE", bg),
-  batchGet: jest.fn().mockRejectedValue(new Error("Not implemented")),
 };
 
 /**
@@ -111,7 +112,7 @@ export const services = {
 
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const proxyService = getMethod("PROXY", bg) as <TData>(
-  serviceConfig: SanitizedServiceConfiguration | null,
+  serviceConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 

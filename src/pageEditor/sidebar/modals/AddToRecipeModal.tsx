@@ -38,7 +38,7 @@ import { type RadioItem } from "@/components/form/widgets/radioItemList/radioIte
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IExtension } from "@/types/extensionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
 type FormState = {
   recipeId: RegistryId;
@@ -66,7 +66,7 @@ const AddToRecipeModal: React.FC = () => {
   const removeExtension = useRemoveExtension();
 
   const recipeMetadataById = useMemo(() => {
-    const result: Record<RegistryId, IExtension["_recipe"]> = {};
+    const result: Record<RegistryId, ModComponentBase["_recipe"]> = {};
     for (const metadata of recipeMetadatas) {
       result[metadata.id] = metadata;
     }

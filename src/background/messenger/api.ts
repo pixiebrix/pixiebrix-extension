@@ -23,7 +23,7 @@ import {
 } from "webext-messenger";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -53,13 +53,14 @@ export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
 export const sheets = {
+  getAllSpreadsheets: getMethod("GOOGLE_SHEETS_GET_ALL_SPREADSHEETS", bg),
+  getSpreadsheet: getMethod("GOOGLE_SHEETS_GET_SPREADSHEET", bg),
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
   getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES", bg),
   getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
+  getAllRows: getMethod("GOOGLE_SHEETS_GET_ALL_ROWS", bg),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-  batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE", bg),
-  batchGet: getMethod("GOOGLE_SHEETS_BATCH_GET", bg),
 };
 
 /**
@@ -101,7 +102,7 @@ export const services = {
 
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const proxyService = getMethod("PROXY", bg) as <TData>(
-  serviceConfig: SanitizedServiceConfiguration | null,
+  serviceConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 

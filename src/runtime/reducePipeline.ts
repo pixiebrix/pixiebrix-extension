@@ -26,7 +26,7 @@ import {
 } from "@/background/messenger/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
-import { HeadlessModeError } from "@/blocks/errors";
+import { HeadlessModeError } from "@/bricks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
@@ -36,7 +36,7 @@ import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import {
   logIfInvalidOutput,
   selectBlockRootElement,
@@ -49,7 +49,7 @@ import {
   unsafeAssumeValidArg,
 } from "@/runtime/runtimeTypes";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
-import { resolveBlockConfig } from "@/blocks/registry";
+import { resolveBlockConfig } from "@/bricks/registry";
 import { isObject } from "@/utils";
 import {
   BusinessError,
@@ -144,12 +144,12 @@ export type InitialValues = {
   input: UnknownObject;
   /**
    * Option values provided by the user during activation of an extension
-   * @see IExtension.optionsArgs
+   * @see ModComponentBase.optionsArgs
    */
   optionsArgs: OptionsArgs;
   /**
    * Service credentials provided by the user during activation of an extension
-   * @see IExtension.services
+   * @see ModComponentBase.services
    */
   serviceContext: ServiceContext;
   /**

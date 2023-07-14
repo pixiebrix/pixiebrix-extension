@@ -17,16 +17,20 @@
 
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import { useEffect, useReducer } from "react";
-import { getLikelyVariableAtPosition } from "@/components/fields/schemaFields/widgets/varPopup/likelyVariableUtils";
+import { useEffect, useReducer, type MutableRefObject } from "react";
+import {
+  getLikelyVariableAtPosition,
+  getVariableAtPosition,
+} from "@/components/fields/schemaFields/widgets/varPopup/likelyVariableUtils";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { type UnknownObject } from "@/types/objectTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
+import { waitAnimationFrame } from "@/utils";
 
 type Props = {
   inputMode: FieldInputMode;
-  inputElementRef: React.MutableRefObject<HTMLElement>;
+  inputElementRef: MutableRefObject<HTMLElement>;
   value: string;
 };
 
@@ -83,8 +87,42 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
   );
 
   const autosuggestEnabled = varAutosuggest && analysisSliceExists;
+
   const isMenuAvailable =
     (inputMode === "var" || inputMode === "string") && autosuggestEnabled;
+
+  const updateSelection = (value: string) => {
+    if (inputMode !== "var" && inputMode !== "string") {
+      return;
+    }
+
+    // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
+    const cursorPosition =
+      (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
+
+    if (inputMode === "var") {
+      const variableName = getVariableAtPosition(value, cursorPosition);
+      dispatch(popupSlice.actions.showMenuForVariable(variableName));
+    }
+
+    if (inputMode === "string") {
+      const variableName = getLikelyVariableAtPosition(value, cursorPosition, {
+        clampPosition: true,
+        includeBoundary: true,
+      }).name;
+
+      console.debug("getLikelyVariableAtPosition", variableName, {
+        value,
+        cursorPosition,
+      });
+
+      if (variableName) {
+        dispatch(popupSlice.actions.showMenuForVariable(variableName));
+      } else if (isMenuShowing) {
+        dispatch(popupSlice.actions.hideMenu());
+      }
+    }
+  };
 
   useEffect(() => {
     if (!inputElementRef.current || !isMenuAvailable) {
@@ -92,50 +130,37 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
     }
 
     const onClick = () => {
-      if (inputMode === "var") {
-        if (!isMenuShowing) {
-          dispatch(popupSlice.actions.showMenuForVariable(value));
-        }
+      updateSelection(value);
+    };
 
-        return;
-      }
+    const onKeyDown = async (event: KeyboardEvent) => {
+      const { key } = event;
+      if (key === "ArrowRight" || key === "ArrowLeft") {
+        // Ensure the browser has updated the selection in the DOM
+        await waitAnimationFrame();
 
-      if (inputMode === "string") {
-        // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
-        const cursorPosition =
-          (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
-
-        const variableName = getLikelyVariableAtPosition(
-          value,
-          cursorPosition
-        ).name;
-
-        if (variableName) {
-          if (!isMenuShowing) {
-            dispatch(popupSlice.actions.showMenuForVariable(variableName));
-          }
-        } else if (isMenuShowing) {
-          dispatch(popupSlice.actions.hideMenu());
-        }
+        updateSelection(value);
+      } else if ((key === "Escape" || key === "}") && isMenuShowing) {
+        dispatch(popupSlice.actions.hideMenu());
       }
     };
 
     const onKeyPress = (event: KeyboardEvent) => {
       const { key } = event;
-      if (key === "@" && !isMenuShowing) {
+      if ((key === "@" || inputMode === "var") && !isMenuShowing) {
         dispatch(popupSlice.actions.showMenuForVariable(null));
-      } else if ((key === "Escape" || key === "}") && isMenuShowing) {
-        dispatch(popupSlice.actions.hideMenu());
       }
     };
 
     const inputElement = inputElementRef.current;
     inputElement.addEventListener("click", onClick);
     inputElement.addEventListener("keypress", onKeyPress);
+    inputElement.addEventListener("keydown", onKeyDown);
 
     return () => {
       inputElement?.removeEventListener("click", onClick);
       inputElement?.removeEventListener("keypress", onKeyPress);
+      inputElement?.removeEventListener("keydown", onKeyDown);
     };
   }, [inputElementRef, isMenuAvailable, inputMode, isMenuShowing, value]);
 
@@ -143,22 +168,13 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
   useDebouncedEffect(
     value,
     () => {
-      if (!isMenuShowing) {
+      // For performance, ignore typing if menu is not already showing. There's a key down trigger for @ in the
+      // TextWidget that will show the popup when the user starts typing a variable
+      if (!isMenuShowing || !isMenuAvailable) {
         return;
       }
 
-      // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
-      const cursorPosition =
-        (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
-
-      const variableName = getLikelyVariableAtPosition(
-        value,
-        cursorPosition
-      ).name;
-
-      if (variableName) {
-        dispatch(popupSlice.actions.updateVariable(variableName));
-      }
+      updateSelection(value);
     },
     {
       delayMillis: 50,

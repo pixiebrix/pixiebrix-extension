@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type InputValidationError } from "@/blocks/errors";
+import { type InputValidationError } from "@/bricks/errors";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./ErrorDetail.module.scss";
 

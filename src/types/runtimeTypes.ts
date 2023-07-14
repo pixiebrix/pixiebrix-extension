@@ -18,10 +18,10 @@
 import { type ComponentType } from "react";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type SafeHTML, type UUID } from "@/types/stringTypes";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type Primitive } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -136,7 +136,7 @@ export type DeferExpression<TValue = UnknownObject> = Expression<
 >;
 
 /**
- * The extension run reason.
+ * The ModComponent run reason.
  * @since 1.6.5
  */
 export enum RunReason {
@@ -152,15 +152,15 @@ export enum RunReason {
   NAVIGATE = 2,
   /**
    * A manual run request. One of:
-   * - The user toggled the sidebar (sidebar extensions only)
+   * - The user toggled the sidebar (sidebar ModComponents only)
    * - A brick issued a reactivation event
    * - PixieBrix issues a re-activate (e.g., on extension install/uninstall)
    */
   MANUAL = 3,
   /**
-   * Experimental: a declared dependency of the extension point changed.
+   * Experimental: a declared dependency of the StarterBrick changed.
    *
-   * See MenuItemExtensionPoint
+   * See MenuItemStarterBrickABC
    */
   DEPENDENCY_CHANGED = 4,
   /**
@@ -168,7 +168,7 @@ export enum RunReason {
    */
   MUTATION = 5,
   /**
-   * Page Editor updated the extension
+   * Page Editor updated the ModComponent
    * @since 1.7.19
    */
   PAGE_EDITOR = 6,
@@ -180,11 +180,11 @@ export enum RunReason {
  */
 export type RunArgs = {
   /**
-   * The reason for running the extension point.
+   * The reason for running the StarterBrick.
    */
   reason: RunReason;
   /**
-   * If provided, only run the specified extensions.
+   * If provided, only run the specified ModComponents.
    */
   extensionIds?: UUID[];
 };
@@ -250,8 +250,8 @@ export type RenderedArgs = UnknownObject & {
 export type ServiceContext = Record<
   ServiceVarRef,
   {
-    __service: SanitizedServiceConfiguration;
-    [prop: string]: string | SanitizedServiceConfiguration | null;
+    __service: SanitizedIntegrationConfig;
+    [prop: string]: string | SanitizedIntegrationConfig | null;
   }
 >;
 

@@ -19,7 +19,7 @@ import React from "react";
 import { useField } from "formik";
 import Select from "react-select";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedServiceConfiguration } from "@/types/serviceTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import {
   type OptionsFactory,
   useOptionsResolver,
@@ -34,7 +34,7 @@ type RemoteMultiSelectWidgetProps = {
   disabled?: boolean;
   isClearable?: boolean;
   optionsFactory: OptionsFactory | Promise<Array<Option<unknown>>>;
-  config: SanitizedServiceConfiguration | null;
+  config: SanitizedIntegrationConfig | null;
   /**
    * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
    */

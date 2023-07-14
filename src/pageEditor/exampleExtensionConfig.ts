@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPipeline } from "@/blocks/types";
-import { type StarterBrickType } from "@/extensionPoints/types";
+import { type BrickPipeline } from "@/bricks/types";
+import { type StarterBrickType } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import {
   createNewBlock,
