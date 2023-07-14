@@ -16,9 +16,9 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
 import Loader from "@/components/Loader";

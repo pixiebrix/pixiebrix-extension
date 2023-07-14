@@ -20,7 +20,7 @@ import {
   stringToExpression,
   upgradePipelineToV3,
 } from "@/pageEditor/extensionPoints/upgrade";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { BrickABC } from "@/types/brickTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
@@ -745,7 +745,7 @@ describe("upgrade overrides", () => {
   test("don't convert framework to expression", async () => {
     // Import dynamically to avoid circular dependence
     const { ComponentReader } = await import(
-      "@/blocks/transformers/component/ComponentReader"
+      "@/bricks/transformers/component/ComponentReader"
     );
 
     const block = new ComponentReader();

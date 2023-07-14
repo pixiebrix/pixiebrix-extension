@@ -17,7 +17,7 @@
 
 import styles from "./AdvancedLinks.module.scss";
 
-import { type BlockIf, type BrickWindow } from "@/blocks/types";
+import { type BlockIf, type BrickWindow } from "@/bricks/types";
 import { type TemplateEngine } from "@/types/runtimeTypes";
 import { joinName } from "@/utils";
 import { useField } from "formik";

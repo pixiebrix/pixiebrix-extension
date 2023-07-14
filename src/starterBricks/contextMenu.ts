@@ -25,14 +25,14 @@ import {
   type Menus,
   type Permissions,
 } from "webextension-polyfill";
-import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
-import { checkAvailable } from "@/blocks/available";
+import { checkAvailable } from "@/bricks/available";
 import {
   ensureContextMenu,
   uninstallContextMenu,
@@ -48,11 +48,11 @@ import notify, {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/blocks/util";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { selectAllBlocks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {

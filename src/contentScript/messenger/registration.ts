@@ -56,7 +56,7 @@ import {
   resetTab,
   runRendererBlock,
 } from "@/contentScript/pageEditor";
-import { checkAvailable } from "@/blocks/available";
+import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
 import { runBrick } from "@/contentScript/executor";
 import {
@@ -75,7 +75,7 @@ import {
   getPanelDefinition,
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
-} from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+} from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancements";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 

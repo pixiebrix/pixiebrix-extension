@@ -25,14 +25,14 @@ import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type UnknownObject } from "@/types/objectTypes";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
   getDocument,
   RootReader,
   tick,
 } from "@/starterBricks/extensionPointTestUtils";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";

@@ -24,13 +24,13 @@ import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefinition,
 } from "@/starterBricks/quickBarProviderExtension";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,
   RootReader,
   tick,
 } from "@/starterBricks/extensionPointTestUtils";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";

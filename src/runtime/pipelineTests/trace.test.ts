@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
@@ -33,7 +33,7 @@ import {
 } from "@/telemetry/trace";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";

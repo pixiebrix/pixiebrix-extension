@@ -22,7 +22,7 @@ import {
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { type StarterBrickType } from "@/starterBricks/types";
 import {
   type AddBlockLocation,
@@ -78,7 +78,7 @@ import {
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
-import { testMatchPatterns } from "@/blocks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";

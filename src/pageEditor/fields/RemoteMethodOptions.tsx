@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { inputProperties } from "@/blocks/transformers/remoteMethod";
+import { inputProperties } from "@/bricks/transformers/remoteMethod";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";

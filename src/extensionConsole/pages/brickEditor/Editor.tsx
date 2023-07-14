@@ -33,7 +33,7 @@ import { type UUID } from "@/types/stringTypes";
 import BrickReference from "@/extensionConsole/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { fetch } from "@/hooks/fetch";
 import { type EditablePackageMetadata } from "@/types/contract";

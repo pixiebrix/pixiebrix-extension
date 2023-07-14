@@ -16,7 +16,7 @@
  */
 
 import React, { useContext, useState } from "react";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import AsyncButton, { type AsyncButtonProps } from "@/components/AsyncButton";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
@@ -26,7 +26,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { getTopLevelFrame } from "webext-messenger";
 import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
-import { SubmitPanelAction } from "@/blocks/errors";
+import { SubmitPanelAction } from "@/bricks/errors";
 import { boolean } from "@/utils";
 import cx from "classnames";
 

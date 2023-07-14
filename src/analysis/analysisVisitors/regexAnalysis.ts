@@ -16,8 +16,8 @@
  */
 
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
-import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { validateRegistryId } from "@/types/helpers";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { joinPathParts } from "@/utils";

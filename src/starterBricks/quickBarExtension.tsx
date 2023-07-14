@@ -32,7 +32,7 @@ import {
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
-import { checkAvailable, testMatchPatterns } from "@/blocks/available";
+import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import notify, {
@@ -42,10 +42,10 @@ import notify, {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/blocks/util";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { selectAllBlocks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";

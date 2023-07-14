@@ -16,20 +16,20 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
-import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
-import { CustomFormRenderer } from "@/blocks/renderers/customForm";
+import { COMPONENT_READER_ID } from "@/bricks/transformers/component/ComponentReader";
+import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { uuidv4 } from "@/types/helpers";
-import { defaultBlockConfig } from "@/blocks/util";
-import TourStep from "@/blocks/transformers/tourStep/tourStep";
+import { defaultBlockConfig } from "@/bricks/util";
+import TourStep from "@/bricks/transformers/tourStep/tourStep";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";

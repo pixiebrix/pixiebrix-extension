@@ -19,10 +19,10 @@ import {
   type Analysis,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import { type BrickPosition } from "@/blocks/types";
+import { type BrickPosition } from "@/bricks/types";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
-import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
+import PipelineExpressionVisitor from "@/bricks/PipelineExpressionVisitor";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";

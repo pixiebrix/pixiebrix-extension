@@ -31,10 +31,10 @@ import {
   minBy,
   partition,
 } from "lodash";
-import { checkAvailable } from "@/blocks/available";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
-import { selectAllBlocks } from "@/blocks/util";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { checkAvailable } from "@/bricks/available";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import { selectAllBlocks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import "@/vendors/hoverintent/hoverintent";
 import { selectExtensionContext } from "@/starterBricks/helpers";
@@ -52,7 +52,7 @@ import {
   unregisterTours,
 } from "@/starterBricks/tourController";
 import { getAll } from "@/tours/tourRunDatabase";
-import { initPopoverPool } from "@/blocks/transformers/temporaryInfo/popoverUtils";
+import { initPopoverPool } from "@/bricks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";

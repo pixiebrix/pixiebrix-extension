@@ -32,7 +32,7 @@ import { sortBy } from "lodash";
 import Loader from "@/components/Loader";
 import BrickDetail from "./BrickDetail";
 import BlockResult from "./BlockResult";
-import { isOfficial } from "@/blocks/util";
+import { isOfficial } from "@/bricks/util";
 import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/packageRegistry";
 import { brickToYaml } from "@/utils/objToYaml";

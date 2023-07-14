@@ -35,8 +35,8 @@ import FormModalOptions, {
 import FormRendererOptions, {
   FORM_RENDERER_ID,
 } from "@/pageEditor/fields/FormRendererOptions";
-import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
-import ComponentReaderOptions from "@/blocks/transformers/component/ComponentReaderOptions";
+import { COMPONENT_READER_ID } from "@/bricks/transformers/component/ComponentReader";
+import ComponentReaderOptions from "@/bricks/transformers/component/ComponentReaderOptions";
 import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/lookup";
 import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
 import DatabaseGetOptions, {
@@ -51,13 +51,13 @@ import DocumentOptions, {
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "@/pageEditor/fields/RemoteMethodOptions";
-import { TourStepTransformer } from "@/blocks/transformers/tourStep/tourStep";
-import TourStepOptions from "@/blocks/transformers/tourStep/TourStepOptions";
-import { ALERT_EFFECT_ID } from "@/blocks/effects/alert";
+import { TourStepTransformer } from "@/bricks/transformers/tourStep/tourStep";
+import TourStepOptions from "@/bricks/transformers/tourStep/TourStepOptions";
+import { ALERT_EFFECT_ID } from "@/bricks/effects/alert";
 import AlertOptions from "@/pageEditor/fields/AlertOptions";
-import { JQueryReader } from "@/blocks/transformers/jquery/JQueryReader";
-import JQueryReaderOptions from "@/blocks/transformers/jquery/JQueryReaderOptions";
-import AssignModVariable from "@/blocks/effects/assignModVariable";
+import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
+import JQueryReaderOptions from "@/bricks/transformers/jquery/JQueryReaderOptions";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
 import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptions";
 
 /**

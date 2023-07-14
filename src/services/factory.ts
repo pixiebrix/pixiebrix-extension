@@ -17,7 +17,7 @@
 
 import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
-import { testMatchPatterns } from "@/blocks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
 import { type AxiosRequestConfig } from "axios";

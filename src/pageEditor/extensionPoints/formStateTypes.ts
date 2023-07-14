@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type NormalizedAvailability } from "@/blocks/types";
+import { type NormalizedAvailability } from "@/bricks/types";
 import { type ElementInfo } from "@/pageScript/frameworks";
 import {
   type ContextMenuConfig,

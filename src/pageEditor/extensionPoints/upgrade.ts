@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
-import blockRegistry from "@/blocks/registry";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import blockRegistry from "@/bricks/registry";
 import { inputProperties } from "@/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep } from "lodash";

@@ -17,7 +17,7 @@
 
 import React from "react";
 import useAsyncState from "@/hooks/useAsyncState";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import serviceRegistry from "@/services/registry";
 import extensionPointRegistry from "@/starterBricks/registry";
 import AsyncStateGate from "@/components/AsyncStateGate";

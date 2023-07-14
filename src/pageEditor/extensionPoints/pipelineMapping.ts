@@ -20,16 +20,16 @@ import {
   type BrickConfig,
   type BrickPipeline,
   type BrickPosition,
-} from "@/blocks/types";
+} from "@/bricks/types";
 import { produce } from "immer";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import PipelineVisitor, {
   ROOT_POSITION,
   type VisitResolvedBlockExtra,
-} from "@/blocks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor";
 import pipelineSchema from "@schemas/pipeline.json";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
-import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
+import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 
 class NormalizePipelineVisitor extends PipelineVisitor {

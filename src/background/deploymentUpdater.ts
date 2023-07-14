@@ -51,7 +51,7 @@ import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";

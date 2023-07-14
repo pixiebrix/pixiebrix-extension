@@ -18,12 +18,12 @@
 import fs from "node:fs";
 // eslint-disable-next-line import/no-unassigned-import -- Until Node adds the global
 import "./cryptoNodePolyfill.js";
-import brickRegistry from "@/blocks/registry";
+import brickRegistry from "@/bricks/registry.js";
 
 // Import for side-effects (these modules register the blocks)
 // NOTE: we don't need to also include extensionPoints because we got rid of all the legacy hard-coded extension points
 // (e.g., the Pipedrive calendar extension point, and TechCrunch entity extension point)
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks.js";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped

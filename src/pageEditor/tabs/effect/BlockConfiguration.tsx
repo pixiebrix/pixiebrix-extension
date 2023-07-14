@@ -29,7 +29,7 @@ import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BrickConfig, type BrickWindow } from "@/blocks/types";
+import { type BrickConfig, type BrickWindow } from "@/bricks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";

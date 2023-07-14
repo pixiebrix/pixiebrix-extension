@@ -22,8 +22,8 @@ import VarAnalysis, {
 } from "./varAnalysis";
 import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import IfElse from "@/blocks/transformers/controlFlow/IfElse";
-import ForEach from "@/blocks/transformers/controlFlow/ForEach";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import {
   makePipelineExpression,
   makeTemplateExpression,
@@ -32,11 +32,11 @@ import {
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import recipeRegistry from "@/recipes/registry";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
-import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
-import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
+import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import {
   type ButtonDocumentElement,

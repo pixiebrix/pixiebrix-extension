@@ -21,7 +21,7 @@ import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { logPromiseDuration, pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
-import { testMatchPatterns } from "@/blocks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
 import { compact, groupBy, intersection, once, uniq } from "lodash";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";

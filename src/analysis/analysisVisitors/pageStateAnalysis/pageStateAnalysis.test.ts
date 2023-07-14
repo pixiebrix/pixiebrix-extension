@@ -16,12 +16,12 @@
  */
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { GetPageState, SetPageState } from "@/blocks/effects/pageState";
+import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import { AnnotationType } from "@/types/annotationTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type BaseFormState } from "@/pageEditor/extensionPoints/elementConfig";
-import { CustomFormRenderer } from "@/blocks/renderers/customForm";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 
 describe("PageStateAnalysis", () => {
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(

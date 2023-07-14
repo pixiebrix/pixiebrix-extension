@@ -17,7 +17,7 @@
 
 import { type TraceRecord } from "@/telemetry/trace";
 import { isEqual, reverse, sortBy } from "lodash";
-import { type Branch } from "@/blocks/types";
+import { type Branch } from "@/bricks/types";
 
 /**
  * Given records for a single runId and blockInstanceId, return the latest call to a given blockInstanceId.

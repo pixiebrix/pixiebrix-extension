@@ -17,7 +17,7 @@
 
 import { isErrorObject } from "@/errors/errorHelpers";
 import { type AxiosRequestConfig } from "axios";
-import { testMatchPatterns } from "@/blocks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import {
   DEFAULT_SERVICE_URL,
   getBaseURL,

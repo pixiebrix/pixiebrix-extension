@@ -18,7 +18,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { selectCopiedBlock } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
 

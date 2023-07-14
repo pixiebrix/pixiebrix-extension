@@ -28,14 +28,14 @@ import {
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
-import { checkAvailable, testMatchPatterns } from "@/blocks/available";
+import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
-import { selectAllBlocks } from "@/blocks/util";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import { selectAllBlocks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
@@ -50,7 +50,7 @@ import {
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
-import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   QuickbarQueryReader,
   quickbarQueryReaderShim,

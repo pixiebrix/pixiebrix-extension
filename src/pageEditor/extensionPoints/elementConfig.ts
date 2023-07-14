@@ -26,7 +26,7 @@ import {
 import {
   type BrickPipeline,
   type NormalizedAvailability,
-} from "@/blocks/types";
+} from "@/bricks/types";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import type { Permissions } from "webextension-polyfill";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";

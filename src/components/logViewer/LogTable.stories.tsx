@@ -22,7 +22,7 @@ import { validateRegistryId, uuidv4 } from "@/types/helpers";
 import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
-import { InputValidationError } from "@/blocks/errors";
+import { InputValidationError } from "@/bricks/errors";
 import { type Schema } from "@/types/schemaTypes";
 import type { LogEntry } from "@/telemetry/logging";
 

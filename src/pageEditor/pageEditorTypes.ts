@@ -24,7 +24,7 @@ import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type StarterBrickType } from "@/starterBricks/types";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type BrickConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "./extensionPoints/formStateTypes";

@@ -26,7 +26,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import SourceLabel from "./SourceLabel";
-import useAllBlocks from "@/blocks/hooks/useAllBlocks";
+import useAllBlocks from "@/bricks/hooks/useAllBlocks";
 import { useAsyncEffect } from "use-async-effect";
 import { computePosition, flip, offset, size } from "@floating-ui/dom";
 import getMenuOptions from "./getMenuOptions";

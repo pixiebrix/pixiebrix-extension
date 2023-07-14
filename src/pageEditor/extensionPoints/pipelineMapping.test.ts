@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ForEach from "@/blocks/transformers/controlFlow/ForEach";
-import IfElse from "@/blocks/transformers/controlFlow/IfElse";
-import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
-import { type BrickConfig } from "@/blocks/types";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
+import { type BrickConfig } from "@/bricks/types";
 import {
   echoBrick,
   teapotBrick,
@@ -28,7 +28,7 @@ import {
   normalizePipelineForEditor,
   omitEditorMetadata,
 } from "./pipelineMapping";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { isPipelineExpression } from "@/utils/expressionUtils";

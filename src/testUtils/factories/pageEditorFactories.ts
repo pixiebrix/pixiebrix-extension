@@ -39,7 +39,7 @@ import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
 } from "@/testUtils/factories/recipeFactories";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/extensionPoints/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";

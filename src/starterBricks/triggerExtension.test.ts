@@ -20,13 +20,13 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,
   RootReader,
   tick,
 } from "@/starterBricks/extensionPointTestUtils";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import {
   fromJS,
   type TriggerConfig,

@@ -45,7 +45,7 @@ import {
   type ExpressionType,
   type PipelineExpression,
 } from "@/types/runtimeTypes";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import {
   act as actHook,
   renderHook,

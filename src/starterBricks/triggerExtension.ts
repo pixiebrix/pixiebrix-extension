@@ -30,7 +30,7 @@ import {
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
-import { checkAvailable } from "@/blocks/available";
+import { checkAvailable } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
@@ -38,12 +38,12 @@ import {
   selectExtensionContext,
 } from "@/starterBricks/helpers";
 import notify from "@/utils/notify";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/blocks/util";
+import { selectAllBlocks } from "@/bricks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { sleep, waitAnimationFrame } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
@@ -53,7 +53,7 @@ import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
 import { guessSelectedElement } from "@/utils/selectionController";
 import "@/vendors/hoverintent/hoverintent";
-import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   type AttachMode,
   type IntervalArgs,
@@ -67,7 +67,7 @@ import {
   getShimEventReader,
   pickEventProperties,
 } from "@/starterBricks/triggerEventReaders";
-import CompositeReader from "@/blocks/readers/CompositeReader";
+import CompositeReader from "@/bricks/readers/CompositeReader";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";

@@ -20,14 +20,14 @@ import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import {
   type TourConfig,
   type TourDefinition,
   fromJS,
 } from "@/starterBricks/tourExtension";
 import { RootReader, tick } from "@/starterBricks/extensionPointTestUtils";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { isTourInProgress } from "@/starterBricks/tourController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import defaultActions from "@/components/quickBar/defaultActions";

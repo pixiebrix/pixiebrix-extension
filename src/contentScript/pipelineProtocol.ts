@@ -1,7 +1,7 @@
-import { type BrickPipeline, type Branch } from "@/blocks/types";
+import { type BrickPipeline, type Branch } from "@/bricks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { expectContext } from "@/utils/expectContext";
-import { HeadlessModeError } from "@/blocks/errors";
+import { HeadlessModeError } from "@/bricks/errors";
 import { type Args, mapArgs, type MapOptions } from "@/runtime/mapArgs";
 import { type Except } from "type-fest";
 import { type UnknownObject } from "@/types/objectTypes";

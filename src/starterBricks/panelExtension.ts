@@ -17,8 +17,8 @@
 
 import { uuidv4 } from "@/types/helpers";
 import Mustache from "mustache";
-import { errorBoundary } from "@/blocks/renderers/common";
-import { checkAvailable } from "@/blocks/available";
+import { errorBoundary } from "@/bricks/renderers/common";
+import { checkAvailable } from "@/bricks/available";
 import { castArray, cloneDeep } from "lodash";
 import {
   type InitialValues,
@@ -44,12 +44,12 @@ import { type Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/blocks/util";
+import { selectAllBlocks } from "@/bricks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type IconConfig } from "@/types/iconTypes";

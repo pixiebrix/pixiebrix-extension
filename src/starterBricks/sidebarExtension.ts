@@ -28,7 +28,7 @@ import {
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
-import { checkAvailable } from "@/blocks/available";
+import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
 import {
   removeExtensionPoint,
@@ -39,17 +39,17 @@ import {
 } from "@/contentScript/sidebarController";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
-import { HeadlessModeError } from "@/blocks/errors";
+import { HeadlessModeError } from "@/bricks/errors";
 import {
   makeShouldRunExtensionForStateChange,
   selectExtensionContext,
 } from "@/starterBricks/helpers";
 import { cloneDeep, debounce, stubTrue } from "lodash";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/blocks/util";
+import { selectAllBlocks } from "@/bricks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";

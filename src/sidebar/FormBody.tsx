@@ -20,7 +20,7 @@ import { type FormPanelEntry } from "@/types/sidebarTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { createFrameSource } from "@/blocks/transformers/ephemeralForm/formTransformer";
+import { createFrameSource } from "@/bricks/transformers/ephemeralForm/formTransformer";
 
 type FormBodyProps = {
   form: FormPanelEntry;

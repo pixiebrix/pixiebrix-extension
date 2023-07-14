@@ -16,7 +16,7 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { checkAvailable } from "@/blocks/available";
+import { checkAvailable } from "@/bricks/available";
 import { castArray, cloneDeep, debounce, once, pick } from "lodash";
 import {
   type InitialValues,
@@ -48,15 +48,15 @@ import notify, {
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
-import { type BrickConfig, type BrickPipeline } from "@/blocks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions, {
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
-import { selectAllBlocks } from "@/blocks/util";
+import { selectAllBlocks } from "@/bricks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
-import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { $safeFind } from "@/helpers";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";

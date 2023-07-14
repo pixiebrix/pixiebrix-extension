@@ -16,10 +16,10 @@
  */
 
 import { type ApiVersion } from "@/types/runtimeTypes";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { InputValidationError } from "@/blocks/errors";
-import { type BrickPipeline } from "@/blocks/types";
+import { InputValidationError } from "@/bricks/errors";
+import { type BrickPipeline } from "@/bricks/types";
 import {
   contextBrick,
   echoBrick,

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { AnalysisVisitorWithResolvedBricksABC } from "./baseAnalysisVisitors";
 import { AnnotationType } from "@/types/annotationTypes";

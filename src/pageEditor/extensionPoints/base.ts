@@ -46,7 +46,7 @@ import {
   type BrickPipeline,
   type NormalizedAvailability,
   type ReaderConfig,
-} from "@/blocks/types";
+} from "@/bricks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";

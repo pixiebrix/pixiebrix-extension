@@ -17,13 +17,13 @@
 
 import PipelineExpressionVisitor, {
   type VisitDocumentElementArgs,
-} from "@/blocks/PipelineExpressionVisitor";
+} from "@/bricks/PipelineExpressionVisitor";
 import {
   nestedPosition,
   type VisitBlockExtra,
   type VisitPipelineExtra,
-} from "@/blocks/PipelineVisitor";
-import { type BrickConfig, type BrickPosition } from "@/blocks/types";
+} from "@/bricks/PipelineVisitor";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import { makeServiceContext } from "@/services/serviceUtils";
@@ -36,7 +36,7 @@ import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/recipes/registry";
-import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
+import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { joinPathParts } from "@/utils";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";

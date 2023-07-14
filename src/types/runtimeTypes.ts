@@ -21,7 +21,7 @@ import { type SafeHTML, type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type Primitive } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
-import { type BrickPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.

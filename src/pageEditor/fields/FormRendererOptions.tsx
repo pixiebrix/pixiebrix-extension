@@ -30,7 +30,7 @@ import { partial } from "lodash";
 import {
   customFormRendererSchema,
   type Storage,
-} from "@/blocks/renderers/customForm";
+} from "@/bricks/renderers/customForm";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import { type ModComponentFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";

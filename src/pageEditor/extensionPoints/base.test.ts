@@ -21,7 +21,7 @@ import {
   selectIsAvailable,
 } from "./base";
 import { type StarterBrickType } from "@/starterBricks/types";
-import { type ReaderConfig } from "@/blocks/types";
+import { type ReaderConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
 
