@@ -65,7 +65,9 @@ describe("locator", () => {
     const option = await locator.locate(config.service.name, config.id);
     expect(option.proxy).toBe(true);
 
-    await expect(locator.getSecretConfig(config.id)).resolves.toBeUndefined();
+    await expect(
+      locator.findIntegrationConfig(config.id)
+    ).resolves.toBeUndefined();
   });
 
   it("sets proxy: false for remote pushdown configurations", async () => {
@@ -95,6 +97,8 @@ describe("locator", () => {
 
     expect(option.proxy).toBe(false);
 
-    await expect(locator.getSecretConfig(config.id)).resolves.not.toBeNull();
+    await expect(
+      locator.findIntegrationConfig(config.id)
+    ).resolves.not.toBeNull();
   });
 });

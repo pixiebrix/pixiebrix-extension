@@ -110,7 +110,7 @@ export async function launchAuthIntegration({
 
   // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_SERVICE_ID, they'll be the same
   // because it doesn't have any secrets.
-  const config = await serviceLocator.getSecretConfig(localAuths[0].id);
+  const config = await serviceLocator.findIntegrationConfig(localAuths[0].id);
   const data = await launchOAuth2Flow(service, config);
 
   if (serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID) {
@@ -180,7 +180,7 @@ export async function _refreshPartnerToken(): Promise<void> {
     console.debug("Refreshing partner JWT");
 
     const service = await serviceRegistry.lookup(CONTROL_ROOM_OAUTH_SERVICE_ID);
-    const config = await serviceLocator.getSecretConfig(authData.authId);
+    const config = await serviceLocator.findIntegrationConfig(authData.authId);
     const context = service.getOAuth2Context(config.config);
 
     if (isEmpty(config.config.controlRoomUrl)) {
