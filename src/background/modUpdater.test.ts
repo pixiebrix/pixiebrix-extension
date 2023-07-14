@@ -23,7 +23,7 @@ import {
   deactivateMod,
   fetchModUpdates,
   getActivatedMarketplaceModMetadata,
-  updateModsIfUpdatesAvailable,
+  updateModsIfForceUpdatesAvailable,
 } from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
@@ -339,15 +339,14 @@ describe("updateModsIfUpdatesAvailable", () => {
     axiosMock.onPost().reply(200, {
       updates: [
         {
-          [publicMod.metadata.id]: {
-            backwards_compatible: null,
-            backwards_incompatible: false,
-          },
+          backwards_compatible: publicModUpdate,
+          name: publicMod.metadata.id,
+          backwards_incompatible: false,
         },
       ],
     });
 
-    await updateModsIfUpdatesAvailable();
+    await updateModsIfForceUpdatesAvailable();
 
     const resultingOptionsState = await loadOptions();
 
@@ -365,15 +364,14 @@ describe("updateModsIfUpdatesAvailable", () => {
     axiosMock.onPost().reply(200, {
       updates: [
         {
-          [publicMod.metadata.id]: {
-            backwards_compatible: null,
-            backwards_incompatible: false,
-          },
+          backwards_compatible: null,
+          name: publicMod.metadata.id,
+          backwards_incompatible: false,
         },
       ],
     });
 
-    await updateModsIfUpdatesAvailable();
+    await updateModsIfForceUpdatesAvailable();
 
     const resultingOptionsState = await loadOptions();
     expect(resultingOptionsState).toEqual(priorOptionsState);
@@ -385,15 +383,16 @@ describe("updateModsIfUpdatesAvailable", () => {
     });
 
     axiosMock.onPost().reply(200, {
-      updates: {
-        [publicMod.metadata.id]: {
+      updates: [
+        {
           backwards_compatible: publicModUpdate,
+          name: publicMod.metadata.id,
           backwards_incompatible: false,
         },
-      },
+      ],
     });
 
-    await updateModsIfUpdatesAvailable();
+    await updateModsIfForceUpdatesAvailable();
 
     const resultingOptionsState = await loadOptions();
     expect(resultingOptionsState.extensions.length).toEqual(2);

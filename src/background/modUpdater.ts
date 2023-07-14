@@ -43,8 +43,6 @@ type ActivatedModState = {
   editor: EditorState;
 };
 
-// TODO: we should consider start extracting this request pattern into an api of some
-//  kind that the background script can use
 export async function autoModUpdatesEnabled(): Promise<boolean> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
@@ -109,14 +107,13 @@ export async function getActivatedMarketplaceModMetadata(): Promise<
   return activatedModComponents
     .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
     .map((mod) => mod._recipe);
-  // TODO: maybe get rid of the _recipe part and just return the whole mod component 👆
 }
 
 /**
  * Given a list of currently activated mods, fetches information about "force updates"
  * for those mods.
  * @param activatedMods mods that are currently activated
- * @returns a list of mods with information about updates available
+ * @returns a list of mods with information about "force updates"
  */
 export async function fetchModUpdates(
   activatedMods: Array<IExtension["_recipe"]>
@@ -135,7 +132,6 @@ export async function fetchModUpdates(
     } = await client.post<PackageVersionUpdates>("/api/registry/updates/", {
       versions: collectModVersions(activatedMods),
     });
-    console.log("*** updates", updates);
 
     return updates;
   } catch (error) {
@@ -146,14 +142,9 @@ export async function fetchModUpdates(
 
 async function getBackwardsCompatibleUpdates(
   activatedMods: Array<IExtension["_recipe"]>
-): Promise<Record<RegistryId, ModDefinition>> {
+): Promise<PackageVersionUpdates["updates"]> {
   const updates = await fetchModUpdates(activatedMods);
-
-  return Object.fromEntries(
-    Object.entries(updates)
-      .filter(([_, update]) => update.backwards_compatible)
-      .map(([id, update]) => [id, update.backwards_compatible])
-  );
+  return updates.filter(({ backwards_compatible }) => backwards_compatible);
 }
 
 function deactivateModComponent(
@@ -224,19 +215,6 @@ function reactivateMod(
   optionsArgs: OptionsArgs,
   optionsState: ExtensionOptionsState
 ): ExtensionOptionsState {
-  const alreadyActivated = optionsState.extensions.find(
-    (activatedModComponent) =>
-      activatedModComponent._recipe?.id === mod.metadata.id
-  );
-
-  if (alreadyActivated) {
-    console.error(
-      `Mod ${mod.metadata.id} already activated, skipping reactivation`
-    );
-    return optionsState;
-  }
-
-  console.log("*** options state before reactivate mod", optionsState);
   return extensionsSlice.reducer(
     optionsState,
     extensionsSlice.actions.installRecipe({
@@ -281,7 +259,6 @@ function updateMod(
   mod: ModDefinition,
   reduxState: ActivatedModState
 ): ActivatedModState {
-  console.log("*** updating mod", mod);
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
   // Deactivate the mod
@@ -295,12 +272,12 @@ function updateMod(
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  // Collect service an option configs to reinstall
+  // Collect service and option configs to reinstall
   const { services, optionsArgs } = collectModConfigurations(
     deactivatedModComponents
   );
 
-  // Reactivate the mod with the updated mod definition & configurations
+  // Reactivate the mod with the updated mod definition & prior configurations
   newOptionsState = reactivateMod(mod, services, optionsArgs, newOptionsState);
 
   return {
@@ -309,13 +286,11 @@ function updateMod(
   };
 }
 
-async function updateMods(modUpdates: Record<RegistryId, ModDefinition>) {
+async function updateMods(modUpdates: PackageVersionUpdates["updates"]) {
   let newOptionsState = await loadOptions();
   let newEditorState = await getEditorState();
 
-  console.log("*** state before update mods", newOptionsState);
-
-  for (const update of Object.values(modUpdates)) {
+  for (const { backwards_compatible: update } of modUpdates) {
     const { options, editor } = updateMod(update, {
       options: newOptionsState,
       editor: newEditorState,
@@ -327,17 +302,9 @@ async function updateMods(modUpdates: Record<RegistryId, ModDefinition>) {
   await saveOptions(newOptionsState);
   await saveEditorState(newEditorState);
   await forEachTab(queueReactivateTab);
-
-  console.log("*** state after update mods", newOptionsState);
 }
 
-// TODO: updateModsIfForceUpdatesAvailable?
-export async function updateModsIfUpdatesAvailable() {
-  console.log("*** checking for mod updates");
-
-  const optionsState = await loadOptions();
-  console.log("*** options state", optionsState);
-
+export async function updateModsIfForceUpdatesAvailable() {
   if (!(await autoModUpdatesEnabled())) {
     return;
   }
@@ -357,6 +324,6 @@ export async function updateModsIfUpdatesAvailable() {
 }
 
 export function initModUpdater(): void {
-  setInterval(updateModsIfUpdatesAvailable, UPDATE_INTERVAL_MS);
-  void updateModsIfUpdatesAvailable();
+  setInterval(updateModsIfForceUpdatesAvailable, UPDATE_INTERVAL_MS);
+  void updateModsIfForceUpdatesAvailable();
 }

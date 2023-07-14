@@ -267,6 +267,10 @@ export type ErrorItem = Except<
   user_agent_extension_version: SemVerString;
 };
 
-// TODO: I think updates.backwards_compatible should be ModDefinition
-export type PackageVersionUpdates =
-  components["schemas"]["PackageVersionUpdates"];
+export type PackageVersionUpdates = {
+  updates: Array<{
+    backwards_compatible: ModDefinition;
+    name: string;
+    backwards_incompatible: boolean;
+  }>;
+};
