@@ -32,7 +32,6 @@ import {
   persistedExtensionFactory,
 } from "@/testUtils/factories/extensionFactories";
 import type { RegistryId, SemVerString, Sharing } from "@/types/registryTypes";
-import type { IExtension, ActivatedModComponent } from "@/types/extensionTypes";
 import {
   extensionPointDefinitionFactory,
   recipeMetadataFactory,
@@ -42,6 +41,7 @@ import { getEditorState } from "@/store/dynamicElementStorage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
+import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError", () => jest.fn());
@@ -94,7 +94,7 @@ describe("getActivatedMarketplaceMods function", () => {
         sharing: {
           public: true,
         } as Sharing,
-      } as IExtension["_recipe"],
+      } as ActivatedModComponent["_recipe"],
     });
 
     privateActivatedMod = persistedExtensionFactory({
@@ -102,7 +102,7 @@ describe("getActivatedMarketplaceMods function", () => {
         sharing: {
           public: false,
         } as Sharing,
-      } as IExtension["_recipe"],
+      } as ActivatedModComponent["_recipe"],
     });
 
     publicActivatedDeployment = persistedExtensionFactory({
@@ -110,8 +110,8 @@ describe("getActivatedMarketplaceMods function", () => {
         sharing: {
           public: true,
         } as Sharing,
-      } as IExtension["_recipe"],
-      _deployment: {} as IExtension["_deployment"],
+      } as ActivatedModComponent["_recipe"],
+      _deployment: {} as ActivatedModComponent["_deployment"],
     });
 
     privateActivatedDeployment = persistedExtensionFactory({
@@ -119,8 +119,8 @@ describe("getActivatedMarketplaceMods function", () => {
         sharing: {
           public: false,
         } as Sharing,
-      } as IExtension["_recipe"],
-      _deployment: {} as IExtension["_deployment"],
+      } as ActivatedModComponent["_recipe"],
+      _deployment: {} as ActivatedModComponent["_deployment"],
     });
   });
 
@@ -147,8 +147,8 @@ describe("getActivatedMarketplaceMods function", () => {
 describe("fetchModUpdates function", () => {
   it("calls the registry/updates/ endpoint with the right payload", async () => {
     const activatedMods = [
-      recipeMetadataFactory() as IExtension["_recipe"],
-      recipeMetadataFactory() as IExtension["_recipe"],
+      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
+      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
     ];
 
     axiosMock.onPost().reply(200, {});
@@ -174,8 +174,8 @@ describe("fetchModUpdates function", () => {
 
   it("reports error and returns empty object on failure", async () => {
     const activatedMods = [
-      recipeMetadataFactory() as IExtension["_recipe"],
-      recipeMetadataFactory() as IExtension["_recipe"],
+      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
+      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
     ];
 
     axiosMock.onPost().reply(400, {});
@@ -195,8 +195,8 @@ describe("collectModVersions function", () => {
 
   it("returns expected object with registry id keys and version number values", () => {
     const activatedMods = [
-      recipeMetadataFactory() as IExtension["_recipe"],
-      recipeMetadataFactory() as IExtension["_recipe"],
+      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
+      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
     ];
 
     const result = collectModVersions(activatedMods);
@@ -217,11 +217,11 @@ describe("collectModVersions function", () => {
       recipeMetadataFactory({
         id: "@test/same-mod" as RegistryId,
         version: "1.0.0" as SemVerString,
-      }) as IExtension["_recipe"],
+      }) as ActivatedModComponent["_recipe"],
       recipeMetadataFactory({
         id: "@test/same-mod" as RegistryId,
         version: "2.0.0" as SemVerString,
-      }) as IExtension["_recipe"],
+      }) as ActivatedModComponent["_recipe"],
     ];
 
     const result = collectModVersions(activatedMods);
@@ -231,11 +231,15 @@ describe("collectModVersions function", () => {
 });
 
 describe("deactivateMod function", () => {
-  let modToDeactivate: IExtension["_recipe"];
+  let modToDeactivate: ActivatedModComponent["_recipe"];
 
   beforeEach(async () => {
-    modToDeactivate = recipeMetadataFactory({}) as IExtension["_recipe"];
-    const anotherMod = recipeMetadataFactory({}) as IExtension["_recipe"];
+    modToDeactivate = recipeMetadataFactory(
+      {}
+    ) as ActivatedModComponent["_recipe"];
+    const anotherMod = recipeMetadataFactory(
+      {}
+    ) as ActivatedModComponent["_recipe"];
 
     await saveOptions({
       extensions: [
@@ -274,7 +278,7 @@ describe("deactivateMod function", () => {
     const extensionPoint = extensionPointDefinitionFactory();
     const extension = extensionFactory({
       extensionPointId: extensionPoint.metadata.id,
-      _recipe: recipeMetadataFactory({}) as IExtension["_recipe"],
+      _recipe: recipeMetadataFactory({}) as ActivatedModComponent["_recipe"],
     }) as ActivatedModComponent;
 
     await saveOptions({
