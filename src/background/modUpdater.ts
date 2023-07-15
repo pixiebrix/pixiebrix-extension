@@ -19,10 +19,8 @@ import type { Me, PackageVersionUpdates } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
-import type { IExtension, UnresolvedExtension } from "@/types/extensionTypes";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import type { ExtensionOptionsState } from "@/store/extensionsTypes";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import type { UUID } from "@/types/stringTypes";
@@ -33,11 +31,16 @@ import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { type ModComponentOptionsState } from "@/store/extensionsTypes";
+import type {
+  ActivatedModComponent,
+  UnresolvedModComponent,
+} from "@/types/modComponentTypes";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
 type ActivatedModState = {
-  options: ExtensionOptionsState;
+  options: ModComponentOptionsState;
   editor: EditorState;
 };
 
@@ -71,7 +74,7 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
  * and the mod components that were deactivated
  */
 export function collectModVersions(
-  mods: Array<IExtension["_recipe"]>
+  mods: Array<ActivatedModComponent["_recipe"]>
 ): Array<{ name: RegistryId; version: SemVerString }> {
   const modVersions: Array<{ name: RegistryId; version: SemVerString }> = [];
 
@@ -101,7 +104,7 @@ export function collectModVersions(
  * @returns a list of mod metadata for activated Marketplace mods
  */
 export async function getActivatedMarketplaceModMetadata(): Promise<
-  Array<IExtension["_recipe"]>
+  Array<ActivatedModComponent["_recipe"]>
 > {
   const { extensions: activatedModComponents } = await loadOptions();
 
@@ -119,7 +122,7 @@ export async function getActivatedMarketplaceModMetadata(): Promise<
  * @returns a list of mods with information about "force updates"
  */
 export async function fetchModUpdates(
-  activatedMods: Array<IExtension["_recipe"]>
+  activatedMods: Array<ActivatedModComponent["_recipe"]>
 ): Promise<PackageVersionUpdates["updates"]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
@@ -151,7 +154,7 @@ export async function fetchModUpdates(
  * @returns a list of backwards compatible mod updates
  */
 async function getBackwardsCompatibleUpdates(
-  activatedMods: Array<IExtension["_recipe"]>
+  activatedMods: Array<ActivatedModComponent["_recipe"]>
 ): Promise<PackageVersionUpdates["updates"]> {
   const updates = await fetchModUpdates(activatedMods);
   return updates.filter(({ backwards_compatible }) => backwards_compatible);
@@ -164,7 +167,7 @@ async function getBackwardsCompatibleUpdates(
  * @returns {reduxState, deactivatedModComponents} new redux state with the mod component deactivated
  */
 function deactivateModComponent(
-  modComponent: UnresolvedExtension,
+  modComponent: UnresolvedModComponent,
   reduxState: ActivatedModState
 ): ActivatedModState {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
@@ -197,7 +200,7 @@ export function deactivateMod(
   reduxState: ActivatedModState
 ): {
   reduxState: ActivatedModState;
-  deactivatedModComponents: UnresolvedExtension[];
+  deactivatedModComponents: UnresolvedModComponent[];
 } {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
@@ -206,7 +209,7 @@ export function deactivateMod(
     options: newOptionsState,
   });
 
-  const deactivatedModComponents: UnresolvedExtension[] = [];
+  const deactivatedModComponents: UnresolvedModComponent[] = [];
   for (const activatedModComponent of activatedModComponents) {
     const { options: nextOptionsState, editor: nextEditorState } =
       deactivateModComponent(activatedModComponent, {
@@ -233,8 +236,8 @@ function reactivateMod(
   mod: ModDefinition,
   services: Record<RegistryId, UUID>,
   optionsArgs: OptionsArgs,
-  optionsState: ExtensionOptionsState
-): ExtensionOptionsState {
+  optionsState: ModComponentOptionsState
+): ModComponentOptionsState {
   return extensionsSlice.reducer(
     optionsState,
     extensionsSlice.actions.installRecipe({
@@ -253,7 +256,7 @@ function reactivateMod(
  * in reactivating the mod.
  */
 export function collectModConfigurations(
-  modComponents: UnresolvedExtension[]
+  modComponents: UnresolvedModComponent[]
 ): {
   services: Record<RegistryId, UUID>;
   optionsArgs: OptionsArgs;
