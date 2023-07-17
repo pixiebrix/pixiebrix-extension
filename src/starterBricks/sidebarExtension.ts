@@ -436,7 +436,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 }
 
-export interface PanelDefinition extends StarterBrickDefinition {
+export interface SidebarDefinition extends StarterBrickDefinition {
   /**
    * The trigger to refresh the panel
    *
@@ -460,7 +460,7 @@ export interface PanelDefinition extends StarterBrickDefinition {
 }
 
 class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
-  private readonly definition: PanelDefinition;
+  private readonly definition: SidebarDefinition;
 
   public readonly rawConfig: StarterBrickConfig;
 
