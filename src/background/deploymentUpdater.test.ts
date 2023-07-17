@@ -20,7 +20,7 @@ import { uuidv4, validateSemVerString } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deploymentUpdater";
-import { reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
 import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { isUpdateAvailable } from "@/background/installer";

@@ -19,7 +19,8 @@ import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveElement,

@@ -36,7 +36,8 @@ import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import {
   type Integration,
   type IntegrationConfig,

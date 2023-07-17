@@ -18,7 +18,8 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { getDNT } from "@/telemetry/dnt";
 import { PropError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";

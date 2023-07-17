@@ -34,7 +34,8 @@ import {
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {

@@ -17,11 +17,11 @@
 
 import { type DependencyList, useCallback } from "react";
 import notify from "@/utils/notify";
-import { reportEvent } from "@/telemetry/events";
+import { type Event, reportEvent } from "@/telemetry/reportEvent";
 import { CancelError } from "@/errors/businessErrors";
 
 type Options = {
-  event?: string;
+  event?: Event;
   errorMessage?: string;
   successMessage?: string;
 };

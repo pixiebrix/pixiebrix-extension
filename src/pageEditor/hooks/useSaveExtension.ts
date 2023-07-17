@@ -19,7 +19,8 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 

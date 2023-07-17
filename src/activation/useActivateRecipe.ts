@@ -21,7 +21,7 @@ import { useCallback } from "react";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -31,6 +31,7 @@ import { isEmpty } from "lodash";
 import { useCreateDatabaseMutation } from "@/services/api";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isUUID, validateUUID } from "@/types/helpers";
+import { Events } from "@/telemetry/events";
 
 export type ActivateResult = {
   success: boolean;

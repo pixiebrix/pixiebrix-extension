@@ -17,7 +17,8 @@
 
 import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 

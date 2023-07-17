@@ -18,7 +18,8 @@
 import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import { isModDefinition } from "@/utils/modUtils";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { push } from "connected-react-router";
 
 function useActivateAction(modViewItem: ModViewItem): () => void | null {

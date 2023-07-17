@@ -20,7 +20,8 @@ import {
   type StandaloneModDefinition,
   type Deployment,
 } from "@/types/contract";
-import { reportEvent, Events } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";

@@ -39,7 +39,8 @@ import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import notify, {
   DEFAULT_ACTION_RESULTS,
   type MessageConfig,

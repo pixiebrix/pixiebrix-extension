@@ -21,7 +21,7 @@ import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/messenger/api";
 import { getExtensionVersion } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import {
   selectExtensions,
@@ -60,6 +60,7 @@ import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
+import { Events } from "@/telemetry/events";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
@@ -142,7 +143,7 @@ export async function uninstallAllDeployments(): Promise<void> {
     optionsState,
   });
 
-  reportEvent(Events.DEPLOYMENT_DEACTIVATE_ALL, {
+  reportEvent("DeploymentDeactivateAll", {
     auto: true,
     deployments: toUninstall.map((x) => x._deployment.id),
   });

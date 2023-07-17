@@ -41,7 +41,8 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";

@@ -21,7 +21,8 @@
 
 import { linkExtension } from "@/auth/token";
 import { type TokenAuthData } from "@/auth/authTypes";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
 

@@ -21,7 +21,8 @@ import React, { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import notify from "@/utils/notify";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
 import { useGetZapierKeyQuery } from "@/services/api";
 

@@ -39,7 +39,8 @@ import { type StorageEstimate } from "@/types/browserTypes";
 import { expectContext } from "@/utils/expectContext";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { round } from "lodash";
-import { Events, reportEvent } from "@/telemetry/events";
+import { reportEvent } from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import useAsyncState from "@/hooks/useAsyncState";
 
 const ConnectionErrorDisplay: React.FC<ErrorDisplayProps> = ({
