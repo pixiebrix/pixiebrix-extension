@@ -237,7 +237,7 @@
     "eslint-config-pixiebrix": "^0.26.3",
     "eslint-config-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
     "eslint-plugin-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
-    "fake-indexeddb": "^4.0.0",
+    "fake-indexeddb": "^4.0.2",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.6.1",
     "jest-environment-jsdom": "^29.6.1",
