@@ -36,7 +36,7 @@ import {
 } from "@/testUtils/factories/pageEditorFactories";
 import {
   brickConfigFactory,
-  brickFactory,
+  brickFactory as brick,
 } from "@/testUtils/factories/brickFactories";
 
 beforeAll(() => {
@@ -143,7 +143,7 @@ test.each`
 `(
   "$readableExpected show Condition and Target settings for $blockName",
   async ({ propertyName, expected }) => {
-    const block = brickFactory({
+    const block = brick({
       [propertyName]: jest.fn(),
       inputSchema: propertiesToSchema({
         message: {

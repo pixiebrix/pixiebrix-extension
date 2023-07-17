@@ -22,7 +22,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/integrationFactories";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -34,7 +34,7 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
 describe("useSpreadsheetId", () => {
   beforeAll(() => {
     servicesLocateMock.mockResolvedValue(
-      sanitizedServiceConfigurationFactory({
+      sanitizedIntegrationConfigFactory({
         serviceId: GOOGLE_SHEET_SERVICE_ID,
         // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
         config: {

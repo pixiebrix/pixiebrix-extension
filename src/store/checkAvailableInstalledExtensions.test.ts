@@ -35,10 +35,10 @@ import {
   RemoteQuickBarExtensionPoint,
 } from "@/starterBricks/quickBarExtension";
 import {
-  extensionPointDefinitionFactory,
+  starterBrickConfigFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
-import { cloudExtensionFactory } from "@/testUtils/factories/extensionFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getInstalledExtensionPoints: jest.fn(),
@@ -56,68 +56,65 @@ describe("checkAvailableInstalledExtensions", () => {
     (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
 
     const availableButtonId = validateRegistryId("test/available-button");
-    const availableButton = cloudExtensionFactory({
+    const availableButton = standaloneModDefinitionFactory({
       extensionPointId: availableButtonId,
     });
     const unavailableButtonId = validateRegistryId("test/unavailable-button");
-    const unavailableButton = cloudExtensionFactory({
+    const unavailableButton = standaloneModDefinitionFactory({
       extensionPointId: unavailableButtonId,
     });
     const availableQbId = validateRegistryId("test/available-quickbar");
-    const availableQb = cloudExtensionFactory({
+    const availableQb = standaloneModDefinitionFactory({
       extensionPointId: availableQbId,
     });
     const unavailableQbId = validateRegistryId("test/unavailable-quickbar");
-    const unavailableQb = cloudExtensionFactory({
+    const unavailableQb = standaloneModDefinitionFactory({
       extensionPointId: unavailableQbId,
     });
 
-    const availableButtonExtensionPointConfig = extensionPointDefinitionFactory(
-      {
-        metadata(): Metadata {
-          return recipeMetadataFactory({
-            id: availableButtonId,
-          });
-        },
-        definition(): MenuDefinition {
-          return {
-            type: "menuItem",
-            containerSelector: "",
-            template: "",
-            isAvailable: {
-              matchPatterns: [testUrl],
-            },
-            reader: validateRegistryId("@pixiebrix/document-context"),
-          };
-        },
-      }
-    ) as StarterBrickConfig<MenuDefinition>;
+    const availableButtonStarterBrickConfig = starterBrickConfigFactory({
+      metadata(): Metadata {
+        return recipeMetadataFactory({
+          id: availableButtonId,
+        });
+      },
+      definition(): MenuDefinition {
+        return {
+          type: "menuItem",
+          containerSelector: "",
+          template: "",
+          isAvailable: {
+            matchPatterns: [testUrl],
+          },
+          reader: validateRegistryId("@pixiebrix/document-context"),
+        };
+      },
+    }) as StarterBrickConfig<MenuDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
-      availableButtonExtensionPointConfig
+      availableButtonStarterBrickConfig
     );
 
-    const availableQuickbarExtensionPointConfig =
-      extensionPointDefinitionFactory({
-        metadata(): Metadata {
-          return recipeMetadataFactory({
-            id: availableQbId,
-          });
-        },
-        definition(): QuickBarDefinition {
-          return {
-            type: "quickBar",
-            contexts: ["all"],
-            documentUrlPatterns: [testUrl],
-            isAvailable: {
-              matchPatterns: [testUrl],
-            },
-            reader: validateRegistryId("@pixiebrix/document-context"),
-            targetMode: "document",
-          };
-        },
-      }) as StarterBrickConfig<QuickBarDefinition>;
+    const availableQuickbarStarterBrickConfig = starterBrickConfigFactory({
+      metadata(): Metadata {
+        return recipeMetadataFactory({
+          id: availableQbId,
+        });
+      },
+      definition(): QuickBarDefinition {
+        return {
+          type: "quickBar",
+          contexts: ["all"],
+          documentUrlPatterns: [testUrl],
+          isAvailable: {
+            matchPatterns: [testUrl],
+          },
+          reader: validateRegistryId("@pixiebrix/document-context"),
+          targetMode: "document",
+        };
+      },
+    }) as StarterBrickConfig<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
-      availableQuickbarExtensionPointConfig
+      availableQuickbarStarterBrickConfig
     );
     (getInstalledExtensionPoints as jest.Mock).mockResolvedValue([
       availableButtonExtensionPoint,

@@ -24,7 +24,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
 function optionsStore(initialState?: {
   extensions: ActivatedModComponent[];
@@ -42,7 +42,7 @@ function optionsStore(initialState?: {
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
     const state = {
-      extensions: [extensionFactory() as ActivatedModComponent],
+      extensions: [modComponentFactory() as ActivatedModComponent],
       auth: { flags: [] } as AuthState,
     };
 
@@ -57,7 +57,7 @@ describe("renders DefaultPanel", () => {
 
   it("renders restricted user content", () => {
     const state = {
-      extensions: [extensionFactory() as ActivatedModComponent],
+      extensions: [modComponentFactory() as ActivatedModComponent],
       auth: { flags: ["restricted-marketplace"] } as AuthState,
     };
 

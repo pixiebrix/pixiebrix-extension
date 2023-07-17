@@ -32,7 +32,7 @@ import { validateSemVerString } from "@/types/helpers";
 import {
   recipeFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 
 let renderRecipeEntry: RenderFunctionWithRedux<
   {

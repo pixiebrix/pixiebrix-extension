@@ -35,12 +35,12 @@ import {
 } from "@/services/constants";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
-  extensionPointConfigFactory,
-  recipeDefinitionFactory,
-} from "@/testUtils/factories/recipeFactories";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/integrationFactories";
+  modComponentDefinitionFactory,
+  recipeFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
   deploymentFactory,
   deploymentPackageFactory,
@@ -50,9 +50,9 @@ describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
     "unmatched deployment",
     ({ restricted }) => {
-      const extensions = [extensionFactory()];
+      const modComponents = [modComponentFactory()];
 
-      const filter = makeUpdatedFilter(extensions, { restricted });
+      const filter = makeUpdatedFilter(modComponents, { restricted });
       expect(filter(deploymentFactory())).toBeTrue();
     }
   );
@@ -63,7 +63,7 @@ describe("makeUpdatedFilter", () => {
       const deployment = deploymentFactory();
 
       const extensions = [
-        extensionFactory({
+        modComponentFactory({
           _deployment: {
             id: deployment.id,
             timestamp: deployment.updated_at,
@@ -83,7 +83,7 @@ describe("makeUpdatedFilter", () => {
       const deployment = deploymentFactory();
 
       const extensions = [
-        extensionFactory({
+        modComponentFactory({
           _deployment: {
             id: deployment.id,
             timestamp: "2020-10-07T12:52:16.189Z",
@@ -101,7 +101,7 @@ describe("makeUpdatedFilter", () => {
     const deployment = deploymentFactory();
 
     const extensions = [
-      extensionFactory({
+      modComponentFactory({
         _deployment: undefined,
         _recipe: {
           ...deployment.package.config.metadata,
@@ -120,7 +120,7 @@ describe("makeUpdatedFilter", () => {
     const deployment = deploymentFactory();
 
     const extensions = [
-      extensionFactory({
+      modComponentFactory({
         _deployment: undefined,
         _recipe: {
           ...deployment.package.config.metadata,
@@ -161,13 +161,13 @@ describe("checkExtensionUpdateRequired", () => {
 
 describe("isDeploymentActive", () => {
   test("not a deployment", () => {
-    expect(isDeploymentActive(extensionFactory())).toBeTrue();
+    expect(isDeploymentActive(modComponentFactory())).toBeTrue();
   });
 
   test("legacy deployment", () => {
     const deployment = deploymentFactory();
 
-    const extension = extensionFactory({
+    const modComponent = modComponentFactory({
       _deployment: {
         id: deployment.id,
         timestamp: deployment.updated_at,
@@ -175,7 +175,7 @@ describe("isDeploymentActive", () => {
       },
     });
 
-    expect(isDeploymentActive(extension)).toBeTrue();
+    expect(isDeploymentActive(modComponent)).toBeTrue();
   });
 
   test.each([[{ active: true }, { active: false }]])(
@@ -183,7 +183,7 @@ describe("isDeploymentActive", () => {
     ({ active }) => {
       const deployment = deploymentFactory();
 
-      const extension = extensionFactory({
+      const modComponent = modComponentFactory({
         _deployment: {
           id: deployment.id,
           timestamp: deployment.updated_at,
@@ -191,7 +191,7 @@ describe("isDeploymentActive", () => {
         },
       });
 
-      expect(isDeploymentActive(extension)).toBe(active);
+      expect(isDeploymentActive(modComponent)).toBe(active);
     }
   );
 });
@@ -200,9 +200,9 @@ describe("extractRecipeServiceIds", () => {
   test("find unique service ids", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
                 [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
@@ -223,9 +223,9 @@ describe("findPersonalServiceConfigurations", () => {
   test("missing personal service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
               },
@@ -246,9 +246,9 @@ describe("findPersonalServiceConfigurations", () => {
   test("found personal service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
               },
@@ -258,7 +258,7 @@ describe("findPersonalServiceConfigurations", () => {
       }),
     });
 
-    const auth = sanitizedServiceConfigurationFactory({
+    const auth = sanitizedIntegrationConfigFactory({
       serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
     });
 
@@ -276,9 +276,9 @@ describe("findPersonalServiceConfigurations", () => {
     const deployment = deploymentFactory({
       bindings: [{ auth: { id: uuidv4(), service_id: registryId } }],
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: registryId,
               },
@@ -288,7 +288,7 @@ describe("findPersonalServiceConfigurations", () => {
       }),
     });
 
-    const auth = sanitizedServiceConfigurationFactory({
+    const auth = sanitizedIntegrationConfigFactory({
       serviceId: registryId,
     });
 
@@ -301,9 +301,9 @@ describe("findPersonalServiceConfigurations", () => {
   test("exclude pixiebrix service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: PIXIEBRIX_SERVICE_ID,
               },
@@ -313,7 +313,7 @@ describe("findPersonalServiceConfigurations", () => {
       }),
     });
 
-    const auth = sanitizedServiceConfigurationFactory({
+    const auth = sanitizedIntegrationConfigFactory({
       serviceId: PIXIEBRIX_SERVICE_ID,
     });
 
@@ -332,9 +332,9 @@ describe("mergeDeploymentServiceConfigurations", () => {
     const deployment = deploymentFactory({
       bindings: [{ auth: { id: boundId, service_id: registryId } }],
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: registryId,
               },
@@ -344,7 +344,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
       }),
     });
 
-    const auth = sanitizedServiceConfigurationFactory({
+    const auth = sanitizedIntegrationConfigFactory({
       serviceId: registryId,
     });
 
@@ -359,9 +359,9 @@ describe("mergeDeploymentServiceConfigurations", () => {
   test("take local service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
               },
@@ -371,7 +371,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
       }),
     });
 
-    const auth = sanitizedServiceConfigurationFactory({
+    const auth = sanitizedIntegrationConfigFactory({
       serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
     });
 
@@ -386,9 +386,9 @@ describe("mergeDeploymentServiceConfigurations", () => {
   test("ignore personal remote service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
               },
@@ -398,7 +398,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
       }),
     });
 
-    const auth = sanitizedServiceConfigurationFactory({
+    const auth = sanitizedIntegrationConfigFactory({
       serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
       proxy: true,
     });
@@ -412,9 +412,9 @@ describe("mergeDeploymentServiceConfigurations", () => {
   test("reject multiple personal configurations", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
-            extensionPointConfigFactory({
+            modComponentDefinitionFactory({
               services: {
                 [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
               },
@@ -425,11 +425,11 @@ describe("mergeDeploymentServiceConfigurations", () => {
     });
 
     const locator = async () => [
-      sanitizedServiceConfigurationFactory({
+      sanitizedIntegrationConfigFactory({
         serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
         proxy: false,
       }),
-      sanitizedServiceConfigurationFactory({
+      sanitizedIntegrationConfigFactory({
         serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
         proxy: false,
       }),

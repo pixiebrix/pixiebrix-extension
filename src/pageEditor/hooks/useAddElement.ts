@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { internalExtensionPointMetaFactory } from "@/pageEditor/starterBricks/base";
+import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
@@ -62,7 +62,7 @@ function useAddElement(): AddElement {
         );
         const url = await getCurrentURL();
 
-        const metadata = internalExtensionPointMetaFactory();
+        const metadata = internalStarterBrickMetaFactory();
 
         const initialState = config.fromNativeElement(
           url,

@@ -21,7 +21,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type BrickOptions } from "@/types/runtimeTypes";
 import { cancelAllTours, markTourStart } from "@/starterBricks/tourController";
-import { tick } from "@/starterBricks/extensionPointTestUtils";
+import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { MultipleElementsFoundError } from "@/errors/businessErrors";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { showPopover } from "@/bricks/transformers/temporaryInfo/popoverUtils";

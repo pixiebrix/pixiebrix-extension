@@ -96,7 +96,7 @@ describe("eventKeyForEntry", () => {
 
   it("uses extensionId for panel", () => {
     const extensionId = uuidv4();
-    const extensionPointId = validateRegistryId("@test/test-extension-point");
+    const extensionPointId = validateRegistryId("@test/test-starter-brick");
     const entry = sidebarEntryFactory("panel", {
       extensionId,
       extensionPointId,

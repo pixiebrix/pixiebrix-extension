@@ -58,7 +58,7 @@ export const recipeMetadataFactory = define<Metadata>({
   version: validateSemVerString("1.0.0"),
 });
 
-export const extensionPointConfigFactory = define<ModComponentDefinition>({
+export const modComponentDefinitionFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
   label: (n: number) => `Test Extension ${n}`,
   services(): Record<OutputKey, RegistryId> {
@@ -73,7 +73,7 @@ export const extensionPointConfigFactory = define<ModComponentDefinition>({
   }),
 });
 
-export const recipeDefinitionFactory = define<ModDefinition>({
+export const modDefinitionFactory = define<ModDefinition>({
   kind: "recipe",
   apiVersion: "v3",
   metadata: (n: number) =>
@@ -83,10 +83,10 @@ export const recipeDefinitionFactory = define<ModDefinition>({
     }),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   sharing: sharingDefinitionFactory,
-  extensionPoints: array(extensionPointConfigFactory, 1),
+  extensionPoints: array(modComponentDefinitionFactory, 1),
 });
 
-export const extensionPointDefinitionFactory = define<StarterBrickConfig>({
+export const starterBrickConfigFactory = define<StarterBrickConfig>({
   kind: "extensionPoint",
   apiVersion: "v3",
   metadata: (n: number) =>
@@ -106,16 +106,16 @@ export const extensionPointDefinitionFactory = define<StarterBrickConfig>({
   },
 });
 
-type ExternalExtensionPointParams = {
+type ExternalStarterBrickParams = {
   extensionPointId?: RegistryId;
 };
 
 /**
- * Factory to create a ModDefinition that refers to a versioned extensionPoint
+ * Factory to create a ModDefinition that refers to a versioned StarterBrick
  */
-export const versionedExtensionPointRecipeFactory = ({
+export const versionedStarterBrickRecipeFactory = ({
   extensionPointId,
-}: ExternalExtensionPointParams = {}) =>
+}: ExternalStarterBrickParams = {}) =>
   define<ModDefinition>({
     kind: "recipe",
     apiVersion: "v3",
@@ -146,26 +146,26 @@ export const versionedExtensionPointRecipeFactory = ({
  * Factory to create a ModDefinition with a definitions section and resolved extensions
  */
 export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
-  const extensionPoints: ModComponentDefinition[] = [];
+  const modComponents: ModComponentDefinition[] = [];
   for (let i = 0; i < extensionCount; i++) {
     // Don't use array(factory, count) here, because it will keep incrementing
     // the modifier number across multiple test runs and cause non-deterministic
     // test execution behavior.
-    const extensionPoint = extensionPointConfigFactory();
-    const ids = extensionPoints.map((x) => x.id);
+    const modComponent = modComponentDefinitionFactory();
+    const ids = modComponents.map((x) => x.id);
     const id = freshIdentifier(DEFAULT_EXTENSION_POINT_VAR as SafeString, ids);
-    extensionPoints.push({
-      ...extensionPoint,
+    modComponents.push({
+      ...modComponent,
       id: id as InnerDefinitionRef,
     });
   }
 
   const definitions: InnerDefinitions = {};
 
-  for (const extensionPoint of extensionPoints) {
+  for (const extensionPoint of modComponents) {
     definitions[extensionPoint.id] = {
       kind: "extensionPoint",
-      definition: extensionPointDefinitionFactory().definition,
+      definition: starterBrickConfigFactory().definition,
     };
   }
 
@@ -182,19 +182,19 @@ export const versionedRecipeWithResolvedExtensions = (extensionCount = 1) => {
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions,
     options: undefined,
-    extensionPoints,
+    extensionPoints: modComponents,
   });
 };
 
-type InnerExtensionPointParams = {
+type InnerStarterBrickParams = {
   extensionPointRef?: InnerDefinitionRef;
 };
 /**
  * Factory to create a factory that creates a ModDefinition that refers to a versioned extensionPoint
  */
-export const innerExtensionPointRecipeFactory = ({
+export const innerStarterBrickRecipeFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,
-}: InnerExtensionPointParams = {}) =>
+}: InnerStarterBrickParams = {}) =>
   define<ModDefinition>({
     kind: "recipe",
     apiVersion: "v3",
@@ -217,25 +217,25 @@ export const innerExtensionPointRecipeFactory = ({
     }),
     options: undefined,
     extensionPoints: () => [
-      extensionPointConfigFactory({ id: extensionPointRef }),
+      modComponentDefinitionFactory({ id: extensionPointRef }),
     ],
   });
 /**
  * A default Recipe factory
  */
-export const recipeFactory = innerExtensionPointRecipeFactory();
+export const recipeFactory = innerStarterBrickRecipeFactory();
 export const getRecipeWithBuiltInServiceAuths = () => {
   const extensionServices = {
     service1: "@pixiebrix/service1",
     service2: "@pixiebrix/service2",
   } as Record<OutputKey, RegistryId>;
 
-  const extensionPointDefinition = extensionPointConfigFactory({
+  const modComponentDefintion = modComponentDefinitionFactory({
     services: extensionServices,
   });
 
   const recipe = recipeFactory({
-    extensionPoints: [extensionPointDefinition],
+    extensionPoints: [modComponentDefintion],
   });
 
   const builtInServiceAuths = [

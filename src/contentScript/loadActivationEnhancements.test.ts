@@ -19,16 +19,16 @@ import { showActivateRecipeInSidebar } from "@/contentScript/sidebarController";
 import { getAuthHeaders } from "@/auth/token";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { loadOptions } from "@/store/extensionsStorage";
-import { getDocument } from "@/starterBricks/extensionPointTestUtils";
+import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MARKETPLACE_URL } from "@/utils/strings";
 import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";
 import {
-  extensionFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories/extensionFactories";
+  modComponentFactory,
+  modComponentRecipeFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import {
   loadActivationEnhancements,
   unloadActivationEnhancements,
@@ -107,14 +107,14 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
-    const extension1 = extensionFactory({
-      _recipe: installedRecipeMetadataFactory({
+    const modComponent1 = modComponentFactory({
+      _recipe: modComponentRecipeFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;
-    const extension2 = extensionFactory() as ActivatedModComponent;
+    const modComponent2 = modComponentFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
-      extensions: [extension1, extension2],
+      extensions: [modComponent1, modComponent2],
     });
 
     await loadActivationEnhancements();
@@ -169,14 +169,14 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue(null);
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
-    const extension1 = extensionFactory({
-      _recipe: installedRecipeMetadataFactory({
+    const modComponent1 = modComponentFactory({
+      _recipe: modComponentRecipeFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;
-    const extension2 = extensionFactory() as ActivatedModComponent;
+    const modComponent2 = modComponentFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
-      extensions: [extension1, extension2],
+      extensions: [modComponent1, modComponent2],
     });
 
     await loadActivationEnhancements();
@@ -192,14 +192,14 @@ describe("marketplace enhancements", () => {
     getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
-    const extension1 = extensionFactory({
-      _recipe: installedRecipeMetadataFactory({
+    const modComponent1 = modComponentFactory({
+      _recipe: modComponentRecipeFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;
-    const extension2 = extensionFactory() as ActivatedModComponent;
+    const modComponent2 = modComponentFactory() as ActivatedModComponent;
     loadOptionsMock.mockResolvedValue({
-      extensions: [extension1, extension2],
+      extensions: [modComponent1, modComponent2],
     });
 
     await loadActivationEnhancements();

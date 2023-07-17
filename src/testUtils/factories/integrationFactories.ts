@@ -24,7 +24,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 
-export const sanitizedServiceConfigurationFactory =
+export const sanitizedIntegrationConfigFactory =
   define<SanitizedIntegrationConfig>({
     id: uuidSequence,
     proxy: false,

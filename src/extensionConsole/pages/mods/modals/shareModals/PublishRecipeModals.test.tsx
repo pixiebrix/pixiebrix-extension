@@ -29,7 +29,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import {
   recipeFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
 let blueprint: ModDefinition;
