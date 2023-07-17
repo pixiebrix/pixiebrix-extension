@@ -62,7 +62,7 @@
     "date-fns": "^2.30.0",
     "dompurify": "^3.0.5",
     "downloadjs": "^1.4.7",
-    "eslint-plugin-unicorn": "^47.0.0",
+    "eslint-plugin-unicorn": "^48.0.0",
     "exifreader": "^4.13.0",
     "export-to-csv": "^0.2.1",
     "filenamify": "^6.0.0",
