@@ -47,8 +47,8 @@ import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 
 import {
-  sanitizedAuthFactory,
-  sanitizedAuthServiceFactory,
+  remoteIntegrationConfigurationFactory,
+  remoteIntegrationServiceFactory,
 } from "@/testUtils/factories/integrationFactories";
 
 export const recipeMetadataFactory = define<Metadata>({
@@ -239,8 +239,8 @@ export const getRecipeWithBuiltInServiceAuths = () => {
   });
 
   const builtInServiceAuths = [
-    sanitizedAuthFactory({
-      service: sanitizedAuthServiceFactory({
+    remoteIntegrationConfigurationFactory({
+      service: remoteIntegrationServiceFactory({
         config: {
           metadata: {
             id: validateRegistryId("@pixiebrix/service1"),
@@ -249,8 +249,8 @@ export const getRecipeWithBuiltInServiceAuths = () => {
         },
       }),
     }),
-    sanitizedAuthFactory({
-      service: sanitizedAuthServiceFactory({
+    remoteIntegrationConfigurationFactory({
+      service: remoteIntegrationServiceFactory({
         config: {
           metadata: {
             id: validateRegistryId("@pixiebrix/service2"),

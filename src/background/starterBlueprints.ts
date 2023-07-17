@@ -26,7 +26,7 @@ import reportError from "@/telemetry/reportError";
 import { debounce, uniq } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
 import { memoizeUntilSettled } from "@/utils";
-import { type SanitizedAuth } from "@/types/contract";
+import { type RemoteIntegrationConfig } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
 import { getRequiredServiceIds } from "@/utils/recipeUtils";
 import { type RegistryId } from "@/types/registryTypes";
@@ -38,14 +38,16 @@ const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";
 const BLUEPRINT_INSTALLATION_DEBOUNCE_MS = 10_000;
 const BLUEPRINT_INSTALLATION_MAX_MS = 60_000;
 
-export async function getBuiltInServiceAuths(): Promise<SanitizedAuth[]> {
+export async function getBuiltInServiceAuths(): Promise<
+  RemoteIntegrationConfig[]
+> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     return [];
   }
 
   try {
-    const { data: serviceAuths } = await client.get<SanitizedAuth[]>(
+    const { data: serviceAuths } = await client.get<RemoteIntegrationConfig[]>(
       "/api/services/shared/?meta=1"
     );
 
