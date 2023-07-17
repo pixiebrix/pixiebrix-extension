@@ -16,13 +16,13 @@
  */
 
 import config from "@/pageEditor/starterBricks/contextMenu";
-import { internalExtensionPointMetaFactory } from "@/pageEditor/starterBricks/base";
+import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 
 describe("contextMenu", () => {
   it("smoke test", () => {
     const formState = config.fromNativeElement(
       "https://example.com",
-      internalExtensionPointMetaFactory(),
+      internalStarterBrickMetaFactory(),
       null
     );
     expect(config.selectExtension(formState)).toEqual(

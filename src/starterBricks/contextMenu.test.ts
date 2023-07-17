@@ -21,7 +21,7 @@ import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import { RootReader } from "@/starterBricks/extensionPointTestUtils";
+import { RootReader } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import {
   type ContextMenuConfig,
@@ -40,8 +40,8 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     kind: "extensionPoint",
     metadata: (n: number) =>
       ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: "Test Starter Brick",
       } as Metadata),
     definition: define<MenuDefinition>({
       type: "contextMenu",
@@ -60,7 +60,7 @@ const extensionFactory = define<ResolvedModComponent<ContextMenuConfig>>({
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<ContextMenuConfig>({
@@ -80,20 +80,20 @@ beforeEach(() => {
 
 describe("contextMenuExtension", () => {
   it("should add extension", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const extension = extensionFactory();
-    extensionPoint.addExtension(extension);
+    const starterBrick = fromJS(extensionPointFactory()());
+    const modComponent = extensionFactory();
+    starterBrick.addExtension(modComponent);
   });
 
   it("should include context menu props in schema", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const reader = await extensionPoint.defaultReader();
+    const starterBrick = fromJS(extensionPointFactory()());
+    const reader = await starterBrick.defaultReader();
     expect(reader.outputSchema.properties).toHaveProperty("selectionText");
   });
 
   it("should include context menu props in preview", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const reader = await extensionPoint.previewReader();
+    const starterBrick = fromJS(extensionPointFactory()());
+    const reader = await starterBrick.previewReader();
     const value = await reader.read(document);
     expect(value).toHaveProperty("selectionText");
   });

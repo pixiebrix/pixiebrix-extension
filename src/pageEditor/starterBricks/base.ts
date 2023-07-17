@@ -201,7 +201,7 @@ export function makeInitialBaseState(
  *
  * @see makeInternalId
  */
-export function internalExtensionPointMetaFactory(): Metadata {
+export function internalStarterBrickMetaFactory(): Metadata {
   return {
     id: validateRegistryId(`${INNER_SCOPE}/${uuidv4()}`),
     name: "Temporary extension point",
@@ -279,7 +279,7 @@ export async function lookupExtensionPoint<
     const innerExtensionPoint = {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       kind: "extensionPoint",
-      metadata: internalExtensionPointMetaFactory(),
+      metadata: internalStarterBrickMetaFactory(),
       ...definition,
     } as unknown as StarterBrickConfig<TDefinition> & {
       definition: { type: TType };

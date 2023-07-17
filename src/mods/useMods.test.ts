@@ -23,13 +23,13 @@ import { useAllRecipes } from "@/recipes/recipesHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
-  cloudExtensionFactory,
-  persistedExtensionFactory,
-} from "@/testUtils/factories/extensionFactories";
+  standaloneModDefinitionFactory,
+  activatedModComponentFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import {
-  recipeDefinitionFactory,
+  recipeFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
@@ -67,7 +67,7 @@ describe("useMods", () => {
         dispatch(
           // eslint-disable-next-line new-cap -- unsave
           extensionsSlice.actions.UNSAFE_setExtensions([
-            persistedExtensionFactory({
+            activatedModComponentFactory({
               _recipe: {
                 ...recipeMetadataFactory(),
                 updated_at: validateTimestamp(new Date().toISOString()),
@@ -100,7 +100,7 @@ describe("useMods", () => {
           // eslint-disable-next-line new-cap -- unsave
           extensionsSlice.actions.UNSAFE_setExtensions(
             range(3).map(() =>
-              persistedExtensionFactory({
+              activatedModComponentFactory({
                 _recipe: {
                   ...metadata,
                   updated_at: validateTimestamp(new Date().toISOString()),
@@ -129,7 +129,7 @@ describe("useMods", () => {
     const metadata = recipeMetadataFactory();
 
     useAllRecipesMock.mockReturnValue({
-      data: [recipeDefinitionFactory({ metadata })],
+      data: [recipeFactory({ metadata })],
       error: undefined,
     } as UseCachedQueryResult<ModDefinition[]>);
 
@@ -138,7 +138,7 @@ describe("useMods", () => {
         dispatch(
           // eslint-disable-next-line new-cap -- test setup
           extensionsSlice.actions.UNSAFE_setExtensions([
-            persistedExtensionFactory({
+            activatedModComponentFactory({
               _recipe: {
                 ...metadata,
                 updated_at: validateTimestamp(new Date().toISOString()),
@@ -165,7 +165,9 @@ describe("useMods", () => {
   });
 
   it("handles inactive cloud extension", async () => {
-    appApiMock.onGet("/api/extensions/").reply(200, [cloudExtensionFactory()]);
+    appApiMock
+      .onGet("/api/extensions/")
+      .reply(200, [standaloneModDefinitionFactory()]);
 
     const wrapper = renderHook(() => useMods());
 
@@ -185,8 +187,8 @@ describe("useMods", () => {
   it("handles active cloud extension", async () => {
     appApiMock.reset();
 
-    const cloudExtension = cloudExtensionFactory();
-    appApiMock.onGet("/api/extensions/").reply(200, [cloudExtension]);
+    const standaloneModDefinition = standaloneModDefinitionFactory();
+    appApiMock.onGet("/api/extensions/").reply(200, [standaloneModDefinition]);
 
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
@@ -194,7 +196,7 @@ describe("useMods", () => {
           // eslint-disable-next-line new-cap -- test setup
           extensionsSlice.actions.UNSAFE_setExtensions([
             // Content doesn't matter, just need to match the ID
-            persistedExtensionFactory({ id: cloudExtension.id }),
+            activatedModComponentFactory({ id: standaloneModDefinition.id }),
           ])
         );
       },

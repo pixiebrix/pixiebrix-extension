@@ -21,7 +21,7 @@ import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";
-import { extensionFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
@@ -44,10 +44,10 @@ afterAll(() => {
 
 describe("InstalledEntry", () => {
   test("it renders not active element", async () => {
-    const extension = extensionFactory();
+    const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const rendered = render(
-      <InstalledEntry extension={extension} recipes={[]} isAvailable />,
+      <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -69,10 +69,10 @@ describe("InstalledEntry", () => {
   });
 
   test("it renders active element", async () => {
-    const extension = extensionFactory();
+    const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const rendered = render(
-      <InstalledEntry extension={extension} recipes={[]} isAvailable />,
+      <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {

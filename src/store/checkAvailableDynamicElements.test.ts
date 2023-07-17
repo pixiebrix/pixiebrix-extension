@@ -57,7 +57,7 @@ describe("checkAvailableDynamicElements", () => {
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/available-button"),
-          name: "Test Extension Point 1",
+          name: "Test Starter Brick 1",
         },
         definition: {
           type: "menuItem",
@@ -75,7 +75,7 @@ describe("checkAvailableDynamicElements", () => {
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),
-          name: "Test Extension Point 2",
+          name: "Test Starter Brick 2",
         },
         definition: {
           type: "menuItem",

@@ -36,9 +36,9 @@ import {
   type StarterBrickType,
 } from "@/starterBricks/types";
 import {
-  extensionPointDefinitionFactory,
+  starterBrickConfigFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
@@ -76,9 +76,9 @@ const internalFormStateFactory = define<
   // @ts-expect-error -- TODO: verify typings
   extensionPoint: derive<ModComponentFormState, StarterBrickConfig>(
     ({ type }) => {
-      const extensionPoint = extensionPointDefinitionFactory();
-      extensionPoint.definition.type = type;
-      return extensionPoint;
+      const starterBrick = starterBrickConfigFactory();
+      starterBrick.definition.type = type;
+      return starterBrick;
     },
     "type"
   ),
