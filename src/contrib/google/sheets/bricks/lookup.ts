@@ -35,6 +35,9 @@ export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
 
 export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
   {
+    googleAccount: {
+      $ref: "https://app.pixiebrix.com/schemas/services/google/ouath2-pkce",
+    },
     spreadsheetId: {
       // Spreadsheet ID or service config
       oneOf: [
