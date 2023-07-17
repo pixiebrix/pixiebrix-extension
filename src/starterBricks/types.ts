@@ -148,6 +148,10 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     return false;
   }
 
+  public get registeredExtensions(): Array<ResolvedModComponent<TConfig>> {
+    return [...this.extensions];
+  }
+
   /**
    * Permissions required to use the extensions attached to the extension point.
    * https://developer.chrome.com/extensions/permission_warnings
