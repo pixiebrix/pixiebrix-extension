@@ -246,7 +246,6 @@ export function safeCssSelector(
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
-    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
     root = undefined,
   }: SafeCssSelectorOptions = {}
 ): string {
@@ -323,7 +322,6 @@ export function expandedCssSelector(
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
-    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
     root = undefined,
   }: SafeCssSelectorOptions = {}
 ): string {
