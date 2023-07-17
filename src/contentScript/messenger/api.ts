@@ -45,7 +45,7 @@ export const getReservedSidebarEntries = getMethod(
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const reloadSidebar = getMethod("RELOAD_SIDEBAR");
-export const removeSidebar = getMethod("REMOVE_SIDEBAR");
+export const removeSidebars = getMethod("REMOVE_SIDEBARS");
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
 
