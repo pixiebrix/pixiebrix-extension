@@ -69,7 +69,7 @@ jest.mock("@/background/activeTab", () => ({
 jest.mock("webext-messenger");
 
 // Override manual mock to support `expect` assertions
-jest.mock("@/telemetry/events", () => ({
+jest.mock("@/telemetry/reportEvent", () => ({
   reportEvent: jest.fn(),
 }));
 
