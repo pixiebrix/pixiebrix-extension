@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useAsyncEffect } from "use-async-effect";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
-import { internalExtensionPointMetaFactory } from "@/pageEditor/starterBricks/base";
+import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -31,7 +31,7 @@ export function useAutoInsert(type: StarterBrickType): void {
 
       const config = ADAPTERS.get(type);
 
-      const metadata = internalExtensionPointMetaFactory();
+      const metadata = internalStarterBrickMetaFactory();
 
       const formState = config.fromNativeElement(
         url,

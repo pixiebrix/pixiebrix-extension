@@ -19,7 +19,7 @@ import bricksRegistry from "@/bricks/registry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { parsePackage } from "@/registry/packageRegistry";
-import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { brickFactory } from "@/testUtils/factories/brickFactories";
 
 const getByKindsMock = backgroundRegistry.getByKinds as jest.MockedFunction<
@@ -72,12 +72,12 @@ describe("blocksMap", () => {
     getByKindsMock.mockResolvedValueOnce([
       {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        ...parsePackage(extensionPointDefinitionFactory() as any),
+        ...parsePackage(starterBrickConfigFactory() as any),
         timestamp: new Date(),
       },
       {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        ...parsePackage(extensionPointDefinitionFactory() as any),
+        ...parsePackage(starterBrickConfigFactory() as any),
         timestamp: new Date(),
       },
     ]);
@@ -130,7 +130,7 @@ describe("bricksRegistry", () => {
   });
 
   test("cache invalid until all()", async () => {
-    const value = extensionPointDefinitionFactory();
+    const value = starterBrickConfigFactory();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const brick = { ...parsePackage(value as any), timestamp: new Date() };
 

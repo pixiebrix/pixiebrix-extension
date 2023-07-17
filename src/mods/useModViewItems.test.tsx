@@ -29,10 +29,10 @@ import { type UnavailableMod } from "@/types/modTypes";
 import { selectUnavailableRecipe } from "@/mods/useMods";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
-  extensionFactory,
-  persistedExtensionFactory,
-} from "@/testUtils/factories/extensionFactories";
-import { recipeFactory } from "@/testUtils/factories/recipeFactories";
+  modComponentFactory,
+  activatedModComponentFactory,
+} from "@/testUtils/factories/modComponentFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -42,13 +42,13 @@ describe("useModViewItems", () => {
   });
 
   it("creates entry for ModComponentBase", async () => {
-    const extension = extensionFactory() as ResolvedModComponent;
+    const modComponent = modComponentFactory() as ResolvedModComponent;
 
-    const wrapper = renderHook(() => useModViewItems([extension]), {
+    const wrapper = renderHook(() => useModViewItems([modComponent]), {
       setupRedux(dispatch) {
         dispatch(
           extensionsSlice.actions.UNSAFE_setExtensions([
-            extension as unknown as ActivatedModComponent,
+            modComponent as unknown as ActivatedModComponent,
           ])
         );
       },
@@ -64,13 +64,15 @@ describe("useModViewItems", () => {
 
   it("creates entry for recipe", async () => {
     const recipe = recipeFactory();
-    const extension = persistedExtensionFactory({
+    const activatedModComponent = activatedModComponentFactory({
       _recipe: selectSourceRecipeMetadata(recipe),
     });
 
     const wrapper = renderHook(() => useModViewItems([recipe]), {
       setupRedux(dispatch) {
-        dispatch(extensionsSlice.actions.UNSAFE_setExtensions([extension]));
+        dispatch(
+          extensionsSlice.actions.UNSAFE_setExtensions([activatedModComponent])
+        );
       },
     });
 
@@ -84,16 +86,19 @@ describe("useModViewItems", () => {
 
   it("creates for unavailable recipe", async () => {
     const recipe = recipeFactory();
-    const extension = persistedExtensionFactory({
+    const activatedModComponent = activatedModComponentFactory({
       _recipe: selectSourceRecipeMetadata(recipe),
     });
 
-    const unavailableRecipe: UnavailableMod =
-      selectUnavailableRecipe(extension);
+    const unavailableRecipe: UnavailableMod = selectUnavailableRecipe(
+      activatedModComponent
+    );
 
     const wrapper = renderHook(() => useModViewItems([unavailableRecipe]), {
       setupRedux(dispatch) {
-        dispatch(extensionsSlice.actions.UNSAFE_setExtensions([extension]));
+        dispatch(
+          extensionsSlice.actions.UNSAFE_setExtensions([activatedModComponent])
+        );
       },
     });
 

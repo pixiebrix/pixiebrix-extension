@@ -22,7 +22,7 @@ import {
   cancelTemporaryPanel,
   closeTemporaryPanel,
 } from "@/contentScript/messenger/api";
-import { tick } from "@/starterBricks/extensionPointTestUtils";
+import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";

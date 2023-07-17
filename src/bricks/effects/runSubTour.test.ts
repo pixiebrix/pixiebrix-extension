@@ -21,7 +21,7 @@ import pDefer from "p-defer";
 import { RunSubTourEffect } from "@/bricks/effects/runSubTour";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { tick } from "@/starterBricks/extensionPointTestUtils";
+import { tick } from "@/starterBricks/starterBrickTestUtils";
 import {
   type ModComponentBase,
   type ResolvedModComponent,

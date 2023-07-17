@@ -27,7 +27,7 @@ import {
   type SanitizedAuthService,
 } from "@/types/contract";
 
-export const sanitizedServiceConfigurationFactory =
+export const sanitizedIntegrationConfigFactory =
   define<SanitizedIntegrationConfig>({
     id: uuidSequence,
     proxy: false,

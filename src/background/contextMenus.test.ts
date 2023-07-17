@@ -30,8 +30,8 @@ import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
 import { setContext } from "@/testUtils/detectPageMock";
-import { extensionFactory } from "@/testUtils/factories/extensionFactories";
-import { extensionPointDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 setContext("background");
 
@@ -61,17 +61,17 @@ describe("contextMenus", () => {
     expect(createMenuMock).not.toHaveBeenCalled();
   });
 
-  it("don't fail on missing extension point", async () => {
-    // Unknown extension point
-    const menuExtension = extensionFactory();
-    await preloadContextMenus([menuExtension]);
+  it("don't fail on missing starter brick", async () => {
+    // Unknown starter brick
+    const menuModComponent = modComponentFactory();
+    await preloadContextMenus([menuModComponent]);
     expect(updateMenuMock).not.toHaveBeenCalled();
     expect(createMenuMock).not.toHaveBeenCalled();
   });
 
   it("preload context menu", async () => {
     const extensionPoint =
-      extensionPointDefinitionFactory() as unknown as StarterBrickConfig<MenuDefinition>;
+      starterBrickConfigFactory() as unknown as StarterBrickConfig<MenuDefinition>;
     extensionPoint.definition.type = "contextMenu";
     extensionPoint.definition.contexts = ["all"];
 
@@ -79,12 +79,12 @@ describe("contextMenus", () => {
 
     extensionPointRegistry.register([fromJS(extensionPoint)]);
 
-    const menuExtension = extensionFactory({
+    const menuModComponent = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,
     }) as ModComponentBase<ContextMenuConfig>;
-    menuExtension.config.title = "Test Menu";
+    menuModComponent.config.title = "Test Menu";
 
-    await preloadContextMenus([menuExtension]);
+    await preloadContextMenus([menuModComponent]);
     expect(updateMenuMock).toHaveBeenCalledWith(
       expect.stringMatching(/pixiebrix-\S+/),
       {

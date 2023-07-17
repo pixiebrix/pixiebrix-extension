@@ -25,7 +25,7 @@ import {
   getDocument,
   RootReader,
   tick,
-} from "@/starterBricks/extensionPointTestUtils";
+} from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import {
   fromJS,
@@ -47,14 +47,14 @@ const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
 
-const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
+const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<QuickBarDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
       ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: "Test Starter Brick",
       } as Metadata),
     definition: define<QuickBarDefinition>({
       type: "quickBar",
@@ -73,7 +73,7 @@ const extensionFactory = define<ResolvedModComponent<QuickBarConfig>>({
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<QuickBarConfig>({
@@ -101,19 +101,19 @@ describe("quickBarExtension", () => {
 
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
 
-    const extensionPoint = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(starterBrickFactory()());
 
-    extensionPoint.addExtension(
+    starterBrick.addExtension(
       extensionFactory({
-        extensionPointId: extensionPoint.id,
+        extensionPointId: starterBrick.id,
       })
     );
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS
     );
-    await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.run({ reason: RunReason.MANUAL });
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS + 1
@@ -135,6 +135,6 @@ describe("quickBarExtension", () => {
     // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
     expect(document.body.innerHTML).not.toEqual("<div></div><div></div>");
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 });

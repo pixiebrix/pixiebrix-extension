@@ -49,7 +49,7 @@ import {
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { tick } from "@/starterBricks/extensionPointTestUtils";
+import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type RendererErrorPayload } from "@/types/rendererTypes";

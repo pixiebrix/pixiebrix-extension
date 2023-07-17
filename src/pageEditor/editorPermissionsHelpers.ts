@@ -17,7 +17,7 @@
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
-import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
+import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import {
   ensurePermissionsFromUserGesture,
@@ -38,12 +38,12 @@ export async function calculatePermissionsForElement(
 
   const { extension, extensionPointConfig } = adapter.asDynamicElement(element);
 
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(extensionPointConfig);
 
   // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
   // registry at this point when called from useCreate
   const permissions = await collectExtensionPermissions(extension, {
-    extensionPoint,
+    extensionPoint: starterBrick,
   });
 
   const hasPermissions = await containsPermissions(permissions);

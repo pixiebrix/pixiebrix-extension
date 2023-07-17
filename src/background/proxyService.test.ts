@@ -33,7 +33,7 @@ import {
   type SecretsConfig,
 } from "@/types/integrationTypes";
 import { setContext } from "@/testUtils/detectPageMock";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 
 jest.unmock("@/services/apiClient");
 setContext("background");
@@ -100,17 +100,17 @@ const requestConfig: AxiosRequestConfig = {
   method: "get",
 };
 
-const directServiceConfig = sanitizedServiceConfigurationFactory({
+const directIntegrationConfig = sanitizedIntegrationConfigFactory({
   proxy: false,
   serviceId: EXAMPLE_SERVICE_API,
 });
 
-const directTokenServiceConfig = sanitizedServiceConfigurationFactory({
+const directTokenIntegrationConfig = sanitizedIntegrationConfigFactory({
   proxy: false,
   serviceId: EXAMPLE_SERVICE_TOKEN_API,
 });
 
-const proxiedServiceConfig = sanitizedServiceConfigurationFactory({
+const proxiedIntegrationConfig = sanitizedIntegrationConfigFactory({
   proxy: true,
   serviceId: EXAMPLE_SERVICE_API,
 });
@@ -143,15 +143,17 @@ describe("authenticated direct requests", () => {
   beforeEach(() => {
     jest
       .spyOn(Locator.prototype, "locate")
-      .mockResolvedValue(directServiceConfig);
+      .mockResolvedValue(directIntegrationConfig);
     jest
       .spyOn(Locator.prototype, "getLocalConfig")
-      .mockResolvedValue(directServiceConfig as unknown as IntegrationConfig);
+      .mockResolvedValue(
+        directIntegrationConfig as unknown as IntegrationConfig
+      );
   });
 
   it("makes an authenticated request", async () => {
     axiosMock.onAny().reply(200, {});
-    const response = await proxyService(directServiceConfig, requestConfig);
+    const response = await proxyService(directIntegrationConfig, requestConfig);
     expect(response.status).toEqual(200);
   });
 
@@ -159,14 +161,14 @@ describe("authenticated direct requests", () => {
     jest.spyOn(Locator.prototype, "getLocalConfig").mockResolvedValue(null);
 
     await expect(async () =>
-      proxyService(directServiceConfig, requestConfig)
+      proxyService(directIntegrationConfig, requestConfig)
     ).rejects.toThrow("Local integration configuration not found:");
   });
 
   it("throws error on bad request", async () => {
     axiosMock.onAny().reply(403, {});
 
-    const request = proxyService(directServiceConfig, requestConfig);
+    const request = proxyService(directIntegrationConfig, requestConfig);
 
     await expect(request).rejects.toThrow(ContextError);
     await expect(request).rejects.toMatchObject({
@@ -186,13 +188,13 @@ describe("proxy service requests", () => {
       status_code: 200,
     });
     const { status, data } = await proxyService(
-      proxiedServiceConfig,
+      proxiedIntegrationConfig,
       requestConfig
     );
     expect(JSON.parse(String(axiosMock.history.post[0].data))).toEqual({
       ...requestConfig,
       service_id: EXAMPLE_SERVICE_API,
-      auth_id: proxiedServiceConfig.id,
+      auth_id: proxiedIntegrationConfig.id,
     });
     expect(status).toEqual(200);
     expect(data).toEqual({ foo: 42 });
@@ -210,7 +212,7 @@ describe("proxy service requests", () => {
           status_code: statusCode,
         });
 
-        const request = proxyService(proxiedServiceConfig, requestConfig);
+        const request = proxyService(proxiedIntegrationConfig, requestConfig);
 
         await expect(request).rejects.toThrow(ContextError);
         await expect(request).rejects.toMatchObject({
@@ -227,7 +229,7 @@ describe("proxy service requests", () => {
 
   it("handle proxy error", async () => {
     axiosMock.onAny().reply(500);
-    const request = proxyService(proxiedServiceConfig, requestConfig);
+    const request = proxyService(proxiedIntegrationConfig, requestConfig);
 
     await expect(request).rejects.toThrow(ContextError);
     await expect(request).rejects.toMatchObject({
@@ -245,7 +247,7 @@ describe("proxy service requests", () => {
 
   it("handle network error", async () => {
     axiosMock.onAny().networkError();
-    const request = proxyService(proxiedServiceConfig, requestConfig);
+    const request = proxyService(proxiedIntegrationConfig, requestConfig);
 
     await expect(request).rejects.toThrow(ContextError);
     await expect(request).rejects.toMatchObject({
@@ -262,11 +264,11 @@ describe("Retry token request", () => {
     mockGetToken.mockClear();
     jest
       .spyOn(Locator.prototype, "locate")
-      .mockResolvedValue(directTokenServiceConfig);
+      .mockResolvedValue(directTokenIntegrationConfig);
     jest
       .spyOn(Locator.prototype, "getLocalConfig")
       .mockResolvedValue(
-        directTokenServiceConfig as unknown as IntegrationConfig
+        directTokenIntegrationConfig as unknown as IntegrationConfig
       );
   });
 
@@ -274,7 +276,10 @@ describe("Retry token request", () => {
     "Handles expired token for %d response",
     async (statusCode) => {
       axiosMock.onGet(requestConfig.url).reply(statusCode, {});
-      const response = proxyService(directTokenServiceConfig, requestConfig);
+      const response = proxyService(
+        directTokenIntegrationConfig,
+        requestConfig
+      );
       await expect(response).rejects.toThrow(ContextError);
       // Once on the initial call b/c no cached auth data, and once for the retry
       expect(mockGetToken).toHaveBeenCalledTimes(2);
@@ -285,7 +290,7 @@ describe("Retry token request", () => {
     axiosMock
       .onGet(requestConfig.url)
       .reply(400, { message: "Access Token has expired" });
-    const response = proxyService(directTokenServiceConfig, requestConfig);
+    const response = proxyService(directTokenIntegrationConfig, requestConfig);
     await expect(response).rejects.toThrow(ContextError);
     // Once on the initial call b/c no cached auth data, and once for the retry
     expect(mockGetToken).toHaveBeenCalledTimes(2);
