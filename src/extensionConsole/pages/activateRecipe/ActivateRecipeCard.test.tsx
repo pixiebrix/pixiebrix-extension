@@ -32,9 +32,9 @@ import { validateRegistryId } from "@/types/helpers";
 import { type RecipeResponse } from "@/types/contract";
 import {
   modComponentDefinitionFactory,
-  modDefinitionFactory,
+  recipeFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 
 registerDefaultWidgets();
 
@@ -94,14 +94,14 @@ const RecipeCard: React.FC = () => {
 
 describe("ActivateRecipeCard", () => {
   test("renders", async () => {
-    setupRecipe(modDefinitionFactory());
+    setupRecipe(recipeFactory());
     const rendered = render(<RecipeCard />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("activate mod definition with missing required mod definition options", async () => {
-    const modDefinition = modDefinitionFactory({
+    const modDefinition = recipeFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "Mod with Required Options",
@@ -136,7 +136,7 @@ describe("ActivateRecipeCard", () => {
   });
 
   test("activate mod defintiion permissions", async () => {
-    const modDefinition = modDefinitionFactory({
+    const modDefinition = recipeFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
@@ -170,7 +170,7 @@ describe("ActivateRecipeCard", () => {
       error: "You must accept browser permissions to activate",
     });
 
-    const modDefinition = modDefinitionFactory({
+    const modDefinition = recipeFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",

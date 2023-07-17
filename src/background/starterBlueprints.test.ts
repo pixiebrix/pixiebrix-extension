@@ -38,7 +38,7 @@ import {
   modComponentDefinitionFactory,
   getRecipeWithBuiltInServiceAuths,
   recipeFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
 import { sanitizedAuthFactory } from "@/testUtils/factories/integrationFactories";
 

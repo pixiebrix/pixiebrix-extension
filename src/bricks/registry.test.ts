@@ -19,7 +19,7 @@ import bricksRegistry from "@/bricks/registry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { parsePackage } from "@/registry/packageRegistry";
-import { starterBrickConfigFactory } from "@/testUtils/factories/recipeFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { brickFactory } from "@/testUtils/factories/brickFactories";
 
 const getByKindsMock = backgroundRegistry.getByKinds as jest.MockedFunction<

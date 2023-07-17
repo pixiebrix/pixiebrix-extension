@@ -38,8 +38,8 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   modComponentDefinitionFactory,
-  modDefinitionFactory,
-} from "@/testUtils/factories/recipeFactories";
+  recipeFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
   deploymentFactory,
@@ -200,7 +200,7 @@ describe("extractRecipeServiceIds", () => {
   test("find unique service ids", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -223,7 +223,7 @@ describe("findPersonalServiceConfigurations", () => {
   test("missing personal service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -246,7 +246,7 @@ describe("findPersonalServiceConfigurations", () => {
   test("found personal service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -276,7 +276,7 @@ describe("findPersonalServiceConfigurations", () => {
     const deployment = deploymentFactory({
       bindings: [{ auth: { id: uuidv4(), service_id: registryId } }],
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -301,7 +301,7 @@ describe("findPersonalServiceConfigurations", () => {
   test("exclude pixiebrix service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -332,7 +332,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
     const deployment = deploymentFactory({
       bindings: [{ auth: { id: boundId, service_id: registryId } }],
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -359,7 +359,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
   test("take local service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -386,7 +386,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
   test("ignore personal remote service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -412,7 +412,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
   test("reject multiple personal configurations", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: modDefinitionFactory({
+        config: recipeFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {

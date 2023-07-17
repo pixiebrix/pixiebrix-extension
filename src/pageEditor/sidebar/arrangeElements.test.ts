@@ -25,14 +25,14 @@ import {
   modComponentRecipeFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import {
-  modDefinitionFactory,
+  recipeFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Recipes
 const ID_FOO = validateRegistryId("test/recipe-foo");
-const recipeFoo: ModDefinition = modDefinitionFactory({
+const recipeFoo: ModDefinition = recipeFactory({
   metadata: recipeMetadataFactory({
     id: ID_FOO,
     name: "Foo Recipe",
@@ -40,7 +40,7 @@ const recipeFoo: ModDefinition = modDefinitionFactory({
 });
 
 const ID_BAR = validateRegistryId("test/recipe-bar");
-const recipeBar: ModDefinition = modDefinitionFactory({
+const recipeBar: ModDefinition = recipeFactory({
   metadata: recipeMetadataFactory({
     id: ID_BAR,
     name: "Bar Recipe",

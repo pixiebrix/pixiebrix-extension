@@ -48,7 +48,7 @@ import {
 import {
   recipeFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/pageEditor/hooks/useUpsertFormElement");
 jest.mock("@/pageEditor/hooks/useResetExtension");

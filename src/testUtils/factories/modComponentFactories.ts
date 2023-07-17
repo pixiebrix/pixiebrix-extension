@@ -32,7 +32,7 @@ import {
 } from "@/types/helpers";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { recipeMetadataFactory } from "@/testUtils/factories/recipeFactories";
+import { recipeMetadataFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type StandaloneModDefinition } from "@/types/contract";
 
 export const modComponentRecipeFactory = define<ModComponentBase["_recipe"]>({

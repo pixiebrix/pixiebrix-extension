@@ -60,7 +60,7 @@ import {
   recipeFactory,
   versionedStarterBrickRecipeFactory,
   versionedRecipeWithResolvedExtensions,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/background/contextMenus");
 

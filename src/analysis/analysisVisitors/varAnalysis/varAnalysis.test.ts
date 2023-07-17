@@ -50,7 +50,7 @@ import {
   formStateFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import { recipeFactory } from "@/testUtils/factories/recipeFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 

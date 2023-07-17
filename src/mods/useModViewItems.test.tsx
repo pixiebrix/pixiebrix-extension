@@ -32,7 +32,7 @@ import {
   modComponentFactory,
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { recipeFactory } from "@/testUtils/factories/recipeFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 const axiosMock = new MockAdapter(axios);
 

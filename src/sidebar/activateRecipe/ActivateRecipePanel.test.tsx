@@ -32,8 +32,8 @@ import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
   getRecipeWithBuiltInServiceAuths,
-  modDefinitionFactory,
-} from "@/testUtils/factories/recipeFactories";
+  recipeFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import {
   marketplaceListingFactory,
@@ -85,7 +85,7 @@ beforeAll(() => {
 });
 
 function setupMocksAndRender(recipeOverride?: Partial<ModDefinition>) {
-  const recipe = modDefinitionFactory({
+  const recipe = recipeFactory({
     ...recipeOverride,
     metadata: {
       id: validateRegistryId("test-recipe"),

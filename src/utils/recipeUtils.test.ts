@@ -22,7 +22,7 @@ import {
 import {
   modComponentDefinitionFactory,
   recipeFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
 
 extensionPointRegistry.lookup = jest.fn();

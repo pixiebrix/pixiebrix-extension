@@ -23,7 +23,7 @@ import {
   type ModComponentOptionsState,
   type ModComponentsRootState,
 } from "@/store/extensionsTypes";
-import { modDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
 beforeEach(() => {
@@ -31,7 +31,7 @@ beforeEach(() => {
 });
 
 test("uninstalls recipe mod components", async () => {
-  const modDefinition = modDefinitionFactory();
+  const modDefinition = recipeFactory();
   const standaloneModDefinition = standaloneModDefinitionFactory({
     _recipe: {
       id: modDefinition.metadata.id,
@@ -76,7 +76,7 @@ test("uninstalls recipe mod components", async () => {
 test("dispatches install recipe action", async () => {
   jest.spyOn(extensionActions, "installRecipe");
 
-  const modDefinition = modDefinitionFactory();
+  const modDefinition = recipeFactory();
   const standaloneModDefinition = standaloneModDefinitionFactory({
     _recipe: {
       id: modDefinition.metadata.id,

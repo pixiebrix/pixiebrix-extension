@@ -31,7 +31,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
 import { setContext } from "@/testUtils/detectPageMock";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
-import { starterBrickConfigFactory } from "@/testUtils/factories/recipeFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 setContext("background");
 

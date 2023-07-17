@@ -39,7 +39,7 @@ import {
   standaloneModDefinitionFactory,
   modComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { recipeFactory } from "@/testUtils/factories/recipeFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/mods/hooks/useModPermissions", () => jest.fn());

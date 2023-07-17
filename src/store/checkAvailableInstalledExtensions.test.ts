@@ -37,7 +37,7 @@ import {
 import {
   starterBrickConfigFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({

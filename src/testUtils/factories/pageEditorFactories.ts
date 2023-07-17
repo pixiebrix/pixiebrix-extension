@@ -38,7 +38,7 @@ import {
 import {
   starterBrickConfigFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";

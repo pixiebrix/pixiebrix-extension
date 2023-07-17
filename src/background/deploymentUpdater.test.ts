@@ -45,7 +45,7 @@ import {
   modComponentRecipeFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { starterBrickConfigFactory } from "@/testUtils/factories/recipeFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { type RegistryPackage } from "@/types/contract";
