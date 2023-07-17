@@ -1,24 +1,35 @@
-import { UnknownObject } from "@/types/objectTypes";
+/*
+ * Copyright (C) 2023 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
-import { StarterBrickConfig } from "@/starterBricks/types";
-import {
-  QuickBarConfig,
-  QuickBarDefinition,
-} from "@/starterBricks/quickBarExtension";
+import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
-import { Metadata } from "@/types/registryTypes";
-import { ResolvedModComponent } from "@/types/modComponentTypes";
+import { type Metadata } from "@/types/registryTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { BrickPipeline } from "@/bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import {
-  SidebarConfig,
-  SidebarDefinition,
   fromJS,
+  type SidebarConfig,
+  type SidebarDefinition,
 } from "@/starterBricks/sidebarExtension";
 import { RunReason } from "@/types/runtimeTypes";
 import { RootReader } from "@/starterBricks/starterBrickTestUtils";
 import { getReservedPanelEntries } from "@/contentScript/sidebarController";
-import { object } from "yup";
 
 const rootReader = new RootReader();
 
