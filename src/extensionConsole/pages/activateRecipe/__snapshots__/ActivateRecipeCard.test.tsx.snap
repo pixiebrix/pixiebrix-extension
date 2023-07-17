@@ -438,12 +438,12 @@ exports[`ActivateRecipeCard renders 1`] = `
                   <div
                     class="card-title h5"
                   >
-                    Blueprint 1
+                    Recipe 1
                   </div>
                   <code
                     class="packageId"
                   >
-                    test/blueprint-1
+                    test/recipe-1
                   </code>
                 </span>
               </div>
