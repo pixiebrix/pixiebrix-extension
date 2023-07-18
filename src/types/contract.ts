@@ -281,7 +281,7 @@ export type ErrorItem = Except<
 };
 
 /**
- * "Force updates" available for a list of packages.
+ * Force updates available for a list of packages.
  * There is no auto-generated swagger Type for this because it serializes
  * the Package config, which is a JSON object.
  * @see ModDefinition

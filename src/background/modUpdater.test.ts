@@ -327,7 +327,6 @@ describe("updateModsIfUpdatesAvailable", () => {
         {
           backwards_compatible: publicModUpdate,
           name: publicMod.metadata.id,
-          backwards_incompatible: false,
         },
       ],
     });
@@ -352,7 +351,6 @@ describe("updateModsIfUpdatesAvailable", () => {
         {
           backwards_compatible: null,
           name: publicMod.metadata.id,
-          backwards_incompatible: false,
         },
       ],
     });
@@ -373,7 +371,6 @@ describe("updateModsIfUpdatesAvailable", () => {
         {
           backwards_compatible: publicModUpdate,
           name: publicMod.metadata.id,
-          backwards_incompatible: false,
         },
       ],
     });
