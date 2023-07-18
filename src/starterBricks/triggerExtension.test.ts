@@ -478,7 +478,11 @@ describe("triggerExtension", () => {
     await extensionPoint.run({ reason: RunReason.MANUAL });
     await extensionPoint.run({ reason: RunReason.MANUAL });
 
-    expect(notifyErrorMock).toHaveBeenCalledOnce();
+    expect(notifyErrorMock).toHaveBeenCalledExactlyOnceWith({
+      message: "An error occurred running a trigger",
+      reportError: false,
+      error: expect.toBeObject(),
+    });
   });
 
   it("reports all brick errors for reportMode: all", async () => {

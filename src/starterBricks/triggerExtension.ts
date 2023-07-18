@@ -415,9 +415,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * Run all extensions for a given root (i.e., handle the trigger firing).
    *
    * DO NOT CALL DIRECTLY: should only be called from runTriggersAndNotify
-   *
-   * @return array of errors from the extensions
-   * @throws Error on non-extension error, e.g., reader error for the default reader
    */
   private async _runTrigger(
     root: SelectorRoot,
@@ -427,7 +424,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }: {
       nativeEvent: Event | null;
     }
-  ): Promise<unknown[]> {
+  ): Promise<void> {
     let extensionsToRun = this.extensions;
 
     if (this.trigger === "hover") {
@@ -440,7 +437,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     // Don't bother running the reader if no extensions match
     if (extensionsToRun.length === 0) {
-      return [];
+      return;
     }
 
     const reader = await this.getBaseReader();
@@ -458,10 +455,10 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       }
 
       // Silently ignore the error
-      return [];
+      return;
     }
 
-    const errors = await Promise.all(
+    await Promise.all(
       extensionsToRun.map(async (extension) => {
         const extensionLogger = this.logger.childLogger(
           selectExtensionContext(extension)
@@ -473,10 +470,10 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
           if (this.shouldReportError({ extensionId: extension.id, error })) {
             reportError(error, { context: extensionLogger.context });
             extensionLogger.error(error);
-            return error;
+            throw error;
           }
 
-          // Return null so the trigger doesn't show any notifications
+          // Silently ignore the error
           return;
         } finally {
           // NOTE: if the extension is not running with synchronous behavior, there's a race condition where
@@ -490,8 +487,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         }
       })
     );
-
-    return compact(errors);
   }
 
   /**
@@ -502,15 +497,17 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
     { nativeEvent }: { nativeEvent: Event | null }
   ): Promise<void> => {
+    // Previously, run trigger returns individual extension errors. That approach was confusing, because it mixed
+    // thrown errors with collected errors returned as values. Instead, we now just rely on a thrown error, and at
+    // most one error will be thrown per root.
     const promises = roots.map(async (root) =>
       this._runTrigger(root, { nativeEvent })
     );
+
     const results = await Promise.allSettled(promises);
 
-    const errors = results.flatMap((x) =>
-      // `runTrigger` fulfills with list of extension error from extension, or rejects on other error, e.g., reader
-      // error from the extension point.
-      x.status === "fulfilled" ? x.value : x.reason
+    const errors = compact(
+      results.map((x) => (x.status === "rejected" ? x.reason : null))
     );
 
     await TriggerStarterBrickABC.notifyErrors(errors);
@@ -531,6 +528,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
 
     if (errors.some((x) => isContextInvalidatedError(x))) {
+      // If the error is a context invalidated error, use the standard notification
       await notifyContextInvalidated();
       return;
     }
@@ -540,6 +538,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     console.debug(message, { errors });
     notify.error({
       message,
+      // Show some information to the user about the error so they can report/correct it.
+      error: errors[0],
       reportError: false,
     });
   }
