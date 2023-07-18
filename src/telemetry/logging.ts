@@ -500,6 +500,8 @@ export function initLogSweep() {
     "Log sweep should only be initialized in the background page"
   );
 
+  // Sweep after initial extension startup
+  setTimeout(sweepLogs, 5000);
   // Sweep logs every 5 minutes
   setInterval(sweepLogs, 300_000);
 }
