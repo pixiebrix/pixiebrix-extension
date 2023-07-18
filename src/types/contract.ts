@@ -270,7 +270,7 @@ export type ErrorItem = Except<
 export type PackageVersionUpdates = {
   updates: Array<{
     backwards_compatible: ModDefinition | null;
-    name: string;
+    name: RegistryId;
     backwards_incompatible: boolean;
   }>;
 };

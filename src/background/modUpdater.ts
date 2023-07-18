@@ -44,6 +44,11 @@ type ActivatedModState = {
   editor: EditorState;
 };
 
+type BackwardsCompatibleUpdate = {
+  name: RegistryId;
+  backwards_compatible: ModDefinition;
+};
+
 export async function autoModUpdatesEnabled(): Promise<boolean> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
@@ -121,7 +126,7 @@ export async function getActivatedMarketplaceModMetadata(): Promise<
  */
 export async function fetchModUpdates(
   activatedMods: Array<ActivatedModComponent["_recipe"]>
-): Promise<PackageVersionUpdates["updates"]> {
+): Promise<BackwardsCompatibleUpdate[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -139,7 +144,12 @@ export async function fetchModUpdates(
 
     // Only return backwards compatible updates for now. Future work outlines
     // handling backwards incompatible updates as well.
-    return updates.filter(({ backwards_compatible }) => backwards_compatible);
+    return updates
+      .filter(({ backwards_compatible }) => backwards_compatible)
+      .map(({ name, backwards_compatible }) => ({
+        name,
+        backwards_compatible,
+      }));
   } catch (error) {
     reportError(error);
     return [];
@@ -303,7 +313,7 @@ function updateMod(
   };
 }
 
-async function updateMods(modUpdates: PackageVersionUpdates["updates"]) {
+async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
   let newOptionsState = await loadOptions();
   let newEditorState = await getEditorState();
 
@@ -328,14 +338,16 @@ export async function updateModsIfForceUpdatesAvailable() {
 
   const activatedMarketplaceMods = await getActivatedMarketplaceModMetadata();
 
-  const modUpdates = await fetchModUpdates(activatedMarketplaceMods);
+  const backwardsCompatibleModUpdates = await fetchModUpdates(
+    activatedMarketplaceMods
+  );
 
-  if (isEmpty(modUpdates)) {
+  if (isEmpty(backwardsCompatibleModUpdates)) {
     console.debug("No automatic mod updates found");
     return;
   }
 
-  await updateMods(modUpdates);
+  await updateMods(backwardsCompatibleModUpdates);
 }
 
 export function initModUpdater(): void {
