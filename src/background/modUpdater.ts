@@ -36,6 +36,7 @@ import type {
   ActivatedModComponent,
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
+import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -248,37 +249,6 @@ function reactivateMod(
 }
 
 /**
- * Compiles a unique list of all mod configurations from the given mod components, for use
- * in reactivating the mod.
- */
-export function collectModConfigurations(
-  modComponents: UnresolvedModComponent[]
-): {
-  services: Record<RegistryId, UUID>;
-  optionsArgs: OptionsArgs;
-} {
-  const services: Record<RegistryId, UUID> = {};
-  let optionsArgs: OptionsArgs = {};
-
-  for (const modComponent of modComponents) {
-    optionsArgs = {
-      ...optionsArgs,
-      ...modComponent.optionsArgs,
-    };
-    if (!modComponent.services || isEmpty(modComponent.services)) {
-      continue;
-    }
-
-    for (const { id, config } of modComponent.services) {
-      // eslint-disable-next-line security/detect-object-injection -- id is a registry id
-      services[id] = config;
-    }
-  }
-
-  return { services, optionsArgs };
-}
-
-/**
  * We currently don't have a way to "update" activated mods directly in the extension and editor redux stores.
  * Therefore, to update the mod, we deactivate and reactivate the mod with all the same configurations.
  * @param mod the mod to update
@@ -301,9 +271,8 @@ function updateMod(
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  const { services, optionsArgs } = collectModConfigurations(
-    deactivatedModComponents
-  );
+  const services = inferRecipeAuths(deactivatedModComponents);
+  const optionsArgs = inferRecipeOptions(deactivatedModComponents);
 
   newOptionsState = reactivateMod(mod, services, optionsArgs, newOptionsState);
 
