@@ -28,7 +28,7 @@ import { syncFlagOn } from "@/store/syncFlags";
 import { isLoadedInIframe } from "@/iframeUtils";
 import Draggable from "react-draggable";
 import dragIcon from "@/icons/drag-handle.svg";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { Provider, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";

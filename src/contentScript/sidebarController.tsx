@@ -16,7 +16,7 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";

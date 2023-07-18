@@ -17,8 +17,9 @@
 
 import { type DependencyList, useCallback } from "react";
 import notify from "@/utils/notify";
-import { type Event, reportEvent } from "@/telemetry/reportEvent";
+import { type Event } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
+import reportEvent from "@/telemetry/reportEvent";
 
 type Options = {
   event?: Event;

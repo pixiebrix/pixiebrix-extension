@@ -24,7 +24,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { type UUID } from "@/types/stringTypes";

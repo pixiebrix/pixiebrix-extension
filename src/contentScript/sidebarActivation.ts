@@ -29,7 +29,7 @@ import {
   setActivatingBlueprint,
 } from "@/background/messenger/external/_implementation";
 import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getInstalledRecipeIds } from "@/contentScript/loadActivationEnhancements";
 import { isLoadedInIframe } from "@/iframeUtils";

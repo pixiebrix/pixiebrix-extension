@@ -41,7 +41,7 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";

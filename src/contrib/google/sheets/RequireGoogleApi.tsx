@@ -24,7 +24,7 @@ import initGoogle, {
 } from "@/contrib/google/initGoogle";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { detectBrowser } from "@/vendors/mixpanel";
 

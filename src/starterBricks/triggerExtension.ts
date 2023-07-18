@@ -32,7 +32,7 @@ import { type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
 import { checkAvailable } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
   awaitElementOnce,

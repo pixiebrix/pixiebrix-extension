@@ -9,7 +9,7 @@ import {
   showSidebar,
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type StarterBrickType } from "@/starterBricks/types";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";

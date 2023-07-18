@@ -27,7 +27,7 @@ import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
 import useUserAction from "@/hooks/useUserAction";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 
 function useDeactivateAction(modViewItem: ModViewItem): () => void | null {

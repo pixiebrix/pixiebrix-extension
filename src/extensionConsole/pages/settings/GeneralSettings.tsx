@@ -22,7 +22,7 @@ import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 
 const GeneralSettings: React.FunctionComponent = () => {

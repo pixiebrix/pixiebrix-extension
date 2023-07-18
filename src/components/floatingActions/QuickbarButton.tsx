@@ -19,7 +19,7 @@ import React from "react";
 import logoUrl from "@/icons/custom-icons/logo.svg";
 import { Button } from "react-bootstrap";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import AsyncButton from "@/components/AsyncButton";
 import notify from "@/utils/notify";

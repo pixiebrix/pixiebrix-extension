@@ -22,7 +22,7 @@ import {
   mergePermissionsStatuses,
 } from "@/permissions/permissionsUtils";
 import { useDispatch, useSelector } from "react-redux";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";

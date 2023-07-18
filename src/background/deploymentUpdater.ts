@@ -21,7 +21,7 @@ import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/messenger/api";
 import { getExtensionVersion } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import {
   selectExtensions,

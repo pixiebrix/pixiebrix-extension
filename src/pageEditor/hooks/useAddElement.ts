@@ -28,7 +28,7 @@ import { type SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
 

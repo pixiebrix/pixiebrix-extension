@@ -17,7 +17,7 @@
 
 import { locator as serviceLocator } from "@/background/locator";
 import { type Runtime } from "webextension-polyfill";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { initTelemetry } from "@/background/telemetry";
 import { getUID } from "@/background/messenger/api";
 import { allowsTrack, DNT_STORAGE_KEY } from "@/telemetry/dnt";

@@ -23,7 +23,7 @@ import {
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
 import { type UUID } from "@/types/stringTypes";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { CloseButton, Nav, type NavLinkProps, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

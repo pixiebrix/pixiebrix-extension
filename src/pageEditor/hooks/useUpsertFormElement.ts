@@ -22,7 +22,7 @@ import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { reactivateEveryTab } from "@/background/messenger/api";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";

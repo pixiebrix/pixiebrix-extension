@@ -121,3 +121,5 @@ export const Events = {
 
   ZAPIER_KEY_COPY: "ZapierKeyCopy",
 } as const;
+
+export type Event = typeof Events[keyof typeof Events];

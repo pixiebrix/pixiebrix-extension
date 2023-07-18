@@ -21,7 +21,7 @@ import { useCallback } from "react";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectExtensions } from "@/store/extensionsSelectors";

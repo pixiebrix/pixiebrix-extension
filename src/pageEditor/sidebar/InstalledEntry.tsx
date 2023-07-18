@@ -41,7 +41,7 @@ import {
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
   selectActiveElement,

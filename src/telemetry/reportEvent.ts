@@ -16,16 +16,14 @@
  */
 
 import { recordEvent } from "@/background/messenger/api";
-import { type Events } from "@/telemetry/events";
+import { type Event } from "@/telemetry/events";
 import { type JsonObject } from "type-fest";
-
-export type Event = typeof Events[keyof typeof Events];
 
 /**
  * Report an event to the PixieBrix telemetry service, if the user doesn't have DNT set.
  * @see selectEventData
  */
-export function reportEvent(event: Event, data: JsonObject = {}): void {
+export default function reportEvent(event: Event, data: JsonObject = {}): void {
   // eslint-disable-next-line prefer-rest-params -- Needs `arguments` to avoid printing the default
   console.debug(...arguments);
   recordEvent({ event, data });

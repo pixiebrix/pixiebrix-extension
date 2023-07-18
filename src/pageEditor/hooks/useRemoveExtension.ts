@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import { reportEvent } from "@/telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
