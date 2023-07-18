@@ -42,7 +42,7 @@ describe("PermissionsPane", () => {
         screen.getByText(
           "PixieBrix cannot connect to this page. Try reloading the Tab."
         )
-      ).not.toBeNull();
+      ).toBeInTheDocument();
     });
   });
 });
