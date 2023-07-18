@@ -29,6 +29,9 @@ export type TargetMode =
   // The element the trigger is attached to
   | "root";
 
+/**
+ * The report mode. Used to prevent repeat events (e.g., interval triggers) from flooding telemetry.
+ */
 export type ReportMode =
   // Events (trigger/error) reported only once per extension per page
   | "once"
