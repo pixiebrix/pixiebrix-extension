@@ -12,7 +12,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.trigger"
       >
-        Trigger event
+        Trigger Event
       </label>
       <div
         class="col-xl-10 col-lg-9"
@@ -255,7 +255,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.rootSelector"
       >
-        Element selector
+        Element Selector
       </label>
       <div
         class="col-xl-10 col-lg-9"
@@ -336,12 +336,12 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           <option
             value="once"
           >
-            once
+            Once
           </option>
           <option
             value="watch"
           >
-            watch
+            Watch
           </option>
         </select>
         <small
@@ -579,9 +579,51 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
+        for="extensionPoint.definition.showErrors"
+      >
+        Show Error Notifications
+      </label>
+      <div
+        class="col-xl-10 col-lg-9"
+      >
+        <div
+          class="switch btn on btn-primary"
+        >
+          <div
+            class="switch-group"
+          >
+            <span
+              class="switch-on btn btn-primary"
+            >
+               
+            </span>
+            <span
+              class="switch-off btn btn-light"
+            >
+               
+            </span>
+            <span
+              class="switch-handle btn btn-light"
+            />
+          </div>
+        </div>
+        <small
+          class="text-muted form-text"
+        >
+          <p>
+            Show an error to the mod user if the trigger fails to execute.
+          </p>
+        </small>
+      </div>
+    </div>
+    <div
+      class="formGroup form-group row"
+    >
+      <label
+        class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.reportMode"
       >
-        Report Mode
+        Telemetry Mode
       </label>
       <div
         class="col-xl-10 col-lg-9"
@@ -590,24 +632,24 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           class="form-control"
           id="extensionPoint.definition.reportMode"
           name="extensionPoint.definition.reportMode"
-          title="Report Mode"
+          title="Telemetry Mode"
         >
           <option
             value="all"
           >
-            Report All
+            Report All Events and Errors
           </option>
           <option
             value="once"
           >
-            Report First
+            Report First Event and Error
           </option>
         </select>
         <small
           class="text-muted form-text"
         >
           <p>
-            Events/errors to report telemetry. Select “Report All” to report all runs and errors. Select “Report First” to only report the first run and first error.
+            Events/errors to report telemetry. Select “Report All Events and Errors” to report all runs and errors. Select “Report First Event and Error” to only report the first run and first error.
           </p>
         </small>
       </div>

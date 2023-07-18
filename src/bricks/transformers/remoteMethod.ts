@@ -27,32 +27,38 @@ import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 
 export const inputProperties: Record<string, Schema> = {
   url: {
+    title: "URL",
     type: "string",
-    description: "The API URL",
+    description: "The API endpoint URL",
   },
   service: {
+    title: "Integration Configuration",
     $ref: "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
     description:
-      "Optional. The service to authenticate the request, if authorization is required",
+      "Optional. The integration configuration to authenticate the request, if authorization is required",
   },
   method: {
+    title: "Method",
     type: "string",
     default: "post",
     description: "The HTTP method",
     enum: ["post", "put", "patch", "delete", "get"],
   },
   params: {
+    title: "Search Parameters",
     type: "object",
     description: "Search/query params",
     additionalProperties: { type: ["string", "number", "boolean"] },
   },
   headers: {
+    title: "Headers",
     type: "object",
     description: "Additional request headers",
     additionalProperties: { type: "string" },
   },
   // Match anything, as valid values are determined by the API being called
   data: {
+    title: "JSON Data",
     description:
       "Supports a JSON payload provided by either a variable or an object",
   },

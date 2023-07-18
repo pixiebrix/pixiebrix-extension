@@ -15,4 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default jest.fn();
+export const logValues = true;
+
+export async function getLoggingConfig(): Promise<unknown> {
+  return {
+    logValues,
+  };
+}

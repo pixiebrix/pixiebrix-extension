@@ -272,6 +272,10 @@ export abstract class IntegrationABC<
 {
   abstract schema: Schema;
 
+  /**
+   * Returns true if the integration performs authentication. Also includes integrations that set other
+   * headers/parameters on API requests.
+   */
   abstract hasAuth: boolean;
 
   abstract get isOAuth2(): boolean;

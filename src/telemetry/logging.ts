@@ -41,10 +41,21 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type UUID } from "@/types/stringTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
+import { memoizeUntilSettled } from "@/utils";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
 const DB_VERSION_NUMBER = 3;
+/**
+ * Maximum number of most recent logs to keep in the database. A low-enough number that performance should not be
+ * impacted due to the number of entries.
+ */
+const MAX_LOG_RECORDS = 1250;
+
+/**
+ * Amount to clear old logs, as a ratio of the maximum number of logs.
+ */
+const LOG_STORAGE_RATIO = 0.75;
 
 export type MessageLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -149,6 +160,10 @@ async function getDB() {
   return database;
 }
 
+/**
+ * Add a log entry to the database.
+ * @param entry the log entry to add
+ */
 export async function appendEntry(entry: LogEntry): Promise<void> {
   const db = await getDB();
   await db.add(ENTRY_OBJECT_STORE, entry);
@@ -192,6 +207,10 @@ export async function clearLogs(): Promise<void> {
   await db.clear(ENTRY_OBJECT_STORE);
 }
 
+/**
+ * Clear logs matching a given context, for example a specific mod.
+ * @param context the query context to clear.
+ */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
   const db = await getDB();
 
@@ -210,7 +229,11 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
   }
 }
 
-export async function getLog(
+/**
+ * Returns log entries matching the given context.
+ * @param context the query log entry context
+ */
+export async function getLogEntries(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
   const db = await getDB();
@@ -233,7 +256,7 @@ export async function getLog(
     );
   }
 
-  // We use the index to do an initial filter on the IndexedDB level, and then makeMatchEntry to apply the full filter in JS.
+  // Use the index to do an initial filter on IDB, and then makeMatchEntry to apply the full filter in JS.
   // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
   const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
 
@@ -418,6 +441,9 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
   await setStorage(LOG_CONFIG_STORAGE_KEY, config);
 }
 
+/**
+ * Clear all debug and trace level logs for the given extension.
+ */
 export async function clearExtensionDebugLogs(
   extensionId: UUID
 ): Promise<void> {
@@ -425,8 +451,57 @@ export async function clearExtensionDebugLogs(
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   const index = tx.store.index("extensionId");
   for await (const cursor of index.iterate(extensionId)) {
-    if (cursor.value.level === "debug") {
+    if (cursor.value.level === "debug" || cursor.value.level === "trace") {
       await cursor.delete();
     }
   }
+}
+
+/**
+ * Free up space in the log database.
+ */
+async function _sweepLogs(): Promise<void> {
+  const numRecords = await count();
+
+  if (numRecords > MAX_LOG_RECORDS) {
+    const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+
+    console.debug("Sweeping logs", {
+      numRecords,
+      numToDelete,
+    });
+
+    const db = await getDB();
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+
+    let deletedCount = 0;
+
+    // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+    // This might mostly "just work" if the cursor happens to iterate in insertion order
+    for await (const cursor of tx.store) {
+      await cursor.delete();
+      deletedCount++;
+
+      if (deletedCount > numToDelete) {
+        return;
+      }
+    }
+  }
+}
+
+/**
+ * Free up space in the log database.
+ */
+export const sweepLogs = memoizeUntilSettled(_sweepLogs);
+
+export function initLogSweep() {
+  expectContext(
+    "background",
+    "Log sweep should only be initialized in the background page"
+  );
+
+  // Sweep after initial extension startup
+  setTimeout(sweepLogs, 5000);
+  // Sweep logs every 5 minutes
+  setInterval(sweepLogs, 300_000);
 }
