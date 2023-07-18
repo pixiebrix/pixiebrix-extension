@@ -36,9 +36,7 @@ import {
 } from "@/testUtils/factories/traceFactories";
 
 // Override the manual mock to support `expect` assertions
-jest.mock("@/telemetry/reportEvent", () => ({
-  reportEvent: jest.fn(),
-}));
+jest.mock("@/telemetry/reportEvent");
 
 const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
   const activeElementId = uuidv4();
