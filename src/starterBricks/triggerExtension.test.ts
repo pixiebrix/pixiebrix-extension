@@ -420,7 +420,42 @@ describe("triggerExtension", () => {
     expect(notifyErrorMock).not.toHaveBeenCalled();
   });
 
-  it("reports only the first brick error", async () => {
+  it("shows context invalidated for user action", async () => {
+    document.body.innerHTML = getDocument(
+      "<div><button>Click Me</button></div>"
+    ).body.innerHTML;
+
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "click",
+        rootSelector: "button",
+        reader: () => [InvalidContextReader.BRICK_ID],
+      })({})
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    document.querySelector("button").click();
+    await tick();
+
+    document.querySelector("button").click();
+    await tick();
+
+    // Should not be called directly
+    expect(notifyErrorMock).not.toHaveBeenCalled();
+
+    // It's a user action, so it should show on each user action
+    expect(notifyContextInvalidatedMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("reports only the first brick error for reportMode: once", async () => {
     const extensionPoint = fromJS(
       extensionPointFactory({
         trigger: "load",
@@ -446,7 +481,7 @@ describe("triggerExtension", () => {
     expect(notifyErrorMock).toHaveBeenCalledOnce();
   });
 
-  it("reports all brick errors", async () => {
+  it("reports all brick errors for reportMode: all", async () => {
     const extensionPoint = fromJS(
       extensionPointFactory({
         trigger: "load",

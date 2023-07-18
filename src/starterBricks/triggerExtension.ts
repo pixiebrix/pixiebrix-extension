@@ -76,7 +76,10 @@ import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { isContextInvalidatedError } from "@/errors/contextInvalidated";
+import {
+  isContextInvalidatedError,
+  notifyContextInvalidated,
+} from "@/errors/contextInvalidated";
 
 export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;
@@ -503,6 +506,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       this._runTrigger(root, { nativeEvent })
     );
     const results = await Promise.allSettled(promises);
+
     const errors = results.flatMap((x) =>
       // `runTrigger` fulfills with list of extension error from extension, or rejects on other error, e.g., reader
       // error from the extension point.
@@ -521,8 +525,13 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   /**
    * Show notification for errors to the user. Caller is responsible for sending error telemetry.
    */
-  static notifyErrors(errors: unknown[]): void {
+  static async notifyErrors(errors: unknown[]): Promise<void> {
     if (errors.length === 0) {
+      return;
+    }
+
+    if (errors.some((x) => isContextInvalidatedError(x))) {
+      await notifyContextInvalidated();
       return;
     }
 
