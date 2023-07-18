@@ -58,14 +58,14 @@ const NoTabAccessPane: React.FunctionComponent = () => {
 
   return (
     <Centered vertically>
-      <p>
-        PixieBrix cannot connect to {siteLabel}. Please try reloading the Tab.
+      <p className="font-weight-bold">
+        PixieBrix cannot connect to {siteLabel}. Try reloading the Tab.
       </p>
 
-      <p>
-        If you are part of an Enterprise deployment, please contact your IT
+      <p className="text-muted">
+        If PixieBrix is managed by your Enterprise, contact your IT
         Administrator to ensure this URL is allowed by your {"organization's"}{" "}
-        Chrome Extension Policy,
+        Chrome Extension Policy.
       </p>
     </Centered>
   );
