@@ -177,6 +177,11 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     return "trigger";
   }
 
+  /**
+   * Returns true if an event should be reported, given whether it has already been reported.
+   * @param alreadyReported true if the event has already been reported
+   * @private
+   */
   private shouldReport(alreadyReported: boolean): boolean {
     switch (this.reportMode) {
       case "once": {
@@ -194,12 +199,20 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
+  /**
+   * Return true if an error should be reported for the given extension ID.
+   * @private
+   */
   private shouldReportError(extensionId: UUID): boolean {
     const alreadyReported = this.reportedErrors.has(extensionId);
     this.reportedErrors.add(extensionId);
     return this.shouldReport(alreadyReported);
   }
 
+  /**
+   * Return true if an event should be reported for the given extension id.
+   * @private
+   */
   private shouldReportEvent(extensionId: UUID): boolean {
     const alreadyReported = this.reportedEvents.has(extensionId);
     this.reportedEvents.add(extensionId);
@@ -322,16 +335,10 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       optionsArgs: extension.optionsArgs,
     };
 
-    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2910
-    try {
-      await reduceExtensionPipeline(actionConfig, initialValues, {
-        logger: extensionLogger,
-        ...apiVersionOptions(extension.apiVersion),
-      });
-      extensionLogger.info("Successfully ran trigger");
-    } catch (error) {
-      extensionLogger.error(error);
-    }
+    await reduceExtensionPipeline(actionConfig, initialValues, {
+      logger: extensionLogger,
+      ...apiVersionOptions(extension.apiVersion),
+    });
   }
 
   /**
@@ -432,6 +439,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         } catch (error) {
           if (this.shouldReportError(extension.id)) {
             reportError(error, { context: extensionLogger.context });
+            extensionLogger.error(error);
           }
 
           return error;
@@ -443,6 +451,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
         if (this.shouldReportEvent(extension.id)) {
           reportEvent("TriggerRun", selectEventData(extension));
+          extensionLogger.info("Successfully ran trigger");
         }
       })
     );
