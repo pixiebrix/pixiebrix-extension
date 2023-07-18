@@ -26,7 +26,7 @@ const position: BrickPosition = {
   path: "test.path",
 };
 
-describe("RegexAnalysis", () => {
+describe("httpRequestAnalysis", () => {
   test("flags URL parameters as info", () => {
     const analysis = new HttpRequestAnalysis();
     analysis.visitBrick(
@@ -44,6 +44,11 @@ describe("RegexAnalysis", () => {
     expect(analysis.getAnnotations()).toStrictEqual([
       expect.objectContaining({
         type: AnnotationType.Info,
+        message:
+          "Pro-tip: you can pass URL parameters to the Search Parameters field. When using the Search Parameters field, PixieBrix automatically encodes parameter values.",
+        position: {
+          path: "test.path.config.url",
+        },
       }),
     ]);
   });
@@ -88,6 +93,11 @@ describe("RegexAnalysis", () => {
     expect(analysis.getAnnotations()).toStrictEqual([
       expect.objectContaining({
         type: AnnotationType.Warning,
+        message:
+          "Watch Out: APIs typically expect GET request input via URL Search Parameters instead of JSON data.",
+        position: {
+          path: "test.path.config.data",
+        },
       }),
     ]);
   });
@@ -115,6 +125,11 @@ describe("RegexAnalysis", () => {
     expect(analysis.getAnnotations()).toStrictEqual([
       expect.objectContaining({
         type: AnnotationType.Warning,
+        message:
+          "Watch Out! You are passing the data as text instead of as an object",
+        position: {
+          path: "test.path.config.data",
+        },
       }),
     ]);
   });
@@ -162,6 +177,11 @@ describe("RegexAnalysis", () => {
     expect(analysis.getAnnotations()).toStrictEqual([
       expect.objectContaining({
         type: AnnotationType.Warning,
+        message:
+          "Watch Out: APIs typically expect GET request input via URL Search Parameters instead of JSON data.",
+        position: {
+          path: "test.path.config.data",
+        },
       }),
     ]);
   });
