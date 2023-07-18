@@ -513,7 +513,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       x.status === "fulfilled" ? x.value : x.reason
     );
 
-    TriggerStarterBrickABC.notifyErrors(errors);
+    await TriggerStarterBrickABC.notifyErrors(errors);
   };
 
   /**
