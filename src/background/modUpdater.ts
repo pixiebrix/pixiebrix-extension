@@ -50,6 +50,8 @@ type BackwardsCompatibleUpdate = {
   backwards_compatible: ModDefinition;
 };
 
+type PackageVersionPair = Array<{ name: RegistryId; version: SemVerString }>;
+
 export async function autoModUpdatesEnabled(): Promise<boolean> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
@@ -77,9 +79,7 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
  * with the payload of the `api/registry/updates` endpoint.
  * @returns a unique list of mod registry ids and their versions
  */
-export async function getActivatedMarketplaceModVersions(): Promise<
-  Array<{ name: RegistryId; version: SemVerString }>
-> {
+export async function getActivatedMarketplaceModVersions(): Promise<PackageVersionPair> {
   const { extensions: activatedModComponents } = await loadOptions();
 
   // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
@@ -88,7 +88,7 @@ export async function getActivatedMarketplaceModVersions(): Promise<
     .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
     .map((mod) => mod._recipe);
 
-  const modVersions: Array<{ name: RegistryId; version: SemVerString }> = [];
+  const modVersions: PackageVersionPair = [];
 
   for (const [name, modComponents] of Object.entries(
     groupBy(mods, "id")
