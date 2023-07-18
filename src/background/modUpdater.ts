@@ -35,8 +35,6 @@ import type {
 } from "@/types/modComponentTypes";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import type { ModComponentOptionsState } from "@/store/extensionsTypes";
-import type { IntegrationDependency } from "@/types/integrationTypes";
-import type { OptionsArgs } from "@/types/runtimeTypes";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -241,23 +239,11 @@ function updateMod(
   newEditorState = nextEditorState;
 
   const services = inferRecipeAuths(
-    deactivatedModComponents.filter(
-      (modComponent) => modComponent.services
-    ) as Array<
-      Exclude<UnresolvedModComponent, "services"> & {
-        services: IntegrationDependency[];
-      }
-    >
+    deactivatedModComponents.filter((modComponent) => modComponent.services)
   );
 
   const optionsArgs = inferRecipeOptions(
-    deactivatedModComponents.filter(
-      (modComponent) => modComponent.optionsArgs
-    ) as Array<
-      Exclude<UnresolvedModComponent, "optionsArgs"> & {
-        optionsArgs: OptionsArgs;
-      }
-    >
+    deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs)
   );
 
   newOptionsState = extensionsSlice.reducer(
@@ -291,8 +277,11 @@ async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
     newEditorState = editor;
   }
 
-  await saveOptions(newOptionsState);
-  await saveEditorState(newEditorState);
+  await Promise.all([
+    saveOptions(newOptionsState),
+    saveEditorState(newEditorState),
+  ]);
+
   await forEachTab(queueReactivateTab);
 }
 
