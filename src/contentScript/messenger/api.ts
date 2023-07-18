@@ -34,7 +34,6 @@ export const removeInstalledExtension = getNotifier(
   "REMOVE_INSTALLED_EXTENSION"
 );
 export const resetTab = getNotifier("RESET_TAB");
-
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const rehydrateSidebar = getMethod("REHYDRATE_SIDEBAR");
