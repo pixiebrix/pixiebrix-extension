@@ -31,7 +31,6 @@ import {
 import { type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
 import { checkAvailable } from "@/bricks/available";
-import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
@@ -85,6 +84,10 @@ export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;
 };
 
+/**
+ * Returns the default error/event reporting mode for the trigger type.
+ * @param trigger the trigger type
+ */
 export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {
   return USER_ACTION_TRIGGERS.includes(trigger) ? "all" : "once";
 }
@@ -138,6 +141,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   abstract get targetMode(): TargetMode;
 
   abstract get reportMode(): ReportMode;
+
+  abstract get showErrors(): boolean;
 
   abstract get debounceOptions(): DebounceOptions;
 
@@ -468,7 +473,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
           await this.runExtension(readerContext, extension, root);
         } catch (error) {
           if (this.shouldReportError({ extensionId: extension.id, error })) {
-            reportError(error, { context: extensionLogger.context });
+            // Don't need to call `reportError` because it's already reported by extensionLogger
             extensionLogger.error(error);
             throw error;
           }
@@ -510,7 +515,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       results.map((x) => (x.status === "rejected" ? x.reason : null))
     );
 
-    await TriggerStarterBrickABC.notifyErrors(errors);
+    await this.notifyErrors(errors);
   };
 
   /**
@@ -522,8 +527,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   /**
    * Show notification for errors to the user. Caller is responsible for sending error telemetry.
    */
-  static async notifyErrors(errors: unknown[]): Promise<void> {
-    if (errors.length === 0) {
+  async notifyErrors(errors: unknown[]): Promise<void> {
+    if (errors.length === 0 || !this.showErrors) {
       return;
     }
 
@@ -538,7 +543,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     console.debug(message, { errors });
     notify.error({
       message,
-      // Show some information to the user about the error so they can report/correct it.
+      // Show any information to the user about the error, so they can report/correct it.
       error: errors[0],
       reportError: false,
     });
@@ -871,6 +876,16 @@ export interface TriggerDefinition extends StarterBrickDefinition {
   reportMode?: ReportMode;
 
   /**
+   * Flag to control if errors should be shown to the end-user.
+   *
+   * Introduced to avoid showing errors for automatic/interval triggers, and for certain compliance use cases.
+   * Prior to 1.7.34, error notifications were being swallowed: see https://github.com/pixiebrix/pixiebrix-extension/issues/2910
+   *
+   * @since 1.7.34
+   */
+  showErrors?: boolean;
+
+  /**
    * @since 1.4.8
    */
   targetMode?: TargetMode;
@@ -947,6 +962,14 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
       this._definition.reportMode ??
       getDefaultReportModeForTrigger(this.trigger)
     );
+  }
+
+  /**
+   * Returns true if errors show be shown to the end-user as notifications.
+   * @since 1.7.34
+   */
+  get showErrors(): boolean {
+    return this._definition.showErrors ?? false;
   }
 
   get intervalMillis(): number {

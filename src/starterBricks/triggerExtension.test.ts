@@ -46,6 +46,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import notify from "@/utils/notify";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
+import reportError from "@/telemetry/reportError";
 
 jest.mock("@/errors/contextInvalidated", () => {
   const actual = jest.requireActual("@/errors/contextInvalidated");
@@ -62,6 +63,7 @@ jest.mock("@/utils/notify", () => ({
   },
 }));
 
+const reportErrorMock = jest.mocked(reportError);
 const notifyErrorMock = jest.mocked(notify.error);
 const notifyContextInvalidatedMock = jest.mocked(notifyContextInvalidated);
 
@@ -108,6 +110,7 @@ beforeEach(() => {
   ensureMocksReset();
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
+  reportErrorMock.mockReset();
   notifyErrorMock.mockReset();
   notifyContextInvalidatedMock.mockReset();
   blockRegistry.clear();
@@ -420,7 +423,7 @@ describe("triggerExtension", () => {
     expect(notifyErrorMock).not.toHaveBeenCalled();
   });
 
-  it("shows context invalidated for user action", async () => {
+  it("shows context invalidated for user action if showErrors", async () => {
     document.body.innerHTML = getDocument(
       "<div><button>Click Me</button></div>"
     ).body.innerHTML;
@@ -429,6 +432,7 @@ describe("triggerExtension", () => {
       extensionPointFactory({
         trigger: "click",
         rootSelector: "button",
+        showErrors: true,
         reader: () => [InvalidContextReader.BRICK_ID],
       })({})
     );
@@ -460,6 +464,7 @@ describe("triggerExtension", () => {
       extensionPointFactory({
         trigger: "load",
         reportMode: "once",
+        showErrors: true,
       })({})
     );
 
@@ -477,6 +482,8 @@ describe("triggerExtension", () => {
     // Run 2x
     await extensionPoint.run({ reason: RunReason.MANUAL });
     await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    expect(reportErrorMock).toHaveBeenCalledTimes(1);
 
     expect(notifyErrorMock).toHaveBeenCalledExactlyOnceWith({
       message: "An error occurred running a trigger",
@@ -485,11 +492,12 @@ describe("triggerExtension", () => {
     });
   });
 
-  it("reports all brick errors for reportMode: all", async () => {
+  it("reports all brick errors for reportMode: all, showErrors: true", async () => {
     const extensionPoint = fromJS(
       extensionPointFactory({
         trigger: "load",
         reportMode: "all",
+        showErrors: true,
       })({})
     );
 
@@ -508,6 +516,7 @@ describe("triggerExtension", () => {
     await extensionPoint.run({ reason: RunReason.MANUAL });
     await extensionPoint.run({ reason: RunReason.MANUAL });
 
+    expect(reportErrorMock).toHaveBeenCalledTimes(2);
     expect(notifyErrorMock).toHaveBeenCalledTimes(2);
   });
 });
