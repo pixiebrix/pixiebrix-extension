@@ -268,26 +268,23 @@ exports[`Network error 1`] = `
             fill="currentColor"
           />
         </svg>
-         PixieBrix does not have permission to access https://fail.com. Specify an Integration to access the API, or add an Extra Permissions rule to the mod.
+         PixieBrix does not have permission to access https://fail.com. Contact your IT Administrator for the
+        <code>
+          runtime_blocked_hosts
+        </code>
+         Chrome Browser Extension policy.
       </div>
       <div>
         <div>
-          PixieBrix did not receive a response. Possible causes:
+          PixieBrix did not receive a response. See 
+          <a
+            href="https://docs.pixiebrix.com/network-errors"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Troubleshooting Network Errors
+          </a>
         </div>
-        <ul>
-          <li>
-            Your browser or another extension blocked the request. Check that PixieBrix has permission to the access the host. If PixieBrix is not showing a Grant Permissions button, ensure that the integration has an 
-            <code
-              class="px-0 mx-0"
-            >
-              isAvailable
-            </code>
-             section defined
-          </li>
-          <li>
-            The remote server did not respond. Try the request again
-          </li>
-        </ul>
       </div>
     </div>
     <div
