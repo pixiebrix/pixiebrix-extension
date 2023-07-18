@@ -17,6 +17,7 @@
 
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { deserializeError } from "serialize-error";
+import { CONTEXT_INVALIDATED_MESSAGE } from "@/pageEditor/tabState/tabStateSlice";
 
 export const selectFrameState = ({ tabState }: TabStateRootState) =>
   tabState.frameState;
@@ -30,3 +31,6 @@ export const selectTabHasPermissions = ({ tabState }: TabStateRootState) =>
 export const selectTabIsConnectingToContentScript = ({
   tabState,
 }: TabStateRootState) => tabState.isConnecting;
+
+export const selectIsContextInvalidated = ({ tabState }: TabStateRootState) =>
+  tabState.error?.message === CONTEXT_INVALIDATED_MESSAGE;

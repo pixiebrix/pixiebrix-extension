@@ -48,6 +48,9 @@ const initialTabState: TabState = {
   error: null,
 };
 
+export const CONTEXT_INVALIDATED_MESSAGE =
+  "PixieBrix was updated or restarted. Please reload 1) the Browser Tab, and then 2) the Page Editor to continue.";
+
 /**
  * This thunk is long-running. It waits for the page's chrome runtime context
  * to be invalidated, and then resolves with an error.
@@ -130,9 +133,7 @@ export const tabStateSlice = createSlice({
       .addCase(awaitContextInvalidated.fulfilled, (state) => {
         state.isConnecting = false;
         state.frameState = defaultFrameState;
-        const error = new BusinessError(
-          "PixieBrix was updated or restarted. Reload the Page Editor to continue."
-        );
+        const error = new BusinessError(CONTEXT_INVALIDATED_MESSAGE);
         state.error = serializeError(error);
       });
   },

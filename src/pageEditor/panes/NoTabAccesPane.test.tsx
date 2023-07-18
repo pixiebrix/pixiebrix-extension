@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
+import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import { render, screen } from "@/pageEditor/testHelpers";
 import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
 import { waitFor } from "@testing-library/react";
@@ -29,16 +29,20 @@ jest.mock("@/pageEditor/hooks/useCurrentUrl", () => ({
 describe("PermissionsPane", () => {
   test("it renders", () => {
     (useCurrentUrl as jest.Mock).mockReturnValue("https://test.url");
-    const rendered = render(<PermissionsPane />);
+    const rendered = render(<NoTabAccessPane />);
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("it renders right copy when the URL isn't available", async () => {
     (useCurrentUrl as jest.Mock).mockReturnValue(undefined);
-    render(<PermissionsPane />);
+    render(<NoTabAccessPane />);
 
     await waitFor(() => {
-      expect(screen.getByText("Enable PixieBrix on this page")).not.toBeNull();
+      expect(
+        screen.getByText(
+          "PixieBrix cannot connect to this page. Please try reloading the Tab."
+        )
+      ).not.toBeNull();
     });
   });
 });

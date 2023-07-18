@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PermissionsPane it renders 1`] = `
+<DocumentFragment>
+  <div
+    class="d-flex flex-column mx-auto mt-4 pb-2 max-550 text-center h-100 justify-content-center"
+  >
+    <p>
+      PixieBrix cannot connect to test.url. Please try reloading the Tab.
+    </p>
+    <p>
+      If you are part of an Enterprise deployment, please contact your IT Administrator to ensure this URL is allowed by your organization's Chrome Extension Policy,
+    </p>
+  </div>
+</DocumentFragment>
+`;

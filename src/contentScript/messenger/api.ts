@@ -35,6 +35,9 @@ export const removeInstalledExtension = getNotifier(
 );
 export const resetTab = getNotifier("RESET_TAB");
 
+// Use getMethod so the Page Editor has a better idea as to when it's been reloaded
+export const reloadTab = getMethod("RELOAD_TAB");
+
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const rehydrateSidebar = getMethod("REHYDRATE_SIDEBAR");

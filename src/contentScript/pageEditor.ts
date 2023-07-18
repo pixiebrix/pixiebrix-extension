@@ -248,3 +248,10 @@ export async function resetTab(): Promise<void> {
   await clearDynamicElements({});
   await reactivateTab();
 }
+
+/**
+ * Reload the tab. Used, e.g., to reload the tab after the browser extension context is invalidated.
+ */
+export async function reloadTab(): Promise<void> {
+  location.reload();
+}
