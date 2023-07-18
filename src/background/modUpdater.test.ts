@@ -226,7 +226,11 @@ describe("collectModVersions function", () => {
 
     const result = collectModVersions(activatedMods);
     expect(result).toEqual([{ name: "@test/same-mod", version: "1.0.0" }]);
-    expect(reportError).toHaveBeenCalled();
+    expect(reportError).toHaveBeenCalledWith(
+      new Error(
+        "Found multiple mod component versions activated for the same mod: @test/same-mod (1.0.0, 2.0.0)"
+      )
+    );
   });
 });
 

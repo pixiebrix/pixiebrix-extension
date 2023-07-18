@@ -25,7 +25,7 @@ import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import type { UUID } from "@/types/stringTypes";
 import type { OptionsArgs } from "@/types/runtimeTypes";
-import { isEmpty } from "lodash";
+import { groupBy, isEmpty } from "lodash";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
@@ -70,29 +70,27 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
  * Produces an array of mods by registry id and currently installed versions. For use
  * with the payload of the `api/registry/updates` endpoint.
  * @param mods the mod components to collect versions for
- * @returns modVersions a unique list of mod registry ids and their versions
- * and the mod components that were deactivated
+ * @returns a unique list of mod registry ids and their versions
  */
 export function collectModVersions(
   mods: Array<ActivatedModComponent["_recipe"]>
 ): Array<{ name: RegistryId; version: SemVerString }> {
   const modVersions: Array<{ name: RegistryId; version: SemVerString }> = [];
 
-  for (const { id, version } of mods) {
-    const existingModVersion = modVersions.find((mod) => mod.name === id);
-    if (existingModVersion && existingModVersion.version !== version) {
+  for (const [name, modComponents] of Object.entries(
+    groupBy(mods, "id")
+  ) as Array<[RegistryId, Array<ActivatedModComponent["_recipe"]>]>) {
+    if (modComponents.length > 0) {
       reportError(
         new Error(
-          `Found two different mod versions activated for the same mod: ${id} (${existingModVersion.version}, ${version}).`
+          `Found multiple mod component versions activated for the same mod: ${name} (${modComponents
+            .map((version) => version.version)
+            .join(", ")})`
         )
       );
     }
 
-    if (existingModVersion) {
-      continue;
-    }
-
-    modVersions.push({ name: id, version });
+    modVersions.push({ name, version: modComponents[0].version });
   }
 
   return modVersions;
