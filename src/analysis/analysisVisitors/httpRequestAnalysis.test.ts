@@ -48,6 +48,26 @@ describe("RegexAnalysis", () => {
     ]);
   });
 
+  test("ignores URL with template", () => {
+    const analysis = new HttpRequestAnalysis();
+    analysis.visitBrick(
+      position,
+      {
+        id: RemoteMethod.BLOCK_ID,
+        config: {
+          method: "get",
+          url: makeTemplateExpression(
+            "nunjucks",
+            "https://example.com/?foo={{ @foo }}"
+          ),
+        },
+      },
+      {} as VisitBlockExtra
+    );
+
+    expect(analysis.getAnnotations()).toStrictEqual([]);
+  });
+
   test("flags passing params as data", () => {
     const analysis = new HttpRequestAnalysis();
     analysis.visitBrick(
@@ -97,6 +117,29 @@ describe("RegexAnalysis", () => {
         type: AnnotationType.Warning,
       }),
     ]);
+  });
+
+  test("ignores data with template", () => {
+    const analysis = new HttpRequestAnalysis();
+    analysis.visitBrick(
+      position,
+      {
+        id: RemoteMethod.BLOCK_ID,
+        config: {
+          method: "post",
+          url: "https://example.com",
+          data: makeTemplateExpression(
+            "nunjucks",
+            JSON.stringify({
+              foo: "{{ @foo }}",
+            })
+          ),
+        },
+      },
+      {} as VisitBlockExtra
+    );
+
+    expect(analysis.getAnnotations()).toStrictEqual([]);
   });
 
   test("passing data for get", () => {
