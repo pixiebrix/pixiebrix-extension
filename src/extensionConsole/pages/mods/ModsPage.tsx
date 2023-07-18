@@ -20,7 +20,8 @@ import ModsPageLayout from "@/extensionConsole/pages/mods/ModsPageLayout";
 import useMods from "@/mods/useMods";
 import { useTitle } from "@/hooks/title";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import Modals from "./modals/Modals";
 import useShowPublishUrlEffect from "@/extensionConsole/pages/mods/hooks/useShowPublishUrlEffect";
 
@@ -30,7 +31,7 @@ const ModsPage: React.FunctionComponent = () => {
   useShowPublishUrlEffect();
 
   useEffect(() => {
-    reportEvent("BlueprintsPageView");
+    reportEvent(Events.MODS_PAGE_VIEW);
   }, []);
 
   return (

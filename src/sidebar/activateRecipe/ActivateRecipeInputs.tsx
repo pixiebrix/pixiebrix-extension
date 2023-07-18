@@ -38,7 +38,8 @@ import { produce } from "immer";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isUUID } from "@/types/helpers";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 type ActivateRecipeInputsProps = {
   recipe: ModDefinition;
@@ -157,7 +158,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
           type="button"
           variant="outline-danger"
           onClick={() => {
-            reportEvent("CancelModActivation", {
+            reportEvent(Events.MOD_ACTIVATION_CANCEL, {
               recipeId: recipe?.metadata?.id,
             });
             onClickCancel();
@@ -168,7 +169,7 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
         <Button
           type="submit"
           onClick={() => {
-            reportEvent("SubmitModActivation", {
+            reportEvent(Events.MOD_ACTIVATION_SUBMIT, {
               recipeId: recipe?.metadata?.id,
             });
             return true;

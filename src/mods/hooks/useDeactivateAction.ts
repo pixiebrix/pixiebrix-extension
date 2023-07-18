@@ -27,7 +27,8 @@ import { useCallback } from "react";
 import { type OptionsState } from "@/store/extensionsTypes";
 import useUserAction from "@/hooks/useUserAction";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
   const dispatch = useDispatch();
@@ -56,7 +57,7 @@ function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
         const blueprintId = mod.metadata.id;
         await uninstallRecipe(blueprintId, extensionsFromMod, dispatch);
 
-        reportEvent("BlueprintRemove", {
+        reportEvent(Events.MOD_REMOVE, {
           blueprintId,
         });
       } else {
@@ -66,7 +67,7 @@ function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
         );
 
         for (const extension of extensionsFromMod) {
-          reportEvent("ExtensionRemove", {
+          reportEvent(Events.MOD_COMPONENT_REMOVE, {
             extensionId: extension.id,
           });
         }

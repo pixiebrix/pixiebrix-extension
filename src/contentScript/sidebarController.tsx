@@ -16,7 +16,8 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
@@ -70,7 +71,7 @@ export async function showSidebar(
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
 
-  reportEvent("SidePanelShow");
+  reportEvent(Events.SIDE_BAR_SHOW);
   const isAlreadyShowing = isSidebarFrameVisible();
 
   if (!isAlreadyShowing) {
@@ -164,7 +165,7 @@ export function hideSidebar(): void {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
 
-  reportEvent("SidePanelHide");
+  reportEvent(Events.SIDE_PANEL_HIDE);
   removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
 }

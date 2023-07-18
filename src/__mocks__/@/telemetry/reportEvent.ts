@@ -17,6 +17,9 @@
 
 import { JsonObject } from "type-fest";
 
-export function reportEvent(event: string, data: JsonObject = {}): void {
+export default function reportEvent(
+  event: string,
+  data: JsonObject = {}
+): void {
   console.debug(...arguments);
 }

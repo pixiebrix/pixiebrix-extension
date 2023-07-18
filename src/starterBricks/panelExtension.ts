@@ -41,7 +41,8 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
@@ -346,7 +347,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     } else {
       console.debug(`Adding new panel for ${extension.id}`);
       this.addPanel($panel);
-      reportEvent("PanelAdd", selectEventData(extension));
+      reportEvent(Events.PANEL_ADD, selectEventData(extension));
     }
 
     // FIXME: required sites that remove the panel, e.g., Pipedrive. Currently causing infinite loop on Salesforce

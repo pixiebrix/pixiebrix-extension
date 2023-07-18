@@ -31,7 +31,8 @@ import {
 import { type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
 import { checkAvailable } from "@/bricks/available";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import {
   awaitElementOnce,
   selectExtensionContext,
@@ -487,7 +488,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         }
 
         if (this.shouldReportEvent(extension.id)) {
-          reportEvent("TriggerRun", selectEventData(extension));
+          reportEvent(Events.TRIGGER_RUN, selectEventData(extension));
           extensionLogger.info("Successfully ran trigger");
         }
       })

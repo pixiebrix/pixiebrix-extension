@@ -24,7 +24,8 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -154,7 +155,7 @@ export function markTourStart(
     packageId: extension._recipe?.id,
   });
 
-  reportEvent("TourStart", {
+  reportEvent(Events.TOUR_START, {
     id: nonce,
     tourName: extension.label,
     ...context,
@@ -171,7 +172,7 @@ export function markTourStep(
   nonce: UUID,
   { step, context }: { step: string; context: MessageContext }
 ): void {
-  reportEvent("TourStep", {
+  reportEvent(Events.TOUR_STEP, {
     nonce,
     step,
     ...context,
@@ -207,7 +208,7 @@ export function markTourEnd(
       completed: !error,
     });
 
-    reportEvent("TourEnd", {
+    reportEvent(Events.TOUR_END, {
       id: nonce,
       ...context,
       errored: Boolean(error) && !skipped,

@@ -24,7 +24,8 @@ import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
 import reportError from "@/telemetry/reportError";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
 import { useAllRecipes } from "@/recipes/recipesHooks";
 
@@ -53,7 +54,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
         }
       }
 
-      reportEvent("PageEditorReset", {
+      reportEvent(Events.PAGE_EDITOR_RESET, {
         sessionId,
         extensionId,
       });
