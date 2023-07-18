@@ -93,7 +93,7 @@ export async function getActivatedMarketplaceModVersions(): Promise<
   for (const [name, modComponents] of Object.entries(
     groupBy(mods, "id")
   ) as Array<[RegistryId, Array<ActivatedModComponent["_recipe"]>]>) {
-    if (modComponents.length > 0) {
+    if (modComponents.length > 1) {
       reportError(
         new Error(
           `Found multiple mod component versions activated for the same mod: ${name} (${modComponents
