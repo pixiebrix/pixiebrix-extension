@@ -226,29 +226,6 @@ export function deactivateMod(
 }
 
 /**
- * Activates the mod assuming it has been deactivated. Also assumes that
- * services and optionsArgs are the same as when the mod was deactivated.
- */
-function reactivateMod(
-  mod: ModDefinition,
-  services: Record<RegistryId, UUID>,
-  optionsArgs: OptionsArgs,
-  optionsState: ModComponentOptionsState
-): ModComponentOptionsState {
-  return extensionsSlice.reducer(
-    optionsState,
-    extensionsSlice.actions.installRecipe({
-      recipe: mod,
-      services,
-      extensionPoints: mod.extensionPoints,
-      optionsArgs,
-      screen: "background",
-      isReinstall: true,
-    })
-  );
-}
-
-/**
  * We currently don't have a way to "update" activated mods directly in the extension and editor redux stores.
  * Therefore, to update the mod, we deactivate and reactivate the mod with all the same configurations.
  * @param mod the mod to update
@@ -274,7 +251,17 @@ function updateMod(
   const services = inferRecipeAuths(deactivatedModComponents);
   const optionsArgs = inferRecipeOptions(deactivatedModComponents);
 
-  newOptionsState = reactivateMod(mod, services, optionsArgs, newOptionsState);
+  newOptionsState = extensionsSlice.reducer(
+    newOptionsState,
+    extensionsSlice.actions.installRecipe({
+      recipe: mod,
+      services,
+      extensionPoints: mod.extensionPoints,
+      optionsArgs,
+      screen: "background",
+      isReinstall: true,
+    })
+  );
 
   return {
     options: newOptionsState,
