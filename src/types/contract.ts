@@ -271,6 +271,5 @@ export type PackageVersionUpdates = {
   updates: Array<{
     backwards_compatible: ModDefinition | null;
     name: RegistryId;
-    backwards_incompatible: boolean;
   }>;
 };

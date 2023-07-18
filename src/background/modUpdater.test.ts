@@ -30,7 +30,7 @@ import {
   installedRecipeMetadataFactory,
   persistedExtensionFactory,
 } from "@/testUtils/factories/extensionFactories";
-import type { RegistryId, SemVerString, Sharing } from "@/types/registryTypes";
+import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import {
   extensionPointDefinitionFactory,
   versionedRecipeWithResolvedExtensions,
