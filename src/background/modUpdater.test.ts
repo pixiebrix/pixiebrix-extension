@@ -27,14 +27,14 @@ import {
 import reportError from "@/telemetry/reportError";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import {
-  installedRecipeMetadataFactory,
-  persistedExtensionFactory,
-} from "@/testUtils/factories/extensionFactories";
+  modComponentRecipeFactory,
+  activatedModComponentFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import {
-  extensionPointDefinitionFactory,
-  versionedRecipeWithResolvedExtensions,
-} from "@/testUtils/factories/recipeFactories";
+  starterBrickConfigFactory,
+  versionedStarterBrickRecipeFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 import { getEditorState } from "@/store/dynamicElementStorage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
@@ -87,27 +87,27 @@ describe("getActivatedMarketplaceModVersions function", () => {
   beforeEach(async () => {
     await saveOptions({ extensions: [] });
 
-    publicActivatedMod = persistedExtensionFactory({
-      _recipe: installedRecipeMetadataFactory({
+    publicActivatedMod = activatedModComponentFactory({
+      _recipe: modComponentRecipeFactory({
         sharing: sharingDefinitionFactory({ public: true }),
       }),
     });
 
-    privateActivatedMod = persistedExtensionFactory({
-      _recipe: installedRecipeMetadataFactory({
+    privateActivatedMod = activatedModComponentFactory({
+      _recipe: modComponentRecipeFactory({
         sharing: sharingDefinitionFactory({ public: false }),
       }),
     });
 
-    publicActivatedDeployment = persistedExtensionFactory({
-      _recipe: installedRecipeMetadataFactory({
+    publicActivatedDeployment = activatedModComponentFactory({
+      _recipe: modComponentRecipeFactory({
         sharing: sharingDefinitionFactory({ public: true }),
       }),
       _deployment: {} as ActivatedModComponent["_deployment"],
     });
 
-    privateActivatedDeployment = persistedExtensionFactory({
-      _recipe: installedRecipeMetadataFactory({
+    privateActivatedDeployment = activatedModComponentFactory({
+      _recipe: modComponentRecipeFactory({
         sharing: sharingDefinitionFactory({ public: false }),
       }),
       _deployment: {} as ActivatedModComponent["_deployment"],
@@ -139,8 +139,8 @@ describe("getActivatedMarketplaceModVersions function", () => {
   });
 
   it("returns expected object with registry id keys and version number values", async () => {
-    const anotherPublicActivatedMod = persistedExtensionFactory({
-      _recipe: installedRecipeMetadataFactory({
+    const anotherPublicActivatedMod = activatedModComponentFactory({
+      _recipe: modComponentRecipeFactory({
         sharing: sharingDefinitionFactory({ public: true }),
       }),
     });
@@ -169,13 +169,13 @@ describe("fetchModUpdates function", () => {
 
   beforeEach(async () => {
     activatedMods = [
-      persistedExtensionFactory({
-        _recipe: installedRecipeMetadataFactory({
+      activatedModComponentFactory({
+        _recipe: modComponentRecipeFactory({
           sharing: sharingDefinitionFactory({ public: true }),
         }),
       }),
-      persistedExtensionFactory({
-        _recipe: installedRecipeMetadataFactory({
+      activatedModComponentFactory({
+        _recipe: modComponentRecipeFactory({
           sharing: sharingDefinitionFactory({ public: true }),
         }),
       }),
@@ -220,18 +220,18 @@ describe("deactivateMod function", () => {
   let modToDeactivate: ActivatedModComponent["_recipe"];
 
   beforeEach(async () => {
-    modToDeactivate = installedRecipeMetadataFactory({});
-    const anotherMod = installedRecipeMetadataFactory({});
+    modToDeactivate = modComponentRecipeFactory({});
+    const anotherMod = modComponentRecipeFactory({});
 
     await saveOptions({
       extensions: [
-        persistedExtensionFactory({
+        activatedModComponentFactory({
           _recipe: modToDeactivate,
         }),
-        persistedExtensionFactory({
+        activatedModComponentFactory({
           _recipe: modToDeactivate,
         }),
-        persistedExtensionFactory({
+        activatedModComponentFactory({
           _recipe: anotherMod,
         }),
       ],
@@ -257,10 +257,10 @@ describe("deactivateMod function", () => {
   });
 
   it("should do nothing if mod id does not have any activated mod components", async () => {
-    const extensionPoint = extensionPointDefinitionFactory();
-    const extension = persistedExtensionFactory({
+    const extensionPoint = starterBrickConfigFactory();
+    const extension = activatedModComponentFactory({
       extensionPointId: extensionPoint.metadata.id,
-      _recipe: installedRecipeMetadataFactory({}),
+      _recipe: modComponentRecipeFactory({}),
     });
 
     await saveOptions({
@@ -290,7 +290,7 @@ describe("updateModsIfUpdatesAvailable", () => {
   beforeEach(async () => {
     axiosMock.reset();
 
-    publicMod = versionedRecipeWithResolvedExtensions(2)({
+    publicMod = versionedStarterBrickRecipeFactory()({
       sharing: sharingDefinitionFactory({ public: true }),
     });
 
@@ -381,11 +381,8 @@ describe("updateModsIfUpdatesAvailable", () => {
     await updateModsIfForceUpdatesAvailable();
 
     const resultingOptionsState = await loadOptions();
-    expect(resultingOptionsState.extensions.length).toEqual(2);
+    expect(resultingOptionsState.extensions.length).toEqual(1);
     expect(resultingOptionsState.extensions[0]._recipe.version).toEqual(
-      "2.0.1"
-    );
-    expect(resultingOptionsState.extensions[1]._recipe.version).toEqual(
       "2.0.1"
     );
   });

@@ -29,12 +29,14 @@ import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 import type {
   ActivatedModComponent,
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import type { ModComponentOptionsState } from "@/store/extensionsTypes";
+import type { IntegrationDependency } from "@/types/integrationTypes";
+import type { OptionsArgs } from "@/types/runtimeTypes";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -82,7 +84,7 @@ export async function getActivatedMarketplaceModVersions(): Promise<
 
   // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
   // the deployment updater will handle the updates.
-  const mods = activatedModComponents
+  const mods: Array<ActivatedModComponent["_recipe"]> = activatedModComponents
     .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
     .map((mod) => mod._recipe);
 
@@ -234,8 +236,25 @@ function updateMod(
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  const services = inferRecipeAuths(deactivatedModComponents);
-  const optionsArgs = inferRecipeOptions(deactivatedModComponents);
+  const services = inferRecipeAuths(
+    deactivatedModComponents.filter(
+      (modComponent) => modComponent.services
+    ) as Array<
+      Exclude<UnresolvedModComponent, "services"> & {
+        services: IntegrationDependency[];
+      }
+    >
+  );
+
+  const optionsArgs = inferRecipeOptions(
+    deactivatedModComponents.filter(
+      (modComponent) => modComponent.optionsArgs
+    ) as Array<
+      Exclude<UnresolvedModComponent, "optionsArgs"> & {
+        optionsArgs: OptionsArgs;
+      }
+    >
+  );
 
   newOptionsState = extensionsSlice.reducer(
     newOptionsState,
