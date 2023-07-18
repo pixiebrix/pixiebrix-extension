@@ -477,6 +477,7 @@ async function _sweepLogs(): Promise<void> {
     let deletedCount = 0;
 
     // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+    // This might mostly "just work" if the cursor happens to iterate in insertion order
     for await (const cursor of tx.store) {
       await cursor.delete();
       deletedCount++;
