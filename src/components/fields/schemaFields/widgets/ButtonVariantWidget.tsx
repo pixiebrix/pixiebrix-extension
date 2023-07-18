@@ -1,0 +1,128 @@
+/*
+ * Copyright (C) 2023 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React from "react";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { useField } from "formik";
+import SelectWidget, {
+  type Option,
+  type SelectLike,
+} from "@/components/form/widgets/SelectWidget";
+import { type UUID } from "@/types/stringTypes";
+import { type OptionProps, type ValueContainerProps } from "react-select";
+import { Button } from "react-bootstrap";
+import styles from "./ButtonVariantWidget.module.scss";
+import cx from "classnames";
+import { type SingleValueProps } from "react-select/dist/declarations/src/components/SingleValue";
+
+const buttonVariants = [
+  { value: "primary", label: "Primary" },
+  { value: "outline-primary", label: "Outline Primary" },
+  { value: "secondary", label: "Secondary" },
+  { value: "outline-secondary", label: "Outline Secondary" },
+  { value: "success", label: "Success" },
+  { value: "outline-success", label: "Outline Success" },
+  { value: "warning", label: "Warning" },
+  { value: "outline-warning", label: "Outline Warning" },
+  { value: "danger", label: "Danger" },
+  { value: "outline-danger", label: "Outline Danger" },
+  { value: "info", label: "Info" },
+  { value: "outline-info", label: "Outline Info" },
+  { value: "light", label: "Light" },
+  { value: "outline-light", label: "Outline Light" },
+  { value: "dark", label: "Dark" },
+  { value: "outline-dark", label: "Outline Dark" },
+  { value: "link", label: "Link" },
+  { value: "outline-link", label: "Outline Link" },
+];
+
+interface OptionValue {
+  value: string;
+  label: string;
+}
+
+const OptionComponent = (props: OptionProps<OptionValue>) => {
+  const { innerProps, innerRef, data, isSelected } = props;
+  return (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      className={cx(styles.optionContainer, { [styles.active]: isSelected })}
+    >
+      <Button
+        type={null}
+        variant={data.value}
+        size="sm"
+        className={styles.option}
+      >
+        {data.label}
+      </Button>
+    </div>
+  );
+};
+
+const ValueComponent = (props: SingleValueProps<OptionValue>) => {
+  const { data } = props;
+  return (
+    <div>
+      <Button
+        type={null}
+        variant={data.value}
+        size="sm"
+        className={styles.option}
+      >
+        {data.label}
+      </Button>
+    </div>
+  );
+};
+
+const ContainerComponent = (props: ValueContainerProps<OptionValue>) => {
+  const { innerProps, children } = props;
+  return (
+    <div {...innerProps} className={styles.selectContainer}>
+      {children}
+    </div>
+  );
+};
+
+const ButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = (
+  props
+) => {
+  const [{ value }, , { setValue }] = useField<string>(props.name);
+
+  return (
+    <div className="mt-2">
+      <SelectWidget<OptionValue>
+        name={props.name}
+        options={buttonVariants}
+        value={value}
+        isSearchable={false}
+        onChange={(event: React.ChangeEvent<SelectLike<Option<UUID>>>) => {
+          setValue(event.target.value);
+        }}
+        components={{
+          Option: OptionComponent,
+          SingleValue: ValueComponent,
+          ValueContainer: ContainerComponent,
+        }}
+      />
+    </div>
+  );
+};
+
+export default ButtonVariantWidget;

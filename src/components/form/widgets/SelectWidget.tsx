@@ -58,6 +58,7 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
     className?: string;
     styles?: StylesConfig;
+    searchable?: boolean;
     /**
      * True if the user can create new options. Default is false.
      */
@@ -84,6 +85,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   className,
   styles,
   createable = false,
+  searchable = true,
 }: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
@@ -120,6 +122,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       onChange={patchedOnChange}
       components={components}
       styles={styles}
+      isSearchable={searchable}
     />
   );
 };
