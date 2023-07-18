@@ -423,7 +423,7 @@ describe("triggerExtension", () => {
     expect(notifyErrorMock).not.toHaveBeenCalled();
   });
 
-  it("shows context invalidated for user action if showErrors", async () => {
+  it("shows context invalidated for user action if showErrors: true", async () => {
     document.body.innerHTML = getDocument(
       "<div><button>Click Me</button></div>"
     ).body.innerHTML;
@@ -518,5 +518,34 @@ describe("triggerExtension", () => {
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
     expect(notifyErrorMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not display error notifications for reportMode: all, showErrors: default", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        reportMode: "all",
+        // Testing the default of false, for backward compatability
+        // showErrors: false,
+      })({})
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+        config: {
+          action: { id: ThrowBrick.BRICK_ID, config: {} },
+        },
+      })
+    );
+
+    await extensionPoint.install();
+
+    // Run 2x
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    expect(reportErrorMock).toHaveBeenCalledTimes(2);
+    expect(notifyErrorMock).toHaveBeenCalledTimes(0);
   });
 });
