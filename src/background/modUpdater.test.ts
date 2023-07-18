@@ -19,10 +19,9 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {
   autoModUpdatesEnabled,
-  collectModVersions,
   deactivateMod,
   fetchModUpdates,
-  getActivatedMarketplaceModMetadata,
+  getActivatedMarketplaceModVersions,
   updateModsIfForceUpdatesAvailable,
 } from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
@@ -79,7 +78,7 @@ describe("autoModUpdatesEnabled function", () => {
   });
 });
 
-describe("getActivatedMarketplaceMods function", () => {
+describe("getActivatedMarketplaceModVersions function", () => {
   let publicActivatedMod: ActivatedModComponent;
   let privateActivatedMod: ActivatedModComponent;
   let publicActivatedDeployment: ActivatedModComponent;
@@ -89,42 +88,34 @@ describe("getActivatedMarketplaceMods function", () => {
     await saveOptions({ extensions: [] });
 
     publicActivatedMod = persistedExtensionFactory({
-      _recipe: {
-        sharing: {
-          public: true,
-        } as Sharing,
-      } as ActivatedModComponent["_recipe"],
+      _recipe: installedRecipeMetadataFactory({
+        sharing: sharingDefinitionFactory({ public: true }),
+      }),
     });
 
     privateActivatedMod = persistedExtensionFactory({
-      _recipe: {
-        sharing: {
-          public: false,
-        } as Sharing,
-      } as ActivatedModComponent["_recipe"],
+      _recipe: installedRecipeMetadataFactory({
+        sharing: sharingDefinitionFactory({ public: false }),
+      }),
     });
 
     publicActivatedDeployment = persistedExtensionFactory({
-      _recipe: {
-        sharing: {
-          public: true,
-        } as Sharing,
-      } as ActivatedModComponent["_recipe"],
+      _recipe: installedRecipeMetadataFactory({
+        sharing: sharingDefinitionFactory({ public: true }),
+      }),
       _deployment: {} as ActivatedModComponent["_deployment"],
     });
 
     privateActivatedDeployment = persistedExtensionFactory({
-      _recipe: {
-        sharing: {
-          public: false,
-        } as Sharing,
-      } as ActivatedModComponent["_recipe"],
+      _recipe: installedRecipeMetadataFactory({
+        sharing: sharingDefinitionFactory({ public: false }),
+      }),
       _deployment: {} as ActivatedModComponent["_deployment"],
     });
   });
 
   it("should return empty list if no activated mods", async () => {
-    const result = await getActivatedMarketplaceModMetadata();
+    const result = await getActivatedMarketplaceModVersions();
     expect(result).toEqual([]);
   });
 
@@ -138,21 +129,65 @@ describe("getActivatedMarketplaceMods function", () => {
       ],
     });
 
-    const result = await getActivatedMarketplaceModMetadata();
-    expect(result).toEqual([publicActivatedMod._recipe]);
+    const result = await getActivatedMarketplaceModVersions();
+    expect(result).toEqual([
+      {
+        name: publicActivatedMod._recipe.id,
+        version: publicActivatedMod._recipe.version,
+      },
+    ]);
+  });
+
+  it("returns expected object with registry id keys and version number values", async () => {
+    const anotherPublicActivatedMod = persistedExtensionFactory({
+      _recipe: installedRecipeMetadataFactory({
+        sharing: sharingDefinitionFactory({ public: true }),
+      }),
+    });
+
+    await saveOptions({
+      extensions: [publicActivatedMod, anotherPublicActivatedMod],
+    });
+
+    const result = await getActivatedMarketplaceModVersions();
+
+    expect(result).toEqual([
+      {
+        name: publicActivatedMod._recipe.id,
+        version: publicActivatedMod._recipe.version,
+      },
+      {
+        name: anotherPublicActivatedMod._recipe.id,
+        version: anotherPublicActivatedMod._recipe.version,
+      },
+    ]);
   });
 });
 
 describe("fetchModUpdates function", () => {
-  it("calls the registry/updates/ endpoint with the right payload", async () => {
-    const activatedMods = [
-      installedRecipeMetadataFactory(),
-      installedRecipeMetadataFactory(),
+  let activatedMods: ActivatedModComponent[];
+
+  beforeEach(async () => {
+    activatedMods = [
+      persistedExtensionFactory({
+        _recipe: installedRecipeMetadataFactory({
+          sharing: sharingDefinitionFactory({ public: true }),
+        }),
+      }),
+      persistedExtensionFactory({
+        _recipe: installedRecipeMetadataFactory({
+          sharing: sharingDefinitionFactory({ public: true }),
+        }),
+      }),
     ];
 
+    await saveOptions({ extensions: activatedMods });
+  });
+
+  it("calls the registry/updates/ endpoint with the right payload", async () => {
     axiosMock.onPost().reply(200, {});
 
-    await fetchModUpdates(activatedMods);
+    await fetchModUpdates();
 
     expect(axiosMock.history.post.length).toBe(1);
     const payload = JSON.parse(String(axiosMock.history.post[0].data));
@@ -160,76 +195,24 @@ describe("fetchModUpdates function", () => {
     expect(payload).toEqual({
       versions: [
         {
-          name: activatedMods[0].id,
-          version: activatedMods[0].version,
+          name: activatedMods[0]._recipe.id,
+          version: activatedMods[0]._recipe.version,
         },
         {
-          name: activatedMods[1].id,
-          version: activatedMods[1].version,
+          name: activatedMods[1]._recipe.id,
+          version: activatedMods[1]._recipe.version,
         },
       ],
     });
   });
 
   it("reports error and returns empty object on failure", async () => {
-    const activatedMods = [
-      installedRecipeMetadataFactory(),
-      installedRecipeMetadataFactory(),
-    ];
-
     axiosMock.onPost().reply(400, {});
 
-    const result = await fetchModUpdates(activatedMods);
+    const result = await fetchModUpdates();
 
     expect(result).toEqual([]);
     expect(reportError).toHaveBeenCalled();
-  });
-});
-
-describe("collectModVersions function", () => {
-  it("returns empty array if no activated mods", () => {
-    const result = collectModVersions([]);
-    expect(result).toEqual([]);
-  });
-
-  it("returns expected object with registry id keys and version number values", () => {
-    const activatedMods = [
-      installedRecipeMetadataFactory(),
-      installedRecipeMetadataFactory(),
-    ];
-
-    const result = collectModVersions(activatedMods);
-    expect(result).toEqual([
-      {
-        name: activatedMods[0].id,
-        version: activatedMods[0].version,
-      },
-      {
-        name: activatedMods[1].id,
-        version: activatedMods[1].version,
-      },
-    ]);
-  });
-
-  it("reports error and returns object if same mod has multiple versions", async () => {
-    const activatedMods = [
-      installedRecipeMetadataFactory({
-        id: "@test/same-mod" as RegistryId,
-        version: "1.0.0" as SemVerString,
-      }),
-      installedRecipeMetadataFactory({
-        id: "@test/same-mod" as RegistryId,
-        version: "2.0.0" as SemVerString,
-      }),
-    ];
-
-    const result = collectModVersions(activatedMods);
-    expect(result).toEqual([{ name: "@test/same-mod", version: "1.0.0" }]);
-    expect(reportError).toHaveBeenCalledWith(
-      new Error(
-        "Found multiple mod component versions activated for the same mod: @test/same-mod (1.0.0, 2.0.0)"
-      )
-    );
   });
 });
 

@@ -71,14 +71,21 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
 }
 
 /**
- * Produces an array of mods by registry id and currently installed versions. For use
+ * Produces an array of activated Marketplace mods by registry id and currently activated versions. For use
  * with the payload of the `api/registry/updates` endpoint.
- * @param mods the mod components to collect versions for
  * @returns a unique list of mod registry ids and their versions
  */
-export function collectModVersions(
-  mods: Array<ActivatedModComponent["_recipe"]>
-): Array<{ name: RegistryId; version: SemVerString }> {
+export async function getActivatedMarketplaceModVersions(): Promise<
+  Array<{ name: RegistryId; version: SemVerString }>
+> {
+  const { extensions: activatedModComponents } = await loadOptions();
+
+  // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
+  // the deployment updater will handle the updates.
+  const mods = activatedModComponents
+    .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
+    .map((mod) => mod._recipe);
+
   const modVersions: Array<{ name: RegistryId; version: SemVerString }> = [];
 
   for (const [name, modComponents] of Object.entries(
@@ -101,31 +108,10 @@ export function collectModVersions(
 }
 
 /**
- * Gets a list of activated Marketplace mod metadata, assuming that Marketplace mods are
- * any public mods that are not deployments.
- * @returns a list of mod metadata for activated Marketplace mods
- */
-export async function getActivatedMarketplaceModMetadata(): Promise<
-  Array<ActivatedModComponent["_recipe"]>
-> {
-  const { extensions: activatedModComponents } = await loadOptions();
-
-  // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
-  // the deployment updater will handle the updates.
-  return activatedModComponents
-    .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
-    .map((mod) => mod._recipe);
-}
-
-/**
- * Given a list of currently activated mods, fetches information about backwards compatible "force updates"
- * for those mods.
- * @param activatedMods mods that are currently activated
+ * Fetches information about backwards compatible "force updates" for Marketplace mods that are currently activated.
  * @returns a list of mods with backwards compatible updates
  */
-export async function fetchModUpdates(
-  activatedMods: Array<ActivatedModComponent["_recipe"]>
-): Promise<BackwardsCompatibleUpdate[]> {
+export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -134,11 +120,13 @@ export async function fetchModUpdates(
     return [];
   }
 
+  const modVersions = await getActivatedMarketplaceModVersions();
+
   try {
     const {
       data: { updates },
     } = await client.post<PackageVersionUpdates>("/api/registry/updates/", {
-      versions: collectModVersions(activatedMods),
+      versions: modVersions,
     });
 
     // Only return backwards compatible updates for now. Future work outlines
@@ -290,11 +278,7 @@ export async function updateModsIfForceUpdatesAvailable() {
     return;
   }
 
-  const activatedMarketplaceMods = await getActivatedMarketplaceModMetadata();
-
-  const backwardsCompatibleModUpdates = await fetchModUpdates(
-    activatedMarketplaceMods
-  );
+  const backwardsCompatibleModUpdates = await fetchModUpdates();
 
   if (isEmpty(backwardsCompatibleModUpdates)) {
     console.debug("No automatic mod updates found");
