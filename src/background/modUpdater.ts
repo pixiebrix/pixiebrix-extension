@@ -48,7 +48,7 @@ type BackwardsCompatibleUpdate = {
   backwards_compatible: ModDefinition;
 };
 
-type PackageVersionPair = Array<{ name: RegistryId; version: SemVerString }>;
+type PackageVersionPair = { name: RegistryId; version: SemVerString };
 
 export async function autoModUpdatesEnabled(): Promise<boolean> {
   const client = await maybeGetLinkedApiClient();
@@ -77,7 +77,9 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
  * with the payload of the `api/registry/updates` endpoint.
  * @returns a unique list of mod registry ids and their versions
  */
-export async function getActivatedMarketplaceModVersions(): Promise<PackageVersionPair> {
+export async function getActivatedMarketplaceModVersions(): Promise<
+  PackageVersionPair[]
+> {
   const { extensions: activatedModComponents } = await loadOptions();
 
   // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
@@ -86,7 +88,7 @@ export async function getActivatedMarketplaceModVersions(): Promise<PackageVersi
     .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
     .map((mod) => mod._recipe);
 
-  const modVersions: PackageVersionPair = [];
+  const modVersions: PackageVersionPair[] = [];
 
   for (const [name, modComponents] of Object.entries(
     groupBy(mods, "id")
@@ -126,6 +128,10 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
 
   const modVersions = await getActivatedMarketplaceModVersions();
 
+  if (isEmpty(modVersions)) {
+    return [];
+  }
+
   try {
     const {
       data: { updates },
@@ -148,7 +154,9 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
 }
 
 /**
- * Deactivates the mod component from the extensions and editor redux stores.
+ * Deactivates the mod component from the extensions and editor redux stores. Note that while the mod component
+ * is removed from redux, it is not removed from existing tabs until a navigation is triggered/store is refreshed in the respective tab.
+ * This is to prevent interrupting the user's workflow when performing updates in the background.
  * @param modComponent the mod component to deactivate
  * @param reduxState the current state of the extension and editor redux stores
  * @returns the new redux state with the mod component deactivated
