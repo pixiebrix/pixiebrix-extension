@@ -23,6 +23,7 @@ import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,
+  InvalidContextReader,
   RootReader,
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
@@ -38,18 +39,35 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  throwBrick,
+  ThrowBrick,
+} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import notify from "@/utils/notify";
+import { notifyContextInvalidated } from "@/errors/contextInvalidated";
+
+jest.mock("@/errors/contextInvalidated", () => {
+  const actual = jest.requireActual("@/errors/contextInvalidated");
+  return {
+    ...actual,
+    notifyContextInvalidated: jest.fn().mockResolvedValue(undefined),
+  };
+});
+
+jest.mock("@/utils/notify", () => ({
+  __esModule: true,
+  default: {
+    error: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
+const notifyErrorMock = jest.mocked(notify.error);
+const notifyContextInvalidatedMock = jest.mocked(notifyContextInvalidated);
 
 beforeAll(() => {
   requestIdleCallback.mock();
 });
-
-beforeEach(() => {
-  ensureMocksReset();
-});
-
-const rootReaderId = validateRegistryId("test/root-reader");
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<TriggerDefinition>>({
@@ -66,7 +84,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
-      reader: () => [rootReaderId],
+      reader: () => [RootReader.BRICK_ID],
       ...definitionOverrides,
     }),
   });
@@ -87,10 +105,13 @@ const extensionFactory = define<ResolvedModComponent<TriggerConfig>>({
 const rootReader = new RootReader();
 
 beforeEach(() => {
+  ensureMocksReset();
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
+  notifyErrorMock.mockReset();
+  notifyContextInvalidatedMock.mockReset();
   blockRegistry.clear();
-  blockRegistry.register([rootReader]);
+  blockRegistry.register([rootReader, new InvalidContextReader(), throwBrick]);
   rootReader.readCount = 0;
   rootReader.ref = undefined;
 });
@@ -369,7 +390,85 @@ describe("triggerExtension", () => {
       );
 
       const reader = await extensionPoint.previewReader();
-      await reader.read(document);
+      const result = await reader.read(document);
+
+      expect(result).toStrictEqual(
+        expect.objectContaining({
+          readCount: 1,
+        })
+      );
     }
   );
+
+  it("ignores context invalidated error for non user-action trigger in reader", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        reader: () => [InvalidContextReader.BRICK_ID],
+      })({})
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    expect(notifyErrorMock).not.toHaveBeenCalled();
+  });
+
+  it("reports only the first brick error", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        reportMode: "once",
+      })({})
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+        config: {
+          action: { id: ThrowBrick.BRICK_ID, config: {} },
+        },
+      })
+    );
+
+    await extensionPoint.install();
+
+    // Run 2x
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    expect(notifyErrorMock).toHaveBeenCalledOnce();
+  });
+
+  it("reports all brick errors", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        reportMode: "all",
+      })({})
+    );
+
+    extensionPoint.addExtension(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+        config: {
+          action: { id: ThrowBrick.BRICK_ID, config: {} },
+        },
+      })
+    );
+
+    await extensionPoint.install();
+
+    // Run 2x
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.run({ reason: RunReason.MANUAL });
+
+    expect(notifyErrorMock).toHaveBeenCalledTimes(2);
+  });
 });

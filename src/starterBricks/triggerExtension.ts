@@ -76,6 +76,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import { type StarterBrick } from "@/types/starterBrickTypes";
+import { isContextInvalidatedError } from "@/errors/contextInvalidated";
 
 export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;
@@ -200,13 +201,32 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   /**
-   * Return true if an error should be reported for the given extension ID.
+   * Return true if an error should be reported.
    * @private
    */
-  private shouldReportError(extensionId: UUID): boolean {
-    const alreadyReported = this.reportedErrors.has(extensionId);
-    this.reportedErrors.add(extensionId);
-    return this.shouldReport(alreadyReported);
+  private shouldReportError({
+    extensionId,
+    error,
+  }: {
+    extensionId?: UUID;
+    error: unknown;
+  }): boolean {
+    if (
+      isContextInvalidatedError(error) &&
+      !USER_ACTION_TRIGGERS.includes(this.trigger)
+    ) {
+      // Fail silently on non-interactive triggers if the background page has been reloaded. Otherwise, the user
+      // receives confusing notifications that aren't tied to actions they've taken.
+      return false;
+    }
+
+    if (extensionId) {
+      const alreadyReported = this.reportedErrors.has(extensionId);
+      this.reportedErrors.add(extensionId);
+      return this.shouldReport(alreadyReported);
+    }
+
+    return true;
   }
 
   /**
@@ -421,12 +441,22 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
 
     const reader = await this.getBaseReader();
+    let readerContext: JsonObject;
 
-    const readerContext = {
-      // The default reader overrides the event property. Should match the override precedence in defaultReader()
-      event: nativeEvent ? pickEventProperties(nativeEvent) : null,
-      ...(await reader.read(root)),
-    };
+    try {
+      readerContext = {
+        // The default reader overrides the event property. Should match the override precedence in defaultReader()
+        event: nativeEvent ? pickEventProperties(nativeEvent) : null,
+        ...(await reader.read(root)),
+      };
+    } catch (error) {
+      if (this.shouldReportError({ error })) {
+        throw error;
+      }
+
+      // Silently ignore the error
+      return [];
+    }
 
     const errors = await Promise.all(
       extensionsToRun.map(async (extension) => {
@@ -437,12 +467,14 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
           this.markRun(extension.id, root);
           await this.runExtension(readerContext, extension, root);
         } catch (error) {
-          if (this.shouldReportError(extension.id)) {
+          if (this.shouldReportError({ extensionId: extension.id, error })) {
             reportError(error, { context: extensionLogger.context });
             extensionLogger.error(error);
+            return error;
           }
 
-          return error;
+          // Return null so the trigger doesn't show any notifications
+          return;
         } finally {
           // NOTE: if the extension is not running with synchronous behavior, there's a race condition where
           // the `delete` could be called while another extension run is still in progress
@@ -455,6 +487,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         }
       })
     );
+
     return compact(errors);
   }
 
