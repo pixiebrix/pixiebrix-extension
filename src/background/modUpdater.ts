@@ -23,7 +23,7 @@ import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
-import { groupBy, isEmpty } from "lodash";
+import { groupBy, isEmpty, uniq } from "lodash";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
@@ -93,17 +93,21 @@ export async function getActivatedMarketplaceModVersions(): Promise<PackageVersi
   for (const [name, modComponents] of Object.entries(
     groupBy(mods, "id")
   ) as Array<[RegistryId, Array<ActivatedModComponent["_recipe"]>]>) {
-    if (modComponents.length > 1) {
+    const uniqueModVersions: SemVerString[] = uniq(
+      modComponents.map((modComponent) => modComponent.version)
+    );
+
+    if (uniqueModVersions.length > 1) {
       reportError(
         new Error(
-          `Found multiple mod component versions activated for the same mod: ${name} (${modComponents
-            .map((version) => version.version)
-            .join(", ")})`
+          `Found multiple mod component versions activated for the same mod: ${name} (${uniqueModVersions.join(
+            ", "
+          )})`
         )
       );
     }
 
-    modVersions.push({ name, version: modComponents[0].version });
+    modVersions.push({ name, version: uniqueModVersions[0] });
   }
 
   return modVersions;

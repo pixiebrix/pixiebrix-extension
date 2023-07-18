@@ -162,6 +162,39 @@ describe("getActivatedMarketplaceModVersions function", () => {
       },
     ]);
   });
+
+  it("reports error if multiple mod component versions activated for same mod", async () => {
+    const sameMod = modComponentRecipeFactory({
+      sharing: sharingDefinitionFactory({ public: true }),
+    });
+
+    const onePublicActivatedMod = activatedModComponentFactory({
+      _recipe: sameMod,
+    });
+
+    const sameModDifferentVersion = modComponentRecipeFactory({
+      ...sameMod,
+      version: "2.0.0" as SemVerString,
+    });
+
+    const anotherPublicActivatedMod = activatedModComponentFactory({
+      _recipe: sameModDifferentVersion,
+    });
+
+    await saveOptions({
+      extensions: [onePublicActivatedMod, anotherPublicActivatedMod],
+    });
+
+    const result = await getActivatedMarketplaceModVersions();
+
+    expect(result).toEqual([
+      {
+        name: onePublicActivatedMod._recipe.id,
+        version: onePublicActivatedMod._recipe.version,
+      },
+    ]);
+    expect(reportError).toHaveBeenCalled();
+  });
 });
 
 describe("fetchModUpdates function", () => {
