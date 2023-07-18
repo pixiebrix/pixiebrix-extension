@@ -23,8 +23,6 @@ import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
-import type { UUID } from "@/types/stringTypes";
-import type { OptionsArgs } from "@/types/runtimeTypes";
 import { groupBy, isEmpty } from "lodash";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";

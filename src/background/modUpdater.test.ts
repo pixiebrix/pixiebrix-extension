@@ -28,7 +28,6 @@ import {
 import reportError from "@/telemetry/reportError";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import {
-  extensionFactory,
   installedRecipeMetadataFactory,
   persistedExtensionFactory,
 } from "@/testUtils/factories/extensionFactories";
@@ -243,15 +242,15 @@ describe("deactivateMod function", () => {
 
     await saveOptions({
       extensions: [
-        extensionFactory({
+        persistedExtensionFactory({
           _recipe: modToDeactivate,
-        }) as ActivatedModComponent,
-        extensionFactory({
+        }),
+        persistedExtensionFactory({
           _recipe: modToDeactivate,
-        }) as ActivatedModComponent,
-        extensionFactory({
+        }),
+        persistedExtensionFactory({
           _recipe: anotherMod,
-        }) as ActivatedModComponent,
+        }),
       ],
     });
   });
@@ -276,10 +275,10 @@ describe("deactivateMod function", () => {
 
   it("should do nothing if mod id does not have any activated mod components", async () => {
     const extensionPoint = extensionPointDefinitionFactory();
-    const extension = extensionFactory({
+    const extension = persistedExtensionFactory({
       extensionPointId: extensionPoint.metadata.id,
       _recipe: installedRecipeMetadataFactory({}),
-    }) as ActivatedModComponent;
+    });
 
     await saveOptions({
       extensions: [extension],
