@@ -269,7 +269,7 @@ export type ErrorItem = Except<
 
 export type PackageVersionUpdates = {
   updates: Array<{
-    backwards_compatible: ModDefinition;
+    backwards_compatible: ModDefinition | null;
     name: string;
     backwards_incompatible: boolean;
   }>;

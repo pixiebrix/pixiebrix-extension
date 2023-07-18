@@ -114,10 +114,10 @@ export async function getActivatedMarketplaceModMetadata(): Promise<
 }
 
 /**
- * Given a list of currently activated mods, fetches information about "force updates"
+ * Given a list of currently activated mods, fetches information about backwards compatible "force updates"
  * for those mods.
  * @param activatedMods mods that are currently activated
- * @returns a list of mods with information about "force updates"
+ * @returns a list of mods with backwards compatible updates
  */
 export async function fetchModUpdates(
   activatedMods: Array<ActivatedModComponent["_recipe"]>
@@ -137,25 +137,13 @@ export async function fetchModUpdates(
       versions: collectModVersions(activatedMods),
     });
 
-    return updates;
+    // Only return backwards compatible updates for now. Future work outlines
+    // handling backwards incompatible updates as well.
+    return updates.filter(({ backwards_compatible }) => backwards_compatible);
   } catch (error) {
     reportError(error);
     return [];
   }
-}
-
-/**
- * The api/registry/updates endpoints returns information about "force updates" for mods, including
- * backwards compatible and backwards incompatible updates. This function fetches updates for the mods and
- * filters out only the updates that are backwards compatible.
- * @param activatedMods mods that are currently activated
- * @returns a list of backwards compatible mod updates
- */
-async function getBackwardsCompatibleUpdates(
-  activatedMods: Array<ActivatedModComponent["_recipe"]>
-): Promise<PackageVersionUpdates["updates"]> {
-  const updates = await fetchModUpdates(activatedMods);
-  return updates.filter(({ backwards_compatible }) => backwards_compatible);
 }
 
 /**
@@ -340,9 +328,7 @@ export async function updateModsIfForceUpdatesAvailable() {
 
   const activatedMarketplaceMods = await getActivatedMarketplaceModMetadata();
 
-  const modUpdates = await getBackwardsCompatibleUpdates(
-    activatedMarketplaceMods
-  );
+  const modUpdates = await fetchModUpdates(activatedMarketplaceMods);
 
   if (isEmpty(modUpdates)) {
     console.debug("No automatic mod updates found");
