@@ -29,12 +29,12 @@ import reportError from "@/telemetry/reportError";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import {
   extensionFactory,
+  installedRecipeMetadataFactory,
   persistedExtensionFactory,
 } from "@/testUtils/factories/extensionFactories";
 import type { RegistryId, SemVerString, Sharing } from "@/types/registryTypes";
 import {
   extensionPointDefinitionFactory,
-  recipeMetadataFactory,
   versionedRecipeWithResolvedExtensions,
 } from "@/testUtils/factories/recipeFactories";
 import { getEditorState } from "@/store/dynamicElementStorage";
@@ -147,8 +147,8 @@ describe("getActivatedMarketplaceMods function", () => {
 describe("fetchModUpdates function", () => {
   it("calls the registry/updates/ endpoint with the right payload", async () => {
     const activatedMods = [
-      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
-      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
+      installedRecipeMetadataFactory(),
+      installedRecipeMetadataFactory(),
     ];
 
     axiosMock.onPost().reply(200, {});
@@ -174,8 +174,8 @@ describe("fetchModUpdates function", () => {
 
   it("reports error and returns empty object on failure", async () => {
     const activatedMods = [
-      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
-      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
+      installedRecipeMetadataFactory(),
+      installedRecipeMetadataFactory(),
     ];
 
     axiosMock.onPost().reply(400, {});
@@ -195,8 +195,8 @@ describe("collectModVersions function", () => {
 
   it("returns expected object with registry id keys and version number values", () => {
     const activatedMods = [
-      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
-      recipeMetadataFactory() as ActivatedModComponent["_recipe"],
+      installedRecipeMetadataFactory(),
+      installedRecipeMetadataFactory(),
     ];
 
     const result = collectModVersions(activatedMods);
@@ -214,14 +214,14 @@ describe("collectModVersions function", () => {
 
   it("reports error and returns object if same mod has multiple versions", async () => {
     const activatedMods = [
-      recipeMetadataFactory({
+      installedRecipeMetadataFactory({
         id: "@test/same-mod" as RegistryId,
         version: "1.0.0" as SemVerString,
-      }) as ActivatedModComponent["_recipe"],
-      recipeMetadataFactory({
+      }),
+      installedRecipeMetadataFactory({
         id: "@test/same-mod" as RegistryId,
         version: "2.0.0" as SemVerString,
-      }) as ActivatedModComponent["_recipe"],
+      }),
     ];
 
     const result = collectModVersions(activatedMods);
@@ -238,12 +238,8 @@ describe("deactivateMod function", () => {
   let modToDeactivate: ActivatedModComponent["_recipe"];
 
   beforeEach(async () => {
-    modToDeactivate = recipeMetadataFactory(
-      {}
-    ) as ActivatedModComponent["_recipe"];
-    const anotherMod = recipeMetadataFactory(
-      {}
-    ) as ActivatedModComponent["_recipe"];
+    modToDeactivate = installedRecipeMetadataFactory({});
+    const anotherMod = installedRecipeMetadataFactory({});
 
     await saveOptions({
       extensions: [
@@ -282,7 +278,7 @@ describe("deactivateMod function", () => {
     const extensionPoint = extensionPointDefinitionFactory();
     const extension = extensionFactory({
       extensionPointId: extensionPoint.metadata.id,
-      _recipe: recipeMetadataFactory({}) as ActivatedModComponent["_recipe"],
+      _recipe: installedRecipeMetadataFactory({}),
     }) as ActivatedModComponent;
 
     await saveOptions({

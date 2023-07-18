@@ -161,7 +161,7 @@ export async function fetchModUpdates(
  * Deactivates the mod component from the extensions and editor redux stores.
  * @param modComponent the mod component to deactivate
  * @param reduxState the current state of the extension and editor redux stores
- * @returns {reduxState, deactivatedModComponents} new redux state with the mod component deactivated
+ * @returns the new redux state with the mod component deactivated
  */
 function deactivateModComponent(
   modComponent: UnresolvedModComponent,
