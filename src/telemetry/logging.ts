@@ -464,7 +464,7 @@ async function _sweepLogs(): Promise<void> {
   const numRecords = await count();
 
   if (numRecords > MAX_LOG_RECORDS) {
-    const numToDelete = (await count()) - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+    const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
 
     console.debug("Sweeping logs", {
       numRecords,
