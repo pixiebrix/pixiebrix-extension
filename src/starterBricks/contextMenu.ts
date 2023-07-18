@@ -45,7 +45,8 @@ import notify, {
   type MessageConfig,
   showNotification,
 } from "@/utils/notify";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
@@ -333,7 +334,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     );
 
     registerHandler(extension.id, async (clickData) => {
-      reportEvent("HandleContextMenu", selectEventData(extension));
+      reportEvent(Events.HANDLE_CONTEXT_MENU, selectEventData(extension));
 
       try {
         const reader = await this.getBaseReader();

@@ -134,6 +134,10 @@ type TriggerExtensionPointState = BaseExtensionPointState & {
     attachMode: AttachMode;
     targetMode: TargetMode;
     reportMode: ReportMode;
+    /**
+     * @since 1.7.34
+     */
+    showErrors: boolean;
 
     isAvailable: NormalizedAvailability;
 

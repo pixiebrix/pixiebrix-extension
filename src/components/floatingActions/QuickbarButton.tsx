@@ -19,7 +19,8 @@ import React from "react";
 import logoUrl from "@/icons/custom-icons/logo.svg";
 import { Button } from "react-bootstrap";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import AsyncButton from "@/components/AsyncButton";
 import notify from "@/utils/notify";
 import { useDispatch } from "react-redux";
@@ -43,7 +44,7 @@ export function QuickbarButton() {
               dispatch(
                 SettingsSlice.actions.setFloatingActionButtonEnabled(false)
               );
-              reportEvent("FloatingQuickBarButtonOnScreenHide");
+              reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_ON_SCREEN_HIDE);
             } catch (error) {
               notify.error({ message: "Error saving settings", error });
             }
@@ -57,7 +58,7 @@ export function QuickbarButton() {
         <Button
           className="quickbar-button"
           onClick={() => {
-            reportEvent("FloatingQuickBarButtonClick");
+            reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_CLICK);
             toggleQuickBar();
           }}
         >

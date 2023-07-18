@@ -15,4 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default jest.fn();
+import { JsonObject } from "type-fest";
+
+export default function reportEvent(
+  event: string,
+  data: JsonObject = {}
+): void {
+  console.debug(...arguments);
+}

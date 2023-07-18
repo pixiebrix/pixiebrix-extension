@@ -28,7 +28,8 @@ import { type SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
 
 type AddElement = (config: ElementConfig) => void;
@@ -79,7 +80,7 @@ function useAddElement(): AddElement {
         dispatch(actions.addElement(initialState as ModComponentFormState));
         dispatch(actions.checkActiveElementAvailability());
 
-        reportEvent("ExtensionAddNew", {
+        reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
           type: config.elementType,
         });
       } catch (error) {

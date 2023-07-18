@@ -21,7 +21,7 @@ import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/messenger/api";
 import { getExtensionVersion } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import {
   selectExtensions,
@@ -60,6 +60,7 @@ import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
+import { Events } from "@/telemetry/events";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
@@ -177,7 +178,7 @@ async function uninstallUnmatchedDeployments(
     optionsState,
   });
 
-  reportEvent("DeploymentDeactivateUnassigned", {
+  reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
     deployments: toUninstall.map((x) => x._deployment.id),
   });
@@ -250,7 +251,7 @@ async function installDeployment(
     })
   );
 
-  reportEvent("DeploymentActivate", {
+  reportEvent(Events.DEPLOYMENT_ACTIVATE, {
     deployment: deployment.id,
     auto: true,
   });
@@ -376,7 +377,7 @@ export async function updateDeployments(): Promise<void> {
     //   installed anyway.
 
     if (ssoUrl != null) {
-      reportEvent("OrganizationExtensionLink", {
+      reportEvent(Events.ORGANIZATION_EXTENSION_LINK, {
         organizationId,
         managedOrganizationId,
         // Initial marks whether this is the initial background deployment install
@@ -391,7 +392,7 @@ export async function updateDeployments(): Promise<void> {
     }
 
     if (managedOrganizationId != null || organizationId != null) {
-      reportEvent("OrganizationExtensionLink", {
+      reportEvent(Events.ORGANIZATION_EXTENSION_LINK, {
         organizationId,
         managedOrganizationId,
         // Initial marks whether this is the initial background deployment install

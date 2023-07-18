@@ -15,4 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default jest.fn();
+import { define } from "cooky-cutter";
+import { type LogEntry } from "@/telemetry/logging";
+import {
+  timestampFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
+import { type JsonObject } from "type-fest";
+import { type MessageContext } from "@/types/loggerTypes";
+
+export const messageContextFactory = define<MessageContext>({
+  extensionId: uuidSequence,
+});
+
+export const logEntryFactory = define<LogEntry>({
+  uuid: uuidSequence,
+  timestamp: timestampFactory,
+  message: (n: number) => `Log entry ${n}`,
+  level: "debug",
+  data: () => ({} as JsonObject),
+  context: messageContextFactory,
+});

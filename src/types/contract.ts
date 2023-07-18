@@ -279,3 +279,16 @@ export type ErrorItem = Except<
   organization: UUID | null;
   user_agent_extension_version: SemVerString;
 };
+
+/**
+ * Force updates available for a list of packages.
+ * There is no auto-generated swagger Type for this because it serializes
+ * the Package config, which is a JSON object.
+ * @see ModDefinition
+ */
+export type PackageVersionUpdates = {
+  updates: Array<{
+    backwards_compatible: ModDefinition | null;
+    name: RegistryId;
+  }>;
+};

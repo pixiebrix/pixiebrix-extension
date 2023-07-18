@@ -47,6 +47,8 @@ const ErrorBanner: React.VFC = () => {
         <Button
           className="ml-2"
           onClick={() => {
+            // Ideally, if the context was invalidated, we'd also automatically reload the inspected tab. However,
+            // because the context is invalidated, we can't send the message to reload it.
             location.reload();
           }}
         >
