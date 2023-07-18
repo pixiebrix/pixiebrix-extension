@@ -20,7 +20,7 @@ import { type Deployment } from "@/types/contract";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateTimestamp } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
-import { recipeDefinitionFactory } from "@/testUtils/factories/recipeFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 // Deployments are returned from the API, but their shape is determined by the registry and ModDefinition type.
 
@@ -38,7 +38,7 @@ export const deploymentPackageFactory = define<Deployment["package"]>({
     ({ config }) => config.metadata.id,
     "config"
   ),
-  config: recipeDefinitionFactory,
+  config: recipeFactory,
 });
 export const deploymentFactory = define<Deployment>({
   id: uuidSequence,

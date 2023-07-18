@@ -31,11 +31,11 @@ import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
 import {
-  extensionPointConfigFactory,
-  extensionPointDefinitionFactory,
-  recipeDefinitionFactory,
+  modComponentDefinitionFactory,
+  starterBrickConfigFactory,
+  recipeFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 
@@ -63,14 +63,14 @@ function setupInputs(): {
     optionsArgs: {},
   };
 
-  const extensionPointId = validateRegistryId("test/extension-point-1");
-  const extensionPoint = extensionPointConfigFactory({
+  const extensionPointId = validateRegistryId("test/starter-brick-1");
+  const modComponentDefinition = modComponentDefinitionFactory({
     id: extensionPointId,
   });
-  const extensionPointDefinition = extensionPointDefinitionFactory({
+  const starterBrickConfig = starterBrickConfigFactory({
     metadata: recipeMetadataFactory({
       id: extensionPointId,
-      name: "Text Extension Point 1",
+      name: "Text Starter Brick 1",
     }),
     definition: {
       type: "contextMenu",
@@ -82,20 +82,20 @@ function setupInputs(): {
       reader: [validateRegistryId("@pixiebrix/document-metadata")],
     },
   }) as StarterBrickConfig<MenuDefinition>;
-  extensionPointDefinition.definition.targetMode = "eventTarget";
-  extensionPointDefinition.definition.contexts = ["all"];
-  extensionPointDefinition.definition.documentUrlPatterns = ["*://*/*"];
+  starterBrickConfig.definition.targetMode = "eventTarget";
+  starterBrickConfig.definition.contexts = ["all"];
+  starterBrickConfig.definition.documentUrlPatterns = ["*://*/*"];
 
-  const recipe = recipeDefinitionFactory({
-    extensionPoints: [extensionPoint],
+  const modDefinition = recipeFactory({
+    extensionPoints: [modComponentDefinition],
     definitions: {
-      [extensionPointId]: extensionPointDefinition,
+      [extensionPointId]: starterBrickConfig,
     } as unknown as InnerDefinitions,
   });
 
   return {
     formValues,
-    recipe,
+    recipe: modDefinition,
   };
 }
 

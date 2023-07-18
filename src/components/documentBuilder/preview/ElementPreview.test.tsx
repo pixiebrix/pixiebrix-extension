@@ -169,7 +169,7 @@ test.each(
 });
 
 test("can preview pipeline element with bricks", () => {
-  const testBlock = brickConfigFactory();
+  const testBrick = brickConfigFactory();
   const markdownBlock = new MarkdownRenderer();
   const markdownConfig = brickConfigFactory({
     id: markdownBlock.id,
@@ -178,7 +178,7 @@ test("can preview pipeline element with bricks", () => {
 
   const element = createNewElement("pipeline");
   const pipeline = element.config.pipeline as PipelineExpression;
-  pipeline.__value__.push(testBlock, markdownConfig);
+  pipeline.__value__.push(testBrick, markdownConfig);
   const rendered = renderElementPreview(element);
 
   expect(rendered.asFragment()).toMatchSnapshot();

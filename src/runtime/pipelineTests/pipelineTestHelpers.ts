@@ -101,18 +101,25 @@ class IdentityBrick extends BrickABC {
   }
 }
 
-class ThrowBrick extends BrickABC {
+export class ThrowBrick extends BrickABC {
+  static BRICK_ID = validateRegistryId("test/throw");
+
   constructor() {
-    super("test/throw", "Throw Brick");
+    super(ThrowBrick.BRICK_ID, "Throw Brick");
   }
 
-  inputSchema = propertiesToSchema({
-    message: {
-      type: "string",
+  inputSchema = propertiesToSchema(
+    {
+      message: {
+        type: "string",
+      },
     },
-  });
+    []
+  );
 
-  async run({ message }: BrickArgs<{ message: string }>) {
+  async run({
+    message = "Default Business Error",
+  }: BrickArgs<{ message?: string }>) {
     throw new BusinessError(message);
   }
 }

@@ -42,6 +42,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
+import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -162,6 +163,13 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new HttpRequestAnalysis(),
+  {
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
 
 async function varAnalysisFactory(
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,

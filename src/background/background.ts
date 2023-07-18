@@ -41,6 +41,7 @@ import initPartnerTheme from "@/background/partnerTheme";
 import initStarterBlueprints from "@/background/starterBlueprints";
 import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
 import { initContentScriptReadyListener } from "@/background/contentScript";
+import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
 
 void initLocator();
@@ -59,6 +60,7 @@ activateBrowserActionIcon();
 initPartnerTheme();
 initStarterBlueprints();
 initPartnerTokenRefresh();
+initLogSweep();
 initModUpdater();
 
 if (isGAPISupported()) {

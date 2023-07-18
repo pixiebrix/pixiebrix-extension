@@ -23,7 +23,8 @@ import { Button } from "react-bootstrap";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
@@ -101,7 +102,7 @@ const ReloadToolbar: React.FunctionComponent<{
 
   const manualRun = async () => {
     // Report before the run to report even if the run errors
-    reportEvent("PageEditorManualRun", {
+    reportEvent(Events.PAGE_EDITOR_MANUAL_RUN, {
       sessionId,
       extensionId: element.uuid,
     });

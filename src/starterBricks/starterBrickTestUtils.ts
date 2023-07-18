@@ -22,6 +22,7 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import { type ElementReference } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
+import { CONTEXT_INVALIDATED_ERROR } from "@/errors/errorHelpers";
 
 /**
  * Helper function returns a promise that resolves after all other promise mocks, even if they are chained
@@ -44,6 +45,8 @@ export function getDocument(html: string): Document {
  * Reader that stores the root element passed to it. Useful for testing target modes.
  */
 export class RootReader extends ReaderABC {
+  static BRICK_ID = validateRegistryId("test/root-reader");
+
   ref: ElementReference;
   readCount = 0;
 
@@ -64,7 +67,7 @@ export class RootReader extends ReaderABC {
   };
 
   constructor() {
-    super(validateRegistryId("test/root-reader"), "Root Reader");
+    super(RootReader.BRICK_ID, "Root Reader");
   }
 
   async read(root: HTMLElement): Promise<JsonObject> {
@@ -74,5 +77,29 @@ export class RootReader extends ReaderABC {
       ref: this.ref,
       readCount: this.readCount,
     };
+  }
+}
+
+/**
+ * Reader that throws an invalid browser extension context error.
+ */
+export class InvalidContextReader extends ReaderABC {
+  static BRICK_ID = validateRegistryId("test/invalid-context");
+
+  override async isAvailable($elements?: JQuery): Promise<boolean> {
+    return true;
+  }
+
+  override readonly outputSchema: Schema = {
+    type: "object",
+    properties: {},
+  };
+
+  constructor() {
+    super(InvalidContextReader.BRICK_ID, "Invalid Context Reader");
+  }
+
+  async read(root: HTMLElement): Promise<JsonObject> {
+    throw new Error(CONTEXT_INVALIDATED_ERROR);
   }
 }

@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { internalExtensionPointMetaFactory } from "@/pageEditor/starterBricks/base";
+import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
@@ -28,7 +28,8 @@ import { type SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
 
 type AddElement = (config: ElementConfig) => void;
@@ -62,7 +63,7 @@ function useAddElement(): AddElement {
         );
         const url = await getCurrentURL();
 
-        const metadata = internalExtensionPointMetaFactory();
+        const metadata = internalStarterBrickMetaFactory();
 
         const initialState = config.fromNativeElement(
           url,
@@ -79,7 +80,7 @@ function useAddElement(): AddElement {
         dispatch(actions.addElement(initialState as ModComponentFormState));
         dispatch(actions.checkActiveElementAvailability());
 
-        reportEvent("ExtensionAddNew", {
+        reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
           type: config.elementType,
         });
       } catch (error) {

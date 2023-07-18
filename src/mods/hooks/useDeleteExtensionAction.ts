@@ -25,6 +25,7 @@ import {
 } from "@/utils/modUtils";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
+import { Events } from "@/telemetry/events";
 
 function useDeleteExtensionAction(modViewItem: ModViewItem): () => void | null {
   const { mod, sharing, status } = modViewItem;
@@ -61,7 +62,7 @@ function useDeleteExtensionAction(modViewItem: ModViewItem): () => void | null {
     {
       successMessage: `Deleted mod ${getLabel(mod)} from your account`,
       errorMessage: `Error deleting mod ${getLabel(mod)} from your account`,
-      event: "ExtensionCloudDelete",
+      event: Events.EXTENSION_CLOUD_DELETE,
     },
     [modals]
   );

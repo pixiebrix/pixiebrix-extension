@@ -35,7 +35,7 @@ import { services, sheets } from "@/background/messenger/api";
 import { selectSchemaFieldType } from "@/testUtils/formHelpers";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const OTHER_TEST_SPREADSHEET_ID = uuidSequence(2);
@@ -63,7 +63,7 @@ const getHeadersMock = jest.mocked(sheets.getHeaders);
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockResolvedValue(
-    sanitizedServiceConfigurationFactory({
+    sanitizedIntegrationConfigFactory({
       serviceId: GOOGLE_SHEET_SERVICE_ID,
       // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
       config: {

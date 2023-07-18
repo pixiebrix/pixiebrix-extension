@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { clearLog, getLog, type LogEntry } from "@/telemetry/logging";
+import { clearLog, getLogEntries, type LogEntry } from "@/telemetry/logging";
 import { type MessageContext } from "@/types/loggerTypes";
 import {
   createAsyncThunk,
@@ -60,7 +60,7 @@ const pollLogs = createAsyncThunk<
   const activeContext = selectActiveContext(thunkAPI.getState());
   let availableEntries: LogEntry[] = [];
   if (activeContext != null) {
-    availableEntries = await getLog(activeContext);
+    availableEntries = await getLogEntries(activeContext);
   }
 
   setTimeout(async () => thunkAPI.dispatch(pollLogs()), REFRESH_INTERVAL);
