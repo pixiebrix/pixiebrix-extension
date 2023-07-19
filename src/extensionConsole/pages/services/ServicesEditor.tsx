@@ -36,7 +36,8 @@ import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import {
   type Integration,
   type IntegrationConfig,
@@ -122,7 +123,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
   const handleCreate = useCallback(
     async (service: Integration) => {
-      reportEvent("ServiceAdd", {
+      reportEvent(Events.INTEGRATION_ADD, {
         serviceId: service.id,
       });
 

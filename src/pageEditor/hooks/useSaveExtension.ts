@@ -19,7 +19,8 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
@@ -50,7 +51,7 @@ function useSaveExtension(): ExtensionSaver {
       if (error) {
         notify.error(error);
       } else {
-        reportEvent("PageEditorSave", {
+        reportEvent(Events.PAGE_EDITOR_SAVE, {
           sessionId,
           extensionId: element.uuid,
         });

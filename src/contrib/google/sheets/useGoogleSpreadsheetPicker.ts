@@ -20,7 +20,8 @@ import { isAuthRejectedError } from "@/contrib/google/auth";
 import { isNullOrBlank } from "@/utils";
 import { type Data, type Doc } from "@/contrib/google/sheets/types";
 import pDefer from "p-defer";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
 import { ensureSheetsReady } from "@/contrib/google/sheets/handlers";
@@ -82,7 +83,7 @@ function useGoogleSpreadsheetPicker(): {
   );
 
   const showPicker = useCallback(async (): Promise<Doc> => {
-    reportEvent("SelectGoogleSpreadsheetStart");
+    reportEvent(Events.SELECT_GOOGLE_SPREADSHEET_START);
 
     if (pickerOrigin == null) {
       throw new Error("Unable to determine URL for File Picker origin");
@@ -96,10 +97,10 @@ function useGoogleSpreadsheetPicker(): {
       throw new Error("Internal error: Google API key is not configured");
     }
 
-    reportEvent("SelectGoogleSpreadsheetEnsureTokenStart");
+    reportEvent(Events.SELECT_GOOGLE_SPREADSHEET_ENSURE_TOKEN_START);
     const token = await ensureSheetsToken();
 
-    reportEvent("SelectGoogleSpreadsheetLoadLibraryStart");
+    reportEvent(Events.SELECT_GOOGLE_SPREADSHEET_LOAD_LIBRARY_START);
     await new Promise((resolve, reject) => {
       // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md#----gapiloadlibraries-callbackorconfig------
       gapi.load("picker", {
@@ -119,7 +120,7 @@ function useGoogleSpreadsheetPicker(): {
 
     const deferredPromise = pDefer<Doc>();
 
-    reportEvent("SelectGoogleSpreadsheetShowPickerStart");
+    reportEvent(Events.SELECT_GOOGLE_SPREADSHEET_SHOW_PICKER_START);
     const picker = new google.picker.PickerBuilder()
       .enableFeature(google.picker.Feature.NAV_HIDDEN)
       .setTitle("Select Spreadsheet")
@@ -135,7 +136,7 @@ function useGoogleSpreadsheetPicker(): {
         // appear in the documentation: https://developers.google.com/drive/picker/reference#callback-types
         // For now, report the event to help diagnose issues users are facing with the picker. In the future,
         // could consider making this a NOP.
-        reportEvent("GoogleFilePickerEvent", {
+        reportEvent(Events.GOOGLE_FILE_PICKER_EVENT, {
           action: data.action,
         });
 
@@ -147,10 +148,10 @@ function useGoogleSpreadsheetPicker(): {
             );
           }
 
-          reportEvent("SelectGoogleSpreadsheetPicked");
+          reportEvent(Events.SELECT_GOOGLE_SPREADSHEET_PICKED);
           deferredPromise.resolve(doc);
         } else if (data.action === google.picker.Action.CANCEL) {
-          reportEvent("SelectGoogleSpreadsheetCancelled");
+          reportEvent(Events.SELECT_GOOGLE_SPREADSHEET_CANCELLED);
           deferredPromise.reject(new CancelError("No spreadsheet selected"));
         }
       })

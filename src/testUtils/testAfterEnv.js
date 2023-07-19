@@ -27,6 +27,8 @@ import "jest-location-mock";
 import "./permissionsMock";
 import * as apiClientMock from "./apiClientMock";
 import * as detectPageMock from "./detectPageMock";
+import * as loggingMock from "./loggingMock";
+import * as reportErrorMock from "./reportErrorMock";
 
 global.$ = $;
 global.jQuery = $;
@@ -47,3 +49,5 @@ globalThis.crypto = {
 
 jest.setMock("webext-detect-page", detectPageMock);
 jest.setMock("@/services/apiClient", apiClientMock);
+jest.setMock("@/telemetry/logging", loggingMock);
+jest.setMock("@/telemetry/reportError", reportErrorMock);

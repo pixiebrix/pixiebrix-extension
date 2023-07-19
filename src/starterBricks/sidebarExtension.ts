@@ -32,6 +32,7 @@ import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
 import {
   removeExtensionPoint,
+  removeExtensions,
   reservePanels,
   sidebarShowEvents,
   updateHeading,
@@ -44,7 +45,7 @@ import {
   makeShouldRunExtensionForStateChange,
   selectExtensionContext,
 } from "@/starterBricks/helpers";
-import { cloneDeep, debounce, stubTrue } from "lodash";
+import { cloneDeep, debounce, remove, stubTrue } from "lodash";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
@@ -131,12 +132,13 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     return selectAllBlocks(extension.config.body);
   }
 
-  clearExtensionInterfaceAndEvents(): void {
-    this.extensions.splice(0, this.extensions.length);
+  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+    removeExtensions(extensionIds);
   }
 
   public override uninstall(): void {
-    this.clearExtensionInterfaceAndEvents();
+    const extensions = this.extensions.splice(0, this.extensions.length);
+    this.clearExtensionInterfaceAndEvents(extensions.map((x) => x.id));
     removeExtensionPoint(this.id);
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents"
@@ -151,7 +153,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * @see uninstall
    */
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
-    this.clearExtensionInterfaceAndEvents();
+    // Don't call this.clearExtensionInterfaceAndEvents to keep the panel. Instead, mutate this.extensions to exclude id
+    remove(this.extensions, (x) => x.id === extensionId);
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
     console.debug(
       "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
@@ -433,7 +436,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 }
 
-export interface PanelDefinition extends StarterBrickDefinition {
+export interface SidebarDefinition extends StarterBrickDefinition {
   /**
    * The trigger to refresh the panel
    *
@@ -457,7 +460,7 @@ export interface PanelDefinition extends StarterBrickDefinition {
 }
 
 class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
-  private readonly definition: PanelDefinition;
+  private readonly definition: SidebarDefinition;
 
   public readonly rawConfig: StarterBrickConfig;
 

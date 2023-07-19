@@ -36,7 +36,7 @@ import {
   hideSidebar,
   showSidebar,
   rehydrateSidebar,
-  removeExtension as removeSidebar,
+  removeExtensions as removeSidebars,
   reloadSidebar,
   getReservedPanelEntries,
 } from "@/contentScript/sidebarController";
@@ -103,7 +103,7 @@ declare global {
     HIDE_SIDEBAR: typeof hideSidebar;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
     RELOAD_SIDEBAR: typeof reloadSidebar;
-    REMOVE_SIDEBAR: typeof removeSidebar;
+    REMOVE_SIDEBARS: typeof removeSidebars;
 
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -167,7 +167,7 @@ export default function registerMessenger(): void {
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
     RELOAD_SIDEBAR: reloadSidebar,
-    REMOVE_SIDEBAR: removeSidebar,
+    REMOVE_SIDEBARS: removeSidebars,
 
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,

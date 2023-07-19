@@ -119,4 +119,9 @@ export interface StarterBrick extends Metadata {
    * @see PipelineExpression
    */
   getBlocks: (modComponent: ResolvedModComponent) => Promise<Brick[]>;
+
+  /**
+   * The current mod components registered with the StarterBrick.
+   */
+  registeredExtensions: ResolvedModComponent[];
 }

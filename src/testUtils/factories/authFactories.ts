@@ -37,7 +37,6 @@ export const organizationStateFactory = define<AuthUserOrganization>({
     return `@organization-${n}`;
   },
   isDeploymentManager: false,
-  hasComplianceAuthToken: false,
 });
 
 /**

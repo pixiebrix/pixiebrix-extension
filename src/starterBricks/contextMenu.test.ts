@@ -29,8 +29,15 @@ import {
   type MenuDefinition,
 } from "@/starterBricks/contextMenu";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { RunReason } from "@/types/runtimeTypes";
+import {
+  uninstallContextMenu,
+  ensureContextMenu,
+} from "@/background/messenger/api";
+
+const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
+const ensureContextMenuMock = jest.mocked(ensureContextMenu);
 
 const rootReader = new RootReader();
 
@@ -76,13 +83,18 @@ beforeEach(() => {
   blockRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = undefined;
+  jest.resetAllMocks();
 });
 
-describe("contextMenuExtension", () => {
-  it("should add extension", async () => {
+describe("contextMenu", () => {
+  it("should add extension once", async () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
+
     starterBrick.addExtension(modComponent);
+    starterBrick.addExtension(modComponent);
+
+    expect(starterBrick.registeredExtensions).toStrictEqual([modComponent]);
   });
 
   it("should include context menu props in schema", async () => {
@@ -96,5 +108,45 @@ describe("contextMenuExtension", () => {
     const reader = await starterBrick.previewReader();
     const value = await reader.read(document);
     expect(value).toHaveProperty("selectionText");
+  });
+
+  it("should register context menu on install", async () => {
+    const starterBrick = fromJS(extensionPointFactory()());
+    const modComponent = extensionFactory();
+
+    starterBrick.addExtension(modComponent);
+
+    await starterBrick.install();
+
+    expect(ensureContextMenuMock).toHaveBeenCalledOnce();
+    expect(ensureContextMenuMock).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        extensionId: modComponent.id,
+      })
+    );
+
+    // Should not be called again - run is a NOP
+    await starterBrick.run({ reason: RunReason.MANUAL });
+    expect(ensureContextMenuMock).toHaveBeenCalledOnce();
+  });
+
+  it("should remove from UI from all tabs on sync", async () => {
+    const starterBrick = fromJS(extensionPointFactory()());
+    const modComponent = extensionFactory();
+    starterBrick.addExtension(modComponent);
+
+    await starterBrick.install();
+    await starterBrick.run({ reason: RunReason.MANUAL });
+
+    // Not read until the menu is actually run
+    expect(rootReader.readCount).toBe(0);
+
+    starterBrick.syncExtensions([]);
+
+    expect(starterBrick.registeredExtensions).toHaveLength(0);
+
+    expect(uninstallContextMenuMock).toHaveBeenCalledExactlyOnceWith({
+      extensionId: modComponent.id,
+    });
   });
 });
