@@ -105,7 +105,7 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   uiSchema,
 }) => {
   const [{ value }, , { setValue }] = useField<string>(name);
-  const { isSearchable, isClearable } = uiSchema;
+  const { isSearchable, isClearable } = uiSchema ?? {};
 
   return (
     <div className="mt-2">
