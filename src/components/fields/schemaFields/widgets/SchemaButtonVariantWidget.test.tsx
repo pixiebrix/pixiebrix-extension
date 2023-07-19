@@ -42,7 +42,7 @@ describe("SchemaButtonVariantWidget", () => {
             description={fieldDescription}
           />
         </Formik>
-      ).asFragment()
+      )
     ).toMatchSnapshot();
   });
 });
