@@ -16,7 +16,7 @@
  */
 
 import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
-import ButtonVariantWidget from "@/components/fields/schemaFields/widgets/ButtonVariantWidget";
+import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
 
-const ButtonVariantSchemaField = defaultFieldFactory(ButtonVariantWidget);
+const ButtonVariantSchemaField = defaultFieldFactory(SchemaButtonVariantWidget);
 export default ButtonVariantSchemaField;

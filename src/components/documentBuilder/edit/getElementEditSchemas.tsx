@@ -166,13 +166,14 @@ function getElementEditSchemas(
           type: "string",
           format: "bootstrap-button-variant",
         },
+        uiSchema: { isClearable: false, isSearchable: false },
         label: "Button Style",
         description: "The style/variant of the button",
       };
       const sizeEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "size"),
         schema: { type: "string", enum: ["lg", "md", "sm"] },
-        uiSchema: { searchable: false },
+        uiSchema: { isClearable: false, isSearchable: false },
         label: "Button Size",
         description: "The size of the button: Small, Medium, or Large",
       };

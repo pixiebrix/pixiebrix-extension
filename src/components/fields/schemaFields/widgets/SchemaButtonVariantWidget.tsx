@@ -100,18 +100,21 @@ const ContainerComponent = (props: ValueContainerProps<OptionValue>) => {
   );
 };
 
-const ButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = (
-  props
-) => {
-  const [{ value }, , { setValue }] = useField<string>(props.name);
+const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
+  name,
+  uiSchema,
+}) => {
+  const [{ value }, , { setValue }] = useField<string>(name);
+  const { isSearchable, isClearable } = uiSchema;
 
   return (
     <div className="mt-2">
       <SelectWidget<OptionValue>
-        name={props.name}
+        name={name}
         options={buttonVariants}
         value={value}
-        isSearchable={false}
+        isSearchable={isSearchable}
+        isClearable={isClearable}
         onChange={(event: React.ChangeEvent<SelectLike<Option<UUID>>>) => {
           setValue(event.target.value);
         }}
@@ -125,4 +128,4 @@ const ButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = (
   );
 };
 
-export default ButtonVariantWidget;
+export default SchemaButtonVariantWidget;

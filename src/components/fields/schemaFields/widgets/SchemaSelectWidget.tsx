@@ -88,7 +88,7 @@ const SchemaSelectWidget: React.VFC<
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
 
-  const { searchable = true } = uiSchema;
+  const { isSearchable = true, isClearable = false } = uiSchema;
 
   const elementRef = useRef();
   useAutoFocusConfiguration({ elementRef, focus: focusInput });
@@ -141,13 +141,13 @@ const SchemaSelectWidget: React.VFC<
   ) : (
     <Select
       inputId={name}
-      isClearable={!isRequired}
+      isClearable={!isRequired && isClearable}
       options={options}
       value={selectedValue}
       onChange={selectOnChange}
       ref={elementRef}
       openMenuOnFocus={true}
-      isSearchable={searchable}
+      isSearchable={isSearchable}
     />
   );
 };
