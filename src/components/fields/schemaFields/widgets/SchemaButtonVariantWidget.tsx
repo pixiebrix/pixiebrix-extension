@@ -79,6 +79,7 @@ const ValueComponent = (props: SingleValueProps<OptionValue>) => {
   const { data } = props;
   return (
     <Button
+      data-testid="selected-value"
       type={null}
       variant={data.value}
       size="sm"

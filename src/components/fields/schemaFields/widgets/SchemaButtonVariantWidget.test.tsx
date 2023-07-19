@@ -18,7 +18,7 @@
 import React from "react";
 import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
 import { render } from "@/pageEditor/testHelpers";
-import { type Schema } from "@/types/schemaTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 // eslint-disable-next-line no-restricted-imports
 import { Formik } from "formik";
 
@@ -28,21 +28,25 @@ const fieldDescription = "this is a test field description";
 const schema: Schema = {
   type: "string",
 };
+
+const renderSelect = (value: string, uiSchema: UiSchema = {}) =>
+  render(
+    <Formik initialValues={{ testField: value }} onSubmit={() => {}}>
+      <SchemaButtonVariantWidget
+        name={fieldName}
+        schema={schema}
+        description={fieldDescription}
+        uiSchema={uiSchema}
+      />
+    </Formik>
+  );
+
 describe("SchemaButtonVariantWidget", () => {
   test("renders button variant select widget", () => {
-    expect(
-      render(
-        <Formik
-          initialValues={{ testField: "outline-primary" }}
-          onSubmit={() => {}}
-        >
-          <SchemaButtonVariantWidget
-            name={fieldName}
-            schema={schema}
-            description={fieldDescription}
-          />
-        </Formik>
-      )
-    ).toMatchSnapshot();
+    const defaultSelect = renderSelect("outline-primary");
+
+    expect(defaultSelect).toMatchSnapshot();
+    const { getByTestId } = defaultSelect;
+    expect(getByTestId("selected-value")).toHaveClass("btn-outline-primary");
   });
 });
