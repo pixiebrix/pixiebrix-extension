@@ -67,7 +67,7 @@ const OptionComponent = (props: OptionProps<OptionValue>) => {
         type={null}
         variant={data.value}
         size="sm"
-        className={styles.option}
+        className={styles.exampleButton}
       >
         {data.label}
       </Button>
@@ -82,7 +82,7 @@ const ValueComponent = (props: SingleValueProps<OptionValue>) => {
       type={null}
       variant={data.value}
       size="sm"
-      className={styles.option}
+      className={styles.exampleButton}
     >
       {data.label}
     </Button>
