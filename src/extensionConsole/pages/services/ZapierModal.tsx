@@ -21,7 +21,8 @@ import React, { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import notify from "@/utils/notify";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
 import { useGetZapierKeyQuery } from "@/services/api";
 
@@ -35,7 +36,7 @@ const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
   const handleCopy = useCallback(async () => {
     await writeTextToClipboard(String(data?.api_key));
     notify.success("Copied API Key to clipboard");
-    reportEvent("ZapierKeyCopy");
+    reportEvent(Events.ZAPIER_KEY_COPY);
   }, [data?.api_key]);
 
   return (

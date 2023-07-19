@@ -28,7 +28,8 @@ import { syncFlagOn } from "@/store/syncFlags";
 import { isLoadedInIframe } from "@/iframeUtils";
 import Draggable from "react-draggable";
 import dragIcon from "@/icons/drag-handle.svg";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { Provider, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
@@ -39,7 +40,7 @@ function reportReposition() {
   // Check here to prevent reporting the event twice on the same page. We just want to know
   // whether users are repositioning on the page at all.
   if (!dragReported) {
-    reportEvent("FloatingQuickBarButtonRepositioned");
+    reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_REPOSITIONED);
     dragReported = true;
   }
 }

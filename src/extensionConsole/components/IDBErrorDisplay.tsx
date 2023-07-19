@@ -39,7 +39,8 @@ import { type StorageEstimate } from "@/types/browserTypes";
 import { expectContext } from "@/utils/expectContext";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { round } from "lodash";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import useAsyncState from "@/hooks/useAsyncState";
 
 const ConnectionErrorDisplay: React.FC<ErrorDisplayProps> = ({
@@ -73,7 +74,10 @@ const ConnectionErrorDisplay: React.FC<ErrorDisplayProps> = ({
           onClick={async () => {
             await recoverAction();
             // Must happen after the clear so the event doesn't get cleared from the event DB buffer
-            reportEvent("IDBRecoverConnection", { errorMessage, errorContext });
+            reportEvent(Events.IDB_RECOVER_CONNECTION, {
+              errorMessage,
+              errorContext,
+            });
             // Put outside the action so user can see the success message before the page reloads.
             await sleep(250);
             location.reload();
@@ -134,7 +138,7 @@ const QuotaErrorDisplay: React.FC<ErrorDisplayProps> = ({
           onClick={async () => {
             await recoverAction();
             // Must happen after the re-create so the event doesn't get cleared from the event DB buffer
-            reportEvent("IDBReclaimQuota", {
+            reportEvent(Events.IDB_RECLAIM_QUOTA, {
               errorContext,
               errorMessage,
               usage: state.data?.storageEstimate.usage,

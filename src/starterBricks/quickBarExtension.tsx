@@ -39,7 +39,8 @@ import notify, {
   DEFAULT_ACTION_RESULTS,
   showNotification,
 } from "@/utils/notify";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
@@ -217,7 +218,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
       name,
       icon,
       perform: async () => {
-        reportEvent("HandleQuickBar", selectEventData(extension));
+        reportEvent(Events.HANDLE_QUICK_BAR, selectEventData(extension));
 
         try {
           const reader = await this.getBaseReader();

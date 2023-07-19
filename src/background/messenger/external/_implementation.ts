@@ -21,7 +21,8 @@
 
 import { linkExtension } from "@/auth/token";
 import { type TokenAuthData } from "@/auth/authTypes";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
 
@@ -30,7 +31,7 @@ const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 export async function setExtensionAuth(auth: TokenAuthData) {
   const updated = await linkExtension(auth);
   if (updated) {
-    reportEvent("LinkExtension");
+    reportEvent(Events.LINK_EXTENSION);
     console.debug(
       `Extension link updated, reloading extension in ${HACK_EXTENSION_LINK_RELOAD_DELAY_MS}ms`
     );
@@ -123,7 +124,7 @@ export async function openActivateBlueprint({
     )}`;
 
   // TODO: possibly remove this event, it's not really being used/observed at all, and the pageSource is very misleading
-  reportEvent("ExternalActivate", { blueprintId, pageSource });
+  reportEvent(Events.EXTERNAL_ACTIVATE, { blueprintId, pageSource });
 
   if (newTab) {
     await browser.tabs.create({ url });

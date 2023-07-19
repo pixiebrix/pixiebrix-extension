@@ -66,7 +66,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
   const cleanResponse = useMemo(() => {
     if (error.response) {
       const { request, config, data, ...rest } = error.response;
-      // Don't include request or config, since we're showing it the other column
+      // Don't include request or config, because we're showing it the other column
       return {
         ...rest,
         data: tryParse(data),
@@ -94,9 +94,10 @@ const NetworkErrorDetail: React.FunctionComponent<{
             ) : (
               <div className="text-warning">
                 <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does
-                not have permission to access {absoluteUrl}. Specify an
-                Integration to access the API, or add an Extra Permissions rule
-                to the mod.
+                not have permission to access {absoluteUrl}. Contact your IT
+                Administrator for the
+                <code>runtime_blocked_hosts</code> Chrome Browser Extension
+                policy.
               </div>
             )
           }
@@ -108,17 +109,16 @@ const NetworkErrorDetail: React.FunctionComponent<{
         )}
         {cleanResponse == null ? (
           <div>
-            <div>PixieBrix did not receive a response. Possible causes:</div>
-            <ul>
-              <li>
-                Your browser or another extension blocked the request. Check
-                that PixieBrix has permission to the access the host. If
-                PixieBrix is not showing a Grant Permissions button, ensure that
-                the integration has an{" "}
-                <code className="px-0 mx-0">isAvailable</code> section defined
-              </li>
-              <li>The remote server did not respond. Try the request again</li>
-            </ul>
+            <div>
+              PixieBrix did not receive a response. See{" "}
+              <a
+                href="https://docs.pixiebrix.com/network-errors"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Troubleshooting Network Errors
+              </a>
+            </div>
           </div>
         ) : (
           <JsonTree data={cleanResponse} />

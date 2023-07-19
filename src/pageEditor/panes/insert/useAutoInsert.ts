@@ -9,7 +9,8 @@ import {
   showSidebar,
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { type StarterBrickType } from "@/starterBricks/types";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
@@ -52,7 +53,7 @@ export function useAutoInsert(type: StarterBrickType): void {
       }
 
       // TODO: report if created new, or using existing foundation
-      reportEvent("PageEditorStart", {
+      reportEvent(Events.PAGE_EDITOR_START, {
         type: config.elementType,
       });
 
@@ -62,7 +63,7 @@ export function useAutoInsert(type: StarterBrickType): void {
         void showSidebar(thisTab);
       }
 
-      reportEvent("ExtensionAddNew", {
+      reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
         type: config.elementType,
       });
     } catch (error) {

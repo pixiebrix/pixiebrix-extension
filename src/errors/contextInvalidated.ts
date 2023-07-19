@@ -27,7 +27,7 @@ const id = "connection-lost";
 
 /**
  * Display a notification when the background page unloads/reloads because at this point
- * all communcation becomes impossible.
+ * all communication becomes impossible.
  */
 export async function notifyContextInvalidated(): Promise<void> {
   // `import()` is only needed to avoid execution of its dependencies, not to lazy-load it

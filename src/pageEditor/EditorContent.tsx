@@ -18,9 +18,10 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
+import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
 import EditorPane from "@/pageEditor/panes/EditorPane";
 import RecipePane from "@/pageEditor/panes/RecipePane";
@@ -85,12 +86,12 @@ const EditorContent: React.FC = () => {
   useGetMarketplaceListingsQuery();
 
   useEffect(() => {
-    reportEvent("PageEditorSessionStart", {
+    reportEvent(Events.PAGE_EDITOR_SESSION_START, {
       sessionId,
     });
 
     return () => {
-      reportEvent("PageEditorSessionEnd", {
+      reportEvent(Events.PAGE_EDITOR_SESSION_END, {
         sessionId,
       });
     };
@@ -107,7 +108,7 @@ const EditorContent: React.FC = () => {
 
   if (!tabHasPermissions && !isConnectingToContentScript) {
     // Check `connecting` to optimistically show the main interface while the devtools are connecting to the page.
-    return <PermissionsPane />;
+    return <NoTabAccessPane />;
   }
 
   // Show generic error for beta features
