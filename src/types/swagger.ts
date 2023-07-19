@@ -1267,8 +1267,6 @@ export interface components {
            */
           url: string;
         };
-        /** @description True if the organization's compliance auth token is set */
-        has_compliance_auth_token?: boolean;
       }[];
       group_memberships?: readonly {
         /** Format: uuid */
