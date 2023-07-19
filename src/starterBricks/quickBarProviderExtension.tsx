@@ -167,6 +167,20 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     return true;
   }
 
+  async runComponents(): Promise<void> {
+    if (this.components.length === 0) {
+      console.debug(
+        `quickBar starter brick ${this.id} has no installed components`
+      );
+
+      // Not sure if this is needed or not, but remove any straggler extension actions
+      quickBarRegistry.removeExtensionPointActions(this.id);
+      return;
+    }
+
+    await this.syncActionProvidersForUrl();
+  }
+
   override async defaultReader(): Promise<Reader> {
     return new ArrayCompositeReader([
       // Include QuickbarQueryReader for the outputSchema. The value gets filled in by the run method
@@ -299,19 +313,6 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     // Register new generator
     this.generators.set(extension.id, actionGenerator);
     quickBarRegistry.addGenerator(actionGenerator, rootActionId);
-  }
-
-  async run(): Promise<void> {
-    if (this.components.length === 0) {
-      console.debug(
-        `quickBar extension point ${this.id} has no installed extensions`
-      );
-      // Not sure if this is needed or not, but remove any straggler extension actions
-      quickBarRegistry.removeExtensionPointActions(this.id);
-      return;
-    }
-
-    await this.syncActionProvidersForUrl();
   }
 }
 

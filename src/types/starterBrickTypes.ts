@@ -47,7 +47,7 @@ export interface StarterBrick extends Metadata {
   inputSchema: Schema;
 
   /**
-   * Default options to provide to the inputSchema.
+   * Default configuration options.
    */
   defaultOptions: UnknownObject;
 
@@ -72,11 +72,10 @@ export interface StarterBrick extends Metadata {
   previewReader: () => Promise<Reader>;
 
   /**
-   * Return true if the StarterBrick should be available on the current page. Based on:
-   *
+   * Return true if the StarterBrick should be available on the current page, based on:
    * - URL match patterns
    * - URL pattern rules
-   * - Element selector rules
+   * - Element selector rules. Does not attempt to wait for the element to be in the DOM.
    */
   isAvailable: () => Promise<boolean>;
 
@@ -86,19 +85,22 @@ export interface StarterBrick extends Metadata {
   isSyncInstall: boolean;
 
   /**
-   * Install/add the StarterBrick to the page.
+   * Install the StarterBrick on the page if/when its target becomes available.
+   * Does not run/add ModComponents to the page.
+   * @see runComponents
    */
   install(): Promise<boolean>;
 
   /**
-   * Register an ModComponent with the StarterBrick. Does not install/run the ModComponent.
+   * Register a ModComponent with the StarterBrick. Does not add/run the ModComponent to the page.
    */
   registerComponent(modComponent: ResolvedModComponent): void;
 
   /**
-   * Run the installed ModComponents for StarterBrick.
+   * Run all registered ModComponents for this StarterBrick and/or add their UI to the page.
+   * @see install
    */
-  run(args: RunArgs): Promise<void>;
+  runComponents(args: RunArgs): Promise<void>;
 
   /**
    * Remove the ModComponent from the StarterBrick and clear its UI from the page.
@@ -108,6 +110,8 @@ export interface StarterBrick extends Metadata {
   /**
    * Remove the StarterBrick and all ModComponents from the page.
    *
+   * @param options.global true to indicate the starter brick is being uninstalled from all tabs. This enabled the
+   * starter brick to perform global UI cleanup, e.g., unregistering a context menu with the Browser.
    * @see removeComponent
    */
   uninstall(options?: { global?: boolean }): void;

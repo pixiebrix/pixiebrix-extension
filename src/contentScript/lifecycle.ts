@@ -169,7 +169,7 @@ async function runExtensionPoint(
     details
   );
 
-  await extensionPoint.run({ reason, extensionIds });
+  await extensionPoint.runComponents({ reason, extensionIds });
   _activeExtensionPoints.add(extensionPoint);
 
   console.debug(

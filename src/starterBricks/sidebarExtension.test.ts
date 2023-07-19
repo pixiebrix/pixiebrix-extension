@@ -77,7 +77,7 @@ describe("sidebarExtension", () => {
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
 
     // Not run until shown
     expect(rootReader.readCount).toBe(0);

@@ -264,7 +264,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     );
   }
 
-  async run(): Promise<void> {
+  async runComponents(): Promise<void> {
     if (this.components.length === 0) {
       console.debug(
         `quickBar extension point ${this.id} has no installed extensions`

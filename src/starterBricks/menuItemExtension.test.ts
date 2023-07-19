@@ -124,7 +124,7 @@ describe("menuItemExtension", () => {
       extensionPoint.registerComponent(modComponent);
 
       await extensionPoint.install();
-      await extensionPoint.run({ reason: RunReason.MANUAL });
+      await extensionPoint.runComponents({ reason: RunReason.MANUAL });
 
       expect(document.querySelectorAll("button")).toHaveLength(1);
       expect(document.body.innerHTML).toEqual(
@@ -150,7 +150,7 @@ describe("menuItemExtension", () => {
     extensionPoint.registerComponent(modComponent);
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
     expect(document.body.innerHTML).toEqual(
@@ -175,7 +175,7 @@ describe("menuItemExtension", () => {
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
@@ -216,7 +216,7 @@ describe("menuItemExtension", () => {
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
@@ -259,7 +259,7 @@ describe("menuItemExtension", () => {
       );
 
       await extensionPoint.install();
-      await extensionPoint.run({ reason: RunReason.MANUAL });
+      await extensionPoint.runComponents({ reason: RunReason.MANUAL });
 
       expect(document.querySelectorAll("button")).toHaveLength(1);
 
@@ -295,7 +295,7 @@ describe("menuItemExtension", () => {
     );
 
     await starterBrick.install();
-    await starterBrick.run({ reason: RunReason.MANUAL });
+    await starterBrick.runComponents({ reason: RunReason.MANUAL });
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
     document.body.innerHTML = "";
@@ -332,7 +332,7 @@ describe("menuItemExtension", () => {
 
     await installPromise;
 
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
 
     await tick();
 
@@ -360,7 +360,7 @@ describe("menuItemExtension", () => {
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
     $("div:first").append("<div class='menu'></div>");
@@ -397,7 +397,7 @@ describe("menuItemExtension", () => {
     await tick();
     await tick();
     await installPromise;
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
     // 2 ticks were necessary in the watch test

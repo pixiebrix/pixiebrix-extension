@@ -118,6 +118,9 @@ export function assertStarterBrickConfig(
   }
 }
 
+/**
+ * Abstract base class for StarterBrick implementations.
+ */
 export abstract class StarterBrickABC<TConfig extends UnknownObject>
   implements StarterBrick
 {
@@ -242,9 +245,9 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   abstract install(): Promise<boolean>;
 
+  abstract runComponents(args: RunArgs): Promise<void>;
+
   uninstall(_options?: { global?: boolean }): void {
     console.warn(`Uninstall not implemented for extension point: ${this.id}`);
   }
-
-  abstract run(args: RunArgs): Promise<void>;
 }

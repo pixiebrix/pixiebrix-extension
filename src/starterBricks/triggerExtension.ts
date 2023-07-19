@@ -780,7 +780,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  async run(): Promise<void> {
+  async runComponents(): Promise<void> {
     this.cancelObservers();
 
     const $root = await this.getRoot();

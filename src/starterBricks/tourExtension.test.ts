@@ -90,7 +90,7 @@ describe("tourExtension", () => {
     );
 
     await starterBrick.install();
-    await starterBrick.run({ reason: RunReason.PAGE_EDITOR });
+    await starterBrick.runComponents({ reason: RunReason.PAGE_EDITOR });
 
     await tick();
 
@@ -112,7 +112,7 @@ describe("tourExtension", () => {
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.INITIAL_LOAD });
+    await extensionPoint.runComponents({ reason: RunReason.INITIAL_LOAD });
 
     await tick();
 

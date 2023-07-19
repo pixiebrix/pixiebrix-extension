@@ -143,7 +143,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents"
     );
-    sidebarShowEvents.remove(this.run);
+    sidebarShowEvents.remove(this.runComponents);
     this.cancelListeners();
   }
 
@@ -159,7 +159,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     console.debug(
       "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
     );
-    sidebarShowEvents.remove(this.run);
+    sidebarShowEvents.remove(this.runComponents);
   }
 
   private async runExtension(
@@ -402,28 +402,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
-    if (available) {
-      // Reserve the panels, so the sidebarController knows about them prior to the sidebar showing.
-      // Previously we were just relying on the sidebarShowEvents event listeners, but that caused race conditions
-      // with how other content is loaded in the sidebar
-      reservePanels(
-        this.components.map((extension) => ({
-          extensionId: extension.id,
-          extensionPointId: this.id,
-          blueprintId: extension._recipe?.id,
-        }))
-      );
 
-      // Add event listener so content for the panel is calculated/loaded when the sidebar opens
-      console.debug(
-        "SidebarStarterBrick:install: listen for sidebarShowEvents"
-      );
-      sidebarShowEvents.add(this.run);
-    } else {
-      removeExtensionPoint(this.id);
-    }
-
-    if (this.debounceOptions?.waitMillis) {
+    if (available && this.debounceOptions?.waitMillis) {
       const { waitMillis, ...options } = this.debounceOptions;
       this.debouncedRefreshPanels = debounce(
         this.refreshPanels,

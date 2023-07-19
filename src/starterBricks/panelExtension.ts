@@ -431,7 +431,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
   }
 
-  async run({ extensionIds = null }: RunArgs): Promise<void> {
+  async runComponents({ extensionIds = null }: RunArgs): Promise<void> {
     if (!this.$container || this.components.length === 0) {
       return;
     }

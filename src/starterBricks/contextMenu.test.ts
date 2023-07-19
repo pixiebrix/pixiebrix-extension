@@ -126,7 +126,7 @@ describe("contextMenu", () => {
     );
 
     // Should not be called again - run is a NOP
-    await starterBrick.run({ reason: RunReason.MANUAL });
+    await starterBrick.runComponents({ reason: RunReason.MANUAL });
     expect(ensureContextMenuMock).toHaveBeenCalledOnce();
   });
 
@@ -136,7 +136,7 @@ describe("contextMenu", () => {
     starterBrick.registerComponent(modComponent);
 
     await starterBrick.install();
-    await starterBrick.run({ reason: RunReason.MANUAL });
+    await starterBrick.runComponents({ reason: RunReason.MANUAL });
 
     // Not read until the menu is actually run
     expect(rootReader.readCount).toBe(0);

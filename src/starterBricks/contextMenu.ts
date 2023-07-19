@@ -200,9 +200,11 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   async install(): Promise<boolean> {
     // Always install the mouse handler in case a context menu is added later
     installMouseHandlerOnce();
-    const available = await this.isAvailable();
+    return this.isAvailable();
+  }
+
+  async runComponents(): Promise<void> {
     await this.registerExtensions();
-    return available;
   }
 
   override async defaultReader(): Promise<Reader> {
@@ -382,10 +384,6 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         }
       }
     });
-  }
-
-  async run(): Promise<void> {
-    // Already taken care by the `install` method
   }
 }
 

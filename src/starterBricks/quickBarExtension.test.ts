@@ -113,7 +113,7 @@ describe("quickBarExtension", () => {
       NUM_DEFAULT_QUICKBAR_ACTIONS
     );
     await starterBrick.install();
-    await starterBrick.run({ reason: RunReason.MANUAL });
+    await starterBrick.runComponents({ reason: RunReason.MANUAL });
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS + 1

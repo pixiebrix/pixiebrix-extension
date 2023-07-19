@@ -441,7 +441,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       // The behavior for multiple buttons is quirky here for "once" attachMode. There's a corner case where
       // 1) if one button is removed, 2) the menus are re-added immediately, 3) PixieBrix stops watching for new buttons
       await this.waitAttachMenus();
-      await this.run({ reason: RunReason.MUTATION });
+      await this.runComponents({ reason: RunReason.MUTATION });
     }
   }
 
@@ -496,7 +496,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       containerSelector,
       (index, element) => {
         this.attachMenus($(element as HTMLElement));
-        void this.run({ reason: RunReason.MUTATION });
+        void this.runComponents({ reason: RunReason.MUTATION });
       },
       // `target` is a required option. Would it be possible to scope if the selector is nested? Would have to consider
       // commas in the selector. E.g., revert back to document if there's a comma
@@ -789,7 +789,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if (dependencies.length > 0) {
       const rerun = once(() => {
         console.debug("Dependency changed, re-running extension");
-        void this.run({
+        void this.runComponents({
           reason: RunReason.DEPENDENCY_CHANGED,
           extensionIds: [extension.id],
         });
@@ -844,7 +844,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
   }
 
-  async run({ extensionIds = null }: RunArgs): Promise<void> {
+  async runComponents({ extensionIds = null }: RunArgs): Promise<void> {
     if (this.menus.size === 0 || this.components.length === 0) {
       return;
     }

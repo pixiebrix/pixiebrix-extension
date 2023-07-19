@@ -176,7 +176,7 @@ export enum RunReason {
 
 /**
  * Arguments for running an StarterBrick
- * @see StarterBrick.run
+ * @see StarterBrick.runComponents
  */
 export type RunArgs = {
   /**

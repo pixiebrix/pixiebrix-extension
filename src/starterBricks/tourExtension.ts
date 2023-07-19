@@ -109,6 +109,8 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
       await initPopoverPool();
       return true;
     }
+
+    return false;
   }
 
   clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
@@ -231,7 +233,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     return minBy(someRun, (x) => latest[x.id]);
   }
 
-  async run({ reason, extensionIds }: RunArgs): Promise<void> {
+  async runComponents({ reason, extensionIds }: RunArgs): Promise<void> {
     if (this.components.length === 0) {
       // NOP
       return;
