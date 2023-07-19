@@ -25,29 +25,29 @@ import SelectWidget, {
 import { type UUID } from "@/types/stringTypes";
 import { type OptionProps, type ValueContainerProps } from "react-select";
 import { Button } from "react-bootstrap";
-import styles from "./ButtonVariantWidget.module.scss";
+import styles from "./SchemaButtonVariantWidget.module.scss";
 import cx from "classnames";
 import { type SingleValueProps } from "react-select/dist/declarations/src/components/SingleValue";
 
 const buttonVariants = [
   { value: "primary", label: "Primary" },
-  { value: "outline-primary", label: "Outline Primary" },
+  { value: "outline-primary", label: "Primary" },
   { value: "secondary", label: "Secondary" },
-  { value: "outline-secondary", label: "Outline Secondary" },
+  { value: "outline-secondary", label: "Secondary" },
   { value: "success", label: "Success" },
-  { value: "outline-success", label: "Outline Success" },
+  { value: "outline-success", label: "Success" },
   { value: "warning", label: "Warning" },
-  { value: "outline-warning", label: "Outline Warning" },
+  { value: "outline-warning", label: "Warning" },
   { value: "danger", label: "Danger" },
-  { value: "outline-danger", label: "Outline Danger" },
+  { value: "outline-danger", label: "Danger" },
   { value: "info", label: "Info" },
-  { value: "outline-info", label: "Outline Info" },
+  { value: "outline-info", label: "Info" },
   { value: "light", label: "Light" },
-  { value: "outline-light", label: "Outline Light" },
+  { value: "outline-light", label: "Light" },
   { value: "dark", label: "Dark" },
-  { value: "outline-dark", label: "Outline Dark" },
+  { value: "outline-dark", label: "Dark" },
   { value: "link", label: "Link" },
-  { value: "outline-link", label: "Outline Link" },
+  { value: "outline-link", label: "Link" },
 ];
 
 interface OptionValue {

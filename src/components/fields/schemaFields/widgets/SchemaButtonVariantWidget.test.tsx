@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,29 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Attempt to match react-select option styling
-.optionContainer {
-  padding: 5px 20px;
-  cursor: pointer;
-  &:hover {
-    background: #deebff;
-  }
+import React from "react";
+import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
+import { render } from "@/pageEditor/testHelpers";
+import { type Schema } from "@/types/schemaTypes";
 
-  &:active {
-    background: #b2d4ff;
-  }
+const fieldName = "testField";
+const fieldDescription = "this is a test field description";
 
-  &.active {
-    background: #2684ff;
-  }
-}
-
-// Give the example buttons a set width so users focus on the colors and not the sizing
-.option {
-  width: 200px;
-}
-
-.selectContainer {
-  display: flex;
-  padding: 6px 12px;
-}
+const schema: Schema = {
+  type: "string",
+};
+describe("SchemaButtonVariantWidget", () => {
+  test("renders button variant select widget", () => {
+    expect(
+      render(
+        <SchemaButtonVariantWidget
+          name={fieldName}
+          schema={schema}
+          description={fieldDescription}
+        />
+      ).asFragment()
+    ).toMatchSnapshot();
+  });
+});
