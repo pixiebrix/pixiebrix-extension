@@ -64,6 +64,7 @@ const OptionComponent = (props: OptionProps<OptionValue>) => {
       className={cx(styles.optionContainer, { [styles.active]: isSelected })}
     >
       <Button
+        data-testid="variant-option"
         type={null}
         variant={data.value}
         size="sm"
@@ -79,7 +80,7 @@ const ValueComponent = (props: SingleValueProps<OptionValue>) => {
   const { data } = props;
   return (
     <Button
-      data-testid="selected-value"
+      data-testid="selected-variant"
       type={null}
       variant={data.value}
       size="sm"
@@ -107,7 +108,7 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   const { isSearchable, isClearable } = uiSchema ?? {};
 
   return (
-    <div className="mt-2">
+    <div className="mt-2" data-testid="select-container">
       <SelectWidget<OptionValue>
         name={name}
         options={buttonVariants}

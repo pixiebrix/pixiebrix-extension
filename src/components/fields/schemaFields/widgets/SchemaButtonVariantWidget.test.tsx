@@ -21,6 +21,7 @@ import { render } from "@/pageEditor/testHelpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 // eslint-disable-next-line no-restricted-imports
 import { Formik } from "formik";
+import selectEvent from "react-select-event";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -46,7 +47,11 @@ describe("SchemaButtonVariantWidget", () => {
     const defaultSelect = renderSelect("outline-primary");
 
     expect(defaultSelect).toMatchSnapshot();
-    const { getByTestId } = defaultSelect;
-    expect(getByTestId("selected-value")).toHaveClass("btn-outline-primary");
+    const { getByTestId, queryAllByTestId } = defaultSelect;
+    expect(getByTestId("selected-variant")).toHaveClass("btn-outline-primary");
+    const selectContainerElement =
+      getByTestId("select-container").querySelector("div");
+    selectEvent.openMenu(selectContainerElement);
+    expect(queryAllByTestId("variant-option")).toHaveLength(18);
   });
 });

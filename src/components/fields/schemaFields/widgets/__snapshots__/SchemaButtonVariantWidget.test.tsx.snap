@@ -7,6 +7,7 @@ exports[`SchemaButtonVariantWidget renders button variant select widget 1`] = `
     <div>
       <div
         class="mt-2"
+        data-testid="select-container"
       >
         <div
           class=" css-b62m3t-container"
@@ -29,7 +30,7 @@ exports[`SchemaButtonVariantWidget renders button variant select widget 1`] = `
             >
               <button
                 class="exampleButton btn btn-outline-primary btn-sm"
-                data-testid="selected-value"
+                data-testid="selected-variant"
                 type="button"
               >
                 Primary
@@ -93,6 +94,7 @@ exports[`SchemaButtonVariantWidget renders button variant select widget 1`] = `
   "container": <div>
     <div
       class="mt-2"
+      data-testid="select-container"
     >
       <div
         class=" css-b62m3t-container"
@@ -115,7 +117,7 @@ exports[`SchemaButtonVariantWidget renders button variant select widget 1`] = `
           >
             <button
               class="exampleButton btn btn-outline-primary btn-sm"
-              data-testid="selected-value"
+              data-testid="selected-variant"
               type="button"
             >
               Primary
