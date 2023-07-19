@@ -330,7 +330,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   // Use arrow syntax to avoid having to bind when passing as listener to `sidebarShowEvents.add`
-  run = async ({ reason }: RunArgs): Promise<void> => {
+  runComponents = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
       console.debug(
         "SidebarStarterBrick:run calling sidebarController:removeExtensionPoint because StarterBrick is not available for URL",
@@ -424,7 +424,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         "SidebarStarterBrick:install: listen for sidebarShowEvents"
       );
 
-      sidebarShowEvents.add(this.run);
+      sidebarShowEvents.add(this.runComponents);
     } else {
       removeExtensionPoint(this.id);
     }

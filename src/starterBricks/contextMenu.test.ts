@@ -110,7 +110,7 @@ describe("contextMenu", () => {
     expect(value).toHaveProperty("selectionText");
   });
 
-  it("should register context menu on install", async () => {
+  it("should register context menu on run", async () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
 
@@ -118,16 +118,16 @@ describe("contextMenu", () => {
 
     await starterBrick.install();
 
+    expect(ensureContextMenuMock).not.toHaveBeenCalled();
+
+    await starterBrick.runComponents({ reason: RunReason.MANUAL });
+
     expect(ensureContextMenuMock).toHaveBeenCalledOnce();
     expect(ensureContextMenuMock).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         extensionId: modComponent.id,
       })
     );
-
-    // Should not be called again - run is a NOP
-    await starterBrick.runComponents({ reason: RunReason.MANUAL });
-    expect(ensureContextMenuMock).toHaveBeenCalledOnce();
   });
 
   it("should remove from UI from all tabs on sync", async () => {
