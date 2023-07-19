@@ -113,7 +113,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     return false;
   }
 
-  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     console.debug("tourExtension:removeExtensions");
     unregisterTours(this.modComponents.map((x) => x.id));
   }
@@ -236,7 +236,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     return minBy(someRun, (x) => latest[x.id]);
   }
 
-  async runComponents({ reason, extensionIds }: RunArgs): Promise<void> {
+  async runModComponents({ reason, extensionIds }: RunArgs): Promise<void> {
     if (this.modComponents.length === 0) {
       // NOP
       return;

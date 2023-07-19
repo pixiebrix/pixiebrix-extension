@@ -94,7 +94,7 @@ describe("quickBarProviderExtension", () => {
 
     const starterBrick = fromJS(starterBrickFactory());
 
-    starterBrick.registerComponent(
+    starterBrick.registerModComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
       })
@@ -104,7 +104,7 @@ describe("quickBarProviderExtension", () => {
       NUM_DEFAULT_QUICKBAR_ACTIONS
     );
     await starterBrick.install();
-    await starterBrick.runComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(quickBarRegistry.currentActions).toHaveLength(
       NUM_DEFAULT_QUICKBAR_ACTIONS + 1
@@ -142,7 +142,7 @@ describe("quickBarProviderExtension", () => {
 
     const starterBrick = fromJS(starterBrickFactory());
 
-    starterBrick.registerComponent(
+    starterBrick.registerModComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
         config: {
@@ -152,7 +152,7 @@ describe("quickBarProviderExtension", () => {
     );
 
     await starterBrick.install();
-    await starterBrick.runComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     await tick();
 

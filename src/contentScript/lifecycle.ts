@@ -169,7 +169,7 @@ async function runExtensionPoint(
     details
   );
 
-  await extensionPoint.runComponents({ reason, extensionIds });
+  await extensionPoint.runModComponents({ reason, extensionIds });
   _activeExtensionPoints.add(extensionPoint);
 
   console.debug(
@@ -246,7 +246,7 @@ export function TEST_getEditorExtensions(): Map<UUID, StarterBrick> {
 export function removePersistedExtension(extensionId: UUID): void {
   // Leaving the extension point in _activeExtensionPoints. Could consider removing if this was the last extension
   const extensionPoint = _persistedExtensions.get(extensionId);
-  extensionPoint?.removeComponent(extensionId);
+  extensionPoint?.removeModComponent(extensionId);
   _persistedExtensions.delete(extensionId);
 }
 
@@ -448,7 +448,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
               extensionPointId
             );
 
-            extensionPoint.synchronizeComponents(extensions);
+            extensionPoint.synchronizeModComponents(extensions);
 
             // Mark the extensions as installed
             for (const extension of extensions) {

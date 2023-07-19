@@ -153,7 +153,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     return false;
   }
 
-  public get registeredComponents(): Array<ResolvedModComponent<TConfig>> {
+  public get registeredModComponents(): Array<ResolvedModComponent<TConfig>> {
     return [...this.modComponents];
   }
 
@@ -182,14 +182,14 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
    * NOTE: when this method is called, the extensions will still be in this.extensions. The caller is responsible for
    * updating this.extensions as necessary.
    *
-   * @see synchronizeComponents
-   * @see removeComponent
+   * @see synchronizeModComponents
+   * @see removeModComponent
    */
-  protected abstract clearComponentInterfaceAndEvents(
+  protected abstract clearModComponentInterfaceAndEvents(
     componentIds: UUID[]
   ): void;
 
-  synchronizeComponents(
+  synchronizeModComponents(
     components: Array<ResolvedModComponent<TConfig>>
   ): void {
     const before = this.modComponents.map((x) => x.id);
@@ -198,7 +198,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     const removed = this.modComponents.filter(
       (currentComponent) => !updatedIds.has(currentComponent.id)
     );
-    this.clearComponentInterfaceAndEvents(removed.map((x) => x.id));
+    this.clearModComponentInterfaceAndEvents(removed.map((x) => x.id));
 
     // Clear extensions and re-populate with updated components
     this.modComponents.splice(0, this.modComponents.length);
@@ -211,13 +211,13 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     });
   }
 
-  removeComponent(componentId: UUID): void {
-    this.synchronizeComponents(
+  removeModComponent(componentId: UUID): void {
+    this.synchronizeModComponents(
       this.modComponents.filter((x) => x.id !== componentId)
     );
   }
 
-  registerComponent(component: ResolvedModComponent<TConfig>): void {
+  registerModComponent(component: ResolvedModComponent<TConfig>): void {
     const index = this.modComponents.findIndex((x) => x.id === component.id);
     if (index >= 0) {
       console.warn(
@@ -245,7 +245,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   abstract install(): Promise<boolean>;
 
-  abstract runComponents(args: RunArgs): Promise<void>;
+  abstract runModComponents(args: RunArgs): Promise<void>;
 
   uninstall(_options?: { global?: boolean }): void {
     console.warn(`Uninstall not implemented for extension point: ${this.id}`);

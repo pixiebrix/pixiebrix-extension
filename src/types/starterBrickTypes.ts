@@ -87,33 +87,33 @@ export interface StarterBrick extends Metadata {
   /**
    * Install the StarterBrick on the page if/when its target becomes available.
    * Does not run/add ModComponents to the page.
-   * @see runComponents
+   * @see runModComponents
    */
   install(): Promise<boolean>;
 
   /**
    * Register a ModComponent with the StarterBrick. Does not add/run the ModComponent to the page.
-   * @see runComponents
+   * @see runModComponents
    */
-  registerComponent(component: ResolvedModComponent): void;
+  registerModComponent(component: ResolvedModComponent): void;
 
   /**
    * Run all registered ModComponents for this StarterBrick and/or add their UI to the page.
    * @see install
    */
-  runComponents(args: RunArgs): Promise<void>;
+  runModComponents(args: RunArgs): Promise<void>;
 
   /**
    * Remove the ModComponent from the StarterBrick and clear its UI and events from the page.
    */
-  removeComponent(modComponentId: UUID): void;
+  removeModComponent(modComponentId: UUID): void;
 
   /**
    * Remove the StarterBrick and all ModComponents from the page.
    *
    * @param options.global true to indicate the starter brick is being uninstalled from all tabs. This enabled the
    * starter brick to perform global UI cleanup, e.g., unregistering a context menu with the Browser.
-   * @see removeComponent
+   * @see removeModComponent
    */
   uninstall(options?: { global?: boolean }): void;
 
@@ -122,10 +122,10 @@ export interface StarterBrick extends Metadata {
    *
    * Equivalent to calling `removeComponent` and `registerComponent`.
    *
-   * @see removeComponent
-   * @see registerComponent
+   * @see removeModComponent
+   * @see registerModComponent
    */
-  synchronizeComponents(modComponents: ResolvedModComponent[]): void;
+  synchronizeModComponents(modComponents: ResolvedModComponent[]): void;
 
   /**
    * Returns all bricks configured in provided ModComponentBase, including sub-pipelines.
@@ -139,5 +139,5 @@ export interface StarterBrick extends Metadata {
    * The mod components currently registered with the StarterBrick.
    * @since 1.7.34
    */
-  registeredComponents: readonly ResolvedModComponent[];
+  registeredModComponents: readonly ResolvedModComponent[];
 }

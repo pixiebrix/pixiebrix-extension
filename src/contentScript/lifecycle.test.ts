@@ -153,7 +153,7 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    starterBrick.registerComponent(
+    starterBrick.registerModComponent(
       await resolveExtensionInnerDefinitions(modComponent)
     );
 
@@ -189,7 +189,7 @@ describe("lifecycle", () => {
     expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);
     expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
 
-    starterBrick.registerComponent(
+    starterBrick.registerModComponent(
       await resolveExtensionInnerDefinitions(modComponent)
     );
 

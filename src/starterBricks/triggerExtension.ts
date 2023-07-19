@@ -273,7 +273,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.abortController.signal.addEventListener("abort", callback);
   }
 
-  clearComponentInterfaceAndEvents(): void {
+  clearModComponentInterfaceAndEvents(): void {
     // NOP: the unregisterExtensionEvents method doesn't need to unregister anything from the page because the
     // observers/handlers are installed for the extensionPoint instance itself, not the extensions. I.e., there's a
     // single load/click/etc. trigger that's shared by all extensions using this extension point.
@@ -780,7 +780,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  async runComponents(): Promise<void> {
+  async runModComponents(): Promise<void> {
     this.cancelObservers();
 
     const $root = await this.getRoot();

@@ -130,7 +130,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     quickBarRegistry.removeExtensionPointActions(this.id);
   }
 
-  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
       quickBarRegistry.removeAction(extensionId);
     }
@@ -264,7 +264,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     );
   }
 
-  async runComponents(): Promise<void> {
+  async runModComponents(): Promise<void> {
     if (this.modComponents.length === 0) {
       console.debug(
         `quickBar extension point ${this.id} has no installed extensions`

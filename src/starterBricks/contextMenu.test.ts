@@ -91,10 +91,10 @@ describe("contextMenu", () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
 
-    starterBrick.registerComponent(modComponent);
-    starterBrick.registerComponent(modComponent);
+    starterBrick.registerModComponent(modComponent);
+    starterBrick.registerModComponent(modComponent);
 
-    expect(starterBrick.registeredComponents).toStrictEqual([modComponent]);
+    expect(starterBrick.registeredModComponents).toStrictEqual([modComponent]);
   });
 
   it("should include context menu props in schema", async () => {
@@ -114,13 +114,13 @@ describe("contextMenu", () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
 
-    starterBrick.registerComponent(modComponent);
+    starterBrick.registerModComponent(modComponent);
 
     await starterBrick.install();
 
     expect(ensureContextMenuMock).not.toHaveBeenCalled();
 
-    await starterBrick.runComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(ensureContextMenuMock).toHaveBeenCalledOnce();
     expect(ensureContextMenuMock).toHaveBeenCalledExactlyOnceWith(
@@ -133,17 +133,17 @@ describe("contextMenu", () => {
   it("should remove from UI from all tabs on sync", async () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
-    starterBrick.registerComponent(modComponent);
+    starterBrick.registerModComponent(modComponent);
 
     await starterBrick.install();
-    await starterBrick.runComponents({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     // Not read until the menu is actually run
     expect(rootReader.readCount).toBe(0);
 
-    starterBrick.synchronizeComponents([]);
+    starterBrick.synchronizeModComponents([]);
 
-    expect(starterBrick.registeredComponents).toHaveLength(0);
+    expect(starterBrick.registeredModComponents).toHaveLength(0);
 
     expect(uninstallContextMenuMock).toHaveBeenCalledExactlyOnceWith({
       extensionId: modComponent.id,

@@ -185,7 +185,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
    * @see uninstallContextMenu
    * @see preloadContextMenus
    */
-  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     // Context menus are registered with Chrome by document pattern via the background page. Therefore, it's impossible
     // to clear the UI menu item from a single tab. Calling `uninstallContextMenu` removes the tab from all menus.
 
@@ -203,7 +203,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     return this.isAvailable();
   }
 
-  async runComponents(): Promise<void> {
+  async runModComponents(): Promise<void> {
     await this.registerExtensions();
   }
 

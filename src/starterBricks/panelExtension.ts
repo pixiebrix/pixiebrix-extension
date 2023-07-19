@@ -164,7 +164,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     return selectAllBlocks(extension.config.body);
   }
 
-  clearComponentInterfaceAndEvents(): void {
+  clearModComponentInterfaceAndEvents(): void {
     // FIXME: implement this to avoid unnecessary firing
     console.warn("removeExtensions not implemented for panel extensionPoint");
   }
@@ -431,7 +431,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
   }
 
-  async runComponents({ extensionIds = null }: RunArgs): Promise<void> {
+  async runModComponents({ extensionIds = null }: RunArgs): Promise<void> {
     if (!this.$container || this.modComponents.length === 0) {
       return;
     }

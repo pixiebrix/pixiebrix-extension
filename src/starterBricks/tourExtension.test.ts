@@ -83,14 +83,14 @@ describe("tourExtension", () => {
   test("install tour via Page Editor", async () => {
     const starterBrick = fromJS(starterBrickFactory()());
 
-    starterBrick.registerComponent(
+    starterBrick.registerModComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
       })
     );
 
     await starterBrick.install();
-    await starterBrick.runComponents({ reason: RunReason.PAGE_EDITOR });
+    await starterBrick.runModComponents({ reason: RunReason.PAGE_EDITOR });
 
     await tick();
 
@@ -105,14 +105,14 @@ describe("tourExtension", () => {
       starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })()
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.runComponents({ reason: RunReason.INITIAL_LOAD });
+    await extensionPoint.runModComponents({ reason: RunReason.INITIAL_LOAD });
 
     await tick();
 

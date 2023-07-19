@@ -132,18 +132,18 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     return selectAllBlocks(extension.config.body);
   }
 
-  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     removeExtensions(extensionIds);
   }
 
   public override uninstall(): void {
     const extensions = this.modComponents.splice(0, this.modComponents.length);
-    this.clearComponentInterfaceAndEvents(extensions.map((x) => x.id));
+    this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
     removeExtensionPoint(this.id);
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents"
     );
-    sidebarShowEvents.remove(this.runComponents);
+    sidebarShowEvents.remove(this.runModComponents);
     this.cancelListeners();
   }
 
@@ -159,7 +159,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     console.debug(
       "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
     );
-    sidebarShowEvents.remove(this.runComponents);
+    sidebarShowEvents.remove(this.runModComponents);
   }
 
   private async runExtension(
@@ -330,7 +330,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   // Use arrow syntax to avoid having to bind when passing as listener to `sidebarShowEvents.add`
-  runComponents = async ({ reason }: RunArgs): Promise<void> => {
+  runModComponents = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
       console.debug(
         "SidebarStarterBrick:run calling sidebarController:removeExtensionPoint because StarterBrick is not available for URL",
@@ -424,7 +424,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         "SidebarStarterBrick:install: listen for sidebarShowEvents"
       );
 
-      sidebarShowEvents.add(this.runComponents);
+      sidebarShowEvents.add(this.runModComponents);
     } else {
       removeExtensionPoint(this.id);
     }

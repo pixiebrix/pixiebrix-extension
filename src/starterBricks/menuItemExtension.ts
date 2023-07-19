@@ -313,7 +313,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     this.cancelListeners.clear();
   }
 
-  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     console.debug(
       "Remove extensionIds for menuItem extension point: %s",
       this.id,
@@ -353,7 +353,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     for (const element of menus) {
       try {
-        this.clearComponentInterfaceAndEvents(extensions.map((x) => x.id));
+        this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
         // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
       } catch (error) {
@@ -441,7 +441,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       // The behavior for multiple buttons is quirky here for "once" attachMode. There's a corner case where
       // 1) if one button is removed, 2) the menus are re-added immediately, 3) PixieBrix stops watching for new buttons
       await this.waitAttachMenus();
-      await this.runComponents({ reason: RunReason.MUTATION });
+      await this.runModComponents({ reason: RunReason.MUTATION });
     }
   }
 
@@ -496,7 +496,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       containerSelector,
       (index, element) => {
         this.attachMenus($(element as HTMLElement));
-        void this.runComponents({ reason: RunReason.MUTATION });
+        void this.runModComponents({ reason: RunReason.MUTATION });
       },
       // `target` is a required option. Would it be possible to scope if the selector is nested? Would have to consider
       // commas in the selector. E.g., revert back to document if there's a comma
@@ -789,7 +789,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if (dependencies.length > 0) {
       const rerun = once(() => {
         console.debug("Dependency changed, re-running extension");
-        void this.runComponents({
+        void this.runModComponents({
           reason: RunReason.DEPENDENCY_CHANGED,
           extensionIds: [extension.id],
         });
@@ -844,7 +844,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
   }
 
-  async runComponents({ extensionIds = null }: RunArgs): Promise<void> {
+  async runModComponents({ extensionIds = null }: RunArgs): Promise<void> {
     if (this.menus.size === 0 || this.modComponents.length === 0) {
       return;
     }

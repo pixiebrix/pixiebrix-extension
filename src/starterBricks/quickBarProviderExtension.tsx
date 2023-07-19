@@ -143,7 +143,9 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
   override uninstall(): void {
     // Remove generators and all existing actions in the Quick Bar
-    this.clearComponentInterfaceAndEvents(this.modComponents.map((x) => x.id));
+    this.clearModComponentInterfaceAndEvents(
+      this.modComponents.map((x) => x.id)
+    );
     quickBarRegistry.removeExtensionPointActions(this.id);
     this.modComponents.splice(0, this.modComponents.length);
   }
@@ -152,7 +154,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
    * Unregister quick bar action providers for the given extension IDs.
    * @param extensionIds the extensions IDs to unregister
    */
-  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
       quickBarRegistry.removeGenerator(this.generators.get(extensionId));
       this.generators.delete(extensionId);
@@ -167,7 +169,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     return true;
   }
 
-  async runComponents(): Promise<void> {
+  async runModComponents(): Promise<void> {
     if (this.modComponents.length === 0) {
       console.debug(
         `quickBar starter brick ${this.id} has no installed components`
@@ -201,7 +203,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     if (!testMatchPatterns(this.documentUrlPatterns)) {
       // Remove actions and un-attach generators
       quickBarRegistry.removeExtensionPointActions(this.id);
-      this.clearComponentInterfaceAndEvents(
+      this.clearModComponentInterfaceAndEvents(
         this.modComponents.map((x) => x.id)
       );
       return;

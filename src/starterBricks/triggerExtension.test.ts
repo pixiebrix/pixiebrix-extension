@@ -129,14 +129,14 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.registerComponent(
+      extensionPoint.registerModComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
       );
 
       await extensionPoint.install();
-      await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       expect(rootReader.readCount).toBe(1);
 
@@ -159,14 +159,14 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.registerComponent(
+      extensionPoint.registerModComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
       );
 
       await extensionPoint.install();
-      await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       expect(rootReader.readCount).toBe(0);
 
@@ -210,14 +210,14 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.registerComponent(
+      extensionPoint.registerModComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
       );
 
       await extensionPoint.install();
-      await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       document.querySelector("button").click();
       await tick();
@@ -246,14 +246,14 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     document.querySelector("button").click();
     await tick();
@@ -278,14 +278,14 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     const element = document.querySelector("input");
 
@@ -309,14 +309,14 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     const buttonElement = document.querySelector("button");
 
@@ -411,14 +411,14 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(notifyErrorMock).not.toHaveBeenCalled();
   });
@@ -437,14 +437,14 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     document.querySelector("button").click();
     await tick();
@@ -468,7 +468,7 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
         config: {
@@ -480,8 +480,8 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
 
     // Run 2x
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).toHaveBeenCalledTimes(1);
 
@@ -501,7 +501,7 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
         config: {
@@ -513,8 +513,8 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
 
     // Run 2x
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
     expect(notifyErrorMock).toHaveBeenCalledTimes(2);
@@ -530,7 +530,7 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.registerComponent(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
         config: {
@@ -542,8 +542,8 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
 
     // Run 2x
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
     expect(notifyErrorMock).toHaveBeenCalledTimes(0);
