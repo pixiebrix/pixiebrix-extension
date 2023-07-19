@@ -20,8 +20,6 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import {
   Button,
   ButtonGroup,
-  Dropdown,
-  DropdownButton,
   // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
   Form,
 } from "react-bootstrap";
@@ -32,12 +30,8 @@ import {
   faAlignLeft,
   faAlignRight,
   faBold,
-  faBorderStyle,
   faCaretDown,
   faCaretRight,
-  faCheck,
-  faFill,
-  faFont,
   faItalic,
 } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
@@ -98,107 +92,6 @@ export const optionsGroups = {
       title: <FontAwesomeIcon icon={faAlignJustify} />,
     },
   ],
-  textVariant: [
-    {
-      className: "text-default",
-      title: <span className="text-default">Default</span>,
-    },
-    {
-      className: "text-primary",
-      title: <span className="text-primary">Primary</span>,
-    },
-    {
-      className: "text-secondary",
-      title: <span className="secondary">Secondary</span>,
-    },
-    { className: "text-info", title: <span className="text-info">Info</span> },
-    {
-      className: "text-warning",
-      title: <span className="text-warning">Warning</span>,
-    },
-    {
-      className: "text-danger",
-      title: <span className="text-danger">Danger</span>,
-    },
-    {
-      className: "text-success",
-      title: <span className="text-success">Success</span>,
-    },
-    {
-      className: "text-muted",
-      title: <span className="text-muted">Muted</span>,
-    },
-    {
-      className: "text-white",
-      title: <span>White</span>,
-    },
-  ],
-  backgroundColor: [
-    {
-      className: "bg-primary",
-      title: <span className="bg-primary text-white">Primary</span>,
-    },
-    {
-      className: "bg-secondary",
-      title: <span className="bg-secondary text-white">Secondary</span>,
-    },
-    {
-      className: "bg-success",
-      title: <span className="bg-success text-white">Success</span>,
-    },
-    {
-      className: "bg-info",
-      title: <span className="bg-info text-white">Info</span>,
-    },
-    {
-      className: "bg-warning",
-      title: <span className="bg-warning">Warning</span>,
-    },
-    {
-      className: "bg-danger",
-      title: <span className="bg-danger text-white">Danger</span>,
-    },
-    {
-      className: "bg-dark",
-      title: <span className="bg-dark text-white">Dark</span>,
-    },
-    {
-      className: "bg-light",
-      title: <span className="bg-light">Light</span>,
-    },
-    {
-      className: "bg-white",
-      title: <span className="bg-white">White</span>,
-    },
-  ],
-  borders: [
-    {
-      className: "border",
-      title: "All Borders",
-      implies: ["border-top", "border-right", "border-bottom", "border-left"],
-      exclusive: true,
-    },
-    {
-      className: "border-top",
-      title: "Border Top",
-      exclusive: false,
-    },
-    {
-      className: "border-right",
-      title: "Border Right",
-      exclusive: false,
-    },
-    {
-      className: "border-bottom",
-      title: "Border Bottom",
-      exclusive: false,
-    },
-    {
-      className: "border-left",
-      title: "Border Left",
-      exclusive: false,
-    },
-  ],
 };
 
 type Value = string | Expression;
@@ -226,36 +119,6 @@ const FlagButton: React.VFC<
     >
       {title}
     </Button>
-  );
-};
-
-const FlagItem: React.VFC<
-  ClassFlag & {
-    classes: string[];
-    toggleClass: (className: string, on: boolean, group?: ClassFlag[]) => void;
-    group?: ClassFlag[];
-  }
-> = ({ className, classes, title, toggleClass, group }) => {
-  const active = classes.includes(className);
-
-  return (
-    <Dropdown.Item
-      active={active}
-      onClick={() => {
-        toggleClass(className, !active, group);
-      }}
-    >
-      {active ? (
-        <FontAwesomeIcon icon={faCheck} fixedWidth />
-      ) : (
-        <FontAwesomeIcon
-          icon={faCheck}
-          fixedWidth
-          style={{ visibility: "hidden" }}
-        />
-      )}
-      <span className="ml-2">{title}</span>
-    </Dropdown.Item>
   );
 };
 
@@ -562,83 +425,6 @@ const CssClassWidget: React.VFC<
               toggleClass={toggleClass}
             />
           ))}
-        </ButtonGroup>
-
-        <ButtonGroup className="mx-2">
-          <DropdownButton
-            title={
-              <span
-                className={
-                  optionsGroups.textVariant.find((x) =>
-                    classes.includes(x.className)
-                  )?.className
-                }
-              >
-                <FontAwesomeIcon icon={faFont} />
-              </span>
-            }
-            disabled={disableControls}
-            variant="light"
-            size="sm"
-          >
-            {optionsGroups.textVariant.map((flag) => (
-              <FlagItem
-                key={flag.className}
-                {...flag}
-                classes={classes}
-                toggleClass={toggleClass}
-                group={optionsGroups.textVariant}
-              />
-            ))}
-          </DropdownButton>
-        </ButtonGroup>
-
-        <ButtonGroup className="mx-2">
-          <DropdownButton
-            title={
-              <span
-                className={
-                  optionsGroups.backgroundColor.find((x) =>
-                    classes.includes(x.className)
-                  )?.className
-                }
-              >
-                <FontAwesomeIcon icon={faFill} />
-              </span>
-            }
-            disabled={disableControls}
-            variant="light"
-            size="sm"
-          >
-            {optionsGroups.backgroundColor.map((flag) => (
-              <FlagItem
-                key={flag.className}
-                {...flag}
-                classes={classes}
-                toggleClass={toggleClass}
-                group={optionsGroups.backgroundColor}
-              />
-            ))}
-          </DropdownButton>
-        </ButtonGroup>
-
-        <ButtonGroup className="mx-2">
-          <DropdownButton
-            title={<FontAwesomeIcon icon={faBorderStyle} />}
-            disabled={disableControls}
-            variant="light"
-            size="sm"
-          >
-            {optionsGroups.borders.map((flag) => (
-              <FlagItem
-                key={flag.className}
-                {...flag}
-                classes={classes}
-                toggleClass={toggleClass}
-                group={optionsGroups.borders}
-              />
-            ))}
-          </DropdownButton>
         </ButtonGroup>
       </div>
 
