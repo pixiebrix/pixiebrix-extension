@@ -67,6 +67,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -179,8 +180,21 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     }
   }
 
-  clearExtensionInterfaceAndEvents(): void {
-    // Don't need to do any cleanup since context menu registration is handled globally
+  /**
+   * Remove the context menu items for the given extensions from all tabs/contexts.
+   * @see uninstallContextMenu
+   * @see preloadContextMenus
+   */
+  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+    // Context menus are registered with Chrome by document pattern via the background page. Therefore, it's impossible
+    // to clear the UI menu item from a single tab. Calling `uninstallContextMenu` removes the tab from all menus.
+
+    // Uninstalling context menus is the least-bad approach because it prevents duplicate menu item titles due to
+    // re-activating a context menu (during re-activation, mod components get new extensionIds.)
+
+    for (const extensionId of extensionIds) {
+      void uninstallContextMenu({ extensionId });
+    }
   }
 
   async install(): Promise<boolean> {

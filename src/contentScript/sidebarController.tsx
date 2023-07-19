@@ -305,16 +305,18 @@ export function hideTemporarySidebarPanel(nonce: UUID): void {
   void sidebarInThisTab.hideTemporaryPanel(sequence, nonce);
 }
 
-export function removeExtension(extensionId: UUID): void {
+/**
+ * Remove all panels associated with given extensionIds.
+ * @param extensionIds the extension UUIDs to remove
+ */
+export function removeExtensions(extensionIds: UUID[]): void {
   expectContext("contentScript");
 
-  console.debug("sidebarController:removeExtension %s", extensionId, {
-    panel: panels.find((x) => x.extensionId === extensionId),
-  });
+  console.debug("sidebarController:removeExtensions", { extensionIds });
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
-  panels.push(...current.filter((x) => x.extensionId !== extensionId));
+  panels.push(...current.filter((x) => !extensionIds.includes(x.extensionId)));
   renderPanelsIfVisible();
 }
 

@@ -33,7 +33,7 @@ import {
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import {
-  type PanelDefinition,
+  type SidebarDefinition,
   type SidebarConfig,
   SidebarStarterBrickABC,
 } from "@/starterBricks/sidebarExtension";
@@ -128,7 +128,7 @@ async function fromExtension(
   config: ModComponentBase<SidebarConfig>
 ): Promise<SidebarFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    PanelDefinition,
+    SidebarDefinition,
     SidebarConfig,
     "actionPanel"
   >(config, "actionPanel");

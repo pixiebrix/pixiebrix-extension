@@ -116,3 +116,19 @@ export async function getTargetState(target: Target): Promise<TargetState> {
     };
   });
 }
+
+let reloadOnNextNavigate = false;
+
+/**
+ * Return true if the mods should be reloaded on the next navigation.
+ */
+export function getReloadOnNextNavigate(): boolean {
+  return reloadOnNextNavigate;
+}
+
+/**
+ * Set if the mods should be reloaded on the next navigation.
+ */
+export function setReloadOnNextNavigate(value: boolean): void {
+  reloadOnNextNavigate = value;
+}

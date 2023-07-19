@@ -37,6 +37,10 @@ import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
+import {
+  getReloadOnNextNavigate,
+  setReloadOnNextNavigate,
+} from "@/contentScript/ready";
 
 /**
  * True if handling the initial page load.
@@ -82,11 +86,6 @@ const _frameHref = new Map<number, string>();
  * Abort controllers for navigation events for Single Page Applications (SPAs).
  */
 const _navigationListeners = new Set<() => void>();
-
-/**
- * Reload extension definitions on next navigation
- */
-let _reloadOnNextNavigate = false;
 
 const WAIT_LOADED_INTERVAL_MS = 25;
 
@@ -290,7 +289,7 @@ export function clearEditorExtension(
 
       _activeExtensionPoints.delete(extensionPoint);
       _editorExtensions.delete(extensionId);
-      sidebar.removeExtension(extensionId);
+      sidebar.removeExtensions([extensionId]);
     } else {
       console.debug(`No dynamic extension exists for uuid: ${extensionId}`);
     }
@@ -448,6 +447,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
             const extensionPoint = await extensionPointRegistry.lookup(
               extensionPointId
             );
+
             extensionPoint.syncExtensions(extensions);
 
             // Mark the extensions as installed
@@ -480,9 +480,9 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
  */
 async function loadPersistedExtensionsOnce(): Promise<StarterBrick[]> {
   // Enforce fresh view for _reloadOnNextNavigate
-  if (_initialLoad || _reloadOnNextNavigate) {
+  if (_initialLoad || getReloadOnNextNavigate()) {
     _initialLoad = false;
-    _reloadOnNextNavigate = false;
+    setReloadOnNextNavigate(false);
     // XXX: could also include _editorExtensions to handle case where user activates a mod while the page editor
     // is open. However, that would require handling corner case where the user reactivating a mod that has dirty
     // changes. It's not worth the complexity of handling the corner case.
@@ -623,12 +623,18 @@ export async function handleNavigate({
   }
 }
 
-export async function queueReactivateTab() {
+/**
+ * Mark that mods should be reloaded on next navigation, e.g., because a mod was updated/activated.
+ */
+export async function queueReactivateTab(): Promise<void> {
   console.debug("contentScript will reload extensions on next navigation");
-  _reloadOnNextNavigate = true;
+  setReloadOnNextNavigate(true);
 }
 
-export async function reactivateTab() {
+/**
+ * Reload and re-activate all mods on the current page.
+ */
+export async function reactivateTab(): Promise<void> {
   await loadPersistedExtensions();
   // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });
