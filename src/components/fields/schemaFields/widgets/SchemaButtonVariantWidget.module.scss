@@ -24,10 +24,8 @@
     background: $S2;
   }
 
-  &:active {
-    background: $S3;
-  }
-
+  // Need to set both the active pseudo class and class
+  &:active,
   &.active {
     background: $S3;
   }
