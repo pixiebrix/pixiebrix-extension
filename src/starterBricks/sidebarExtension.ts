@@ -403,7 +403,33 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
 
-    if (available && this.debounceOptions?.waitMillis) {
+    if (available) {
+      // Strictly speaking, the `install` method should not add components to the page. However, for sidebar panel,
+      // there's a race condition between the install and runComponents call on initial page load if the user
+      // clicks the browser action too quickly.
+      // Reserve the panels, to ensure the sidebarController knows about them prior to the sidebar showing. This is to
+      // avoid a race condition with the position of the home tab in the sidebar.
+      // In the future, we might instead consider gating sidebar content loading based on mods both having been
+      // `install`ed and `runComponents` called completed at least once.
+      reservePanels(
+        this.components.map((components) => ({
+          extensionId: components.id,
+          extensionPointId: this.id,
+          blueprintId: components._recipe?.id,
+        }))
+      );
+
+      // Add event listener so content for the panel is calculated/loaded when the sidebar opens
+      console.debug(
+        "SidebarStarterBrick:install: listen for sidebarShowEvents"
+      );
+
+      sidebarShowEvents.add(this.run);
+    } else {
+      removeExtensionPoint(this.id);
+    }
+
+    if (this.debounceOptions?.waitMillis) {
       const { waitMillis, ...options } = this.debounceOptions;
       this.debouncedRefreshPanels = debounce(
         this.refreshPanels,
