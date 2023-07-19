@@ -32,7 +32,10 @@ describe("SchemaButtonVariantWidget", () => {
   test("renders button variant select widget", () => {
     expect(
       render(
-        <Formik initialValues={{ testField: "primary" }} onSubmit={() => {}}>
+        <Formik
+          initialValues={{ testField: "outline-primary" }}
+          onSubmit={() => {}}
+        >
           <SchemaButtonVariantWidget
             name={fieldName}
             schema={schema}
