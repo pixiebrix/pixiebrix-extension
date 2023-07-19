@@ -187,11 +187,11 @@ async function runExtensionPoint(
  *
  * Used to ensure all sidebar extension points have had a chance to reserve panels before showing the sidebar.
  *
- * @see StarterBrick.syncInstall
+ * @see StarterBrick.isSyncInstall
  */
 export async function ensureInstalled(): Promise<void> {
   const extensionPoints = await loadPersistedExtensionsOnce();
-  const sidebarExtensionPoints = extensionPoints.filter((x) => x.syncInstall);
+  const sidebarExtensionPoints = extensionPoints.filter((x) => x.isSyncInstall);
   // Log to help debug race conditions
   console.debug("lifecycle:ensureInstalled", {
     sidebarExtensionPoints,
@@ -246,7 +246,7 @@ export function TEST_getEditorExtensions(): Map<UUID, StarterBrick> {
 export function removePersistedExtension(extensionId: UUID): void {
   // Leaving the extension point in _activeExtensionPoints. Could consider removing if this was the last extension
   const extensionPoint = _persistedExtensions.get(extensionId);
-  extensionPoint?.removeExtension(extensionId);
+  extensionPoint?.removeComponent(extensionId);
   _persistedExtensions.delete(extensionId);
 }
 
@@ -448,7 +448,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
               extensionPointId
             );
 
-            extensionPoint.syncExtensions(extensions);
+            extensionPoint.synchronizeComponents(extensions);
 
             // Mark the extensions as installed
             for (const extension of extensions) {
@@ -614,7 +614,7 @@ export async function handleNavigate({
             });
           });
 
-          if (extensionPoint.syncInstall) {
+          if (extensionPoint.isSyncInstall) {
             await runPromise;
           }
         })

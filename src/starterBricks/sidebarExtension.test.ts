@@ -70,7 +70,7 @@ describe("sidebarExtension", () => {
   it("reserves panel on load", async () => {
     const extensionPoint = fromJS(starterBrickFactory()());
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -99,7 +99,7 @@ describe("sidebarExtension", () => {
   it("synchronize clears panel", async () => {
     const extensionPoint = fromJS(starterBrickFactory()());
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -109,7 +109,7 @@ describe("sidebarExtension", () => {
 
     expect(getReservedPanelEntries().panels).toHaveLength(1);
 
-    extensionPoint.syncExtensions([]);
+    extensionPoint.synchronizeComponents([]);
 
     // Synchronize removes the panel
     expect(getReservedPanelEntries().panels).toHaveLength(0);
@@ -124,13 +124,13 @@ describe("sidebarExtension", () => {
       extensionPointId: extensionPoint.id,
     });
 
-    extensionPoint.addExtension(extension);
+    extensionPoint.registerComponent(extension);
 
     await extensionPoint.install();
 
     expect(getReservedPanelEntries().panels).toHaveLength(1);
 
-    extensionPoint.removeExtension(extension.id);
+    extensionPoint.removeComponent(extension.id);
 
     // Synchronize removes the panel
     expect(getReservedPanelEntries().panels).toHaveLength(0);

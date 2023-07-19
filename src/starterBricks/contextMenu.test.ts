@@ -91,10 +91,10 @@ describe("contextMenu", () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
 
-    starterBrick.addExtension(modComponent);
-    starterBrick.addExtension(modComponent);
+    starterBrick.registerComponent(modComponent);
+    starterBrick.registerComponent(modComponent);
 
-    expect(starterBrick.registeredExtensions).toStrictEqual([modComponent]);
+    expect(starterBrick.registeredComponents).toStrictEqual([modComponent]);
   });
 
   it("should include context menu props in schema", async () => {
@@ -114,7 +114,7 @@ describe("contextMenu", () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
 
-    starterBrick.addExtension(modComponent);
+    starterBrick.registerComponent(modComponent);
 
     await starterBrick.install();
 
@@ -133,7 +133,7 @@ describe("contextMenu", () => {
   it("should remove from UI from all tabs on sync", async () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
-    starterBrick.addExtension(modComponent);
+    starterBrick.registerComponent(modComponent);
 
     await starterBrick.install();
     await starterBrick.run({ reason: RunReason.MANUAL });
@@ -141,9 +141,9 @@ describe("contextMenu", () => {
     // Not read until the menu is actually run
     expect(rootReader.readCount).toBe(0);
 
-    starterBrick.syncExtensions([]);
+    starterBrick.synchronizeComponents([]);
 
-    expect(starterBrick.registeredExtensions).toHaveLength(0);
+    expect(starterBrick.registeredComponents).toHaveLength(0);
 
     expect(uninstallContextMenuMock).toHaveBeenCalledExactlyOnceWith({
       extensionId: modComponent.id,

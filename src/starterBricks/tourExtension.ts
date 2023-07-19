@@ -111,16 +111,16 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     }
   }
 
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     console.debug("tourExtension:removeExtensions");
-    unregisterTours(this.extensions.map((x) => x.id));
+    unregisterTours(this.components.map((x) => x.id));
   }
 
   override uninstall(): void {
     console.debug("tourExtension:uninstall", {
       id: this.id,
     });
-    unregisterTours(this.extensions.map((x) => x.id));
+    unregisterTours(this.components.map((x) => x.id));
   }
 
   inputSchema: Schema = propertiesToSchema({
@@ -129,7 +129,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     },
   });
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<TourConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.tour);
@@ -192,7 +192,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
    * @see autoRunSchedule
    */
   async decideAutoRunTour(): Promise<ResolvedModComponent<TourConfig>> {
-    const extensionIds = new Set(this.extensions.map((x) => x.id));
+    const extensionIds = new Set(this.components.map((x) => x.id));
 
     const runs = await getAll();
 
@@ -202,7 +202,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
         return tour.extensionId;
       }
 
-      for (const extension of this.extensions) {
+      for (const extension of this.components) {
         if (
           extension._recipe?.id === tour.packageId &&
           extension.label === tour.tourName
@@ -218,7 +218,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
       max(xs.map((x) => Date.parse(x.updatedAt)))
     );
 
-    const [someRun, neverRun] = partition(this.extensions, (x) => latest[x.id]);
+    const [someRun, neverRun] = partition(this.components, (x) => latest[x.id]);
 
     if (neverRun.length > 0) {
       return neverRun[0];
@@ -232,13 +232,13 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   }
 
   async run({ reason, extensionIds }: RunArgs): Promise<void> {
-    if (this.extensions.length === 0) {
+    if (this.components.length === 0) {
       // NOP
       return;
     }
 
     // Always ensure all tours are registered
-    for (const extension of this.extensions) {
+    for (const extension of this.components) {
       this.registerTour(extension);
     }
 
@@ -246,7 +246,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     // tours re-running on Page Editor close/open or "Reactivate All" unless they have a matching autoRunSchedule
     if (reason === RunReason.PAGE_EDITOR) {
       cancelAllTours();
-      const extensionPool = extensionIds ?? this.extensions.map((x) => x.id);
+      const extensionPool = extensionIds ?? this.components.map((x) => x.id);
       this.extensionTours.get(extensionPool[0])?.run();
       return;
     }

@@ -158,13 +158,13 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     return "panel";
   }
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<PanelConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 
-  clearExtensionInterfaceAndEvents(): void {
+  clearComponentInterfaceAndEvents(): void {
     // FIXME: implement this to avoid unnecessary firing
     console.warn("removeExtensions not implemented for panel extensionPoint");
   }
@@ -189,7 +189,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   override uninstall(): void {
     this.uninstalled = true;
 
-    for (const extension of this.extensions) {
+    for (const extension of this.components) {
       const $item = this.$container.find(
         `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
       );
@@ -439,7 +439,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   }
 
   async run({ extensionIds = null }: RunArgs): Promise<void> {
-    if (!this.$container || this.extensions.length === 0) {
+    if (!this.$container || this.components.length === 0) {
       return;
     }
 
@@ -452,7 +452,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const errors: unknown[] = [];
 
-    for (const extension of this.extensions) {
+    for (const extension of this.components) {
       if (extensionIds != null && !extensionIds.includes(extension.id)) {
         continue;
       }

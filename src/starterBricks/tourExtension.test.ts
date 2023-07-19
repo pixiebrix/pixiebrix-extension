@@ -83,7 +83,7 @@ describe("tourExtension", () => {
   test("install tour via Page Editor", async () => {
     const starterBrick = fromJS(starterBrickFactory()());
 
-    starterBrick.addExtension(
+    starterBrick.registerComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
       })
@@ -105,7 +105,7 @@ describe("tourExtension", () => {
       starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })

@@ -94,7 +94,7 @@ describe("quickBarProviderExtension", () => {
 
     const starterBrick = fromJS(starterBrickFactory());
 
-    starterBrick.addExtension(
+    starterBrick.registerComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
       })
@@ -142,7 +142,7 @@ describe("quickBarProviderExtension", () => {
 
     const starterBrick = fromJS(starterBrickFactory());
 
-    starterBrick.addExtension(
+    starterBrick.registerComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
         config: {

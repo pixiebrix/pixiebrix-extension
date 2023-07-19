@@ -103,7 +103,7 @@ describe("quickBarExtension", () => {
 
     const starterBrick = fromJS(starterBrickFactory()());
 
-    starterBrick.addExtension(
+    starterBrick.registerComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
       })

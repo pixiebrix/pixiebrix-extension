@@ -128,7 +128,7 @@ function installMouseHandlerOnce(): void {
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
 export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<ContextMenuConfig> {
-  public override get syncInstall() {
+  public override get isSyncInstall() {
     return true;
   }
 
@@ -164,7 +164,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     ["title", "action"]
   );
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<ContextMenuConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
@@ -172,7 +172,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
-    const extensions = this.extensions.splice(0, this.extensions.length);
+    const extensions = this.components.splice(0, this.components.length);
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id });
@@ -185,7 +185,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
    * @see uninstallContextMenu
    * @see preloadContextMenus
    */
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     // Context menus are registered with Chrome by document pattern via the background page. Therefore, it's impossible
     // to clear the UI menu item from a single tab. Calling `uninstallContextMenu` removes the tab from all menus.
 
@@ -248,12 +248,12 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   private async registerExtensions(): Promise<void> {
     console.debug(
       "Registering",
-      this.extensions.length,
+      this.components.length,
       "contextMenu starter bricks"
     );
 
     const results = await Promise.allSettled(
-      this.extensions.map(async (extension) => {
+      this.components.map(async (extension) => {
         try {
           await this.registerExtension(extension);
         } catch (error) {

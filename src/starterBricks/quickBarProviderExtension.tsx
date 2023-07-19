@@ -131,7 +131,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     ["generator"]
   );
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<QuickBarProviderConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.generator);
@@ -143,16 +143,16 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
   override uninstall(): void {
     // Remove generators and all existing actions in the Quick Bar
-    this.clearExtensionInterfaceAndEvents(this.extensions.map((x) => x.id));
+    this.clearComponentInterfaceAndEvents(this.components.map((x) => x.id));
     quickBarRegistry.removeExtensionPointActions(this.id);
-    this.extensions.splice(0, this.extensions.length);
+    this.components.splice(0, this.components.length);
   }
 
   /**
    * Unregister quick bar action providers for the given extension IDs.
    * @param extensionIds the extensions IDs to unregister
    */
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
       quickBarRegistry.removeGenerator(this.generators.get(extensionId));
       this.generators.delete(extensionId);
@@ -187,12 +187,12 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     if (!testMatchPatterns(this.documentUrlPatterns)) {
       // Remove actions and un-attach generators
       quickBarRegistry.removeExtensionPointActions(this.id);
-      this.clearExtensionInterfaceAndEvents(this.extensions.map((x) => x.id));
+      this.clearComponentInterfaceAndEvents(this.components.map((x) => x.id));
       return;
     }
 
     const results = await Promise.allSettled(
-      this.extensions.map(async (extension) => {
+      this.components.map(async (extension) => {
         try {
           await this.registerActionProvider(extension);
         } catch (error) {
@@ -302,7 +302,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   }
 
   async run(): Promise<void> {
-    if (this.extensions.length === 0) {
+    if (this.components.length === 0) {
       console.debug(
         `quickBar extension point ${this.id} has no installed extensions`
       );

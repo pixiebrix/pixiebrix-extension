@@ -313,7 +313,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     this.cancelListeners.clear();
   }
 
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     console.debug(
       "Remove extensionIds for menuItem extension point: %s",
       this.id,
@@ -336,7 +336,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     const menus = [...this.menus.values()];
 
     // Clear so they don't get re-added by the onNodeRemoved mechanism
-    const extensions = this.extensions.splice(0, this.extensions.length);
+    const extensions = this.components.splice(0, this.components.length);
     this.menus.clear();
 
     if (extensions.length === 0) {
@@ -353,7 +353,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     for (const element of menus) {
       try {
-        this.clearExtensionInterfaceAndEvents(extensions.map((x) => x.id));
+        this.clearComponentInterfaceAndEvents(extensions.map((x) => x.id));
         // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
       } catch (error) {
@@ -402,7 +402,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     $menu.append($menuItem);
   }
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<MenuItemStarterBrickConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
@@ -845,7 +845,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   async run({ extensionIds = null }: RunArgs): Promise<void> {
-    if (this.menus.size === 0 || this.extensions.length === 0) {
+    if (this.menus.size === 0 || this.components.length === 0) {
       return;
     }
 
@@ -871,7 +871,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
       let ctxtPromise: Promise<JsonObject>;
 
-      for (const extension of this.extensions) {
+      for (const extension of this.components) {
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 

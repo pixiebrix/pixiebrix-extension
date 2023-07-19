@@ -32,6 +32,9 @@ export type Location =
   // Sidebar panel. ephemeralForm uses `sidebar` as the location for the sidebar
   "panel" | "modal" | "popover";
 
+/**
+ * A StarterBrick entity on a page that can ModComponents can be added to.
+ */
 export interface StarterBrick extends Metadata {
   /**
    * The kind of StarterBrick.
@@ -69,7 +72,7 @@ export interface StarterBrick extends Metadata {
   previewReader: () => Promise<Reader>;
 
   /**
-   * Return true if the StarterBrick is available on the current page. Based on:
+   * Return true if the StarterBrick should be available on the current page. Based on:
    *
    * - URL match patterns
    * - URL pattern rules
@@ -78,9 +81,9 @@ export interface StarterBrick extends Metadata {
   isAvailable: () => Promise<boolean>;
 
   /**
-   * True if the StarterBrick must be installed before the page can be considered ready
+   * True if the StarterBrick must be installed before the mods on the page should be considered ready.
    */
-  syncInstall: boolean;
+  isSyncInstall: boolean;
 
   /**
    * Install/add the StarterBrick to the page.
@@ -88,25 +91,9 @@ export interface StarterBrick extends Metadata {
   install(): Promise<boolean>;
 
   /**
-   * Remove the StarterBrick and installed ModComponents from the page.
+   * Register an ModComponent with the StarterBrick. Does not install/run the ModComponent.
    */
-  uninstall(options?: { global?: boolean }): void;
-
-  /**
-   * Remove the ModComponent from the StarterBrick.
-   */
-  removeExtension(modComponentId: UUID): void;
-
-  /**
-   * Register an ModComponent with the StarterBrick. Does not actually install/run the ModComponent.
-   */
-  addExtension(modComponent: ResolvedModComponent): void;
-
-  /**
-   * Sync registered ModComponents, removing any ModComponents that aren't provided here. Does not actually install/run
-   * the ModComponents.
-   */
-  syncExtensions(modComponents: ResolvedModComponent[]): void;
+  registerComponent(modComponent: ResolvedModComponent): void;
 
   /**
    * Run the installed ModComponents for StarterBrick.
@@ -114,14 +101,38 @@ export interface StarterBrick extends Metadata {
   run(args: RunArgs): Promise<void>;
 
   /**
-   * Returns all blocks configured in the ModComponentBase, including sub pipelines.
-   *
-   * @see PipelineExpression
+   * Remove the ModComponent from the StarterBrick and clear its UI from the page.
    */
-  getBlocks: (modComponent: ResolvedModComponent) => Promise<Brick[]>;
+  removeComponent(modComponentId: UUID): void;
 
   /**
-   * The current mod components registered with the StarterBrick.
+   * Remove the StarterBrick and all ModComponents from the page.
+   *
+   * @see removeComponent
    */
-  registeredExtensions: ResolvedModComponent[];
+  uninstall(options?: { global?: boolean }): void;
+
+  /**
+   * Synchronize registered ModComponents, removing any ModComponents that aren't provided. DOES NOT run the components.
+   *
+   * Equivalent to calling `removeComponent` and `registerComponent`.
+   *
+   * @see removeComponent
+   * @see registerComponent
+   */
+  synchronizeComponents(modComponents: ResolvedModComponent[]): void;
+
+  /**
+   * Returns all bricks configured in provided ModComponentBase, including sub-pipelines.
+   *
+   * @param modComponent the ModComponent to get bricks for
+   * @see PipelineExpression
+   */
+  getBricks: (modComponent: ResolvedModComponent) => Promise<Brick[]>;
+
+  /**
+   * The mod components currently registered with the StarterBrick.
+   * @since 1.7.34
+   */
+  registeredComponents: readonly ResolvedModComponent[];
 }

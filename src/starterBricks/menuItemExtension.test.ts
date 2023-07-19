@@ -121,7 +121,7 @@ describe("menuItemExtension", () => {
         extensionPointId: extensionPoint.id,
       });
 
-      extensionPoint.addExtension(modComponent);
+      extensionPoint.registerComponent(modComponent);
 
       await extensionPoint.install();
       await extensionPoint.run({ reason: RunReason.MANUAL });
@@ -147,7 +147,7 @@ describe("menuItemExtension", () => {
       extensionPointId: extensionPoint.id,
     });
 
-    extensionPoint.addExtension(modComponent);
+    extensionPoint.registerComponent(modComponent);
 
     await extensionPoint.install();
     await extensionPoint.run({ reason: RunReason.MANUAL });
@@ -168,7 +168,7 @@ describe("menuItemExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -209,7 +209,7 @@ describe("menuItemExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -252,7 +252,7 @@ describe("menuItemExtension", () => {
         })()
       );
 
-      extensionPoint.addExtension(
+      extensionPoint.registerComponent(
         modComponentFactory({
           extensionPointId: extensionPoint.id,
         })
@@ -288,7 +288,7 @@ describe("menuItemExtension", () => {
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
     const starterBrick = fromJS(starterBrickFactory()());
 
-    starterBrick.addExtension(
+    starterBrick.registerComponent(
       modComponentFactory({
         extensionPointId: starterBrick.id,
       })
@@ -318,7 +318,7 @@ describe("menuItemExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -353,7 +353,7 @@ describe("menuItemExtension", () => {
 
     const extensionPoint = fromJS(starterBrick);
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -383,7 +383,7 @@ describe("menuItemExtension", () => {
 
     const extensionPoint = fromJS(starterBrick);
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       modComponentFactory({
         extensionPointId: extensionPoint.id,
       })

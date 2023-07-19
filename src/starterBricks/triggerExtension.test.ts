@@ -129,7 +129,7 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.addExtension(
+      extensionPoint.registerComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
@@ -159,7 +159,7 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.addExtension(
+      extensionPoint.registerComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
@@ -210,7 +210,7 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.addExtension(
+      extensionPoint.registerComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
@@ -246,7 +246,7 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -278,7 +278,7 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -309,7 +309,7 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -411,7 +411,7 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -437,7 +437,7 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
@@ -468,7 +468,7 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
         config: {
@@ -501,7 +501,7 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
         config: {
@@ -530,7 +530,7 @@ describe("triggerExtension", () => {
       })({})
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
         config: {
