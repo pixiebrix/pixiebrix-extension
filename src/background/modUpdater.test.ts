@@ -40,12 +40,18 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
+import { uninstallContextMenu } from "@/background/contextMenus";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError", () => jest.fn());
 jest.mock("@/background/activeTab", () => ({
   forEachTab: jest.fn().mockResolvedValue(undefined),
 }));
+jest.mock("@/background/contextMenus", () => ({
+  uninstallContextMenu: jest.fn(),
+}));
+
+const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 
 describe("autoModUpdatesEnabled function", () => {
   it("should return false if flag absent", async () => {
@@ -287,6 +293,15 @@ describe("deactivateMod function", () => {
     expect(deactivatedModComponents[0]._recipe.id).toEqual(modToDeactivate.id);
     expect(deactivatedModComponents[1]._recipe.id).toEqual(modToDeactivate.id);
     expect(resultingState.extensions.length).toEqual(1);
+
+    // Verify that deactivate removes the context menu UI globally. See call for explanation of why that's necessary.
+    expect(uninstallContextMenuMock).toHaveBeenCalledTimes(2);
+    expect(uninstallContextMenuMock).toHaveBeenCalledWith({
+      extensionId: deactivatedModComponents[0].id,
+    });
+    expect(uninstallContextMenuMock).toHaveBeenCalledWith({
+      extensionId: deactivatedModComponents[1].id,
+    });
   });
 
   it("should do nothing if mod id does not have any activated mod components", async () => {
