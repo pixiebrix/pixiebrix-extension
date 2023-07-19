@@ -173,18 +173,11 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     throw new Error("PanelExtensionPoint.defaultReader not implemented");
   }
 
-  getTemplate(): string {
-    if (this.template) return this.template;
-    throw new Error("PanelExtensionPoint.getTemplate not implemented");
-  }
+  abstract getTemplate(): string;
 
-  getContainerSelector(): string | string[] {
-    throw new Error("PanelExtensionPoint.getContainerSelector not implemented");
-  }
+  abstract getContainerSelector(): string | string[];
 
-  async isAvailable(): Promise<boolean> {
-    throw new Error("PanelExtensionPoint.isAvailable not implemented");
-  }
+  abstract override isAvailable(): Promise<boolean>;
 
   override uninstall(): void {
     this.uninstalled = true;

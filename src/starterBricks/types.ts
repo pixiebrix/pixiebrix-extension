@@ -134,9 +134,11 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   public readonly description: string;
 
+  /**
+   * The current registered mod components.
+   * @protected
+   */
   protected readonly components: Array<ResolvedModComponent<TConfig>> = [];
-
-  protected readonly template?: string;
 
   public abstract readonly inputSchema: Schema;
 
@@ -153,7 +155,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   }
 
   /**
-   * Permissions required to use the extensions attached to the extension point.
+   * Permissions required to use the mod components attached to the starter brick.
    * https://developer.chrome.com/extensions/permission_warnings
    */
   public abstract readonly permissions: Permissions.Permissions;
