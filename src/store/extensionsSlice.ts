@@ -221,18 +221,16 @@ const extensionsSlice = createSlice({
 
         assertModComponentNotResolved(extension);
 
-        // Display name is 'StarterBrickActivate' in telemetry
         reportEvent(Events.STARTER_BRICK_ACTIVATE, selectEventData(extension));
 
         // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
         // or activate the deployment again
-
         state.extensions.push(extension);
 
+        // Ensure context menus are available on all existing tabs
         void contextMenus.preload([extension]);
       }
 
-      // Display name is 'ModActivate' in telemetry
       reportEvent(Events.MOD_ACTIVATE, {
         blueprintId: recipe.metadata.id,
         blueprintVersion: recipe.metadata.version,

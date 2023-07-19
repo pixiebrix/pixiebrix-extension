@@ -35,6 +35,7 @@ import type {
 } from "@/types/modComponentTypes";
 import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import type { ModComponentOptionsState } from "@/store/extensionsTypes";
+import { uninstallContextMenu } from "@/background/contextMenus";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -184,7 +185,8 @@ function deactivateModComponent(
 }
 
 /**
- * Deactivates all mod components with the given mod id.
+ * Deactivates all mod components with the given mod id. Does not remove the mod UI from existing tabs.
+ *
  * @param modId the mod registry id
  * @param reduxState the current state of the extension and editor redux stores
  * @returns {reduxState, deactivatedModComponents} new redux state with the mod components deactivated
@@ -215,6 +217,12 @@ export function deactivateMod(
     newEditorState = nextEditorState;
 
     deactivatedModComponents.push(activatedModComponent);
+
+    // Remove the menu item UI from all mods. We must explicitly remove context menu items because otherwise the user
+    // will see duplicate menu items because the old/new mod components have different UUIDs.
+    // `updateMods` calls `queueReactivateTab`. So if the user clicks on a tab where the new version of the mod
+    // component is not loaded yet, they'll get a notification to reload the page.
+    void uninstallContextMenu({ extensionId: activatedModComponent.id });
   }
 
   return {
@@ -224,8 +232,12 @@ export function deactivateMod(
 }
 
 /**
+ * Update the mod by deactivating and reactivating the mod with all the same configurations.
+ **
  * We currently don't have a way to "update" activated mods directly in the extension and editor redux stores.
- * Therefore, to update the mod, we deactivate and reactivate the mod with all the same configurations.
+ *
+ * The ModComponents will have new UUIDs.
+ *
  * @param mod the mod to update
  * @param reduxState the current state of the extension and editor redux stores
  * @returns new redux state with the mod updated
