@@ -78,16 +78,14 @@ const OptionComponent = (props: OptionProps<OptionValue>) => {
 const ValueComponent = (props: SingleValueProps<OptionValue>) => {
   const { data } = props;
   return (
-    <div>
-      <Button
-        type={null}
-        variant={data.value}
-        size="sm"
-        className={styles.option}
-      >
-        {data.label}
-      </Button>
-    </div>
+    <Button
+      type={null}
+      variant={data.value}
+      size="sm"
+      className={styles.option}
+    >
+      {data.label}
+    </Button>
   );
 };
 
