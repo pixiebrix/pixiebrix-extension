@@ -74,7 +74,7 @@ export const makeStringOptions = (...items: string[]): Option[] =>
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   options,
-  isClearable = false,
+  isClearable = true,
   isLoading,
   loadError,
   disabled,

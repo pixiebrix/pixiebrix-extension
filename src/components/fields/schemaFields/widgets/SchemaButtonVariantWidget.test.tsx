@@ -46,9 +46,14 @@ describe("SchemaButtonVariantWidget", () => {
   test("renders button variant select widget", () => {
     const defaultSelect = renderSelect("outline-primary");
 
+    // General snapshot test
     expect(defaultSelect).toMatchSnapshot();
+
+    // Selected variant matches preview
     const { getByTestId, queryAllByTestId } = defaultSelect;
     expect(getByTestId("selected-variant")).toHaveClass("btn-outline-primary");
+
+    // All variants present
     const selectContainerElement =
       getByTestId("select-container").querySelector("div");
     selectEvent.openMenu(selectContainerElement);
