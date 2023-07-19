@@ -217,17 +217,17 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     );
   }
 
-  registerComponent(componentId: ResolvedModComponent<TConfig>): void {
-    const index = this.components.findIndex((x) => x.id === componentId.id);
+  registerComponent(component: ResolvedModComponent<TConfig>): void {
+    const index = this.components.findIndex((x) => x.id === component.id);
     if (index >= 0) {
       console.warn(
-        `Extension ${componentId.id} already registered for the extension point ${this.id}`
+        `Component ${component.id} already registered for the starter brick ${this.id}`
       );
       // Index is guaranteed to be a number, and this.extensions is an array
       // eslint-disable-next-line security/detect-object-injection
-      this.components[index] = componentId;
+      this.components[index] = component;
     } else {
-      this.components.push(componentId);
+      this.components.push(component);
     }
   }
 

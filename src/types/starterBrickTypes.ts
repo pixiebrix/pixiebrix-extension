@@ -95,7 +95,7 @@ export interface StarterBrick extends Metadata {
    * Register a ModComponent with the StarterBrick. Does not add/run the ModComponent to the page.
    * @see runComponents
    */
-  registerComponent(modComponent: ResolvedModComponent): void;
+  registerComponent(component: ResolvedModComponent): void;
 
   /**
    * Run all registered ModComponents for this StarterBrick and/or add their UI to the page.

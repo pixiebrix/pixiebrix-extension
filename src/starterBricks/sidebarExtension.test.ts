@@ -77,11 +77,8 @@ describe("sidebarExtension", () => {
     );
 
     await extensionPoint.install();
-    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
 
-    // Not run until shown
-    expect(rootReader.readCount).toBe(0);
-
+    // To avoid race condition, it reserves panels in the install method in addition to the run method
     expect(getReservedPanelEntries()).toStrictEqual({
       forms: [],
       panels: [
@@ -92,6 +89,11 @@ describe("sidebarExtension", () => {
       temporaryPanels: [],
       recipeToActivate: null,
     });
+
+    await extensionPoint.runComponents({ reason: RunReason.MANUAL });
+
+    // Not run until shown
+    expect(rootReader.readCount).toBe(0);
 
     extensionPoint.uninstall();
   });
