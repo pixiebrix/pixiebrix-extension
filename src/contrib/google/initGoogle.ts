@@ -18,7 +18,7 @@
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { isMV3 } from "@/mv3/api";
-import { DISCOVERY_DOCS as SHEETS_DOCS } from "@/contrib/google/sheets/sheetsConstants";
+import { DISCOVERY_DOCS as SHEETS_DOCS } from "@/contrib/google/sheets/core/sheetsConstants";
 import pDefer from "p-defer";
 import { isGoogleChrome } from "@/chrome";
 import { sleep } from "@/utils";

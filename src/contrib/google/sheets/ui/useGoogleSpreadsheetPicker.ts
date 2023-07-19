@@ -14,17 +14,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
+import useCurrentOrigin from "@/contrib/google/sheets/core/useCurrentOrigin";
 import { useCallback, useState } from "react";
 import { isAuthRejectedError } from "@/contrib/google/auth";
 import { isNullOrBlank } from "@/utils";
-import { type Data, type Doc } from "@/contrib/google/sheets/types";
+import { type Data, type Doc } from "@/contrib/google/sheets/core/types";
 import pDefer from "p-defer";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
-import { ensureSheetsReady } from "@/contrib/google/sheets/handlers";
+import { ensureSheetsReady } from "@/contrib/google/sheets/core/handlers";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;

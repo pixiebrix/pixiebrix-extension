@@ -17,8 +17,8 @@
 
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
-import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
+import SheetsFileWidget from "@/contrib/google/sheets/ui/SheetsFileWidget";
+import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { sheets } from "@/background/messenger/api";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
@@ -32,7 +32,7 @@ import {
   isGoogleInitialized,
 } from "@/contrib/google/initGoogle";
 import userEvent from "@testing-library/user-event";
-import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
+import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker";
 import { act, screen } from "@testing-library/react";
 
 jest.mock("@/contrib/google/sheets/useGoogleSpreadsheetPicker", () => ({

@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@testing-library/react-hooks";
-import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
+import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { isEqual } from "lodash";
 
 describe("useOnChangeEffect", () => {

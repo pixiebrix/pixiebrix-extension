@@ -20,8 +20,8 @@ import {
   handleGoogleRequestRejection,
   handleLegacyGoogleClientRequestRejection,
 } from "@/contrib/google/auth";
-import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
-import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/sheetsConstants";
+import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
+import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/core/sheetsConstants";
 import { expectContext } from "@/utils/expectContext";
 import initGoogle, {
   isGAPISupported,
@@ -39,7 +39,7 @@ import {
   type Spreadsheet,
   type SpreadsheetProperties,
   type ValueRange,
-} from "@/contrib/google/sheets/types";
+} from "@/contrib/google/sheets/core/types";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";

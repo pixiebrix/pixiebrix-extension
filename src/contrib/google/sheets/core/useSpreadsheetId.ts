@@ -27,7 +27,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
-import { getSheetServiceOutputKey } from "@/contrib/google/sheets/getSheetServiceOutputKey";
+import { getSheetServiceOutputKey } from "@/contrib/google/sheets/core/getSheetServiceOutputKey";
 import { type Expression, type OptionsArgs } from "@/types/runtimeTypes";
 
 type SpreadsheetState = {

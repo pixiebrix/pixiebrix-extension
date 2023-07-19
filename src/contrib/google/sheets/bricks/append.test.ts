@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { detectShape, normalizeShape } from "@/contrib/google/sheets/append";
+import {
+  detectShape,
+  normalizeShape,
+} from "@/contrib/google/sheets/bricks/append";
 
 describe("Infer shape", () => {
   it("Infer entries shape", () => {

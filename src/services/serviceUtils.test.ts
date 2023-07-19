@@ -19,7 +19,7 @@ import { extractServiceIds } from "@/services/serviceUtils";
 import {
   SHEET_SERVICE_SCHEMA,
   BASE_SHEET_SCHEMA,
-} from "@/contrib/google/sheets/schemas";
+} from "@/contrib/google/sheets/core/schemas";
 
 describe("extractServiceIds", () => {
   it("errors by default if not found", () => {

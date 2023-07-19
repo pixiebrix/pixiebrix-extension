@@ -19,14 +19,14 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import PushOptions from "@/contrib/zapier/PushOptions";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
-import AppendSpreadsheetOptions from "@/contrib/google/sheets/AppendSpreadsheetOptions";
+import AppendSpreadsheetOptions from "@/contrib/google/sheets/ui/AppendSpreadsheetOptions";
 import SheetServiceOptions, {
   SERVICE_GOOGLE_SHEET_ID,
-} from "@/contrib/google/sheets/SheetServiceOptions";
+} from "@/contrib/google/sheets/ui/SheetServiceOptions";
 import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
 import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
-import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/append";
+import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/bricks/append";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import FormModalOptions, {
@@ -37,8 +37,8 @@ import FormRendererOptions, {
 } from "@/pageEditor/fields/FormRendererOptions";
 import { COMPONENT_READER_ID } from "@/bricks/transformers/component/ComponentReader";
 import ComponentReaderOptions from "@/bricks/transformers/component/ComponentReaderOptions";
-import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/lookup";
-import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
+import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/bricks/lookup";
+import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import DatabaseGetOptions, {
   DATABASE_GET_ID,
 } from "@/pageEditor/fields/DatabaseGetOptions";

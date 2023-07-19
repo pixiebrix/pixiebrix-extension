@@ -25,7 +25,7 @@ import {
   PERSON_READER,
 } from "./pipedrive/readers";
 import { GeocodeTransformer } from "./google/geocode";
-import { GoogleSheetsAppend } from "./google/sheets/append";
+import { GoogleSheetsAppend } from "./google/sheets/bricks/append";
 import {
   SendAdvancedSlackMessage,
   SendSimpleSlackMessage,
@@ -36,7 +36,7 @@ import { RunLocalProcess } from "./uipath/localProcess";
 import { UiPathAppRenderer } from "./uipath/embedApp";
 import { PushZap } from "./zapier/push";
 import { RunBot } from "./automationanywhere/RunBot";
-import { GoogleSheetsLookup } from "@/contrib/google/sheets/lookup";
+import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
 
 let registered = false;
 

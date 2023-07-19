@@ -641,7 +641,7 @@ describe("upgrade overrides", () => {
   test("append to google sheets as object", async () => {
     // Import dynamically to avoid circular dependence
     const { GoogleSheetsAppend } = await import(
-      "@/contrib/google/sheets/append"
+      "@/contrib/google/sheets/bricks/append"
     );
 
     const block = new GoogleSheetsAppend();
@@ -691,7 +691,7 @@ describe("upgrade overrides", () => {
   test("append to google sheets as array", async () => {
     // Import dynamically to avoid circular dependence
     const { GoogleSheetsAppend } = await import(
-      "@/contrib/google/sheets/append"
+      "@/contrib/google/sheets/bricks/append"
     );
 
     const block = new GoogleSheetsAppend();

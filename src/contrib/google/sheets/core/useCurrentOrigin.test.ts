@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useCurrentOrigin from "@/contrib/google/sheets/useCurrentOrigin";
+import useCurrentOrigin from "@/contrib/google/sheets/core/useCurrentOrigin";
 import { renderHook } from "@/sidebar/testHelpers";
 import Tab = chrome.tabs.Tab;
 import { waitForEffect } from "@/testUtils/testHelpers";

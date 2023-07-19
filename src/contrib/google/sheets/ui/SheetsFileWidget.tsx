@@ -18,7 +18,7 @@
 import "./SheetsFileWidget.module.scss";
 
 import React, { useEffect, useState } from "react";
-import { type SheetMeta } from "@/contrib/google/sheets/types";
+import { type SheetMeta } from "@/contrib/google/sheets/core/types";
 import { useField, useFormikContext } from "formik";
 import { isNullOrBlank } from "@/utils";
 import { sheets } from "@/background/messenger/api";
@@ -32,8 +32,8 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { isModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
-import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/useGoogleSpreadsheetPicker";
-import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
+import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker";
+import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
 import useAsyncState from "@/hooks/useAsyncState";

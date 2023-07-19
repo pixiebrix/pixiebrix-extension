@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@/sidebar/testHelpers";
-import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
+import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
 import { services } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";

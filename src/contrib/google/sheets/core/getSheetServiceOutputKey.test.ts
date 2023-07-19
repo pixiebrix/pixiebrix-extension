@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSheetServiceOutputKey } from "@/contrib/google/sheets/getSheetServiceOutputKey";
+import { getSheetServiceOutputKey } from "@/contrib/google/sheets/core/getSheetServiceOutputKey";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 describe("getSheetServiceOutputKey", () => {
