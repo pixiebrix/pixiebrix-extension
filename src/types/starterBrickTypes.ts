@@ -93,6 +93,7 @@ export interface StarterBrick extends Metadata {
 
   /**
    * Register a ModComponent with the StarterBrick. Does not add/run the ModComponent to the page.
+   * @see runComponents
    */
   registerComponent(modComponent: ResolvedModComponent): void;
 
@@ -103,7 +104,7 @@ export interface StarterBrick extends Metadata {
   runComponents(args: RunArgs): Promise<void>;
 
   /**
-   * Remove the ModComponent from the StarterBrick and clear its UI from the page.
+   * Remove the ModComponent from the StarterBrick and clear its UI and events from the page.
    */
   removeComponent(modComponentId: UUID): void;
 
