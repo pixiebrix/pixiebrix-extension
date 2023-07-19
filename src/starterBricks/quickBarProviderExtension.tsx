@@ -143,9 +143,9 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
   override uninstall(): void {
     // Remove generators and all existing actions in the Quick Bar
-    this.clearComponentInterfaceAndEvents(this.components.map((x) => x.id));
+    this.clearComponentInterfaceAndEvents(this.modComponents.map((x) => x.id));
     quickBarRegistry.removeExtensionPointActions(this.id);
-    this.components.splice(0, this.components.length);
+    this.modComponents.splice(0, this.modComponents.length);
   }
 
   /**
@@ -168,7 +168,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   }
 
   async runComponents(): Promise<void> {
-    if (this.components.length === 0) {
+    if (this.modComponents.length === 0) {
       console.debug(
         `quickBar starter brick ${this.id} has no installed components`
       );
@@ -201,12 +201,14 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     if (!testMatchPatterns(this.documentUrlPatterns)) {
       // Remove actions and un-attach generators
       quickBarRegistry.removeExtensionPointActions(this.id);
-      this.clearComponentInterfaceAndEvents(this.components.map((x) => x.id));
+      this.clearComponentInterfaceAndEvents(
+        this.modComponents.map((x) => x.id)
+      );
       return;
     }
 
     const results = await Promise.allSettled(
-      this.components.map(async (extension) => {
+      this.modComponents.map(async (extension) => {
         try {
           await this.registerActionProvider(extension);
         } catch (error) {

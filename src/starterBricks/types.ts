@@ -141,7 +141,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
    * The current registered mod components.
    * @protected
    */
-  protected readonly components: Array<ResolvedModComponent<TConfig>> = [];
+  protected readonly modComponents: Array<ResolvedModComponent<TConfig>> = [];
 
   public abstract readonly inputSchema: Schema;
 
@@ -154,7 +154,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   }
 
   public get registeredComponents(): Array<ResolvedModComponent<TConfig>> {
-    return [...this.components];
+    return [...this.modComponents];
   }
 
   /**
@@ -192,17 +192,17 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   synchronizeComponents(
     components: Array<ResolvedModComponent<TConfig>>
   ): void {
-    const before = this.components.map((x) => x.id);
+    const before = this.modComponents.map((x) => x.id);
 
     const updatedIds = new Set(components.map((x) => x.id));
-    const removed = this.components.filter(
+    const removed = this.modComponents.filter(
       (currentComponent) => !updatedIds.has(currentComponent.id)
     );
     this.clearComponentInterfaceAndEvents(removed.map((x) => x.id));
 
     // Clear extensions and re-populate with updated components
-    this.components.splice(0, this.components.length);
-    this.components.push(...components);
+    this.modComponents.splice(0, this.modComponents.length);
+    this.modComponents.push(...components);
 
     console.debug("synchronizeComponents for extension point %s", this.id, {
       before,
@@ -213,21 +213,21 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   removeComponent(componentId: UUID): void {
     this.synchronizeComponents(
-      this.components.filter((x) => x.id !== componentId)
+      this.modComponents.filter((x) => x.id !== componentId)
     );
   }
 
   registerComponent(component: ResolvedModComponent<TConfig>): void {
-    const index = this.components.findIndex((x) => x.id === component.id);
+    const index = this.modComponents.findIndex((x) => x.id === component.id);
     if (index >= 0) {
       console.warn(
         `Component ${component.id} already registered for the starter brick ${this.id}`
       );
       // Index is guaranteed to be a number, and this.extensions is an array
       // eslint-disable-next-line security/detect-object-injection
-      this.components[index] = component;
+      this.modComponents[index] = component;
     } else {
-      this.components.push(component);
+      this.modComponents.push(component);
     }
   }
 

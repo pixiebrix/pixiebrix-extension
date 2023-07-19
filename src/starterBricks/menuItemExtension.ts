@@ -336,7 +336,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     const menus = [...this.menus.values()];
 
     // Clear so they don't get re-added by the onNodeRemoved mechanism
-    const extensions = this.components.splice(0, this.components.length);
+    const extensions = this.modComponents.splice(0, this.modComponents.length);
     this.menus.clear();
 
     if (extensions.length === 0) {
@@ -845,7 +845,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   async runComponents({ extensionIds = null }: RunArgs): Promise<void> {
-    if (this.menus.size === 0 || this.components.length === 0) {
+    if (this.menus.size === 0 || this.modComponents.length === 0) {
       return;
     }
 
@@ -871,7 +871,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
       let ctxtPromise: Promise<JsonObject>;
 
-      for (const extension of this.components) {
+      for (const extension of this.modComponents) {
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 

@@ -172,7 +172,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
-    const extensions = this.components.splice(0, this.components.length);
+    const extensions = this.modComponents.splice(0, this.modComponents.length);
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id });
@@ -250,12 +250,12 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   private async registerExtensions(): Promise<void> {
     console.debug(
       "Registering",
-      this.components.length,
+      this.modComponents.length,
       "contextMenu starter bricks"
     );
 
     const results = await Promise.allSettled(
-      this.components.map(async (extension) => {
+      this.modComponents.map(async (extension) => {
         try {
           await this.registerExtension(extension);
         } catch (error) {

@@ -182,7 +182,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   override uninstall(): void {
     this.uninstalled = true;
 
-    for (const extension of this.components) {
+    for (const extension of this.modComponents) {
       const $item = this.$container.find(
         `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
       );
@@ -432,7 +432,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   }
 
   async runComponents({ extensionIds = null }: RunArgs): Promise<void> {
-    if (!this.$container || this.components.length === 0) {
+    if (!this.$container || this.modComponents.length === 0) {
       return;
     }
 
@@ -445,7 +445,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const errors: unknown[] = [];
 
-    for (const extension of this.components) {
+    for (const extension of this.modComponents) {
       if (extensionIds != null && !extensionIds.includes(extension.id)) {
         continue;
       }

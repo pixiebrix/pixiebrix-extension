@@ -137,7 +137,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   public override uninstall(): void {
-    const extensions = this.components.splice(0, this.components.length);
+    const extensions = this.modComponents.splice(0, this.modComponents.length);
     this.clearComponentInterfaceAndEvents(extensions.map((x) => x.id));
     removeExtensionPoint(this.id);
     console.debug(
@@ -154,7 +154,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    */
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
     // Don't call this.clearExtensionInterfaceAndEvents to keep the panel. Instead, mutate this.extensions to exclude id
-    remove(this.components, (x) => x.id === extensionId);
+    remove(this.modComponents, (x) => x.id === extensionId);
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
     console.debug(
       "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
@@ -245,7 +245,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }: {
     shouldRunExtension?: (extension: ModComponentBase) => boolean;
   }): Promise<void> => {
-    const extensionsToRefresh = this.components.filter((extension) =>
+    const extensionsToRefresh = this.modComponents.filter((extension) =>
       shouldRunExtension(extension)
     );
 
@@ -342,7 +342,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       return;
     }
 
-    if (this.components.length === 0) {
+    if (this.modComponents.length === 0) {
       console.debug(
         "SidebarStarterBrick:run Sidebar StarterBrick %s has no installed extensions",
         this.id
@@ -354,7 +354,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
     // the sidebar won't be visible yet on initial page load.
     reservePanels(
-      this.components.map((extension) => ({
+      this.modComponents.map((extension) => ({
         extensionId: extension.id,
         extensionPointId: this.id,
         blueprintId: extension._recipe?.id,
@@ -412,7 +412,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // In the future, we might instead consider gating sidebar content loading based on mods both having been
       // `install`ed and `runComponents` called completed at least once.
       reservePanels(
-        this.components.map((components) => ({
+        this.modComponents.map((components) => ({
           extensionId: components.id,
           extensionPointId: this.id,
           blueprintId: components._recipe?.id,

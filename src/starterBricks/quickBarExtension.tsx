@@ -173,7 +173,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     }
 
     const results = await Promise.allSettled(
-      this.components.map(async (extension) => {
+      this.modComponents.map(async (extension) => {
         try {
           await this.registerExtensionAction(extension);
         } catch (error) {
@@ -265,7 +265,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   }
 
   async runComponents(): Promise<void> {
-    if (this.components.length === 0) {
+    if (this.modComponents.length === 0) {
       console.debug(
         `quickBar extension point ${this.id} has no installed extensions`
       );

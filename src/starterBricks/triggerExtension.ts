@@ -307,7 +307,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.installedEvents.clear();
 
     // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
-    this.components.splice(0, this.components.length);
+    this.modComponents.splice(0, this.modComponents.length);
   }
 
   inputSchema: Schema = propertiesToSchema({
@@ -431,7 +431,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       nativeEvent: Event | null;
     }
   ): Promise<void> {
-    let extensionsToRun = this.components;
+    let extensionsToRun = this.modComponents;
 
     if (this.trigger === "hover") {
       // Enforce synchronous behavior for `hover` event
