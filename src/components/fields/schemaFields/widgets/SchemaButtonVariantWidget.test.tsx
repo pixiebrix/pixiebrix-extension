@@ -19,6 +19,8 @@ import React from "react";
 import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
 import { render } from "@/pageEditor/testHelpers";
 import { type Schema } from "@/types/schemaTypes";
+// eslint-disable-next-line no-restricted-imports
+import { Formik } from "formik";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -30,11 +32,13 @@ describe("SchemaButtonVariantWidget", () => {
   test("renders button variant select widget", () => {
     expect(
       render(
-        <SchemaButtonVariantWidget
-          name={fieldName}
-          schema={schema}
-          description={fieldDescription}
-        />
+        <Formik initialValues={{ testField: "primary" }} onSubmit={() => {}}>
+          <SchemaButtonVariantWidget
+            name={fieldName}
+            schema={schema}
+            description={fieldDescription}
+          />
+        </Formik>
       ).asFragment()
     ).toMatchSnapshot();
   });
