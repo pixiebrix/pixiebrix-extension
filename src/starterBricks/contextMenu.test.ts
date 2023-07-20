@@ -91,10 +91,10 @@ describe("contextMenu", () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
 
-    starterBrick.addExtension(modComponent);
-    starterBrick.addExtension(modComponent);
+    starterBrick.registerModComponent(modComponent);
+    starterBrick.registerModComponent(modComponent);
 
-    expect(starterBrick.registeredExtensions).toStrictEqual([modComponent]);
+    expect(starterBrick.registeredModComponents).toStrictEqual([modComponent]);
   });
 
   it("should include context menu props in schema", async () => {
@@ -110,13 +110,17 @@ describe("contextMenu", () => {
     expect(value).toHaveProperty("selectionText");
   });
 
-  it("should register context menu on install", async () => {
+  it("should register context menu on run", async () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
 
-    starterBrick.addExtension(modComponent);
+    starterBrick.registerModComponent(modComponent);
 
     await starterBrick.install();
+
+    expect(ensureContextMenuMock).not.toHaveBeenCalled();
+
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(ensureContextMenuMock).toHaveBeenCalledOnce();
     expect(ensureContextMenuMock).toHaveBeenCalledExactlyOnceWith(
@@ -124,26 +128,22 @@ describe("contextMenu", () => {
         extensionId: modComponent.id,
       })
     );
-
-    // Should not be called again - run is a NOP
-    await starterBrick.run({ reason: RunReason.MANUAL });
-    expect(ensureContextMenuMock).toHaveBeenCalledOnce();
   });
 
   it("should remove from UI from all tabs on sync", async () => {
     const starterBrick = fromJS(extensionPointFactory()());
     const modComponent = extensionFactory();
-    starterBrick.addExtension(modComponent);
+    starterBrick.registerModComponent(modComponent);
 
     await starterBrick.install();
-    await starterBrick.run({ reason: RunReason.MANUAL });
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     // Not read until the menu is actually run
     expect(rootReader.readCount).toBe(0);
 
-    starterBrick.syncExtensions([]);
+    starterBrick.synchronizeModComponents([]);
 
-    expect(starterBrick.registeredExtensions).toHaveLength(0);
+    expect(starterBrick.registeredModComponents).toHaveLength(0);
 
     expect(uninstallContextMenuMock).toHaveBeenCalledExactlyOnceWith({
       extensionId: modComponent.id,

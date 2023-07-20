@@ -131,7 +131,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     ["generator"]
   );
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<QuickBarProviderConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.generator);
@@ -143,16 +143,18 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
   override uninstall(): void {
     // Remove generators and all existing actions in the Quick Bar
-    this.clearExtensionInterfaceAndEvents(this.extensions.map((x) => x.id));
+    this.clearModComponentInterfaceAndEvents(
+      this.modComponents.map((x) => x.id)
+    );
     quickBarRegistry.removeExtensionPointActions(this.id);
-    this.extensions.splice(0, this.extensions.length);
+    this.modComponents.splice(0, this.modComponents.length);
   }
 
   /**
    * Unregister quick bar action providers for the given extension IDs.
    * @param extensionIds the extensions IDs to unregister
    */
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
       quickBarRegistry.removeGenerator(this.generators.get(extensionId));
       this.generators.delete(extensionId);
@@ -165,6 +167,20 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     // access to (so PixieBrix will ask for permissions). Whether a quick bar item actually appears is controlled by the
     // documentUrlPatterns.
     return true;
+  }
+
+  async runModComponents(): Promise<void> {
+    if (this.modComponents.length === 0) {
+      console.debug(
+        `quickBar starter brick ${this.id} has no installed components`
+      );
+
+      // Not sure if this is needed or not, but remove any straggler extension actions
+      quickBarRegistry.removeExtensionPointActions(this.id);
+      return;
+    }
+
+    await this.syncActionProvidersForUrl();
   }
 
   override async defaultReader(): Promise<Reader> {
@@ -187,12 +203,14 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     if (!testMatchPatterns(this.documentUrlPatterns)) {
       // Remove actions and un-attach generators
       quickBarRegistry.removeExtensionPointActions(this.id);
-      this.clearExtensionInterfaceAndEvents(this.extensions.map((x) => x.id));
+      this.clearModComponentInterfaceAndEvents(
+        this.modComponents.map((x) => x.id)
+      );
       return;
     }
 
     const results = await Promise.allSettled(
-      this.extensions.map(async (extension) => {
+      this.modComponents.map(async (extension) => {
         try {
           await this.registerActionProvider(extension);
         } catch (error) {
@@ -299,19 +317,6 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     // Register new generator
     this.generators.set(extension.id, actionGenerator);
     quickBarRegistry.addGenerator(actionGenerator, rootActionId);
-  }
-
-  async run(): Promise<void> {
-    if (this.extensions.length === 0) {
-      console.debug(
-        `quickBar extension point ${this.id} has no installed extensions`
-      );
-      // Not sure if this is needed or not, but remove any straggler extension actions
-      quickBarRegistry.removeExtensionPointActions(this.id);
-      return;
-    }
-
-    await this.syncActionProvidersForUrl();
   }
 }
 

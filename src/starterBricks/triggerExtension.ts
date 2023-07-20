@@ -273,7 +273,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.abortController.signal.addEventListener("abort", callback);
   }
 
-  clearExtensionInterfaceAndEvents(): void {
+  clearModComponentInterfaceAndEvents(): void {
     // NOP: the unregisterExtensionEvents method doesn't need to unregister anything from the page because the
     // observers/handlers are installed for the extensionPoint instance itself, not the extensions. I.e., there's a
     // single load/click/etc. trigger that's shared by all extensions using this extension point.
@@ -307,7 +307,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.installedEvents.clear();
 
     // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
-    this.extensions.splice(0, this.extensions.length);
+    this.modComponents.splice(0, this.modComponents.length);
   }
 
   inputSchema: Schema = propertiesToSchema({
@@ -316,7 +316,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     },
   });
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<TriggerConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
@@ -431,7 +431,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       nativeEvent: Event | null;
     }
   ): Promise<void> {
-    let extensionsToRun = this.extensions;
+    let extensionsToRun = this.modComponents;
 
     if (this.trigger === "hover") {
       // Enforce synchronous behavior for `hover` event
@@ -780,7 +780,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  async run(): Promise<void> {
+  async runModComponents(): Promise<void> {
     this.cancelObservers();
 
     const $root = await this.getRoot();
