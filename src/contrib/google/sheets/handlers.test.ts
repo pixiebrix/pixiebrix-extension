@@ -15,8 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ensureSheetsReady } from "@/contrib/google/sheets/handlers";
+import {
+  ensureSheetsReady,
+  getAllSpreadsheets,
+} from "@/contrib/google/sheets/handlers";
 import { ensureGoogleToken } from "@/contrib/google/auth";
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
+import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
+import { proxyService as realProxyService } from "@/background/requests";
+import { proxyService as apiProxyService } from "@/background/messenger/api";
+
+const axiosMock = new MockAdapter(axios);
+// enrichAxiosErrors();
+
+// Wire up proxyService to the real implementation
+jest.mocked(apiProxyService).mockImplementation(realProxyService);
 
 jest.mock("@/contrib/google/initGoogle", () => ({
   isGoogleInitialized: jest.fn().mockReturnValue(true),
@@ -54,5 +68,16 @@ describe("ensureSheetsReady", () => {
       Error
     );
     expect(ensureGoogleTokenMock).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe("error handling", () => {
+  beforeEach(() => {
+    axiosMock.reset();
+  });
+
+  it("handles 404", async () => {
+    axiosMock.onGet().reply(404);
+    await expect(getAllSpreadsheets(null)).rejects.toThrow();
   });
 });
