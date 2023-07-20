@@ -55,32 +55,19 @@ interface OptionValue {
   label: string;
 }
 
-const OptionComponent = (props: OptionProps<OptionValue>) => {
-  const { innerProps, innerRef, data, isSelected } = props;
-  return (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      className={cx(styles.optionContainer, { [styles.active]: isSelected })}
-    >
-      <Button
-        data-testid="variant-option"
-        type={null}
-        variant={data.value}
-        size="sm"
-        className={styles.exampleButton}
-      >
-        {data.label}
-      </Button>
-    </div>
-  );
-};
-
-const ValueComponent = (props: SingleValueProps<OptionValue>) => {
-  const { data } = props;
-  return (
+const OptionComponent = ({
+  innerProps,
+  innerRef,
+  data,
+  isSelected,
+}: OptionProps<OptionValue>) => (
+  <div
+    ref={innerRef}
+    {...innerProps}
+    className={cx(styles.optionContainer, { [styles.active]: isSelected })}
+  >
     <Button
-      data-testid="selected-variant"
+      data-testid="variant-option"
       type={null}
       variant={data.value}
       size="sm"
@@ -88,24 +75,36 @@ const ValueComponent = (props: SingleValueProps<OptionValue>) => {
     >
       {data.label}
     </Button>
-  );
-};
+  </div>
+);
 
-const ContainerComponent = (props: ValueContainerProps<OptionValue>) => {
-  const { innerProps, children } = props;
-  return (
-    <div {...innerProps} className={styles.selectContainer}>
-      {children}
-    </div>
-  );
-};
+const ValueComponent = ({ data }: SingleValueProps<OptionValue>) => (
+  <Button
+    data-testid="selected-variant"
+    type={null}
+    variant={data.value}
+    size="sm"
+    className={styles.exampleButton}
+  >
+    {data.label}
+  </Button>
+);
+
+const ContainerComponent = ({
+  innerProps,
+  children,
+}: ValueContainerProps<OptionValue>) => (
+  <div {...innerProps} className={styles.selectContainer}>
+    {children}
+  </div>
+);
 
 const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
-  uiSchema,
+  uiSchema = {},
 }) => {
   const [{ value }, , { setValue }] = useField(name);
-  const { isSearchable, isClearable } = uiSchema ?? {};
+  const { isSearchable, isClearable } = uiSchema;
 
   return (
     <div className="mt-2" data-testid="select-container">
