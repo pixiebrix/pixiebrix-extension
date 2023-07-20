@@ -84,11 +84,12 @@ export function mapSchemaToOptions({
 
 const SchemaSelectWidget: React.VFC<
   SchemaFieldProps & { placeholder?: string }
-> = ({ name, schema, isRequired, focusInput, placeholder, uiSchema = {} }) => {
+> = ({ name, schema, isRequired, focusInput, placeholder, uiSchema }) => {
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
 
-  const { isSearchable = true, isClearable = true } = uiSchema;
+  const { isSearchable = true, isClearable = true } =
+    uiSchema?.options?.props ?? {};
 
   const elementRef = useRef();
   useAutoFocusConfiguration({ elementRef, focus: focusInput });

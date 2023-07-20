@@ -169,7 +169,6 @@ function getElementEditSchemas(
           type: "string",
           format: "bootstrap-button-variant",
         },
-        uiSchema: { isClearable: false, isSearchable: false },
         label: "Button Style",
         description: "The style/variant of the button",
       };
@@ -183,7 +182,14 @@ function getElementEditSchemas(
             { const: "sm", title: "Small" },
           ],
         },
-        uiSchema: { isClearable: false, isSearchable: false },
+        uiSchema: {
+          options: {
+            props: {
+              isClearable: false,
+              isSearchable: false,
+            },
+          },
+        },
         label: "Button Size",
         description: "The size of the button: Small, Medium, or Large",
       };
