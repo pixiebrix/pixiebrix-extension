@@ -18,10 +18,11 @@
 import React from "react";
 import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
 import { render } from "@/pageEditor/testHelpers";
-import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 // eslint-disable-next-line no-restricted-imports
 import { Formik } from "formik";
 import selectEvent from "react-select-event";
+import userEvent from "@testing-library/user-event";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -30,14 +31,18 @@ const schema: Schema = {
   type: "string",
 };
 
-const renderSelect = (value: string, uiSchema: UiSchema = {}) =>
+const renderSelect = (value: string, onSubmit?: (formVals: any) => void) =>
   render(
-    <Formik initialValues={{ testField: value }} onSubmit={() => {}}>
+    <Formik
+      initialValues={{ testField: value }}
+      onSubmit={onSubmit}
+      validate={onSubmit}
+      validateOnChange
+    >
       <SchemaButtonVariantWidget
         name={fieldName}
         schema={schema}
         description={fieldDescription}
-        uiSchema={uiSchema}
       />
     </Formik>
   );
@@ -50,13 +55,29 @@ describe("SchemaButtonVariantWidget", () => {
     expect(defaultSelect).toMatchSnapshot();
 
     // Selected variant matches preview
-    const { getByTestId, queryAllByTestId } = defaultSelect;
+    const { getByTestId } = defaultSelect;
     expect(getByTestId("selected-variant")).toHaveClass("btn-outline-primary");
+  });
+
+  test("selecting variants updates form", async () => {
+    const onSubmit = jest.fn();
+
+    const defaultSelect = renderSelect("outline-primary", (values) =>
+      onSubmit(values)
+    );
+    const { getByTestId, queryAllByTestId } = defaultSelect;
 
     // All variants present
     const selectContainerElement =
       getByTestId("select-container").querySelector("div");
+
     selectEvent.openMenu(selectContainerElement);
-    expect(queryAllByTestId("variant-option")).toHaveLength(18);
+    const options = queryAllByTestId("variant-option");
+    expect(options).toHaveLength(18);
+
+    await userEvent.click(options[8]);
+
+    expect(getByTestId("selected-variant")).toHaveClass("btn-danger");
+    expect(onSubmit).toHaveBeenCalledWith({ testField: "danger" });
   });
 });
