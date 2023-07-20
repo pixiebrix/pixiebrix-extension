@@ -26,16 +26,14 @@ function getClassNameEdit(
   elementName: string,
   {
     label = "Layout/Style",
-    optionOverrides,
-  }: { label?: string; optionOverrides?: Partial<CssClassWidgetControls> } = {}
+    uiSchema,
+  }: { label?: string; uiSchema?: Partial<CssClassWidgetControls> } = {}
 ): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
     schema: { type: "string", format: "bootstrap-class" },
     label,
-    uiSchema: {
-      optionOverrides,
-    },
+    uiSchema,
   };
 }
 
@@ -234,7 +232,7 @@ function getElementEditSchemas(
         getHiddenEdit(elementName),
         getClassNameEdit(elementName, {
           label: "Label Style",
-          optionOverrides: {
+          uiSchema: {
             textVariant: false,
             backgroundColor: false,
             borders: false,

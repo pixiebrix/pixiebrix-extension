@@ -531,11 +531,9 @@ const CssClassWidget: React.VFC<
 > = (props) => {
   const { name, uiSchema } = props;
 
-  const optionOverrides = uiSchema?.optionOverrides ?? {};
-
   const controlOptions: CssClassWidgetControls = {
     ...defaultOptions,
-    ...optionOverrides,
+    ...uiSchema,
   };
 
   const [{ value }, , { setValue }] = useField<Value>(name);
