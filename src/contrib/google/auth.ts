@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getErrorMessage } from "@/errors/errorHelpers";
+import {
+  getErrorMessage,
+  getRootCause,
+  isErrorObject,
+  selectError,
+} from "@/errors/errorHelpers";
 import { forbidContext } from "@/utils/expectContext";
 import chromeP from "webext-polyfill-kinda";
 import { isGoogleInitialized } from "@/contrib/google/initGoogle";
@@ -23,6 +28,7 @@ import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { isObject } from "@/utils";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { ErrorObject } from "serialize-error";
 
 /**
  * The user or account policy explicitly denied the permission.
@@ -132,22 +138,25 @@ export async function handleGoogleRequestRejection(
   googleAccount: SanitizedIntegrationConfig | null,
   legacyClientToken: string | null
 ): Promise<Error> {
-  const basicMessage = "Google rejected request";
-  console.debug(basicMessage, { error });
+  // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
+  // configuration. Therefore, get root cause for determining if this is an Axios error
+  const rootCause = getRootCause(error);
+
+  console.debug("Error making Google request", { error });
 
   if (!isObject(error)) {
-    return new Error(basicMessage, { cause: error });
+    // Shouldn't happen in practice, but be defensive
+    return new Error("Unknown error making Google request", {
+      cause: selectError(error),
+    });
   }
 
-  if (!isAxiosError(error) || error.response == null) {
-    return {
-      name: "UnknownError",
-      message: basicMessage,
-      ...error,
-    };
+  if (!isAxiosError(rootCause) || rootCause.response == null) {
+    // It should always be an error-like object at this point, but be defensive.
+    return selectError(error);
   }
 
-  const { status } = error.response;
+  const { status } = rootCause.response;
 
   if (status === 404) {
     return new PermissionsError(

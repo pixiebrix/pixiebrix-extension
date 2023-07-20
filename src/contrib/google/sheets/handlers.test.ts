@@ -36,9 +36,13 @@ jest.mock("@/contrib/google/initGoogle", () => ({
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
-jest.mock("@/contrib/google/auth", () => ({
-  ensureGoogleToken: jest.fn().mockResolvedValue("NOTAREALTOKEN"),
-}));
+jest.mock("@/contrib/google/auth", () => {
+  const actual = jest.requireActual("@/contrib/google/auth");
+  return {
+    ...actual,
+    ensureGoogleToken: jest.fn().mockResolvedValue("NOTAREALTOKEN"),
+  };
+});
 
 // Mock out the gapi object
 (globalThis.gapi as any) = {
@@ -104,9 +108,8 @@ describe("error handling", () => {
     axiosMock.onGet().reply(404);
     const googleAccount = sanitizedIntegrationConfigFactory();
 
-    // Not sure the best way to assert a specific error response or code or message, the string message here doesn't seem to work
     await expect(getAllSpreadsheets(googleAccount)).rejects.toThrow(
-      "Request failed with status code 404"
+      "Cannot locate the Google drive resource. Have you been granted access?"
     );
   });
 });
