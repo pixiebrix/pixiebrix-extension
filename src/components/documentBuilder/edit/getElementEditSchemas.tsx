@@ -21,11 +21,14 @@ import { type DocumentElementType } from "@/components/documentBuilder/documentB
 import React from "react";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
-function getClassNameEdit(elementName: string): SchemaFieldProps {
+function getClassNameEdit(
+  elementName: string,
+  { label = "Layout/Style" }: { label?: string } = {}
+): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
     schema: { type: "string", format: "bootstrap-class" },
-    label: "Layout/Style",
+    label,
   };
 }
 
@@ -157,7 +160,7 @@ function getElementEditSchemas(
       const titleEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "title"),
         schema: { type: "string" },
-        label: "Title",
+        label: "Button Label",
         description: "The text to display on the button",
       };
       const variantEdit: SchemaFieldProps = {
@@ -222,7 +225,7 @@ function getElementEditSchemas(
         fullWidthEdit,
         disabledEdit,
         getHiddenEdit(elementName),
-        getClassNameEdit(elementName),
+        getClassNameEdit(elementName, { label: "Label Style" }),
       ];
     }
 
