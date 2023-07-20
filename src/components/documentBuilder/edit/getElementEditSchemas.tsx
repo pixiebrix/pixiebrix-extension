@@ -175,7 +175,14 @@ function getElementEditSchemas(
       };
       const sizeEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "size"),
-        schema: { type: "string", enum: ["lg", "md", "sm"] },
+        schema: {
+          type: "string",
+          oneOf: [
+            { const: "md", title: "Medium" },
+            { const: "lg", title: "Large" },
+            { const: "sm", title: "Small" },
+          ],
+        },
         uiSchema: { isClearable: false, isSearchable: false },
         label: "Button Size",
         description: "The size of the button: Small, Medium, or Large",
