@@ -21,15 +21,14 @@ import {
 } from "@/contrib/google/sheets/handlers";
 import { ensureGoogleToken } from "@/contrib/google/auth";
 import MockAdapter from "axios-mock-adapter";
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import { proxyService as realProxyService } from "@/background/requests";
 import { proxyService as apiProxyService } from "@/background/messenger/api";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
-
-const axiosMock = new MockAdapter(axios);
-
-// Wire up proxyService to the real implementation
-jest.mocked(apiProxyService).mockImplementation(realProxyService);
+import {
+  type IntegrationABC,
+  type SecretsConfig,
+} from "@/types/integrationTypes";
 
 jest.mock("@/contrib/google/initGoogle", () => ({
   isGoogleInitialized: jest.fn().mockReturnValue(true),
@@ -70,6 +69,32 @@ describe("ensureSheetsReady", () => {
   });
 });
 
+const axiosMock = new MockAdapter(axios);
+
+// Wire up proxyService to the real implementation
+jest.mocked(apiProxyService).mockImplementation(realProxyService);
+
+jest.mock("@/services/registry", () => {
+  const actual = jest.requireActual("@/services/registry");
+
+  return {
+    ...actual,
+    lookup: jest.fn(
+      async (id) =>
+        ({
+          id,
+          name: "Test GSheets Service",
+          isOAuth2: true,
+          isToken: false,
+          authenticateRequest: (
+            serviceConfig: SecretsConfig,
+            requestConfig: AxiosRequestConfig
+          ) => requestConfig,
+        } as IntegrationABC)
+    ),
+  };
+});
+
 describe("error handling", () => {
   beforeEach(() => {
     axiosMock.reset();
@@ -78,6 +103,10 @@ describe("error handling", () => {
   it("Returns permissions error for 404 with google integration", async () => {
     axiosMock.onGet().reply(404);
     const googleAccount = sanitizedIntegrationConfigFactory();
-    await expect(getAllSpreadsheets(googleAccount)).rejects.toThrow();
+
+    // Not sure the best way to assert a specific error response or code or message, the string message here doesn't seem to work
+    await expect(getAllSpreadsheets(googleAccount)).rejects.toThrow(
+      "Request failed with status code 404"
+    );
   });
 });
