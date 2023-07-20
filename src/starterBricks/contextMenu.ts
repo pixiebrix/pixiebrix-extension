@@ -128,7 +128,7 @@ function installMouseHandlerOnce(): void {
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
 export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<ContextMenuConfig> {
-  public override get syncInstall() {
+  public override get isSyncInstall() {
     return true;
   }
 
@@ -164,7 +164,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     ["title", "action"]
   );
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<ContextMenuConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
@@ -172,7 +172,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
-    const extensions = this.extensions.splice(0, this.extensions.length);
+    const extensions = this.modComponents.splice(0, this.modComponents.length);
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id });
@@ -185,7 +185,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
    * @see uninstallContextMenu
    * @see preloadContextMenus
    */
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     // Context menus are registered with Chrome by document pattern via the background page. Therefore, it's impossible
     // to clear the UI menu item from a single tab. Calling `uninstallContextMenu` removes the tab from all menus.
 
@@ -200,9 +200,11 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   async install(): Promise<boolean> {
     // Always install the mouse handler in case a context menu is added later
     installMouseHandlerOnce();
-    const available = await this.isAvailable();
+    return this.isAvailable();
+  }
+
+  async runModComponents(): Promise<void> {
     await this.registerExtensions();
-    return available;
   }
 
   override async defaultReader(): Promise<Reader> {
@@ -248,12 +250,12 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   private async registerExtensions(): Promise<void> {
     console.debug(
       "Registering",
-      this.extensions.length,
+      this.modComponents.length,
       "contextMenu starter bricks"
     );
 
     const results = await Promise.allSettled(
-      this.extensions.map(async (extension) => {
+      this.modComponents.map(async (extension) => {
         try {
           await this.registerExtension(extension);
         } catch (error) {
@@ -382,10 +384,6 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         }
       }
     });
-  }
-
-  async run(): Promise<void> {
-    // Already taken care by the `install` method
   }
 }
 

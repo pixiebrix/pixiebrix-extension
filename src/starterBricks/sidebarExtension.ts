@@ -126,24 +126,24 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     return "actionPanel";
   }
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<SidebarConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     removeExtensions(extensionIds);
   }
 
   public override uninstall(): void {
-    const extensions = this.extensions.splice(0, this.extensions.length);
-    this.clearExtensionInterfaceAndEvents(extensions.map((x) => x.id));
+    const extensions = this.modComponents.splice(0, this.modComponents.length);
+    this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
     removeExtensionPoint(this.id);
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents"
     );
-    sidebarShowEvents.remove(this.run);
+    sidebarShowEvents.remove(this.runModComponents);
     this.cancelListeners();
   }
 
@@ -154,12 +154,12 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    */
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
     // Don't call this.clearExtensionInterfaceAndEvents to keep the panel. Instead, mutate this.extensions to exclude id
-    remove(this.extensions, (x) => x.id === extensionId);
+    remove(this.modComponents, (x) => x.id === extensionId);
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
     console.debug(
       "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
     );
-    sidebarShowEvents.remove(this.run);
+    sidebarShowEvents.remove(this.runModComponents);
   }
 
   private async runExtension(
@@ -245,7 +245,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }: {
     shouldRunExtension?: (extension: ModComponentBase) => boolean;
   }): Promise<void> => {
-    const extensionsToRefresh = this.extensions.filter((extension) =>
+    const extensionsToRefresh = this.modComponents.filter((extension) =>
       shouldRunExtension(extension)
     );
 
@@ -330,7 +330,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   // Use arrow syntax to avoid having to bind when passing as listener to `sidebarShowEvents.add`
-  run = async ({ reason }: RunArgs): Promise<void> => {
+  runModComponents = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
       console.debug(
         "SidebarStarterBrick:run calling sidebarController:removeExtensionPoint because StarterBrick is not available for URL",
@@ -342,7 +342,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       return;
     }
 
-    if (this.extensions.length === 0) {
+    if (this.modComponents.length === 0) {
       console.debug(
         "SidebarStarterBrick:run Sidebar StarterBrick %s has no installed extensions",
         this.id
@@ -354,7 +354,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
     // the sidebar won't be visible yet on initial page load.
     reservePanels(
-      this.extensions.map((extension) => ({
+      this.modComponents.map((extension) => ({
         extensionId: extension.id,
         extensionPointId: this.id,
         blueprintId: extension._recipe?.id,
@@ -402,15 +402,20 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
+
     if (available) {
-      // Reserve the panels, so the sidebarController knows about them prior to the sidebar showing.
-      // Previously we were just relying on the sidebarShowEvents event listeners, but that caused race conditions
-      // with how other content is loaded in the sidebar
+      // Strictly speaking, the `install` method should not add components to the page. However, for sidebar panel,
+      // there's a race condition between the install and runComponents call on initial page load if the user
+      // clicks the browser action too quickly.
+      // Reserve the panels, to ensure the sidebarController knows about them prior to the sidebar showing. This is to
+      // avoid a race condition with the position of the home tab in the sidebar.
+      // In the future, we might instead consider gating sidebar content loading based on mods both having been
+      // `install`ed and `runComponents` called completed at least once.
       reservePanels(
-        this.extensions.map((extension) => ({
-          extensionId: extension.id,
+        this.modComponents.map((components) => ({
+          extensionId: components.id,
           extensionPointId: this.id,
-          blueprintId: extension._recipe?.id,
+          blueprintId: components._recipe?.id,
         }))
       );
 
@@ -418,7 +423,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       console.debug(
         "SidebarStarterBrick:install: listen for sidebarShowEvents"
       );
-      sidebarShowEvents.add(this.run);
+
+      sidebarShowEvents.add(this.runModComponents);
     } else {
       removeExtensionPoint(this.id);
     }
@@ -472,7 +478,7 @@ class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
     this.definition = cloned.definition;
   }
 
-  public override get syncInstall() {
+  public override get isSyncInstall() {
     // Panels must be reserved for the page to be considered ready. Otherwise, there are race conditions with whether
     // the sidebar panels have been reserved by the time the user clicks the browserAction.
     return true;

@@ -77,7 +77,7 @@ export async function collectExtensionPermissions(
     );
   }
 
-  const blocks = await extensionPoint.getBlocks(resolved);
+  const blocks = await extensionPoint.getBricks(resolved);
   const blockPermissions = blocks.map((x) => x.permissions);
 
   return mergePermissions(

@@ -158,13 +158,13 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     return "panel";
   }
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<PanelConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
 
-  clearExtensionInterfaceAndEvents(): void {
+  clearModComponentInterfaceAndEvents(): void {
     // FIXME: implement this to avoid unnecessary firing
     console.warn("removeExtensions not implemented for panel extensionPoint");
   }
@@ -173,23 +173,16 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     throw new Error("PanelExtensionPoint.defaultReader not implemented");
   }
 
-  getTemplate(): string {
-    if (this.template) return this.template;
-    throw new Error("PanelExtensionPoint.getTemplate not implemented");
-  }
+  abstract getTemplate(): string;
 
-  getContainerSelector(): string | string[] {
-    throw new Error("PanelExtensionPoint.getContainerSelector not implemented");
-  }
+  abstract getContainerSelector(): string | string[];
 
-  async isAvailable(): Promise<boolean> {
-    throw new Error("PanelExtensionPoint.isAvailable not implemented");
-  }
+  abstract override isAvailable(): Promise<boolean>;
 
   override uninstall(): void {
     this.uninstalled = true;
 
-    for (const extension of this.extensions) {
+    for (const extension of this.modComponents) {
       const $item = this.$container.find(
         `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
       );
@@ -438,8 +431,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
   }
 
-  async run({ extensionIds = null }: RunArgs): Promise<void> {
-    if (!this.$container || this.extensions.length === 0) {
+  async runModComponents({ extensionIds = null }: RunArgs): Promise<void> {
+    if (!this.$container || this.modComponents.length === 0) {
       return;
     }
 
@@ -452,7 +445,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const errors: unknown[] = [];
 
-    for (const extension of this.extensions) {
+    for (const extension of this.modComponents) {
       if (extensionIds != null && !extensionIds.includes(extension.id)) {
         continue;
       }

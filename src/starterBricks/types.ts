@@ -118,6 +118,9 @@ export function assertStarterBrickConfig(
   }
 }
 
+/**
+ * Abstract base class for StarterBrick implementations.
+ */
 export abstract class StarterBrickABC<TConfig extends UnknownObject>
   implements StarterBrick
 {
@@ -134,9 +137,11 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   public readonly description: string;
 
-  protected readonly extensions: Array<ResolvedModComponent<TConfig>> = [];
-
-  protected readonly template?: string;
+  /**
+   * The current registered mod components.
+   * @protected
+   */
+  protected readonly modComponents: Array<ResolvedModComponent<TConfig>> = [];
 
   public abstract readonly inputSchema: Schema;
 
@@ -144,21 +149,21 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   public abstract get kind(): StarterBrickType;
 
-  public get syncInstall() {
+  public get isSyncInstall() {
     return false;
   }
 
-  public get registeredExtensions(): Array<ResolvedModComponent<TConfig>> {
-    return [...this.extensions];
+  public get registeredModComponents(): Array<ResolvedModComponent<TConfig>> {
+    return [...this.modComponents];
   }
 
   /**
-   * Permissions required to use the extensions attached to the extension point.
+   * Permissions required to use the mod components attached to the starter brick.
    * https://developer.chrome.com/extensions/permission_warnings
    */
   public abstract readonly permissions: Permissions.Permissions;
 
-  public get defaultOptions(): Record<string, unknown> {
+  public get defaultOptions(): UnknownObject {
     return {};
   }
 
@@ -177,48 +182,52 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
    * NOTE: when this method is called, the extensions will still be in this.extensions. The caller is responsible for
    * updating this.extensions as necessary.
    *
-   * @see syncExtensions
-   * @see removeExtension
+   * @see synchronizeModComponents
+   * @see removeModComponent
    */
-  protected abstract clearExtensionInterfaceAndEvents(
-    extensionIds: UUID[]
+  protected abstract clearModComponentInterfaceAndEvents(
+    componentIds: UUID[]
   ): void;
 
-  syncExtensions(extensions: Array<ResolvedModComponent<TConfig>>): void {
-    const before = this.extensions.map((x) => x.id);
+  synchronizeModComponents(
+    components: Array<ResolvedModComponent<TConfig>>
+  ): void {
+    const before = this.modComponents.map((x) => x.id);
 
-    const updatedIds = new Set(extensions.map((x) => x.id));
-    const removed = this.extensions.filter(
-      (currentExtension) => !updatedIds.has(currentExtension.id)
+    const updatedIds = new Set(components.map((x) => x.id));
+    const removed = this.modComponents.filter(
+      (currentComponent) => !updatedIds.has(currentComponent.id)
     );
-    this.clearExtensionInterfaceAndEvents(removed.map((x) => x.id));
+    this.clearModComponentInterfaceAndEvents(removed.map((x) => x.id));
 
-    // Clear extensions and re-populate with updated extensions
-    this.extensions.splice(0, this.extensions.length);
-    this.extensions.push(...extensions);
+    // Clear extensions and re-populate with updated components
+    this.modComponents.splice(0, this.modComponents.length);
+    this.modComponents.push(...components);
 
-    console.debug("syncExtensions for extension point %s", this.id, {
+    console.debug("synchronizeComponents for extension point %s", this.id, {
       before,
-      after: extensions.map((x) => x.id),
+      after: components.map((x) => x.id),
       removed: removed.map((x) => x.id),
     });
   }
 
-  removeExtension(extensionId: UUID): void {
-    this.syncExtensions(this.extensions.filter((x) => x.id !== extensionId));
+  removeModComponent(componentId: UUID): void {
+    this.synchronizeModComponents(
+      this.modComponents.filter((x) => x.id !== componentId)
+    );
   }
 
-  addExtension(extension: ResolvedModComponent<TConfig>): void {
-    const index = this.extensions.findIndex((x) => x.id === extension.id);
+  registerModComponent(component: ResolvedModComponent<TConfig>): void {
+    const index = this.modComponents.findIndex((x) => x.id === component.id);
     if (index >= 0) {
       console.warn(
-        `Extension ${extension.id} already registered for the extension point ${this.id}`
+        `Component ${component.id} already registered for the starter brick ${this.id}`
       );
       // Index is guaranteed to be a number, and this.extensions is an array
       // eslint-disable-next-line security/detect-object-injection
-      this.extensions[index] = extension;
+      this.modComponents[index] = component;
     } else {
-      this.extensions.push(extension);
+      this.modComponents.push(component);
     }
   }
 
@@ -228,7 +237,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     return this.defaultReader();
   }
 
-  abstract getBlocks(
+  abstract getBricks(
     extension: ResolvedModComponent<TConfig>
   ): Promise<Brick[]>;
 
@@ -236,9 +245,9 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   abstract install(): Promise<boolean>;
 
+  abstract runModComponents(args: RunArgs): Promise<void>;
+
   uninstall(_options?: { global?: boolean }): void {
     console.warn(`Uninstall not implemented for extension point: ${this.id}`);
   }
-
-  abstract run(args: RunArgs): Promise<void>;
 }

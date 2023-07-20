@@ -128,7 +128,7 @@ export async function updateDynamicElement({
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
   const resolved = await resolveExtensionInnerDefinitions(extensionConfig);
 
-  starterBrick.addExtension(resolved);
+  starterBrick.registerModComponent(resolved);
   await runEditorExtension(extensionConfig.id, starterBrick);
 
   if (starterBrick.kind === "actionPanel") {
