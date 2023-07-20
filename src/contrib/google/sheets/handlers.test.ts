@@ -24,7 +24,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { proxyService as realProxyService } from "@/background/requests";
 import { proxyService as apiProxyService } from "@/background/messenger/api";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -77,7 +77,7 @@ describe("error handling", () => {
 
   it("Returns permissions error for 404 with google integration", async () => {
     axiosMock.onGet().reply(404);
-    const googleAccount = sanitizedServiceConfigurationFactory();
+    const googleAccount = sanitizedIntegrationConfigFactory();
     await expect(getAllSpreadsheets(googleAccount)).rejects.toThrow();
   });
 });
