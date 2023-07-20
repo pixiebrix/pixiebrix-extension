@@ -22,12 +22,11 @@ import {
 import { ensureGoogleToken } from "@/contrib/google/auth";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { proxyService as realProxyService } from "@/background/requests";
 import { proxyService as apiProxyService } from "@/background/messenger/api";
+import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
 
 const axiosMock = new MockAdapter(axios);
-// enrichAxiosErrors();
 
 // Wire up proxyService to the real implementation
 jest.mocked(apiProxyService).mockImplementation(realProxyService);
@@ -76,8 +75,9 @@ describe("error handling", () => {
     axiosMock.reset();
   });
 
-  it("handles 404", async () => {
+  it("Returns permissions error for 404 with google integration", async () => {
     axiosMock.onGet().reply(404);
-    await expect(getAllSpreadsheets(null)).rejects.toThrow();
+    const googleAccount = sanitizedServiceConfigurationFactory();
+    await expect(getAllSpreadsheets(googleAccount)).rejects.toThrow();
   });
 });
