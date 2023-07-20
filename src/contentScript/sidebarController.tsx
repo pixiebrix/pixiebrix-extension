@@ -16,7 +16,8 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
@@ -70,7 +71,7 @@ export async function showSidebar(
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
 
-  reportEvent("SidePanelShow");
+  reportEvent(Events.SIDE_BAR_SHOW);
   const isAlreadyShowing = isSidebarFrameVisible();
 
   if (!isAlreadyShowing) {
@@ -164,7 +165,7 @@ export function hideSidebar(): void {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
 
-  reportEvent("SidePanelHide");
+  reportEvent(Events.SIDE_PANEL_HIDE);
   removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
 }
@@ -304,16 +305,18 @@ export function hideTemporarySidebarPanel(nonce: UUID): void {
   void sidebarInThisTab.hideTemporaryPanel(sequence, nonce);
 }
 
-export function removeExtension(extensionId: UUID): void {
+/**
+ * Remove all panels associated with given extensionIds.
+ * @param extensionIds the extension UUIDs to remove
+ */
+export function removeExtensions(extensionIds: UUID[]): void {
   expectContext("contentScript");
 
-  console.debug("sidebarController:removeExtension %s", extensionId, {
-    panel: panels.find((x) => x.extensionId === extensionId),
-  });
+  console.debug("sidebarController:removeExtensions", { extensionIds });
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
-  panels.push(...current.filter((x) => x.extensionId !== extensionId));
+  panels.push(...current.filter((x) => !extensionIds.includes(x.extensionId)));
   renderPanelsIfVisible();
 }
 

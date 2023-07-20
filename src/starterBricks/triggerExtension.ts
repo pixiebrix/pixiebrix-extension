@@ -31,8 +31,8 @@ import {
 import { type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, debounce, isEmpty, noop } from "lodash";
 import { checkAvailable } from "@/bricks/available";
-import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import {
   awaitElementOnce,
   selectExtensionContext,
@@ -76,11 +76,19 @@ import { type Schema } from "@/types/schemaTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  isContextInvalidatedError,
+  notifyContextInvalidated,
+} from "@/errors/contextInvalidated";
 
 export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;
 };
 
+/**
+ * Returns the default error/event reporting mode for the trigger type.
+ * @param trigger the trigger type
+ */
 export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {
   return USER_ACTION_TRIGGERS.includes(trigger) ? "all" : "once";
 }
@@ -135,6 +143,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   abstract get reportMode(): ReportMode;
 
+  abstract get showErrors(): boolean;
+
   abstract get debounceOptions(): DebounceOptions;
 
   abstract get customTriggerOptions(): CustomEventOptions;
@@ -177,6 +187,11 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     return "trigger";
   }
 
+  /**
+   * Returns true if an event should be reported, given whether it has already been reported.
+   * @param alreadyReported true if the event has already been reported
+   * @private
+   */
   private shouldReport(alreadyReported: boolean): boolean {
     switch (this.reportMode) {
       case "once": {
@@ -194,12 +209,39 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  private shouldReportError(extensionId: UUID): boolean {
-    const alreadyReported = this.reportedErrors.has(extensionId);
-    this.reportedErrors.add(extensionId);
-    return this.shouldReport(alreadyReported);
+  /**
+   * Return true if an error should be reported.
+   * @private
+   */
+  private shouldReportError({
+    extensionId,
+    error,
+  }: {
+    extensionId?: UUID;
+    error: unknown;
+  }): boolean {
+    if (
+      isContextInvalidatedError(error) &&
+      !USER_ACTION_TRIGGERS.includes(this.trigger)
+    ) {
+      // Fail silently on non-interactive triggers if the background page has been reloaded. Otherwise, the user
+      // receives confusing notifications that aren't tied to actions they've taken.
+      return false;
+    }
+
+    if (extensionId) {
+      const alreadyReported = this.reportedErrors.has(extensionId);
+      this.reportedErrors.add(extensionId);
+      return this.shouldReport(alreadyReported);
+    }
+
+    return true;
   }
 
+  /**
+   * Return true if an event should be reported for the given extension id.
+   * @private
+   */
   private shouldReportEvent(extensionId: UUID): boolean {
     const alreadyReported = this.reportedEvents.has(extensionId);
     this.reportedEvents.add(extensionId);
@@ -231,7 +273,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.abortController.signal.addEventListener("abort", callback);
   }
 
-  clearExtensionInterfaceAndEvents(): void {
+  clearModComponentInterfaceAndEvents(): void {
     // NOP: the unregisterExtensionEvents method doesn't need to unregister anything from the page because the
     // observers/handlers are installed for the extensionPoint instance itself, not the extensions. I.e., there's a
     // single load/click/etc. trigger that's shared by all extensions using this extension point.
@@ -265,7 +307,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.installedEvents.clear();
 
     // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
-    this.extensions.splice(0, this.extensions.length);
+    this.modComponents.splice(0, this.modComponents.length);
   }
 
   inputSchema: Schema = propertiesToSchema({
@@ -274,7 +316,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     },
   });
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<TriggerConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
@@ -322,16 +364,10 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       optionsArgs: extension.optionsArgs,
     };
 
-    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2910
-    try {
-      await reduceExtensionPipeline(actionConfig, initialValues, {
-        logger: extensionLogger,
-        ...apiVersionOptions(extension.apiVersion),
-      });
-      extensionLogger.info("Successfully ran trigger");
-    } catch (error) {
-      extensionLogger.error(error);
-    }
+    await reduceExtensionPipeline(actionConfig, initialValues, {
+      logger: extensionLogger,
+      ...apiVersionOptions(extension.apiVersion),
+    });
   }
 
   /**
@@ -385,9 +421,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * Run all extensions for a given root (i.e., handle the trigger firing).
    *
    * DO NOT CALL DIRECTLY: should only be called from runTriggersAndNotify
-   *
-   * @return array of errors from the extensions
-   * @throws Error on non-extension error, e.g., reader error for the default reader
    */
   private async _runTrigger(
     root: SelectorRoot,
@@ -397,8 +430,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }: {
       nativeEvent: Event | null;
     }
-  ): Promise<unknown[]> {
-    let extensionsToRun = this.extensions;
+  ): Promise<void> {
+    let extensionsToRun = this.modComponents;
 
     if (this.trigger === "hover") {
       // Enforce synchronous behavior for `hover` event
@@ -410,18 +443,28 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     // Don't bother running the reader if no extensions match
     if (extensionsToRun.length === 0) {
-      return [];
+      return;
     }
 
     const reader = await this.getBaseReader();
+    let readerContext: JsonObject;
 
-    const readerContext = {
-      // The default reader overrides the event property. Should match the override precedence in defaultReader()
-      event: nativeEvent ? pickEventProperties(nativeEvent) : null,
-      ...(await reader.read(root)),
-    };
+    try {
+      readerContext = {
+        // The default reader overrides the event property. Should match the override precedence in defaultReader()
+        event: nativeEvent ? pickEventProperties(nativeEvent) : null,
+        ...(await reader.read(root)),
+      };
+    } catch (error) {
+      if (this.shouldReportError({ error })) {
+        throw error;
+      }
 
-    const errors = await Promise.all(
+      // Silently ignore the error
+      return;
+    }
+
+    await Promise.all(
       extensionsToRun.map(async (extension) => {
         const extensionLogger = this.logger.childLogger(
           selectExtensionContext(extension)
@@ -430,11 +473,14 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
           this.markRun(extension.id, root);
           await this.runExtension(readerContext, extension, root);
         } catch (error) {
-          if (this.shouldReportError(extension.id)) {
-            reportError(error, { context: extensionLogger.context });
+          if (this.shouldReportError({ extensionId: extension.id, error })) {
+            // Don't need to call `reportError` because it's already reported by extensionLogger
+            extensionLogger.error(error);
+            throw error;
           }
 
-          return error;
+          // Silently ignore the error
+          return;
         } finally {
           // NOTE: if the extension is not running with synchronous behavior, there's a race condition where
           // the `delete` could be called while another extension run is still in progress
@@ -442,11 +488,11 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         }
 
         if (this.shouldReportEvent(extension.id)) {
-          reportEvent("TriggerRun", selectEventData(extension));
+          reportEvent(Events.TRIGGER_RUN, selectEventData(extension));
+          extensionLogger.info("Successfully ran trigger");
         }
       })
     );
-    return compact(errors);
   }
 
   /**
@@ -457,17 +503,20 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
     { nativeEvent }: { nativeEvent: Event | null }
   ): Promise<void> => {
+    // Previously, run trigger returns individual extension errors. That approach was confusing, because it mixed
+    // thrown errors with collected errors returned as values. Instead, we now just rely on a thrown error, and at
+    // most one error will be thrown per root.
     const promises = roots.map(async (root) =>
       this._runTrigger(root, { nativeEvent })
     );
+
     const results = await Promise.allSettled(promises);
-    const errors = results.flatMap((x) =>
-      // `runTrigger` fulfills with list of extension error from extension, or rejects on other error, e.g., reader
-      // error from the extension point.
-      x.status === "fulfilled" ? x.value : x.reason
+
+    const errors = compact(
+      results.map((x) => (x.status === "rejected" ? x.reason : null))
     );
 
-    TriggerStarterBrickABC.notifyErrors(errors);
+    await this.notifyErrors(errors);
   };
 
   /**
@@ -479,8 +528,14 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   /**
    * Show notification for errors to the user. Caller is responsible for sending error telemetry.
    */
-  static notifyErrors(errors: unknown[]): void {
-    if (errors.length === 0) {
+  async notifyErrors(errors: unknown[]): Promise<void> {
+    if (errors.length === 0 || !this.showErrors) {
+      return;
+    }
+
+    if (errors.some((x) => isContextInvalidatedError(x))) {
+      // If the error is a context invalidated error, use the standard notification
+      await notifyContextInvalidated();
       return;
     }
 
@@ -489,6 +544,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     console.debug(message, { errors });
     notify.error({
       message,
+      // Show any information to the user about the error, so they can report/correct it.
+      error: errors[0],
       reportError: false,
     });
   }
@@ -723,7 +780,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  async run(): Promise<void> {
+  async runModComponents(): Promise<void> {
     this.cancelObservers();
 
     const $root = await this.getRoot();
@@ -820,6 +877,16 @@ export interface TriggerDefinition extends StarterBrickDefinition {
   reportMode?: ReportMode;
 
   /**
+   * Flag to control if errors should be shown to the end-user.
+   *
+   * Introduced to avoid showing errors for automatic/interval triggers, and for certain compliance use cases.
+   * Prior to 1.7.34, error notifications were being swallowed: see https://github.com/pixiebrix/pixiebrix-extension/issues/2910
+   *
+   * @since 1.7.34
+   */
+  showErrors?: boolean;
+
+  /**
    * @since 1.4.8
    */
   targetMode?: TargetMode;
@@ -896,6 +963,14 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
       this._definition.reportMode ??
       getDefaultReportModeForTrigger(this.trigger)
     );
+  }
+
+  /**
+   * Returns true if errors show be shown to the end-user as notifications.
+   * @since 1.7.34
+   */
+  get showErrors(): boolean {
+    return this._definition.showErrors ?? false;
   }
 
   get intervalMillis(): number {

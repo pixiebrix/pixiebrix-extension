@@ -26,7 +26,7 @@ import {
   type TourDefinition,
   fromJS,
 } from "@/starterBricks/tourExtension";
-import { RootReader, tick } from "@/starterBricks/extensionPointTestUtils";
+import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import { isTourInProgress } from "@/starterBricks/tourController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -38,14 +38,14 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const rootReader = new RootReader();
 
-const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
+const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<TourDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
       ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: "Test Starter Brick",
       } as Metadata),
     definition: define<TourDefinition>({
       type: "tour",
@@ -62,7 +62,7 @@ const extensionFactory = define<ResolvedModComponent<TourConfig>>({
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<TourConfig>({
@@ -81,38 +81,38 @@ beforeEach(() => {
 
 describe("tourExtension", () => {
   test("install tour via Page Editor", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(starterBrickFactory()());
 
-    extensionPoint.addExtension(
+    starterBrick.registerModComponent(
       extensionFactory({
-        extensionPointId: extensionPoint.id,
+        extensionPointId: starterBrick.id,
       })
     );
 
-    await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.PAGE_EDITOR });
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.PAGE_EDITOR });
 
     await tick();
 
     expect(isTourInProgress()).toBe(false);
     expect(rootReader.readCount).toBe(1);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   test("register tour with quick bar", async () => {
     const extensionPoint = fromJS(
-      extensionPointFactory({ allowUserRun: true, autoRunSchedule: "never" })()
+      starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.INITIAL_LOAD });
+    await extensionPoint.runModComponents({ reason: RunReason.INITIAL_LOAD });
 
     await tick();
 

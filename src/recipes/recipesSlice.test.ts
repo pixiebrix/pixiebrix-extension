@@ -20,7 +20,7 @@ import { initialState, recipesActions, recipesSlice } from "./recipesSlice";
 import { type RecipesRootState } from "./recipesTypes";
 import recipesRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
-import { recipeFactory } from "@/testUtils/factories/recipeFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("./registry", () => ({
   __esModule: true,

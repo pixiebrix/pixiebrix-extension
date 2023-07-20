@@ -39,7 +39,8 @@ import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import notify, {
   DEFAULT_ACTION_RESULTS,
   type MessageConfig,
@@ -312,7 +313,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     this.cancelListeners.clear();
   }
 
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     console.debug(
       "Remove extensionIds for menuItem extension point: %s",
       this.id,
@@ -335,7 +336,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     const menus = [...this.menus.values()];
 
     // Clear so they don't get re-added by the onNodeRemoved mechanism
-    const extensions = this.extensions.splice(0, this.extensions.length);
+    const extensions = this.modComponents.splice(0, this.modComponents.length);
     this.menus.clear();
 
     if (extensions.length === 0) {
@@ -352,7 +353,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     for (const element of menus) {
       try {
-        this.clearExtensionInterfaceAndEvents(extensions.map((x) => x.id));
+        this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
         // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
       } catch (error) {
@@ -401,7 +402,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     $menu.append($menuItem);
   }
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<MenuItemStarterBrickConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
@@ -440,7 +441,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       // The behavior for multiple buttons is quirky here for "once" attachMode. There's a corner case where
       // 1) if one button is removed, 2) the menus are re-added immediately, 3) PixieBrix stops watching for new buttons
       await this.waitAttachMenus();
-      await this.run({ reason: RunReason.MUTATION });
+      await this.runModComponents({ reason: RunReason.MUTATION });
     }
   }
 
@@ -495,7 +496,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       containerSelector,
       (index, element) => {
         this.attachMenus($(element as HTMLElement));
-        void this.run({ reason: RunReason.MUTATION });
+        void this.runModComponents({ reason: RunReason.MUTATION });
       },
       // `target` is a required option. Would it be possible to scope if the selector is nested? Would have to consider
       // commas in the selector. E.g., revert back to document if there's a comma
@@ -696,7 +697,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
         console.debug("Run menu item", this.logger.context);
 
-        reportEvent("MenuItemClick", selectEventData(extension));
+        reportEvent(Events.MENU_ITEM_CLICK, selectEventData(extension));
 
         try {
           // Read the latest state at the time of the action
@@ -788,7 +789,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if (dependencies.length > 0) {
       const rerun = once(() => {
         console.debug("Dependency changed, re-running extension");
-        void this.run({
+        void this.runModComponents({
           reason: RunReason.DEPENDENCY_CHANGED,
           extensionIds: [extension.id],
         });
@@ -843,8 +844,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
   }
 
-  async run({ extensionIds = null }: RunArgs): Promise<void> {
-    if (this.menus.size === 0 || this.extensions.length === 0) {
+  async runModComponents({ extensionIds = null }: RunArgs): Promise<void> {
+    if (this.menus.size === 0 || this.modComponents.length === 0) {
       return;
     }
 
@@ -870,7 +871,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
       let ctxtPromise: Promise<JsonObject>;
 
-      for (const extension of this.extensions) {
+      for (const extension of this.modComponents) {
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 

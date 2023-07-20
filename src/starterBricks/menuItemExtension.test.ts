@@ -31,7 +31,7 @@ import {
   getDocument,
   RootReader,
   tick,
-} from "@/starterBricks/extensionPointTestUtils";
+} from "@/starterBricks/starterBrickTestUtils";
 import { type BrickPipeline } from "@/bricks/types";
 import { reduceExtensionPipeline } from "@/runtime/reducePipeline";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
@@ -57,14 +57,14 @@ globalThis.requestAnimationFrame = jest.fn((callback) => {
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
-const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
+const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<MenuDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
       ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: "Test Starter Brick",
       } as Metadata),
     definition: define<MenuDefinition>({
       type: "menuItem",
@@ -78,12 +78,12 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ResolvedModComponent>({
+const modComponentFactory = define<ResolvedModComponent>({
   apiVersion: "v3",
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<MenuItemStarterBrickConfig>({
@@ -112,23 +112,23 @@ describe("menuItemExtension", () => {
       document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
 
       const extensionPoint = fromJS(
-        extensionPointFactory({
+        starterBrickFactory({
           position,
         })()
       );
 
-      const extension = extensionFactory({
+      const modComponent = modComponentFactory({
         extensionPointId: extensionPoint.id,
       });
 
-      extensionPoint.addExtension(extension);
+      extensionPoint.registerModComponent(modComponent);
 
       await extensionPoint.install();
-      await extensionPoint.run({ reason: RunReason.MANUAL });
+      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       expect(document.querySelectorAll("button")).toHaveLength(1);
       expect(document.body.innerHTML).toEqual(
-        `<div data-pb-extension-point="${extensionPoint.id}">foo<button data-pb-uuid="${extension.id}">Hello World</button></div>`
+        `<div data-pb-extension-point="${extensionPoint.id}">foo<button data-pb-uuid="${modComponent.id}">Hello World</button></div>`
       );
 
       extensionPoint.uninstall();
@@ -138,23 +138,23 @@ describe("menuItemExtension", () => {
   it("can prepend menu item", async () => {
     document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
     const extensionPoint = fromJS(
-      extensionPointFactory({
+      starterBrickFactory({
         position: "prepend",
       })()
     );
 
-    const extension = extensionFactory({
+    const modComponent = modComponentFactory({
       extensionPointId: extensionPoint.id,
     });
 
-    extensionPoint.addExtension(extension);
+    extensionPoint.registerModComponent(modComponent);
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
     expect(document.body.innerHTML).toEqual(
-      `<div data-pb-extension-point="${extensionPoint.id}"><button data-pb-uuid="${extension.id}">Hello World</button>foo</div>`
+      `<div data-pb-extension-point="${extensionPoint.id}"><button data-pb-uuid="${modComponent.id}">Hello World</button>foo</div>`
     );
 
     extensionPoint.uninstall();
@@ -163,19 +163,19 @@ describe("menuItemExtension", () => {
   it("can use targetMode: eventTarget", async () => {
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
     const extensionPoint = fromJS(
-      extensionPointFactory({
+      starterBrickFactory({
         targetMode: "eventTarget",
       })()
     );
 
-    extensionPoint.addExtension(
-      extensionFactory({
+    extensionPoint.registerModComponent(
+      modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
@@ -203,20 +203,20 @@ describe("menuItemExtension", () => {
       '<div id="outer"><div id="toolbar"></div></div>'
     ).body.innerHTML;
     const extensionPoint = fromJS(
-      extensionPointFactory({
+      starterBrickFactory({
         readerSelector: "div",
         containerSelector: "#toolbar",
       })()
     );
 
-    extensionPoint.addExtension(
-      extensionFactory({
+    extensionPoint.registerModComponent(
+      modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
@@ -247,19 +247,19 @@ describe("menuItemExtension", () => {
     async (targetMode) => {
       document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
       const extensionPoint = fromJS(
-        extensionPointFactory({
+        starterBrickFactory({
           targetMode,
         })()
       );
 
-      extensionPoint.addExtension(
-        extensionFactory({
+      extensionPoint.registerModComponent(
+        modComponentFactory({
           extensionPointId: extensionPoint.id,
         })
       );
 
       await extensionPoint.install();
-      await extensionPoint.run({ reason: RunReason.MANUAL });
+      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       expect(document.querySelectorAll("button")).toHaveLength(1);
 
@@ -286,16 +286,16 @@ describe("menuItemExtension", () => {
 
   it("re-attaches to container", async () => {
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
-    const extensionPoint = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(starterBrickFactory()());
 
-    extensionPoint.addExtension(
-      extensionFactory({
-        extensionPointId: extensionPoint.id,
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
       })
     );
 
-    await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
     document.body.innerHTML = "";
@@ -305,7 +305,7 @@ describe("menuItemExtension", () => {
     await tick();
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
-    extensionPoint.uninstall();
+    starterBrick.uninstall();
   });
 
   it("watches ancestor changes for menu location", async () => {
@@ -313,13 +313,13 @@ describe("menuItemExtension", () => {
       '<div id="root"><div id="menu"></div></div>'
     ).body.innerHTML;
     const extensionPoint = fromJS(
-      extensionPointFactory({
+      starterBrickFactory({
         containerSelector: ".newClass #menu",
       })()
     );
 
-    extensionPoint.addExtension(
-      extensionFactory({
+    extensionPoint.registerModComponent(
+      modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
     );
@@ -332,7 +332,7 @@ describe("menuItemExtension", () => {
 
     await installPromise;
 
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     await tick();
 
@@ -347,20 +347,20 @@ describe("menuItemExtension", () => {
     document.body.innerHTML = getDocument(
       "<div><div class='menu'></div></div>"
     ).body.innerHTML;
-    const extensionPointConfig = extensionPointFactory()();
-    extensionPointConfig.definition.containerSelector = ".menu";
-    extensionPointConfig.definition.attachMode = "watch";
+    const starterBrick = starterBrickFactory()();
+    starterBrick.definition.containerSelector = ".menu";
+    starterBrick.definition.attachMode = "watch";
 
-    const extensionPoint = fromJS(extensionPointConfig);
+    const extensionPoint = fromJS(starterBrick);
 
-    extensionPoint.addExtension(
-      extensionFactory({
+    extensionPoint.registerModComponent(
+      modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
     $("div:first").append("<div class='menu'></div>");
@@ -377,14 +377,14 @@ describe("menuItemExtension", () => {
     // Test the quirky behavior of "once" mode when there are multiple elements on the page and the original menu
     // is removed from the page
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
-    const extensionPointConfig = extensionPointFactory()();
-    extensionPointConfig.definition.containerSelector = ".menu";
-    extensionPointConfig.definition.attachMode = "once";
+    const starterBrick = starterBrickFactory()();
+    starterBrick.definition.containerSelector = ".menu";
+    starterBrick.definition.attachMode = "once";
 
-    const extensionPoint = fromJS(extensionPointConfig);
+    const extensionPoint = fromJS(starterBrick);
 
-    extensionPoint.addExtension(
-      extensionFactory({
+    extensionPoint.registerModComponent(
+      modComponentFactory({
         extensionPointId: extensionPoint.id,
       })
     );
@@ -397,7 +397,7 @@ describe("menuItemExtension", () => {
     await tick();
     await tick();
     await installPromise;
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
     expect(document.querySelectorAll("button")).toHaveLength(1);
 
     // 2 ticks were necessary in the watch test

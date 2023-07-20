@@ -49,12 +49,18 @@ type SelectionMenuOptions = {
   documentUrlPatterns: string[];
 };
 
+/**
+ * Return a unique context menu item id for the given extension id.
+ * @param extensionId
+ */
 function makeMenuId(extensionId: UUID): string {
   return `${MENU_PREFIX}${extensionId}`;
 }
 
 /**
+ * Dispatch a Chrome context menu event to the corresponding content script.
  * FIXME: this method doesn't handle frames
+ * @see handleMenuAction
  */
 async function dispatchMenu(
   info: Menus.OnClickData,
@@ -102,8 +108,11 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
 }
 
 /**
- * Uninstall contextMenu for `extensionId`. Returns true if the contextMenu was removed, or false if the contextMenu was
- * not found.
+ * Uninstall the contextMenu UI for `extensionId` from browser context menu on all tabs.
+ *
+ * Safe to call on non-context menu extension ids.
+ *
+ * @returns {boolean} true if the contextMenu was removed, or false if the contextMenu was not found.
  */
 export async function uninstallContextMenu({
   extensionId,
@@ -124,15 +133,19 @@ export async function uninstallContextMenu({
   }
 }
 
+/**
+ * Register a context menu item on all tabs.
+ */
 export const ensureContextMenu = memoizeUntilSettled(_ensureContextMenu, {
   cacheKey: ([{ extensionId }]) => extensionId,
 });
+
 async function _ensureContextMenu({
   extensionId,
   contexts,
   title,
   documentUrlPatterns,
-}: SelectionMenuOptions) {
+}: SelectionMenuOptions): Promise<void> {
   expectContext("background");
 
   if (!extensionId) {
@@ -162,6 +175,11 @@ async function _ensureContextMenu({
   }
 }
 
+/**
+ * Add context menu items to the Chrome context menu on all tabs, in anticipation that on Page Load, the content
+ * script will register a handler for the item.
+ * @param extensions the ModComponent to preload.
+ */
 export async function preloadContextMenus(
   extensions: ModComponentBase[]
 ): Promise<void> {

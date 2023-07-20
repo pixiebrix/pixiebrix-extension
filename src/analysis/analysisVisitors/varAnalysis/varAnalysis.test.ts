@@ -45,17 +45,17 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { services } from "@/background/messenger/api";
-import { installedRecipeMetadataFactory } from "@/testUtils/factories/extensionFactories";
+import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import { recipeFactory } from "@/testUtils/factories/recipeFactories";
-import { sanitizedServiceConfigurationFactory } from "@/testUtils/factories/serviceFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
 jest.mocked(services.locate).mockResolvedValue(
-  sanitizedServiceConfigurationFactory({
+  sanitizedIntegrationConfigFactory({
     serviceId: validateRegistryId("@test/service"),
   })
 );
@@ -125,7 +125,7 @@ describe("Collecting available vars", () => {
           optionsArgs: {
             foo: "bar",
           },
-          recipe: installedRecipeMetadataFactory({
+          recipe: modComponentRecipeFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -231,7 +231,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: installedRecipeMetadataFactory({
+          recipe: modComponentRecipeFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -266,7 +266,7 @@ describe("Collecting available vars", () => {
             bar: "qux",
             baz: "quux",
           },
-          recipe: installedRecipeMetadataFactory({
+          recipe: modComponentRecipeFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -302,7 +302,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: installedRecipeMetadataFactory({
+          recipe: modComponentRecipeFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -332,7 +332,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: installedRecipeMetadataFactory({
+          recipe: modComponentRecipeFactory({
             id: validateRegistryId("test/recipe"),
           }),
           optionsArgs: {

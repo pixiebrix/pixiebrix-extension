@@ -23,9 +23,10 @@ import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,
+  InvalidContextReader,
   RootReader,
   tick,
-} from "@/starterBricks/extensionPointTestUtils";
+} from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import {
   fromJS,
@@ -38,18 +39,37 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  throwBrick,
+  ThrowBrick,
+} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import notify from "@/utils/notify";
+import { notifyContextInvalidated } from "@/errors/contextInvalidated";
+import reportError from "@/telemetry/reportError";
+
+jest.mock("@/errors/contextInvalidated", () => {
+  const actual = jest.requireActual("@/errors/contextInvalidated");
+  return {
+    ...actual,
+    notifyContextInvalidated: jest.fn().mockResolvedValue(undefined),
+  };
+});
+
+jest.mock("@/utils/notify", () => ({
+  __esModule: true,
+  default: {
+    error: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
+const reportErrorMock = jest.mocked(reportError);
+const notifyErrorMock = jest.mocked(notify.error);
+const notifyContextInvalidatedMock = jest.mocked(notifyContextInvalidated);
 
 beforeAll(() => {
   requestIdleCallback.mock();
 });
-
-beforeEach(() => {
-  ensureMocksReset();
-});
-
-const rootReaderId = validateRegistryId("test/root-reader");
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<TriggerDefinition>>({
@@ -57,8 +77,8 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     kind: "extensionPoint",
     metadata: (n: number) =>
       ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: "Test Starter Brick",
       } as Metadata),
     definition: define<TriggerDefinition>({
       type: "trigger",
@@ -66,7 +86,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
-      reader: () => [rootReaderId],
+      reader: () => [RootReader.BRICK_ID],
       ...definitionOverrides,
     }),
   });
@@ -76,7 +96,7 @@ const extensionFactory = define<ResolvedModComponent<TriggerConfig>>({
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<TriggerConfig>({
@@ -87,10 +107,14 @@ const extensionFactory = define<ResolvedModComponent<TriggerConfig>>({
 const rootReader = new RootReader();
 
 beforeEach(() => {
+  ensureMocksReset();
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
+  reportErrorMock.mockReset();
+  notifyErrorMock.mockReset();
+  notifyContextInvalidatedMock.mockReset();
   blockRegistry.clear();
-  blockRegistry.register([rootReader]);
+  blockRegistry.register([rootReader, new InvalidContextReader(), throwBrick]);
   rootReader.readCount = 0;
   rootReader.ref = undefined;
 });
@@ -105,14 +129,14 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.addExtension(
+      extensionPoint.registerModComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
       );
 
       await extensionPoint.install();
-      await extensionPoint.run({ reason: RunReason.MANUAL });
+      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       expect(rootReader.readCount).toBe(1);
 
@@ -135,14 +159,14 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.addExtension(
+      extensionPoint.registerModComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
       );
 
       await extensionPoint.install();
-      await extensionPoint.run({ reason: RunReason.MANUAL });
+      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       expect(rootReader.readCount).toBe(0);
 
@@ -186,14 +210,14 @@ describe("triggerExtension", () => {
         })()
       );
 
-      extensionPoint.addExtension(
+      extensionPoint.registerModComponent(
         extensionFactory({
           extensionPointId: extensionPoint.id,
         })
       );
 
       await extensionPoint.install();
-      await extensionPoint.run({ reason: RunReason.MANUAL });
+      await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       document.querySelector("button").click();
       await tick();
@@ -222,14 +246,14 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     document.querySelector("button").click();
     await tick();
@@ -254,14 +278,14 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     const element = document.querySelector("input");
 
@@ -285,14 +309,14 @@ describe("triggerExtension", () => {
       })()
     );
 
-    extensionPoint.addExtension(
+    extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
       })
     );
 
     await extensionPoint.install();
-    await extensionPoint.run({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     const buttonElement = document.querySelector("button");
 
@@ -369,7 +393,159 @@ describe("triggerExtension", () => {
       );
 
       const reader = await extensionPoint.previewReader();
-      await reader.read(document);
+      const result = await reader.read(document);
+
+      expect(result).toStrictEqual(
+        expect.objectContaining({
+          readCount: 1,
+        })
+      );
     }
   );
+
+  it("ignores context invalidated error for non user-action trigger in reader", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        reader: () => [InvalidContextReader.BRICK_ID],
+      })({})
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+
+    expect(notifyErrorMock).not.toHaveBeenCalled();
+  });
+
+  it("shows context invalidated for user action if showErrors: true", async () => {
+    document.body.innerHTML = getDocument(
+      "<div><button>Click Me</button></div>"
+    ).body.innerHTML;
+
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "click",
+        rootSelector: "button",
+        showErrors: true,
+        reader: () => [InvalidContextReader.BRICK_ID],
+      })({})
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      })
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+
+    document.querySelector("button").click();
+    await tick();
+
+    document.querySelector("button").click();
+    await tick();
+
+    // Should not be called directly
+    expect(notifyErrorMock).not.toHaveBeenCalled();
+
+    // It's a user action, so it should show on each user action
+    expect(notifyContextInvalidatedMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("reports only the first brick error for reportMode: once", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        reportMode: "once",
+        showErrors: true,
+      })({})
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+        config: {
+          action: { id: ThrowBrick.BRICK_ID, config: {} },
+        },
+      })
+    );
+
+    await extensionPoint.install();
+
+    // Run 2x
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+
+    expect(reportErrorMock).toHaveBeenCalledTimes(1);
+
+    expect(notifyErrorMock).toHaveBeenCalledExactlyOnceWith({
+      message: "An error occurred running a trigger",
+      reportError: false,
+      error: expect.toBeObject(),
+    });
+  });
+
+  it("reports all brick errors for reportMode: all, showErrors: true", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        reportMode: "all",
+        showErrors: true,
+      })({})
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+        config: {
+          action: { id: ThrowBrick.BRICK_ID, config: {} },
+        },
+      })
+    );
+
+    await extensionPoint.install();
+
+    // Run 2x
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+
+    expect(reportErrorMock).toHaveBeenCalledTimes(2);
+    expect(notifyErrorMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not display error notifications for reportMode: all, showErrors: default", async () => {
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        reportMode: "all",
+        // Testing the default of false, for backward compatability
+        // showErrors: false,
+      })({})
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+        config: {
+          action: { id: ThrowBrick.BRICK_ID, config: {} },
+        },
+      })
+    );
+
+    await extensionPoint.install();
+
+    // Run 2x
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+    await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
+
+    expect(reportErrorMock).toHaveBeenCalledTimes(2);
+    expect(notifyErrorMock).toHaveBeenCalledTimes(0);
+  });
 });

@@ -21,7 +21,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import { type BrickOptions } from "@/types/runtimeTypes";
 import { CancelError, PropError } from "@/errors/businessErrors";
-import { tick } from "@/starterBricks/extensionPointTestUtils";
+import { tick } from "@/starterBricks/starterBrickTestUtils";
 
 const brick = new TourEffect();
 

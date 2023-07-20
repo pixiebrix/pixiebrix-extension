@@ -31,10 +31,10 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { validateRegistryId } from "@/types/helpers";
 import { type RecipeResponse } from "@/types/contract";
 import {
-  extensionPointConfigFactory,
-  recipeDefinitionFactory,
+  modComponentDefinitionFactory,
+  recipeFactory,
   recipeMetadataFactory,
-} from "@/testUtils/factories/recipeFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 
 registerDefaultWidgets();
 
@@ -94,14 +94,14 @@ const RecipeCard: React.FC = () => {
 
 describe("ActivateRecipeCard", () => {
   test("renders", async () => {
-    setupRecipe(recipeDefinitionFactory());
+    setupRecipe(recipeFactory());
     const rendered = render(<RecipeCard />);
     await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("activate recipe with missing required recipe options", async () => {
-    const recipe = recipeDefinitionFactory({
+  test("activate mod definition with missing required mod definition options", async () => {
+    const modDefinition = recipeFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "Mod with Required Options",
@@ -121,12 +121,12 @@ describe("ActivateRecipeCard", () => {
         uiSchema: {},
       },
       extensionPoints: [
-        extensionPointConfigFactory({
-          label: "Extension Point for Mod with Required Options",
+        modComponentDefinitionFactory({
+          label: "Starter Brick for Mod with Required Options",
         }),
       ],
     });
-    setupRecipe(recipe);
+    setupRecipe(modDefinition);
 
     const rendered = render(<RecipeCard />);
     await waitForEffect();
@@ -135,19 +135,19 @@ describe("ActivateRecipeCard", () => {
     expect(screen.getByText("Database is a required field")).not.toBeNull();
   });
 
-  test("activate recipe permissions", async () => {
-    const recipe = recipeDefinitionFactory({
+  test("activate mod defintiion permissions", async () => {
+    const modDefinition = recipeFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
       }),
       extensionPoints: [
-        extensionPointConfigFactory({
-          label: "A Extension Point for Mod",
+        modComponentDefinitionFactory({
+          label: "A Starter Brick for Mod",
         }),
       ],
     });
-    setupRecipe(recipe);
+    setupRecipe(modDefinition);
 
     const rendered = render(<RecipeCard />);
     await waitForEffect();
@@ -160,7 +160,7 @@ describe("ActivateRecipeCard", () => {
         optionsArgs: {},
         services: [],
       },
-      recipe
+      modDefinition
     );
   });
 
@@ -170,18 +170,18 @@ describe("ActivateRecipeCard", () => {
       error: "You must accept browser permissions to activate",
     });
 
-    const recipe = recipeDefinitionFactory({
+    const modDefinition = recipeFactory({
       metadata: recipeMetadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
       }),
       extensionPoints: [
-        extensionPointConfigFactory({
-          label: "A Extension Point for Mod",
+        modComponentDefinitionFactory({
+          label: "A Starter Brick for Mod",
         }),
       ],
     });
-    setupRecipe(recipe);
+    setupRecipe(modDefinition);
 
     const rendered = render(<RecipeCard />);
     await waitForEffect();

@@ -27,7 +27,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
-import { recipeFactory } from "@/testUtils/factories/recipeFactories";
+import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useOptionalRecipe: jest.fn(),

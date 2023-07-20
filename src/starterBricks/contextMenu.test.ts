@@ -21,7 +21,7 @@ import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import { RootReader } from "@/starterBricks/extensionPointTestUtils";
+import { RootReader } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import {
   type ContextMenuConfig,
@@ -29,8 +29,15 @@ import {
   type MenuDefinition,
 } from "@/starterBricks/contextMenu";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { RunReason } from "@/types/runtimeTypes";
+import {
+  uninstallContextMenu,
+  ensureContextMenu,
+} from "@/background/messenger/api";
+
+const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
+const ensureContextMenuMock = jest.mocked(ensureContextMenu);
 
 const rootReader = new RootReader();
 
@@ -40,8 +47,8 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     kind: "extensionPoint",
     metadata: (n: number) =>
       ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: "Test Starter Brick",
       } as Metadata),
     definition: define<MenuDefinition>({
       type: "contextMenu",
@@ -60,7 +67,7 @@ const extensionFactory = define<ResolvedModComponent<ContextMenuConfig>>({
   _resolvedModComponentBrand: undefined,
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<ContextMenuConfig>({
@@ -76,25 +83,70 @@ beforeEach(() => {
   blockRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = undefined;
+  jest.resetAllMocks();
 });
 
-describe("contextMenuExtension", () => {
-  it("should add extension", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const extension = extensionFactory();
-    extensionPoint.addExtension(extension);
+describe("contextMenu", () => {
+  it("should add extension once", async () => {
+    const starterBrick = fromJS(extensionPointFactory()());
+    const modComponent = extensionFactory();
+
+    starterBrick.registerModComponent(modComponent);
+    starterBrick.registerModComponent(modComponent);
+
+    expect(starterBrick.registeredModComponents).toStrictEqual([modComponent]);
   });
 
   it("should include context menu props in schema", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const reader = await extensionPoint.defaultReader();
+    const starterBrick = fromJS(extensionPointFactory()());
+    const reader = await starterBrick.defaultReader();
     expect(reader.outputSchema.properties).toHaveProperty("selectionText");
   });
 
   it("should include context menu props in preview", async () => {
-    const extensionPoint = fromJS(extensionPointFactory()());
-    const reader = await extensionPoint.previewReader();
+    const starterBrick = fromJS(extensionPointFactory()());
+    const reader = await starterBrick.previewReader();
     const value = await reader.read(document);
     expect(value).toHaveProperty("selectionText");
+  });
+
+  it("should register context menu on run", async () => {
+    const starterBrick = fromJS(extensionPointFactory()());
+    const modComponent = extensionFactory();
+
+    starterBrick.registerModComponent(modComponent);
+
+    await starterBrick.install();
+
+    expect(ensureContextMenuMock).not.toHaveBeenCalled();
+
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
+
+    expect(ensureContextMenuMock).toHaveBeenCalledOnce();
+    expect(ensureContextMenuMock).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        extensionId: modComponent.id,
+      })
+    );
+  });
+
+  it("should remove from UI from all tabs on sync", async () => {
+    const starterBrick = fromJS(extensionPointFactory()());
+    const modComponent = extensionFactory();
+    starterBrick.registerModComponent(modComponent);
+
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
+
+    // Not read until the menu is actually run
+    expect(rootReader.readCount).toBe(0);
+
+    starterBrick.synchronizeModComponents([]);
+
+    expect(starterBrick.registeredModComponents).toHaveLength(0);
+
+    expect(uninstallContextMenuMock).toHaveBeenCalledExactlyOnceWith({
+      extensionId: modComponent.id,
+    });
   });
 });

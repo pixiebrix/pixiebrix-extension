@@ -110,7 +110,7 @@ const TriggerConfiguration: React.FC<{
         as="select"
         description="Select a browser event to trigger or launch this mod"
         onChange={onTriggerChange}
-        {...makeLockableFieldProps("Trigger event", isLocked)}
+        {...makeLockableFieldProps("Trigger Event", isLocked)}
       >
         <option value="load">Page Load</option>
         <option value="interval">Interval</option>
@@ -170,7 +170,7 @@ const TriggerConfiguration: React.FC<{
             as={LocationWidget}
             selectMode="element"
             description="Use your cursor to select an element on the page to watch"
-            {...makeLockableFieldProps("Element selector", isLocked)}
+            {...makeLockableFieldProps("Element Selector", isLocked)}
           />
 
           <ConnectedFieldTemplate
@@ -187,8 +187,8 @@ const TriggerConfiguration: React.FC<{
             }
             {...makeLockableFieldProps("Attach Mode", isLocked)}
           >
-            <option value="once">once</option>
-            <option value="watch">watch</option>
+            <option value="once">Once</option>
+            <option value="watch">Watch</option>
           </ConnectedFieldTemplate>
         </>
       )}
@@ -221,20 +221,31 @@ const TriggerConfiguration: React.FC<{
       />
 
       <ConnectedFieldTemplate
+        name={fieldName("showErrors")}
+        as={BooleanWidget}
+        title="Show Error Notifications"
+        description={
+          <p>Show an error to the mod user if the trigger fails to execute.</p>
+        }
+        {...makeLockableFieldProps("Show Error Notifications", isLocked)}
+      />
+
+      <ConnectedFieldTemplate
         name={fieldName("reportMode")}
         as="select"
-        title="Report Mode"
+        title="Telemetry Mode"
         description={
           <p>
-            Events/errors to report telemetry. Select &ldquo;Report All&rdquo;
-            to report all runs and errors. Select &ldquo;Report First&rdquo; to
-            only report the first run and first error.
+            Events/errors to report telemetry. Select &ldquo;Report All Events
+            and Errors&rdquo; to report all runs and errors. Select
+            &ldquo;Report First Event and Error&rdquo; to only report the first
+            run and first error.
           </p>
         }
-        {...makeLockableFieldProps("Report Mode", isLocked)}
+        {...makeLockableFieldProps("Telemetry Mode", isLocked)}
       >
-        <option value="all">Report All</option>
-        <option value="once">Report First</option>
+        <option value="all">Report All Events and Errors</option>
+        <option value="once">Report First Event and Error</option>
       </ConnectedFieldTemplate>
 
       <MatchRulesSection isLocked={isLocked} />

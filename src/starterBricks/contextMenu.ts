@@ -45,7 +45,8 @@ import notify, {
   type MessageConfig,
   showNotification,
 } from "@/utils/notify";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
@@ -66,6 +67,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -126,7 +128,7 @@ function installMouseHandlerOnce(): void {
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
 export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<ContextMenuConfig> {
-  public override get syncInstall() {
+  public override get isSyncInstall() {
     return true;
   }
 
@@ -162,7 +164,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     ["title", "action"]
   );
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<ContextMenuConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
@@ -170,7 +172,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
-    const extensions = this.extensions.splice(0, this.extensions.length);
+    const extensions = this.modComponents.splice(0, this.modComponents.length);
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id });
@@ -178,16 +180,31 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     }
   }
 
-  clearExtensionInterfaceAndEvents(): void {
-    // Don't need to do any cleanup since context menu registration is handled globally
+  /**
+   * Remove the context menu items for the given extensions from all tabs/contexts.
+   * @see uninstallContextMenu
+   * @see preloadContextMenus
+   */
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
+    // Context menus are registered with Chrome by document pattern via the background page. Therefore, it's impossible
+    // to clear the UI menu item from a single tab. Calling `uninstallContextMenu` removes the tab from all menus.
+
+    // Uninstalling context menus is the least-bad approach because it prevents duplicate menu item titles due to
+    // re-activating a context menu (during re-activation, mod components get new extensionIds.)
+
+    for (const extensionId of extensionIds) {
+      void uninstallContextMenu({ extensionId });
+    }
   }
 
   async install(): Promise<boolean> {
     // Always install the mouse handler in case a context menu is added later
     installMouseHandlerOnce();
-    const available = await this.isAvailable();
+    return this.isAvailable();
+  }
+
+  async runModComponents(): Promise<void> {
     await this.registerExtensions();
-    return available;
   }
 
   override async defaultReader(): Promise<Reader> {
@@ -233,12 +250,12 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   private async registerExtensions(): Promise<void> {
     console.debug(
       "Registering",
-      this.extensions.length,
+      this.modComponents.length,
       "contextMenu starter bricks"
     );
 
     const results = await Promise.allSettled(
-      this.extensions.map(async (extension) => {
+      this.modComponents.map(async (extension) => {
         try {
           await this.registerExtension(extension);
         } catch (error) {
@@ -319,7 +336,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     );
 
     registerHandler(extension.id, async (clickData) => {
-      reportEvent("HandleContextMenu", selectEventData(extension));
+      reportEvent(Events.HANDLE_CONTEXT_MENU, selectEventData(extension));
 
       try {
         const reader = await this.getBaseReader();
@@ -367,10 +384,6 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         }
       }
     });
-  }
-
-  async run(): Promise<void> {
-    // Already taken care by the `install` method
   }
 }
 

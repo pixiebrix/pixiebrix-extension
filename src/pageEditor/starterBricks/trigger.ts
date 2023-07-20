@@ -65,6 +65,8 @@ function fromNativeElement(
         targetMode: null,
         // Use "once" for reportMode, since the default is "load"
         reportMode: "once",
+        // Show error notifications by default, to assist with development
+        showErrors: true,
         intervalMillis: null,
         background: null,
         debounce: null,
@@ -90,6 +92,7 @@ function selectExtensionPointConfig(
       attachMode,
       targetMode,
       reportMode,
+      showErrors,
       debounce,
       customEvent,
       intervalMillis,
@@ -112,6 +115,8 @@ function selectExtensionPointConfig(
       attachMode,
       targetMode,
       reportMode: reportMode ?? getDefaultReportModeForTrigger(trigger),
+      // Default to false for backward compatability. See https://github.com/pixiebrix/pixiebrix-extension/issues/2910
+      showErrors: showErrors ?? false,
       rootSelector,
     },
   });
@@ -155,6 +160,7 @@ async function fromExtension(
     attachMode,
     targetMode,
     reportMode,
+    showErrors,
     trigger,
     reader,
     background,
@@ -183,6 +189,7 @@ async function fromExtension(
         attachMode,
         targetMode,
         reportMode,
+        showErrors,
         customEvent,
         debounce,
         background,

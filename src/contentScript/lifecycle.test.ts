@@ -28,26 +28,26 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import { RootReader, tick } from "@/starterBricks/extensionPointTestUtils";
+import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
-let extensionPointRegistry: any;
+let starterBrickRegistry: any;
 let loadOptionsMock: jest.Mock;
 let lifecycleModule: any;
 
 const rootReader = new RootReader();
 
-const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
+const starterBrickConfigFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<TriggerDefinition>>({
     apiVersion: "v3",
     kind: "extensionPoint",
     metadata: (n: number) =>
       ({
-        id: validateRegistryId(`test/extension-point-${n}`),
-        name: "Test Extension Point",
+        id: validateRegistryId(`test/starter-brick-${n}`),
+        name: "Test Starter Brick",
       } as Metadata),
     definition: define<TriggerDefinition>({
       type: "trigger",
@@ -60,11 +60,13 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     }),
   });
 
-const extensionFactory = define<ActivatedModComponent<TriggerConfig>>({
+const activatedModComponentFactory = define<
+  ActivatedModComponent<TriggerConfig>
+>({
   apiVersion: "v3",
   id: uuidSequence,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: null,
   label: "Test Extension",
   config: define<TriggerConfig>({
@@ -86,7 +88,7 @@ describe("lifecycle", () => {
       }));
 
       lifecycleModule = require("@/contentScript/lifecycle");
-      extensionPointRegistry = require("@/starterBricks/registry").default;
+      starterBrickRegistry = require("@/starterBricks/registry").default;
       loadOptionsMock = require("@/store/extensionsStorage").loadOptions;
     });
 
@@ -118,18 +120,18 @@ describe("lifecycle", () => {
   });
 
   it("installs persisted trigger on first run", async () => {
-    const extensionPoint = fromJS(
-      extensionPointFactory({
+    const starterBrick = fromJS(
+      starterBrickConfigFactory({
         trigger: "load",
       })()
     );
 
-    extensionPointRegistry.register([extensionPoint]);
-    const extension = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    starterBrickRegistry.register([starterBrick]);
+    const modComponent = activatedModComponentFactory({
+      extensionPointId: starterBrick.id,
     });
 
-    loadOptionsMock.mockResolvedValue({ extensions: [extension] });
+    loadOptionsMock.mockResolvedValue({ extensions: [modComponent] });
 
     // Sanity check for the test
     expect(loadOptionsMock).toHaveBeenCalledTimes(0);
@@ -137,49 +139,45 @@ describe("lifecycle", () => {
 
     await tick();
 
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
-      extensionPoint,
-    ]);
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
   });
 
   it("runEditorExtension", async () => {
-    const extensionPoint = fromJS(
-      extensionPointFactory({
+    const starterBrick = fromJS(
+      starterBrickConfigFactory({
         trigger: "load",
       })()
     );
 
-    const extension = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    const modComponent = activatedModComponentFactory({
+      extensionPointId: starterBrick.id,
     });
 
-    extensionPoint.addExtension(
-      await resolveExtensionInnerDefinitions(extension)
+    starterBrick.registerModComponent(
+      await resolveExtensionInnerDefinitions(modComponent)
     );
 
-    await lifecycleModule.runEditorExtension(extension.id, extensionPoint);
+    await lifecycleModule.runEditorExtension(modComponent.id, starterBrick);
 
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
-      extensionPoint,
-    ]);
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
     expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
     expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
   });
 
   it("runEditorExtension removes existing", async () => {
-    const extensionPoint = fromJS(
-      extensionPointFactory({
+    const starterBrick = fromJS(
+      starterBrickConfigFactory({
         trigger: "load",
       })()
     );
 
-    extensionPointRegistry.register([extensionPoint]);
+    starterBrickRegistry.register([starterBrick]);
 
-    const extension = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    const modComponent = activatedModComponentFactory({
+      extensionPointId: starterBrick.id,
     });
 
-    loadOptionsMock.mockResolvedValue({ extensions: [extension] });
+    loadOptionsMock.mockResolvedValue({ extensions: [modComponent] });
 
     // Sanity check for the test
     expect(loadOptionsMock).toHaveBeenCalledTimes(0);
@@ -189,20 +187,16 @@ describe("lifecycle", () => {
 
     // Ensure the persisted extension is loaded
     expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
-      extensionPoint,
-    ]);
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
 
-    extensionPoint.addExtension(
-      await resolveExtensionInnerDefinitions(extension)
+    starterBrick.registerModComponent(
+      await resolveExtensionInnerDefinitions(modComponent)
     );
 
-    await lifecycleModule.runEditorExtension(extension.id, extensionPoint);
+    await lifecycleModule.runEditorExtension(modComponent.id, starterBrick);
 
-    // Still only a single extension point
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
-      extensionPoint,
-    ]);
+    // Still only a single starter brick
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
 
     expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(0);
     expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
@@ -215,56 +209,54 @@ describe("lifecycle", () => {
     expect(lifecycleModule.TEST_getEditorExtensions().size).toBe(1);
   });
 
-  it("Removes extension points from deactivated mods", async () => {
-    const extensionPoint = fromJS(
-      extensionPointFactory({
+  it("Removes starter bricks from deactivated mods", async () => {
+    const starterBrick = fromJS(
+      starterBrickConfigFactory({
         trigger: "load",
       })()
     );
 
-    extensionPointRegistry.register([extensionPoint]);
+    starterBrickRegistry.register([starterBrick]);
 
-    const extension = extensionFactory({
-      extensionPointId: extensionPoint.id,
+    const modComponent = activatedModComponentFactory({
+      extensionPointId: starterBrick.id,
     });
 
-    loadOptionsMock.mockResolvedValue({ extensions: [extension] });
+    loadOptionsMock.mockResolvedValue({ extensions: [modComponent] });
 
     await lifecycleModule.handleNavigate();
 
     await tick();
 
-    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
-      extensionPoint,
-    ]);
+    expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
 
-    const updatedExtensionPoint = fromJS(
-      extensionPointFactory({
+    const updatedStarterBrick = fromJS(
+      starterBrickConfigFactory({
         trigger: "initialize",
       })()
     );
 
     // @ts-expect-error -- There's some weirdness going on with this extensionPointFactory;
-    // it's not incrementing the extension point id, nor is allowing the id to be passed as an override
+    // it's not incrementing the starter brick id, nor is allowing the id to be passed as an override
     // https://github.com/pixiebrix/pixiebrix-extension/issues/5972
-    updatedExtensionPoint.id = "test/updated-extension-point";
+    updatedStarterBrick.id = "test/updated-starter-brick";
 
-    extensionPointRegistry.register([updatedExtensionPoint]);
+    starterBrickRegistry.register([updatedStarterBrick]);
 
-    const updatedExtension = extensionFactory({
-      extensionPointId: updatedExtensionPoint.id,
+    const updatedModComponent = activatedModComponentFactory({
+      extensionPointId: updatedStarterBrick.id,
     });
 
-    loadOptionsMock.mockResolvedValue({ extensions: [updatedExtension] });
+    loadOptionsMock.mockResolvedValue({ extensions: [updatedModComponent] });
     lifecycleModule.queueReactivateTab();
 
     await lifecycleModule.handleNavigate({ force: true });
     await tick();
 
-    // New extension point is installed, old extension point is removed
+    // New starter brick is installed, old starter brick is removed
     expect(lifecycleModule.TEST_getPersistedExtensions().size).toBe(1);
     expect(lifecycleModule.getActiveExtensionPoints()).toEqual([
-      updatedExtensionPoint,
+      updatedStarterBrick,
     ]);
   });
 });

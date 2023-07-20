@@ -17,15 +17,28 @@
 
 import { type Menus } from "webextension-polyfill";
 import { type UUID } from "@/types/stringTypes";
+import notify from "@/utils/notify";
+import { getReloadOnNextNavigate } from "@/contentScript/ready";
 
 type MenuHandler = (args: Menus.OnClickData) => Promise<void>;
 
 const handlers = new Map<UUID, MenuHandler>();
 
+/**
+ * Register a context menu handler for the given extension. Overwrites any existing handler.
+ * @param extensionId the extension id
+ * @param handler the menu handler to call
+ */
 export function registerHandler(extensionId: UUID, handler: MenuHandler): void {
   handlers.set(extensionId, handler);
 }
 
+/**
+ * Handle a context menu action. Called from the background page.
+ * @param extensionId the extension id
+ * @param args the args from the Chrome context menu action event
+ * @see dispatchMenu
+ */
 export async function handleMenuAction({
   extensionId,
   args,
@@ -39,10 +52,25 @@ export async function handleMenuAction({
     return;
   }
 
+  // If the handler fails, there's 3 potential scenarios:
+  // 1. The user is editing a new menu item in the Page Editor, so only that tab has the handler.
+  // In the future, we could consider checking to see if the Page Editor is open in any tab.
+
+  // 2. The context menu was activated (e.g., mod update) but the content script hasn't reloaded yet
+  if (getReloadOnNextNavigate()) {
+    // We don't know which mod was updated, or if the mod containing intended context menu was updated. However,
+    // reloading the page will generally be the best remedy
+    notify.warning("A mod was updated. Reload the page to use this action.");
+    return;
+  }
+
+  // 3. An actual error occurred
   console.error("No context menu found for extension: %s", extensionId, {
     extensionId,
     handlers: [...handlers.keys()],
   });
 
-  throw new Error("No context menu handler found for extension");
+  throw new Error(
+    "No context menu handler found. Please try reloading the page."
+  );
 }

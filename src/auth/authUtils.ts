@@ -35,7 +35,6 @@ export function selectOrganizations(
       role,
       scope,
       is_deployment_manager,
-      has_compliance_auth_token,
     }) => ({
       id: organization,
       name: organization_name,
@@ -43,7 +42,6 @@ export function selectOrganizations(
       role,
       scope,
       isDeploymentManager: is_deployment_manager,
-      hasComplianceAuthToken: has_compliance_auth_token,
     })
   );
 }

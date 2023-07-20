@@ -39,7 +39,8 @@ import notify, {
   DEFAULT_ACTION_RESULTS,
   showNotification,
 } from "@/utils/notify";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
@@ -115,7 +116,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     ["title", "action"]
   );
 
-  async getBlocks(
+  async getBricks(
     extension: ResolvedModComponent<QuickBarConfig>
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
@@ -129,7 +130,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     quickBarRegistry.removeExtensionPointActions(this.id);
   }
 
-  clearExtensionInterfaceAndEvents(extensionIds: UUID[]): void {
+  clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
     for (const extensionId of extensionIds) {
       quickBarRegistry.removeAction(extensionId);
     }
@@ -172,7 +173,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     }
 
     const results = await Promise.allSettled(
-      this.extensions.map(async (extension) => {
+      this.modComponents.map(async (extension) => {
         try {
           await this.registerExtensionAction(extension);
         } catch (error) {
@@ -217,7 +218,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
       name,
       icon,
       perform: async () => {
-        reportEvent("HandleQuickBar", selectEventData(extension));
+        reportEvent(Events.HANDLE_QUICK_BAR, selectEventData(extension));
 
         try {
           const reader = await this.getBaseReader();
@@ -263,8 +264,8 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     );
   }
 
-  async run(): Promise<void> {
-    if (this.extensions.length === 0) {
+  async runModComponents(): Promise<void> {
+    if (this.modComponents.length === 0) {
       console.debug(
         `quickBar extension point ${this.id} has no installed extensions`
       );

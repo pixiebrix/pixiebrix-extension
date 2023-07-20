@@ -19,7 +19,7 @@ import {
   clearEditorExtension,
   runEditorExtension,
 } from "@/contentScript/lifecycle";
-import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
+import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import Overlay from "@/vendors/Overlay";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
@@ -87,9 +87,9 @@ export async function runExtensionPointReader(
     }
   }
 
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(extensionPointConfig);
 
-  const reader = await extensionPoint.previewReader();
+  const reader = await starterBrick.previewReader();
 
   // FIXME: this will return an incorrect value in the following scenario(s):
   //  - A menuItem uses a readerSelector (which is OK, because that param is not exposed in the Page Editor)
@@ -117,21 +117,21 @@ export async function updateDynamicElement({
     tourDefinition.autoRunSchedule = "never";
   }
 
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(extensionPointConfig);
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated dynamic element
   // will automatically replace the old panel because the panels are keyed by extension id
-  if (extensionPoint.kind !== "actionPanel") {
+  if (starterBrick.kind !== "actionPanel") {
     clearEditorExtension(extensionConfig.id, { clearTrace: false });
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
   const resolved = await resolveExtensionInnerDefinitions(extensionConfig);
 
-  extensionPoint.addExtension(resolved);
-  await runEditorExtension(extensionConfig.id, extensionPoint);
+  starterBrick.registerModComponent(resolved);
+  await runEditorExtension(extensionConfig.id, starterBrick);
 
-  if (extensionPoint.kind === "actionPanel") {
+  if (starterBrick.kind === "actionPanel") {
     await ensureSidebar();
     await activateExtensionPanel(extensionConfig.id);
   }

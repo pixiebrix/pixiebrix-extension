@@ -17,7 +17,7 @@
 
 import { locator as serviceLocator } from "@/background/locator";
 import { type Runtime } from "webextension-polyfill";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
 import { initTelemetry } from "@/background/telemetry";
 import { getUID } from "@/background/messenger/api";
 import { allowsTrack, DNT_STORAGE_KEY } from "@/telemetry/dnt";
@@ -29,6 +29,7 @@ import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import { Events } from "@/telemetry/events";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
@@ -192,7 +193,7 @@ async function install({
   const { version } = browser.runtime.getManifest();
 
   if (reason === "install") {
-    reportEvent("PixieBrixInstall", {
+    reportEvent(Events.PIXIEBRIX_INSTALL, {
       version,
     });
 
@@ -219,11 +220,11 @@ async function install({
     void requirePartnerAuth();
 
     if (version === previousVersion) {
-      reportEvent("PixieBrixReload", {
+      reportEvent(Events.PIXIEBRIX_RELOAD, {
         version,
       });
     } else {
-      reportEvent("PixieBrixUpdate", {
+      reportEvent(Events.PIXIEBRIX_UNINSTALL, {
         version,
         previousVersion,
       });
