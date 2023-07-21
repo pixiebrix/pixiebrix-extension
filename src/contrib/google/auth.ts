@@ -177,7 +177,7 @@ export async function handleGoogleRequestRejection(
         "Bad Google client PKCE token. Removed the auth token from the cache so the user can re-authenticate"
       );
     } else {
-      console.debug("No auth token provided for request");
+      console.warn("No auth token provided for request");
     }
 
     return new PermissionsError(
@@ -188,5 +188,5 @@ export async function handleGoogleRequestRejection(
     );
   }
 
-  return new Error(getErrorMessage(error));
+  return error as Error;
 }
