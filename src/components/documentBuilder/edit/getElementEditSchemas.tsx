@@ -20,15 +20,20 @@ import { joinName } from "@/utils";
 import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 import React from "react";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
+import { type CssClassWidgetControls } from "@/components/fields/schemaFields/widgets/CssClassWidget";
 
 function getClassNameEdit(
   elementName: string,
-  { label = "Layout/Style" }: { label?: string } = {}
+  {
+    label = "Layout/Style",
+    uiSchema,
+  }: { label?: string; uiSchema?: Partial<CssClassWidgetControls> } = {}
 ): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
     schema: { type: "string", format: "bootstrap-class" },
     label,
+    uiSchema,
   };
 }
 
@@ -245,7 +250,14 @@ function getElementEditSchemas(
         fullWidthEdit,
         disabledEdit,
         getHiddenEdit(elementName),
-        getClassNameEdit(elementName, { label: "Label Style" }),
+        getClassNameEdit(elementName, {
+          label: "Label Style",
+          uiSchema: {
+            textVariant: false,
+            backgroundColor: false,
+            borders: false,
+          },
+        }),
       ];
     }
 
