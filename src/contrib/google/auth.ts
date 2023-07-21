@@ -188,5 +188,5 @@ export async function handleGoogleRequestRejection(
     );
   }
 
-  return error as Error;
+  return error as unknown as Error;
 }
