@@ -75,6 +75,12 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
   });
 }
 
+function getNextUrlFromActivateUrl(activateUrl: string): string | null {
+  const url = new URL(activateUrl);
+  const searchParams = new URLSearchParams(url.search);
+  return searchParams.get("nextUrl");
+}
+
 function addActivateRecipeListener() {
   window.addEventListener(
     "ActivateRecipe",
@@ -82,10 +88,17 @@ function addActivateRecipeListener() {
       event: CustomEvent<{ recipeId: RegistryId; activateUrl: string | URL }>
     ) => {
       const { recipeId, activateUrl } = event.detail;
+      const nextUrl = getNextUrlFromActivateUrl(activateUrl as string);
 
       if (!(await isUserLoggedIn())) {
         // Open the activate link in the current browser tab
         window.location.assign(activateUrl);
+        return;
+      }
+
+      if (nextUrl) {
+        await setActivatingBlueprint({ blueprintId: recipeId });
+        window.location.assign(nextUrl);
         return;
       }
 
