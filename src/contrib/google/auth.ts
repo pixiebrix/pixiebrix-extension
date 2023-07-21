@@ -15,10 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getErrorMessage } from "@/errors/errorHelpers";
+import {
+  getErrorMessage,
+  getRootCause,
+  selectError,
+} from "@/errors/errorHelpers";
 import { forbidContext } from "@/utils/expectContext";
 import chromeP from "webext-polyfill-kinda";
 import { isGoogleInitialized } from "@/contrib/google/initGoogle";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { isObject } from "@/utils";
+import { deleteCachedAuthData } from "@/background/messenger/api";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 
 /**
  * The user or account policy explicitly denied the permission.
@@ -82,7 +90,10 @@ class PermissionsError extends Error {
   }
 }
 
-export async function handleGoogleRequestRejection(
+/**
+ * @deprecated Use handleGoogleRequestRejection instead
+ */
+export async function handleLegacyGoogleClientRequestRejection(
   token: string,
   // TODO: Find a better solution than casting to any
   error: any
@@ -118,4 +129,64 @@ export async function handleGoogleRequestRejection(
   }
 
   return new Error(getErrorMessage(error.result.error));
+}
+
+export async function handleGoogleRequestRejection(
+  error: unknown,
+  googleAccount: SanitizedIntegrationConfig | null,
+  legacyClientToken: string | null
+): Promise<Error> {
+  // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
+  // configuration. Therefore, get root cause for determining if this is an Axios error
+  const rootCause = getRootCause(error);
+
+  console.debug("Error making Google request", { error });
+
+  if (!isObject(error)) {
+    // Shouldn't happen in practice, but be defensive
+    return new Error("Unknown error making Google request", {
+      cause: selectError(error),
+    });
+  }
+
+  if (!isAxiosError(rootCause) || rootCause.response == null) {
+    // It should always be an error-like object at this point, but be defensive.
+    return selectError(error);
+  }
+
+  const { status } = rootCause.response;
+
+  if (status === 404) {
+    return new PermissionsError(
+      "Cannot locate the Google drive resource. Have you been granted access?",
+      status
+    );
+  }
+
+  if ([403, 401].includes(status)) {
+    if (legacyClientToken) {
+      await chromeP.identity.removeCachedAuthToken({
+        token: legacyClientToken,
+      });
+      console.debug(
+        "Bad Google (legacy) OAuth token. Removed the auth token from the cache so the user can re-authenticate"
+      );
+    } else if (googleAccount) {
+      await deleteCachedAuthData(googleAccount.id);
+      console.debug(
+        "Bad Google client PKCE token. Removed the auth token from the cache so the user can re-authenticate"
+      );
+    } else {
+      console.warn("No auth token provided for request");
+    }
+
+    return new PermissionsError(
+      `Permission denied, re-authenticate with Google and try again. Details: ${getErrorMessage(
+        error
+      )}`,
+      status
+    );
+  }
+
+  return error as unknown as Error;
 }

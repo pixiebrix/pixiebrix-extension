@@ -24,7 +24,10 @@ import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
+import {
+  INTERNAL_reset as resetManagedStorage,
+  readManagedStorage,
+} from "@/store/enterprise/managedStorage";
 import { render } from "@/extensionConsole/testHelpers";
 import settingsSlice from "@/store/settingsSlice";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
@@ -227,12 +230,19 @@ describe("SetupPage", () => {
   });
 
   test("Managed Storage OAuth2 partner user", async () => {
+    const controlRoomUrl = "https://notarealcontrolroom.com";
+
     mockAnonymousUser();
 
     await browser.storage.managed.set({
       partnerId: "automation-anywhere",
-      controlRoomUrl: "https://notarealcontrolroom.com",
+      controlRoomUrl,
     });
+
+    // XXX: waiting for managed storage initialization seems to be necessary to avoid test interference when
+    // run with other tests. We needed to add it after some seemingly unrelated changes:
+    // See test suite changes in : https://github.com/pixiebrix/pixiebrix-extension/pull/6134/
+    await readManagedStorage();
 
     render(
       <MemoryRouter>
@@ -247,6 +257,6 @@ describe("SetupPage", () => {
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value")
-    ).toStrictEqual("https://notarealcontrolroom.com");
+    ).toStrictEqual(controlRoomUrl);
   });
 });

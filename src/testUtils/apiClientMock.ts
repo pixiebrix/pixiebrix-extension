@@ -17,6 +17,9 @@
 
 import axios from "axios";
 
+// Re-export utility methods directly
+export const { absoluteApiUrl } = jest.requireActual("@/services/apiClient");
+
 export async function getLinkedApiClient() {
   return axios.create();
 }
