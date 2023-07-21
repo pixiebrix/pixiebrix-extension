@@ -17,7 +17,11 @@
 
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { type Expression } from "@/types/runtimeTypes";
-import { type LabelledEnumSchema, type Schema } from "@/types/schemaTypes";
+import {
+  type LabelledEnumSchema,
+  type Schema,
+  type UiSchema,
+} from "@/types/schemaTypes";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import {
   SERVICE_BASE_SCHEMA,
@@ -49,7 +53,7 @@ export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
 
-export const isButtonVariantField = (uiSchema?: Schema) =>
+export const isButtonVariantField = (uiSchema?: UiSchema) =>
   typeof uiSchema === "object" &&
   get(uiSchema, ["ui:widget"]) === "SchemaButtonVariantWidget";
 
