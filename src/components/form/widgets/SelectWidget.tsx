@@ -58,6 +58,7 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
     className?: string;
     styles?: StylesConfig;
+    isSearchable?: boolean;
     /**
      * True if the user can create new options. Default is false.
      */
@@ -73,7 +74,8 @@ export const makeStringOptions = (...items: string[]): Option[] =>
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   options,
-  isClearable = false,
+  // Default to true to match the default isClearable value in SchemaSelectWidget
+  isClearable = true,
   isLoading,
   loadError,
   disabled,
@@ -84,6 +86,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   className,
   styles,
   createable = false,
+  isSearchable = true,
 }: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
@@ -120,6 +123,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       onChange={patchedOnChange}
       components={components}
       styles={styles}
+      isSearchable={isSearchable}
     />
   );
 };

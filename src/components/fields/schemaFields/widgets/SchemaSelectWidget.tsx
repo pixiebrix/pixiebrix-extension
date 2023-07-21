@@ -18,75 +18,28 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import Select, { type Options } from "react-select";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { compact, isEmpty, uniq, uniqBy } from "lodash";
+import { isEmpty, uniq } from "lodash";
 import { useField } from "formik";
 import Creatable from "react-select/creatable";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
-import { type Schema } from "@/types/schemaTypes";
-import { isLabelledEnumField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isExpression } from "@/utils/expressionUtils";
+import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 
-type StringOption = {
+export type StringOption = {
   value: string;
 };
 
-type StringOptionsType = Options<StringOption>;
-
-/**
- * Return the options for a SelectWidget based on the schema and user input.
- * @param schema the JSONSchema for the field
- * @param value the current value of the field, to ensure an option exists for it
- * @param created the values the user has created
- */
-export function mapSchemaToOptions({
-  schema,
-  value,
-  created,
-}: {
-  schema: Pick<Schema, "examples" | "enum" | "type" | "oneOf">;
-  value: string;
-  created: string[];
-}): {
-  creatable: boolean;
-  options: StringOptionsType;
-} {
-  if (schema.type !== "string") {
-    // Should never hit this, because SchemaSelectWidget should only be rendered for string fields
-    return {
-      creatable: false,
-      options: [],
-    };
-  }
-
-  const primitiveValues = schema.examples ?? schema.enum;
-
-  const schemaOptions = isLabelledEnumField(schema)
-    ? schema.oneOf.map((x) => ({ value: x.const, label: x.title ?? x.const }))
-    : Array.isArray(primitiveValues)
-    ? primitiveValues.map((value: string) => ({ value, label: value }))
-    : [];
-
-  const userOptions = compact([value, ...created])
-    .filter(
-      (value) =>
-        !schemaOptions.some((schemaOption) => value === schemaOption.value)
-    )
-    .map((value) => ({
-      value,
-      label: value,
-    }));
-
-  return {
-    creatable: Boolean(schema.examples),
-    options: uniqBy([...userOptions, ...schemaOptions], "value"),
-  };
-}
+export type StringOptionsType = Options<StringOption>;
 
 const SchemaSelectWidget: React.VFC<
   SchemaFieldProps & { placeholder?: string }
-> = ({ name, schema, isRequired, focusInput, placeholder }) => {
+> = ({ name, schema, isRequired, focusInput, placeholder, uiSchema }) => {
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
+
+  // Defaulting to true for these options
+  const { isSearchable = true, isClearable = true } =
+    uiSchema?.options?.props ?? {};
 
   const elementRef = useRef();
   useAutoFocusConfiguration({ elementRef, focus: focusInput });
@@ -139,12 +92,13 @@ const SchemaSelectWidget: React.VFC<
   ) : (
     <Select
       inputId={name}
-      isClearable={!isRequired}
+      isClearable={!isRequired && isClearable}
       options={options}
       value={selectedValue}
       onChange={selectOnChange}
       ref={elementRef}
       openMenuOnFocus={true}
+      isSearchable={isSearchable}
     />
   );
 };

@@ -167,33 +167,53 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "variant"),
         schema: {
           type: "string",
-          enum: [
-            "primary",
-            "secondary",
-            "success",
-            "warning",
-            "danger",
-            "info",
-            "light",
-            "dark",
-            "link",
-            "outline-primary",
-            "outline-secondary",
-            "outline-success",
-            "outline-warning",
-            "outline-danger",
-            "outline-info",
-            "outline-light",
-            "outline-dark",
-            "outline-link",
+          oneOf: [
+            { const: "primary", title: "Primary" },
+            { const: "outline-primary", title: "Primary" },
+            { const: "secondary", title: "Secondary" },
+            { const: "outline-secondary", title: "Secondary" },
+            { const: "success", title: "Success" },
+            { const: "outline-success", title: "Success" },
+            { const: "warning", title: "Warning" },
+            { const: "outline-warning", title: "Warning" },
+            { const: "danger", title: "Danger" },
+            { const: "outline-danger", title: "Danger" },
+            { const: "info", title: "Info" },
+            { const: "outline-info", title: "Info" },
+            { const: "light", title: "Light" },
+            { const: "outline-light", title: "Light" },
+            { const: "dark", title: "Dark" },
+            { const: "outline-dark", title: "Dark" },
+            { const: "link", title: "Link" },
+            { const: "outline-link", title: "Link" },
           ],
+        },
+        uiSchema: {
+          "ui:widget": "SchemaButtonVariantWidget",
         },
         label: "Button Style",
         description: "The style/variant of the button",
       };
       const sizeEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "size"),
-        schema: { type: "string", enum: ["lg", "md", "sm"] },
+        schema: {
+          type: "string",
+          oneOf: [
+            { const: "md", title: "Medium" },
+            { const: "lg", title: "Large" },
+            { const: "sm", title: "Small" },
+          ],
+        },
+        uiSchema: {
+          options: {
+            props: {
+              // Disabled clearable because the button will have a default size whether a user selects one or not
+              isClearable: false,
+              // Default searchable to false because it seems silly to allow search across 3 options
+              isSearchable: false,
+            },
+          },
+        },
         label: "Button Size",
         description: "The size of the button: Small, Medium, or Large",
       };

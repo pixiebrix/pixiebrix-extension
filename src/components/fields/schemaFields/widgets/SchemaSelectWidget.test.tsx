@@ -18,10 +18,9 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type Schema } from "@/types/schemaTypes";
-import SchemaSelectWidget, {
-  mapSchemaToOptions,
-} from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { render } from "@/pageEditor/testHelpers";
+import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
