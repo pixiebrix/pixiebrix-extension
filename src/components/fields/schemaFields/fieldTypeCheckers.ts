@@ -49,13 +49,6 @@ export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
 
-export const isButtonVariantField = (fieldDefinition: unknown) =>
-  typeof fieldDefinition === "object" &&
-  "type" in fieldDefinition &&
-  fieldDefinition.type === "string" &&
-  "format" in fieldDefinition &&
-  fieldDefinition.format === "bootstrap-button-variant";
-
 /**
  * Returns true if the schema uses oneOf and "const" keyword to label enum options.
  * Read more at: https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-247861695

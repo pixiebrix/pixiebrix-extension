@@ -167,7 +167,6 @@ function getElementEditSchemas(
         name: joinName(elementName, "config", "variant"),
         schema: {
           type: "string",
-          format: "bootstrap-button-variant",
           enum: [
             { value: "primary", label: "Primary" },
             { value: "outline-primary", label: "Primary" },
@@ -190,7 +189,7 @@ function getElementEditSchemas(
           ],
         },
         uiSchema: {
-          widget: "SchemaButtonVariantWidget",
+          "ui:widget": "SchemaButtonVariantWidget",
         },
         label: "Button Style",
         description: "The style/variant of the button",

@@ -29,17 +29,12 @@ import styles from "./SchemaButtonVariantWidget.module.scss";
 import cx from "classnames";
 import { type SingleValueProps } from "react-select/dist/declarations/src/components/SingleValue";
 
-interface OptionValue {
-  value: string;
-  label: string;
-}
-
 const OptionComponent = ({
   innerProps,
   innerRef,
   data,
   isSelected,
-}: OptionProps<OptionValue>) => (
+}: OptionProps<Option>) => (
   <div
     ref={innerRef}
     {...innerProps}
@@ -57,7 +52,7 @@ const OptionComponent = ({
   </div>
 );
 
-const ValueComponent = ({ data }: SingleValueProps<OptionValue>) => (
+const ValueComponent = ({ data }: SingleValueProps<Option>) => (
   <Button
     data-testid="selected-variant"
     type={null}
@@ -72,7 +67,7 @@ const ValueComponent = ({ data }: SingleValueProps<OptionValue>) => (
 const ContainerComponent = ({
   innerProps,
   children,
-}: ValueContainerProps<OptionValue>) => (
+}: ValueContainerProps<Option>) => (
   <div {...innerProps} className={styles.selectContainer}>
     {children}
   </div>
@@ -81,20 +76,19 @@ const ContainerComponent = ({
 const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
   schema,
-  uiSchema = {},
 }) => {
   const [{ value }, , { setValue }] = useField(name);
-  const { isSearchable, isClearable } = uiSchema;
   const { enum: options } = schema;
 
   return (
     <div className="mt-2" data-testid="select-container">
-      <SelectWidget<OptionValue>
+      <SelectWidget<Option>
         name={name}
         options={options as Option[]}
         value={value}
-        isSearchable={isSearchable}
-        isClearable={isClearable}
+        isSearchable={false}
+        // Set clearable to false because the input looks off next to the button preview
+        isClearable={false}
         onChange={(event: React.ChangeEvent<SelectLike<Option<UUID>>>) => {
           setValue(event.target.value);
         }}
