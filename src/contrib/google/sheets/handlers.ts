@@ -18,6 +18,7 @@
 import {
   ensureGoogleToken,
   handleGoogleRequestRejection,
+  handleLegacyGoogleClientRequestRejection,
 } from "@/contrib/google/auth";
 import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
 import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/sheetsConstants";
@@ -105,59 +106,55 @@ export async function ensureSheetsReady({
   throw lastError;
 }
 
-export async function getAllSpreadsheets(
+async function executeRequest<Response, RequestData = never>(
+  requestConfig: AxiosRequestConfig<RequestData>,
   googleAccount: SanitizedIntegrationConfig | null
-): Promise<FileList> {
-  const token = await ensureSheetsReady({ interactive: false });
-
-  const requestConfig: AxiosRequestConfig = {
-    url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'`,
-    method: "get",
-  };
+): Promise<Response> {
+  let legacyClientToken: string | null = null;
 
   if (!googleAccount) {
+    legacyClientToken = await ensureSheetsReady({ interactive: false });
     // Fall-back to using the token from ensureSheetsReady
     requestConfig.headers = {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${legacyClientToken}`,
     };
   }
 
   try {
-    const { data } = await proxyService<FileList>(googleAccount, requestConfig);
-    return data;
+    const result = await proxyService<Response>(googleAccount, requestConfig);
+    return result.data;
   } catch (error) {
-    throw await handleGoogleRequestRejection(token, error);
+    throw await handleGoogleRequestRejection(
+      error,
+      googleAccount,
+      legacyClientToken
+    );
   }
+}
+
+export async function getAllSpreadsheets(
+  googleAccount: SanitizedIntegrationConfig | null
+): Promise<FileList> {
+  const requestConfig: AxiosRequestConfig<never> = {
+    url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'`,
+    method: "get",
+  };
+  return executeRequest<FileList>(requestConfig, googleAccount);
 }
 
 async function batchUpdateSpreadsheet(
   { googleAccount, spreadsheetId }: SpreadsheetTarget,
   request: BatchUpdateSpreadsheetRequest
 ): Promise<BatchUpdateSpreadsheetResponse> {
-  const token = await ensureSheetsReady({ interactive: false });
-
   const requestConfig: AxiosRequestConfig<BatchUpdateSpreadsheetRequest> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}:batchUpdate`,
     method: "post",
     data: request,
   };
-
-  if (!googleAccount) {
-    // Fall-back to using the token from ensureSheetsReady
-    requestConfig.headers = {
-      Authorization: `Bearer ${token}`,
-    };
-  }
-
-  try {
-    const { data } = await proxyService<BatchUpdateSpreadsheetResponse>(
-      googleAccount,
-      requestConfig
-    );
-    return data;
-  } catch (error) {
-    throw await handleGoogleRequestRejection(token, error);
-  }
+  return executeRequest<
+    BatchUpdateSpreadsheetResponse,
+    BatchUpdateSpreadsheetRequest
+  >(requestConfig, googleAccount);
 }
 
 export async function createTab({
@@ -186,8 +183,6 @@ export async function appendRows(
   { googleAccount, spreadsheetId, tabName }: SpreadsheetTarget,
   values: unknown[][]
 ): Promise<AppendValuesResponse> {
-  const token = await ensureSheetsReady({ interactive: false });
-
   const requestConfig: AxiosRequestConfig<ValueRange> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}:append`,
     method: "post",
@@ -200,23 +195,10 @@ export async function appendRows(
       values,
     },
   };
-
-  if (!googleAccount) {
-    // Fall-back to using the token from ensureSheetsReady
-    requestConfig.headers = {
-      Authorization: `Bearer ${token}`,
-    };
-  }
-
-  try {
-    const { data } = await proxyService<AppendValuesResponse>(
-      googleAccount,
-      requestConfig
-    );
-    return data;
-  } catch (error) {
-    throw await handleGoogleRequestRejection(token, error);
-  }
+  return executeRequest<AppendValuesResponse, ValueRange>(
+    requestConfig,
+    googleAccount
+  );
 }
 
 async function getRows(
@@ -227,43 +209,13 @@ async function getRows(
    */
   range = ""
 ): Promise<ValueRange> {
-  const token = await ensureSheetsReady({ interactive: false });
-
   let url = `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}`;
   if (range) {
     url += `!${range}`;
   }
 
-  const requestConfig: AxiosRequestConfig = { url, method: "get" };
-
-  if (!googleAccount) {
-    // Fall-back to using the token from ensureSheetsReady
-    requestConfig.headers = {
-      Authorization: `Bearer ${token}`,
-    };
-  }
-
-  /* Example of old error handling, not sure if needed:
-  return await new Promise<BatchGetValuesResponse>((resolve, reject) => {
-      sheetRequest.execute((r) => {
-        if (r.status >= 300 || (r as any).code >= 300) {
-          reject(r);
-        } else {
-          resolve(r.result);
-        }
-      });
-    });
-   */
-
-  try {
-    const { data } = await proxyService<ValueRange>(
-      googleAccount,
-      requestConfig
-    );
-    return data;
-  } catch (error) {
-    throw await handleGoogleRequestRejection(token, error);
-  }
+  const requestConfig: AxiosRequestConfig<never> = { url, method: "get" };
+  return executeRequest<ValueRange>(requestConfig, googleAccount);
 }
 
 export async function getAllRows(
@@ -282,29 +234,11 @@ export async function getSpreadsheet({
   googleAccount,
   spreadsheetId,
 }: SpreadsheetTarget): Promise<Spreadsheet> {
-  const token = await ensureSheetsReady({ interactive: false });
-
-  const requestConfig: AxiosRequestConfig = {
+  const requestConfig: AxiosRequestConfig<never> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}`,
     method: "get",
   };
-
-  if (!googleAccount) {
-    // Fall-back to using the token from ensureSheetsReady
-    requestConfig.headers = {
-      Authorization: `Bearer ${token}`,
-    };
-  }
-
-  try {
-    const { data } = await proxyService<Spreadsheet>(
-      googleAccount,
-      requestConfig
-    );
-    return data;
-  } catch (error) {
-    throw await handleGoogleRequestRejection(token, error);
-  }
+  return executeRequest<Spreadsheet>(requestConfig, googleAccount);
 }
 
 /**
@@ -345,7 +279,7 @@ export async function getSheetProperties(
 
     return spreadsheet.properties;
   } catch (error) {
-    throw await handleGoogleRequestRejection(token, error);
+    throw await handleLegacyGoogleClientRequestRejection(token, error);
   }
 }
 
@@ -384,6 +318,6 @@ export async function getTabNames(spreadsheetId: string): Promise<string[]> {
 
     return spreadsheet.sheets.map((x) => x.properties.title);
   } catch (error) {
-    throw await handleGoogleRequestRejection(token, error);
+    throw await handleLegacyGoogleClientRequestRejection(token, error);
   }
 }
