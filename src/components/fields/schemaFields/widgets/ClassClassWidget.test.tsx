@@ -80,6 +80,23 @@ describe("calculateNextValue", () => {
   });
 });
 
+it("should toggle border group", () => {
+  expect(
+    calculateNextValue("border-left", "border", true, optionsGroups.borders)
+  ).toBe("border");
+  expect(
+    calculateNextValue("border", "border-left", true, optionsGroups.borders)
+  ).toBe("border border-left");
+  expect(
+    calculateNextValue(
+      "border border-left",
+      "border",
+      false,
+      optionsGroups.borders
+    )
+  ).toBe("border-left");
+});
+
 describe("calculateNextSpacing", () => {
   it("should update size in place", () => {
     expect(calculateNextSpacing("p-0", "p", { side: null, size: 1 })).toBe(
