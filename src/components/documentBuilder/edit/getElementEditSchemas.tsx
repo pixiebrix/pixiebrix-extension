@@ -207,7 +207,9 @@ function getElementEditSchemas(
         uiSchema: {
           options: {
             props: {
+              // Disabled clearable because the button will have a default size whether a user selects one or not
               isClearable: false,
+              // Default searchable to false because it seems silly to allow search across 3 options
               isSearchable: false,
             },
           },

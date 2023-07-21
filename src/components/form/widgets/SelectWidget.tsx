@@ -74,6 +74,7 @@ export const makeStringOptions = (...items: string[]): Option[] =>
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   options,
+  // Default to true to match the default isClearable value in SchemaSelectWidget
   isClearable = true,
   isLoading,
   loadError,
