@@ -49,8 +49,7 @@ export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
 
-export const isButtonVariantField = (uiSchema: unknown) =>
-  typeof uiSchema === "object" &&
+export const isButtonVariantField = (uiSchema: Schema) =>
   get(uiSchema, ["ui:widget"]) === "SchemaButtonVariantWidget";
 
 /**
