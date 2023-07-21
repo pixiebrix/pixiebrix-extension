@@ -18,7 +18,6 @@
 import {
   getErrorMessage,
   getRootCause,
-  isErrorObject,
   selectError,
 } from "@/errors/errorHelpers";
 import { forbidContext } from "@/utils/expectContext";
@@ -28,7 +27,6 @@ import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { isObject } from "@/utils";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
-import { ErrorObject } from "serialize-error";
 
 /**
  * The user or account policy explicitly denied the permission.

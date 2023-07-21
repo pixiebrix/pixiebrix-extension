@@ -17,8 +17,10 @@
 
 import { define } from "cooky-cutter";
 import {
+  type IntegrationConfig,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
+  type SecretsConfig,
 } from "@/types/integrationTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
@@ -32,6 +34,15 @@ export const sanitizedIntegrationConfigFactory =
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedIntegrationConfig);
 
+export const integrationConfigFactory = define<IntegrationConfig>({
+  id: uuidSequence,
+  serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
+  label: (n: number) => `Integration ${n}`,
+  config: () => ({} as SecretsConfig),
+  // Nominal brand without casting
+  _rawIntegrationConfigBrand: undefined,
+});
+
 export const remoteIntegrationServiceFactory = define<
   RemoteIntegrationConfig["service"]
 >({
@@ -39,6 +50,9 @@ export const remoteIntegrationServiceFactory = define<
     metadata: {
       id: validateRegistryId(`@test/integration-${n}`),
       name: `Test Integration ${n}`,
+    },
+    schema: {
+      properties: {},
     },
   }),
   name: (n: number) => validateRegistryId(`@test/integration-${n}`),
