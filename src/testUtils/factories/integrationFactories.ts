@@ -34,11 +34,13 @@ export const sanitizedIntegrationConfigFactory =
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedIntegrationConfig);
 
+export const secretsConfigFactory = define<SecretsConfig>({} as SecretsConfig);
+
 export const integrationConfigFactory = define<IntegrationConfig>({
   id: uuidSequence,
   serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
   label: (n: number) => `Integration ${n}`,
-  config: () => ({} as SecretsConfig),
+  config: secretsConfigFactory,
   // Nominal brand without casting
   _rawIntegrationConfigBrand: undefined,
 });

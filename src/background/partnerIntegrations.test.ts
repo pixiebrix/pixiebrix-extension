@@ -20,9 +20,8 @@ import {
   getPartnerPrincipals,
 } from "@/background/partnerIntegrations";
 import { readRawConfigurations } from "@/services/registry";
-import { fetch } from "@/hooks/fetch";
-import controlRoomTokenService from "@contrib/integrations/automation-anywhere.yaml";
-import controlRoomOAuthService from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import tokenIntegrationDefinition from "@contrib/integrations/automation-anywhere.yaml";
+import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { locator as serviceLocator } from "@/background/locator";
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
@@ -31,20 +30,20 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import { setCachedAuthData } from "@/background/auth";
-import MockAdapter from "axios-mock-adapter";
-import axios from "axios";
 import { syncRemotePackages } from "@/baseRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IntegrationConfig } from "@/types/integrationTypes";
+import {
+  integrationConfigFactory,
+  secretsConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { registry } from "@/background/messenger/api";
 
-const serviceMap = new Map([
-  [(controlRoomTokenService as any).metadata.id, controlRoomTokenService],
-  [(controlRoomOAuthService as any).metadata.id, controlRoomOAuthService],
+const integrationDefinitionMap = new Map([
+  [CONTROL_ROOM_TOKEN_SERVICE_ID, tokenIntegrationDefinition],
+  [CONTROL_ROOM_OAUTH_SERVICE_ID, oauthIntegrationDefinition],
 ]);
-
-jest.mock("@/hooks/fetch", () => ({
-  fetch: jest.fn(),
-}));
 
 jest.mock("@/auth/token", () => ({
   readPartnerAuthData: jest.fn().mockResolvedValue({}),
@@ -61,94 +60,67 @@ jest.mock("@/services/registry", () => {
   };
 });
 
-jest.mock("@/background/messenger/api", () => {
-  const actual = jest.requireActual("@/background/messenger/api");
-  return {
-    ...actual,
-    registry: {
-      async find(id: RegistryId) {
-        const config = serviceMap.get(id);
-        return {
-          id: (config.metadata as any).id,
-          config,
-        };
-      },
-      syncRemote: jest.fn().mockResolvedValue(undefined),
-    },
-  };
-});
-
-jest.mock("@/hooks/fetch", () => ({
-  fetch: jest.fn(),
-}));
-
 jest.mock("@/background/auth", () => ({
   setCachedAuthData: jest.fn().mockResolvedValue(undefined),
 }));
 
-const axiosMock = new MockAdapter(axios);
-
-afterEach(() => {
-  axiosMock.reset();
-  axiosMock.resetHistory();
+// Module mocked via __mocks__/@/background/messenger/api
+jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {
+  const config = integrationDefinitionMap.get(id);
+  return {
+    id: (config.metadata as any).id,
+    config,
+  } as any;
 });
 
-const readRawConfigurationsMock = readRawConfigurations as jest.Mock;
-const fetchMock = fetch as jest.Mock;
-const setPartnerAuthMock = setPartnerAuth as jest.Mock;
-const readPartnerAuthDataMock = readPartnerAuthData as jest.Mock;
-const setCachedAuthDataMock = setCachedAuthData as jest.Mock;
+const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
+const setPartnerAuthMock = jest.mocked(setPartnerAuth);
+const readPartnerAuthDataMock = jest.mocked(readPartnerAuthData);
+const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
 
 describe("getPartnerPrincipals", () => {
   beforeEach(() => {
-    fetchMock.mockReset();
+    appApiMock.reset();
+
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [tokenIntegrationDefinition, oauthIntegrationDefinition]);
+
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
+
     readRawConfigurationsMock.mockReset();
   });
 
   test("get empty principals", async () => {
-    fetchMock.mockResolvedValue([
-      controlRoomTokenService,
-      controlRoomOAuthService,
-    ]);
-
-    await syncRemotePackages();
-
-    // No remote services configured
-    fetchMock.mockResolvedValue([]);
+    // No local integration configurations
     readRawConfigurationsMock.mockResolvedValue([]);
 
-    const principles = await getPartnerPrincipals();
+    await syncRemotePackages();
+    await serviceLocator.refresh();
 
-    expect(principles).toStrictEqual([]);
+    const principals = await getPartnerPrincipals();
+
+    expect(principals).toStrictEqual([]);
   });
 
   test("get configured principal", async () => {
-    fetchMock.mockResolvedValue([
-      controlRoomTokenService,
-      controlRoomOAuthService,
-    ]);
-
-    await syncRemotePackages();
-
-    // No remote services configured
-    fetchMock.mockResolvedValue([]);
-
+    // Local configuration
     readRawConfigurationsMock.mockResolvedValue([
-      {
-        id: uuidv4(),
+      integrationConfigFactory({
         serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
-        config: {
+        config: secretsConfigFactory({
           controlRoomUrl: "https://control-room.example.com",
           username: "bot_creator",
-        },
-      } as unknown as IntegrationConfig,
+        }),
+      }),
     ]);
 
-    await serviceLocator.refreshLocal();
+    await serviceLocator.refresh();
+    await syncRemotePackages();
 
-    const principles = await getPartnerPrincipals();
+    const principals = await getPartnerPrincipals();
 
-    expect(principles).toStrictEqual([
+    expect(principals).toStrictEqual([
       {
         hostname: "control-room.example.com",
         principalId: "bot_creator",
@@ -158,6 +130,11 @@ describe("getPartnerPrincipals", () => {
 });
 
 describe("refresh partner token", () => {
+  beforeEach(() => {
+    appApiMock.reset();
+    appApiMock.resetHistory();
+  });
+
   it("nop if no token", async () => {
     await _refreshPartnerToken();
     expect(readPartnerAuthDataMock).toHaveBeenCalledOnce();
@@ -170,7 +147,7 @@ describe("refresh partner token", () => {
     });
 
     await _refreshPartnerToken();
-    expect(axiosMock.history.post).toHaveLength(0);
+    expect(appApiMock.history.post).toHaveLength(0);
   });
 
   it("refreshes token", async () => {
@@ -191,7 +168,7 @@ describe("refresh partner token", () => {
       } as unknown as IntegrationConfig,
     ]);
 
-    axiosMock.onPost().reply(200, {
+    appApiMock.onPost().reply(200, {
       access_token: "notatoken2",
       refresh_token: "notarefreshtoken2",
     });
@@ -199,7 +176,7 @@ describe("refresh partner token", () => {
     await serviceLocator.refreshLocal();
 
     await _refreshPartnerToken();
-    expect(axiosMock.history.post).toHaveLength(1);
+    expect(appApiMock.history.post).toHaveLength(1);
     // `toHaveBeenCalledOnceWith` had the wrong types :shrug:
     expect(setPartnerAuthMock).toHaveBeenCalledWith({
       authId,
@@ -225,16 +202,16 @@ describe("refresh partner token", () => {
     });
 
     readRawConfigurationsMock.mockResolvedValue([
-      {
+      integrationConfigFactory({
         id: authId,
         serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
-        config: {
+        config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
-        },
-      } as unknown as IntegrationConfig,
+        }),
+      }),
     ]);
 
-    axiosMock.onPost().reply(401);
+    appApiMock.onPost().reply(401);
 
     await serviceLocator.refreshLocal();
 
