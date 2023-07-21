@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import SelectWidget, {
@@ -28,6 +28,8 @@ import { Button } from "react-bootstrap";
 import styles from "./SchemaButtonVariantWidget.module.scss";
 import cx from "classnames";
 import { type SingleValueProps } from "react-select/dist/declarations/src/components/SingleValue";
+import { type Schema } from "@/types/schemaTypes";
+import { isLabelledEnumField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 
 const OptionComponent = ({
   innerProps,
@@ -73,12 +75,19 @@ const ContainerComponent = ({
   </div>
 );
 
+const getOptions = (
+  schema: Pick<Schema, "examples" | "enum" | "type" | "oneOf">
+) =>
+  isLabelledEnumField(schema)
+    ? schema.oneOf.map((x) => ({ value: x.const, label: x.title }))
+    : [];
+
 const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
   schema,
 }) => {
   const [{ value }, , { setValue }] = useField(name);
-  const { enum: options } = schema;
+  const options = useMemo(() => getOptions(schema), [schema]);
 
   return (
     <div className="mt-2" data-testid="select-container">

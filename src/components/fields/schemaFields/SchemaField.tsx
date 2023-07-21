@@ -23,15 +23,15 @@ import CssClassField from "./CssClassField";
 import HeadingStyleField from "./HeadingStyleField";
 import {
   isAppServiceField,
+  isButtonVariantField,
   isCssClassField,
   isHeadingStyleField,
 } from "./fieldTypeCheckers";
 import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
 import ButtonVariantSchemaField from "@/components/fields/schemaFields/ButtonVariantSchemaField";
-import { get } from "lodash";
 
 const SchemaField: SchemaFieldComponent = (props) => {
-  const { schema } = props;
+  const { schema, uiSchema } = props;
 
   if (isAppServiceField(schema)) {
     return <AppServiceField {...props} />;
@@ -45,7 +45,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
     return <HeadingStyleField {...props} />;
   }
 
-  if (get(props, ["uiSchema", "ui:widget"]) === "SchemaButtonVariantWidget") {
+  if (isButtonVariantField(uiSchema)) {
     return <ButtonVariantSchemaField {...props} />;
   }
 

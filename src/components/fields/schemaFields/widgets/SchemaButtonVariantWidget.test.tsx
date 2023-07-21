@@ -29,17 +29,17 @@ const fieldDescription = "this is a test field description";
 
 const schema: Schema = {
   type: "string",
-  enum: [
-    { value: "primary", label: "Primary" },
-    { value: "outline-primary", label: "Primary" },
-    { value: "secondary", label: "Secondary" },
-    { value: "outline-secondary", label: "Secondary" },
-    { value: "success", label: "Success" },
-    { value: "outline-success", label: "Success" },
-    { value: "warning", label: "Warning" },
-    { value: "outline-warning", label: "Warning" },
-    { value: "danger", label: "Danger" },
-    { value: "outline-danger", label: "Danger" },
+  oneOf: [
+    { const: "primary", title: "Primary" },
+    { const: "outline-primary", title: "Primary" },
+    { const: "secondary", title: "Secondary" },
+    { const: "outline-secondary", title: "Secondary" },
+    { const: "success", title: "Success" },
+    { const: "outline-success", title: "Success" },
+    { const: "warning", title: "Warning" },
+    { const: "outline-warning", title: "Warning" },
+    { const: "danger", title: "Danger" },
+    { const: "outline-danger", title: "Danger" },
   ],
 };
 

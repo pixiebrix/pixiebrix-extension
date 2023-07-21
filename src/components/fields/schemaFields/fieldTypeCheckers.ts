@@ -23,7 +23,7 @@ import {
   SERVICE_BASE_SCHEMA,
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 import keySchema from "@schemas/key.json";
 import iconSchema from "@schemas/icon.json";
 import databaseSchema from "@schemas/database.json";
@@ -48,6 +48,10 @@ export const isCssClassField = (fieldDefinition: Schema) =>
 export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
+
+export const isButtonVariantField = (uiSchema: unknown) =>
+  typeof uiSchema === "object" &&
+  get(uiSchema, ["ui:widget"]) === "SchemaButtonVariantWidget";
 
 /**
  * Returns true if the schema uses oneOf and "const" keyword to label enum options.

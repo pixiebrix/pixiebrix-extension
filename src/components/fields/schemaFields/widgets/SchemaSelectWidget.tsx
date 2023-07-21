@@ -88,6 +88,7 @@ const SchemaSelectWidget: React.VFC<
   const [created, setCreated] = useState([]);
   const [{ value: fieldValue }, , { setValue }] = useField(name);
 
+  // Defaulting to true for these options
   const { isSearchable = true, isClearable = true } =
     uiSchema?.options?.props ?? {};
 
