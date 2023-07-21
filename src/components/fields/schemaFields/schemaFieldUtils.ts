@@ -47,9 +47,8 @@ export function makeLabelForSchemaField({
  * @param fieldProps
  */
 export const getWidgetTypeFromFieldProps = (fieldProps: SchemaFieldProps) =>
-  "type" in fieldProps.schema &&
-  fieldProps.schema.type === "string" &&
   "uiSchema" in fieldProps &&
+  typeof fieldProps.uiSchema === "object" &&
   "ui:widget" in fieldProps.uiSchema
     ? fieldProps.uiSchema["ui:widget"]
     : null;

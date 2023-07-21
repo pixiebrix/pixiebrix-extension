@@ -29,6 +29,18 @@ const fieldDescription = "this is a test field description";
 
 const schema: Schema = {
   type: "string",
+  enum: [
+    { value: "primary", label: "Primary" },
+    { value: "outline-primary", label: "Primary" },
+    { value: "secondary", label: "Secondary" },
+    { value: "outline-secondary", label: "Secondary" },
+    { value: "success", label: "Success" },
+    { value: "outline-success", label: "Success" },
+    { value: "warning", label: "Warning" },
+    { value: "outline-warning", label: "Warning" },
+    { value: "danger", label: "Danger" },
+    { value: "outline-danger", label: "Danger" },
+  ],
 };
 
 const renderSelect = (value: string, onSubmit?: (formVals: any) => void) =>
@@ -73,11 +85,11 @@ describe("SchemaButtonVariantWidget", () => {
 
     selectEvent.openMenu(selectContainerElement);
     const options = queryAllByTestId("variant-option");
-    expect(options).toHaveLength(18);
+    expect(options).toHaveLength(10);
 
-    await userEvent.click(options[8]);
+    await userEvent.click(options[4]);
 
-    expect(getByTestId("selected-variant")).toHaveClass("btn-danger");
-    expect(onSubmit).toHaveBeenCalledWith({ testField: "danger" });
+    expect(getByTestId("selected-variant")).toHaveClass("btn-success");
+    expect(onSubmit).toHaveBeenCalledWith({ testField: "success" });
   });
 });
