@@ -18,18 +18,17 @@
 import React, { useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
-import SelectWidget, {
-  type Option,
-  type SelectLike,
-} from "@/components/form/widgets/SelectWidget";
-import { type UUID } from "@/types/stringTypes";
-import { type OptionProps, type ValueContainerProps } from "react-select";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import Select, {
+  type OptionProps,
+  type ValueContainerProps,
+} from "react-select";
 import { Button } from "react-bootstrap";
 import styles from "./SchemaButtonVariantWidget.module.scss";
 import cx from "classnames";
 import { type SingleValueProps } from "react-select/dist/declarations/src/components/SingleValue";
-import { type Schema } from "@/types/schemaTypes";
-import { isLabelledEnumField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { type StringOption } from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 
 const OptionComponent = ({
   innerProps,
@@ -75,31 +74,32 @@ const ContainerComponent = ({
   </div>
 );
 
-const getOptions = (
-  schema: Pick<Schema, "examples" | "enum" | "type" | "oneOf">
-) =>
-  isLabelledEnumField(schema)
-    ? schema.oneOf.map((x) => ({ value: x.const, label: x.title }))
-    : [];
-
 const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
   schema,
 }) => {
   const [{ value }, , { setValue }] = useField(name);
-  const options = useMemo(() => getOptions(schema), [schema]);
+  const { options } = useMemo(
+    () => mapSchemaToOptions({ schema, value }),
+    [schema, value]
+  );
+
+  const selectedValue = options.find((x) => x.value === value) ?? {
+    value: null,
+  };
 
   return (
     <div className="mt-2" data-testid="select-container">
-      <SelectWidget<Option>
+      <Select
         name={name}
-        options={options as Option[]}
-        value={value}
+        options={options}
+        value={selectedValue}
         isSearchable={false}
         // Set clearable to false because the input looks off next to the button preview
         isClearable={false}
-        onChange={(event: React.ChangeEvent<SelectLike<Option<UUID>>>) => {
-          setValue(event.target.value);
+        onChange={(event: StringOption) => {
+          console.log({ options, event });
+          setValue(event.value);
         }}
         components={{
           Option: OptionComponent,
