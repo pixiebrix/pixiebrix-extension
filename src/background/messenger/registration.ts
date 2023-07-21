@@ -18,7 +18,7 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import * as sheets from "@/contrib/google/sheets/core/handlers";
+import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
 import {
   ensureContextMenu,
   preloadContextMenus,

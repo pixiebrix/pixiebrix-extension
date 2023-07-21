@@ -27,7 +27,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/handlers";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"

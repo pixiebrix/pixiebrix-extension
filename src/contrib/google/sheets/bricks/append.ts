@@ -29,7 +29,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/handlers";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 
 type CellValue = string | number | null;
 

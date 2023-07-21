@@ -37,7 +37,7 @@ import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffec
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/handlers";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 
 const HeaderField: React.FunctionComponent<{
   name: string;

@@ -24,7 +24,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
-import { ensureSheetsReady } from "@/contrib/google/sheets/core/handlers";
+import { ensureSheetsReady } from "@/contrib/google/sheets/core/sheetsApi";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;

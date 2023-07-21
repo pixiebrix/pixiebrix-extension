@@ -18,7 +18,7 @@
 import {
   ensureSheetsReady,
   getAllSpreadsheets,
-} from "@/contrib/google/sheets/core/handlers";
+} from "@/contrib/google/sheets/core/sheetsApi";
 import { ensureGoogleToken } from "@/contrib/google/auth";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
