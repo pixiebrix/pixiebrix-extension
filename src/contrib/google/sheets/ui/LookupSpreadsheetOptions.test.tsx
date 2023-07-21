@@ -18,7 +18,7 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
+import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import { act, screen } from "@testing-library/react";
 import {
   makeTemplateExpression,

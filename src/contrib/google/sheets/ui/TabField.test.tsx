@@ -18,7 +18,7 @@
 import React from "react";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import { render } from "@/pageEditor/testHelpers";
-import TabField from "@/contrib/google/sheets/TabField";
+import TabField from "@/contrib/google/sheets/ui/TabField";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { sheets } from "@/background/messenger/api";

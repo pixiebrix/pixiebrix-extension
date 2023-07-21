@@ -18,7 +18,7 @@
 import {
   columnToLetter,
   normalizeHeader,
-} from "@/contrib/google/sheets/sheetsHelpers";
+} from "@/contrib/google/sheets/core/sheetsHelpers";
 
 describe("normalizeHeader", () => {
   it("trims whitespace", () => {

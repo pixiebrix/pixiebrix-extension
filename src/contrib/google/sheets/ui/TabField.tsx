@@ -23,7 +23,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
+import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";

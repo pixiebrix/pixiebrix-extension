@@ -17,10 +17,10 @@
 
 import React, { useState } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import SheetsFileWidget from "@/contrib/google/sheets/SheetsFileWidget";
+import SheetsFileWidget from "@/contrib/google/sheets/ui/SheetsFileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { validateRegistryId } from "@/types/helpers";
-import { type SheetMeta } from "@/contrib/google/sheets/types";
+import { type SheetMeta } from "@/contrib/google/sheets/core/types";
 
 export const SERVICE_GOOGLE_SHEET_ID = validateRegistryId("google/sheet");
 

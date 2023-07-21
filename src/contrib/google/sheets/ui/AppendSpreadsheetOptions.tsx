@@ -21,22 +21,22 @@ import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { useAsyncState } from "@/hooks/common";
-import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
+import { APPEND_SCHEMA } from "@/contrib/google/sheets/bricks/append";
 import { isNullOrBlank, joinName } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import TabField from "@/contrib/google/sheets/TabField";
+import TabField from "@/contrib/google/sheets/ui/TabField";
 import { dereference } from "@/validators/generic";
 import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
-import useSpreadsheetId from "@/contrib/google/sheets/useSpreadsheetId";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/schemas";
+import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
+import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { isEmpty, isEqual } from "lodash";
-import { useOnChangeEffect } from "@/contrib/google/sheets/useOnChangeEffect";
-import { requireGoogleHOC } from "@/contrib/google/sheets/RequireGoogleApi";
+import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
+import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/handlers";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
