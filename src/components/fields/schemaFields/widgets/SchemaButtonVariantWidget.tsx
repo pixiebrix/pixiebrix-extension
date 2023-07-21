@@ -98,7 +98,6 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
         // Set clearable to false because the input looks off next to the button preview
         isClearable={false}
         onChange={(event: StringOption) => {
-          console.log({ options, event });
           setValue(event.value);
         }}
         components={{
