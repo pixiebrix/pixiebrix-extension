@@ -35,7 +35,7 @@ import userEvent from "@testing-library/user-event";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker";
 import { act, screen } from "@testing-library/react";
 
-jest.mock("@/contrib/google/sheets/useGoogleSpreadsheetPicker", () => ({
+jest.mock("@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker", () => ({
   __esModule: true,
   default: jest.fn(() => ({
     showPicker: jest.fn(),
