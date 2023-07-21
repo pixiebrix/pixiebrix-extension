@@ -25,7 +25,6 @@ import { createHashHistory } from "history";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import {
-  initManagedStorage,
   INTERNAL_reset as resetManagedStorage,
   readManagedStorage,
 } from "@/store/enterprise/managedStorage";
