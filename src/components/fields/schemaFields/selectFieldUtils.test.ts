@@ -104,7 +104,7 @@ describe("selectFieldUtils", () => {
       });
     });
 
-    test("enum", () => {
+    test("primitive", () => {
       const schema: Schema = {
         type: "string",
         enum: ["val1", "val2"],
@@ -122,6 +122,34 @@ describe("selectFieldUtils", () => {
           {
             value: "val2",
             label: "val2",
+          },
+        ],
+      });
+    });
+
+    test("user options", () => {
+      const schema: Schema = {
+        type: "string",
+        enum: ["val1"],
+        examples: ["example"],
+      };
+
+      const result = mapSchemaToOptions({
+        schema,
+        value: "",
+        created: ["created_val"],
+      });
+
+      expect(result).toStrictEqual({
+        creatable: true,
+        options: [
+          {
+            value: "created_val",
+            label: "created_val",
+          },
+          {
+            value: "example",
+            label: "example",
           },
         ],
       });
