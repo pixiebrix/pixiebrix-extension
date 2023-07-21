@@ -15,19 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
 
-// Re-export utility methods directly
-export const { absoluteApiUrl } = jest.requireActual("@/services/apiClient");
-
-export async function getLinkedApiClient() {
-  return axios.create();
-}
-
-export async function getApiClient() {
-  return axios.create();
-}
-
-export async function maybeGetLinkedApiClient() {
-  return axios.create();
-}
+const ButtonVariantSchemaField = defaultFieldFactory(SchemaButtonVariantWidget);
+export default ButtonVariantSchemaField;

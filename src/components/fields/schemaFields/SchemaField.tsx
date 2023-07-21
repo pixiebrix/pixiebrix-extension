@@ -23,13 +23,15 @@ import CssClassField from "./CssClassField";
 import HeadingStyleField from "./HeadingStyleField";
 import {
   isAppServiceField,
+  isButtonVariantField,
   isCssClassField,
   isHeadingStyleField,
 } from "./fieldTypeCheckers";
 import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
+import ButtonVariantSchemaField from "@/components/fields/schemaFields/ButtonVariantSchemaField";
 
 const SchemaField: SchemaFieldComponent = (props) => {
-  const { schema } = props;
+  const { schema, uiSchema } = props;
 
   if (isAppServiceField(schema)) {
     return <AppServiceField {...props} />;
@@ -41,6 +43,10 @@ const SchemaField: SchemaFieldComponent = (props) => {
 
   if (isHeadingStyleField(schema)) {
     return <HeadingStyleField {...props} />;
+  }
+
+  if (isButtonVariantField(uiSchema)) {
+    return <ButtonVariantSchemaField {...props} />;
   }
 
   if (props.name.endsWith(".isRootAware")) {
