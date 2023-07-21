@@ -227,11 +227,13 @@ describe("SetupPage", () => {
   });
 
   test("Managed Storage OAuth2 partner user", async () => {
+    const controlRoomUrl = "https://notarealcontrolroom.com";
+
     mockAnonymousUser();
 
     await browser.storage.managed.set({
       partnerId: "automation-anywhere",
-      controlRoomUrl: "https://notarealcontrolroom.com",
+      controlRoomUrl,
     });
 
     render(
@@ -244,9 +246,10 @@ describe("SetupPage", () => {
       expect(screen.queryByTestId("loader")).toBeNull();
     });
 
+    // FIXME: there's some test interference, this test passes on its own
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value")
-    ).toStrictEqual("https://notarealcontrolroom.com");
+    ).toStrictEqual(controlRoomUrl);
   });
 });

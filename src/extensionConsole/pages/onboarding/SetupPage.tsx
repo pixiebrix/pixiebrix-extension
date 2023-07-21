@@ -86,6 +86,11 @@ const SetupPage: React.FunctionComponent = () => {
     );
   }
 
+  console.error("SetupPage", {
+    hasPartner,
+    hasConfiguredIntegration,
+  });
+
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
 
   if (authMethod === "pixiebrix-token") {

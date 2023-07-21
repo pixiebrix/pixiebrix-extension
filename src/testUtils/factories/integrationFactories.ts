@@ -30,7 +30,7 @@ export const sanitizedIntegrationConfigFactory =
   define<SanitizedIntegrationConfig>({
     id: uuidSequence,
     proxy: false,
-    serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
+    serviceId: (n: number) => validateRegistryId(`test/integration-${n}`),
     config: () => ({} as SanitizedConfig),
   } as unknown as SanitizedIntegrationConfig);
 
@@ -38,7 +38,7 @@ export const secretsConfigFactory = define<SecretsConfig>({} as SecretsConfig);
 
 export const integrationConfigFactory = define<IntegrationConfig>({
   id: uuidSequence,
-  serviceId: (n: number) => validateRegistryId(`test/service-${n}`),
+  serviceId: (n: number) => validateRegistryId(`test/integration-${n}`),
   label: (n: number) => `Integration ${n}`,
   config: secretsConfigFactory,
   // Nominal brand without casting
