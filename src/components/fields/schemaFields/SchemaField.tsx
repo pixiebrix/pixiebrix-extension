@@ -28,7 +28,7 @@ import {
 } from "./fieldTypeCheckers";
 import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
 import ButtonVariantSchemaField from "@/components/fields/schemaFields/ButtonVariantSchemaField";
-import { getWidgetTypeFromFieldProps } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { get } from "lodash";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema } = props;
@@ -45,7 +45,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
     return <HeadingStyleField {...props} />;
   }
 
-  if (getWidgetTypeFromFieldProps(props) === "SchemaButtonVariantWidget") {
+  if (get(props, ["uiSchema", "ui:widget"]) === "SchemaButtonVariantWidget") {
     return <ButtonVariantSchemaField {...props} />;
   }
 

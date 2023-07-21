@@ -40,19 +40,6 @@ export function makeLabelForSchemaField({
   return label ?? title ?? fieldLabel(name);
 }
 
-/**
- * Accepts an object of type SchemaFieldProps and returns the "ui:widget" if it exists
- * Using this to try and match the rsjf recommended format for custom widgets:
- * https://rjsf-team.github.io/react-jsonschema-form/docs/advanced-customization/custom-widgets-fields#adding-your-own-custom-widgets
- * @param fieldProps
- */
-export const getWidgetTypeFromFieldProps = (fieldProps: SchemaFieldProps) =>
-  "uiSchema" in fieldProps &&
-  typeof fieldProps.uiSchema === "object" &&
-  "ui:widget" in fieldProps.uiSchema
-    ? fieldProps.uiSchema["ui:widget"]
-    : null;
-
 type FieldConfig = {
   prop: string;
   isRequired: boolean;
