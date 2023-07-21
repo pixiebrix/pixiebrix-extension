@@ -29,27 +29,6 @@ import styles from "./SchemaButtonVariantWidget.module.scss";
 import cx from "classnames";
 import { type SingleValueProps } from "react-select/dist/declarations/src/components/SingleValue";
 
-const buttonVariants = [
-  { value: "primary", label: "Primary" },
-  { value: "outline-primary", label: "Primary" },
-  { value: "secondary", label: "Secondary" },
-  { value: "outline-secondary", label: "Secondary" },
-  { value: "success", label: "Success" },
-  { value: "outline-success", label: "Success" },
-  { value: "warning", label: "Warning" },
-  { value: "outline-warning", label: "Warning" },
-  { value: "danger", label: "Danger" },
-  { value: "outline-danger", label: "Danger" },
-  { value: "info", label: "Info" },
-  { value: "outline-info", label: "Info" },
-  { value: "light", label: "Light" },
-  { value: "outline-light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "outline-dark", label: "Dark" },
-  { value: "link", label: "Link" },
-  { value: "outline-link", label: "Link" },
-];
-
 interface OptionValue {
   value: string;
   label: string;
@@ -101,16 +80,18 @@ const ContainerComponent = ({
 
 const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
+  schema,
   uiSchema = {},
 }) => {
   const [{ value }, , { setValue }] = useField(name);
   const { isSearchable, isClearable } = uiSchema;
+  const { enum: options } = schema;
 
   return (
     <div className="mt-2" data-testid="select-container">
       <SelectWidget<OptionValue>
         name={name}
-        options={buttonVariants}
+        options={options as Option[]}
         value={value}
         isSearchable={isSearchable}
         isClearable={isClearable}
