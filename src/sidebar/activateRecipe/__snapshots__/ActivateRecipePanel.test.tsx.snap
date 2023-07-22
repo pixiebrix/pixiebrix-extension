@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivateRecipePanel activates basic recipe automatically and renders well-done page 1`] = `
+exports[`ActivateModPanel activates basic recipe automatically and renders well-done page 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -47,7 +47,7 @@ exports[`ActivateRecipePanel activates basic recipe automatically and renders we
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel activates basic recipe with empty options structure automatically and renders well-done page 1`] = `
+exports[`ActivateModPanel activates basic recipe with empty options structure automatically and renders well-done page 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -94,7 +94,7 @@ exports[`ActivateRecipePanel activates basic recipe with empty options structure
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel activates recipe with built-in services automatically and renders well-done page 1`] = `
+exports[`ActivateModPanel activates recipe with built-in services automatically and renders well-done page 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -141,7 +141,7 @@ exports[`ActivateRecipePanel activates recipe with built-in services automatical
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel activates recipe with database preview automatically and renders well-done page 1`] = `
+exports[`ActivateModPanel activates recipe with database preview automatically and renders well-done page 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -188,7 +188,7 @@ exports[`ActivateRecipePanel activates recipe with database preview automaticall
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut is configured on MacOS 1`] = `
+exports[`ActivateModPanel renders well-done page for quick bar mod shortcut is configured on MacOS 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -258,7 +258,7 @@ exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut i
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut is configured on Windows 1`] = `
+exports[`ActivateModPanel renders well-done page for quick bar mod shortcut is configured on Windows 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -328,7 +328,7 @@ exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut i
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut not configured 1`] = `
+exports[`ActivateModPanel renders well-done page for quick bar mod shortcut not configured 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -382,7 +382,7 @@ exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut n
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel renders with options, permissions info 1`] = `
+exports[`ActivateModPanel renders with options, permissions info 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -707,7 +707,7 @@ exports[`ActivateRecipePanel renders with options, permissions info 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipePanel renders with service configuration if no built-in service configs available 1`] = `
+exports[`ActivateModPanel renders with service configuration if no built-in service configs available 1`] = `
 <DocumentFragment>
   <div
     class="root"

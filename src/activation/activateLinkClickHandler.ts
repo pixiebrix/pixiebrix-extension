@@ -19,7 +19,19 @@ import { validateRegistryId } from "@/types/helpers";
 import { type ModActivationPanelEntry } from "@/types/sidebarTypes";
 import { isActivationUrl } from "@/activation/ActivationLink";
 import notify from "@/utils/notify";
-import { compact } from "lodash";
+import { compact, isEmpty } from "lodash";
+
+/**
+ * Read id search params from the URL. Handles both `id` and `id[]`.
+ * @param url
+ */
+function readIdsFromUrl(url: URL): string[] {
+  const rawIds = [
+    ...url.searchParams.getAll("id"),
+    ...url.searchParams.getAll("id[]"),
+  ];
+  return rawIds.filter((x) => !isEmpty(x));
+}
 
 export default function activateLinkClickHandler(
   event: MouseEvent,
@@ -38,9 +50,7 @@ export default function activateLinkClickHandler(
   }
 
   const url = new URL(href);
-
-  // Read all ids
-  const rawIds = url.searchParams.getAll("id");
+  const rawIds = readIdsFromUrl(url);
   let modIds;
 
   try {

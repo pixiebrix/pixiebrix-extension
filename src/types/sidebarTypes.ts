@@ -220,12 +220,12 @@ export type FormPanelEntry = BasePanelEntry & {
 /**
  * Panel entry for activating one or more mods.
  *
- * @since 1.7.35 supports activating multiple mods as if all mods don't require UI interaction.
+ * @since 1.7.35 supports activating multiple mods if all mods don't require configuration
  */
 export type ModActivationPanelEntry = BasePanelEntry & {
   type: "activateMods";
   /**
-   * The mod id(s) to activate
+   * One or more mod id(s) to activate. If providing multiple mod ids, none of the mods may require configuration.
    */
   modIds: RegistryId[];
   /**

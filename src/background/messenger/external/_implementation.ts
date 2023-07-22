@@ -115,7 +115,7 @@ export async function setActivatingMods({
 }
 
 /**
- * Returns the mod id(s) that PixieBrix should show activation UI for.
+ * Returns the mod id(s) that PixieBrix should show activation UI for, or null if there are none.
  *
  * @see setActivatingMods
  */
@@ -124,7 +124,7 @@ export async function getActivatingModIds(): Promise<RegistryId[] | null> {
     STORAGE_BLUEPRINT_ID
   );
 
-  return value ? castArray(value) : null;
+  return value?.length > 0 ? castArray(value) : null;
 }
 
 type ActivateModsOptions = {
@@ -159,6 +159,7 @@ type ActivateModsOptions = {
  * Opens redirectUrl, otherwise opens the Extension Console activation wizard.
  *
  * @return true
+ * @throws Error if no mod ids are provided
  */
 export async function openActivateModPage({
   blueprintId: modIdOrIds,

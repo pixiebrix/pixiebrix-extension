@@ -21,7 +21,7 @@ import Form, {
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
-import styles from "./ActivateRecipePanel.module.scss";
+import styles from "./ActivateModPanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
@@ -55,7 +55,7 @@ type ActivateRecipeInputsProps = {
   activationError?: string;
 };
 
-const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
+const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
   recipe: inputRecipe,
   optionsWizardStep,
   initialValues,
@@ -193,4 +193,4 @@ const ActivateRecipeInputs: React.FC<ActivateRecipeInputsProps> = ({
   );
 };
 
-export default ActivateRecipeInputs;
+export default ActivateModInputs;

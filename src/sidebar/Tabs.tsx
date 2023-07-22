@@ -34,7 +34,7 @@ import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/bricks/errors";
-import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
+import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectExtensionFromEventKey,
@@ -48,6 +48,7 @@ import {
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
+import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -296,11 +297,20 @@ const Tabs: React.FC = () => {
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: "activate",
+                    // For backward compatability, provide a single modId to the recipeToActivate property
                     recipeToActivate: modActivationPanel.modIds[0],
+                    modCount: modActivationPanel.modIds.length,
+                    modIds: modActivationPanel.modIds,
                   });
                 }}
               >
-                <ActivateRecipePanel recipeId={modActivationPanel.modIds[0]} />
+                {modActivationPanel.modIds.length === 1 ? (
+                  <ActivateModPanel modId={modActivationPanel.modIds[0]} />
+                ) : (
+                  <ActivateMultipleModsPanel
+                    modIds={modActivationPanel.modIds}
+                  />
+                )}
               </ErrorBoundary>
             </Tab.Pane>
           )}

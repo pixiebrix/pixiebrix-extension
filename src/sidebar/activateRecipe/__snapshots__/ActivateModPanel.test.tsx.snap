@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActivateRecipePanel activates basic recipe automatically and renders well-done page 1`] = `<DocumentFragment />`;
+
+exports[`ActivateRecipePanel activates basic recipe with empty options structure automatically and renders well-done page 1`] = `<DocumentFragment />`;
+
+exports[`ActivateRecipePanel activates recipe with built-in services automatically and renders well-done page 1`] = `<DocumentFragment />`;
+
+exports[`ActivateRecipePanel activates recipe with database preview automatically and renders well-done page 1`] = `<DocumentFragment />`;
+
+exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut is configured on MacOS 1`] = `<DocumentFragment />`;
+
+exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut is configured on Windows 1`] = `<DocumentFragment />`;
+
+exports[`ActivateRecipePanel renders well-done page for quick bar mod shortcut not configured 1`] = `<DocumentFragment />`;
+
+exports[`ActivateRecipePanel renders with options, permissions info 1`] = `<DocumentFragment />`;
+
+exports[`ActivateRecipePanel renders with service configuration if no built-in service configs available 1`] = `<DocumentFragment />`;

@@ -54,6 +54,35 @@ describe("activateLinkClickHandler", () => {
     );
   });
 
+  it.each(["id", "id[]"])(
+    "handles multiple ids with param %s",
+    async (paramName: string) => {
+      const modIds = [registryIdFactory(), registryIdFactory()];
+
+      const url = new URL(ACTIVATION_LINK_PREFIX);
+      url.searchParams.append(paramName, modIds[0]);
+      url.searchParams.append(paramName, modIds[1]);
+
+      render(<a href={url.href}>Activate Mod</a>);
+
+      document.addEventListener("click", handleClicks);
+
+      await act(async () => {
+        await userEvent.click(
+          screen.getByRole("link", { name: "Activate Mod" })
+        );
+      });
+
+      expect(callback).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "activateMods",
+          modIds,
+          heading: expect.toBeString(),
+        })
+      );
+    }
+  );
+
   it("does not intercept non-activation links", async () => {
     render(<a href="https://example.com">Activate Mod</a>);
 

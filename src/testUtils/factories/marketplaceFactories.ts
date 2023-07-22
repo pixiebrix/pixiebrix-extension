@@ -29,6 +29,10 @@ export const marketplaceTagFactory = define<MarketplaceTag>({
   fa_icon: "fab abacus",
 });
 
+/**
+ * Create a MarketplaceListing.package for a ModDefinition.
+ * @param recipe
+ */
 export function recipeToMarketplacePackage(
   recipe: ModDefinition
 ): MarketplaceListing["package"] {
