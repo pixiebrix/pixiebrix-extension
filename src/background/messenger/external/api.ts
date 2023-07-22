@@ -51,7 +51,7 @@ export const setExtensionAuth = liftExternal(
 
 export const setActivatingBlueprint = liftExternal(
   "SET_ACTIVATING_BLUEPRINT",
-  local.setActivatingBlueprint
+  local.setActivatingMods
 );
 
 export const openMarketplace = liftExternal(
@@ -61,12 +61,12 @@ export const openMarketplace = liftExternal(
 
 export const openActivateBlueprint = liftExternal(
   "OPEN_ACTIVATE_BLUEPRINT",
-  local.openActivateBlueprint
+  local.openActivateModPage
 );
 
 export const openExtensionOptions = liftExternal(
   "OPEN_OPTIONS",
-  local.openExtensionOptions
+  local.openExtensionConsole
 );
 
 export const getPartnerToken = liftExternal(
@@ -76,5 +76,5 @@ export const getPartnerToken = liftExternal(
 
 export const installStarterBlueprints = liftExternal(
   "INSTALL_STARTER_BLUEPRINTS",
-  local.installStarterBlueprints
+  local.activateStarterMods
 );

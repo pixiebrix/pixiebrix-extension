@@ -41,7 +41,7 @@ import {
   selectSidebarActiveTabKey,
   selectSidebarForms,
   selectSidebarPanels,
-  selectSidebarRecipeToActivate,
+  selectSidebarModActivationPanel,
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
 } from "@/sidebar/sidebarSelectors";
@@ -116,7 +116,7 @@ const Tabs: React.FC = () => {
   const panels = useSelector(selectSidebarPanels);
   const forms = useSelector(selectSidebarForms);
   const temporaryPanels = useSelector(selectSidebarTemporaryPanels);
-  const recipeToActivate = useSelector(selectSidebarRecipeToActivate);
+  const modActivationPanel = useSelector(selectSidebarModActivationPanel);
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
 
@@ -205,14 +205,15 @@ const Tabs: React.FC = () => {
               />
             </TabWithDivider>
           ))}
-          {recipeToActivate && (
+          {modActivationPanel && (
             <TabWithDivider
-              key={recipeToActivate.recipeId}
-              active={isPanelActive(recipeToActivate)}
-              eventKey={eventKeyForEntry(recipeToActivate)}
+              // Use eventKeyForEntry which generates a string key
+              key={eventKeyForEntry(modActivationPanel)}
+              active={isPanelActive(modActivationPanel)}
+              eventKey={eventKeyForEntry(modActivationPanel)}
             >
               <span className={styles.tabTitle}>
-                {recipeToActivate.heading}
+                {modActivationPanel.heading}
               </span>
             </TabWithDivider>
           )}
@@ -285,21 +286,21 @@ const Tabs: React.FC = () => {
           {temporaryPanels.map((panel) => (
             <TemporaryPanelTabPane panel={panel} key={panel.nonce} />
           ))}
-          {recipeToActivate && (
+          {modActivationPanel && (
             <Tab.Pane
               className={cx("h-100", styles.paneOverrides)}
-              key={recipeToActivate.recipeId}
-              eventKey={eventKeyForEntry(recipeToActivate)}
+              key={eventKeyForEntry(modActivationPanel)}
+              eventKey={eventKeyForEntry(modActivationPanel)}
             >
               <ErrorBoundary
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: "activate",
-                    recipeToActivate: recipeToActivate.recipeId,
+                    recipeToActivate: modActivationPanel.modIds[0],
                   });
                 }}
               >
-                <ActivateRecipePanel recipeId={recipeToActivate.recipeId} />
+                <ActivateRecipePanel recipeId={modActivationPanel.modIds[0]} />
               </ErrorBoundary>
             </Tab.Pane>
           )}

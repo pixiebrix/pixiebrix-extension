@@ -102,14 +102,14 @@ function setupMocksAndRender(recipeOverride?: Partial<ModDefinition>) {
   appApiMock.onGet("/api/marketplace/listings/").reply(200, [listing]);
   appApiMock.onGet().reply(200, []);
 
-  const entry = sidebarEntryFactory("activateRecipe", {
+  const entry = sidebarEntryFactory("activateMods", {
     recipeId: recipe.metadata.id,
     heading: "Activate Mod",
   });
 
   return render(<ActivateRecipePanel recipeId={recipe.metadata.id} />, {
     setupRedux(dispatch) {
-      dispatch(sidebarSlice.actions.showActivateRecipe(entry));
+      dispatch(sidebarSlice.actions.showModActivationPanel(entry));
     },
   });
 }

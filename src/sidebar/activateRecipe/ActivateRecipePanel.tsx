@@ -197,7 +197,7 @@ const ActivateRecipePanelContent: React.FC<
   );
 
   async function handleActivationDecision() {
-    reduxDispatch(actions.hideActivateRecipe());
+    reduxDispatch(actions.hideModActivationPanel());
 
     if (!sidebarHasModPanels) {
       const topFrame = await getTopLevelFrame();

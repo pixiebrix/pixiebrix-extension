@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { showActivateRecipeInSidebar } from "@/contentScript/sidebarController";
-import { getAuthHeaders } from "@/auth/token";
+import { showModActivationInSidebar } from "@/contentScript/sidebarController";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { loadOptions } from "@/store/extensionsStorage";
 import { getDocument } from "@/starterBricks/starterBrickTestUtils";
@@ -24,7 +23,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MARKETPLACE_URL } from "@/utils/strings";
-import { getActivatingBlueprint } from "@/background/messenger/external/_implementation";
+import { getActivatingModIds } from "@/background/messenger/external/_implementation";
 import {
   modComponentFactory,
   modComponentRecipeFactory,
@@ -34,24 +33,21 @@ import {
   unloadActivationEnhancements,
 } from "@/contentScript/loadActivationEnhancements";
 import { isReadyInThisDocument } from "@/contentScript/ready";
+import { isLinked } from "@/auth/token";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
-  showActivateRecipeInSidebar: jest.fn(),
-  hideActivateRecipeInSidebar: jest.fn(),
+  showModActivationInSidebar: jest.fn(),
+  hideModActivationInSidebar: jest.fn(),
 }));
 
-const showFunctionMock = showActivateRecipeInSidebar as jest.MockedFunction<
-  typeof showActivateRecipeInSidebar
->;
+const showFunctionMock = jest.mocked(showModActivationInSidebar);
 
 jest.mock("@/auth/token", () => ({
-  getAuthHeaders: jest.fn(),
+  isLinked: jest.fn().mockResolvedValue(true),
 }));
 
-const getAuthHeadersMock = getAuthHeaders as jest.MockedFunction<
-  typeof getAuthHeaders
->;
+const isLinkedMock = jest.mocked(isLinked);
 
 jest.mock("@/contentScript/ready", () => ({
   isReadyInThisDocument: jest.fn(() => true),
@@ -64,8 +60,8 @@ jest.mock("@/store/extensionsStorage", () => ({
 const loadOptionsMock = loadOptions as jest.MockedFunction<typeof loadOptions>;
 
 jest.mock("@/background/messenger/external/_implementation", () => ({
-  setActivatingBlueprint: jest.fn(),
-  getActivatingBlueprint: jest.fn(),
+  setActivatingMods: jest.fn(),
+  getActivatingModIds: jest.fn(),
 }));
 
 jest.mock("@/sidebar/store", () => ({
@@ -74,8 +70,7 @@ jest.mock("@/sidebar/store", () => ({
   },
 }));
 
-const getActivatingBlueprintMock =
-  getActivatingBlueprint as jest.MockedFunction<typeof getActivatingBlueprint>;
+const getActivatingModIdsMock = jest.mocked(getActivatingModIds);
 
 const recipeId1 = validateRegistryId("@pixies/misc/comment-and-vote");
 const recipeId2 = validateRegistryId("@pixies/github/github-notifications");
@@ -104,7 +99,7 @@ describe("marketplace enhancements", () => {
   });
 
   test("given user is logged in, when an activate button is clicked, should open the sidebar", async () => {
-    getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
+    isLinkedMock.mockResolvedValue(true);
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
@@ -132,7 +127,7 @@ describe("marketplace enhancements", () => {
   });
 
   test("given user is not logged in, when activation button clicked, open admin console", async () => {
-    getAuthHeadersMock.mockResolvedValue(null);
+    isLinkedMock.mockResolvedValue(false);
     window.location.assign(MARKETPLACE_URL);
 
     await loadActivationEnhancements();
@@ -149,24 +144,24 @@ describe("marketplace enhancements", () => {
   });
 
   test("given user is not logged in, when loaded, then don't resume activation in progress", async () => {
-    getAuthHeadersMock.mockResolvedValue(null);
+    isLinkedMock.mockResolvedValue(false);
     window.location.assign(MARKETPLACE_URL);
 
     await initSidebarActivation();
 
     // Before loading in-progress recipe activation, isUserLoggedIn is called,
-    // which calls getAuthHeaders
-    expect(getAuthHeadersMock).toHaveBeenCalledTimes(1);
+    // which calls isLinked
+    expect(isLinkedMock).toHaveBeenCalledTimes(1);
     // The getInstalledRecipeIds function should not call loadOptions
     // when the user is not logged in
     expect(loadOptionsMock).not.toHaveBeenCalled();
     // The marketplace script should not resume in-progress blueprint
     // activation when the user is not logged in
-    expect(getActivatingBlueprintMock).not.toHaveBeenCalled();
+    expect(getActivatingModIdsMock).not.toHaveBeenCalled();
   });
 
   test("given user is not logged in, when loaded, should change button text", async () => {
-    getAuthHeadersMock.mockResolvedValue(null);
+    isLinkedMock.mockResolvedValue(false);
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
@@ -189,7 +184,7 @@ describe("marketplace enhancements", () => {
   });
 
   test("given user is logged in, when loaded, should change button text for installed recipe", async () => {
-    getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
+    isLinkedMock.mockResolvedValue(true);
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
@@ -211,7 +206,7 @@ describe("marketplace enhancements", () => {
   });
 
   test("given user is logged in, when loaded, should resume activation in progress", async () => {
-    getAuthHeadersMock.mockResolvedValue({ foo: "bar" });
+    isLinkedMock.mockResolvedValue(true);
     window.location.assign(MARKETPLACE_URL);
 
     await loadActivationEnhancements();
@@ -219,12 +214,12 @@ describe("marketplace enhancements", () => {
 
     // Before loading in-progress recipe activation, isUserLoggedIn is called,
     // which calls getAuthHeaders
-    expect(getAuthHeadersMock).toHaveBeenCalledTimes(1);
+    expect(isLinkedMock).toHaveBeenCalledTimes(1);
     // The getInstalledRecipeIds function should call loadOptions
     // when the user is logged in
     expect(loadOptionsMock).toHaveBeenCalled();
     // The marketplace script should resume in-progress blueprint
     // activation when the user is logged in
-    expect(getActivatingBlueprintMock).toHaveBeenCalled();
+    expect(getActivatingModIdsMock).toHaveBeenCalled();
   });
 });

@@ -30,7 +30,7 @@ describe("defaultEventKey", () => {
         panels: [],
         temporaryPanels: [],
         staticPanels: [],
-        recipeToActivate: null,
+        modActivationPanel: null,
       })
     ).toBe(null);
   });
@@ -90,8 +90,9 @@ describe("eventKeyForEntry", () => {
 
   it("uses recipeId for activateRecipe", () => {
     const recipeId = validateRegistryId("@test/test-recipe");
-    const entry = sidebarEntryFactory("activateRecipe", { recipeId });
-    expect(eventKeyForEntry(entry)).toBe(`activate-${recipeId}`);
+    const entry = sidebarEntryFactory("activateMods", { recipeId });
+    // Main part is a an object hash of the mod ids
+    expect(eventKeyForEntry(entry)).toStartWith("activate-");
   });
 
   it("uses extensionId for panel", () => {

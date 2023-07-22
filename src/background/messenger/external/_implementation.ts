@@ -25,21 +25,38 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
+import { type RegistryId } from "@/types/registryTypes";
+import { castArray } from "lodash";
+import reportError from "@/telemetry/reportError";
+import { validateRegistryId } from "@/types/helpers";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
-export async function setExtensionAuth(auth: TokenAuthData) {
+/**
+ * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
+ */
+const STORAGE_BLUEPRINT_ID = "activatingBlueprintId" as ManualStorageKey;
+
+/**
+ * Set the user's credentials for the PixieBrix extension. Returns true if the data was updated.
+ *
+ * Reloads the browser extension if the credentials were updated.
+ *
+ * @param auth the user data and credentials
+ * @see linkExtension
+ */
+export async function setExtensionAuth(auth: TokenAuthData): Promise<boolean> {
   const updated = await linkExtension(auth);
   if (updated) {
     reportEvent(Events.LINK_EXTENSION);
     console.debug(
-      `Extension link updated, reloading extension in ${HACK_EXTENSION_LINK_RELOAD_DELAY_MS}ms`
+      `Extension link updated, reloading browser extension in ${HACK_EXTENSION_LINK_RELOAD_DELAY_MS}ms`
     );
 
     // A hack to ensure the SET_EXTENSION_AUTH messenger response flows to the front-end before the backend
     // page is reloaded.
     setTimeout(async () => {
-      console.debug("Reloading extension due to extension link update");
+      console.debug("Reloading browser extension due to extension link update");
       browser.runtime.reload();
     }, HACK_EXTENSION_LINK_RELOAD_DELAY_MS);
   }
@@ -47,14 +64,21 @@ export async function setExtensionAuth(auth: TokenAuthData) {
   return updated;
 }
 
-type OpenOptionsOptions = {
+type OpenMarketplaceOptions = {
   /**
    * True to open the extension in a new tab, false to replace the current tab (default=True)
    */
   newTab?: boolean;
 };
 
-export async function openMarketplace({ newTab = true }: OpenOptionsOptions) {
+/**
+ * Opens the Extension Console marketplace route. NOTE: this is not the public marketplace.
+ * @return true
+ * @deprecated there's no top-level marketplace route in the Extension Console anymore
+ */
+export async function openMarketplace({
+  newTab = true,
+}: OpenMarketplaceOptions): Promise<boolean> {
   const baseUrl = browser.runtime.getURL("options.html");
 
   const url = `${baseUrl}#/marketplace`;
@@ -68,29 +92,48 @@ export async function openMarketplace({ newTab = true }: OpenOptionsOptions) {
   return true;
 }
 
-type SetActivatingBlueprintOptions = {
+type SetActivatingModsOptions = {
   /**
    * The id of a blueprint to activate
+   *
+   * As of 1.7.35, this can be a single mod or list of mods. But we're keeping the name for backwards compatibility.
    */
-  blueprintId: string;
+  blueprintId: RegistryId | RegistryId[];
 };
 
-const STORAGE_BLUEPRINT_ID = "activatingBlueprintId" as ManualStorageKey;
-export async function setActivatingBlueprint({
-  blueprintId,
-}: SetActivatingBlueprintOptions) {
-  return setStorage(STORAGE_BLUEPRINT_ID, blueprintId);
+/**
+ * Set mod is that PixieBrix should start activation for.
+ *
+ * @see getActivatingModIds
+ */
+export async function setActivatingMods({
+  blueprintId: modIdOrIds,
+}: SetActivatingModsOptions): Promise<void> {
+  // Defensive check for syntactically valid registry ids
+  const modIds = castArray(modIdOrIds).map((x) => validateRegistryId(x));
+  return setStorage(STORAGE_BLUEPRINT_ID, modIds);
 }
 
-export async function getActivatingBlueprint() {
-  return readStorage(STORAGE_BLUEPRINT_ID);
+/**
+ * Returns the mod id(s) that PixieBrix should show activation UI for.
+ *
+ * @see setActivatingMods
+ */
+export async function getActivatingModIds(): Promise<RegistryId[] | null> {
+  const value: RegistryId | RegistryId[] = await readStorage(
+    STORAGE_BLUEPRINT_ID
+  );
+
+  return value ? castArray(value) : null;
 }
 
-type ActivateBlueprintOptions = {
+type ActivateModsOptions = {
   /**
-   * The blueprint to activate
+   * The mods(s) to activate.
+   *
+   * As of 1.7.35, this can be a single mod or list of mods. But we're keeping the name for backwards compatibility.
    */
-  blueprintId: string;
+  blueprintId: RegistryId | RegistryId[];
 
   /**
    * True to open the extension in a new tab, false to replace the current tab (default=True)
@@ -110,21 +153,38 @@ type ActivateBlueprintOptions = {
   redirectUrl?: string;
 };
 
-export async function openActivateBlueprint({
-  blueprintId,
+/**
+ * Open the url for activating a blueprint in a new/existing tab.
+ *
+ * Opens redirectUrl, otherwise opens the Extension Console activation wizard.
+ *
+ * @return true
+ */
+export async function openActivateModPage({
+  blueprintId: modIdOrIds,
   newTab = true,
   pageSource = "marketplace",
   redirectUrl,
-}: ActivateBlueprintOptions) {
+}: ActivateModsOptions): Promise<boolean> {
+  const modIds = castArray(modIdOrIds);
+
+  if (modIds.length === 0) {
+    throw new Error("No mod ids provided");
+  } else if (redirectUrl == null && modIds.length > 1) {
+    reportError(
+      new Error("No redirectUrl provided for multiple mod activation")
+    );
+  }
+
   const baseConsoleUrl = browser.runtime.getURL("options.html");
+
   const url =
     redirectUrl ??
-    `${baseConsoleUrl}#/marketplace/activate/${encodeURIComponent(
-      blueprintId
-    )}`;
+    // For extension console activation, only support a single mod id
+    `${baseConsoleUrl}#/marketplace/activate/${encodeURIComponent(modIds[0])}`;
 
   // TODO: possibly remove this event, it's not really being used/observed at all, and the pageSource is very misleading
-  reportEvent(Events.EXTERNAL_ACTIVATE, { blueprintId, pageSource });
+  reportEvent(Events.EXTERNAL_ACTIVATE, { blueprintId: modIds[0], pageSource });
 
   if (newTab) {
     await browser.tabs.create({ url });
@@ -135,11 +195,19 @@ export async function openActivateBlueprint({
   return true;
 }
 
-export async function openExtensionOptions() {
+/**
+ * Open the Extension Console
+ * @return true
+ */
+export async function openExtensionConsole(): Promise<boolean> {
   await browser.runtime.openOptionsPage();
   return true;
 }
 
-export async function installStarterBlueprints() {
+/**
+ * Activate starter mods via the background page.
+ * @see installStarterBlueprintsInBackground
+ */
+export async function activateStarterMods(): Promise<boolean> {
   return installStarterBlueprintsInBackground();
 }

@@ -87,7 +87,7 @@ describe("sidebarExtension", () => {
         }),
       ],
       temporaryPanels: [],
-      recipeToActivate: null,
+      modActivationPanel: null,
     });
 
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });

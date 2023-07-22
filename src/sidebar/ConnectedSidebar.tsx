@@ -24,7 +24,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
-  type ActivateModPanelEntry,
+  type ModActivationPanelEntry,
   type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
@@ -34,7 +34,6 @@ import sidebarSlice from "./sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
-import { type RegistryId } from "@/types/registryTypes";
 import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
@@ -76,11 +75,13 @@ function useConnectedListener(): SidebarListener {
       onHideTemporaryPanel({ nonce }) {
         dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
       },
-      onShowActivateRecipe(activateRecipeEntry: ActivateModPanelEntry) {
-        dispatch(sidebarSlice.actions.showActivateRecipe(activateRecipeEntry));
+      onShowActivateRecipe(modActivationPanel: ModActivationPanelEntry) {
+        dispatch(
+          sidebarSlice.actions.showModActivationPanel(modActivationPanel)
+        );
       },
-      onHideActivateRecipe(recipeId: RegistryId) {
-        dispatch(sidebarSlice.actions.hideActivateRecipe());
+      onHideActivateRecipe() {
+        dispatch(sidebarSlice.actions.hideModActivationPanel());
       },
     }),
     [dispatch]
@@ -103,7 +104,7 @@ const ConnectedSidebar: React.VFC = () => {
     // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
     await ensureExtensionPointsInstalled(topFrame);
 
-    const { panels, temporaryPanels, forms, recipeToActivate } =
+    const { panels, temporaryPanels, forms, modActivationPanel } =
       await getReservedSidebarEntries(topFrame);
 
     const staticPanels = showHomePanel ? [HOME_PANEL] : [];
@@ -114,7 +115,7 @@ const ConnectedSidebar: React.VFC = () => {
       temporaryPanels,
       forms,
       staticPanels,
-      recipeToActivate,
+      modActivationPanel,
     });
 
     dispatch(
@@ -123,7 +124,7 @@ const ConnectedSidebar: React.VFC = () => {
         temporaryPanels,
         forms,
         staticPanels,
-        recipeToActivate,
+        modActivationPanel,
       })
     );
 
@@ -143,7 +144,7 @@ const ConnectedSidebar: React.VFC = () => {
   useEffect(() => {
     const listener = (event: MouseEvent) => {
       activateLinkClickHandler(event, (entry) => {
-        dispatch(sidebarSlice.actions.showActivateRecipe(entry));
+        dispatch(sidebarSlice.actions.showModActivationPanel(entry));
       });
     };
 

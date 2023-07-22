@@ -35,8 +35,8 @@ beforeEach(() => {
 
 describe("activateLinkClickHandler", () => {
   it("handles simple anchor element", async () => {
-    const recipeId = registryIdFactory();
-    const href = `${ACTIVATION_LINK_PREFIX}${recipeId}`;
+    const modId = registryIdFactory();
+    const href = `${ACTIVATION_LINK_PREFIX}${modId}`;
     render(<a href={href}>Activate Mod</a>);
 
     document.addEventListener("click", handleClicks);
@@ -47,8 +47,8 @@ describe("activateLinkClickHandler", () => {
 
     expect(callback).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: "activateRecipe",
-        recipeId,
+        type: "activateMods",
+        modIds: [modId],
         heading: expect.toBeString(),
       })
     );

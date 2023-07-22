@@ -18,14 +18,13 @@
 import reportError from "@/telemetry/reportError";
 import {
   type ActivatePanelOptions,
-  type ActivateModPanelEntry,
+  type ModActivationPanelEntry,
   type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type RegistryId } from "@/types/registryTypes";
 import { sortBy } from "lodash";
 
 let lastMessageSeen = -1;
@@ -49,8 +48,8 @@ export type SidebarListener = {
    */
   onShowTemporaryPanel: (panel: TemporaryPanelEntry) => void;
   onHideTemporaryPanel: (panel: { nonce: UUID }) => void;
-  onShowActivateRecipe: (activateRecipeEntry: ActivateModPanelEntry) => void;
-  onHideActivateRecipe: (recipeId: RegistryId) => void;
+  onShowActivateRecipe: (activateRecipeEntry: ModActivationPanelEntry) => void;
+  onHideActivateRecipe: () => void;
 };
 
 // Because protocol.tsx accepts webext-messenger messages before the React App and listener initializes, we have to
@@ -207,16 +206,13 @@ export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
   runListeners("onHideTemporaryPanel", sequence, { nonce });
 }
 
-export async function showActivateRecipe(
+export async function showActivateMods(
   sequence: number,
-  entry: ActivateModPanelEntry
-) {
+  entry: ModActivationPanelEntry
+): Promise<void> {
   runListeners("onShowActivateRecipe", sequence, entry);
 }
 
-export async function hideActivateRecipe(
-  sequence: number,
-  recipeId: RegistryId
-) {
-  runListeners("onHideActivateRecipe", sequence, recipeId);
+export async function hideActivateMods(sequence: number): Promise<void> {
+  runListeners("onHideActivateRecipe", sequence, null);
 }

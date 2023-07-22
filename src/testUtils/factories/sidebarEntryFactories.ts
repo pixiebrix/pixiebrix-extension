@@ -17,7 +17,7 @@
 
 import { define, type FactoryConfig } from "cooky-cutter";
 import {
-  type ActivateModPanelEntry,
+  type ModActivationPanelEntry,
   type EntryType,
   type FormPanelEntry,
   type PanelEntry,
@@ -29,11 +29,10 @@ import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 
-const activateModPanelEntryFactory = define<ActivateModPanelEntry>({
-  type: "activateRecipe",
-  recipeId: (n: number) =>
-    validateRegistryId(`@test/activate-recipe-test-${n}`),
-  heading: (n: number) => `Activate Recipe Test ${n}`,
+const activateModPanelEntryFactory = define<ModActivationPanelEntry>({
+  type: "activateMods",
+  modIds: (n: number) => [validateRegistryId(`@test/activate-mods-test-${n}`)],
+  heading: (n: number) => `Activate Mods Test ${n}`,
 });
 const staticPanelEntryFactory = define<StaticPanelEntry>({
   type: "staticPanel",
@@ -86,10 +85,10 @@ export function sidebarEntryFactory<T = FormPanelEntry>(
   type: "form",
   override?: FactoryConfig<T>
 ): FormPanelEntry;
-export function sidebarEntryFactory<T = ActivateModPanelEntry>(
-  type: "activateRecipe",
+export function sidebarEntryFactory<T = ModActivationPanelEntry>(
+  type: "activateMods",
   override?: FactoryConfig<T>
-): ActivateModPanelEntry;
+): ModActivationPanelEntry;
 
 export function sidebarEntryFactory<T = StaticPanelEntry>(
   type: "staticPanel",
@@ -99,9 +98,9 @@ export function sidebarEntryFactory<T = SidebarEntry>(
   type: EntryType,
   override?: FactoryConfig<T>
 ): SidebarEntry {
-  if (type === "activateRecipe") {
+  if (type === "activateMods") {
     return activateModPanelEntryFactory(
-      override as FactoryConfig<ActivateModPanelEntry>
+      override as FactoryConfig<ModActivationPanelEntry>
     );
   }
 

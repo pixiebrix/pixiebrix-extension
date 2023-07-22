@@ -34,13 +34,13 @@ import { type ModComponentOptionsState } from "@/store/extensionsTypes";
  * @see PanelEntry
  * @see FormPanelEntry
  * @see TemporaryPanelEntry
- * @see ActivateModPanelEntry
+ * @see ModActivationPanelEntry
  */
 export type EntryType =
   | "panel"
   | "form"
   | "temporaryPanel"
-  | "activateRecipe"
+  | "activateMods"
   | "staticPanel";
 
 /**
@@ -217,22 +217,27 @@ export type FormPanelEntry = BasePanelEntry & {
   form: FormDefinition;
 };
 
-export type ActivateModPanelEntry = BasePanelEntry & {
-  type: "activateRecipe";
+/**
+ * Panel entry for activating one or more mods.
+ *
+ * @since 1.7.35 supports activating multiple mods as if all mods don't require UI interaction.
+ */
+export type ModActivationPanelEntry = BasePanelEntry & {
+  type: "activateMods";
   /**
-   * The blueprint id of the mod to activate
+   * The mod id(s) to activate
    */
-  recipeId: RegistryId;
+  modIds: RegistryId[];
   /**
    * Heading for tab name in the sidebar
    */
   heading: string;
 };
 
-export function isActivateModPanelEntry(
+export function isModActivationPanelEntry(
   panel: unknown
-): panel is ActivateModPanelEntry {
-  return (panel as ActivateModPanelEntry)?.type === "activateRecipe";
+): panel is ModActivationPanelEntry {
+  return (panel as ModActivationPanelEntry)?.type === "activateMods";
 }
 
 export type StaticPanelEntry = BasePanelEntry & {
@@ -249,7 +254,7 @@ export type SidebarEntry =
   | PanelEntry
   | FormPanelEntry
   | TemporaryPanelEntry
-  | ActivateModPanelEntry
+  | ModActivationPanelEntry
   | StaticPanelEntry;
 
 /**
@@ -260,7 +265,7 @@ export type SidebarEntries = {
   forms: FormPanelEntry[];
   temporaryPanels: TemporaryPanelEntry[];
   staticPanels: StaticPanelEntry[];
-  recipeToActivate: ActivateModPanelEntry | null;
+  modActivationPanel: ModActivationPanelEntry | null;
 };
 
 /**
