@@ -47,6 +47,13 @@ type Shape = KnownShape | "infer";
 
 export const APPEND_SCHEMA: Schema = propertiesToSchema(
   {
+    googleAccount: {
+      oneOf: [
+        {
+          $ref: "https://app.pixiebrix.com/schemas/services/google/ouath2-pkce",
+        },
+      ],
+    },
     spreadsheetId: {
       // Spreadsheet ID or service config
       oneOf: [
@@ -101,6 +108,7 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
       ],
     },
   },
+  // For backwards compatibility, googleAccount is not required
   ["spreadsheetId", "tabName", "rowValues"]
 );
 

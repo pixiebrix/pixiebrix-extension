@@ -35,6 +35,13 @@ export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
 
 export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
   {
+    googleAccount: {
+      oneOf: [
+        {
+          $ref: "https://app.pixiebrix.com/schemas/services/google/ouath2-pkce",
+        },
+      ],
+    },
     spreadsheetId: {
       // Spreadsheet ID or service config
       oneOf: [
@@ -66,6 +73,7 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
       description: "The value to lookup",
     },
   },
+  // For backwards compatibility, googleAccount is not required
   ["spreadsheetId", "tabName", "header", "query"]
 );
 
