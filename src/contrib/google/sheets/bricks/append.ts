@@ -265,11 +265,13 @@ export class GoogleSheetsAppend extends EffectABC {
 
   async effect(
     {
+      googleAccount,
       spreadsheetId: spreadsheetIdArg,
       tabName,
       shape = "infer",
       rowValues: rawValues = {},
     }: BrickArgs<{
+      googleAccount: SanitizedIntegrationConfig | null;
       spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       shape: Shape;
@@ -282,7 +284,7 @@ export class GoogleSheetsAppend extends EffectABC {
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
     const target: SpreadsheetTarget = {
-      googleAccount: null,
+      googleAccount,
       spreadsheetId,
       tabName,
     };
