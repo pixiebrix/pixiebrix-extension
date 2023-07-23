@@ -67,7 +67,8 @@ export function useMergeAsyncState<
     refetch,
   };
 
-  // Memoize the to avoid re-rendering downstream components
+  // Memoize the entire object to avoid re-rendering downstream components, especially if `merge` was passed as an
+  // arrow function so memoizedMerge is a new reference on every render.
   return useMemoCompare(result, deepEquals);
 }
 

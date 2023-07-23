@@ -21,6 +21,22 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type Database, type Organization } from "@/types/contract";
 
+function databasesToOptions(
+  databases: Database[],
+  organizations: Organization[]
+): Option[] {
+  return databases.map((database) => {
+    const organization = organizations.find(
+      (x) => x.id === database.organization_id
+    );
+
+    return {
+      label: `${database.name} - ${organization?.name ?? "Private"}`,
+      value: database.id,
+    };
+  });
+}
+
 /**
  * React Hook that returns a fetchable list of private and team database options.
  * @param refetchOnMount true to refetch available databases on mount (default: false)
@@ -39,17 +55,8 @@ function useDatabaseOptions({
   return useMergeAsyncState(
     databasesQueryState,
     organizationsQueryState,
-    (databases: Database[], organizations: Organization[]) =>
-      databases.map((database) => {
-        const organization = organizations.find(
-          (x) => x.id === database.organization_id
-        );
-
-        return {
-          label: `${database.name} - ${organization?.name ?? "Private"}`,
-          value: database.id,
-        };
-      })
+    // Provide as module function so useMergeAsyncState can memoize it
+    databasesToOptions
   );
 }
 
