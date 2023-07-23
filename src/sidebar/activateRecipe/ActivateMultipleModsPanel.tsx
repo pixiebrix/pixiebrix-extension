@@ -60,6 +60,7 @@ const MultipleSuccessPanel: React.FC<{ results: ModResultPair[] }> = ({
   return (
     <SuccessPanel
       title="Your mods are ready to use!"
+      numMods={results.length}
       includesQuickBar={results.some((x) => x.mod.includesQuickBar)}
       handleActivationDecision={handleActivationDecision}
     />

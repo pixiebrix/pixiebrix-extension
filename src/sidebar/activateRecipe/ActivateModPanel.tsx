@@ -136,9 +136,10 @@ const ModName: React.FC<{ modDefinition: ModDefinition }> = ({
   modDefinition,
 }) => <div className={styles.modName}>{modDefinition.metadata.name}</div>;
 
-export const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
-  includesQuickBar,
-}) => {
+export const SuccessMessage: React.FC<{
+  includesQuickBar: boolean;
+  numMods: number;
+}> = ({ numMods, includesQuickBar }) => {
   const { shortcut } = useQuickbarShortcut();
 
   if (includesQuickBar && isEmpty(shortcut)) {
@@ -166,7 +167,9 @@ export const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
   if (includesQuickBar) {
     return (
       <>
-        <div>Launch it using your Quick Bar shortcut</div>
+        <div>
+          Launch {numMods > 1 ? "them" : "it"} using your Quick Bar shortcut
+        </div>
         <ShortcutKeys shortcut={shortcut} />
         <Button
           variant="link"
@@ -190,8 +193,9 @@ export const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
 export const SuccessPanel: React.FC<{
   title: React.ReactNode;
   includesQuickBar: boolean;
+  numMods: number;
   handleActivationDecision: () => Promise<void>;
-}> = ({ title, includesQuickBar, handleActivationDecision }) => (
+}> = ({ title, includesQuickBar, handleActivationDecision, numMods }) => (
   <div className={styles.root}>
     <div className={cx("scrollable-area", styles.content)}>
       <h1>Well done!</h1>
@@ -199,7 +203,7 @@ export const SuccessPanel: React.FC<{
       <div className={styles.textContainer}>
         {title}
         <br />
-        <SuccessMessage includesQuickBar={includesQuickBar} />
+        <SuccessMessage includesQuickBar={includesQuickBar} numMods={numMods} />
       </div>
     </div>
     <div className={styles.footer}>
@@ -323,6 +327,7 @@ const ActivateRecipePanelContent: React.FC<
             <div>is ready to use!</div>
           </>
         }
+        numMods={1}
         includesQuickBar={includesQuickBar}
         handleActivationDecision={handleActivationDecision}
       />
