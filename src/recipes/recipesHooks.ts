@@ -81,25 +81,18 @@ export function useRequiredModDefinitions(
 ): AsyncState<ModDefinition[]> {
   const state = useAllRecipes();
 
-  const findMods = useCallback(
-    (mods: ModDefinition[]) => {
-      const matches = mods.filter((x) => ids.includes(x.metadata.id));
+  const recipeState = useMergeAsyncState(state, (mods: ModDefinition[]) => {
+    const matches = mods.filter((x) => ids.includes(x.metadata.id));
 
-      if (ids.length !== matches.length) {
-        const missing = ids.filter(
-          (x) => !matches.some((mod) => mod.metadata.id === x)
-        );
-        throw new Error(
-          `One or more mod definitions not found: ${missing.join(", ")}`
-        );
-      }
+    if (ids.length !== matches.length) {
+      const missingIds = ids.filter(
+        (x) => !matches.some((mod) => mod.metadata.id === x)
+      );
+      throw new Error(`Mod definition(s) not found: ${missingIds.join(", ")}`);
+    }
 
-      return matches;
-    },
-    [ids]
-  );
-
-  const recipeState = useMergeAsyncState(state, findMods);
+    return matches;
+  });
 
   // Avoid reference change when useAllRecipes switches from cache to remote fetch
   const data = useMemoCompare(recipeState.data, deepEquals);

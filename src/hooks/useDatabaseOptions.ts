@@ -21,12 +21,17 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type Database, type Organization } from "@/types/contract";
 
-const useDatabaseOptions = ({
+/**
+ * React Hook that returns a fetchable list of private and team database options.
+ * @param refetchOnMount true to refetch available databases on mount (default: false)
+ */
+function useDatabaseOptions({
   refetchOnMount,
-}: { refetchOnMount?: boolean } = {}): FetchableAsyncState<Option[]> => {
+}: { refetchOnMount?: boolean } = {}): FetchableAsyncState<Option[]> {
   const databasesQueryState = useGetDatabasesQuery(undefined, {
     refetchOnMountOrArgChange: refetchOnMount,
   });
+
   const organizationsQueryState = useGetOrganizationsQuery(undefined, {
     refetchOnMountOrArgChange: refetchOnMount,
   });
@@ -35,18 +40,17 @@ const useDatabaseOptions = ({
     databasesQueryState,
     organizationsQueryState,
     (databases: Database[], organizations: Organization[]) =>
-      databases.map((db) => {
+      databases.map((database) => {
         const organization = organizations.find(
-          (o) => o.id === db.organization_id
+          (x) => x.id === database.organization_id
         );
-        const dbName = `${db.name} - ${organization?.name ?? "Private"}`;
 
         return {
-          label: dbName,
-          value: db.id,
+          label: `${database.name} - ${organization?.name ?? "Private"}`,
+          value: database.id,
         };
       })
   );
-};
+}
 
 export default useDatabaseOptions;

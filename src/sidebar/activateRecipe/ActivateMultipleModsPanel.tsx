@@ -42,7 +42,9 @@ type ModResultPair = {
   result: ActivateResult;
 };
 
-const ResultsPanel: React.FC<{ results: ModResultPair[] }> = ({ results }) => {
+const MultipleSuccessPanel: React.FC<{ results: ModResultPair[] }> = ({
+  results,
+}) => {
   const reduxDispatch = useDispatch();
   const sidebarHasModPanels = useSelector(selectSidebarHasModPanels);
 
@@ -66,9 +68,9 @@ const ResultsPanel: React.FC<{ results: ModResultPair[] }> = ({ results }) => {
 
 /**
  * React Component Panel to automatically activate multiple mods and show a success message.
- * @param mods
+ * @param mods mod definitions supporting automatic activation
  */
-const ActivateModWizardPanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
+const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
   mods,
 }) => {
   const activate = useActivateRecipe("marketplace");
@@ -79,13 +81,13 @@ const ActivateModWizardPanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
   const activatedModComponents = useSelector(selectExtensions);
   const databaseOptionsState = useDatabaseOptions({ refetchOnMount: true });
 
-  // Automatically activate the mods on mount
+  // A bit hacky -- using useDeriveAsyncState to automatically activate the mods on mount
   const activationResultState = useDeriveAsyncState(
     databaseOptionsState,
     async (databaseOptions: Option[]) => {
       if (newMods.some((x) => x.requiresConfiguration)) {
         throw new Error(
-          `Mod ${newMods[0].modDefinition.metadata.name} requires configuration`
+          "One or more mods require configuration. Activate the mods individually to configure them."
         );
       }
 
@@ -125,7 +127,7 @@ const ActivateModWizardPanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
 
   return (
     <AsyncStateGate state={activationResultState}>
-      {({ data: results }) => <ResultsPanel results={results} />}
+      {({ data: results }) => <MultipleSuccessPanel results={results} />}
     </AsyncStateGate>
   );
 };
@@ -140,7 +142,7 @@ const ActivateMultipleModsPanel: React.FC<{ modIds: RegistryId[] }> = ({
   modIds,
 }) => (
   <RequireMods modIds={modIds}>
-    {(mods) => <ActivateModWizardPanel mods={mods} />}
+    {(mods) => <AutoActivatePanel mods={mods} />}
   </RequireMods>
 );
 

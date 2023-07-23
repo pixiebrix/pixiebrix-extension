@@ -53,6 +53,7 @@ import { persistor } from "@/sidebar/store";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions } = sidebarSlice;
 
@@ -131,6 +132,10 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
   );
 };
 
+const ModName: React.FC<{ modDefinition: ModDefinition }> = ({
+  modDefinition,
+}) => <div className={styles.modName}>{modDefinition.metadata.name}</div>;
+
 export const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
   includesQuickBar,
 }) => {
@@ -207,7 +212,6 @@ const ActivateRecipePanelContent: React.FC<
   RequiredModDefinition & UseActivateRecipeWizardResult
 > = ({
   modDefinition,
-  modNameNode,
   includesQuickBar,
   requiresConfiguration,
   wizardSteps,
@@ -315,7 +319,7 @@ const ActivateRecipePanelContent: React.FC<
       <SuccessPanel
         title={
           <>
-            {modNameNode}
+            <ModName modDefinition={modDefinition} />
             <div>is ready to use!</div>
           </>
         }
@@ -337,7 +341,7 @@ const ActivateRecipePanelContent: React.FC<
         needsPermissions={state.needsPermissions}
         header={
           <>
-            {modNameNode}
+            <ModName modDefinition={modDefinition} />
             <p>
               {
                 "We're almost there. This mod has a few settings to configure before using. You can always change these later."

@@ -33,7 +33,6 @@ import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
   getRecipeWithBuiltInServiceAuths,
   recipeFactory,
-  recipeMetadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import {
@@ -44,6 +43,7 @@ import * as messengerApi from "@/contentScript/messenger/api";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import userEvent from "@testing-library/user-event";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
+import ErrorBoundary from "@/sidebar/ErrorBoundary";
 
 jest.mock("@/recipes/recipesHooks", () => ({
   useRequiredModDefinitions: jest.fn(),
@@ -110,7 +110,7 @@ function setupMocksAndRender(
   appApiMock.onGet().reply(200, []);
 
   const entry = sidebarEntryFactory("activateMods", {
-    recipeId: recipe.metadata.id,
+    modIds: [recipe.metadata.id],
     heading: "Activate Mod",
   });
 
@@ -325,8 +325,27 @@ describe("ActivateMultipleModsPanel", () => {
     });
 
     await waitForEffect();
-    await waitForEffect();
 
     expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("shows error if any mod requires configuration", async () => {
+    const { recipe } = getRecipeWithBuiltInServiceAuths();
+
+    setupMocksAndRender(recipe, {
+      componentOverride: (
+        <ErrorBoundary>
+          <ActivateMultipleModsPanel modIds={[recipe.metadata.id]} />
+        </ErrorBoundary>
+      ),
+    });
+
+    await waitForEffect();
+
+    expect(
+      screen.queryByText(
+        "One or more mods require configuration. Activate the mods individually to configure them."
+      )
+    ).toBeInTheDocument();
   });
 });

@@ -23,6 +23,8 @@ import {
 import memoizeOne from "memoize-one";
 import { useCallback, useMemo } from "react";
 import { mergeAsyncState } from "@/utils/asyncStateUtils";
+import useMemoCompare from "@/hooks/useMemoCompare";
+import deepEquals from "fast-deep-equal";
 
 /**
  * React hook to merge multiple AsyncState objects into a single AsyncState.
@@ -46,7 +48,7 @@ export function useMergeAsyncState<
   // @ts-expect-error -- getting args except last element
   const dependencies: FetchableAsyncStateArray = args.slice(0, -1);
 
-  // Memoize to avoid re-rendering downstream components
+  // Memoize the merge method avoid re-rendering downstream components
   const memoizedMerge = useMemo(() => memoizeOne(merge), [merge]);
 
   const refetchCallbacks = dependencies.map((x) => x.refetch);
@@ -60,10 +62,13 @@ export function useMergeAsyncState<
     refetchCallbacks
   );
 
-  return {
+  const result = {
     ...mergeAsyncState(...dependencies, memoizedMerge),
     refetch,
   };
+
+  // Memoize the to avoid re-rendering downstream components
+  return useMemoCompare(result, deepEquals);
 }
 
 export default useMergeAsyncState;

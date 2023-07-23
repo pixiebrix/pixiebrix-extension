@@ -20,7 +20,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useRequiredModDefinitions } from "@/recipes/recipesHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
-import styles from "./RequireMods.module.scss";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
@@ -36,11 +35,6 @@ export type RequiredModDefinition = {
    * The mod definition.
    */
   modDefinition: ModDefinition;
-  /**
-   * A styled-div with the mod name.
-   * @deprecated move this property to a presentational component
-   */
-  modNameNode: React.ReactNode;
   /**
    * True if the mod includes a quick bar or dynamic quick bar provider starter brick.
    */
@@ -128,7 +122,7 @@ function requiresUserConfiguration(
 }
 
 /**
- * Helper component to render children that depend on mod definitions.
+ * Helper component to conditionally render children that depend on mod definitions.
  */
 const RequireMods: React.FC<Props> = ({ modIds, children }) => {
   const modDefinitionsState = useRequiredModDefinitions(modIds);
@@ -161,11 +155,6 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
             isActive: modComponents.some(
               (x) => x._recipe?.id === modDefinition.metadata.id
             ),
-            modNameNode: (
-              <div className={styles.modName}>
-                {modDefinition.metadata.name}
-              </div>
-            ),
           };
         })
       )
@@ -173,7 +162,7 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
 
   // Throw error to hit error boundary
   if (state.isError) {
-    throw state.error ?? new Error("Error retrieving mod");
+    throw state.error ?? new Error("Error retrieving mods");
   }
 
   if (state.isLoading) {
