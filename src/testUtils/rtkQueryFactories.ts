@@ -58,6 +58,8 @@ export function querySuccessFactory<T>(
       };
 
   return {
+    // Need to spread fetchState first so that TypeScript can infer the type of `data`.
+    ...fetchState,
     data,
     isLoading: false,
     isError: false,
@@ -67,7 +69,6 @@ export function querySuccessFactory<T>(
     refetch: jest.fn(),
     status: QueryStatus.fulfilled,
     fulfilledTimeStamp: Date.now(),
-    ...fetchState,
   };
 }
 
