@@ -25,8 +25,7 @@ import { selectSettings } from "@/store/settingsSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useGetTheme } from "@/hooks/useTheme";
-import useAsyncState from "@/hooks/useAsyncState";
-import { getUserData } from "@/auth/token";
+import { selectTelemetryOrganizationId } from "@/auth/authSelectors";
 
 const GeneralSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -34,12 +33,11 @@ const GeneralSettings: React.FunctionComponent = () => {
 
   const theme = useGetTheme();
 
-  // The telemetryOrganizationId isn't in the authSlice in Redux, so need to read it directly :shrug:
-  const userState = useAsyncState(async () => getUserData(), []);
+  const telemetryOrganizationId = useSelector(selectTelemetryOrganizationId);
 
   // Disable FAB for enterprise and partner users
   const disableFloatingActionButton =
-    Boolean(userState.data?.telemetryOrganizationId) || theme !== "default";
+    Boolean(telemetryOrganizationId) || theme !== "default";
 
   const checked = isFloatingActionButtonEnabled && !disableFloatingActionButton;
 
