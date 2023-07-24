@@ -23,6 +23,7 @@ import {
 } from "@/chrome";
 import { type SettingsState } from "@/store/settingsTypes";
 import { mapValues } from "lodash";
+import { expectContext } from "@/utils/expectContext";
 
 const SETTINGS_STORAGE_KEY = "persist:settings" as ReduxStorageKey;
 
@@ -30,6 +31,8 @@ const SETTINGS_STORAGE_KEY = "persist:settings" as ReduxStorageKey;
  * Read settings from local storage (without going through redux-persistor).
  */
 export async function getSettingsState(): Promise<SettingsState> {
+  expectContext("extension");
+
   const rawSettings = await readReduxStorage(SETTINGS_STORAGE_KEY, {});
   const parsedSettings = mapValues(rawSettings, (setting) =>
     JSON.parse(setting)

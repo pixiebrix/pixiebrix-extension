@@ -25,7 +25,7 @@ import {
   type UserDataUpdate,
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
-import { expectContext } from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 import { isEmpty, omit, remove } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
 import { syncRemotePackages } from "@/baseRegistry";
@@ -53,6 +53,9 @@ export function removeListener(handler: AuthListener): void {
 export async function readAuthData(): Promise<
   TokenAuthData | Partial<TokenAuthData>
 > {
+  forbidContext("web");
+  forbidContext("contentScript");
+
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
@@ -69,6 +72,9 @@ export async function flagOn(flag: string): Promise<boolean> {
  * Return the native PixieBrix API token (issued by the PixieBrix API).
  */
 export async function getExtensionToken(): Promise<string | undefined> {
+  forbidContext("web");
+  forbidContext("contentScript");
+
   const { token } = await readAuthData();
   return token;
 }
@@ -108,6 +114,9 @@ export async function clearPartnerAuth(): Promise<void> {
  * - Partner Bearer JWT
  */
 export async function getAuthHeaders(): Promise<UnknownObject | null> {
+  forbidContext("web");
+  forbidContext("contentScript");
+
   const [nativeToken, partnerAuth] = await Promise.all([
     getExtensionToken(),
     readPartnerAuthData(),

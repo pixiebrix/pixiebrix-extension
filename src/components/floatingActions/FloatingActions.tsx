@@ -33,6 +33,8 @@ import { Events } from "@/telemetry/events";
 import { Provider, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
+import { getUserData } from "@/background/messenger/api";
+import { getActiveTheme } from "@/themes/themeStore";
 
 // Putting this outside the component since it doesn't need to trigger a re-render
 let dragReported = false;
@@ -82,13 +84,31 @@ function FloatingActionsContainer() {
   );
 }
 
-export async function initFloatingActions() {
-  const settings = await getSettingsState();
-  // Add floating actions if the feature flag and settings are enabled
+/**
+ * Add the floating action button to the page if the user is not an enterprise/partner user.
+ */
+export async function initFloatingActions(): Promise<void> {
+  if (isLoadedInIframe()) {
+    // Skip expensive checks
+    return;
+  }
+
+  const [settings, theme, user] = await Promise.all([
+    getSettingsState(),
+    getActiveTheme(),
+    getUserData(),
+  ]);
+
+  // Add floating action button if the feature flag and settings are enabled
+  // XXX: consider moving checks into React component, so we can use the Redux context
   if (
-    !isLoadedInIframe() &&
     settings.isFloatingActionButtonEnabled &&
-    syncFlagOn("floating-quickbar-button")
+    syncFlagOn("floating-quickbar-button") &&
+    // `telemetryOrganizationId` indicates user is part of an enterprise organization
+    // See https://github.com/pixiebrix/pixiebrix-app/blob/39fac4874402a541f62e80ab74aaefd446cc3743/api/models/user.py#L68-L68
+    !user.telemetryOrganizationId &&
+    // Don't show FAB is user isn't on the PixieBrix default theme
+    theme === "default"
   ) {
     const container = document.createElement("div");
     container.id = FLOATING_ACTION_BUTTON_CONTAINER_ID;

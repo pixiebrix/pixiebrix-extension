@@ -62,6 +62,7 @@ const SettingsPage: React.FunctionComponent = () => {
           <GeneralSettings />
         </Section>
       )}
+
       {(organization == null || DEBUG) && (
         <Section>
           <PrivacySettings />

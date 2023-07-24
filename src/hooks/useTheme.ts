@@ -42,6 +42,14 @@ async function activateBackgroundTheme(
   await activatePartnerTheme();
 }
 
+/**
+ * Calculate the active theme and set it on the settings slice.
+ *
+ * If not in a React context, use getActiveTheme instead.
+ *
+ * @see getActiveTheme
+ * @returns the active theme
+ */
 export function useGetTheme(): Theme {
   const { theme, partnerId } = useSelector(selectSettings);
   const { partner: cachedPartner } = useSelector(selectAuth);

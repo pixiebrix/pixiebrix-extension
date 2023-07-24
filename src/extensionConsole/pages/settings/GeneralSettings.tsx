@@ -24,10 +24,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { useGetTheme } from "@/hooks/useTheme";
+import useAsyncState from "@/hooks/useAsyncState";
+import { getUserData } from "@/auth/token";
 
 const GeneralSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { isFloatingActionButtonEnabled } = useSelector(selectSettings);
+
+  const theme = useGetTheme();
+
+  const userState = useAsyncState(async () => getUserData(), []);
+
+  // Disable FAB for enterprise and partner users
+  const disableFloatingActionButton =
+    Boolean(userState.data?.telemetryOrganizationId) || theme !== "default";
+
+  const checked = isFloatingActionButtonEnabled && !disableFloatingActionButton;
+
   return (
     <Card>
       <Card.Header>General Settings</Card.Header>
@@ -37,7 +51,7 @@ const GeneralSettings: React.FunctionComponent = () => {
             <div>
               <Form.Label>
                 Floating action button:{" "}
-                <i>{isFloatingActionButtonEnabled ? "Enabled" : "Disabled"}</i>
+                <i>{checked ? "Enabled" : "Disabled"}</i>
               </Form.Label>
               <Form.Text muted className="mb-2">
                 Toggle on to enable floating button that opens the Quick Bar
@@ -49,7 +63,8 @@ const GeneralSettings: React.FunctionComponent = () => {
               offstyle="light"
               onlabel=" "
               offlabel=" "
-              checked={isFloatingActionButtonEnabled}
+              disabled={disableFloatingActionButton}
+              checked={checked}
               onChange={(enable) => {
                 reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING, {
                   enabled: enable,
