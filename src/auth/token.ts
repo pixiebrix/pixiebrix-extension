@@ -80,6 +80,9 @@ export async function getExtensionToken(): Promise<string | undefined> {
 }
 
 export async function readPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
+  forbidContext("web");
+  forbidContext("contentScript");
+
   return readStorage(STORAGE_PARTNER_TOKEN, {});
 }
 
@@ -114,6 +117,7 @@ export async function clearPartnerAuth(): Promise<void> {
  * - Partner Bearer JWT
  */
 export async function getAuthHeaders(): Promise<UnknownObject | null> {
+  // Don't allow transmitting auth headers to insecure contexts
   forbidContext("web");
   forbidContext("contentScript");
 
@@ -143,6 +147,8 @@ export async function getAuthHeaders(): Promise<UnknownObject | null> {
 /**
  * Return `true` if the extension is linked to the API. I.e., that the user is "logged in".
  *
+ * Safe to call from the content script and other non-security sensitive extension contexts.
+ *
  * NOTE: do not use this as a check before making an authenticated API call. Instead, use `maybeGetLinkedApiClient`
  * which avoids a race condition between the time the check is made and underlying `getExtensionToken` call to get
  * the token.
@@ -150,7 +156,14 @@ export async function getAuthHeaders(): Promise<UnknownObject | null> {
  * @see maybeGetLinkedApiClient
  */
 export async function isLinked(): Promise<boolean> {
-  return (await getAuthHeaders()) != null;
+  expectContext("extension");
+
+  const [{ token: nativeToken }, { token: partnerToken }] = (await Promise.all([
+    readStorage(STORAGE_EXTENSION_KEY, {}),
+    readStorage(STORAGE_PARTNER_TOKEN, {}),
+  ])) as [TokenAuthData, PartnerAuthData];
+
+  return Boolean(nativeToken) || Boolean(partnerToken);
 }
 
 /**
@@ -159,6 +172,7 @@ export async function isLinked(): Promise<boolean> {
  */
 export async function getUserData(): Promise<Partial<UserData>> {
   expectContext("extension");
+
   const data = await readAuthData();
   return omit(data, "token");
 }
