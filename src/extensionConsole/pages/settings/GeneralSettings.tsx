@@ -34,6 +34,7 @@ const GeneralSettings: React.FunctionComponent = () => {
 
   const theme = useGetTheme();
 
+  // The telemetryOrganizationId isn't in the authSlice in Redux, so need to read it directly :shrug:
   const userState = useAsyncState(async () => getUserData(), []);
 
   // Disable FAB for enterprise and partner users
