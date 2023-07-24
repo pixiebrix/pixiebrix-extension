@@ -52,27 +52,45 @@ const GeneralSettings: React.FunctionComponent = () => {
                 Floating action button:{" "}
                 <i>{checked ? "Enabled" : "Disabled"}</i>
               </Form.Label>
-              <Form.Text muted className="mb-2">
-                Toggle on to enable floating button that opens the Quick Bar
-              </Form.Text>
+              {disableFloatingActionButton ? (
+                <Form.Text muted className="mb-2">
+                  The floating action button is not available for enterprise and
+                  partner users
+                </Form.Text>
+              ) : (
+                <Form.Text muted className="mb-2">
+                  Toggle on to enable floating button that opens the Quick Bar
+                </Form.Text>
+              )}
             </div>
-            <BootstrapSwitchButton
-              size="sm"
-              onstyle="info"
-              offstyle="light"
-              onlabel=" "
-              offlabel=" "
-              disabled={disableFloatingActionButton}
-              checked={checked}
-              onChange={(enable) => {
-                reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING, {
-                  enabled: enable,
-                });
-                dispatch(
-                  settingsSlice.actions.setFloatingActionButtonEnabled(enable)
-                );
-              }}
-            />
+
+            {
+              // Hide because the disabled flag is not working
+              !disableFloatingActionButton && (
+                <BootstrapSwitchButton
+                  size="sm"
+                  onstyle="info"
+                  offstyle="light"
+                  onlabel=" "
+                  offlabel=" "
+                  disabled={disableFloatingActionButton}
+                  checked={checked}
+                  onChange={(enable) => {
+                    reportEvent(
+                      Events.FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING,
+                      {
+                        enabled: enable,
+                      }
+                    );
+                    dispatch(
+                      settingsSlice.actions.setFloatingActionButtonEnabled(
+                        enable
+                      )
+                    );
+                  }}
+                />
+              )
+            }
           </Form.Group>
         </Form>
       </Card.Body>

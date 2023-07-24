@@ -34,7 +34,6 @@ import { Provider, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { getUserData } from "@/background/messenger/api";
-import { getActiveTheme } from "@/themes/themeStore";
 
 // Putting this outside the component since it doesn't need to trigger a re-render
 let dragReported = false;
@@ -93,9 +92,8 @@ export async function initFloatingActions(): Promise<void> {
     return;
   }
 
-  const [settings, theme, user] = await Promise.all([
+  const [settings, { telemetryOrganizationId }] = await Promise.all([
     getSettingsState(),
-    getActiveTheme(),
     getUserData(),
   ]);
 
@@ -106,9 +104,11 @@ export async function initFloatingActions(): Promise<void> {
     syncFlagOn("floating-quickbar-button") &&
     // `telemetryOrganizationId` indicates user is part of an enterprise organization
     // See https://github.com/pixiebrix/pixiebrix-app/blob/39fac4874402a541f62e80ab74aaefd446cc3743/api/models/user.py#L68-L68
-    !user.telemetryOrganizationId &&
-    // Don't show FAB is user isn't on the PixieBrix default theme
-    theme === "default"
+    !telemetryOrganizationId &&
+    // Don't show FAB is user has a partner theme active
+    // Just get the theme from the store instead of using getActive theme to avoid extra Chrome storage reads
+    // In practice, the Chrome policy should not change between useGetTheme and a call to initFloatingActions on a page
+    settings.theme === "default"
   ) {
     const container = document.createElement("div");
     container.id = FLOATING_ACTION_BUTTON_CONTAINER_ID;
