@@ -99,7 +99,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       query,
       multi,
     }: BrickArgs<{
-      googleAccount: SanitizedIntegrationConfig | null;
+      googleAccount?: SanitizedIntegrationConfig | undefined;
       spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       header: string;

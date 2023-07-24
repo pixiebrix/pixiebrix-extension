@@ -271,7 +271,7 @@ export class GoogleSheetsAppend extends EffectABC {
       shape = "infer",
       rowValues: rawValues = {},
     }: BrickArgs<{
-      googleAccount: SanitizedIntegrationConfig | null;
+      googleAccount?: SanitizedIntegrationConfig | undefined;
       spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       shape: Shape;
