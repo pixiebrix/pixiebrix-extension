@@ -41,9 +41,7 @@ describe("activateLinkClickHandler", () => {
 
     document.addEventListener("click", handleClicks);
 
-    await act(async () => {
-      await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
-    });
+    await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
 
     expect(callback).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -67,11 +65,7 @@ describe("activateLinkClickHandler", () => {
 
       document.addEventListener("click", handleClicks);
 
-      await act(async () => {
-        await userEvent.click(
-          screen.getByRole("link", { name: "Activate Mod" })
-        );
-      });
+      await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
 
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -88,9 +82,7 @@ describe("activateLinkClickHandler", () => {
 
     document.addEventListener("click", handleClicks);
 
-    await act(async () => {
-      await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
-    });
+    await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
 
     expect(callback).not.toHaveBeenCalled();
   });

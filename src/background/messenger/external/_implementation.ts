@@ -102,7 +102,7 @@ type SetActivatingModsOptions = {
 };
 
 /**
- * Set mod is that PixieBrix should start activation for.
+ * Set the mod id(s) that PixieBrix should start activation for.
  *
  * @see getActivatingModIds
  */
