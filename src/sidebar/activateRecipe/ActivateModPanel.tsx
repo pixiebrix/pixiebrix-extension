@@ -15,11 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useReducer, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import Loader from "@/components/Loader";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
-import styles from "./ActivateRecipePanel.module.scss";
+import styles from "./ActivateModPanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
 import { useDispatch, useSelector } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -30,7 +36,7 @@ import {
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
 import { isEmpty } from "lodash";
-import ActivateRecipeInputs from "@/sidebar/activateRecipe/ActivateRecipeInputs";
+import ActivateModInputs from "@/sidebar/activateRecipe/ActivateModInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import { Button } from "react-bootstrap";
@@ -40,13 +46,14 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useActivateRecipeWizard, {
   type UseActivateRecipeWizardResult,
 } from "@/activation/useActivateRecipeWizard";
-import RequireRecipe, {
-  type RecipeState,
-} from "@/sidebar/activateRecipe/RequireRecipe";
+import RequireMods, {
+  type RequiredModDefinition,
+} from "@/sidebar/activateRecipe/RequireMods";
 import { persistor } from "@/sidebar/store";
 import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions } = sidebarSlice;
 
@@ -125,9 +132,14 @@ const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
   );
 };
 
-const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
-  includesQuickBar,
-}) => {
+const ModName: React.FC<{ modDefinition: ModDefinition }> = ({
+  modDefinition,
+}) => <div className={styles.modName}>{modDefinition.metadata.name}</div>;
+
+export const SuccessMessage: React.FC<{
+  includesQuickBar: boolean;
+  numMods: number;
+}> = ({ numMods, includesQuickBar }) => {
   const { shortcut } = useQuickbarShortcut();
 
   if (includesQuickBar && isEmpty(shortcut)) {
@@ -155,7 +167,9 @@ const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
   if (includesQuickBar) {
     return (
       <>
-        <div>Launch it using your Quick Bar shortcut</div>
+        <div>
+          Launch {numMods > 1 ? "them" : "it"} using your Quick Bar shortcut
+        </div>
         <ShortcutKeys shortcut={shortcut} />
         <Button
           variant="link"
@@ -176,11 +190,32 @@ const SuccessMessage: React.FC<{ includesQuickBar: boolean }> = ({
   return <div>Go try it out now, or activate another mod.</div>;
 };
 
+export const SuccessPanel: React.FC<{
+  title: React.ReactNode;
+  includesQuickBar: boolean;
+  numMods: number;
+  handleActivationDecision: () => Promise<void>;
+}> = ({ title, includesQuickBar, handleActivationDecision, numMods }) => (
+  <div className={styles.root}>
+    <div className={cx("scrollable-area", styles.content)}>
+      <h1>Well done!</h1>
+      <img src={activationCompleteImage} alt="" width={300} />
+      <div className={styles.textContainer}>
+        {title}
+        <br />
+        <SuccessMessage includesQuickBar={includesQuickBar} numMods={numMods} />
+      </div>
+    </div>
+    <div className={styles.footer}>
+      <AsyncButton onClick={handleActivationDecision}>Ok</AsyncButton>
+    </div>
+  </div>
+);
+
 const ActivateRecipePanelContent: React.FC<
-  RecipeState & UseActivateRecipeWizardResult
+  RequiredModDefinition & UseActivateRecipeWizardResult
 > = ({
-  recipe,
-  recipeNameNode,
+  modDefinition,
   includesQuickBar,
   requiresConfiguration,
   wizardSteps,
@@ -197,7 +232,7 @@ const ActivateRecipePanelContent: React.FC<
   );
 
   async function handleActivationDecision() {
-    reduxDispatch(actions.hideActivateRecipe());
+    reduxDispatch(actions.hideModActivationPanel());
 
     if (!sidebarHasModPanels) {
       const topFrame = await getTopLevelFrame();
@@ -213,7 +248,7 @@ const ActivateRecipePanelContent: React.FC<
     );
 
     const { hasPermissions } = await checkRecipePermissions(
-      recipe,
+      modDefinition,
       selectedAuths
     );
 
@@ -235,7 +270,7 @@ const ActivateRecipePanelContent: React.FC<
 
     const { success, error } = await marketplaceActivateRecipe(
       formValuesRef.current,
-      recipe
+      modDefinition
     );
 
     if (success) {
@@ -246,7 +281,7 @@ const ActivateRecipePanelContent: React.FC<
     }
   }, [
     marketplaceActivateRecipe,
-    recipe,
+    modDefinition,
     state.isActivated,
     state.isActivating,
   ]);
@@ -285,28 +320,24 @@ const ActivateRecipePanelContent: React.FC<
 
   if (state.isActivated) {
     return (
-      <div className={styles.root}>
-        <div className={cx("scrollable-area", styles.content)}>
-          <h1>Well done!</h1>
-          <img src={activationCompleteImage} alt="" width={300} />
-          <div className={styles.textContainer}>
-            {recipeNameNode}
+      <SuccessPanel
+        title={
+          <>
+            <ModName modDefinition={modDefinition} />
             <div>is ready to use!</div>
-            <br />
-            <SuccessMessage includesQuickBar={includesQuickBar} />
-          </div>
-        </div>
-        <div className={styles.footer}>
-          <AsyncButton onClick={handleActivationDecision}>Ok</AsyncButton>
-        </div>
-      </div>
+          </>
+        }
+        numMods={1}
+        includesQuickBar={includesQuickBar}
+        handleActivationDecision={handleActivationDecision}
+      />
     );
   }
 
   return (
     <div className={styles.root}>
-      <ActivateRecipeInputs
-        recipe={recipe}
+      <ActivateModInputs
+        recipe={modDefinition}
         optionsWizardStep={wizardSteps.find(({ key }) => key === "options")}
         initialValues={initialValues}
         onChange={onChange}
@@ -315,7 +346,7 @@ const ActivateRecipePanelContent: React.FC<
         needsPermissions={state.needsPermissions}
         header={
           <>
-            {recipeNameNode}
+            <ModName modDefinition={modDefinition} />
             <p>
               {
                 "We're almost there. This mod has a few settings to configure before using. You can always change these later."
@@ -333,26 +364,33 @@ const ActivateRecipePanelContent: React.FC<
   );
 };
 
-const ActivateRecipeWizardPanel: React.FC<RecipeState> = (recipeState) => {
+const ActivateModWizardPanel: React.FC<RequiredModDefinition> = (modState) => {
   const wizardState = useActivateRecipeWizard(
-    recipeState.recipe,
-    recipeState.defaultAuthOptions
+    modState.modDefinition,
+    modState.defaultAuthOptions
   );
   return (
     <AsyncStateGate state={wizardState}>
       {({ data: wizardResult }) => (
-        <ActivateRecipePanelContent {...recipeState} {...wizardResult} />
+        <ActivateRecipePanelContent {...modState} {...wizardResult} />
       )}
     </AsyncStateGate>
   );
 };
 
-const ActivateRecipePanel: React.FC<{ recipeId: RegistryId }> = ({
-  recipeId,
-}) => (
-  <RequireRecipe recipeId={recipeId}>
-    {(recipeState) => <ActivateRecipeWizardPanel {...recipeState} />}
-  </RequireRecipe>
-);
+/**
+ * React Component Panel for activating a single mod, which may require end-user configuration.
+ * @param modId the mod id
+ */
+const ActivateModPanel: React.FC<{ modId: RegistryId }> = ({ modId }) => {
+  // Memoize to array reference doesn't change on re-render
+  const modIds = useMemo(() => [modId], [modId]);
 
-export default ActivateRecipePanel;
+  return (
+    <RequireMods modIds={modIds}>
+      {(modDefinitions) => <ActivateModWizardPanel {...modDefinitions[0]} />}
+    </RequireMods>
+  );
+};
+
+export default ActivateModPanel;

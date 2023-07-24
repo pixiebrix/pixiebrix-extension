@@ -27,7 +27,7 @@ export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.forms) &&
   isEmpty(sidebar.temporaryPanels) &&
   isEmpty(sidebar.staticPanels) &&
-  sidebar.recipeToActivate == null;
+  sidebar.modActivationPanel == null;
 
 export const selectSidebarHasModPanels = ({ sidebar }: SidebarRootState) =>
   !isEmpty(sidebar.panels) ||
@@ -49,8 +49,9 @@ export const selectSidebarTemporaryPanels = ({ sidebar }: SidebarRootState) =>
 export const selectSidebarStaticPanels = ({ sidebar }: SidebarRootState) =>
   sidebar.staticPanels;
 
-export const selectSidebarRecipeToActivate = ({ sidebar }: SidebarRootState) =>
-  sidebar.recipeToActivate;
+export const selectSidebarModActivationPanel = ({
+  sidebar,
+}: SidebarRootState) => sidebar.modActivationPanel;
 
 export const selectExtensionFromEventKey =
   ({ options, sidebar }: SidebarRootState) =>
@@ -60,7 +61,7 @@ export const selectExtensionFromEventKey =
       ...sidebar.forms,
       ...sidebar.temporaryPanels,
       ...sidebar.staticPanels,
-      sidebar.recipeToActivate,
+      sidebar.modActivationPanel,
     ];
 
     // Get sidebar entry by event key

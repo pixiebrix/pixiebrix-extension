@@ -35,7 +35,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import type {
   ActivatePanelOptions,
-  ActivateModPanelEntry,
+  ModActivationPanelEntry,
   FormPanelEntry,
   PanelEntry,
   PanelPayload,
@@ -58,7 +58,7 @@ export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
 
-let recipeToActivate: ActivateModPanelEntry = null;
+let modActivationPanelEntry: ModActivationPanelEntry = null;
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
@@ -452,37 +452,51 @@ export function upsertPanel(
   renderPanelsIfVisible();
 }
 
-export function showActivateRecipeInSidebar(
-  entry: Except<ActivateModPanelEntry, "type">
+/**
+ * Show a mod activation panel in the sidebar. If there's already a panel showing, it will be replaced.
+ *
+ * @param entry the mod activation panel entry
+ * @throws Error if the sidebar frame is not visible
+ */
+export function showModActivationInSidebar(
+  entry: Except<ModActivationPanelEntry, "type">
 ): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
     throw new Error(
-      "Cannot activate a recipe in the sidebar if the sidebar is not visible"
+      "Cannot activate mods in the sidebar if the sidebar is not visible"
     );
   }
 
-  recipeToActivate = {
-    type: "activateRecipe",
+  modActivationPanelEntry = {
+    type: "activateMods",
     ...entry,
   };
 
   const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.showActivateRecipe(sequence, recipeToActivate);
+  void sidebarInThisTab.showModActivationPanel(
+    sequence,
+    modActivationPanelEntry
+  );
 }
 
-export function hideActivateRecipeInSidebar(recipeId: RegistryId): void {
+/**
+ * Hide the mod activation panel in the sidebar.
+ * @see showModActivationInSidebar
+ */
+export function hideModActivationInSidebar(): void {
   expectContext("contentScript");
 
-  recipeToActivate = null;
+  // Clear out in in-memory tracking
+  modActivationPanelEntry = null;
 
   if (!isSidebarFrameVisible()) {
     return;
   }
 
   const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.hideActivateRecipe(sequence, recipeId);
+  void sidebarInThisTab.hideModActivationPanel(sequence);
 }
 
 /**
@@ -497,12 +511,12 @@ export function getReservedPanelEntries(): {
   panels: PanelEntry[];
   temporaryPanels: TemporaryPanelEntry[];
   forms: FormPanelEntry[];
-  recipeToActivate: ActivateModPanelEntry | null;
+  modActivationPanel: ModActivationPanelEntry | null;
 } {
   return {
     panels,
     temporaryPanels: getTemporaryPanelSidebarEntries(),
     forms: getFormPanelSidebarEntries(),
-    recipeToActivate,
+    modActivationPanel: modActivationPanelEntry,
   };
 }

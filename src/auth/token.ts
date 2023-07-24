@@ -132,7 +132,7 @@ export async function getAuthHeaders(): Promise<UnknownObject | null> {
 }
 
 /**
- * Return `true` if the extension is linked to the API.
+ * Return `true` if the extension is linked to the API. I.e., that the user is "logged in".
  *
  * NOTE: do not use this as a check before making an authenticated API call. Instead, use `maybeGetLinkedApiClient`
  * which avoids a race condition between the time the check is made and underlying `getExtensionToken` call to get

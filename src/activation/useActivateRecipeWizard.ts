@@ -40,6 +40,7 @@ import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
+import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the ModDefinition, however the types aren't set up in a way for TypeScript
@@ -73,6 +74,114 @@ export function makeDatabasePreviewName(
   return `${recipe.metadata.name} - ${optionSchema.title ?? name}`;
 }
 
+export function wizardStateFactory({
+  modDefinition,
+  defaultAuthOptions = {},
+  databaseOptions,
+  installedExtensions,
+  optionsValidationSchema,
+}: {
+  modDefinition: ModDefinition;
+  defaultAuthOptions: Record<RegistryId, AuthOption>;
+  databaseOptions: Option[];
+  installedExtensions: UnresolvedModComponent[];
+  optionsValidationSchema: AnyObjectSchema;
+}): UseActivateRecipeWizardResult {
+  const extensionPoints = modDefinition.extensionPoints ?? [];
+
+  const installedBlueprintExtensions = installedExtensions?.filter(
+    (extension) => extension._recipe?.id === modDefinition.metadata.id
+  );
+
+  const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
+  const installedServices = inferRecipeAuths(installedBlueprintExtensions, {
+    optional: true,
+  });
+
+  const serviceIds = uniq(
+    extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
+  );
+
+  const wizardSteps = STEPS.filter((step) => {
+    switch (step.key) {
+      case "services": {
+        return serviceIds.some(
+          (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+        );
+      }
+
+      case "options": {
+        return !isEmpty(inputProperties(modDefinition.options?.schema ?? {}));
+      }
+
+      default: {
+        return true;
+      }
+    }
+  });
+
+  const initialValues: WizardValues = {
+    extensions: Object.fromEntries(
+      // By default, all extensions in the recipe should be toggled on
+      extensionPoints.map((_, index) => [index, true])
+    ),
+    services: serviceIds.map((id) => ({
+      id,
+      // Prefer the installed config for reinstall cases, otherwise use the default
+      // eslint-disable-next-line security/detect-object-injection -- is a registry id
+      config: installedServices[id] ?? defaultAuthOptions[id]?.value,
+    })),
+    optionsArgs: mapValues(
+      modDefinition.options?.schema?.properties ?? {},
+      (optionSchema: Schema, name: string) => {
+        const installed = installedOptions[name];
+        if (installed) {
+          return forcePrimitive(installed);
+        }
+
+        if (
+          isDatabaseField(optionSchema) &&
+          optionSchema.format === "preview"
+        ) {
+          const databaseName = makeDatabasePreviewName(
+            modDefinition,
+            optionSchema,
+            name
+          );
+          const existingDatabaseOption = databaseOptions.find(
+            (option) => option.label === `${databaseName} - Private`
+          );
+          return existingDatabaseOption?.value ?? databaseName;
+        }
+
+        return forcePrimitive(optionSchema.default);
+      }
+    ),
+  };
+
+  const validationSchema = Yup.object().shape({
+    extensions: Yup.object().shape(
+      Object.fromEntries(
+        extensionPoints.map((_, index) => [index, Yup.boolean().required()])
+      )
+    ),
+    services: Yup.array().of(
+      Yup.object().test(
+        "servicesRequired",
+        "Please select a configuration",
+        (value) => value.id === PIXIEBRIX_SERVICE_ID || value.config != null
+      )
+    ),
+    optionsArgs: optionsValidationSchema,
+  });
+
+  return {
+    wizardSteps,
+    initialValues,
+    validationSchema,
+  };
+}
+
 function useActivateRecipeWizard(
   recipe: ModDefinition,
   defaultAuthOptions: Record<RegistryId, AuthOption> = {}
@@ -81,107 +190,21 @@ function useActivateRecipeWizard(
   const optionsValidationSchemaState = useAsyncRecipeOptionsValidationSchema(
     recipe.options?.schema
   );
+
   // Force-fetch latest database options
   const databaseOptionsState = useDatabaseOptions({ refetchOnMount: true });
 
   return useMergeAsyncState(
     optionsValidationSchemaState,
     databaseOptionsState,
-    (optionsValidationSchema: AnyObjectSchema, databaseOptions: Option[]) => {
-      const extensionPoints = recipe.extensionPoints ?? [];
-
-      const installedBlueprintExtensions = installedExtensions?.filter(
-        (extension) => extension._recipe?.id === recipe.metadata.id
-      );
-
-      const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
-      const installedServices = inferRecipeAuths(installedBlueprintExtensions, {
-        optional: true,
-      });
-
-      const serviceIds = uniq(
-        extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
-      );
-
-      const wizardSteps = STEPS.filter((step) => {
-        switch (step.key) {
-          case "services": {
-            return serviceIds.some(
-              (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
-            );
-          }
-
-          case "options": {
-            return !isEmpty(inputProperties(recipe.options?.schema ?? {}));
-          }
-
-          default: {
-            return true;
-          }
-        }
-      });
-
-      const initialValues: WizardValues = {
-        extensions: Object.fromEntries(
-          // By default, all extensions in the recipe should be toggled on
-          extensionPoints.map((_, index) => [index, true])
-        ),
-        services: serviceIds.map((id) => ({
-          id,
-          // Prefer the installed config for reinstall cases, otherwise use the default
-          // eslint-disable-next-line security/detect-object-injection -- is a registry id
-          config: installedServices[id] ?? defaultAuthOptions[id]?.value,
-        })),
-        optionsArgs: mapValues(
-          recipe.options?.schema?.properties ?? {},
-          (optionSchema: Schema, name: string) => {
-            const installed = installedOptions[name];
-            if (installed) {
-              return forcePrimitive(installed);
-            }
-
-            if (
-              isDatabaseField(optionSchema) &&
-              optionSchema.format === "preview"
-            ) {
-              const databaseName = makeDatabasePreviewName(
-                recipe,
-                optionSchema,
-                name
-              );
-              const existingDatabaseOption = databaseOptions.find(
-                (option) => option.label === `${databaseName} - Private`
-              );
-              return existingDatabaseOption?.value ?? databaseName;
-            }
-
-            return forcePrimitive(optionSchema.default);
-          }
-        ),
-      };
-
-      const validationSchema = Yup.object().shape({
-        extensions: Yup.object().shape(
-          Object.fromEntries(
-            extensionPoints.map((_, index) => [index, Yup.boolean().required()])
-          )
-        ),
-        services: Yup.array().of(
-          Yup.object().test(
-            "servicesRequired",
-            "Please select a configuration",
-            (value) => value.id === PIXIEBRIX_SERVICE_ID || value.config != null
-          )
-        ),
-        optionsArgs: optionsValidationSchema,
-      });
-
-      return {
-        wizardSteps,
-        initialValues,
-        validationSchema,
-      };
-    }
+    (optionsValidationSchema: AnyObjectSchema, databaseOptions: Option[]) =>
+      wizardStateFactory({
+        modDefinition: recipe,
+        defaultAuthOptions,
+        databaseOptions,
+        installedExtensions,
+        optionsValidationSchema,
+      })
   );
 }
 

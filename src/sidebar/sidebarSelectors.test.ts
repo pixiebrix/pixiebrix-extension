@@ -11,7 +11,7 @@ describe("sidebarSelectors", () => {
         forms: [],
         temporaryPanels: [],
         staticPanels: [],
-        recipeToActivate: null,
+        modActivationPanel: null,
         pendingActivePanel: null,
       },
       options: { extensions: [] },

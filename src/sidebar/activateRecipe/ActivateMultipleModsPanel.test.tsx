@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.recipeName {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #5217c6;
-  margin-bottom: 0.25rem;
-}
+describe("ActivateMultipleModsPanel", () => {
+  test("tests are in other file", () => {
+    // Tests are in the ActivateModPanel.test.tsx file to avoid duplicate mocking/setup logic
+  });
+});

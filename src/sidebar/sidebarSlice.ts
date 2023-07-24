@@ -20,7 +20,7 @@ import type {
   PanelEntry,
   ActivatePanelOptions,
   TemporaryPanelEntry,
-  ActivateModPanelEntry,
+  ModActivationPanelEntry,
   SidebarEntry,
   SidebarState,
   StaticPanelEntry,
@@ -45,7 +45,7 @@ const emptySidebarState: SidebarState = {
   forms: [],
   temporaryPanels: [],
   staticPanels: [],
-  recipeToActivate: null,
+  modActivationPanel: null,
   activeKey: null,
   pendingActivePanel: null,
 };
@@ -60,7 +60,7 @@ function eventKeyExists(state: SidebarState, query: string | null): boolean {
     state.temporaryPanels.some((x) => eventKeyForEntry(x) === query) ||
     state.panels.some((x) => eventKeyForEntry(x) === query) ||
     state.staticPanels.some((x) => eventKeyForEntry(x) === query) ||
-    eventKeyForEntry(state.recipeToActivate) === query
+    eventKeyForEntry(state.modActivationPanel) === query
   );
 }
 
@@ -201,14 +201,14 @@ const sidebarSlice = createSlice({
         panels: PanelEntry[];
         temporaryPanels: TemporaryPanelEntry[];
         forms: FormPanelEntry[];
-        recipeToActivate: ActivateModPanelEntry | null;
+        modActivationPanel: ModActivationPanelEntry | null;
       }>
     ) {
       state.staticPanels = castDraft(action.payload.staticPanels);
       state.forms = castDraft(action.payload.forms);
       state.panels = castDraft(action.payload.panels);
       state.temporaryPanels = castDraft(action.payload.temporaryPanels);
-      state.recipeToActivate = castDraft(action.payload.recipeToActivate);
+      state.modActivationPanel = castDraft(action.payload.modActivationPanel);
       state.activeKey = defaultEventKey(state);
     },
     selectTab(state, action: PayloadAction<string>) {
@@ -358,14 +358,18 @@ const sidebarSlice = createSlice({
         state.activeKey = defaultEventKey(state);
       }
     },
-    showActivateRecipe(state, action: PayloadAction<ActivateModPanelEntry>) {
+    showModActivationPanel(
+      state,
+      action: PayloadAction<ModActivationPanelEntry>
+    ) {
       const entry = action.payload;
-      state.recipeToActivate = entry;
+      state.modActivationPanel = entry;
       state.activeKey = eventKeyForEntry(entry);
     },
-    hideActivateRecipe(state) {
-      const { recipeToActivate: entry } = state;
-      state.recipeToActivate = null;
+    hideModActivationPanel(state) {
+      // We don't need to pass in an id to this action, because the can only be one active mod activation panel at a time
+      const { modActivationPanel: entry } = state;
+      state.modActivationPanel = null;
       fixActiveTabOnRemove(state, entry);
     },
   },

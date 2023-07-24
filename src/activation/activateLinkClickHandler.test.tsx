@@ -20,7 +20,6 @@ import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 import { render, screen } from "@testing-library/react";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { ACTIVATION_LINK_PREFIX } from "@/activation/ActivationLink";
-import { act } from "react-dom/test-utils";
 import userEvent from "@testing-library/user-event";
 
 const callback = jest.fn();
@@ -35,33 +34,54 @@ beforeEach(() => {
 
 describe("activateLinkClickHandler", () => {
   it("handles simple anchor element", async () => {
-    const recipeId = registryIdFactory();
-    const href = `${ACTIVATION_LINK_PREFIX}${recipeId}`;
+    const modId = registryIdFactory();
+    const href = `${ACTIVATION_LINK_PREFIX}${modId}`;
     render(<a href={href}>Activate Mod</a>);
 
     document.addEventListener("click", handleClicks);
 
-    await act(async () => {
-      await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
-    });
+    await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
 
     expect(callback).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: "activateRecipe",
-        recipeId,
+        type: "activateMods",
+        modIds: [modId],
         heading: expect.toBeString(),
       })
     );
   });
+
+  it.each(["id", "id[]"])(
+    "handles multiple ids with param %s",
+    async (paramName: string) => {
+      const modIds = [registryIdFactory(), registryIdFactory()];
+
+      const url = new URL(ACTIVATION_LINK_PREFIX);
+      url.searchParams.append(paramName, modIds[0]);
+      url.searchParams.append(paramName, modIds[1]);
+
+      render(<a href={url.href}>Activate Mod</a>);
+
+      document.addEventListener("click", handleClicks);
+
+      await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
+
+      expect(callback).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "activateMods",
+          modIds,
+          heading: expect.toBeString(),
+        })
+      );
+    }
+  );
 
   it("does not intercept non-activation links", async () => {
     render(<a href="https://example.com">Activate Mod</a>);
 
     document.addEventListener("click", handleClicks);
 
-    await act(async () => {
-      await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
-    });
+    await userEvent.click(screen.getByRole("link", { name: "Activate Mod" }));
 
     expect(callback).not.toHaveBeenCalled();
   });

@@ -16,7 +16,10 @@
  */
 
 import { renderHook } from "@/extensionConsole/testHelpers";
-import { useOptionalRecipe, useRequiredRecipe } from "@/recipes/recipesHooks";
+import {
+  useOptionalRecipe,
+  useRequiredModDefinitions,
+} from "@/recipes/recipesHooks";
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { registry } from "@/background/messenger/api";
@@ -31,7 +34,7 @@ describe("useRequiredRecipe", () => {
     );
 
     const wrapper = renderHook(() =>
-      useRequiredRecipe(validateRegistryId("nonexistent-recipe"))
+      useRequiredModDefinitions([validateRegistryId("nonexistent-recipe")])
     );
 
     await wrapper.waitForEffect();

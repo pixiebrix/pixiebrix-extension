@@ -16,14 +16,27 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { type ActivateModPanelEntry } from "@/types/sidebarTypes";
+import { type ModActivationPanelEntry } from "@/types/sidebarTypes";
 import { isActivationUrl } from "@/activation/ActivationLink";
 import notify from "@/utils/notify";
+import { compact, isEmpty } from "lodash";
+
+/**
+ * Read id search params from the URL. Handles both `id` and `id[]`.
+ * @param url
+ */
+function readIdsFromUrl(url: URL): string[] {
+  const rawIds = [
+    ...url.searchParams.getAll("id"),
+    ...url.searchParams.getAll("id[]"),
+  ];
+  return rawIds.filter((x) => !isEmpty(x));
+}
 
 export default function activateLinkClickHandler(
   event: MouseEvent,
-  callback: (entry: ActivateModPanelEntry) => void
-) {
+  callback: (entry: ModActivationPanelEntry) => void
+): void {
   const path = event.composedPath();
   const target = path[0] as HTMLElement;
   const link = target.closest("a");
@@ -37,19 +50,26 @@ export default function activateLinkClickHandler(
   }
 
   const url = new URL(href);
-  const recipeId = validateRegistryId(url.searchParams.get("id"));
-  if (!recipeId) {
-    notify.warning(`Recipe id param not found in activate link url: ${href}`);
+  const rawIds = readIdsFromUrl(url);
+  let modIds;
+
+  try {
+    modIds = compact(rawIds.map((x) => validateRegistryId(x)));
+  } catch {
+    notify.warning(`Invalid mod id in URL: ${href}`);
+    return;
+  }
+
+  if (modIds.length === 0) {
+    notify.warning(`Mod id param not found in activate link url: ${href}`);
     return;
   }
 
   event.preventDefault();
 
-  const entry: ActivateModPanelEntry = {
-    type: "activateRecipe",
-    recipeId,
+  callback({
+    type: "activateMods",
+    modIds,
     heading: "Activating",
-  };
-
-  callback(entry);
+  });
 }

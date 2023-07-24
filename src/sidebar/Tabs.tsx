@@ -34,20 +34,21 @@ import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SubmitPanelAction } from "@/bricks/errors";
-import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
+import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectExtensionFromEventKey,
   selectSidebarActiveTabKey,
   selectSidebarForms,
   selectSidebarPanels,
-  selectSidebarRecipeToActivate,
+  selectSidebarModActivationPanel,
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
+import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -116,7 +117,7 @@ const Tabs: React.FC = () => {
   const panels = useSelector(selectSidebarPanels);
   const forms = useSelector(selectSidebarForms);
   const temporaryPanels = useSelector(selectSidebarTemporaryPanels);
-  const recipeToActivate = useSelector(selectSidebarRecipeToActivate);
+  const modActivationPanel = useSelector(selectSidebarModActivationPanel);
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
 
@@ -205,14 +206,15 @@ const Tabs: React.FC = () => {
               />
             </TabWithDivider>
           ))}
-          {recipeToActivate && (
+          {modActivationPanel && (
             <TabWithDivider
-              key={recipeToActivate.recipeId}
-              active={isPanelActive(recipeToActivate)}
-              eventKey={eventKeyForEntry(recipeToActivate)}
+              // Use eventKeyForEntry which generates a string key
+              key={eventKeyForEntry(modActivationPanel)}
+              active={isPanelActive(modActivationPanel)}
+              eventKey={eventKeyForEntry(modActivationPanel)}
             >
               <span className={styles.tabTitle}>
-                {recipeToActivate.heading}
+                {modActivationPanel.heading}
               </span>
             </TabWithDivider>
           )}
@@ -285,21 +287,30 @@ const Tabs: React.FC = () => {
           {temporaryPanels.map((panel) => (
             <TemporaryPanelTabPane panel={panel} key={panel.nonce} />
           ))}
-          {recipeToActivate && (
+          {modActivationPanel && (
             <Tab.Pane
               className={cx("h-100", styles.paneOverrides)}
-              key={recipeToActivate.recipeId}
-              eventKey={eventKeyForEntry(recipeToActivate)}
+              key={eventKeyForEntry(modActivationPanel)}
+              eventKey={eventKeyForEntry(modActivationPanel)}
             >
               <ErrorBoundary
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
                     panelType: "activate",
-                    recipeToActivate: recipeToActivate.recipeId,
+                    // For backward compatability, provide a single modId to the recipeToActivate property
+                    recipeToActivate: modActivationPanel.modIds[0],
+                    modCount: modActivationPanel.modIds.length,
+                    modIds: modActivationPanel.modIds,
                   });
                 }}
               >
-                <ActivateRecipePanel recipeId={recipeToActivate.recipeId} />
+                {modActivationPanel.modIds.length === 1 ? (
+                  <ActivateModPanel modId={modActivationPanel.modIds[0]} />
+                ) : (
+                  <ActivateMultipleModsPanel
+                    modIds={modActivationPanel.modIds}
+                  />
+                )}
               </ErrorBoundary>
             </Tab.Pane>
           )}

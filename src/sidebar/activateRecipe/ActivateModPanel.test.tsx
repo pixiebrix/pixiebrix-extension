@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { useRequiredRecipe } from "@/recipes/recipesHooks";
+import { useRequiredModDefinitions } from "@/recipes/recipesHooks";
 import { render, screen } from "@/sidebar/testHelpers";
-import ActivateRecipePanel from "@/sidebar/activateRecipe/ActivateRecipePanel";
+import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
@@ -42,16 +42,18 @@ import {
 import * as messengerApi from "@/contentScript/messenger/api";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import userEvent from "@testing-library/user-event";
+import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
+import ErrorBoundary from "@/sidebar/ErrorBoundary";
 
 jest.mock("@/recipes/recipesHooks", () => ({
-  useRequiredRecipe: jest.fn(),
+  useRequiredModDefinitions: jest.fn(),
 }));
 
 jest.mock("@/sidebar/sidebarSelectors", () => ({
   selectSidebarHasModPanels: jest.fn(),
 }));
 
-const useRequiredRecipeMock = jest.mocked(useRequiredRecipe);
+const useRequiredModDefinitionsMock = jest.mocked(useRequiredModDefinitions);
 const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
 const selectSidebarHasModPanelsMock = jest.mocked(selectSidebarHasModPanels);
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
@@ -84,7 +86,10 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-function setupMocksAndRender(recipeOverride?: Partial<ModDefinition>) {
+function setupMocksAndRender(
+  recipeOverride?: Partial<ModDefinition>,
+  { componentOverride }: { componentOverride?: React.ReactElement } = {}
+) {
   const recipe = recipeFactory({
     ...recipeOverride,
     metadata: {
@@ -92,7 +97,9 @@ function setupMocksAndRender(recipeOverride?: Partial<ModDefinition>) {
       name: "Test Mod",
     },
   });
-  useRequiredRecipeMock.mockReturnValue(valueToAsyncCacheState(recipe));
+  useRequiredModDefinitionsMock.mockReturnValue(
+    valueToAsyncCacheState([recipe])
+  );
   const listing = marketplaceListingFactory({
     // Consistent user-visible name for snapshots
     package: recipeToMarketplacePackage(recipe),
@@ -102,14 +109,18 @@ function setupMocksAndRender(recipeOverride?: Partial<ModDefinition>) {
   appApiMock.onGet("/api/marketplace/listings/").reply(200, [listing]);
   appApiMock.onGet().reply(200, []);
 
-  const entry = sidebarEntryFactory("activateRecipe", {
-    recipeId: recipe.metadata.id,
+  const entry = sidebarEntryFactory("activateMods", {
+    modIds: [recipe.metadata.id],
     heading: "Activate Mod",
   });
 
-  return render(<ActivateRecipePanel recipeId={recipe.metadata.id} />, {
+  const element = componentOverride ?? (
+    <ActivateModPanel modId={recipe.metadata.id} />
+  );
+
+  return render(element, {
     setupRedux(dispatch) {
-      dispatch(sidebarSlice.actions.showActivateRecipe(entry));
+      dispatch(sidebarSlice.actions.showModActivationPanel(entry));
     },
   });
 }
@@ -298,5 +309,43 @@ describe("ActivateRecipePanel", () => {
     await userEvent.click(screen.getByRole("button", { name: /ok/i }));
 
     expect(hideSidebarSpy).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe("ActivateMultipleModsPanel", () => {
+  it("automatically activates single mod", async () => {
+    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
+
+    appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
+
+    const rendered = setupMocksAndRender(recipe, {
+      componentOverride: (
+        <ActivateMultipleModsPanel modIds={[recipe.metadata.id]} />
+      ),
+    });
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("shows error if any mod requires configuration", async () => {
+    const { recipe } = getRecipeWithBuiltInServiceAuths();
+
+    setupMocksAndRender(recipe, {
+      componentOverride: (
+        <ErrorBoundary>
+          <ActivateMultipleModsPanel modIds={[recipe.metadata.id]} />
+        </ErrorBoundary>
+      ),
+    });
+
+    await waitForEffect();
+
+    expect(
+      screen.queryByText(
+        "One or more mods require configuration. Activate the mods individually to configure them."
+      )
+    ).toBeInTheDocument();
   });
 });

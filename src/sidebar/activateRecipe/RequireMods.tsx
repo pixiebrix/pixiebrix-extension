@@ -17,10 +17,9 @@
 
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useRequiredRecipe } from "@/recipes/recipesHooks";
+import { useRequiredModDefinitions } from "@/recipes/recipesHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
-import styles from "./RequireRecipe.module.scss";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
@@ -28,18 +27,35 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { useSelector } from "react-redux";
+import { selectExtensions } from "@/store/extensionsSelectors";
 
-export type RecipeState = {
-  recipe: ModDefinition;
-  recipeNameNode: React.ReactNode;
+export type RequiredModDefinition = {
+  /**
+   * The mod definition.
+   */
+  modDefinition: ModDefinition;
+  /**
+   * True if the mod includes a quick bar or dynamic quick bar provider starter brick.
+   */
   includesQuickBar: boolean;
+  /**
+   * True if the mod will require end-user configuration.
+   */
   requiresConfiguration: boolean;
-  defaultAuthOptions: Record<RegistryId, AuthOption>;
+  /**
+   * True if the mod is already activated.
+   */
+  isActive: boolean;
+  /**
+   * The default integration configurations for the mod
+   */
+  defaultAuthOptions: Record<RegistryId, AuthOption | null>;
 };
 
 type Props = {
-  recipeId: RegistryId;
-  children: (props: RecipeState) => React.ReactElement;
+  modIds: RegistryId[];
+  children: (props: RequiredModDefinition[]) => React.ReactElement;
 };
 
 /**
@@ -106,37 +122,47 @@ function requiresUserConfiguration(
 }
 
 /**
- * Helper component to render children that depend on a recipe and its metadata.
+ * Helper component to conditionally render children that depend on mod definitions.
  */
-const RequireRecipe: React.FC<Props> = ({ recipeId, children }) => {
-  const recipeDefinitionState = useRequiredRecipe(recipeId);
+const RequireMods: React.FC<Props> = ({ modIds, children }) => {
+  const modDefinitionsState = useRequiredModDefinitions(modIds);
+
+  const modComponents = useSelector(selectExtensions);
 
   const authOptionsState = useAuthOptions();
 
   const state = useDeriveAsyncState(
-    recipeDefinitionState,
+    modDefinitionsState,
     authOptionsState,
-    async (recipe: ModDefinition, authOptions: AuthOption[]) => {
-      const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
-        recipe,
-        authOptions
-      );
+    async (modDefinitions: ModDefinition[], authOptions: AuthOption[]) =>
+      Promise.all(
+        modDefinitions.map(async (modDefinition) => {
+          const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
+            modDefinition,
+            authOptions
+          );
 
-      return {
-        recipe,
-        defaultAuthOptions,
-        requiresConfiguration: requiresUserConfiguration(recipe, authOptions),
-        includesQuickBar: await includesQuickBarExtensionPoint(recipe),
-        recipeNameNode: (
-          <div className={styles.recipeName}>{recipe.metadata.name}</div>
-        ),
-      };
-    }
+          return {
+            modDefinition,
+            defaultAuthOptions,
+            requiresConfiguration: requiresUserConfiguration(
+              modDefinition,
+              authOptions
+            ),
+            includesQuickBar: await includesQuickBarExtensionPoint(
+              modDefinition
+            ),
+            isActive: modComponents.some(
+              (x) => x._recipe?.id === modDefinition.metadata.id
+            ),
+          };
+        })
+      )
   );
 
   // Throw error to hit error boundary
   if (state.isError) {
-    throw state.error ?? new Error("Error retrieving mod");
+    throw state.error ?? new Error("Error retrieving mods");
   }
 
   if (state.isLoading) {
@@ -146,4 +172,4 @@ const RequireRecipe: React.FC<Props> = ({ recipeId, children }) => {
   return children(state.data);
 };
 
-export default RequireRecipe;
+export default RequireMods;

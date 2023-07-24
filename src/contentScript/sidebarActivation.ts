@@ -16,49 +16,47 @@
  */
 
 import { type RegistryId } from "@/types/registryTypes";
-import { validateRegistryId } from "@/types/helpers";
+import { isRegistryId } from "@/types/helpers";
 import {
   ensureSidebar,
   HIDE_SIDEBAR_EVENT_NAME,
-  hideActivateRecipeInSidebar,
-  showActivateRecipeInSidebar,
+  hideModActivationInSidebar,
+  showModActivationInSidebar,
 } from "@/contentScript/sidebarController";
-import { getAuthHeaders } from "@/auth/token";
+import { isLinked } from "@/auth/token";
 import {
-  getActivatingBlueprint,
-  setActivatingBlueprint,
+  getActivatingModIds,
+  setActivatingMods,
 } from "@/background/messenger/external/_implementation";
-import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getInstalledRecipeIds } from "@/contentScript/loadActivationEnhancements";
 import { isLoadedInIframe } from "@/iframeUtils";
 
-async function isUserLoggedIn(): Promise<boolean> {
-  const authHeaders = await getAuthHeaders();
-  return Boolean(authHeaders);
+/**
+ * Returns mod ids that are currently being activated, or null if there are none.
+ *
+ * Same as getActivatingBlueprints, but filters out any mod ids that are not syntactically valid.
+ *
+ * @see getActivatingModIds
+ */
+async function getInProgressModActivation(): Promise<RegistryId[] | null> {
+  const modIds = (await getActivatingModIds()) ?? [];
+
+  // Defensive validation
+  const valid = modIds.filter((x) => isRegistryId(x));
+
+  return valid.length > 0 ? valid : null;
 }
 
-async function getInProgressRecipeActivation(): Promise<RegistryId | null> {
-  try {
-    const activatingRecipeId = await getActivatingBlueprint();
-    if (typeof activatingRecipeId !== "string") {
-      return null;
-    }
-
-    return validateRegistryId(activatingRecipeId);
-  } catch (error) {
-    reportError(error);
-    return null;
-  }
-}
-
-async function showSidebarActivationForRecipe(recipeId: RegistryId) {
+async function showSidebarActivationForMods(
+  modIds: RegistryId[]
+): Promise<void> {
   const controller = new AbortController();
 
   await ensureSidebar();
-  showActivateRecipeInSidebar({
-    recipeId,
+  showModActivationInSidebar({
+    modIds,
     heading: "Activating",
   });
   window.addEventListener(
@@ -71,7 +69,7 @@ async function showSidebarActivationForRecipe(recipeId: RegistryId) {
     }
   );
   controller.signal.addEventListener("abort", () => {
-    hideActivateRecipeInSidebar(recipeId);
+    hideModActivationInSidebar();
   });
 }
 
@@ -87,17 +85,17 @@ function addActivateRecipeListener() {
     async (
       event: CustomEvent<{ recipeId: RegistryId; activateUrl: string | URL }>
     ) => {
-      const { recipeId, activateUrl } = event.detail;
+      const { recipeId: modId, activateUrl } = event.detail;
       const nextUrl = getNextUrlFromActivateUrl(activateUrl as string);
 
-      if (!(await isUserLoggedIn())) {
+      if (!(await isLinked())) {
         // Open the activate link in the current browser tab
         window.location.assign(activateUrl);
         return;
       }
 
       if (nextUrl) {
-        await setActivatingBlueprint({ blueprintId: recipeId });
+        await setActivatingMods({ blueprintId: modId });
         window.location.assign(nextUrl);
         return;
       }
@@ -105,28 +103,31 @@ function addActivateRecipeListener() {
       const installedRecipeIds = await getInstalledRecipeIds();
 
       reportEvent(Events.START_MOD_ACTIVATE, {
-        blueprintId: recipeId,
+        blueprintId: modId,
         screen: "marketplace",
-        reinstall: installedRecipeIds.has(recipeId),
+        reinstall: installedRecipeIds.has(modId),
       });
 
-      await showSidebarActivationForRecipe(recipeId);
+      await showSidebarActivationForMods([modId]);
     }
   );
 }
 
-export async function initSidebarActivation() {
+export async function initSidebarActivation(): Promise<void> {
   addActivateRecipeListener();
 
-  if (!(await isUserLoggedIn())) {
+  if (!(await isLinked())) {
     return;
   }
 
-  const recipeId = await getInProgressRecipeActivation();
+  const modIds = await getInProgressModActivation();
 
   // Do not try to show sidebar activation inside an iframe
-  if (recipeId && !isLoadedInIframe()) {
-    await setActivatingBlueprint({ blueprintId: null });
-    await showSidebarActivationForRecipe(recipeId);
+  if (modIds && !isLoadedInIframe()) {
+    await Promise.allSettled([
+      // Clear out local storage
+      setActivatingMods({ blueprintId: null }),
+      showSidebarActivationForMods(modIds),
+    ]);
   }
 }

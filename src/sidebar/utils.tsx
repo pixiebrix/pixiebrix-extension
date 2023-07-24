@@ -19,10 +19,12 @@ import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
 import React, { type ReactNode } from "react";
 import HomePanel from "@/sidebar/homePanel/HomePanel";
 import {
-  isActivateModPanelEntry,
+  isModActivationPanelEntry,
   isPanelEntry,
   isStaticPanelEntry,
 } from "@/types/sidebarTypes";
+import hash from "object-hash";
+import { sortBy } from "lodash";
 
 export const STATIC_PANEL_BODY_MAP: Record<string, ReactNode> = {
   home: <HomePanel />,
@@ -38,8 +40,8 @@ export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
     return null;
   }
 
-  if (isActivateModPanelEntry(entry)) {
-    return `activate-${entry.recipeId}`;
+  if (isModActivationPanelEntry(entry)) {
+    return `activate-${hash(sortBy(entry.modIds))}`;
   }
 
   if (isPanelEntry(entry)) {
@@ -67,7 +69,7 @@ export function defaultEventKey({
   panels = [],
   temporaryPanels = [],
   staticPanels = [],
-  recipeToActivate = null,
+  modActivationPanel = null,
 }: SidebarEntries): string | null {
   if (forms.length > 0) {
     return eventKeyForEntry(forms.at(-1));
@@ -81,8 +83,8 @@ export function defaultEventKey({
     return eventKeyForEntry(panels.at(0));
   }
 
-  if (recipeToActivate) {
-    return eventKeyForEntry(recipeToActivate);
+  if (modActivationPanel) {
+    return eventKeyForEntry(modActivationPanel);
   }
 
   if (staticPanels.length > 0) {

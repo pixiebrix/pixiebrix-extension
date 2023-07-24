@@ -40,7 +40,7 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
  * If you want to return an error state if the recipe doesn't exist, use useRequiredRecipe instead.
  *
  * @param id the registry id of the recipe
- * @see useRequiredRecipe
+ * @see useRequiredModDefinitions
  * @see useAllRecipes
  */
 export function useOptionalRecipe(
@@ -67,31 +67,32 @@ export function useOptionalRecipe(
 }
 
 /**
- * Lookup a recipe from the registry by ID, or return an error state if it doesn't exist.
+ * Lookup mod definitions from the registry by ID, or return an error state if any don't exist.
  *
- * Only returns an error state if the remote fetch fails. If the recipe is not found in the local cache, it will wait
+ * Only returns an error state if the remote fetch fails. If any mod is not found in the local cache, it will wait
  * until the remote fetch completes before returning an error state.
  *
- * @param id the registry id of the recipe
+ * @param ids the registry ids of the mod definitions
  * @see useOptionalRecipe
  * @see useAllRecipes
  */
-export function useRequiredRecipe(id: RegistryId): AsyncState<ModDefinition> {
+export function useRequiredModDefinitions(
+  ids: RegistryId[]
+): AsyncState<ModDefinition[]> {
   const state = useAllRecipes();
 
-  const findRecipe = useCallback(
-    (recipes: ModDefinition[]) => {
-      const recipe = recipes.find((x) => x.metadata.id === id);
-      if (!recipe) {
-        throw new Error(`Recipe ${id} not found`);
-      }
+  const recipeState = useMergeAsyncState(state, (mods: ModDefinition[]) => {
+    const matches = mods.filter((x) => ids.includes(x.metadata.id));
 
-      return recipe;
-    },
-    [id]
-  );
+    if (ids.length !== matches.length) {
+      const missingIds = ids.filter(
+        (x) => !matches.some((mod) => mod.metadata.id === x)
+      );
+      throw new Error(`Mod definition(s) not found: ${missingIds.join(", ")}`);
+    }
 
-  const recipeState = useMergeAsyncState(state, findRecipe);
+    return matches;
+  });
 
   // Avoid reference change when useAllRecipes switches from cache to remote fetch
   const data = useMemoCompare(recipeState.data, deepEquals);
