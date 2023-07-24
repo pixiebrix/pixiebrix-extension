@@ -92,12 +92,14 @@ export class GoogleSheetsLookup extends TransformerABC {
 
   async transform(
     {
+      googleAccount,
       spreadsheetId: spreadsheetIdArg,
       tabName,
       header,
       query,
       multi,
     }: BrickArgs<{
+      googleAccount?: SanitizedIntegrationConfig | undefined;
       spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       header: string;
