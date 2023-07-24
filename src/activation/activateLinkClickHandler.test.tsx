@@ -20,7 +20,6 @@ import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 import { render, screen } from "@testing-library/react";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { ACTIVATION_LINK_PREFIX } from "@/activation/ActivationLink";
-import { act } from "react-dom/test-utils";
 import userEvent from "@testing-library/user-event";
 
 const callback = jest.fn();
