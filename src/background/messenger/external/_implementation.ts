@@ -184,9 +184,6 @@ export async function openActivateModPage({
     // For extension console activation, only support a single mod id
     `${baseConsoleUrl}#/marketplace/activate/${encodeURIComponent(modIds[0])}`;
 
-  // TODO: possibly remove this event, it's not really being used/observed at all, and the pageSource is very misleading
-  reportEvent(Events.EXTERNAL_ACTIVATE, { blueprintId: modIds[0], pageSource });
-
   if (newTab) {
     await browser.tabs.create({ url });
   } else {
