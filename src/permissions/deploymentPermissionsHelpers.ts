@@ -23,7 +23,7 @@ import {
   findLocalDeploymentServiceConfigurations,
   type Locate,
 } from "@/utils/deploymentUtils";
-import { checkRecipePermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 /**
@@ -46,7 +46,7 @@ export async function checkDeploymentPermissions(
     locate
   );
 
-  return checkRecipePermissions(
+  return checkModDefinitionPermissions(
     blueprint,
     flatten(Object.values(localAuths)).map((x) => ({
       id: x.serviceId,

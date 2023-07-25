@@ -26,7 +26,7 @@ import { reactivateEveryTab } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
-import { checkRecipePermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
@@ -39,7 +39,7 @@ import {
 
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 
-const checkPermissionsMock = jest.mocked(checkRecipePermissions);
+const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);
 const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 

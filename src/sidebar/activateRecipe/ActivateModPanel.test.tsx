@@ -28,7 +28,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
-import { checkRecipePermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
   getRecipeWithBuiltInServiceAuths,
@@ -54,7 +54,9 @@ jest.mock("@/sidebar/sidebarSelectors", () => ({
 }));
 
 const useRequiredModDefinitionsMock = jest.mocked(useRequiredModDefinitions);
-const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
+const checkModDefinitionPermissionsMock = jest.mocked(
+  checkModDefinitionPermissions
+);
 const selectSidebarHasModPanelsMock = jest.mocked(selectSidebarHasModPanels);
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
@@ -137,7 +139,7 @@ beforeEach(() => {
     isConfigured: false,
   });
 
-  checkRecipePermissionsMock.mockResolvedValue({
+  checkModDefinitionPermissionsMock.mockResolvedValue({
     hasPermissions: true,
     permissions: {},
   });
@@ -145,7 +147,7 @@ beforeEach(() => {
 
 describe("ActivateRecipePanel", () => {
   it("renders with options, permissions info", async () => {
-    jest.mocked(checkRecipePermissions).mockResolvedValue({
+    jest.mocked(checkModDefinitionPermissions).mockResolvedValue({
       hasPermissions: false,
       permissions: { origins: ["https://newurl.com"] },
     });

@@ -125,7 +125,7 @@ jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
   );
   return {
     ...originalModule,
-    checkRecipePermissions: jest.fn().mockImplementation(async () => ({
+    checkModDefinitionPermissions: jest.fn().mockImplementation(async () => ({
       hasPermissions: true,
       permissions: { origins: [] },
     })),

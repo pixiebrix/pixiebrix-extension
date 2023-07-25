@@ -65,7 +65,7 @@ type Props = {
  *
  * @param recipe the recipe definition
  * @param authOptions the integration configurations available to the user
- * @see checkRecipePermissions
+ * @see checkModDefinitionPermissions
  */
 function requiresUserConfiguration(
   recipe: ModDefinition,
