@@ -18,10 +18,14 @@
 
 .root {
   position: fixed;
-  z-index: 2147481647;
+  // Don't overlap on-screen messengers:
+  // chatlio messenger: 9999999
+  // intercom: 2147483000
+  z-index: calc(9999999 - 1);
   bottom: 0;
   left: 0;
-  margin: 30px 10px;
+  // Initial vertical/horizontal spacing from the bottom left of the screen
+  margin: 70px 10px;
 }
 
 .drag-container {
