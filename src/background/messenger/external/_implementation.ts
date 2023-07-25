@@ -35,7 +35,7 @@ const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 /**
  * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
  */
-const STORAGE_BLUEPRINT_ID = "activatingBlueprintId" as ManualStorageKey;
+const STORAGE_MOD_IDS_KEY = "activatingBlueprintId" as ManualStorageKey;
 
 /**
  * Set the user's credentials for the PixieBrix extension. Returns true if the data was updated.
@@ -111,7 +111,7 @@ export async function setActivatingMods({
 }: SetActivatingModsOptions): Promise<void> {
   // Defensive check for syntactically valid registry ids
   const modIds = castArray(modIdOrIds).map((x) => validateRegistryId(x));
-  return setStorage(STORAGE_BLUEPRINT_ID, modIds);
+  return setStorage(STORAGE_MOD_IDS_KEY, modIds);
 }
 
 /**
@@ -121,7 +121,7 @@ export async function setActivatingMods({
  */
 export async function getActivatingModIds(): Promise<RegistryId[] | null> {
   const value: RegistryId | RegistryId[] = await readStorage(
-    STORAGE_BLUEPRINT_ID
+    STORAGE_MOD_IDS_KEY
   );
 
   return value?.length > 0 ? castArray(value) : null;
@@ -164,7 +164,6 @@ type ActivateModsOptions = {
 export async function openActivateModPage({
   blueprintId: modIdOrIds,
   newTab = true,
-  pageSource = "marketplace",
   redirectUrl,
 }: ActivateModsOptions): Promise<boolean> {
   const modIds = castArray(modIdOrIds);

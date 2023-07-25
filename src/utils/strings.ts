@@ -16,7 +16,7 @@
  */
 
 /**
- * Link to the marketplace
+ * URL of the marketplace, including `/marketplace/` path, e.g., https://www.pixiebrix.com/marketplace/
  */
 // eslint-disable-next-line prefer-destructuring -- breaks EnvironmentPlugin
 export const MARKETPLACE_URL = process.env.MARKETPLACE_URL;
