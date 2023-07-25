@@ -28,7 +28,7 @@ import { isValidTheme } from "@/themes/themeUtils";
 export async function getActiveTheme(): Promise<Theme> {
   expectContext("extension");
 
-  // The theme property is via an effect in useGetTheme
+  // The theme property is initialized/set via an effect in useGetTheme
   const { theme } = await getSettingsState();
   const { partnerId: managedPartnerId } = await readManagedStorage();
 

@@ -65,7 +65,8 @@ const GeneralSettings: React.FunctionComponent = () => {
             </div>
 
             {
-              // Hide because the disabled flag is not working
+              // Hide because the disabled flag is not working. Even when disabled is true, the user can
+              // still toggle the switch :shrug:
               !disableFloatingActionButton && (
                 <BootstrapSwitchButton
                   size="sm"

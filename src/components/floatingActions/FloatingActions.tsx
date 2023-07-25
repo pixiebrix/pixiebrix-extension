@@ -98,18 +98,19 @@ export async function initFloatingActions(): Promise<void> {
     getUserData(),
   ]);
 
+  // `telemetryOrganizationId` indicates user is part of an enterprise organization
+  // See https://github.com/pixiebrix/pixiebrix-app/blob/39fac4874402a541f62e80ab74aaefd446cc3743/api/models/user.py#L68-L68
+  // Just get the theme from the store instead of using getActive theme to avoid extra Chrome storage reads
+  // In practice, the Chrome policy should not change between useGetTheme and a call to initFloatingActions on a page
+  const isEnterpriseOrPartnerUser =
+    Boolean(telemetryOrganizationId) || settings.theme !== DEFAULT_THEME;
+
   // Add floating action button if the feature flag and settings are enabled
   // XXX: consider moving checks into React component, so we can use the Redux context
   if (
     settings.isFloatingActionButtonEnabled &&
     syncFlagOn("floating-quickbar-button") &&
-    // `telemetryOrganizationId` indicates user is part of an enterprise organization
-    // See https://github.com/pixiebrix/pixiebrix-app/blob/39fac4874402a541f62e80ab74aaefd446cc3743/api/models/user.py#L68-L68
-    !telemetryOrganizationId &&
-    // Don't show FAB is user has a partner theme active
-    // Just get the theme from the store instead of using getActive theme to avoid extra Chrome storage reads
-    // In practice, the Chrome policy should not change between useGetTheme and a call to initFloatingActions on a page
-    settings.theme === DEFAULT_THEME
+    !isEnterpriseOrPartnerUser
   ) {
     const container = document.createElement("div");
     container.id = FLOATING_ACTION_BUTTON_CONTAINER_ID;
