@@ -34,6 +34,7 @@ import { Provider, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { getUserData } from "@/background/messenger/api";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 
 // Putting this outside the component since it doesn't need to trigger a re-render
 let dragReported = false;
@@ -108,7 +109,7 @@ export async function initFloatingActions(): Promise<void> {
     // Don't show FAB is user has a partner theme active
     // Just get the theme from the store instead of using getActive theme to avoid extra Chrome storage reads
     // In practice, the Chrome policy should not change between useGetTheme and a call to initFloatingActions on a page
-    settings.theme === "default"
+    settings.theme === DEFAULT_THEME
   ) {
     const container = document.createElement("div");
     container.id = FLOATING_ACTION_BUTTON_CONTAINER_ID;
