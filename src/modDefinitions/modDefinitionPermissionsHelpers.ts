@@ -85,7 +85,7 @@ async function collectExtensionDefinitionPermissions(
  * Returns true if the recipe has the necessary permissions to run. Does not request the permissions.
  * @param recipe the recipe definition
  * @param selectedAuths selected integration configurations
- * @see ensureRecipePermissionsFromUserGesture
+ * @see ensureModDefinitionPermissionsFromUserGesture
  */
 export async function checkRecipePermissions(
   recipe: Pick<ModDefinition, "definitions" | "extensionPoints">,
@@ -112,18 +112,18 @@ export async function checkRecipePermissions(
 }
 
 /**
- * Ensures that the recipe has the necessary permissions to run. If not, prompts the user to grant them. NOTE: Must
+ * Ensures that the mod definition has the necessary permissions to run. If not, prompts the user to grant them. NOTE: Must
  * be called from a user gesture.
- * @param recipe the recipe definition
+ * @param modDefinition the mod definition
  * @param selectedAuths selected integration configurations
  * @see checkRecipePermissions
  */
-export async function ensureRecipePermissionsFromUserGesture(
-  recipe: ModDefinition,
+export async function ensureModDefinitionPermissionsFromUserGesture(
+  modDefinition: ModDefinition,
   selectedAuths: IntegrationConfigPair[]
 ): Promise<boolean> {
   // Single method to make mocking in tests easier
   return ensurePermissionsFromUserGesture(
-    await checkRecipePermissions(recipe, selectedAuths)
+    await checkRecipePermissions(modDefinition, selectedAuths)
   );
 }

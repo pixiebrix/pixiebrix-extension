@@ -27,7 +27,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
 import AsyncButton from "@/components/AsyncButton";
-import { ensureRecipePermissionsFromUserGesture } from "@/modDefinitions/recipePermissionsHelpers";
+import { ensureModDefinitionPermissionsFromUserGesture } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
@@ -51,7 +51,7 @@ export const useInstallBotGamesBlueprint = () => {
 
     // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
     try {
-      accepted = await ensureRecipePermissionsFromUserGesture(
+      accepted = await ensureModDefinitionPermissionsFromUserGesture(
         botGamesRecipe,
         []
       );

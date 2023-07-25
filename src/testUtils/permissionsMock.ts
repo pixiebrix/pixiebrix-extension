@@ -119,9 +119,9 @@ jest
   .mocked(backgroundApi.containsPermissions)
   .mockImplementation(browser.permissions.contains);
 
-jest.mock("@/modDefinitions/recipePermissionsHelpers", () => {
+jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
-    "@/modDefinitions/recipePermissionsHelpers"
+    "@/modDefinitions/modDefinitionPermissionsHelpers"
   );
   return {
     ...originalModule,

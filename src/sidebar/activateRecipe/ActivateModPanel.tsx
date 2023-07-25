@@ -50,7 +50,7 @@ import RequireMods, {
   type RequiredModDefinition,
 } from "@/sidebar/activateRecipe/RequireMods";
 import { persistor } from "@/sidebar/store";
-import { checkRecipePermissions } from "@/modDefinitions/recipePermissionsHelpers";
+import { checkRecipePermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
