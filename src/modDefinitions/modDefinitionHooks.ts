@@ -19,7 +19,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllRecipes } from "@/modDefinitions/recipesSelectors";
 import { useCallback, useEffect } from "react";
-import { recipesActions } from "./recipesSlice";
+import { recipesActions } from "./modDefinitionsSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   type AsyncState,

@@ -25,7 +25,7 @@ import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
-import { recipesSlice } from "@/modDefinitions/recipesSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export default {
@@ -40,7 +40,7 @@ function optionsStore(initialState?: UnknownObject) {
       modsPage: modsPageSlice.reducer,
       options: extensionsSlice.reducer,
       modModals: modModalsSlice.reducer,
-      recipes: recipesSlice.reducer,
+      recipes: modDefinitionsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

@@ -16,7 +16,11 @@
  */
 
 import { serializeError } from "serialize-error";
-import { initialState, recipesActions, recipesSlice } from "./recipesSlice";
+import {
+  initialState,
+  recipesActions,
+  modDefinitionsSlice,
+} from "./modDefinitionsSlice";
 import { type RecipesRootState } from "./recipesTypes";
 import recipesRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
@@ -124,7 +128,7 @@ describe("refreshRecipes", () => {
 describe("reducers", () => {
   test("startFetchingFromRemote does not set isLoading", () => {
     const state = { ...initialState };
-    const nextState = recipesSlice.reducer(
+    const nextState = modDefinitionsSlice.reducer(
       state,
       recipesActions.startFetchingFromRemote()
     );
@@ -144,7 +148,7 @@ describe("reducers", () => {
       isRemoteUninitialized: false,
       error: new Error("test"),
     };
-    const nextState = recipesSlice.reducer(
+    const nextState = modDefinitionsSlice.reducer(
       state,
       recipesActions.setRecipes(recipes)
     );

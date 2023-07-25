@@ -25,7 +25,7 @@ import {
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
-import { recipesSlice } from "@/modDefinitions/recipesSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { appApi } from "@/services/api";
 import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 import servicesSlice from "@/store/servicesSlice";
@@ -39,7 +39,7 @@ const configureStoreForTests = () =>
       options: extensionsSlice.reducer,
       modModals: modModalsSlice.reducer,
       modsPage: modsPageSlice.reducer,
-      recipes: recipesSlice.reducer,
+      recipes: modDefinitionsSlice.reducer,
       services: servicesSlice.reducer,
       workshop: workshopSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,

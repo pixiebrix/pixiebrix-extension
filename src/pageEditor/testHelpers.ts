@@ -33,7 +33,7 @@ import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { appApi } from "@/services/api";
-import { recipesSlice } from "@/modDefinitions/recipesSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 
 const configureStoreForTests = () =>
@@ -50,7 +50,7 @@ const configureStoreForTests = () =>
       logs: logSlice.reducer,
       analysis: analysisSlice.reducer,
       tabState: tabStateSlice.reducer,
-      recipes: recipesSlice.reducer,
+      recipes: modDefinitionsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

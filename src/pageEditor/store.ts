@@ -38,7 +38,7 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
-import { recipesSlice } from "@/modDefinitions/recipesSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 import { type StorageInterface } from "@/store/StorageInterface";
 import {
@@ -91,7 +91,7 @@ const store = configureStore({
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
-    recipes: recipesSlice.reducer,
+    recipes: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {

@@ -49,7 +49,7 @@ export const initialState: RecipesState = Object.freeze({
   isLoadingFromRemote: false,
 });
 
-export const recipesSlice = createSlice({
+export const modDefinitionsSlice = createSlice({
   name: "recipes",
   initialState,
   reducers: {
@@ -108,11 +108,11 @@ const loadRecipesFromCache = createAsyncThunk<
   }
 
   try {
-    dispatch(recipesSlice.actions.startFetchingFromCache());
+    dispatch(modDefinitionsSlice.actions.startFetchingFromCache());
     const recipes = await recipeRegistry.all();
-    dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
+    dispatch(modDefinitionsSlice.actions.setRecipesFromCache(recipes));
   } catch {
-    dispatch(recipesSlice.actions.setCacheError());
+    dispatch(modDefinitionsSlice.actions.setCacheError());
   }
 });
 
@@ -126,19 +126,19 @@ export const syncRemoteRecipes = createAsyncThunk<
   }
 
   try {
-    dispatch(recipesSlice.actions.startFetchingFromRemote());
+    dispatch(modDefinitionsSlice.actions.startFetchingFromRemote());
     await syncRemotePackages();
     const recipes = await recipeRegistry.all();
-    dispatch(recipesSlice.actions.setRecipes(recipes));
+    dispatch(modDefinitionsSlice.actions.setRecipes(recipes));
   } catch (error) {
     // Serialize because stored in Redux
     const serializedError = serializeError(error, { useToJSON: false });
-    dispatch(recipesSlice.actions.setError(serializedError));
+    dispatch(modDefinitionsSlice.actions.setError(serializedError));
   }
 });
 
 export const recipesActions = {
-  ...recipesSlice.actions,
+  ...modDefinitionsSlice.actions,
   loadRecipesFromCache,
   syncRemoteRecipes,
 };

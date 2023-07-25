@@ -49,7 +49,7 @@ import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
-import { recipesSlice } from "@/modDefinitions/recipesSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import {
@@ -104,7 +104,7 @@ const store = configureStore({
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     modModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
-    recipes: recipesSlice.reducer,
+    recipes: modDefinitionsSlice.reducer,
     session: sessionSlice.reducer,
     sessionChanges: persistReducer(
       persistSessionChangesConfig,

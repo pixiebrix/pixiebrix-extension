@@ -17,7 +17,7 @@
 
 import { appApi } from "@/services/api";
 import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
-import { syncRemoteRecipes } from "./recipesSlice";
+import { syncRemoteRecipes } from "./modDefinitionsSlice";
 
 const apiEndpoints = appApi.endpoints;
 
