@@ -20,7 +20,7 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type ResolvedModComponentDefinition } from "@/types/modDefinitionTypes";
-import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/permissions/modDefinitionPermissionsHelpers";
 
 // Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with modDefinitionPermissionsHelpers.ts
 

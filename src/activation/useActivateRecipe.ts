@@ -26,7 +26,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
-import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/permissions/modDefinitionPermissionsHelpers";
 import { isEmpty } from "lodash";
 import { useCreateDatabaseMutation } from "@/services/api";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";

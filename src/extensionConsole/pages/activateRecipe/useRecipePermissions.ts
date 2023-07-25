@@ -19,7 +19,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { services as serviceLocator } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type IntegrationConfigPair } from "@/types/integrationTypes";
-import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/permissions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type AsyncState } from "@/types/sliceTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";

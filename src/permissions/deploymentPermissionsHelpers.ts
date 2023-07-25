@@ -23,7 +23,7 @@ import {
   findLocalDeploymentServiceConfigurations,
   type Locate,
 } from "@/utils/deploymentUtils";
-import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/permissions/modDefinitionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 /**
