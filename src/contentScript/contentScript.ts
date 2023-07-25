@@ -30,6 +30,9 @@ import {
 import { logPromiseDuration } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
+
 // Track module load so we hear something from content script in the console if Chrome attempted to import the module.
 console.debug("contentScript: module load");
 
@@ -76,7 +79,7 @@ async function initContentScript() {
   }
 }
 
-if (location.protocol === "https:") {
+if (location.protocol === "https:" || DEBUG) {
   // eslint-disable-next-line promise/prefer-await-to-then -- Top-level await isn't available
   void initContentScript().catch((error) => {
     throw new Error("Error initializing contentScript", { cause: error });

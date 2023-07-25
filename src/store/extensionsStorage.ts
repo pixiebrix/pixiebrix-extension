@@ -30,6 +30,8 @@ import {
 } from "@/store/extensionsMigrations";
 import { type ModComponentOptionsState } from "./extensionsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
+import { type RegistryId } from "@/types/registryTypes";
+import { compact } from "lodash";
 
 const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
 
@@ -52,6 +54,21 @@ export async function loadOptions(): Promise<ModComponentOptionsState> {
     migrateExtensionsShape({
       extensions: JSON.parse(base.extensions ?? "[]"),
     })
+  );
+}
+
+/**
+ * Returns the set of currently activated mod ids. Reads current activated mods from storage.
+ */
+export async function getActivatedModIds(): Promise<Set<RegistryId>> {
+  const options = await loadOptions();
+
+  if (!options) {
+    return new Set();
+  }
+
+  return new Set(
+    compact(options.extensions.map((extension) => extension._recipe?.id))
   );
 }
 

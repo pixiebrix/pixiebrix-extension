@@ -14,13 +14,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { compact, isEmpty, startsWith } from "lodash";
-import { loadOptions } from "@/store/extensionsStorage";
+import { isEmpty, startsWith } from "lodash";
+import { getActivatedModIds } from "@/store/extensionsStorage";
 import { type RegistryId } from "@/types/registryTypes";
-import { validateRegistryId } from "@/types/helpers";
+import { isRegistryId } from "@/types/helpers";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { pollUntilTruthy } from "@/utils";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { DEFAULT_SERVICE_URL } from "@/services/baseService";
+
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 let enhancementsLoaded = false;
 
@@ -28,25 +32,27 @@ function isMarketplacePage(): boolean {
   return startsWith(window.location.href, MARKETPLACE_URL);
 }
 
+/**
+ * Read all id search params from the URL. Handles both `id` and `id[]`.
+ */
+export function extractIdsFromUrl(searchParams: URLSearchParams): RegistryId[] {
+  const rawIds = [...searchParams.getAll("id"), ...searchParams.getAll("id[]")];
+  return rawIds.filter((x) => isRegistryId(x)) as RegistryId[];
+}
+
+/**
+ * Returns a node list of mod activation links currently on the page.
+ *
+ * Includes marketplace activation links and shared links (e.g., on landing pages and emails).
+ */
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
+  // Include DEFAULT_SERVICE_URL for use during local/staging testing
   return document.querySelectorAll<HTMLAnchorElement>(
-    "a[href*='.pixiebrix.com/activate']"
+    `a[href*='.pixiebrix.com/activate'], a[href*='${DEFAULT_SERVICE_URL}/activate']`
   );
 }
 
-export async function getInstalledRecipeIds(): Promise<Set<RegistryId>> {
-  const options = await loadOptions();
-
-  if (!options) {
-    return new Set();
-  }
-
-  return new Set(
-    compact(options.extensions.map((extension) => extension._recipe?.id))
-  );
-}
-
-function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
+function changeActivateButtonToActiveLabel(button: HTMLAnchorElement): void {
   // Check if the button is already changed to an active label or if it isn't a special activate button that
   // should be swapped to an active label
   const isActivateButton = Object.hasOwn(button.dataset, "activateButton");
@@ -79,23 +85,25 @@ export async function loadActivationEnhancements(): Promise<void> {
     return;
   }
 
-  const installedRecipeIds = await getInstalledRecipeIds();
+  // XXX: consider moving after the button event listener is added to avoid race with the user clicking on the link
+  const activatedModIds = await getActivatedModIds();
 
   for (const button of activateButtonLinks) {
     const url = new URL(button.href);
-    let recipeId: RegistryId;
-    try {
-      recipeId = validateRegistryId(url.searchParams.get("id"));
-    } catch {
+
+    const modIds = extractIdsFromUrl(url.searchParams);
+
+    if (modIds.length === 0) {
       continue;
     }
 
-    // Check if recipe is already activated, and change button content to indicate active status
-    // Note: This should only run on the Marketplace page
-    if (isMarketplacePage() && installedRecipeIds.has(recipeId)) {
+    // On Marketplace pages, check if the single mod / all mods in the pack already activated, and change button content
+    // to indicate active status
+    if (isMarketplacePage() && modIds.every((x) => activatedModIds.has(x))) {
       changeActivateButtonToActiveLabel(button);
     }
 
+    // Replace the default click handler with direct mod activation
     button.addEventListener("click", async (event) => {
       event.preventDefault();
 
@@ -109,31 +117,31 @@ export async function loadActivationEnhancements(): Promise<void> {
 
       if (isContentScriptReady) {
         window.dispatchEvent(
-          new CustomEvent("ActivateRecipe", {
-            detail: { recipeId, activateUrl: button.href },
+          new CustomEvent("ActivateMods", {
+            detail: { modIds, activateUrl: button.href },
           })
         );
       } else {
-        // Something probably went wrong with the content script, so just navigate to the activate url
+        // Something probably went wrong with the content script, so navigate to the `/activate` url
         window.location.assign(button.href);
       }
     });
   }
 }
 
-export async function reloadActivationEnhancements() {
+export async function reloadActivationEnhancements(): Promise<void> {
   enhancementsLoaded = false;
   await loadActivationEnhancements();
 }
 
 /**
- * This should only be used for testing purposes
+ * Unset loaded state. For use in test cleanup.
  */
-export function unloadActivationEnhancements() {
+export function TEST_unloadActivationEnhancements(): void {
   enhancementsLoaded = false;
 }
 
-if (location.protocol === "https:") {
+if (location.protocol === "https:" || DEBUG) {
   void loadActivationEnhancements();
 } else {
   console.warn("Unsupported protocol", location.protocol);

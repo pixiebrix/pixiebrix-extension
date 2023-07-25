@@ -80,39 +80,57 @@ export interface StarterBrick extends Metadata {
   isAvailable: () => Promise<boolean>;
 
   /**
-   * True if the StarterBrick must be installed before the mods on the page should be considered ready.
+   * True if the StarterBrick must be installed and components run before a lifecycle run is considered complete.
+   *
+   * Always false for starter bricks that wait for certain elements to appear on the page.
+   *
+   * @see handleNavigate
    */
   isSyncInstall: boolean;
 
   /**
-   * Install the StarterBrick on the page if/when its target becomes available.
-   * Does not run/add ModComponents to the page.
+   * Install the StarterBrick on the page when its target becomes available. Does not run/add ModComponents to the page.
+   *
+   * Safe to call multiple times.
+   *
    * @see runModComponents
    */
   install(): Promise<boolean>;
 
   /**
    * Register a ModComponent with the StarterBrick. Does not add/run the ModComponent to the page.
+   *
    * @see runModComponents
+   * @see synchronizeModComponents
    */
   registerModComponent(component: ResolvedModComponent): void;
 
   /**
    * Run all registered ModComponents for this StarterBrick and/or add their UI to the page.
+   *
+   * Call registerModComponent or synchronizeModComponents before calling this method.
+   *
    * @see install
+   * @see registerModComponent
+   * @see synchronizeModComponents
    */
   runModComponents(args: RunArgs): Promise<void>;
 
   /**
    * Remove the ModComponent from the StarterBrick and clear its UI and events from the page.
+   *
+   * @see synchronizeModComponents
    */
   removeModComponent(modComponentId: UUID): void;
 
   /**
    * Remove the StarterBrick and all ModComponents from the page.
    *
-   * @param options.global true to indicate the starter brick is being uninstalled from all tabs. This enabled the
-   * starter brick to perform global UI cleanup, e.g., unregistering a context menu with the Browser.
+   * Uninstall can only be called once per StarterBrick instance. Some starter bricks, e.g., menuItem, may throw an
+   * error if they've already been uninstalled.
+   *
+   * @param options.global true to indicate the starter brick is being uninstalled from all tabs. This enables the
+   * starter brick to perform global UI/event cleanup, e.g., unregistering a context menu with the Browser.
    * @see removeModComponent
    */
   uninstall(options?: { global?: boolean }): void;
