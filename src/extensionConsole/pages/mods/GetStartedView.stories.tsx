@@ -27,7 +27,7 @@ import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import { recipesSlice } from "@/modDefinitions/recipesSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 

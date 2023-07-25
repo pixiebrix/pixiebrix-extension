@@ -23,7 +23,7 @@ import {
   selectActiveRecipeId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/slices/editorSelectors";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
 
 const SaveAsNewRecipeModal: React.FC = () => {
   const { isSaveAsNewRecipeModalVisible: show } = useSelector(

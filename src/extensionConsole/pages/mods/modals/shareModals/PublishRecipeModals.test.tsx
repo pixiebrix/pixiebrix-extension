@@ -35,7 +35,7 @@ import { authStateFactory } from "@/testUtils/factories/authFactories";
 let blueprint: ModDefinition;
 let auth: AuthState;
 
-jest.mock("@/recipes/recipesHooks", () => ({
+jest.mock("@/modDefinitions/recipesHooks", () => ({
   useOptionalRecipe: jest.fn().mockImplementation(() => ({
     data: blueprint,
     isFetching: false,

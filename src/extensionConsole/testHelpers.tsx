@@ -25,9 +25,9 @@ import {
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import { recipesSlice } from "@/modDefinitions/recipesSlice";
 import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 import servicesSlice from "@/store/servicesSlice";
 import workshopSlice from "@/store/workshopSlice";
 

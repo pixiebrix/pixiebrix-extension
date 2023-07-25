@@ -29,7 +29,7 @@ import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "./starterBricks/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
-import { type RecipesRootState } from "@/recipes/recipesTypes";
+import { type RecipesRootState } from "@/modDefinitions/recipesTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";

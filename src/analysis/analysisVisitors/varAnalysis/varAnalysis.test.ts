@@ -31,7 +31,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import recipeRegistry from "@/recipes/registry";
+import recipeRegistry from "@/modDefinitions/registry";
 import blockRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
@@ -76,7 +76,7 @@ jest.mock("@/bricks/registry", () => ({
   },
 }));
 
-jest.mock("@/recipes/registry", () => ({
+jest.mock("@/modDefinitions/registry", () => ({
   __esModule: true,
   default: {
     lookup: jest.fn(),

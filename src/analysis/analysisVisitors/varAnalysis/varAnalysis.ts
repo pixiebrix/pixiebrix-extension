@@ -35,7 +35,7 @@ import {
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
-import recipesRegistry from "@/recipes/registry";
+import recipesRegistry from "@/modDefinitions/registry";
 import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { joinPathParts } from "@/utils";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";

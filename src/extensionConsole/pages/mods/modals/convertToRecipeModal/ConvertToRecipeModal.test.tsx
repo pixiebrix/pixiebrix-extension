@@ -32,7 +32,7 @@ import { type RootState } from "@/store/optionsStore";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
-jest.mock("@/recipes/recipesHooks", () => ({
+jest.mock("@/modDefinitions/recipesHooks", () => ({
   useAllRecipes: jest.fn().mockReturnValue({ refetch: jest.fn() }),
 }));
 

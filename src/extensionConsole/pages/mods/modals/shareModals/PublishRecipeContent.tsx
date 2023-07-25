@@ -29,7 +29,7 @@ import notify from "@/utils/notify";
 import { produce } from "immer";
 import ActivationLink from "@/activation/ActivationLink";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
 import PublishContentLayout from "./PublishContentLayout";
 import { MARKETPLACE_URL } from "@/utils/strings";
 

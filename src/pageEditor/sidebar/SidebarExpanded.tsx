@@ -57,7 +57,7 @@ import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllRecipes } from "@/modDefinitions/recipesHooks";
 import { useDebounce } from "use-debounce";
 
 const SidebarExpanded: React.FunctionComponent<{

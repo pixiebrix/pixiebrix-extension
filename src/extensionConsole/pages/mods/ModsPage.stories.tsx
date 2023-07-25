@@ -25,7 +25,7 @@ import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import { recipesSlice } from "@/modDefinitions/recipesSlice";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export default {

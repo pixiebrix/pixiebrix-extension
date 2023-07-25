@@ -19,7 +19,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import {
   useOptionalRecipe,
   useRequiredModDefinitions,
-} from "@/recipes/recipesHooks";
+} from "@/modDefinitions/recipesHooks";
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { registry } from "@/background/messenger/api";

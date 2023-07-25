@@ -44,7 +44,7 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllRecipes } from "@/modDefinitions/recipesHooks";
 import {
   type ModComponentBase,
   type ActivatedModComponent,

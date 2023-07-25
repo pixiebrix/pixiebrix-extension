@@ -22,14 +22,17 @@ import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOpt
 import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
-import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
+import {
+  useAllRecipes,
+  useOptionalRecipe,
+} from "@/modDefinitions/recipesHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("@/recipes/recipesHooks", () => ({
+jest.mock("@/modDefinitions/recipesHooks", () => ({
   useOptionalRecipe: jest.fn(),
   useAllRecipes: jest.fn(),
 }));

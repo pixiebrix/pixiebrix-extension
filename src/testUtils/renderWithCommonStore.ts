@@ -21,7 +21,7 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
 import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,

@@ -26,7 +26,7 @@ import {
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
 import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({

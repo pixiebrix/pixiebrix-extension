@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useRequiredModDefinitions } from "@/recipes/recipesHooks";
+import { useRequiredModDefinitions } from "@/modDefinitions/recipesHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";

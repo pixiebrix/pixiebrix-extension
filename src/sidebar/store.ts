@@ -28,7 +28,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import { recipesSlice } from "@/modDefinitions/recipesSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 

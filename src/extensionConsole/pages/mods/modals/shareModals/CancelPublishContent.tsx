@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
 import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";

@@ -31,7 +31,7 @@ import {
 import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
 import { RequireScope } from "@/auth/RequireScope";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);

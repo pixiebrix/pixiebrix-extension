@@ -19,7 +19,7 @@ import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
 import { type RegistryId } from "@/types/registryTypes";
 import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -27,7 +27,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
 import AsyncButton from "@/components/AsyncButton";
-import { ensureRecipePermissionsFromUserGesture } from "@/recipes/recipePermissionsHelpers";
+import { ensureRecipePermissionsFromUserGesture } from "@/modDefinitions/recipePermissionsHelpers";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;

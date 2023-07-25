@@ -33,8 +33,8 @@ import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { appApi } from "@/services/api";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { recipesSlice } from "@/modDefinitions/recipesSlice";
+import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({

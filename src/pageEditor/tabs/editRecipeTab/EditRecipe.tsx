@@ -37,7 +37,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import Alert from "@/components/Alert";
 import { createSelector } from "reselect";
 import { lt } from "semver";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`

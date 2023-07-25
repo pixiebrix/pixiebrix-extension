@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useRequiredModDefinitions } from "@/recipes/recipesHooks";
+import { useRequiredModDefinitions } from "@/modDefinitions/recipesHooks";
 import { render, screen } from "@/sidebar/testHelpers";
 import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -28,7 +28,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkRecipePermissions } from "@/modDefinitions/recipePermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
   getRecipeWithBuiltInServiceAuths,
@@ -45,7 +45,7 @@ import userEvent from "@testing-library/user-event";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
 
-jest.mock("@/recipes/recipesHooks", () => ({
+jest.mock("@/modDefinitions/recipesHooks", () => ({
   useRequiredModDefinitions: jest.fn(),
 }));
 

@@ -22,7 +22,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { useGetAllCloudExtensionsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllRecipes } from "@/modDefinitions/recipesHooks";
 import { uniqBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type ModComponentBase } from "@/types/modComponentTypes";

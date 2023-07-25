@@ -23,7 +23,7 @@ import PublishRecipeContent from "./PublishRecipeContent";
 import { Modal } from "react-bootstrap";
 import { appApi } from "@/services/api";
 import Loader from "@/components/Loader";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
 import { isRecipePendingPublish } from "@/utils/modUtils";

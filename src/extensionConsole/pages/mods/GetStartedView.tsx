@@ -25,7 +25,7 @@ import { isMac } from "@/utils";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RegistryId } from "@/types/registryTypes";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
 import ModIcon from "@/mods/ModIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";
 

@@ -36,7 +36,7 @@ import {
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllRecipes } from "@/modDefinitions/recipesHooks";
 
 function useModViewItems(mods: Mod[]): {
   modViewItems: readonly ModViewItem[];

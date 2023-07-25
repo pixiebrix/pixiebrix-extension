@@ -23,7 +23,7 @@ import {
   findLocalDeploymentServiceConfigurations,
   type Locate,
 } from "@/utils/deploymentUtils";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkRecipePermissions } from "@/modDefinitions/recipePermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 /**

@@ -20,7 +20,7 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type ResolvedModComponentDefinition } from "@/types/modDefinitionTypes";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkRecipePermissions } from "@/modDefinitions/recipePermissionsHelpers";
 
 // Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with recipePermissionsHelpers.ts
 

@@ -47,7 +47,7 @@ import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { type StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllRecipes } from "@/modDefinitions/recipesHooks";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { selectSourceRecipeMetadata } from "@/types/modComponentTypes";

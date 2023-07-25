@@ -67,7 +67,10 @@ import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
+import {
+  useAllRecipes,
+  useOptionalRecipe,
+} from "@/modDefinitions/recipesHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import {

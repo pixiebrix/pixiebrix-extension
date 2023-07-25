@@ -49,8 +49,8 @@ import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { recipesSlice } from "@/modDefinitions/recipesSlice";
+import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import {
   persistSessionChangesConfig,
