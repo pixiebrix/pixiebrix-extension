@@ -138,11 +138,13 @@ describe("marketplace enhancements", () => {
       _recipe: modComponentRecipeFactory,
     });
 
+    const modIds = components.map((x) => x._recipe?.id);
+
     document.body.innerHTML = `
     <div>
         <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-          components[0]._recipe.id
-        )}&id=${encodeURIComponent(components[1]._recipe.id)}">Click Me!</a>
+          modIds[0]
+        )}&id=${modIds[1]}">Click Me!</a>
     </div>`;
 
     getActivatedModIdsMock.mockResolvedValue(new Set());
@@ -154,14 +156,16 @@ describe("marketplace enhancements", () => {
     expect(showSidebarMock).not.toHaveBeenCalledOnce();
 
     // Click an activate button
-    const activateButtons = document.querySelectorAll("a");
-    activateButtons[0].click();
+    const activateButton = document.querySelector("a");
+    activateButton.click();
     await waitForEffect();
 
     expect(window.location.href).toBe("https://www.pixiebrix.com/");
     // The show-sidebar function should be called
-    // FIXME: this passes when run individually. There's some test interference going on.
-    expect(showSidebarMock).toHaveBeenCalledOnce();
+    expect(showSidebarMock).toHaveBeenCalledExactlyOnceWith({
+      heading: "Activating",
+      modIds,
+    });
   });
 
   test("given user is not logged in, when activation button clicked, open admin console", async () => {
