@@ -19,6 +19,8 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { type Except } from "type-fest";
 
+// TODO: move me to types/modDefinitionsTypes.ts?
+
 export type ModDefinitionsState = Except<
   UseCachedQueryResult<ModDefinition[]>,
   "refetch"
