@@ -52,7 +52,7 @@ function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   );
 }
 
-function changeActivateButtonToActiveLabel(button: HTMLAnchorElement) {
+function changeActivateButtonToActiveLabel(button: HTMLAnchorElement): void {
   // Check if the button is already changed to an active label or if it isn't a special activate button that
   // should be swapped to an active label
   const isActivateButton = Object.hasOwn(button.dataset, "activateButton");
@@ -97,8 +97,8 @@ export async function loadActivationEnhancements(): Promise<void> {
       continue;
     }
 
-    // Check if all mods are already activated, and change button content to indicate active status
-    // Note: This should only run on Marketplace pages
+    // On Marketplace pages, check if the single mod / all mods in the pack already activated, and change button content
+    // to indicate active status
     if (isMarketplacePage() && modIds.every((x) => activatedModIds.has(x))) {
       changeActivateButtonToActiveLabel(button);
     }
@@ -129,7 +129,7 @@ export async function loadActivationEnhancements(): Promise<void> {
   }
 }
 
-export async function reloadActivationEnhancements() {
+export async function reloadActivationEnhancements(): Promise<void> {
   enhancementsLoaded = false;
   await loadActivationEnhancements();
 }
@@ -137,7 +137,7 @@ export async function reloadActivationEnhancements() {
 /**
  * Unset loaded state. For use in test cleanup.
  */
-export function TEST_unloadActivationEnhancements() {
+export function TEST_unloadActivationEnhancements(): void {
   enhancementsLoaded = false;
 }
 
