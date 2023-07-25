@@ -103,14 +103,14 @@ function addActivateModsListener(): void {
       return;
     }
 
-    const installedRecipeIds = await getActivatedModIds();
+    const activatedModIds = await getActivatedModIds();
 
     reportEvent(Events.START_MOD_ACTIVATE, {
       // For legacy, report the first mod id
       blueprintId: modIds[0],
       modIds,
       screen: "marketplace",
-      reinstall: modIds.some((x) => installedRecipeIds.has(x)),
+      reinstall: modIds.some((x) => activatedModIds.has(x)),
     });
 
     await showSidebarActivationForMods(modIds);
