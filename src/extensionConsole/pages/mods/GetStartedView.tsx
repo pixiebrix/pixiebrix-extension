@@ -25,7 +25,7 @@ import { isMac } from "@/utils";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RegistryId } from "@/types/registryTypes";
-import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionsHooks";
 import ModIcon from "@/mods/ModIcon";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
@@ -56,7 +56,7 @@ const GetStartedView: React.VoidFunctionComponent<{
     ?.metadata?.blueprintId as RegistryId;
 
   const { data: recipe, isFetching: isFetchingRecipe } =
-    useOptionalRecipe(onboardingModId);
+    useOptionalModDefinition(onboardingModId);
 
   const { data: listings } = useGetMarketplaceListingsQuery(
     { package__name: onboardingModId },

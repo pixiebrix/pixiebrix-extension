@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import { useAllRecipes } from "./recipesHooks";
+import { useAllModDefinitions } from "./modDefinitionsHooks";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import { act, render } from "@/pageEditor/testHelpers";
 import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";
@@ -83,14 +83,14 @@ test("load recipes and save one", async () => {
   const fetchingSavingPromise = pDefer<void>();
 
   const TestComponent: React.FunctionComponent = () => {
-    // Internally useSaveRecipe calls useAllRecipes.
-    // To make it more transparent and realistic we use useAllRecipes here
+    // Internally useSaveRecipe calls useAllModDefinitions.
+    // To make it more transparent and realistic we use useAllModDefinitions here
     // The hook will:
     // - load the recipes from server
     // - parse the raw recipes and save them to the registry (local storage)
     // - return all the recipes from the registry to the caller
     const { data: allRecipes, isFetching } = defaultInitialValue(
-      useAllRecipes(),
+      useAllModDefinitions(),
       []
     );
 

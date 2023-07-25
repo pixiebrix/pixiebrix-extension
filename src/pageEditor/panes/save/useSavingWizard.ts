@@ -44,7 +44,7 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { useAllRecipes } from "@/modDefinitions/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 import {
   type ModComponentBase,
   type ActivatedModComponent,
@@ -83,7 +83,7 @@ const useSavingWizard = () => {
   const elements = useSelector(selectElements);
   const element = useSelector(selectActiveElement);
 
-  const { data: recipes } = useAllRecipes();
+  const { data: recipes } = useAllModDefinitions();
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [createRecipe] = useCreateRecipeMutation();
   const [updateRecipe] = useUpdateRecipeMutation();

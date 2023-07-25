@@ -20,7 +20,7 @@ import useFlags from "@/hooks/useFlags";
 import { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectActiveTab } from "@/extensionConsole/pages/mods/modsPageSelectors";
-import { useAllRecipes } from "@/modDefinitions/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 export type OnboardingType =
@@ -37,7 +37,8 @@ function useOnboarding(): {
   const { restrict } = useFlags();
   const activeTab = useSelector(selectActiveTab);
 
-  const { data: rawRecipes, isFetching: isRecipesLoading } = useAllRecipes();
+  const { data: rawRecipes, isFetching: isRecipesLoading } =
+    useAllModDefinitions();
   const { data: organizations, isLoading: isOrganizationsLoading } =
     useGetOrganizationsQuery();
   const { hasUpdate: hasDeployments, isLoading: isDeploymentsLoading } =

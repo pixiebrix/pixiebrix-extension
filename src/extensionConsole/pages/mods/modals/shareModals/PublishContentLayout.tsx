@@ -31,7 +31,7 @@ import {
 import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
-import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionsHooks";
 import { RequireScope } from "@/auth/RequireScope";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
@@ -49,7 +49,7 @@ const PublishContentLayout: React.FunctionComponent<
   const { blueprintId } = useSelector(selectShowPublishContext);
   const { scope: userScope, organizations: userOrganizations } =
     useSelector(selectAuth);
-  const { data: recipe } = useOptionalRecipe(blueprintId);
+  const { data: recipe } = useOptionalModDefinition(blueprintId);
 
   // Sorting returns new array, so it safe to mutate it
   const sortedOrganizations = sortOrganizations(userOrganizations);

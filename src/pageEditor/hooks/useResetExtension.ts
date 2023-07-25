@@ -27,7 +27,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
-import { useAllRecipes } from "@/modDefinitions/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 
 type Config = {
   extensionId: UUID;
@@ -37,7 +37,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectExtensions);
-  const { data: recipes } = useAllRecipes();
+  const { data: recipes } = useAllModDefinitions();
   const { showConfirmation } = useModals();
 
   return useCallback(

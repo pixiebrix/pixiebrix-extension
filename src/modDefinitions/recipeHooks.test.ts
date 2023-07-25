@@ -17,16 +17,16 @@
 
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
-  useOptionalRecipe,
+  useOptionalModDefinition,
   useRequiredModDefinitions,
-} from "@/modDefinitions/recipesHooks";
+} from "@/modDefinitions/modDefinitionsHooks";
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { registry } from "@/background/messenger/api";
 
 registry.syncRemote = jest.fn();
 
-describe("useRequiredRecipe", () => {
+describe("useRequiredModDefinitions", () => {
   it("only errors if recipe not found after remote fetch", async () => {
     const deferred = pDefer();
     (registry.syncRemote as jest.Mock).mockImplementation(
@@ -69,7 +69,7 @@ describe("useRecipe", () => {
     );
 
     const wrapper = renderHook(() =>
-      useOptionalRecipe(validateRegistryId("nonexistent-recipe"))
+      useOptionalModDefinition(validateRegistryId("nonexistent-recipe"))
     );
 
     await wrapper.waitForEffect();

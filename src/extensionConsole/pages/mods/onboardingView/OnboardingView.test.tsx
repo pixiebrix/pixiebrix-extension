@@ -19,7 +19,7 @@ import React from "react";
 import useFlags from "@/hooks/useFlags";
 import { type Organization } from "@/types/contract";
 import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
-import { useAllRecipes } from "@/modDefinitions/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 import DeploymentsContext, {
   type DeploymentsState,
 } from "@/extensionConsole/pages/deployments/DeploymentsContext";
@@ -29,8 +29,8 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/modDefinitions/recipesHooks", () => ({
-  useAllRecipes: jest.fn(),
+jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+  useAllModDefinitions: jest.fn(),
 }));
 
 const mockOnboarding = ({
@@ -48,7 +48,7 @@ const mockOnboarding = ({
 
   mockAllApiEndpoints();
 
-  (useAllRecipes as jest.Mock).mockImplementation(() => ({
+  (useAllModDefinitions as jest.Mock).mockImplementation(() => ({
     data: hasTeamBlueprints
       ? [
           {

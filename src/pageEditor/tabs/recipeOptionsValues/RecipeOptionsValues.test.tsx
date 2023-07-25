@@ -23,18 +23,18 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import {
-  useAllRecipes,
-  useOptionalRecipe,
-} from "@/modDefinitions/recipesHooks";
+  useAllModDefinitions,
+  useOptionalModDefinition,
+} from "@/modDefinitions/modDefinitionsHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("@/modDefinitions/recipesHooks", () => ({
-  useOptionalRecipe: jest.fn(),
-  useAllRecipes: jest.fn(),
+jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+  useOptionalModDefinition: jest.fn(),
+  useAllModDefinitions: jest.fn(),
 }));
 
 jest.mock("@/contrib/google/initGoogle", () => ({
@@ -45,10 +45,10 @@ jest.mock("@/contrib/google/initGoogle", () => ({
 }));
 
 function mockRecipe(recipe: ModDefinition) {
-  (useAllRecipes as jest.Mock).mockReturnValue(
+  (useAllModDefinitions as jest.Mock).mockReturnValue(
     valueToAsyncCacheState([recipe])
   );
-  (useOptionalRecipe as jest.Mock).mockReturnValue(
+  (useOptionalModDefinition as jest.Mock).mockReturnValue(
     valueToAsyncCacheState(recipe)
   );
 }

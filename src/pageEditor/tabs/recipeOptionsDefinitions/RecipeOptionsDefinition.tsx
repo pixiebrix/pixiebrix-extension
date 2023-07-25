@@ -47,7 +47,7 @@ import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionsHooks";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -87,7 +87,11 @@ export const EMPTY_RECIPE_OPTIONS_DEFINITION: ModOptionsDefinition = {
 const RecipeOptionsDefinition: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipe, isFetching, error } = useOptionalRecipe(recipeId);
+  const {
+    data: recipe,
+    isFetching,
+    error,
+  } = useOptionalModDefinition(recipeId);
 
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(

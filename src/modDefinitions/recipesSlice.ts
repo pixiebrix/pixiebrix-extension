@@ -66,7 +66,7 @@ export const recipesSlice = createSlice({
       state.isLoadingFromCache = false;
     },
     setCacheError(state) {
-      // Don't flash on error on cache failure. The useAllRecipes hook will immediately trigger a remote fetch
+      // Don't flash on error on cache failure. The useAllModDefinitions hook will immediately trigger a remote fetch
       state.isLoadingFromCache = false;
     },
     startFetchingFromRemote(state) {

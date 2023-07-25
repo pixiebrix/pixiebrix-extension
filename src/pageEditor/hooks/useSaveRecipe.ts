@@ -40,7 +40,7 @@ import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { type RegistryId } from "@/types/registryTypes";
-import { useAllRecipes } from "@/modDefinitions/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
@@ -54,7 +54,7 @@ type RecipeSaver = {
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useUpsertFormElement();
-  const { data: recipes, isLoading: isRecipesLoading } = useAllRecipes();
+  const { data: recipes, isLoading: isRecipesLoading } = useAllModDefinitions();
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();

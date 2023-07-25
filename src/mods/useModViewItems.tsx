@@ -36,7 +36,7 @@ import {
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
-import { useAllRecipes } from "@/modDefinitions/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 
 function useModViewItems(mods: Mod[]): {
   modViewItems: readonly ModViewItem[];
@@ -48,7 +48,7 @@ function useModViewItems(mods: Mod[]): {
 
   // Don't merge async states. Allow hook to render without listings
   const listingsQuery = useGetMarketplaceListingsQuery();
-  const { data: recipes, isLoading: isRecipesLoading } = useAllRecipes();
+  const { data: recipes, isLoading: isRecipesLoading } = useAllModDefinitions();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({

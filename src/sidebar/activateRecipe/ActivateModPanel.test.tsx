@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useRequiredModDefinitions } from "@/modDefinitions/recipesHooks";
+import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 import { render, screen } from "@/sidebar/testHelpers";
 import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -45,7 +45,7 @@ import userEvent from "@testing-library/user-event";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
 
-jest.mock("@/modDefinitions/recipesHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
   useRequiredModDefinitions: jest.fn(),
 }));
 

@@ -47,7 +47,7 @@ import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { type StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useAllRecipes } from "@/modDefinitions/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { selectSourceRecipeMetadata } from "@/types/modComponentTypes";
@@ -144,7 +144,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
     dispatch(modModalsSlice.actions.closeModal());
   };
 
-  const { refetch: refetchRecipes } = useAllRecipes();
+  const { refetch: refetchRecipes } = useAllModDefinitions();
 
   const convertToRecipe = async (
     formValues: ConvertModFormState,

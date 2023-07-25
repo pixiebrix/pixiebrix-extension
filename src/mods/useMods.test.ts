@@ -19,7 +19,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import useMods from "@/mods/useMods";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateTimestamp } from "@/types/helpers";
-import { useAllRecipes } from "@/modDefinitions/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
@@ -33,19 +33,19 @@ import {
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
-jest.mock("@/modDefinitions/recipesHooks", () => ({
-  useAllRecipes: jest.fn(),
+jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+  useAllModDefinitions: jest.fn(),
 }));
 
-const useAllRecipesMock = jest.mocked(useAllRecipes);
+const useAllModDefinitionsMock = jest.mocked(useAllModDefinitions);
 
 describe("useMods", () => {
   beforeEach(() => {
     appApiMock.reset();
     appApiMock.onGet("/api/extensions/").reply(200, []);
 
-    useAllRecipesMock.mockReset();
-    useAllRecipesMock.mockReturnValue({
+    useAllModDefinitionsMock.mockReset();
+    useAllModDefinitionsMock.mockReturnValue({
       data: undefined,
     } as UseCachedQueryResult<ModDefinition[]>);
   });
@@ -128,7 +128,7 @@ describe("useMods", () => {
   it("handles known recipe", async () => {
     const metadata = recipeMetadataFactory();
 
-    useAllRecipesMock.mockReturnValue({
+    useAllModDefinitionsMock.mockReturnValue({
       data: [recipeFactory({ metadata })],
       error: undefined,
     } as UseCachedQueryResult<ModDefinition[]>);

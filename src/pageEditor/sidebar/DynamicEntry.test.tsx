@@ -23,8 +23,10 @@ import { authActions } from "@/auth/authSlice";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
-jest.mock("@/modDefinitions/recipesHooks", () => ({
-  useAllRecipes: jest.fn().mockReturnValue({ data: [], isLoading: false }),
+jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+  useAllModDefinitions: jest
+    .fn()
+    .mockReturnValue({ data: [], isLoading: false }),
 }));
 
 beforeAll(() => {

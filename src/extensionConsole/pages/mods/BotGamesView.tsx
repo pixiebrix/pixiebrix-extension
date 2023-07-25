@@ -19,7 +19,7 @@ import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
-import { useOptionalRecipe } from "@/modDefinitions/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionsHooks";
 import { type RegistryId } from "@/types/registryTypes";
 import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -37,7 +37,9 @@ const BOT_GAMES_CHALLENGE_URL =
 
 export const useInstallBotGamesBlueprint = () => {
   const dispatch = useDispatch();
-  const { data: botGamesRecipe } = useOptionalRecipe(BOT_GAMES_BLUEPRINT_ID);
+  const { data: botGamesRecipe } = useOptionalModDefinition(
+    BOT_GAMES_BLUEPRINT_ID
+  );
   const installedExtensions = useSelector(selectExtensions);
 
   const isBotGamesBlueprintInstalled = installedExtensions.some(
