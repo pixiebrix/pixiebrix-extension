@@ -27,14 +27,16 @@ import { registry } from "@/background/messenger/api";
 registry.syncRemote = jest.fn();
 
 describe("useRequiredModDefinitions", () => {
-  it("only errors if recipe not found after remote fetch", async () => {
+  it("only errors if mod definition not found after remote fetch", async () => {
     const deferred = pDefer();
     (registry.syncRemote as jest.Mock).mockImplementation(
       async () => deferred.promise
     );
 
     const wrapper = renderHook(() =>
-      useRequiredModDefinitions([validateRegistryId("nonexistent-recipe")])
+      useRequiredModDefinitions([
+        validateRegistryId("nonexistent-mod-definition"),
+      ])
     );
 
     await wrapper.waitForEffect();
@@ -61,7 +63,7 @@ describe("useRequiredModDefinitions", () => {
   });
 });
 
-describe("useRecipe", () => {
+describe("useOptionalModDefinition", () => {
   it("returns null if not found", async () => {
     const deferred = pDefer();
     (registry.syncRemote as jest.Mock).mockImplementation(
@@ -69,7 +71,7 @@ describe("useRecipe", () => {
     );
 
     const wrapper = renderHook(() =>
-      useOptionalModDefinition(validateRegistryId("nonexistent-recipe"))
+      useOptionalModDefinition(validateRegistryId("nonexistent-mod-definition"))
     );
 
     await wrapper.waitForEffect();
