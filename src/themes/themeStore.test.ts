@@ -40,6 +40,6 @@ describe("getActiveTheme", () => {
 
     await saveSettingsState(initialSettingsState);
 
-    expect(await getActiveTheme()).toEqual("automation-anywhere");
+    await expect(getActiveTheme()).resolves.toEqual("automation-anywhere");
   });
 });

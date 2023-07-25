@@ -18,7 +18,7 @@
 import { getSettingsState } from "@/store/settingsStorage";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { expectContext } from "@/utils/expectContext";
-import { type Theme } from "@/themes/themeTypes";
+import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
 import { isValidTheme } from "@/themes/themeUtils";
 
 /**
@@ -30,10 +30,10 @@ export async function getActiveTheme(): Promise<Theme> {
 
   // The theme property is via an effect in useGetTheme
   const { theme } = await getSettingsState();
-  // Enterprise managed storage always takes precedence over the user's theme
   const { partnerId: managedPartnerId } = await readManagedStorage();
 
+  // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
   const active = managedPartnerId ?? theme;
 
-  return isValidTheme(active) ? active : "default";
+  return isValidTheme(active) ? active : DEFAULT_THEME;
 }
