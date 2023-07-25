@@ -24,10 +24,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { useGetTheme } from "@/hooks/useTheme";
+import { selectTelemetryOrganizationId } from "@/auth/authSelectors";
 
 const GeneralSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { isFloatingActionButtonEnabled } = useSelector(selectSettings);
+
+  const theme = useGetTheme();
+
+  const telemetryOrganizationId = useSelector(selectTelemetryOrganizationId);
+
+  // Disable FAB for enterprise and partner users
+  const disableFloatingActionButton =
+    Boolean(telemetryOrganizationId) || theme !== "default";
+
+  const checked = isFloatingActionButtonEnabled && !disableFloatingActionButton;
+
   return (
     <Card>
       <Card.Header>General Settings</Card.Header>
@@ -37,28 +50,48 @@ const GeneralSettings: React.FunctionComponent = () => {
             <div>
               <Form.Label>
                 Floating action button:{" "}
-                <i>{isFloatingActionButtonEnabled ? "Enabled" : "Disabled"}</i>
+                <i>{checked ? "Enabled" : "Disabled"}</i>
               </Form.Label>
-              <Form.Text muted className="mb-2">
-                Toggle on to enable floating button that opens the Quick Bar
-              </Form.Text>
+              {disableFloatingActionButton ? (
+                <Form.Text muted className="mb-2">
+                  The floating action button is not available for enterprise and
+                  partner users
+                </Form.Text>
+              ) : (
+                <Form.Text muted className="mb-2">
+                  Toggle on to enable floating button that opens the Quick Bar
+                </Form.Text>
+              )}
             </div>
-            <BootstrapSwitchButton
-              size="sm"
-              onstyle="info"
-              offstyle="light"
-              onlabel=" "
-              offlabel=" "
-              checked={isFloatingActionButtonEnabled}
-              onChange={(enable) => {
-                reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING, {
-                  enabled: enable,
-                });
-                dispatch(
-                  settingsSlice.actions.setFloatingActionButtonEnabled(enable)
-                );
-              }}
-            />
+
+            {
+              // Hide because the disabled flag is not working. Even when disabled is true, the user can
+              // still toggle the switch :shrug:
+              !disableFloatingActionButton && (
+                <BootstrapSwitchButton
+                  size="sm"
+                  onstyle="info"
+                  offstyle="light"
+                  onlabel=" "
+                  offlabel=" "
+                  disabled={disableFloatingActionButton}
+                  checked={checked}
+                  onChange={(enable) => {
+                    reportEvent(
+                      Events.FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING,
+                      {
+                        enabled: enable,
+                      }
+                    );
+                    dispatch(
+                      settingsSlice.actions.setFloatingActionButtonEnabled(
+                        enable
+                      )
+                    );
+                  }}
+                />
+              )
+            }
           </Form.Group>
         </Form>
       </Card.Body>

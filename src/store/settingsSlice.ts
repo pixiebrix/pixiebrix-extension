@@ -35,7 +35,11 @@ export const initialSettingsState: SettingsState = {
   suggestElements: false,
   browserWarningDismissed: false,
   varAutosuggest: false,
-  isFloatingActionButtonEnabled: false,
+  /**
+   * True to enable the floating action button, if the user is not an enterprise/partner user.
+   * @since 1.7.35 default to true
+   */
+  isFloatingActionButtonEnabled: true,
   partnerId: null,
   authMethod: null,
   authServiceId: null,

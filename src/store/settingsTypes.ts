@@ -76,6 +76,7 @@ export type SettingsState = SkunkworksSettings & {
    * Whether the non-Chrome browser warning has been dismissed.
    */
   browserWarningDismissed: boolean;
+
   /**
    * Button to enable the floating action button on the page
    */

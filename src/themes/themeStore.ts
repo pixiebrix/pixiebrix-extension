@@ -15,31 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getThemeLogo } from "@/themes/themeUtils";
-import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { browserAction } from "@/mv3/api";
+import { getSettingsState } from "@/store/settingsStorage";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { expectContext } from "@/utils/expectContext";
-import { getActiveTheme } from "@/themes/themeStore";
+import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
+import { isValidTheme } from "@/themes/themeUtils";
 
 /**
- * Set the toolbar icon based on the current theme.
+ * Returns the active theme. In React, prefer useGetTheme.
  * @see useGetTheme
  */
-async function setToolbarIcon(): Promise<void> {
-  const activeTheme = await getActiveTheme();
+export async function getActiveTheme(): Promise<Theme> {
+  expectContext("extension");
 
-  if (activeTheme === DEFAULT_THEME) {
-    activateBrowserActionIcon();
-    return;
-  }
+  // The theme property is initialized/set via an effect in useGetTheme
+  const { theme } = await getSettingsState();
+  const { partnerId: managedPartnerId } = await readManagedStorage();
 
-  const themeLogo = getThemeLogo(activeTheme);
-  browserAction.setIcon({ path: themeLogo.small });
-}
+  // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
+  const active = managedPartnerId ?? theme;
 
-export default function initPartnerTheme() {
-  expectContext("background");
-
-  void setToolbarIcon();
+  return isValidTheme(active) ? active : DEFAULT_THEME;
 }
