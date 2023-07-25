@@ -21,7 +21,7 @@ import {
   recipesActions,
   modDefinitionsSlice,
 } from "./modDefinitionsSlice";
-import { type RecipesRootState } from "./recipesTypes";
+import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
 import recipesRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
@@ -91,7 +91,7 @@ describe("refreshRecipes", () => {
     const thunkFunction = recipesActions.syncRemoteRecipes();
     await thunkFunction(
       dispatch,
-      () => ({ recipes: {} } as RecipesRootState),
+      () => ({ recipes: {} } as ModDefinitionsRootState),
       undefined
     );
 
@@ -114,7 +114,7 @@ describe("refreshRecipes", () => {
     const thunkFunction = recipesActions.syncRemoteRecipes();
     await thunkFunction(
       dispatch,
-      () => ({ recipes: {} } as RecipesRootState),
+      () => ({ recipes: {} } as ModDefinitionsRootState),
       undefined
     );
 

@@ -19,11 +19,11 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { type Except } from "type-fest";
 
-export type RecipesState = Except<
+export type ModDefinitionsState = Except<
   UseCachedQueryResult<ModDefinition[]>,
   "refetch"
 >;
 
-export type RecipesRootState = {
-  recipes: RecipesState;
+export type ModDefinitionsRootState = {
+  recipes: ModDefinitionsState;
 };

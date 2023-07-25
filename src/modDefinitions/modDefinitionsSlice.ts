@@ -21,14 +21,17 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { serializeError } from "serialize-error";
-import { type RecipesRootState, type RecipesState } from "./recipesTypes";
+import {
+  type ModDefinitionsRootState,
+  type ModDefinitionsState,
+} from "./modDefinitionsTypes";
 import recipeRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { revertAll } from "@/store/commonActions";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { setErrorOnState, setValueOnState } from "@/utils/asyncStateUtils";
 
-export const initialState: RecipesState = Object.freeze({
+export const initialState: ModDefinitionsState = Object.freeze({
   // Standard async state
   data: undefined,
   // Current data will always match data because the slice doesn't consider any input arguments
@@ -101,7 +104,7 @@ export const modDefinitionsSlice = createSlice({
 const loadRecipesFromCache = createAsyncThunk<
   void,
   void,
-  { state: RecipesRootState }
+  { state: ModDefinitionsRootState }
 >("recipes/loadFromCache", async (arg, { dispatch, getState }) => {
   if (!getState().recipes.isCacheUninitialized) {
     throw new Error("Already loaded recipes from cache");
@@ -119,7 +122,7 @@ const loadRecipesFromCache = createAsyncThunk<
 export const syncRemoteRecipes = createAsyncThunk<
   void,
   void,
-  { state: RecipesRootState }
+  { state: ModDefinitionsRootState }
 >("recipes/refresh", async (arg, { dispatch, getState }) => {
   if (getState().recipes.isFetchingFromRemote) {
     throw new Error("Already fetching recipes from server");
