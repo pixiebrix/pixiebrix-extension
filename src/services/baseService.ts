@@ -22,7 +22,11 @@ import { useAsyncEffect } from "use-async-effect";
 import { useCallback, useState } from "react";
 import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 
+/**
+ * The default URL of the app, e.g., https://app.pixiebrix.com
+ */
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
+
 const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 
 type ConfiguredHost = string | null | undefined;

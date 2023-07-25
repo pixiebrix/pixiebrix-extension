@@ -21,6 +21,10 @@ import { isRegistryId } from "@/types/helpers";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { pollUntilTruthy } from "@/utils";
 import { MARKETPLACE_URL } from "@/utils/strings";
+import { DEFAULT_SERVICE_URL } from "@/services/baseService";
+
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 let enhancementsLoaded = false;
 
@@ -36,9 +40,15 @@ export function extractIdsFromUrl(searchParams: URLSearchParams): RegistryId[] {
   return rawIds.filter((x) => isRegistryId(x)) as RegistryId[];
 }
 
+/**
+ * Returns a node list of mod activation links currently on the page.
+ *
+ * Includes marketplace activation links and shared links (e.g., on landing pages and emails).
+ */
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
+  // Include DEFAULT_SERVICE_URL for use during local/staging testing
   return document.querySelectorAll<HTMLAnchorElement>(
-    "a[href*='.pixiebrix.com/activate']"
+    `a[href*='.pixiebrix.com/activate'], a[href*='${DEFAULT_SERVICE_URL}/activate']`
   );
 }
 
@@ -75,6 +85,7 @@ export async function loadActivationEnhancements(): Promise<void> {
     return;
   }
 
+  // XXX: consider moving after the button event listener is added to avoid race with the user clicking on the link
   const activatedModIds = await getActivatedModIds();
 
   for (const button of activateButtonLinks) {
@@ -130,7 +141,7 @@ export function TEST_unloadActivationEnhancements() {
   enhancementsLoaded = false;
 }
 
-if (location.protocol === "https:") {
+if (location.protocol === "https:" || DEBUG) {
   void loadActivationEnhancements();
 } else {
   console.warn("Unsupported protocol", location.protocol);
