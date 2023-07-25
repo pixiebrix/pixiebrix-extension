@@ -49,7 +49,8 @@ export const setExtensionAuth = liftExternal(
   local.setExtensionAuth
 );
 
-export const setActivatingBlueprint = liftExternal(
+export const setActivatingMods = liftExternal(
+  // Can't change SET_ACTIVATING_BLUEPRINT constant due to backward compatability.
   "SET_ACTIVATING_BLUEPRINT",
   local.setActivatingMods
 );
