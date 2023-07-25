@@ -30,8 +30,8 @@ import {
 } from "@/background/messenger/external/_implementation";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { getInstalledRecipeIds } from "@/contentScript/loadActivationEnhancements";
 import { isLoadedInIframe } from "@/iframeUtils";
+import { getActivatedModIds } from "@/store/extensionsStorage";
 
 /**
  * Returns mod ids that are currently being activated, or null if there are none.
@@ -44,7 +44,7 @@ async function getInProgressModActivation(): Promise<RegistryId[] | null> {
   const modIds = (await getActivatingModIds()) ?? [];
 
   // Defensive validation
-  const valid = modIds.filter((x) => isRegistryId(x));
+  const valid = modIds.filter((x: string) => isRegistryId(x));
 
   return valid.length > 0 ? valid : null;
 }
@@ -79,14 +79,14 @@ function getNextUrlFromActivateUrl(activateUrl: string): string | null {
   return searchParams.get("nextUrl");
 }
 
-function addActivateRecipeListener() {
+function addActivateModsListener(): void {
   window.addEventListener(
-    "ActivateRecipe",
+    "ActivateMods",
     async (
-      event: CustomEvent<{ recipeId: RegistryId; activateUrl: string | URL }>
+      event: CustomEvent<{ modIds: RegistryId[]; activateUrl: string }>
     ) => {
-      const { recipeId: modId, activateUrl } = event.detail;
-      const nextUrl = getNextUrlFromActivateUrl(activateUrl as string);
+      const { modIds, activateUrl } = event.detail;
+      const nextUrl = getNextUrlFromActivateUrl(activateUrl);
 
       if (!(await isLinked())) {
         // Open the activate link in the current browser tab
@@ -95,26 +95,28 @@ function addActivateRecipeListener() {
       }
 
       if (nextUrl) {
-        await setActivatingMods({ blueprintId: modId });
+        await setActivatingMods({ blueprintId: modIds });
         window.location.assign(nextUrl);
         return;
       }
 
-      const installedRecipeIds = await getInstalledRecipeIds();
+      const installedRecipeIds = await getActivatedModIds();
 
       reportEvent(Events.START_MOD_ACTIVATE, {
-        blueprintId: modId,
+        // For legacy, report the first mod id
+        blueprintId: modIds[0],
+        modIds,
         screen: "marketplace",
-        reinstall: installedRecipeIds.has(modId),
+        reinstall: modIds.some((x) => installedRecipeIds.has(x)),
       });
 
-      await showSidebarActivationForMods([modId]);
+      await showSidebarActivationForMods(modIds);
     }
   );
 }
 
 export async function initSidebarActivation(): Promise<void> {
-  addActivateRecipeListener();
+  addActivateModsListener();
 
   if (!(await isLinked())) {
     return;

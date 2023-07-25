@@ -17,7 +17,7 @@
 
 import { showModActivationInSidebar } from "@/contentScript/sidebarController";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
-import { loadOptions } from "@/store/extensionsStorage";
+import { getActivatedModIds } from "@/store/extensionsStorage";
 import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
@@ -30,18 +30,17 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import {
   loadActivationEnhancements,
-  unloadActivationEnhancements,
+  TEST_unloadActivationEnhancements,
 } from "@/contentScript/loadActivationEnhancements";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { isLinked } from "@/auth/token";
+import { array } from "cooky-cutter";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
   showModActivationInSidebar: jest.fn(),
   hideModActivationInSidebar: jest.fn(),
 }));
-
-const showFunctionMock = jest.mocked(showModActivationInSidebar);
 
 jest.mock("@/auth/token", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
@@ -54,10 +53,8 @@ jest.mock("@/contentScript/ready", () => ({
 }));
 
 jest.mock("@/store/extensionsStorage", () => ({
-  loadOptions: jest.fn(),
+  getActivatedModIds: jest.fn().mockResolvedValue([]),
 }));
-
-const loadOptionsMock = loadOptions as jest.MockedFunction<typeof loadOptions>;
 
 jest.mock("@/background/messenger/external/_implementation", () => ({
   setActivatingMods: jest.fn(),
@@ -70,6 +67,8 @@ jest.mock("@/sidebar/store", () => ({
   },
 }));
 
+const showSidebarMock = jest.mocked(showModActivationInSidebar);
+const getActivatedModIdsMock = jest.mocked(getActivatedModIds);
 const getActivatingModIdsMock = jest.mocked(getActivatingModIds);
 
 const recipeId1 = validateRegistryId("@pixies/misc/comment-and-vote");
@@ -91,11 +90,13 @@ describe("marketplace enhancements", () => {
     document.body.innerHTML = "";
     document.body.innerHTML = getDocument(activateButtonsHtml).body.innerHTML;
     (isReadyInThisDocument as jest.Mock).mockImplementation(() => true);
+    getActivatedModIdsMock.mockResolvedValue(new Set());
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.resetAllMocks();
-    unloadActivationEnhancements();
+    // eslint-disable-next-line new-cap -- test method
+    TEST_unloadActivationEnhancements();
   });
 
   test("given user is logged in, when an activate button is clicked, should open the sidebar", async () => {
@@ -108,9 +109,9 @@ describe("marketplace enhancements", () => {
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
-    loadOptionsMock.mockResolvedValue({
-      extensions: [modComponent1, modComponent2],
-    });
+    getActivatedModIdsMock.mockResolvedValue(
+      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id])
+    );
 
     await loadActivationEnhancements();
     await initSidebarActivation();
@@ -123,7 +124,44 @@ describe("marketplace enhancements", () => {
     // The current page should not navigate away from the marketplace
     expect(window.location.href).toBe(MARKETPLACE_URL);
     // The show-sidebar function should be called
-    expect(showFunctionMock).toHaveBeenCalledOnce();
+    expect(showSidebarMock).toHaveBeenCalledOnce();
+  });
+
+  test("multiple mod activation on non-detail page", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    window.location.assign("https://www.pixiebrix.com/");
+
+    const components = array(
+      modComponentFactory,
+      2
+    )({
+      _recipe: modComponentRecipeFactory,
+    });
+
+    document.body.innerHTML = `
+    <div>
+        <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
+          components[0]._recipe.id
+        )}&id=${encodeURIComponent(components[1]._recipe.id)}">Click Me!</a>
+    </div>`;
+
+    getActivatedModIdsMock.mockResolvedValue(new Set());
+
+    await loadActivationEnhancements();
+    await initSidebarActivation();
+
+    // Sanity check for test interference
+    expect(showSidebarMock).not.toHaveBeenCalledOnce();
+
+    // Click an activate button
+    const activateButtons = document.querySelectorAll("a");
+    activateButtons[0].click();
+    await waitForEffect();
+
+    expect(window.location.href).toBe("https://www.pixiebrix.com/");
+    // The show-sidebar function should be called
+    // FIXME: this passes when run individually. There's some test interference going on.
+    expect(showSidebarMock).toHaveBeenCalledOnce();
   });
 
   test("given user is not logged in, when activation button clicked, open admin console", async () => {
@@ -154,7 +192,7 @@ describe("marketplace enhancements", () => {
     expect(isLinkedMock).toHaveBeenCalledTimes(1);
     // The getInstalledRecipeIds function should not call loadOptions
     // when the user is not logged in
-    expect(loadOptionsMock).not.toHaveBeenCalled();
+    expect(getActivatedModIdsMock).not.toHaveBeenCalled();
     // The marketplace script should not resume in-progress blueprint
     // activation when the user is not logged in
     expect(getActivatingModIdsMock).not.toHaveBeenCalled();
@@ -170,9 +208,9 @@ describe("marketplace enhancements", () => {
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
-    loadOptionsMock.mockResolvedValue({
-      extensions: [modComponent1, modComponent2],
-    });
+    getActivatedModIdsMock.mockResolvedValue(
+      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id])
+    );
 
     await loadActivationEnhancements();
     await initSidebarActivation();
@@ -193,9 +231,9 @@ describe("marketplace enhancements", () => {
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
-    loadOptionsMock.mockResolvedValue({
-      extensions: [modComponent1, modComponent2],
-    });
+    getActivatedModIdsMock.mockResolvedValue(
+      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id])
+    );
 
     await loadActivationEnhancements();
     await initSidebarActivation();
@@ -217,9 +255,9 @@ describe("marketplace enhancements", () => {
     expect(isLinkedMock).toHaveBeenCalledTimes(1);
     // The getInstalledRecipeIds function should call loadOptions
     // when the user is logged in
-    expect(loadOptionsMock).toHaveBeenCalled();
+    expect(getActivatedModIdsMock).toHaveBeenCalledOnce();
     // The marketplace script should resume in-progress blueprint
     // activation when the user is logged in
-    expect(getActivatingModIdsMock).toHaveBeenCalled();
+    expect(getActivatingModIdsMock).toHaveBeenCalledOnce();
   });
 });
