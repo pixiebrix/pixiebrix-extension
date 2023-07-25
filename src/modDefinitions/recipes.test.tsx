@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import { useAllModDefinitions } from "./modDefinitionsHooks";
+import { useAllModDefinitions } from "./modDefinitionHooks";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import { act, render } from "@/pageEditor/testHelpers";
 import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";

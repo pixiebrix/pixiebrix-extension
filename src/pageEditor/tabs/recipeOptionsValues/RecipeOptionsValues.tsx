@@ -23,7 +23,7 @@ import {
   selectDirtyOptionValuesForRecipeId,
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
-import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionsHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,

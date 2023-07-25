@@ -35,7 +35,7 @@ import { authStateFactory } from "@/testUtils/factories/authFactories";
 let blueprint: ModDefinition;
 let auth: AuthState;
 
-jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useOptionalModDefinition: jest.fn().mockImplementation(() => ({
     data: blueprint,
     isFetching: false,

@@ -47,7 +47,7 @@ import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionsHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(

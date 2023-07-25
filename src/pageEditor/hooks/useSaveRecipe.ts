@@ -40,7 +40,7 @@ import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { type RegistryId } from "@/types/registryTypes";
-import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 

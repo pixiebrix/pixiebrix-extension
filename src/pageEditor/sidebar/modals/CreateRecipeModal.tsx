@@ -70,7 +70,7 @@ import { pick } from "lodash";
 import {
   useAllModDefinitions,
   useOptionalModDefinition,
-} from "@/modDefinitions/modDefinitionsHooks";
+} from "@/modDefinitions/modDefinitionHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import {

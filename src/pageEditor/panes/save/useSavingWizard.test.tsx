@@ -39,7 +39,7 @@ import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
@@ -62,7 +62,7 @@ jest.mock("@/services/api", () => ({
   }),
 }));
 
-jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn().mockReturnValue({
     data: [],
     isLoading: false,

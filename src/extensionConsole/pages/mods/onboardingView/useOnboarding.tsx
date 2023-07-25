@@ -20,7 +20,7 @@ import useFlags from "@/hooks/useFlags";
 import { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectActiveTab } from "@/extensionConsole/pages/mods/modsPageSelectors";
-import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 export type OnboardingType =

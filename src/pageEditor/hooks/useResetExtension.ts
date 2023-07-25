@@ -27,7 +27,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
-import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 
 type Config = {
   extensionId: UUID;

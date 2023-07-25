@@ -19,7 +19,7 @@ import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
-import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionsHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { type RegistryId } from "@/types/registryTypes";
 import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";

@@ -45,7 +45,7 @@ import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionsHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ActivationLink from "@/activation/ActivationLink";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { type Option } from "@/components/form/widgets/SelectWidget";

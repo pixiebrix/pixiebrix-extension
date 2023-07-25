@@ -25,14 +25,14 @@ import { screen } from "@testing-library/react";
 import {
   useAllModDefinitions,
   useOptionalModDefinition,
-} from "@/modDefinitions/modDefinitionsHooks";
+} from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useOptionalModDefinition: jest.fn(),
   useAllModDefinitions: jest.fn(),
 }));

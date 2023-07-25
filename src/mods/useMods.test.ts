@@ -19,7 +19,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import useMods from "@/mods/useMods";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateTimestamp } from "@/types/helpers";
-import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
@@ -33,7 +33,7 @@ import {
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
-jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn(),
 }));
 

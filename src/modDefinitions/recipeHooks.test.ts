@@ -19,7 +19,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import {
   useOptionalModDefinition,
   useRequiredModDefinitions,
-} from "@/modDefinitions/modDefinitionsHooks";
+} from "@/modDefinitions/modDefinitionHooks";
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { registry } from "@/background/messenger/api";

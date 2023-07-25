@@ -19,7 +19,7 @@ import React from "react";
 import useFlags from "@/hooks/useFlags";
 import { type Organization } from "@/types/contract";
 import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
-import { useAllModDefinitions } from "@/modDefinitions/modDefinitionsHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import DeploymentsContext, {
   type DeploymentsState,
 } from "@/extensionConsole/pages/deployments/DeploymentsContext";
@@ -29,7 +29,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn(),
 }));
 

@@ -32,7 +32,7 @@ import { type RootState } from "@/store/optionsStore";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
-jest.mock("@/modDefinitions/modDefinitionsHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn().mockReturnValue({ refetch: jest.fn() }),
 }));
 
