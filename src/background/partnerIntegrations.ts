@@ -20,18 +20,24 @@ import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { safeParseUrl } from "@/utils";
 import { type RegistryId } from "@/types/registryTypes";
-import { launchOAuth2Flow, setCachedAuthData } from "@/background/auth";
+import {
+  getCachedAuthData,
+  launchOAuth2Flow,
+  setCachedAuthData,
+} from "@/background/auth";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import serviceRegistry from "@/services/registry";
 
 import {
   CONTROL_ROOM_OAUTH_SERVICE_ID,
   CONTROL_ROOM_TOKEN_SERVICE_ID,
+  GOOGLE_OAUTH_PKCE_SERVICE_ID,
 } from "@/services/constants";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
+import { type PartnerAuthData } from "@/auth/authTypes";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
@@ -172,18 +178,57 @@ export async function launchAuthIntegration({
 }
 
 /**
- * Refresh an Automation Anywhere JWT. NOOP if a JWT refresh token is not available.
+ * Refresh an auth token, e.g. Automation Anywhere JWT or Google token.
+ * NOOP if a refresh token is not available.
  */
-export async function _refreshPartnerToken(): Promise<void> {
-  const authData = await readPartnerAuthData();
-  if (authData.authId && authData.refreshToken) {
-    console.debug("Refreshing partner JWT");
+// TODO: should I rename serviceId to integrationId?
+export async function _refreshToken(serviceId: RegistryId): Promise<void> {
+  expectContext("background");
 
-    const service = await serviceRegistry.lookup(CONTROL_ROOM_OAUTH_SERVICE_ID);
+  let authData: Partial<PartnerAuthData> = {};
+
+  if (serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID) {
+    authData = await readPartnerAuthData();
+  } else if (serviceId === GOOGLE_OAUTH_PKCE_SERVICE_ID) {
+    const googleAuths = await serviceLocator.locateAllForService(serviceId);
+
+    if (googleAuths.length > 1) {
+      // TODO: Need to think through if this is a problem and
+      //  if we want to prevent a user from creating multiple google configs.
+      console.warn(
+        `Multiple configurations found for: ${GOOGLE_OAUTH_PKCE_SERVICE_ID}`
+      );
+    } else if (googleAuths.length === 1) {
+      const googleAuthId = googleAuths[0].id;
+      const googleAuthData = await getCachedAuthData(googleAuthId);
+      if (googleAuthData) {
+        authData = {
+          authId: googleAuthId,
+          token: googleAuthData.access_token as string,
+          refreshToken: googleAuthData.refresh_token as string,
+        };
+      }
+    }
+  } else {
+    console.warn(`Support for integration not implemented: ${serviceId}`);
+    throw new Error(`Support for integration not implemented: ${serviceId}`);
+  }
+
+  // TODO: remove this
+  console.log(`Running refresh token for ${serviceId}`);
+  console.log(authData);
+
+  if (authData.authId && authData.refreshToken) {
+    console.debug("Refreshing token");
+
+    const service = await serviceRegistry.lookup(serviceId);
     const config = await serviceLocator.findIntegrationConfig(authData.authId);
     const context = service.getOAuth2Context(config.config);
 
-    if (isEmpty(config.config.controlRoomUrl)) {
+    if (
+      serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID &&
+      isEmpty(config.config.controlRoomUrl)
+    ) {
       // Fine to dump to console for debugging because CONTROL_ROOM_OAUTH_SERVICE_ID doesn't have any secret props.
       console.warn("controlRoomUrl is missing on configuration", config);
       throw new Error("controlRoomUrl is missing on configuration");
@@ -195,6 +240,7 @@ export async function _refreshPartnerToken(): Promise<void> {
     params.append("client_id", context.client_id);
     params.append("refresh_token", authData.refreshToken);
     params.append("hosturl", config.config.controlRoomUrl);
+    console.log("params", params.toString());
 
     // On 401, throw the error. In the future, we might consider clearing the partnerAuth. However, currently that
     // would trigger a re-login, which may not be desirable at arbitrary times.
@@ -202,25 +248,35 @@ export async function _refreshPartnerToken(): Promise<void> {
       headers: { Authorization: `Basic ${btoa(context.client_id)} ` },
     });
 
-    // Store for use direct calls to the partner API
+    // Store for making direct calls to the partner API
+    console.log("data", data);
     await setCachedAuthData(config.id, data);
 
+    // TODO: remove this
+    console.log(
+      `Successfully refreshed partner JWT for ${serviceId} at`,
+      new Date()
+    );
+
     // Store for use with the PixieBrix API
-    await setPartnerAuth({
-      authId: config.id,
-      token: data.access_token,
-      // `refresh_token` only returned if offline_access scope is requested
-      refreshToken: data.refresh_token,
-      extraHeaders: {
-        "X-Control-Room": config.config.controlRoomUrl,
-      },
-    });
+    if (serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID) {
+      await setPartnerAuth({
+        authId: config.id,
+        token: data.access_token,
+        // `refresh_token` only returned if offline_access scope is requested
+        refreshToken: data.refresh_token,
+        extraHeaders: {
+          "X-Control-Room": config.config.controlRoomUrl,
+        },
+      });
+    }
   }
 }
 
-export async function safeTokenRefresh(): Promise<void> {
+// TODO: move to background/auth.ts file because it's used by partner + google auth
+export async function safeTokenRefresh(serviceId: RegistryId): Promise<void> {
   try {
-    await _refreshPartnerToken();
+    await _refreshToken(serviceId);
   } catch (error) {
     console.warn("Failed to refresh partner token", error);
   }
@@ -229,6 +285,19 @@ export async function safeTokenRefresh(): Promise<void> {
 /**
  * Refresh partner JWT every 10 minutes, if a refresh token is available.
  */
+// TODO: change to 10 minutes
 export function initPartnerTokenRefresh(): void {
-  setInterval(safeTokenRefresh, 1000 * 60 * 10);
+  setInterval(async () => {
+    await safeTokenRefresh(CONTROL_ROOM_OAUTH_SERVICE_ID);
+  }, 1000 * 20);
+}
+
+/**
+ * Refresh Google token every 10 minutes, if a refresh token is available.
+ */
+// TODO: change to 10 minutes
+export function initGoogleTokenRefresh(): void {
+  setInterval(async () => {
+    await safeTokenRefresh(GOOGLE_OAUTH_PKCE_SERVICE_ID);
+  }, 1000 * 20);
 }

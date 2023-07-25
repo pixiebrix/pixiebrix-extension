@@ -39,7 +39,10 @@ import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import initPartnerTheme from "@/background/partnerTheme";
 import initStarterBlueprints from "@/background/starterBlueprints";
-import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
+import {
+  initPartnerTokenRefresh,
+  initGoogleTokenRefresh,
+} from "@/background/partnerIntegrations";
 import { initContentScriptReadyListener } from "@/background/contentScript";
 import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
@@ -60,6 +63,7 @@ activateBrowserActionIcon();
 initPartnerTheme();
 initStarterBlueprints();
 initPartnerTokenRefresh();
+initGoogleTokenRefresh();
 initLogSweep();
 initModUpdater();
 
