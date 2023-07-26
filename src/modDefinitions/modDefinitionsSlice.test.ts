@@ -22,7 +22,7 @@ import {
   modDefinitionsSlice,
 } from "./modDefinitionsSlice";
 import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
-import recipesRegistry from "./registry";
+import modDefinitionsRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
@@ -50,8 +50,10 @@ const syncRemotePackagesMock = syncRemotePackages as jest.MockedFn<
 describe("loadModDefinitionsFromCache", () => {
   test("calls registry and dispatches setModDefinitionsFromCache action", async () => {
     const dispatch = jest.fn();
-    const cachedRecipes = [recipeFactory()];
-    (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
+    const cachedModDefinitions = [recipeFactory()];
+    (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
+      cachedModDefinitions
+    );
 
     const thunkFunction = modDefinitionsActions.loadModDefinitionsFromCache();
     await thunkFunction(
@@ -59,14 +61,14 @@ describe("loadModDefinitionsFromCache", () => {
       () => ({ modDefinitions: initialState }),
       undefined
     );
-    expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
+    expect(modDefinitionsRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setModDefinitionsFromCache(cachedRecipes)
+      modDefinitionsActions.setModDefinitionsFromCache(cachedModDefinitions)
     );
   });
 });
 
-describe("refreshRecipes", () => {
+describe("syncRemoteModDefinitions", () => {
   test("doesn't refresh if already loading", async () => {
     const dispatch = jest.fn();
 
@@ -86,11 +88,13 @@ describe("refreshRecipes", () => {
     expect(syncRemotePackagesMock).not.toHaveBeenCalled();
   });
 
-  test("fetches recipes and updates the state", async () => {
+  test("fetches mod definitions and updates the state", async () => {
     const dispatch = jest.fn();
 
-    const cachedRecipes = [recipeFactory()];
-    (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
+    const cachedModDefinitions = [recipeFactory()];
+    (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
+      cachedModDefinitions
+    );
 
     const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
@@ -103,9 +107,9 @@ describe("refreshRecipes", () => {
       modDefinitionsActions.startFetchingFromRemote()
     );
     expect(syncRemotePackagesMock).toHaveBeenCalledTimes(1);
-    expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
+    expect(modDefinitionsRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setModDefinitions(cachedRecipes)
+      modDefinitionsActions.setModDefinitions(cachedModDefinitions)
     );
   });
 
@@ -140,8 +144,8 @@ describe("reducers", () => {
     expect(nextState.isLoading).toBeFalse();
   });
 
-  test("sets recipes", () => {
-    const recipes = [recipeFactory()];
+  test("sets mod definitions", () => {
+    const modDefinitions = [recipeFactory()];
     const state = {
       ...initialState,
       isFetching: true,
@@ -154,12 +158,12 @@ describe("reducers", () => {
     };
     const nextState = modDefinitionsSlice.reducer(
       state,
-      modDefinitionsActions.setModDefinitions(recipes)
+      modDefinitionsActions.setModDefinitions(modDefinitions)
     );
 
     expect(nextState).toEqual({
-      data: recipes,
-      currentData: recipes,
+      data: modDefinitions,
+      currentData: modDefinitions,
       isFetching: false,
       isLoading: false,
       isUninitialized: false,
