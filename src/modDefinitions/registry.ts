@@ -44,9 +44,9 @@ type RegistryModDefinition = ModDefinition & {
 };
 
 /**
- * Fix hand-crafted recipe options from the workshop
+ * Fix hand-crafted mod options from the workshop
  */
-function normalizeRecipeOptions(
+function normalizeModOptions(
   options?: ModOptionsDefinition
 ): ModOptionsDefinition {
   if (options == null) {
@@ -73,7 +73,7 @@ function normalizeRecipeOptions(
 
 function fromJS(rawRecipe: UnnormalizedModDefinition) {
   return produce(rawRecipe, (draft) => {
-    draft.options = normalizeRecipeOptions(rawRecipe.options);
+    draft.options = normalizeModOptions(rawRecipe.options);
     (draft as RegistryModDefinition).id = rawRecipe.metadata.id;
   }) as RegistryModDefinition;
 }
