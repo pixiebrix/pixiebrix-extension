@@ -70,7 +70,7 @@ describe("refreshRecipes", () => {
   test("doesn't refresh if already loading", async () => {
     const dispatch = jest.fn();
 
-    const thunkFunction = modDefinitionsActions.syncRemoteRecipes();
+    const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
       dispatch,
       () => ({
@@ -92,7 +92,7 @@ describe("refreshRecipes", () => {
     const cachedRecipes = [recipeFactory()];
     (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
 
-    const thunkFunction = modDefinitionsActions.syncRemoteRecipes();
+    const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
       dispatch,
       () => ({ modDefinitions: {} } as ModDefinitionsRootState),
@@ -115,7 +115,7 @@ describe("refreshRecipes", () => {
     const error = new Error("test");
     syncRemotePackagesMock.mockRejectedValueOnce(error);
 
-    const thunkFunction = modDefinitionsActions.syncRemoteRecipes();
+    const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
       dispatch,
       () => ({ modDefinitions: {} } as ModDefinitionsRootState),

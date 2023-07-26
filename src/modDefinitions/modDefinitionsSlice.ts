@@ -119,20 +119,20 @@ const loadModDefinitionsFromCache = createAsyncThunk<
   }
 });
 
-export const syncRemoteRecipes = createAsyncThunk<
+export const syncRemoteModDefinitions = createAsyncThunk<
   void,
   void,
   { state: ModDefinitionsRootState }
 >("modDefinitions/refresh", async (arg, { dispatch, getState }) => {
   if (getState().modDefinitions.isFetchingFromRemote) {
-    throw new Error("Already fetching recipes from server");
+    throw new Error("Already fetching mod definitions from server");
   }
 
   try {
     dispatch(modDefinitionsSlice.actions.startFetchingFromRemote());
     await syncRemotePackages();
-    const recipes = await modDefinitionRegistry.all();
-    dispatch(modDefinitionsSlice.actions.setModDefinitions(recipes));
+    const modDefinitions = await modDefinitionRegistry.all();
+    dispatch(modDefinitionsSlice.actions.setModDefinitions(modDefinitions));
   } catch (error) {
     // Serialize because stored in Redux
     const serializedError = serializeError(error, { useToJSON: false });
@@ -143,5 +143,5 @@ export const syncRemoteRecipes = createAsyncThunk<
 export const modDefinitionsActions = {
   ...modDefinitionsSlice.actions,
   loadModDefinitionsFromCache,
-  syncRemoteRecipes,
+  syncRemoteModDefinitions,
 };

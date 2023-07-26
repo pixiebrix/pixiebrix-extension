@@ -130,7 +130,7 @@ export function useRequiredModDefinitions(
 export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
   const dispatch = useDispatch();
   const refetch = useCallback(
-    () => dispatch(modDefinitionsActions.syncRemoteRecipes()),
+    () => dispatch(modDefinitionsActions.syncRemoteModDefinitions()),
     [dispatch]
   );
   const state = useSelector(selectAllModDefinitions);
@@ -149,7 +149,7 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
       !state.isLoadingFromCache &&
       !state.isCacheUninitialized
     ) {
-      dispatch(modDefinitionsActions.syncRemoteRecipes());
+      dispatch(modDefinitionsActions.syncRemoteModDefinitions());
     }
   }, [
     dispatch,

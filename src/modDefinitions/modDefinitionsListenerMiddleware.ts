@@ -17,7 +17,7 @@
 
 import { appApi } from "@/services/api";
 import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
-import { syncRemoteRecipes } from "./modDefinitionsSlice";
+import { syncRemoteModDefinitions } from "./modDefinitionsSlice";
 
 const apiEndpoints = appApi.endpoints;
 
@@ -31,7 +31,7 @@ modDefinitionsListenerMiddleware.startListening({
     apiEndpoints.deletePackage.matchFulfilled
   ),
   effect(action, { dispatch }) {
-    void dispatch(syncRemoteRecipes());
+    void dispatch(syncRemoteModDefinitions());
   },
 });
 
