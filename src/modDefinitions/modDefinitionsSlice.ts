@@ -25,7 +25,7 @@ import {
   type ModDefinitionsRootState,
   type ModDefinitionsState,
 } from "./modDefinitionsTypes";
-import recipeRegistry from "./registry";
+import modDefinitionRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { revertAll } from "@/store/commonActions";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -112,7 +112,7 @@ const loadModDefinitionsFromCache = createAsyncThunk<
 
   try {
     dispatch(modDefinitionsSlice.actions.startFetchingFromCache());
-    const recipes = await recipeRegistry.all();
+    const recipes = await modDefinitionRegistry.all();
     dispatch(modDefinitionsSlice.actions.setModDefinitionsFromCache(recipes));
   } catch {
     dispatch(modDefinitionsSlice.actions.setCacheError());
@@ -131,7 +131,7 @@ export const syncRemoteRecipes = createAsyncThunk<
   try {
     dispatch(modDefinitionsSlice.actions.startFetchingFromRemote());
     await syncRemotePackages();
-    const recipes = await recipeRegistry.all();
+    const recipes = await modDefinitionRegistry.all();
     dispatch(modDefinitionsSlice.actions.setRecipes(recipes));
   } catch (error) {
     // Serialize because stored in Redux
