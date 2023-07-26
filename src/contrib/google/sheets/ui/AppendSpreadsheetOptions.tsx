@@ -17,30 +17,22 @@
 
 import React from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/bricks/append";
 import { isNullOrBlank, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/ui/TabField";
-import { dereference } from "@/validators/generic";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
-import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { isEmpty, isEqual } from "lodash";
 import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
 import { isTemplateExpression } from "@/utils/expressionUtils";
-import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
-import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
-import AsyncStateGate from "@/components/AsyncStateGate";
-import useAsyncState from "@/hooks/useAsyncState";
 import { type UnknownObject } from "@/types/objectTypes";
 import getHeadersForSpreadsheetTab from "@/contrib/google/sheets/core/getHeadersForSpreadsheetTab";
+import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 
 const RowValuesField: React.FunctionComponent<{
   name: string;
@@ -90,96 +82,20 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const basePath = joinName(name, configKey);
-  const googleAccountAsyncState = useGoogleAccount(basePath);
-  const spreadsheetIdAsyncState = useSpreadsheetId(basePath);
+  const blockConfigPath = joinName(name, configKey);
 
   const [{ value: tabName }] = useField<string | Expression>(
-    joinName(basePath, "tabName")
-  );
-
-  const baseSchemaAsyncState = useAsyncState(
-    dereference(BASE_SHEET_SCHEMA),
-    [],
-    {
-      initialValue: BASE_SHEET_SCHEMA,
-    }
-  );
-
-  const spreadsheetSchemaState = useDeriveAsyncState(
-    googleAccountAsyncState,
-    baseSchemaAsyncState,
-    async (
-      googleAccount: SanitizedIntegrationConfig | null,
-      baseSchema: Schema
-    ) => {
-      if (googleAccount == null) {
-        return baseSchema;
-      }
-
-      const spreadsheetFileList = await sheets.getAllSpreadsheets(
-        googleAccount
-      );
-      if (isEmpty(spreadsheetFileList.files)) {
-        return baseSchema;
-      }
-
-      const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
-        const: file.id,
-        title: file.name,
-      }));
-      return {
-        title: "Spreadsheet",
-        oneOf: [
-          baseSchema,
-          {
-            type: "string",
-            oneOf: spreadsheetSchemaEnum,
-          },
-        ],
-      } as Schema;
-    }
-  );
-
-  const spreadsheetAsyncState = useDeriveAsyncState(
-    googleAccountAsyncState,
-    spreadsheetIdAsyncState,
-    async (
-      googleAccount: SanitizedIntegrationConfig | null,
-      spreadsheetId: string | null
-    ) => {
-      if (spreadsheetId == null) {
-        return null;
-      }
-
-      // Sheets api handles fallback situation when googleAccount is null
-      return sheets.getSpreadsheet(
-        {
-          googleAccount,
-          spreadsheetId,
-        },
-        { includeGridData: true }
-      );
-    }
-  );
-
-  const spreadsheetFormAsyncState = useDeriveAsyncState(
-    spreadsheetAsyncState,
-    spreadsheetSchemaState,
-    async (spreadsheet: Spreadsheet, schema) => ({
-      spreadsheet,
-      schema,
-    })
+    joinName(blockConfigPath, "tabName")
   );
 
   return (
     <div className="my-2">
       <SchemaField
-        name={joinName(basePath, "googleAccount")}
+        name={joinName(blockConfigPath, "googleAccount")}
         schema={APPEND_SCHEMA.properties.googleAccount as Schema}
       />
-      <AsyncStateGate state={spreadsheetFormAsyncState}>
-        {({ data: { spreadsheet, schema } }) => (
+      <RequireGoogleSheet blockConfigPath={blockConfigPath}>
+        {({ spreadsheet, schema }) => (
           <>
             <FormErrorContext.Provider
               value={{
@@ -189,7 +105,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
               }}
             >
               <SchemaField
-                name={joinName(basePath, "spreadsheetId")}
+                name={joinName(blockConfigPath, "spreadsheetId")}
                 schema={schema}
                 isRequired
               />
@@ -198,20 +114,20 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
                 // would like analysis to run if this is in text/template mode, but not if it's in select mode.
                 // Select mode is more important, so we're leaving it like this for now.
                 <TabField
-                  name={joinName(basePath, "tabName")}
+                  name={joinName(blockConfigPath, "tabName")}
                   schema={APPEND_SCHEMA.properties.tabName as Schema}
                   spreadsheet={spreadsheet}
                 />
               }
             </FormErrorContext.Provider>
             <RowValuesField
-              name={joinName(basePath, "rowValues")}
+              name={joinName(blockConfigPath, "rowValues")}
               spreadsheet={spreadsheet}
               tabName={tabName}
             />
           </>
         )}
-      </AsyncStateGate>
+      </RequireGoogleSheet>
     </div>
   );
 };

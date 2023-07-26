@@ -100,14 +100,14 @@ async function deriveSpreadsheetId(
  * Hook to get the Google Sheets spreadsheetId from an integration configuration or direct input.
  */
 function useSpreadsheetId(
-  brickConfigPath: string
+  blockConfigPath: string
 ): FetchableAsyncState<string | null> {
   const {
     values: { services: servicesValue },
   } = useFormikContext<ServiceSlice>();
 
   const [{ value: fieldValue }, , { setError }] = useField<string | Expression>(
-    joinName(brickConfigPath, "spreadsheetId")
+    joinName(blockConfigPath, "spreadsheetId")
   );
 
   const [{ value: optionsArgs }] = useField<OptionsArgs>("optionsArgs");

@@ -22,25 +22,17 @@ import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { joinName } from "@/utils";
 import TabField from "@/contrib/google/sheets/ui/TabField";
-import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
 import { isEmpty, isEqual } from "lodash";
-import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
-import { dereference } from "@/validators/generic";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
-import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
-import useAsyncState from "@/hooks/useAsyncState";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
-import AsyncStateGate from "@/components/AsyncStateGate";
-import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import getHeadersForSpreadsheetTab from "@/contrib/google/sheets/core/getHeadersForSpreadsheetTab";
+import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 
 const HeaderField: React.FunctionComponent<{
   name: string;
@@ -96,96 +88,20 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const basePath = joinName(name, configKey);
-  const googleAccountAsyncState = useGoogleAccount(basePath);
-  const spreadsheetIdAsyncState = useSpreadsheetId(basePath);
+  const blockConfigPath = joinName(name, configKey);
 
   const [{ value: tabName }] = useField<string | Expression>(
-    joinName(basePath, "tabName")
-  );
-
-  const baseSchemaAsyncState = useAsyncState(
-    dereference(BASE_SHEET_SCHEMA),
-    [],
-    {
-      initialValue: BASE_SHEET_SCHEMA,
-    }
-  );
-
-  const spreadsheetSchemaState = useDeriveAsyncState(
-    googleAccountAsyncState,
-    baseSchemaAsyncState,
-    async (
-      googleAccount: SanitizedIntegrationConfig | null,
-      baseSchema: Schema
-    ) => {
-      if (googleAccount == null) {
-        return baseSchema;
-      }
-
-      const spreadsheetFileList = await sheets.getAllSpreadsheets(
-        googleAccount
-      );
-      if (isEmpty(spreadsheetFileList.files)) {
-        return baseSchema;
-      }
-
-      const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
-        const: file.id,
-        title: file.name,
-      }));
-      return {
-        title: "Spreadsheet",
-        oneOf: [
-          baseSchema,
-          {
-            type: "string",
-            oneOf: spreadsheetSchemaEnum,
-          },
-        ],
-      } as Schema;
-    }
-  );
-
-  const spreadsheetAsyncState = useDeriveAsyncState(
-    googleAccountAsyncState,
-    spreadsheetIdAsyncState,
-    async (
-      googleAccount: SanitizedIntegrationConfig | null,
-      spreadsheetId: string | null
-    ) => {
-      if (spreadsheetId == null) {
-        return null;
-      }
-
-      // Sheets api handles fallback situation when googleAccount is null
-      return sheets.getSpreadsheet(
-        {
-          googleAccount,
-          spreadsheetId,
-        },
-        { includeGridData: true }
-      );
-    }
-  );
-
-  const spreadsheetFormAsyncState = useDeriveAsyncState(
-    spreadsheetAsyncState,
-    spreadsheetSchemaState,
-    async (spreadsheet: Spreadsheet, schema) => ({
-      spreadsheet,
-      schema,
-    })
+    joinName(blockConfigPath, "tabName")
   );
 
   return (
     <div className="my-2">
       <SchemaField
-        name={joinName(basePath, "googleAccount")}
+        name={joinName(blockConfigPath, "googleAccount")}
         schema={LOOKUP_SCHEMA.properties.googleAccount as Schema}
       />
-      <AsyncStateGate state={spreadsheetFormAsyncState}>
-        {({ data: { spreadsheet, schema } }) => (
+      <RequireGoogleSheet blockConfigPath={blockConfigPath}>
+        {({ spreadsheet, schema }) => (
           <FormErrorContext.Provider
             value={{
               shouldUseAnalysis: false,
@@ -194,7 +110,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
             }}
           >
             <SchemaField
-              name={joinName(basePath, "spreadsheetId")}
+              name={joinName(blockConfigPath, "spreadsheetId")}
               schema={schema}
               isRequired
             />
@@ -204,12 +120,12 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
               // Select mode is more important, so we're leaving it like this for now.
               <>
                 <TabField
-                  name={joinName(basePath, "tabName")}
+                  name={joinName(blockConfigPath, "tabName")}
                   schema={LOOKUP_SCHEMA.properties.tabName as Schema}
                   spreadsheet={spreadsheet}
                 />
                 <HeaderField
-                  name={joinName(basePath, "header")}
+                  name={joinName(blockConfigPath, "header")}
                   spreadsheet={spreadsheet}
                   tabName={tabName}
                 />
@@ -217,16 +133,16 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
             }
           </FormErrorContext.Provider>
         )}
-      </AsyncStateGate>
+      </RequireGoogleSheet>
       <SchemaField
-        name={joinName(basePath, "query")}
+        name={joinName(blockConfigPath, "query")}
         label="Query"
         description="Value to search for in the column"
         schema={LOOKUP_SCHEMA.properties.query as Schema}
         isRequired
       />
       <SchemaField
-        name={joinName(basePath, "multi")}
+        name={joinName(blockConfigPath, "multi")}
         label="All Matches"
         description="Toggle on to return an array of matches"
         schema={LOOKUP_SCHEMA.properties.multi as Schema}

@@ -59,7 +59,7 @@ async function deriveGoogleAccountIntegrationConfig(
  * Hook to get the Google account from an integration configuration or direct input.
  */
 function useGoogleAccount(
-  brickConfigPath: string
+  blockConfigPath: string
 ): FetchableAsyncState<SanitizedIntegrationConfig | null> {
   const {
     values: { services: servicesValue },
@@ -67,7 +67,7 @@ function useGoogleAccount(
 
   const [{ value: fieldValue }, , { setError }] = useField<
     Expression | undefined
-  >(joinName(brickConfigPath, "googleAccount"));
+  >(joinName(blockConfigPath, "googleAccount"));
 
   return useAsyncState(async () => {
     try {
