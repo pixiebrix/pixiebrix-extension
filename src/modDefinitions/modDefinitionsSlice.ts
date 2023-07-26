@@ -82,7 +82,7 @@ export const modDefinitionsSlice = createSlice({
       state.isFetching = true;
       state.isFetchingFromRemote = true;
     },
-    setRecipes(state, action: PayloadAction<ModDefinition[]>) {
+    setModDefinitions(state, action: PayloadAction<ModDefinition[]>) {
       setValueOnState(state, action.payload);
       state.isFetchingFromRemote = false;
       state.isLoadingFromRemote = false;
@@ -132,7 +132,7 @@ export const syncRemoteRecipes = createAsyncThunk<
     dispatch(modDefinitionsSlice.actions.startFetchingFromRemote());
     await syncRemotePackages();
     const recipes = await modDefinitionRegistry.all();
-    dispatch(modDefinitionsSlice.actions.setRecipes(recipes));
+    dispatch(modDefinitionsSlice.actions.setModDefinitions(recipes));
   } catch (error) {
     // Serialize because stored in Redux
     const serializedError = serializeError(error, { useToJSON: false });

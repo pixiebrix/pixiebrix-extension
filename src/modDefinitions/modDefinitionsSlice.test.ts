@@ -105,7 +105,7 @@ describe("refreshRecipes", () => {
     expect(syncRemotePackagesMock).toHaveBeenCalledTimes(1);
     expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setRecipes(cachedRecipes)
+      modDefinitionsActions.setModDefinitions(cachedRecipes)
     );
   });
 
@@ -154,7 +154,7 @@ describe("reducers", () => {
     };
     const nextState = modDefinitionsSlice.reducer(
       state,
-      modDefinitionsActions.setRecipes(recipes)
+      modDefinitionsActions.setModDefinitions(recipes)
     );
 
     expect(nextState).toEqual({
