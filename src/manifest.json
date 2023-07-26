@@ -22,7 +22,6 @@
   "content_scripts": [
     {
       "matches": ["https://*/*"],
-      "exclude_matches": ["https://*.googleapis.com/*"],
       "js": ["contentScript.js"],
       "css": ["contentScript.css"],
       "all_frames": true,
