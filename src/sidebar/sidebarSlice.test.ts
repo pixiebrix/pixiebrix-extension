@@ -257,7 +257,6 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as SidebarState;
 
-    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
     fixActiveTabOnRemove(state, newPanel);
 
     expect(state).toStrictEqual({
@@ -288,7 +287,6 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as SidebarState;
 
-    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
     fixActiveTabOnRemove(state, newPanel);
 
     expect(state).toStrictEqual({
@@ -323,7 +321,6 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as SidebarState;
 
-    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
     fixActiveTabOnRemove(state, newPanel);
 
     expect(state).toStrictEqual({
@@ -351,7 +348,6 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as SidebarState;
 
-    // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
     fixActiveTabOnRemove(state, newPanel);
 
     expect(state).toStrictEqual({
