@@ -19,7 +19,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllModDefinitions } from "@/modDefinitions/modDefinitionsSelectors";
 import { useCallback, useEffect } from "react";
-import { recipesActions } from "./modDefinitionsSlice";
+import { modDefinitionsActions } from "./modDefinitionsSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   type AsyncState,
@@ -130,7 +130,7 @@ export function useRequiredModDefinitions(
 export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
   const dispatch = useDispatch();
   const refetch = useCallback(
-    () => dispatch(recipesActions.syncRemoteRecipes()),
+    () => dispatch(modDefinitionsActions.syncRemoteRecipes()),
     [dispatch]
   );
   const state = useSelector(selectAllModDefinitions);
@@ -138,7 +138,7 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
   // First load from local database
   useEffect(() => {
     if (state.isCacheUninitialized) {
-      dispatch(recipesActions.loadModDefinitionsFromCache());
+      dispatch(modDefinitionsActions.loadModDefinitionsFromCache());
     }
   }, [dispatch, state.isCacheUninitialized]);
 
@@ -149,7 +149,7 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
       !state.isLoadingFromCache &&
       !state.isCacheUninitialized
     ) {
-      dispatch(recipesActions.syncRemoteRecipes());
+      dispatch(modDefinitionsActions.syncRemoteRecipes());
     }
   }, [
     dispatch,

@@ -140,7 +140,7 @@ export const syncRemoteRecipes = createAsyncThunk<
   }
 });
 
-export const recipesActions = {
+export const modDefinitionsActions = {
   ...modDefinitionsSlice.actions,
   loadModDefinitionsFromCache,
   syncRemoteRecipes,
