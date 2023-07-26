@@ -64,10 +64,7 @@ import {
   type SecretsConfig,
 } from "@/types/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
-import {
-  refreshGoogleTokens,
-  safeTokenRefresh,
-} from "@/background/refreshToken";
+import { refreshGoogleTokens } from "@/background/refreshToken";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
