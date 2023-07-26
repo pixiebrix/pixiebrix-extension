@@ -35,7 +35,10 @@ import {
 import { isAbsoluteUrl, isObject } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import {
+  GOOGLE_OAUTH_PKCE_INTEGRATION_ID,
+  PIXIEBRIX_SERVICE_ID,
+} from "@/services/constants";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   selectRemoteResponseErrorMessage,
@@ -61,6 +64,10 @@ import {
   type SecretsConfig,
 } from "@/types/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
+import {
+  refreshGoogleTokens,
+  safeTokenRefresh,
+} from "@/background/refreshToken";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
@@ -272,14 +279,31 @@ async function performConfiguredRequest(
       await authenticate(serviceConfig, requestConfig)
     );
   } catch (error) {
-    // Try again - have the user login again, or automatically try to get a new token
+    // Try again - automatically try to get a new token using the refresh token or have the user login again
 
     const axiosError = selectAxiosError(error);
 
     if (axiosError && isAuthenticationError(axiosError)) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
+        if (service.id === GOOGLE_OAUTH_PKCE_INTEGRATION_ID) {
+          try {
+            await refreshGoogleTokens();
+
+            return serializableAxiosRequest(
+              await authenticate(serviceConfig, requestConfig)
+            );
+          } catch (error) {
+            console.warn(
+              `Failed to refresh ${GOOGLE_OAUTH_PKCE_INTEGRATION_ID} token:`,
+              error
+            );
+          }
+        }
+
+        // Delete all cached auth data, which will require the user to login again.
         await deleteCachedAuthData(serviceConfig.id);
+
         return serializableAxiosRequest(
           await authenticate(serviceConfig, requestConfig)
         );

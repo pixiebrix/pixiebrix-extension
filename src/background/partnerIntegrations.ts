@@ -174,8 +174,14 @@ export async function launchAuthIntegration({
 /**
  * Refresh an Automation Anywhere JWT. NOOP if a JWT refresh token is not available.
  */
-export async function _refreshPartnerToken(): Promise<void> {
+export async function refreshPartnerToken(): Promise<void> {
+  expectContext("background");
+
   const authData = await readPartnerAuthData();
+
+  // TODO: remove this
+  console.info("Refreshing partner token", authData);
+
   if (authData.authId && authData.refreshToken) {
     console.debug("Refreshing partner JWT");
 
@@ -215,20 +221,8 @@ export async function _refreshPartnerToken(): Promise<void> {
         "X-Control-Room": config.config.controlRoomUrl,
       },
     });
-  }
-}
 
-export async function safeTokenRefresh(): Promise<void> {
-  try {
-    await _refreshPartnerToken();
-  } catch (error) {
-    console.warn("Failed to refresh partner token", error);
+    // TODO: remove this
+    console.log("Successfully refreshed partner token at", new Date());
   }
-}
-
-/**
- * Refresh partner JWT every 10 minutes, if a refresh token is available.
- */
-export function initPartnerTokenRefresh(): void {
-  setInterval(safeTokenRefresh, 1000 * 60 * 10);
 }
