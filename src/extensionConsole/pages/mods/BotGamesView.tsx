@@ -27,7 +27,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
 import AsyncButton from "@/components/AsyncButton";
-import { ensureModDefinitionPermissionsFromUserGesture } from "@/permissions/modDefinitionPermissionsHelpers";
+import { ensureModDefinitionPermissionsFromUserGesture } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;

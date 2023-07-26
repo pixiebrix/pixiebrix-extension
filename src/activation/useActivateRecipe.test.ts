@@ -26,7 +26,7 @@ import { reactivateEveryTab } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
-import { checkModDefinitionPermissions } from "@/permissions/modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
