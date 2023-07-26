@@ -63,7 +63,7 @@ export const modDefinitionsSlice = createSlice({
       state.isCacheUninitialized = false;
       state.isLoadingFromCache = true;
     },
-    setRecipesFromCache(state, action: PayloadAction<ModDefinition[]>) {
+    setModDefinitionsFromCache(state, action: PayloadAction<ModDefinition[]>) {
       // NOTE: there will be a flash of `isFetching: false` before the remote fetch starts
       setValueOnState(state, action.payload);
       state.isLoadingFromCache = false;
@@ -113,7 +113,7 @@ const loadModDefinitionsFromCache = createAsyncThunk<
   try {
     dispatch(modDefinitionsSlice.actions.startFetchingFromCache());
     const recipes = await recipeRegistry.all();
-    dispatch(modDefinitionsSlice.actions.setRecipesFromCache(recipes));
+    dispatch(modDefinitionsSlice.actions.setModDefinitionsFromCache(recipes));
   } catch {
     dispatch(modDefinitionsSlice.actions.setCacheError());
   }
@@ -142,6 +142,6 @@ export const syncRemoteRecipes = createAsyncThunk<
 
 export const recipesActions = {
   ...modDefinitionsSlice.actions,
-  loadRecipesFromCache: loadModDefinitionsFromCache,
+  loadModDefinitionsFromCache,
   syncRemoteRecipes,
 };

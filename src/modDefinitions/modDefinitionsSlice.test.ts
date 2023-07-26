@@ -47,13 +47,13 @@ const syncRemotePackagesMock = syncRemotePackages as jest.MockedFn<
   typeof syncRemotePackages
 >;
 
-describe("loadRecipesFromCache", () => {
-  test("calls registry and dispatches setRecipesFromCache action", async () => {
+describe("loadModDefinitionsFromCache", () => {
+  test("calls registry and dispatches setModDefinitionsFromCache action", async () => {
     const dispatch = jest.fn();
     const cachedRecipes = [recipeFactory()];
     (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
 
-    const thunkFunction = recipesActions.loadRecipesFromCache();
+    const thunkFunction = recipesActions.loadModDefinitionsFromCache();
     await thunkFunction(
       dispatch,
       () => ({ modDefinitions: initialState }),
@@ -61,7 +61,7 @@ describe("loadRecipesFromCache", () => {
     );
     expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      recipesActions.setRecipesFromCache(cachedRecipes)
+      recipesActions.setModDefinitionsFromCache(cachedRecipes)
     );
   });
 });

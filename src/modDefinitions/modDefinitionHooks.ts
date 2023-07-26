@@ -138,7 +138,7 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
   // First load from local database
   useEffect(() => {
     if (state.isCacheUninitialized) {
-      dispatch(recipesActions.loadRecipesFromCache());
+      dispatch(recipesActions.loadModDefinitionsFromCache());
     }
   }, [dispatch, state.isCacheUninitialized]);
 
