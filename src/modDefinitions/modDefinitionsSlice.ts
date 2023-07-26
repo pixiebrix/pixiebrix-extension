@@ -77,7 +77,7 @@ export const modDefinitionsSlice = createSlice({
         state.isLoadingFromRemote = true;
       }
 
-      // Don't reset currentData, because the recipes slice doesn't take any inputs arguments
+      // Don't reset currentData, because the mod definitions slice doesn't take any inputs arguments
       state.isRemoteUninitialized = false;
       state.isFetching = true;
       state.isFetchingFromRemote = true;
@@ -107,13 +107,15 @@ const loadModDefinitionsFromCache = createAsyncThunk<
   { state: ModDefinitionsRootState }
 >("modDefinitions/loadFromCache", async (arg, { dispatch, getState }) => {
   if (!getState().modDefinitions.isCacheUninitialized) {
-    throw new Error("Already loaded recipes from cache");
+    throw new Error("Already loaded mod definitions from cache");
   }
 
   try {
     dispatch(modDefinitionsSlice.actions.startFetchingFromCache());
-    const recipes = await modDefinitionRegistry.all();
-    dispatch(modDefinitionsSlice.actions.setModDefinitionsFromCache(recipes));
+    const modDefinitions = await modDefinitionRegistry.all();
+    dispatch(
+      modDefinitionsSlice.actions.setModDefinitionsFromCache(modDefinitions)
+    );
   } catch {
     dispatch(modDefinitionsSlice.actions.setCacheError());
   }
