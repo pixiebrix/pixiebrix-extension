@@ -99,9 +99,9 @@ export const modDefinitionsSlice = createSlice({
 });
 
 /**
- * Load recipes from the local database.
+ * Load mod definitions from the local database.
  */
-const loadRecipesFromCache = createAsyncThunk<
+const loadModDefinitionsFromCache = createAsyncThunk<
   void,
   void,
   { state: ModDefinitionsRootState }
@@ -142,6 +142,6 @@ export const syncRemoteRecipes = createAsyncThunk<
 
 export const recipesActions = {
   ...modDefinitionsSlice.actions,
-  loadRecipesFromCache,
+  loadRecipesFromCache: loadModDefinitionsFromCache,
   syncRemoteRecipes,
 };
