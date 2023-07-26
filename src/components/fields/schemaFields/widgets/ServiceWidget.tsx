@@ -186,12 +186,12 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
     useField<Expression<ServiceVarRef>>(props);
 
   const { serviceIds, options } = useMemo(() => {
-    const extractedServiceIds = extractServiceIds(schema);
+    const serviceIds = extractServiceIds(schema);
     return {
-      serviceIds: extractedServiceIds,
-      options: isEmpty(extractedServiceIds)
+      serviceIds,
+      options: isEmpty(serviceIds)
         ? authOptions
-        : authOptions.filter((x) => extractedServiceIds.includes(x.serviceId)),
+        : authOptions.filter((x) => serviceIds.includes(x.serviceId)),
     };
   }, [authOptions, schema]);
 
