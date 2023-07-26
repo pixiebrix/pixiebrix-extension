@@ -53,10 +53,31 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   ...schemaFieldProps
 }) => {
   const [{ value }, , { setValue }] = useField(schemaFieldProps.name);
-  const { inputMode, onOmitField } = useToggleFormField(
+
+  const { inputMode: inferredInputMode, onOmitField } = useToggleFormField(
     schemaFieldProps.name,
     schemaFieldProps.schema
   );
+  const [inputMode, setInputMode] = useState<FieldInputMode>(inferredInputMode);
+
+  useEffect(() => {
+    if (
+      inferredInputMode &&
+      (!inputMode ||
+        !inputModeOptions.some((option) => option.value === inputMode))
+    ) {
+      setInputMode(inferredInputMode);
+    }
+
+    // XXX: Figure out a less hacky way to handle this
+    // fix string expression inference
+    if (inputMode === "var" && inferredInputMode === "string") {
+      setInputMode("string");
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Don't run when inputMode changes, we're setting it here
+  }, [inferredInputMode, inputModeOptions]);
+
   const defaultInputRef = useRef<HTMLElement>();
   const inputRef = inputRefProp ?? defaultInputRef;
   const selectedOption = getOptionForInputMode(inputModeOptions, inputMode);
@@ -91,6 +112,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         newInputMode
       );
 
+      setInputMode(newInputMode);
       // Already handled "omit" and returned above
       setValue(interpretValue(value));
       setFocusInput(true);
@@ -103,6 +125,10 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     focusInput,
     inputRef,
   };
+
+  if (selectedOption?.fieldSchemaOverride != null) {
+    widgetProps.schema = selectedOption.fieldSchemaOverride;
+  }
 
   if (inputMode === "omit") {
     const optionValues = new Set(

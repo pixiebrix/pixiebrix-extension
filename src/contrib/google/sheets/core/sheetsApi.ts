@@ -214,8 +214,7 @@ async function getRows(
     url += `!${range}`;
   }
 
-  const requestConfig: AxiosRequestConfig<never> = { url, method: "get" };
-  return executeRequest<ValueRange>(requestConfig, googleAccount);
+  return executeRequest<ValueRange>({ url, method: "get" }, googleAccount);
 }
 
 export async function getAllRows(
@@ -230,15 +229,20 @@ export async function getHeaders(target: SpreadsheetTarget): Promise<string[]> {
   return values[0]?.map(String);
 }
 
-export async function getSpreadsheet({
-  googleAccount,
-  spreadsheetId,
-}: SpreadsheetTarget): Promise<Spreadsheet> {
-  const requestConfig: AxiosRequestConfig<never> = {
-    url: `${SHEETS_BASE_URL}/${spreadsheetId}`,
-    method: "get",
-  };
-  return executeRequest<Spreadsheet>(requestConfig, googleAccount);
+type GetSpreadsheetOptions = {
+  includeGridData?: boolean;
+};
+
+export async function getSpreadsheet(
+  { googleAccount, spreadsheetId }: SpreadsheetTarget,
+  { includeGridData }: GetSpreadsheetOptions = {}
+): Promise<Spreadsheet> {
+  let url = `${SHEETS_BASE_URL}/${spreadsheetId}`;
+  if (includeGridData) {
+    url += "?includeGridData=true";
+  }
+
+  return executeRequest<Spreadsheet>({ url, method: "get" }, googleAccount);
 }
 
 /**

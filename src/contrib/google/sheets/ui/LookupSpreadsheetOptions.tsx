@@ -15,57 +15,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { joinName } from "@/utils";
 import TabField from "@/contrib/google/sheets/ui/TabField";
-import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
 import { isEmpty, isEqual } from "lodash";
 import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
 import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
-import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
+import useAsyncState from "@/hooks/useAsyncState";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import AsyncStateGate from "@/components/AsyncStateGate";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 
 const HeaderField: React.FunctionComponent<{
   name: string;
-  spreadsheetId: string | null;
+  spreadsheet: Spreadsheet | null;
   tabName: string | Expression;
-}> = ({ name, spreadsheetId, tabName }) => {
-  const [
-    { value: headerValue },
-    ,
-    { setValue: setHeaderValue, setError: setHeaderError },
-  ] = useField<string | Expression>(name);
+}> = ({ name, spreadsheet, tabName }) => {
+  const [{ value: headerValue }, , { setValue: setHeaderValue }] = useField<
+    string | Expression
+  >(name);
 
-  const [headers, loading, error] = useAsyncState<string[]>(
-    async () => {
-      if (spreadsheetId && tabName && !isExpression(tabName)) {
-        const target: SpreadsheetTarget = {
-          googleAccount: null,
-          spreadsheetId,
-          tabName,
-        };
-        return sheets.getHeaders(target);
-      }
+  const rawTabName = isExpression(tabName) ? tabName.__value__ : tabName;
 
-      return [];
-    },
-    [spreadsheetId, tabName],
-    []
+  const sheet = spreadsheet?.sheets?.find(
+    (sheet) => sheet.properties.title === rawTabName
   );
+  const headers =
+    sheet?.data?.[0]?.rowData?.[0]?.values?.map(
+      (value) => value.formattedValue
+    ) ?? [];
+  const fieldSchema: Schema = {
+    type: "string",
+    title: "Column Header",
+    description: "The column header to use for the lookup",
+    enum: headers,
+  };
 
   // Clear header when tabName changes, if the current value is not
   // an expression, which means it is a selected header from another tab.
@@ -75,12 +74,9 @@ const HeaderField: React.FunctionComponent<{
     }
   });
 
-  // If we've loaded tab names and the tab name is not set, set it to the first tab name.
-  // Check to make sure there's not an error, so we're not setting it to the first value
-  // of a stale list of tabs, and check the tab name value itself to prevent an infinite
-  // re-render loop here.
+  // If we've loaded headers and the header value is not set, set it to the first header.
   useEffect(() => {
-    if (loading || error || isEmpty(headers)) {
+    if (isEmpty(headers)) {
       return;
     }
 
@@ -91,26 +87,6 @@ const HeaderField: React.FunctionComponent<{
       setHeaderValue(headers[0]);
     }
   });
-
-  const fieldSchema = useMemo<Schema>(
-    () => ({
-      type: "string",
-      title: "Column Header",
-      description: "The column header to use for the lookup",
-      enum: headers ?? [],
-    }),
-    [headers]
-  );
-
-  useEffect(
-    () => {
-      if (!loading && error) {
-        setHeaderError("Error loading headers: " + getErrorMessage(error));
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik setters change on every render
-    [error, loading]
-  );
 
   return (
     <SchemaField
@@ -127,7 +103,8 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   configKey,
 }) => {
   const basePath = joinName(name, configKey);
-  const spreadsheetId = useSpreadsheetId(basePath);
+  const googleAccountAsyncState = useGoogleAccount(basePath);
+  const spreadsheetIdAsyncState = useSpreadsheetId(basePath);
 
   const [{ value: tabNameValue }] = useField<string | Expression>(
     joinName(basePath, "tabName")
@@ -148,48 +125,120 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     isEqual
   );
 
-  const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
+  const baseSchemaAsyncState = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
     [],
-    BASE_SHEET_SCHEMA
+    {
+      initialValue: BASE_SHEET_SCHEMA,
+    }
+  );
+
+  const spreadsheetSchemaState = useDeriveAsyncState(
+    googleAccountAsyncState,
+    baseSchemaAsyncState,
+    async (
+      googleAccount: SanitizedIntegrationConfig | null,
+      baseSchema: Schema
+    ) => {
+      if (googleAccount == null) {
+        return baseSchema;
+      }
+
+      const spreadsheetFileList = await sheets.getAllSpreadsheets(
+        googleAccount
+      );
+      if (isEmpty(spreadsheetFileList.files)) {
+        return baseSchema;
+      }
+
+      const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
+        const: file.id,
+        title: file.name,
+      }));
+      return {
+        title: "Spreadsheet",
+        oneOf: [
+          baseSchema,
+          {
+            type: "string",
+            oneOf: spreadsheetSchemaEnum,
+          },
+        ],
+      } as Schema;
+    }
+  );
+
+  const spreadsheetAsyncState = useDeriveAsyncState(
+    googleAccountAsyncState,
+    spreadsheetIdAsyncState,
+    async (
+      googleAccount: SanitizedIntegrationConfig | null,
+      spreadsheetId: string | null
+    ) => {
+      if (spreadsheetId == null) {
+        return null;
+      }
+
+      // Sheets api handles fallback situation when googleAccount is null
+      return sheets.getSpreadsheet(
+        {
+          googleAccount,
+          spreadsheetId,
+        },
+        { includeGridData: true }
+      );
+    }
+  );
+
+  const spreadsheetFormAsyncState = useDeriveAsyncState(
+    spreadsheetAsyncState,
+    spreadsheetSchemaState,
+    async (spreadsheet: Spreadsheet, schema) => ({
+      spreadsheet,
+      schema,
+    })
   );
 
   return (
     <div className="my-2">
-      {isLoadingSheetSchema ? (
-        <Loader />
-      ) : (
-        <FormErrorContext.Provider
-          value={{
-            shouldUseAnalysis: false,
-            showUntouchedErrors: true,
-            showFieldActions: false,
-          }}
-        >
-          <SchemaField
-            name={joinName(basePath, "spreadsheetId")}
-            schema={sheetSchema}
-            isRequired
-          />
-          {
-            // The problem with including these inside the nested FormErrorContext.Provider is that we
-            // would like analysis to run if they are in text/template mode, but not in select mode.
-            // Select mode is more important, so we're leaving it like this for now.
-            <>
-              <TabField
-                name={joinName(basePath, "tabName")}
-                schema={LOOKUP_SCHEMA.properties.tabName as Schema}
-                spreadsheetId={spreadsheetId}
-              />
-              <HeaderField
-                name={headerFieldName}
-                spreadsheetId={spreadsheetId}
-                tabName={tabNameValue}
-              />
-            </>
-          }
-        </FormErrorContext.Provider>
-      )}
+      <SchemaField
+        name={joinName(basePath, "googleAccount")}
+        schema={LOOKUP_SCHEMA.properties.googleAccount as Schema}
+      />
+      <AsyncStateGate state={spreadsheetFormAsyncState}>
+        {({ data: { spreadsheet, schema } }) => (
+          <FormErrorContext.Provider
+            value={{
+              shouldUseAnalysis: false,
+              showUntouchedErrors: true,
+              showFieldActions: false,
+            }}
+          >
+            <SchemaField
+              name={joinName(basePath, "spreadsheetId")}
+              schema={schema}
+              isRequired
+            />
+            {
+              // The problem with including these inside the nested FormErrorContext.Provider is that we
+              // would like analysis to run if they are in text/template mode, but not in select mode.
+              // Select mode is more important, so we're leaving it like this for now.
+              <>
+                <TabField
+                  name={joinName(basePath, "tabName")}
+                  schema={LOOKUP_SCHEMA.properties.tabName as Schema}
+                  spreadsheet={spreadsheet}
+                />
+                <HeaderField
+                  name={headerFieldName}
+                  spreadsheet={spreadsheet}
+                  tabName={tabNameValue}
+                />
+              </>
+            }
+          </FormErrorContext.Provider>
+        )}
+      </AsyncStateGate>
       <SchemaField
         name={joinName(basePath, "query")}
         label="Query"

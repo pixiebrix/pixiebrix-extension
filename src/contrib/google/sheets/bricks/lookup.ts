@@ -36,9 +36,10 @@ export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
 export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
   {
     googleAccount: {
+      title: "Google Account",
       oneOf: [
         {
-          $ref: "https://app.pixiebrix.com/schemas/services/google/ouath2-pkce",
+          $ref: "https://app.pixiebrix.com/schemas/services/google/oauth2-pkce",
         },
       ],
     },
@@ -113,7 +114,7 @@ export class GoogleSheetsLookup extends TransformerABC {
         ? spreadsheetIdArg
         : spreadsheetIdArg.config.spreadsheetId;
     const target: SpreadsheetTarget = {
-      googleAccount: null,
+      googleAccount,
       spreadsheetId,
       tabName,
     };
