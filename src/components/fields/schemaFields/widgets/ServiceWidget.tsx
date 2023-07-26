@@ -187,12 +187,11 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
 
   const { serviceIds, options } = useMemo(() => {
     const extractedServiceIds = extractServiceIds(schema);
-    const options = isEmpty(extractedServiceIds)
-      ? authOptions
-      : authOptions.filter((x) => extractedServiceIds.includes(x.serviceId));
     return {
       serviceIds: extractedServiceIds,
-      options,
+      options: isEmpty(extractedServiceIds)
+        ? authOptions
+        : authOptions.filter((x) => extractedServiceIds.includes(x.serviceId)),
     };
   }, [authOptions, schema]);
 
