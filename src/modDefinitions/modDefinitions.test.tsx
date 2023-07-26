@@ -39,33 +39,33 @@ beforeAll(() => {
   appApiMock.reset();
 });
 
-// The test "loads" recipes from server and attempts to save the first (and the only) recipe
-// It verifies the proper API calls and the recipe schema "sent" to the server
-test("load recipes and save one", async () => {
-  // This is the shape of a recipe that we get from the API /api/recipes/ endpoint
-  const sourceRecipe = recipeFactory();
+// The test "loads" mod definitions from server and attempts to save the first (and the only) mod definition
+// It verifies the proper API calls and the mod definition schema "sent" to the server
+test("load mod definitions and save one", async () => {
+  // This is the shape of a mod definition that we get from the API /api/recipes/ endpoint
+  const sourceModDefinition = recipeFactory();
 
   const packageId = uuidv4();
-  const recipeId = validateRegistryId(sourceRecipe.metadata.id);
-  let resultRecipeDefinition: any; // Holds the data that will be sent to the API
+  const modDefinitionId = validateRegistryId(sourceModDefinition.metadata.id);
+  let resultModDefinition: any; // Holds the data that will be sent to the API
 
   appApiMock
     .onGet("/api/registry/bricks/")
-    .reply(200, [sourceRecipe])
+    .reply(200, [sourceModDefinition])
     .onGet("/api/bricks/")
     .reply(200, [
       {
         id: packageId,
-        name: recipeId,
+        name: modDefinitionId,
       },
     ])
     .onPut(`/api/bricks/${packageId}/`)
     .reply(({ data }) => {
-      resultRecipeDefinition = JSON.parse(data as string);
+      resultModDefinition = JSON.parse(data as string);
       return [201, { data }];
     });
 
-  // Pre-populate IDB with the recipe
+  // Pre-populate IDB with the mod definition
   await localRegistry.syncPackages();
 
   // Sanity check that localRegistry.syncPackages fetches from server
@@ -86,10 +86,10 @@ test("load recipes and save one", async () => {
     // Internally useSaveRecipe calls useAllModDefinitions.
     // To make it more transparent and realistic we use useAllModDefinitions here
     // The hook will:
-    // - load the recipes from server
-    // - parse the raw recipes and save them to the registry (local storage)
-    // - return all the recipes from the registry to the caller
-    const { data: allRecipes, isFetching } = defaultInitialValue(
+    // - load the mod definitions from server
+    // - parse the raw mod definitions and save them to the registry (local storage)
+    // - return all the mod definitions from the registry to the caller
+    const { data: allModDefinitions, isFetching } = defaultInitialValue(
       useAllModDefinitions(),
       []
     );
@@ -98,15 +98,15 @@ test("load recipes and save one", async () => {
 
     // Track if saveRecipe has been called
     const calledSave = React.useRef(false);
-    // Track if re-fetching of the recipes by the registry has been called
+    // Track if re-fetching of the mod definitions by the registry has been called
     const calledRefetch = React.useRef(false);
 
-    if (!isFetching && allRecipes.length > 0 && !calledSave.current) {
+    if (!isFetching && allModDefinitions.length > 0 && !calledSave.current) {
       // The saveRecipe action involves
       // - preparing a recipe for saving
       // - calling RTK Query mutation
       // - saving the recipe to the server
-      void saveRecipe(recipeId);
+      void saveRecipe(modDefinitionId);
       calledSave.current = true;
     }
 
@@ -123,7 +123,7 @@ test("load recipes and save one", async () => {
     return (
       <div>
         {isFetching ? "Fetching" : "Not Fetching"}
-        {`Got ${allRecipes.length} recipes`}
+        {`Got ${allModDefinitions.length} mod definitions`}
         {isSavingRecipe ? "Saving" : "Not Saving"}
         {calledSave.current ? "Called Save" : "Not Called Save"}
       </div>
@@ -132,7 +132,7 @@ test("load recipes and save one", async () => {
 
   render(<TestComponent />);
 
-  // Let the registry and the RTK Query to load and update a recipe
+  // Let the registry and the RTK Query to load and update a mod definition
   await act(async () => fetchingSavingPromise.promise);
 
   expect(appApiMock.history.get.map((x) => x.url)).toEqual([
@@ -142,9 +142,9 @@ test("load recipes and save one", async () => {
     "/api/bricks/",
   ]);
 
-  // Validate the recipe config sent to server
+  // Validate the config sent to server
   const validationResult = await validateSchema(
-    resultRecipeDefinition.config as string
+    resultModDefinition.config as string
   );
   expect(validationResult).toEqual({});
 });
