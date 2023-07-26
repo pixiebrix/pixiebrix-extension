@@ -91,7 +91,7 @@ const store = configureStore({
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
-    recipes: modDefinitionsSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {

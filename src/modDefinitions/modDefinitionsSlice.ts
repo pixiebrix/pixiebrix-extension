@@ -53,7 +53,7 @@ export const initialState: ModDefinitionsState = Object.freeze({
 });
 
 export const modDefinitionsSlice = createSlice({
-  name: "recipes",
+  name: "modDefinitions",
   initialState,
   reducers: {
     startFetchingFromCache(state) {
@@ -105,8 +105,8 @@ const loadModDefinitionsFromCache = createAsyncThunk<
   void,
   void,
   { state: ModDefinitionsRootState }
->("recipes/loadFromCache", async (arg, { dispatch, getState }) => {
-  if (!getState().recipes.isCacheUninitialized) {
+>("modDefinitions/loadFromCache", async (arg, { dispatch, getState }) => {
+  if (!getState().modDefinitions.isCacheUninitialized) {
     throw new Error("Already loaded recipes from cache");
   }
 
@@ -123,8 +123,8 @@ export const syncRemoteRecipes = createAsyncThunk<
   void,
   void,
   { state: ModDefinitionsRootState }
->("recipes/refresh", async (arg, { dispatch, getState }) => {
-  if (getState().recipes.isFetchingFromRemote) {
+>("modDefinitions/refresh", async (arg, { dispatch, getState }) => {
+  if (getState().modDefinitions.isFetchingFromRemote) {
     throw new Error("Already fetching recipes from server");
   }
 

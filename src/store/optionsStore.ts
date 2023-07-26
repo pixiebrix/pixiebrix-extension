@@ -104,7 +104,7 @@ const store = configureStore({
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     modModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
-    recipes: modDefinitionsSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     session: sessionSlice.reducer,
     sessionChanges: persistReducer(
       persistSessionChangesConfig,

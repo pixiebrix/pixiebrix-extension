@@ -40,7 +40,7 @@ function optionsStore(initialState?: UnknownObject) {
       modsPage: modsPageSlice.reducer,
       options: extensionsSlice.reducer,
       modModals: modModalsSlice.reducer,
-      recipes: modDefinitionsSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

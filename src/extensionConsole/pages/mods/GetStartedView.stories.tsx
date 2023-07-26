@@ -40,7 +40,7 @@ function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
       modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
-      recipes: modDefinitionsSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,
     },

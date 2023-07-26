@@ -27,5 +27,5 @@ export type ModDefinitionsState = Except<
 >;
 
 export type ModDefinitionsRootState = {
-  recipes: ModDefinitionsState;
+  modDefinitions: ModDefinitionsState;
 };

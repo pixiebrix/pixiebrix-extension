@@ -54,7 +54,11 @@ describe("loadRecipesFromCache", () => {
     (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
 
     const thunkFunction = recipesActions.loadRecipesFromCache();
-    await thunkFunction(dispatch, () => ({ recipes: initialState }), undefined);
+    await thunkFunction(
+      dispatch,
+      () => ({ modDefinitions: initialState }),
+      undefined
+    );
     expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
       recipesActions.setRecipesFromCache(cachedRecipes)
@@ -70,7 +74,7 @@ describe("refreshRecipes", () => {
     await thunkFunction(
       dispatch,
       () => ({
-        recipes: {
+        modDefinitions: {
           ...initialState,
           isFetchingFromRemote: true,
           isRemoteUninitialized: false,
@@ -91,7 +95,7 @@ describe("refreshRecipes", () => {
     const thunkFunction = recipesActions.syncRemoteRecipes();
     await thunkFunction(
       dispatch,
-      () => ({ recipes: {} } as ModDefinitionsRootState),
+      () => ({ modDefinitions: {} } as ModDefinitionsRootState),
       undefined
     );
 
@@ -114,7 +118,7 @@ describe("refreshRecipes", () => {
     const thunkFunction = recipesActions.syncRemoteRecipes();
     await thunkFunction(
       dispatch,
-      () => ({ recipes: {} } as ModDefinitionsRootState),
+      () => ({ modDefinitions: {} } as ModDefinitionsRootState),
       undefined
     );
 

@@ -39,7 +39,7 @@ const configureStoreForTests = () =>
       options: extensionsSlice.reducer,
       modModals: modModalsSlice.reducer,
       modsPage: modsPageSlice.reducer,
-      recipes: modDefinitionsSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       services: servicesSlice.reducer,
       workshop: workshopSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,

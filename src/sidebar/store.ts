@@ -50,7 +50,7 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     // `services` slice is used to determine login state for partner installs
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
-    recipes: modDefinitionsSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
