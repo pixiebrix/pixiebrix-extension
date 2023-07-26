@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
@@ -36,20 +36,26 @@ const TabField: React.FC<
   const inputRef = useRef<HTMLTextAreaElement>();
 
   const [
-    { value: tabNameFieldValue },
+    { value: tabName },
     ,
-    { setValue: setTabNameValue, setError: setTabNameError },
+    { setValue: setTabName, setError: setTabNameError },
   ] = useField<string | Expression>(name);
 
   const tabNames =
     spreadsheet?.sheets?.map((sheet) => sheet.properties.title) ??
     emptyTabNames;
+  const fieldSchema: Schema = {
+    type: "string",
+    title: "Tab Name",
+    description: "The spreadsheet tab",
+    enum: tabNames,
+  };
 
   // Clear tab name when spreadsheetId changes, if the current value is not
   // an expression, which means it is a selected tab name from another sheet.
   useOnChangeEffect(spreadsheet?.spreadsheetId, () => {
-    if (!isTemplateExpression(tabNameFieldValue)) {
-      setTabNameValue(makeTemplateExpression("nunjucks", ""));
+    if (!isTemplateExpression(tabName)) {
+      setTabName(makeTemplateExpression("nunjucks", ""));
       setTabNameError(null);
     }
   });
@@ -63,25 +69,12 @@ const TabField: React.FC<
       return;
     }
 
-    if (
-      !tabNameFieldValue ||
-      (isExpression(tabNameFieldValue) && isEmpty(tabNameFieldValue.__value__))
-    ) {
-      setTabNameValue(tabNames[0]);
+    if (!tabName || (isExpression(tabName) && isEmpty(tabName.__value__))) {
+      setTabName(tabNames[0]);
       setTabNameError(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- don't include formik helpers
-  }, [tabNameFieldValue, tabNames]);
-
-  const fieldSchema = useMemo<Schema>(
-    () => ({
-      type: "string",
-      title: "Tab Name",
-      description: "The spreadsheet tab",
-      enum: tabNames ?? [],
-    }),
-    [tabNames]
-  );
+  }, [tabName, tabNames]);
 
   // TODO: re-add info message that tab will be created
   // {!tabsPending &&

@@ -70,7 +70,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     }
 
     // XXX: Figure out a less hacky way to handle this
-    // fix string expression inference
+    // fix string expression inference - main use here is when var field auto-swaps to text when user types a space
     if (inputMode === "var" && inferredInputMode === "string") {
       setInputMode("string");
     }

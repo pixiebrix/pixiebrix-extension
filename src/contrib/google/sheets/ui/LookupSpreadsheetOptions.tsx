@@ -40,25 +40,18 @@ import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
+import getHeadersForSpreadsheetTab from "@/contrib/google/sheets/core/getHeadersForSpreadsheetTab";
 
 const HeaderField: React.FunctionComponent<{
   name: string;
   spreadsheet: Spreadsheet | null;
   tabName: string | Expression;
 }> = ({ name, spreadsheet, tabName }) => {
-  const [{ value: headerValue }, , { setValue: setHeaderValue }] = useField<
+  const [{ value: header }, , { setValue: setHeader }] = useField<
     string | Expression
   >(name);
 
-  const rawTabName = isExpression(tabName) ? tabName.__value__ : tabName;
-
-  const sheet = spreadsheet?.sheets?.find(
-    (sheet) => sheet.properties.title === rawTabName
-  );
-  const headers =
-    sheet?.data?.[0]?.rowData?.[0]?.values?.map(
-      (value) => value.formattedValue
-    ) ?? [];
+  const headers = getHeadersForSpreadsheetTab(spreadsheet, tabName);
   const fieldSchema: Schema = {
     type: "string",
     title: "Column Header",
@@ -68,11 +61,15 @@ const HeaderField: React.FunctionComponent<{
 
   // Clear header when tabName changes, if the current value is not
   // an expression, which means it is a selected header from another tab.
-  useOnChangeEffect(tabName, () => {
-    if (!isTemplateExpression(headerValue)) {
-      setHeaderValue(makeTemplateExpression("nunjucks", ""));
-    }
-  });
+  useOnChangeEffect(
+    tabName,
+    () => {
+      if (!isTemplateExpression(header)) {
+        setHeader(makeTemplateExpression("nunjucks", ""));
+      }
+    },
+    isEqual
+  );
 
   // If we've loaded headers and the header value is not set, set it to the first header.
   useEffect(() => {
@@ -80,11 +77,8 @@ const HeaderField: React.FunctionComponent<{
       return;
     }
 
-    if (
-      !headerValue ||
-      (isExpression(headerValue) && isEmpty(headerValue.__value__))
-    ) {
-      setHeaderValue(headers[0]);
+    if (!header || (isExpression(header) && isEmpty(header.__value__))) {
+      setHeader(headers[0]);
     }
   });
 
@@ -106,23 +100,8 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const googleAccountAsyncState = useGoogleAccount(basePath);
   const spreadsheetIdAsyncState = useSpreadsheetId(basePath);
 
-  const [{ value: tabNameValue }] = useField<string | Expression>(
+  const [{ value: tabName }] = useField<string | Expression>(
     joinName(basePath, "tabName")
-  );
-  const headerFieldName = joinName(basePath, "header");
-  const [{ value: headerValue }, , { setValue: setHeaderValue }] = useField<
-    string | Expression
-  >(headerFieldName);
-
-  // Clear the header value when the tab name changes, if the value is not an expression, or is empty
-  useOnChangeEffect(
-    tabNameValue,
-    () => {
-      if (!isTemplateExpression(headerValue)) {
-        setHeaderValue(makeTemplateExpression("nunjucks", ""));
-      }
-    },
-    isEqual
   );
 
   const baseSchemaAsyncState = useAsyncState(
@@ -230,9 +209,9 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
                   spreadsheet={spreadsheet}
                 />
                 <HeaderField
-                  name={headerFieldName}
+                  name={joinName(basePath, "header")}
                   spreadsheet={spreadsheet}
-                  tabName={tabNameValue}
+                  tabName={tabName}
                 />
               </>
             }
