@@ -212,9 +212,17 @@ export type AuthState = {
   readonly extension: boolean;
 
   /**
-   *  The primary organization for the user
+   *  The primary organization for the user, or null.
    */
   readonly organization?: OrganizationAuthState | null;
+
+  /**
+   * The enterprise organization used for telemetry collection, or null. Generally, if set, this will be the same as the
+   * user's primary organization.
+   *
+   * @since 1.7.35
+   */
+  readonly telemetryOrganizationId?: UUID | null;
 
   /**
    * Organizations the user is a member of
