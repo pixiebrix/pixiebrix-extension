@@ -21,8 +21,8 @@ import { syncRemoteRecipes } from "./modDefinitionsSlice";
 
 const apiEndpoints = appApi.endpoints;
 
-const recipesListenerMiddleware = createListenerMiddleware();
-recipesListenerMiddleware.startListening({
+const modDefinitionsListenerMiddleware = createListenerMiddleware();
+modDefinitionsListenerMiddleware.startListening({
   matcher: isAnyOf(
     apiEndpoints.createRecipe.matchFulfilled,
     apiEndpoints.updateRecipe.matchFulfilled,
@@ -35,4 +35,5 @@ recipesListenerMiddleware.startListening({
   },
 });
 
-export const recipesMiddleware = recipesListenerMiddleware.middleware;
+export const modDefinitionsMiddleware =
+  modDefinitionsListenerMiddleware.middleware;

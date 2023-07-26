@@ -50,7 +50,7 @@ import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
-import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import {
   persistSessionChangesConfig,
@@ -121,7 +121,7 @@ const store = configureStore({
       },
     })
       .concat(appApi.middleware)
-      .concat(recipesMiddleware)
+      .concat(modDefinitionsMiddleware)
       .concat(routerMiddleware(hashHistory))
       .concat(conditionalMiddleware)
       .concat(sessionChangesMiddleware)

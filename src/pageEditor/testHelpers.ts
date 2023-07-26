@@ -34,7 +34,7 @@ import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { appApi } from "@/services/api";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
-import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -58,7 +58,7 @@ const configureStoreForTests = () =>
       return getDefaultMiddleware()
         .concat(appApi.middleware)
         .concat(pageEditorAnalysisManager.middleware)
-        .concat(recipesMiddleware);
+        .concat(modDefinitionsMiddleware);
       /* eslint-enable unicorn/prefer-spread */
     },
   });

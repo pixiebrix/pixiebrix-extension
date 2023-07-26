@@ -17,7 +17,7 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAllRecipes } from "@/modDefinitions/recipesSelectors";
+import { selectAllModDefinitions } from "@/modDefinitions/modDefinitionsSelectors";
 import { useCallback, useEffect } from "react";
 import { recipesActions } from "./modDefinitionsSlice";
 import { type RegistryId } from "@/types/registryTypes";
@@ -133,7 +133,7 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
     () => dispatch(recipesActions.syncRemoteRecipes()),
     [dispatch]
   );
-  const state = useSelector(selectAllRecipes);
+  const state = useSelector(selectAllModDefinitions);
 
   // First load from local database
   useEffect(() => {

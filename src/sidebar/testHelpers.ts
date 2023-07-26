@@ -26,7 +26,7 @@ import {
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
 import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -42,7 +42,7 @@ const configureStoreForTests = () =>
       /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware()
         .concat(appApi.middleware)
-        .concat(recipesMiddleware);
+        .concat(modDefinitionsMiddleware);
       /* eslint-enable unicorn/prefer-spread */
     },
   });

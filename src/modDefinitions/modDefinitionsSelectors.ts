@@ -17,7 +17,7 @@
 
 import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
 
-export function selectAllRecipes({
+export function selectAllModDefinitions({
   recipes,
 }: ModDefinitionsRootState): ModDefinitionsRootState["recipes"] {
   return recipes;

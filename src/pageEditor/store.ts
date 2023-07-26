@@ -39,7 +39,7 @@ import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
-import { recipesMiddleware } from "@/modDefinitions/recipesListenerMiddleware";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import { type StorageInterface } from "@/store/StorageInterface";
 import {
   persistSessionChangesConfig,
@@ -105,7 +105,7 @@ const store = configureStore({
     })
       .concat(appApi.middleware)
       .concat(pageEditorAnalysisManager.middleware)
-      .concat(recipesMiddleware)
+      .concat(modDefinitionsMiddleware)
       .concat(conditionalMiddleware)
       .concat(sessionChangesMiddleware)
       .concat(
