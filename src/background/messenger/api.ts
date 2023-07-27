@@ -138,3 +138,5 @@ export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",
   bg
 );
+
+export const ping = getMethod("PING", bg);

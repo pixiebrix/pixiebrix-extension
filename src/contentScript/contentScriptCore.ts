@@ -36,6 +36,7 @@ import {
 import { onUncaughtError } from "@/errors/errorHelpers";
 import { initFloatingActions } from "@/components/floatingActions/FloatingActions";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
+import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -71,4 +72,6 @@ export async function init(): Promise<void> {
   // Let the partner page know
   initPartnerIntegrations();
   void initFloatingActions();
+
+  initPerformanceMonitoring();
 }
