@@ -17,13 +17,16 @@
 
 import { type Schema } from "@/types/schemaTypes";
 
+export const SPREADSHEET_FIELD_TITLE = "Google Sheet";
+export const SPREADSHEET_FIELD_DESCRIPTION =
+  "Select a Google Sheet. The first row in your sheet MUST contain headings.";
+
 export const BASE_SHEET_SCHEMA: Schema = {
   $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
 };
 
 export const SHEET_SERVICE_SCHEMA: Schema = {
   $ref: "https://app.pixiebrix.com/schemas/services/google/sheet",
-  title: "Google Sheet",
-  description:
-    "Select a Google Sheet. The first row in your sheet MUST contain headings.",
+  title: SPREADSHEET_FIELD_TITLE,
+  description: SPREADSHEET_FIELD_DESCRIPTION,
 };

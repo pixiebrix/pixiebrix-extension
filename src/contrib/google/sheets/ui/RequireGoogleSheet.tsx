@@ -22,7 +22,11 @@ import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
 import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
 import useAsyncState from "@/hooks/useAsyncState";
 import { dereference } from "@/validators/generic";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
+import {
+  BASE_SHEET_SCHEMA,
+  SPREADSHEET_FIELD_DESCRIPTION,
+  SPREADSHEET_FIELD_TITLE,
+} from "@/contrib/google/sheets/core/schemas";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { sheets } from "@/background/messenger/api";
@@ -74,7 +78,8 @@ const RequireGoogleSheet: React.FC<{
         title: file.name,
       }));
       return {
-        title: "Spreadsheet",
+        title: SPREADSHEET_FIELD_TITLE,
+        description: SPREADSHEET_FIELD_DESCRIPTION,
         oneOf: [
           baseSchema,
           {

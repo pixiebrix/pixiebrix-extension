@@ -32,7 +32,7 @@ import SheetsFileWidget from "@/contrib/google/sheets/ui/SheetsFileWidget";
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
-import { selectSchemaFieldType } from "@/testUtils/formHelpers";
+import { selectSchemaFieldInputMode } from "@/testUtils/formHelpers";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
@@ -583,7 +583,7 @@ describe("AppendSpreadsheetOptions", () => {
     // Toggle the field to sheet picker
     await act(async () => {
       // The Google sheet picker uses "string" as the FieldInputMode
-      await selectSchemaFieldType("config.spreadsheetId", "string");
+      await selectSchemaFieldInputMode("config.spreadsheetId", "string");
     });
 
     // Ensure other fields have not changed yet. The spreadsheetId field value

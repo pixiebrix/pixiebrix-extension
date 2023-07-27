@@ -27,6 +27,7 @@ import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/wid
 import { type Schema } from "@/types/schemaTypes";
 import { type ExpressionType } from "@/types/runtimeTypes";
 import { isTemplateExpression } from "@/utils/expressionUtils";
+import { produce } from "immer";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -398,7 +399,15 @@ export function getToggleOptions({
       isArrayItem,
       allowExpressions,
     }).map((option) => {
-      option.fieldSchemaOverride = subSchema;
+      option.fieldSchemaOverride = produce(subSchema, (draft) => {
+        if (fieldSchema.title && !draft.title) {
+          draft.title = fieldSchema.title;
+        }
+
+        if (fieldSchema.description && !draft.description) {
+          draft.description = fieldSchema.description;
+        }
+      });
 
       // Only use the schema description if a custom description wasn't already
       // set for the input mode option

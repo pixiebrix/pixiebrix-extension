@@ -20,11 +20,10 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
-import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
+import { isExpression } from "@/utils/expressionUtils";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 
 // Use a module constant for the sake of memo dependencies
@@ -35,11 +34,9 @@ const TabField: React.FC<
 > = ({ name, spreadsheet }) => {
   const inputRef = useRef<HTMLTextAreaElement>();
 
-  const [
-    { value: tabName },
-    ,
-    { setValue: setTabName, setError: setTabNameError },
-  ] = useField<string | Expression>(name);
+  const [{ value: tabName }, , { setValue: setTabName }] = useField<
+    string | Expression
+  >(name);
 
   const tabNames =
     spreadsheet?.sheets?.map((sheet) => sheet.properties.title) ??
@@ -51,30 +48,33 @@ const TabField: React.FC<
     enum: tabNames,
   };
 
-  // Clear tab name when spreadsheetId changes, if the current value is not
-  // an expression, which means it is a selected tab name from another sheet.
-  useOnChangeEffect(spreadsheet?.spreadsheetId, () => {
-    if (!isTemplateExpression(tabName)) {
-      setTabName(makeTemplateExpression("nunjucks", ""));
-      setTabNameError(null);
-    }
-  });
+  useEffect(
+    () => {
+      // Don't modify the field if it's currently focused
+      if (document.activeElement === inputRef.current) {
+        return;
+      }
 
-  // If we've loaded tab names and the tab name is not set, set it to the first tab name.
-  // Check to make sure there's not an error, so we're not setting it to the first value
-  // of a stale list of tabs, and check the tab name value itself to prevent an infinite
-  // re-render loop here. Don't automatically modify the input if it's currently focused.
-  useEffect(() => {
-    if (isEmpty(tabNames) || document.activeElement === inputRef.current) {
-      return;
-    }
+      // If tabName value is a string, that means it is a selected tab from a loaded spreadsheet
+      if (!isExpression(tabName) && !isEmpty(tabName)) {
+        if (isEmpty(tabNames)) {
+          setTabName(makeTemplateExpression("nunjucks", ""));
+        } else if (!tabNames.includes(tabName)) {
+          setTabName(tabNames[0]);
+        }
+      }
 
-    if (!tabName || (isExpression(tabName) && isEmpty(tabName.__value__))) {
-      setTabName(tabNames[0]);
-      setTabNameError(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- don't include formik helpers
-  }, [tabName, tabNames]);
+      // Also set to the first tab if the field value is an empty expression or null (initial value)
+      if (
+        tabName == null ||
+        (isExpression(tabName) && isEmpty(tabName.__value__))
+      ) {
+        setTabName(tabNames[0]);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tabNames are strings, and we're setting tabName
+    [spreadsheet?.spreadsheetId, ...tabNames]
+  );
 
   // TODO: re-add info message that tab will be created
   // {!tabsPending &&

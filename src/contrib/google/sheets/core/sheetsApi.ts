@@ -235,7 +235,8 @@ export async function getSpreadsheet({
 }: SpreadsheetTarget): Promise<Spreadsheet> {
   // Construct a file mask to return metadata for each sheet (tab) in the spreadsheet, without
   // hydrating the actual grid data for the sheet
-  const fileMask = "properties(title),sheets.properties(sheetId,title)";
+  const fileMask =
+    "spreadsheetId,properties(title),sheets.properties(sheetId,title)";
 
   return executeRequest<Spreadsheet>(
     {

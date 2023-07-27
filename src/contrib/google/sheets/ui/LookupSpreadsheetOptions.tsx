@@ -149,7 +149,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
                 <HeaderField
                   name={joinName(blockConfigPath, "header")}
                   googleAccount={googleAccount}
-                  spreadsheetId={spreadsheet.spreadsheetId}
+                  spreadsheetId={spreadsheet?.spreadsheetId}
                   tabName={tabName}
                 />
               </>

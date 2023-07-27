@@ -167,6 +167,10 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     setValue(selectedOption.interpretValue(newValue));
   };
 
+  useEffect(() => {
+    console.log("selectedOption mode", selectedOption.value);
+  }, [selectedOption]);
+
   return (
     <div className={styles.root}>
       <div className={styles.field}>
@@ -188,7 +192,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         onSelect={onModeChange}
         className={styles.dropdown}
         data-testid={`toggle-${schemaFieldProps.name}`}
-        data-test-selected={selectedOption?.label ?? ""}
+        data-test-selected={selectedOption?.value ?? ""}
       >
         {inputModeOptions.map((option) => (
           <Dropdown.Item
