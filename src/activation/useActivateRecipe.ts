@@ -69,7 +69,7 @@ function selectActivateEventData(recipe: ModDefinition) {
  */
 function useActivateRecipe(
   source: ActivationSource,
-  { checkPermissions = false }: { checkPermissions?: boolean } = {}
+  { checkPermissions = true }: { checkPermissions?: boolean } = {}
 ): ActivateRecipeFormCallback {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);

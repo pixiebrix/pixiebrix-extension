@@ -138,6 +138,28 @@ describe("useActivateRecipe", () => {
     expect(reactivateEveryTabMock).not.toHaveBeenCalled();
   });
 
+  it("ignores permissions if flag set", async () => {
+    const { formValues, recipe } = setupInputs();
+    setRecipeHasPermissions(false);
+    setUserAcceptedPermissions(false);
+
+    const {
+      result: { current: activateRecipe },
+    } = renderHook(
+      () => useActivateRecipe("marketplace", { checkPermissions: false }),
+      {
+        setupRedux(dispatch, { store }) {
+          jest.spyOn(store, "dispatch");
+        },
+      }
+    );
+
+    const { success, error } = await activateRecipe(formValues, recipe);
+
+    expect(success).toBe(true);
+    expect(error).toBeUndefined();
+  });
+
   it("calls uninstallRecipe, installs to extensionsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
     const { formValues, recipe } = setupInputs();
     setRecipeHasPermissions(false);
