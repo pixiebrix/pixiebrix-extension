@@ -67,7 +67,10 @@ import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
+import {
+  useAllModDefinitions,
+  useOptionalModDefinition,
+} from "@/modDefinitions/modDefinitionHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import {
@@ -312,7 +315,7 @@ function useInitialFormState({
 
 function useFormSchema() {
   const newRecipeIds = useSelector(selectNewRecipeIds);
-  const { data: recipes } = useAllRecipes();
+  const { data: recipes } = useAllModDefinitions();
   const savedRecipeIds: RegistryId[] = (recipes ?? []).map(
     (x) => x.metadata.id
   );
@@ -350,7 +353,7 @@ const CreateRecipeModalBody: React.FC = () => {
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
   const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
   const { data: activeRecipe, isFetching: isRecipeFetching } =
-    useOptionalRecipe(activeRecipeId);
+    useOptionalModDefinition(activeRecipeId);
 
   const formSchema = useFormSchema();
 

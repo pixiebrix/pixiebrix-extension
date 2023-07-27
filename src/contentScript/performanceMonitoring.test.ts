@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipesRootState } from "./recipesTypes";
+import { getDiagnostics } from "@/contentScript/performanceMonitoring";
 
-export function selectAllRecipes({
-  recipes,
-}: RecipesRootState): RecipesRootState["recipes"] {
-  return recipes;
-}
+describe("getDiagnostics", () => {
+  it("gets disabled diagnostics", async () => {
+    await expect(getDiagnostics()).resolves.toStrictEqual({
+      isMonitoringEnabled: false,
+      pingWarnings: [],
+    });
+  });
+});

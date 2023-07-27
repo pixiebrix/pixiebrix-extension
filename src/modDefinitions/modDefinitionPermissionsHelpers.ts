@@ -34,15 +34,15 @@ import { collectServiceOriginPermissions } from "@/permissions/servicePermission
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
-async function collectExtensionDefinitionPermissions(
-  extensionPoints: ResolvedModComponentDefinition[],
+async function collectModComponentDefinitionPermissions(
+  modComponentDefinitions: ResolvedModComponentDefinition[],
   serviceAuths: IntegrationConfigPair[]
 ): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
     collectServiceOriginPermissions(serviceAuth)
   );
 
-  const extensionPointPromises = extensionPoints.map(
+  const modComponentPromises = modComponentDefinitions.map(
     async ({
       id,
       permissions = {},
@@ -75,24 +75,26 @@ async function collectExtensionDefinitionPermissions(
 
   const permissionsList = await Promise.all([
     ...servicePromises,
-    ...extensionPointPromises,
+    ...modComponentPromises,
   ]);
 
   return mergePermissions(permissionsList);
 }
 
 /**
- * Returns true if the recipe has the necessary permissions to run. Does not request the permissions.
- * @param recipe the recipe definition
+ * Returns true if the mod definition has the necessary permissions to run. Does not request the permissions.
+ * @param modDefinition the mod definition
  * @param selectedAuths selected integration configurations
- * @see ensureRecipePermissionsFromUserGesture
+ * @see ensureModDefinitionPermissionsFromUserGesture
  */
-export async function checkRecipePermissions(
-  recipe: Pick<ModDefinition, "definitions" | "extensionPoints">,
+export async function checkModDefinitionPermissions(
+  modDefinition: Pick<ModDefinition, "definitions" | "extensionPoints">,
   selectedAuths: IntegrationConfigPair[]
 ): Promise<PermissionsStatus> {
-  const extensionDefinitions = await resolveRecipeInnerDefinitions(recipe);
-  const permissions = await collectExtensionDefinitionPermissions(
+  const extensionDefinitions = await resolveRecipeInnerDefinitions(
+    modDefinition
+  );
+  const permissions = await collectModComponentDefinitionPermissions(
     extensionDefinitions,
     selectedAuths
   );
@@ -112,18 +114,18 @@ export async function checkRecipePermissions(
 }
 
 /**
- * Ensures that the recipe has the necessary permissions to run. If not, prompts the user to grant them. NOTE: Must
+ * Ensures that the mod definition has the necessary permissions to run. If not, prompts the user to grant them. NOTE: Must
  * be called from a user gesture.
- * @param recipe the recipe definition
+ * @param modDefinition the mod definition
  * @param selectedAuths selected integration configurations
- * @see checkRecipePermissions
+ * @see checkModDefinitionPermissions
  */
-export async function ensureRecipePermissionsFromUserGesture(
-  recipe: ModDefinition,
+export async function ensureModDefinitionPermissionsFromUserGesture(
+  modDefinition: ModDefinition,
   selectedAuths: IntegrationConfigPair[]
 ): Promise<boolean> {
   // Single method to make mocking in tests easier
   return ensurePermissionsFromUserGesture(
-    await checkRecipePermissions(recipe, selectedAuths)
+    await checkModDefinitionPermissions(modDefinition, selectedAuths)
   );
 }

@@ -47,6 +47,11 @@ export type SkunkworksSettings = {
    * Experimental setting to support autosuggest for variables in the Page Editor
    */
   varAutosuggest?: boolean;
+
+  /**
+   * Experimental setting to track runtime performance
+   */
+  performanceTracing?: boolean;
 };
 
 export type SettingsState = SkunkworksSettings & {

@@ -20,6 +20,7 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
 import { propertiesToSchema } from "@/validators/generic";
+import { logPromiseDuration } from "@/utils";
 
 const NO_PARAMS: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -65,11 +66,14 @@ export class ShowSidebar extends EffectABC {
   ): Promise<void> {
     // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
     // not the extensionId of the extension toggling the sidebar
-    void showSidebar({
-      force: forcePanel,
-      panelHeading,
-      blueprintId: logger.context.blueprintId,
-    });
+    void logPromiseDuration(
+      "ShowSidebar:showSidebar",
+      showSidebar({
+        force: forcePanel,
+        panelHeading,
+        blueprintId: logger.context.blueprintId,
+      })
+    );
   }
 }
 

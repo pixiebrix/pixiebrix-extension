@@ -16,9 +16,13 @@
  */
 
 import { serializeError } from "serialize-error";
-import { initialState, recipesActions, recipesSlice } from "./recipesSlice";
-import { type RecipesRootState } from "./recipesTypes";
-import recipesRegistry from "./registry";
+import {
+  initialState,
+  modDefinitionsActions,
+  modDefinitionsSlice,
+} from "./modDefinitionsSlice";
+import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
+import modDefinitionsRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
 
@@ -43,30 +47,36 @@ const syncRemotePackagesMock = syncRemotePackages as jest.MockedFn<
   typeof syncRemotePackages
 >;
 
-describe("loadRecipesFromCache", () => {
-  test("calls registry and dispatches setRecipesFromCache action", async () => {
+describe("loadModDefinitionsFromCache", () => {
+  test("calls registry and dispatches setModDefinitionsFromCache action", async () => {
     const dispatch = jest.fn();
-    const cachedRecipes = [recipeFactory()];
-    (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
+    const cachedModDefinitions = [recipeFactory()];
+    (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
+      cachedModDefinitions
+    );
 
-    const thunkFunction = recipesActions.loadRecipesFromCache();
-    await thunkFunction(dispatch, () => ({ recipes: initialState }), undefined);
-    expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
+    const thunkFunction = modDefinitionsActions.loadModDefinitionsFromCache();
+    await thunkFunction(
+      dispatch,
+      () => ({ modDefinitions: initialState }),
+      undefined
+    );
+    expect(modDefinitionsRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      recipesActions.setRecipesFromCache(cachedRecipes)
+      modDefinitionsActions.setModDefinitionsFromCache(cachedModDefinitions)
     );
   });
 });
 
-describe("refreshRecipes", () => {
+describe("syncRemoteModDefinitions", () => {
   test("doesn't refresh if already loading", async () => {
     const dispatch = jest.fn();
 
-    const thunkFunction = recipesActions.syncRemoteRecipes();
+    const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
       dispatch,
       () => ({
-        recipes: {
+        modDefinitions: {
           ...initialState,
           isFetchingFromRemote: true,
           isRemoteUninitialized: false,
@@ -78,26 +88,28 @@ describe("refreshRecipes", () => {
     expect(syncRemotePackagesMock).not.toHaveBeenCalled();
   });
 
-  test("fetches recipes and updates the state", async () => {
+  test("fetches mod definitions and updates the state", async () => {
     const dispatch = jest.fn();
 
-    const cachedRecipes = [recipeFactory()];
-    (recipesRegistry.all as jest.Mock).mockResolvedValueOnce(cachedRecipes);
+    const cachedModDefinitions = [recipeFactory()];
+    (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
+      cachedModDefinitions
+    );
 
-    const thunkFunction = recipesActions.syncRemoteRecipes();
+    const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
       dispatch,
-      () => ({ recipes: {} } as RecipesRootState),
+      () => ({ modDefinitions: {} } as ModDefinitionsRootState),
       undefined
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      recipesActions.startFetchingFromRemote()
+      modDefinitionsActions.startFetchingFromRemote()
     );
     expect(syncRemotePackagesMock).toHaveBeenCalledTimes(1);
-    expect(recipesRegistry.all).toHaveBeenCalledTimes(1);
+    expect(modDefinitionsRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      recipesActions.setRecipes(cachedRecipes)
+      modDefinitionsActions.setModDefinitions(cachedModDefinitions)
     );
   });
 
@@ -107,16 +119,16 @@ describe("refreshRecipes", () => {
     const error = new Error("test");
     syncRemotePackagesMock.mockRejectedValueOnce(error);
 
-    const thunkFunction = recipesActions.syncRemoteRecipes();
+    const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
       dispatch,
-      () => ({ recipes: {} } as RecipesRootState),
+      () => ({ modDefinitions: {} } as ModDefinitionsRootState),
       undefined
     );
 
     const serializedError = serializeError(error, { useToJSON: false });
     expect(dispatch).toHaveBeenCalledWith(
-      recipesActions.setError(serializedError)
+      modDefinitionsActions.setError(serializedError)
     );
   });
 });
@@ -124,16 +136,16 @@ describe("refreshRecipes", () => {
 describe("reducers", () => {
   test("startFetchingFromRemote does not set isLoading", () => {
     const state = { ...initialState };
-    const nextState = recipesSlice.reducer(
+    const nextState = modDefinitionsSlice.reducer(
       state,
-      recipesActions.startFetchingFromRemote()
+      modDefinitionsActions.startFetchingFromRemote()
     );
     expect(nextState.isFetching).toBeTrue();
     expect(nextState.isLoading).toBeFalse();
   });
 
-  test("sets recipes", () => {
-    const recipes = [recipeFactory()];
+  test("sets mod definitions", () => {
+    const modDefinitions = [recipeFactory()];
     const state = {
       ...initialState,
       isFetching: true,
@@ -144,14 +156,14 @@ describe("reducers", () => {
       isRemoteUninitialized: false,
       error: new Error("test"),
     };
-    const nextState = recipesSlice.reducer(
+    const nextState = modDefinitionsSlice.reducer(
       state,
-      recipesActions.setRecipes(recipes)
+      modDefinitionsActions.setModDefinitions(modDefinitions)
     );
 
     expect(nextState).toEqual({
-      data: recipes,
-      currentData: recipes,
+      data: modDefinitions,
+      currentData: modDefinitions,
       isFetching: false,
       isLoading: false,
       isUninitialized: false,

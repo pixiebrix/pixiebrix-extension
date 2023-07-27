@@ -534,18 +534,6 @@ export async function logPromiseDuration<P>(
   }
 }
 
-export async function logFunctionDuration<
-  Fn extends (...args: unknown[]) => Promise<unknown>
->(title: string, fn: Fn): Promise<ReturnType<Fn>> {
-  const start = Date.now();
-  try {
-    return (await fn()) as Awaited<ReturnType<Fn>>;
-  } finally {
-    // Prefer `debug` level; `console.time` has `log` level
-    console.debug(title, `${Math.round(Date.now() - start)}ms`);
-  }
-}
-
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
   return globalThis.navigator?.platform.includes("Mac");

@@ -23,7 +23,7 @@ import {
   selectDirtyOptionValuesForRecipeId,
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,
@@ -54,7 +54,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
     data: recipe,
     isFetching: isLoadingRecipe,
     error: recipeError,
-  } = useOptionalRecipe(recipeId);
+  } = useOptionalModDefinition(recipeId);
   const dirtyRecipeOptions = useSelector(
     selectDirtyOptionDefinitionsForRecipeId(recipeId)
   );

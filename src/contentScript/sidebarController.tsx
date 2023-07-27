@@ -160,6 +160,10 @@ export async function ensureSidebar(): Promise<void> {
   }
 }
 
+/**
+ * Hide the sidebar. Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
+ * @see HIDE_SIDEBAR_EVENT_NAME
+ */
 export function hideSidebar(): void {
   console.debug("sidebarController:hideSidebar", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
