@@ -109,7 +109,7 @@ interface UserSummary {
 /**
  * Diagnostic data to report for performance debugging.
  */
-interface Diagnostics extends UserSummary {
+export interface Diagnostics extends UserSummary {
   /**
    * The timestamp the diagnostic data was collected.
    */

@@ -63,6 +63,7 @@ import {
   clearTraces,
 } from "@/telemetry/trace";
 import {
+  collectPerformanceDiagnostics,
   initTelemetry,
   pong,
   recordBrickRun,
@@ -108,6 +109,8 @@ declare global {
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
 
     PING: typeof pong;
+    COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
+
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
@@ -187,6 +190,8 @@ export default function registerMessenger(): void {
     WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
 
     PING: pong,
+    COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
+
     ACTIVATE_TAB: activateTab,
     REACTIVATE_EVERY_TAB: reactivateEveryTab,
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,

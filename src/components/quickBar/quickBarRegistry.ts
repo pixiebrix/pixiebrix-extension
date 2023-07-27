@@ -204,7 +204,7 @@ class QuickBarRegistry {
 }
 
 /**
- * Singleton registry for the content script
+ * Singleton registry for the content script.
  */
 const quickBarRegistry = new QuickBarRegistry();
 

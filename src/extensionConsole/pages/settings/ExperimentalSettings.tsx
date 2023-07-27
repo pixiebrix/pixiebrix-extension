@@ -61,6 +61,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
     excludeRandomClasses,
     selectionTools,
     varAutosuggest,
+    performanceTracing,
   } = useSelector(selectSettings);
 
   return (
@@ -116,13 +117,27 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           />
           <ExperimentalFeature
             id="varAutosuggest"
-            label="Autosuggest Variables in Page Editor."
+            label="Autosuggest Variables in Page Editor:"
             description="Toggle on to enable variable autosuggest for variable and text template entry modes"
             isEnabled={varAutosuggest}
             onChange={(value) => {
               dispatch(
                 settingsSlice.actions.setFlag({
                   flag: "varAutosuggest",
+                  value,
+                })
+              );
+            }}
+          />
+          <ExperimentalFeature
+            id="performanceTracing"
+            label="Performance Tracing:"
+            description="Toggle on to trace runtime performance"
+            isEnabled={performanceTracing}
+            onChange={(value) => {
+              dispatch(
+                settingsSlice.actions.setFlag({
+                  flag: "performanceTracing",
                   value,
                 })
               );

@@ -18,14 +18,65 @@
 import { ping } from "@/background/messenger/api";
 import { isContextInvalidatedError } from "@/errors/contextInvalidated";
 import { isLoadedInIframe } from "@/iframeUtils";
+import { getSettingsState } from "@/store/settingsStorage";
 
 const PING_INTERVAL_MS = 5 * 1000;
 const PING_WARNING_THRESHOLD_MS = 150;
 
 /**
+ * Timing results for a ping.
+ */
+interface PingTiming {
+  /**
+   * Time the ping was sent
+   */
+  timestamp: number;
+
+  /**
+   * Time for the background page to receive/start handling the message
+   */
+  sendMs: number;
+  /**
+   * Time for the content script to receive the response after handling the message
+   */
+  responseMs: number;
+  /**
+   * Total round trip time
+   */
+  totalMs: number;
+}
+
+/**
+ * Performance diagnostics.
+ */
+interface Diagnostics {
+  /**
+   * True if performance monitoring is enabled in this frame.
+   */
+  isMonitoringEnabled: boolean;
+
+  /**
+   * Ping times that exceeded the warning threshold.
+   * @see PING_WARNING_THRESHOLD_MS
+   */
+  pingWarnings: PingTiming[];
+}
+
+/**
+ * True to enable performance monitoring in this frame.
+ */
+let isMonitoringEnabled = false;
+
+/**
+ * Pings that exceeded the warning threshold.
+ * @see PING_WARNING_THRESHOLD_MS
+ */
+const pingWarnings: PingTiming[] = [];
+
+/**
  * Ping the background page to measure the latency of the runtime messaging.
  */
-async function pingBackgroundPage() {
+async function pingBackgroundPage(): Promise<void> {
   const startTimestamp = Date.now();
 
   let response;
@@ -51,23 +102,47 @@ async function pingBackgroundPage() {
   const log =
     duration > PING_WARNING_THRESHOLD_MS ? console.warn : console.debug;
 
-  log(`ping (ms): ${endTimestamp - startTimestamp}`, {
-    // Time for the background page to receive/start handling the message
+  const data: PingTiming = {
+    timestamp: startTimestamp,
     sendMs: receiveTimestamp - startTimestamp,
-    // Time for the content script to receive the response after handling the message
     responseMs: endTimestamp - receiveTimestamp,
-    // Total time
-    totalMs: endTimestamp - startTimestamp,
-  });
+    totalMs: duration,
+  };
+
+  log(`ping (ms): ${duration}`, data);
+
+  if (duration > PING_WARNING_THRESHOLD_MS) {
+    pingWarnings.push(data);
+  }
+}
+
+/**
+ * Returns content script performance diagnostics.
+ *
+ * @since 1.7.35
+ */
+export async function getDiagnostics(): Promise<Diagnostics> {
+  return {
+    isMonitoringEnabled,
+    pingWarnings,
+  };
 }
 
 /**
  * Initialize performance monitoring for the top level frame, if performance monitoring is turned on.
  */
-export function initPerformanceMonitoring(): void {
+export async function initPerformanceMonitoring(): Promise<void> {
   if (isLoadedInIframe()) {
     return;
   }
+
+  const { performanceTracing } = await getSettingsState();
+
+  if (!performanceTracing) {
+    return;
+  }
+
+  isMonitoringEnabled = true;
 
   void pingBackgroundPage();
 
