@@ -28,7 +28,7 @@ import { locator as serviceLocator } from "@/background/locator";
  */
 export default async function refreshGoogleToken(
   integrationConfig: SanitizedIntegrationConfig
-): Promise<void> {
+): Promise<boolean> {
   expectContext("background");
 
   if (integrationConfig.serviceId !== GOOGLE_OAUTH_PKCE_INTEGRATION_ID) {
@@ -69,5 +69,9 @@ export default async function refreshGoogleToken(
     await setCachedAuthData(integrationConfig.id, data);
 
     console.debug("Successfully refreshed google token");
+
+    return true;
   }
+
+  return false;
 }

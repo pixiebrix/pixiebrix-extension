@@ -286,11 +286,13 @@ async function performConfiguredRequest(
       if (service.isOAuth2 || service.isToken) {
         if (service.id === GOOGLE_OAUTH_PKCE_INTEGRATION_ID) {
           try {
-            await refreshGoogleToken(serviceConfig);
+            const isTokenRefreshed = await refreshGoogleToken(serviceConfig);
 
-            return serializableAxiosRequest(
-              await authenticate(serviceConfig, requestConfig)
-            );
+            if (isTokenRefreshed) {
+              return serializableAxiosRequest(
+                await authenticate(serviceConfig, requestConfig)
+              );
+            }
           } catch (error) {
             console.warn(
               `Failed to refresh ${GOOGLE_OAUTH_PKCE_INTEGRATION_ID} token:`,
