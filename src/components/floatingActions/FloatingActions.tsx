@@ -109,7 +109,7 @@ export async function initFloatingActions(): Promise<void> {
   // XXX: consider moving checks into React component, so we can use the Redux context
   if (
     settings.isFloatingActionButtonEnabled &&
-    syncFlagOn("floating-quickbar-button") &&
+    syncFlagOn("floating-quickbar-button-freemium") &&
     !isEnterpriseOrPartnerUser
   ) {
     const container = document.createElement("div");
