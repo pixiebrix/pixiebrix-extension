@@ -243,5 +243,5 @@ export async function safeTokenRefresh(): Promise<void> {
 export function initPartnerTokenRefresh(): void {
   setInterval(async () => {
     await safeTokenRefresh();
-  }, 1000 * 20);
+  }, 1000 * 10);
 }
