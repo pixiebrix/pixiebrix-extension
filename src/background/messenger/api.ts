@@ -138,3 +138,10 @@ export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",
   bg
 );
+
+export const ping = getMethod("PING", bg);
+
+export const collectPerformanceDiagnostics = getMethod(
+  "COLLECT_PERFORMANCE_DIAGNOSTICS",
+  bg
+);

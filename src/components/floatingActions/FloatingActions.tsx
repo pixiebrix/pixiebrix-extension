@@ -109,6 +109,8 @@ export async function initFloatingActions(): Promise<void> {
   // XXX: consider moving checks into React component, so we can use the Redux context
   if (
     settings.isFloatingActionButtonEnabled &&
+    // XXX: there's likely a race here with when syncFlagOn gets the flag from localStorage. But in practice, this
+    // seems to work fine. (Likely because the flags will be loaded by the time the Promise.all above resolves)
     syncFlagOn("floating-quickbar-button-freemium") &&
     !isEnterpriseOrPartnerUser
   ) {
