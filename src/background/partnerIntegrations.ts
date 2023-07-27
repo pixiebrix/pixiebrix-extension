@@ -240,7 +240,7 @@ export async function safeTokenRefresh(): Promise<void> {
  * Refresh the JWT every week so the inactivity expiry doesn't kick in.
  */
 // TODO: fix this, 20 sec is only for local development
-export async function initPartnerTokenRefresh(): Promise<void> {
+export function initPartnerTokenRefresh(): void {
   setInterval(async () => {
     await safeTokenRefresh();
   }, 1000 * 20);

@@ -77,7 +77,7 @@ export default async function refreshGoogleToken(
 }
 
 // TODO: remove this, only for development
-export async function initGoogleTokenRefresh(): Promise<void> {
+export function initGoogleTokenRefresh(): void {
   const googleIntegrationConfigs = await serviceLocator.locateAllForService(
     GOOGLE_OAUTH_PKCE_INTEGRATION_ID
   );
