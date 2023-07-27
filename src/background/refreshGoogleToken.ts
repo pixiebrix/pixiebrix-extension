@@ -39,9 +39,6 @@ export default async function refreshGoogleToken(
 
   const cachedAuthData = await getCachedAuthData(integrationConfig.id);
 
-  // TODO: remove this
-  console.info("Refreshing google token", integrationConfig, cachedAuthData);
-
   if (integrationConfig.id && cachedAuthData?.refresh_token) {
     console.debug("Refreshing google token");
 
@@ -71,19 +68,6 @@ export default async function refreshGoogleToken(
 
     await setCachedAuthData(integrationConfig.id, data);
 
-    // TODO: remove this
-    console.log("Successfully refreshed google token");
+    console.debug("Successfully refreshed google token");
   }
-}
-
-// TODO: remove this, only for development
-export function initGoogleTokenRefresh(): void {
-  setInterval(async () => {
-    const googleIntegrationConfigs = await serviceLocator.locateAllForService(
-      GOOGLE_OAUTH_PKCE_INTEGRATION_ID
-    );
-    if (googleIntegrationConfigs.length > 0) {
-      await refreshGoogleToken(googleIntegrationConfigs[0]);
-    }
-  }, 1000 * 10);
 }

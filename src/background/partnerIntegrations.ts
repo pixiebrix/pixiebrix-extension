@@ -179,9 +179,6 @@ export async function _refreshPartnerToken(): Promise<void> {
 
   const authData = await readPartnerAuthData();
 
-  // TODO: remove this
-  console.info("Refreshing partner token", authData);
-
   if (authData.authId && authData.refreshToken) {
     console.debug("Refreshing partner JWT");
 
@@ -222,8 +219,7 @@ export async function _refreshPartnerToken(): Promise<void> {
       },
     });
 
-    // TODO: remove this
-    console.log("Successfully refreshed partner token at", new Date());
+    console.debug("Successfully refreshed partner token");
   }
 }
 
@@ -237,11 +233,10 @@ export async function safeTokenRefresh(): Promise<void> {
 
 /**
  * The Automation Anywhere JWT has an absolute expiry of 30 days and an inactivity expiry of 15 days.
- * Refresh the JWT every week so the inactivity expiry doesn't kick in.
+ * Refresh the JWT every week, so it doesn't expire after the inactivity period.
  */
-// TODO: fix this, 20 sec is only for local development
 export function initPartnerTokenRefresh(): void {
   setInterval(async () => {
     await safeTokenRefresh();
-  }, 1000 * 10);
+  }, 1000 * 60 * 60 * 24 * 7); // 7 days
 }
