@@ -76,8 +76,8 @@ export function requiresUserConfiguration(
     authOptions
   );
 
-  const recipeOptions = recipe.options?.schema?.properties;
-  const requiredOptions = recipe.options?.schema?.required ?? [];
+  const { properties: recipeOptions, required: requiredOptions = [] } =
+    recipe.options?.schema ?? {};
 
   const needsOptionsInputs =
     !isEmpty(recipeOptions) &&
