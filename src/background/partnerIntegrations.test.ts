@@ -16,7 +16,7 @@
  */
 
 import {
-  refreshPartnerToken,
+  _refreshPartnerToken,
   getPartnerPrincipals,
 } from "@/background/partnerIntegrations";
 import { readRawConfigurations } from "@/services/registry";
@@ -136,7 +136,7 @@ describe("refresh partner token", () => {
   });
 
   it("nop if no token", async () => {
-    await refreshPartnerToken();
+    await _refreshPartnerToken();
     expect(readPartnerAuthDataMock).toHaveBeenCalledOnce();
   });
 
@@ -146,7 +146,7 @@ describe("refresh partner token", () => {
       token: "notatoken",
     });
 
-    await refreshPartnerToken();
+    await _refreshPartnerToken();
     expect(appApiMock.history.post).toHaveLength(0);
   });
 
@@ -175,7 +175,7 @@ describe("refresh partner token", () => {
 
     await serviceLocator.refreshLocal();
 
-    await refreshPartnerToken();
+    await _refreshPartnerToken();
     expect(appApiMock.history.post).toHaveLength(1);
     // `toHaveBeenCalledOnceWith` had the wrong types :shrug:
     expect(setPartnerAuthMock).toHaveBeenCalledWith({
@@ -215,7 +215,7 @@ describe("refresh partner token", () => {
 
     await serviceLocator.refreshLocal();
 
-    await expect(refreshPartnerToken()).rejects.toThrow(
+    await expect(_refreshPartnerToken()).rejects.toThrow(
       "Request failed with status code 401"
     );
   });

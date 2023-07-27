@@ -174,7 +174,7 @@ export async function launchAuthIntegration({
 /**
  * Refresh an Automation Anywhere JWT. NOOP if a JWT refresh token is not available.
  */
-export async function refreshPartnerToken(): Promise<void> {
+export async function _refreshPartnerToken(): Promise<void> {
   expectContext("background");
 
   const authData = await readPartnerAuthData();
@@ -225,4 +225,23 @@ export async function refreshPartnerToken(): Promise<void> {
     // TODO: remove this
     console.log("Successfully refreshed partner token at", new Date());
   }
+}
+
+export async function safeTokenRefresh(): Promise<void> {
+  try {
+    await _refreshPartnerToken();
+  } catch (error) {
+    console.warn("Failed to refresh partner token", error);
+  }
+}
+
+/**
+ * The Automation Anywhere JWT has an absolute expiry of 30 days and an inactivity expiry of 15 days.
+ * Refresh the JWT every week so the inactivity expiry doesn't kick in.
+ */
+// TODO: fix this, 20 sec is only for local development
+export async function initPartnerTokenRefresh(): Promise<void> {
+  setInterval(async () => {
+    await safeTokenRefresh();
+  }, 1000 * 20);
 }

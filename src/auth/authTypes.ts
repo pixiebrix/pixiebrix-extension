@@ -117,25 +117,21 @@ export interface TokenAuthData extends UserData {
   token: string;
 }
 
-export type IntegrationConfigurationAuthData = {
+export type PartnerAuthData = {
   /**
-   * The integration configuration uuid
+   * The service auth configuration for authenticating with the PixieBrix API.
    */
   authId: UUID | null;
-
+  /**
+   * The JWT bearer token corresponding to the authId.
+   */
   token: string | null;
-
   /**
    * The refresh token, if `offline_access` was included in scope.
    * @since 1.7.15
    */
   refreshToken: string | null;
-};
 
-/**
- * Note, token is a JWT bearer token for the Automation Anywhere partner.
- */
-export type PartnerAuthData = IntegrationConfigurationAuthData & {
   /**
    * Extra HTTP headers to send with every request.
    */
