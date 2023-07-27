@@ -83,7 +83,7 @@ export const Events = {
 
   PIXIEBRIX_INSTALL: "PixieBrixInstall",
   PIXIEBRIX_RELOAD: "PixieBrixReload",
-  PIXIEBRIX_UNINSTALL: "PixieBrixUninstall",
+  PIXIEBRIX_UPDATE: "PixieBrixUpdate",
 
   SELECT_GOOGLE_SPREADSHEET_CANCELLED: "SelectGoogleSpreadsheetCancelled",
   SELECT_GOOGLE_SPREADSHEET_ENSURE_TOKEN_START:

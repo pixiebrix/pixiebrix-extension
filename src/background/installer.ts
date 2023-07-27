@@ -224,7 +224,7 @@ async function install({
         version,
       });
     } else {
-      reportEvent(Events.PIXIEBRIX_UNINSTALL, {
+      reportEvent(Events.PIXIEBRIX_UPDATE, {
         version,
         previousVersion,
       });
