@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
@@ -24,48 +24,77 @@ import { isNullOrBlank, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
-import { isEmpty, isEqual } from "lodash";
-import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
+import { isEmpty } from "lodash";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
-import { isTemplateExpression } from "@/utils/expressionUtils";
-import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
+import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 import { type UnknownObject } from "@/types/objectTypes";
-import getHeadersForSpreadsheetTab from "@/contrib/google/sheets/core/getHeadersForSpreadsheetTab";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
+import { SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import useAsyncEffect from "use-async-effect";
+import { sheets } from "@/background/messenger/api";
+import hash from "object-hash";
+
+const ANONYMOUS_OBJECT_SCHEMA: Schema = {
+  type: "object",
+  additionalProperties: true,
+};
 
 const RowValuesField: React.FunctionComponent<{
   name: string;
-  spreadsheet: Spreadsheet | null;
+  googleAccount: SanitizedIntegrationConfig | null;
+  spreadsheetId: string | null;
   tabName: string | Expression;
-}> = ({ name, spreadsheet, tabName }) => {
+}> = ({ name, googleAccount, spreadsheetId, tabName }) => {
   const [{ value: rowValues }, , { setValue: setRowValues }] =
     useField<UnknownObject>(name);
 
-  const headers = getHeadersForSpreadsheetTab(spreadsheet, tabName);
-  const fieldSchema: Schema = isEmpty(headers)
-    ? {
-        type: "object",
-        additionalProperties: true,
+  const [fieldSchema, setFieldSchema] = useState<Schema>(
+    ANONYMOUS_OBJECT_SCHEMA
+  );
+
+  useAsyncEffect(
+    async (isMounted) => {
+      const headers = await sheets.getHeaders({
+        googleAccount,
+        spreadsheetId,
+        tabName: isExpression(tabName) ? tabName.__value__ : tabName,
+      });
+
+      if (!isMounted()) {
+        return;
       }
-    : {
+
+      // Clear rowValues field, if the value is not an expression, or is empty
+      if (!isTemplateExpression(rowValues) || isEmpty(rowValues.__value__)) {
+        setRowValues({});
+      }
+
+      const headerProperties = Object.fromEntries(
+        headers
+          .filter((x) => !isNullOrBlank(x))
+          .map((header) => [header, { type: "string" }])
+      );
+
+      if (isEmpty(headerProperties)) {
+        setFieldSchema(ANONYMOUS_OBJECT_SCHEMA);
+        return;
+      }
+
+      setFieldSchema({
         type: "object",
         properties: Object.fromEntries(
           headers
             .filter((x) => !isNullOrBlank(x))
             .map((header) => [header, { type: "string" }])
         ),
-      };
-
-  // Clear row values when tabName changes, if the value is not an expression, or is empty
-  useOnChangeEffect(
-    tabName,
-    () => {
-      if (!isTemplateExpression(rowValues) || isEmpty(rowValues.__value__)) {
-        setRowValues({});
-      }
+      });
     },
-    isEqual
+    // Hash just in case tabName is an expression, and we
+    // don't need to run the effect when googleAccount changes,
+    // because we can keep headers loaded if the new user
+    // still has access to the same spreadsheetId and tabName.
+    [hash({ spreadsheetId, tabName })]
   );
 
   return (
@@ -95,7 +124,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         schema={APPEND_SCHEMA.properties.googleAccount as Schema}
       />
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
-        {({ spreadsheet, schema }) => (
+        {({ googleAccount, spreadsheet, schema }) => (
           <>
             <FormErrorContext.Provider
               value={{
@@ -122,7 +151,8 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
             </FormErrorContext.Provider>
             <RowValuesField
               name={joinName(blockConfigPath, "rowValues")}
-              spreadsheet={spreadsheet}
+              googleAccount={googleAccount}
+              spreadsheetId={spreadsheet.spreadsheetId}
               tabName={tabName}
             />
           </>

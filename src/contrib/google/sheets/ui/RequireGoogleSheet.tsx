@@ -30,14 +30,15 @@ import { isEmpty } from "lodash";
 import { type AsyncState } from "@/types/sliceTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 
-type SpreadsheetAndSchema = {
+type GoogleSheetState = {
+  googleAccount: SanitizedIntegrationConfig | null;
   spreadsheet: Spreadsheet;
   schema: Schema;
 };
 
 const RequireGoogleSheet: React.FC<{
   blockConfigPath: string;
-  children: (props: SpreadsheetAndSchema) => ReactElement;
+  children: (props: GoogleSheetState) => ReactElement;
 }> = ({ blockConfigPath, children }) => {
   const googleAccountAsyncState = useGoogleAccount(blockConfigPath);
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
@@ -88,6 +89,9 @@ const RequireGoogleSheet: React.FC<{
   const spreadsheetAsyncState = useDeriveAsyncState(
     googleAccountAsyncState,
     spreadsheetIdAsyncState,
+    // Include spreadsheetSchemaState here to block and prevent double-call to
+    // Google sheets api before the user has completed Google login
+    spreadsheetSchemaState,
     async (
       googleAccount: SanitizedIntegrationConfig | null,
       spreadsheetId: string | null
@@ -97,28 +101,30 @@ const RequireGoogleSheet: React.FC<{
       }
 
       // Sheets api handles fallback situation when googleAccount is null
-      return sheets.getSpreadsheet(
-        {
-          googleAccount,
-          spreadsheetId,
-        },
-        { includeGridData: true }
-      );
+      return sheets.getSpreadsheet({
+        googleAccount,
+        spreadsheetId,
+      });
     }
   );
 
-  const spreadsheetAndSchemaAsyncState: AsyncState<SpreadsheetAndSchema> =
-    useDeriveAsyncState(
-      spreadsheetAsyncState,
-      spreadsheetSchemaState,
-      async (spreadsheet: Spreadsheet, schema) => ({
-        spreadsheet,
-        schema,
-      })
-    );
+  const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
+    googleAccountAsyncState,
+    spreadsheetAsyncState,
+    spreadsheetSchemaState,
+    async (
+      googleAccount: SanitizedIntegrationConfig | null,
+      spreadsheet: Spreadsheet,
+      schema
+    ) => ({
+      googleAccount,
+      spreadsheet,
+      schema,
+    })
+  );
 
   return (
-    <AsyncStateGate state={spreadsheetAndSchemaAsyncState}>
+    <AsyncStateGate state={resultAsyncState}>
       {({ data }) => children(data)}
     </AsyncStateGate>
   );

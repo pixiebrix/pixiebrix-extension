@@ -229,20 +229,24 @@ export async function getHeaders(target: SpreadsheetTarget): Promise<string[]> {
   return values[0]?.map(String);
 }
 
-type GetSpreadsheetOptions = {
-  includeGridData?: boolean;
-};
+export async function getSpreadsheet({
+  googleAccount,
+  spreadsheetId,
+}: SpreadsheetTarget): Promise<Spreadsheet> {
+  // Construct a file mask to return metadata for each sheet (tab) in the spreadsheet, without
+  // hydrating the actual grid data for the sheet
+  const fileMask = "properties(title),sheets.properties(sheetId,title)";
 
-export async function getSpreadsheet(
-  { googleAccount, spreadsheetId }: SpreadsheetTarget,
-  { includeGridData }: GetSpreadsheetOptions = {}
-): Promise<Spreadsheet> {
-  let url = `${SHEETS_BASE_URL}/${spreadsheetId}`;
-  if (includeGridData) {
-    url += "?includeGridData=true";
-  }
-
-  return executeRequest<Spreadsheet>({ url, method: "get" }, googleAccount);
+  return executeRequest<Spreadsheet>(
+    {
+      url: `${SHEETS_BASE_URL}/${spreadsheetId}`,
+      method: "get",
+      params: {
+        fields: fileMask,
+      },
+    },
+    googleAccount
+  );
 }
 
 /**

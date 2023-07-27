@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
@@ -24,55 +24,77 @@ import { joinName } from "@/utils";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
-import { isEmpty, isEqual } from "lodash";
+import { isEmpty } from "lodash";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
-import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
-import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
-import getHeadersForSpreadsheetTab from "@/contrib/google/sheets/core/getHeadersForSpreadsheetTab";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { sheets } from "@/background/messenger/api";
+import useAsyncEffect from "use-async-effect";
+import hash from "object-hash";
 
-const HeaderField: React.FunctionComponent<{
-  name: string;
-  spreadsheet: Spreadsheet | null;
-  tabName: string | Expression;
-}> = ({ name, spreadsheet, tabName }) => {
-  const [{ value: header }, , { setValue: setHeader }] = useField<
-    string | Expression
-  >(name);
-
-  const headers = getHeadersForSpreadsheetTab(spreadsheet, tabName);
-  const fieldSchema: Schema = {
+function headerFieldSchemaForHeaders(headers: string[]): Schema {
+  return {
     type: "string",
     title: "Column Header",
     description: "The column header to use for the lookup",
     enum: headers,
   };
+}
 
-  // Clear header when tabName changes, if the current value is not
-  // an expression, which means it is a selected header from another tab.
-  useOnChangeEffect(
-    tabName,
-    () => {
+const HeaderField: React.FunctionComponent<{
+  name: string;
+  googleAccount: SanitizedIntegrationConfig | null;
+  spreadsheetId: string | null;
+  tabName: string | Expression;
+}> = ({ name, googleAccount, spreadsheetId, tabName }) => {
+  const [{ value: header }, , { setValue: setHeader }] = useField<
+    string | Expression
+  >(name);
+
+  const [fieldSchema, setFieldSchema] = useState<Schema>(
+    headerFieldSchemaForHeaders([])
+  );
+
+  useAsyncEffect(
+    async (isMounted) => {
+      const headers = await sheets.getHeaders({
+        googleAccount,
+        spreadsheetId,
+        tabName: isExpression(tabName) ? tabName.__value__ : tabName,
+      });
+
+      if (!isMounted()) {
+        return;
+      }
+
+      setFieldSchema(headerFieldSchemaForHeaders(headers));
+
+      // Clear header when tabName changes, if the current value is not
+      // an expression, which means it is a selected header from another tab.
       if (!isTemplateExpression(header)) {
         setHeader(makeTemplateExpression("nunjucks", ""));
       }
+
+      if (isEmpty(headers)) {
+        return;
+      }
+
+      // If we've loaded headers and the current header value is not valid,
+      // then set it to the first loaded header
+      const currentHeader = isExpression(header) ? header?.__value__ : header;
+      if (!headers.includes(currentHeader)) {
+        setHeader(headers[0]);
+      }
     },
-    isEqual
+    // Hash just in case tabName is an expression, and we
+    // don't need to run the effect when googleAccount changes,
+    // because we can keep headers loaded if the new user
+    // still has access to the same spreadsheetId and tabName.
+    [hash({ spreadsheetId, tabName })]
   );
-
-  // If we've loaded headers and the header value is not set, set it to the first header.
-  useEffect(() => {
-    if (isEmpty(headers)) {
-      return;
-    }
-
-    if (!header || (isExpression(header) && isEmpty(header.__value__))) {
-      setHeader(headers[0]);
-    }
-  });
 
   return (
     <SchemaField
@@ -101,7 +123,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         schema={LOOKUP_SCHEMA.properties.googleAccount as Schema}
       />
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
-        {({ spreadsheet, schema }) => (
+        {({ googleAccount, spreadsheet, schema }) => (
           <FormErrorContext.Provider
             value={{
               shouldUseAnalysis: false,
@@ -126,7 +148,8 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
                 />
                 <HeaderField
                   name={joinName(blockConfigPath, "header")}
-                  spreadsheet={spreadsheet}
+                  googleAccount={googleAccount}
+                  spreadsheetId={spreadsheet.spreadsheetId}
                   tabName={tabName}
                 />
               </>
