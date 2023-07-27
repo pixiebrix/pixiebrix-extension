@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RecipesRootState } from "./recipesTypes";
+import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
 
-export function selectAllRecipes({
-  recipes,
-}: RecipesRootState): RecipesRootState["recipes"] {
-  return recipes;
+export function selectAllModDefinitions({
+  modDefinitions,
+}: ModDefinitionsRootState): ModDefinitionsRootState["modDefinitions"] {
+  return modDefinitions;
 }

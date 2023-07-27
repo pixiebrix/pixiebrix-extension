@@ -49,8 +49,8 @@ import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import {
   persistSessionChangesConfig,
@@ -104,7 +104,7 @@ const store = configureStore({
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     modModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
-    recipes: recipesSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     session: sessionSlice.reducer,
     sessionChanges: persistReducer(
       persistSessionChangesConfig,
@@ -121,7 +121,7 @@ const store = configureStore({
       },
     })
       .concat(appApi.middleware)
-      .concat(recipesMiddleware)
+      .concat(modDefinitionsMiddleware)
       .concat(routerMiddleware(hashHistory))
       .concat(conditionalMiddleware)
       .concat(sessionChangesMiddleware)

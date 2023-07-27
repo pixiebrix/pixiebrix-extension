@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useRequiredModDefinitions } from "@/recipes/recipesHooks";
+import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
 import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
@@ -65,7 +65,7 @@ type Props = {
  *
  * @param recipe the recipe definition
  * @param authOptions the integration configurations available to the user
- * @see checkRecipePermissions
+ * @see checkModDefinitionPermissions
  */
 export function requiresUserConfiguration(
   recipe: ModDefinition,

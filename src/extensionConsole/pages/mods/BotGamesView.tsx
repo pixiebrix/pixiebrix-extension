@@ -19,7 +19,7 @@ import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { type RegistryId } from "@/types/registryTypes";
 import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -27,7 +27,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import botGamesIllustration from "@img/bot-games-arcade-illustration.png";
 import AsyncButton from "@/components/AsyncButton";
-import { ensureRecipePermissionsFromUserGesture } from "@/recipes/recipePermissionsHelpers";
+import { ensureModDefinitionPermissionsFromUserGesture } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
@@ -37,7 +37,9 @@ const BOT_GAMES_CHALLENGE_URL =
 
 export const useInstallBotGamesBlueprint = () => {
   const dispatch = useDispatch();
-  const { data: botGamesRecipe } = useOptionalRecipe(BOT_GAMES_BLUEPRINT_ID);
+  const { data: botGamesRecipe } = useOptionalModDefinition(
+    BOT_GAMES_BLUEPRINT_ID
+  );
   const installedExtensions = useSelector(selectExtensions);
 
   const isBotGamesBlueprintInstalled = installedExtensions.some(
@@ -49,7 +51,7 @@ export const useInstallBotGamesBlueprint = () => {
 
     // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
     try {
-      accepted = await ensureRecipePermissionsFromUserGesture(
+      accepted = await ensureModDefinitionPermissionsFromUserGesture(
         botGamesRecipe,
         []
       );

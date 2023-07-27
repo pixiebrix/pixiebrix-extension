@@ -32,11 +32,11 @@ import {
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
 
-jest.mock("@/recipes/recipesHooks", () => ({
-  useAllRecipes: jest
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
+  useAllModDefinitions: jest
     .fn()
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
-  useOptionalRecipe: jest
+  useOptionalModDefinition: jest
     .fn()
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
 }));

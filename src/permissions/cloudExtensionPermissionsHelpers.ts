@@ -20,9 +20,9 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type ResolvedModComponentDefinition } from "@/types/modDefinitionTypes";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 
-// Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with recipePermissionsHelpers.ts
+// Separate from extensionPermissionsHelpers.ts to avoid a circular dependency with modDefinitionPermissionsHelpers.ts
 
 /**
  * Return permissions status for a StandaloneModDefinition and the user's selected dependencies
@@ -53,7 +53,7 @@ export async function checkCloudExtensionPermissions(
     ],
   };
 
-  return checkRecipePermissions(
+  return checkModDefinitionPermissions(
     recipeLike,
     configured.map(({ id, config }) => ({ id, config }))
   );

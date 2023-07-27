@@ -15,24 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { appApi } from "@/services/api";
-import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
-import { syncRemoteRecipes } from "./recipesSlice";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type UseCachedQueryResult } from "@/types/sliceTypes";
+import { type Except } from "type-fest";
 
-const apiEndpoints = appApi.endpoints;
+// TODO: move me to types/modDefinitionsTypes.ts?
 
-const recipesListenerMiddleware = createListenerMiddleware();
-recipesListenerMiddleware.startListening({
-  matcher: isAnyOf(
-    apiEndpoints.createRecipe.matchFulfilled,
-    apiEndpoints.updateRecipe.matchFulfilled,
-    apiEndpoints.createPackage.matchFulfilled,
-    apiEndpoints.updatePackage.matchFulfilled,
-    apiEndpoints.deletePackage.matchFulfilled
-  ),
-  effect(action, { dispatch }) {
-    void dispatch(syncRemoteRecipes());
-  },
-});
+export type ModDefinitionsState = Except<
+  UseCachedQueryResult<ModDefinition[]>,
+  "refetch"
+>;
 
-export const recipesMiddleware = recipesListenerMiddleware.middleware;
+export type ModDefinitionsRootState = {
+  modDefinitions: ModDefinitionsState;
+};

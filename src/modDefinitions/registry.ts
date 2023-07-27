@@ -44,9 +44,9 @@ type RegistryModDefinition = ModDefinition & {
 };
 
 /**
- * Fix hand-crafted recipe options from the workshop
+ * Fix hand-crafted mod options from the workshop
  */
-function normalizeRecipeOptions(
+function normalizeModOptions(
   options?: ModOptionsDefinition
 ): ModOptionsDefinition {
   if (options == null) {
@@ -56,13 +56,13 @@ function normalizeRecipeOptions(
     };
   }
 
-  const recipeSchema = options.schema ?? {};
+  const modDefinitionSchema = options.schema ?? {};
   const schema: Schema =
-    "type" in recipeSchema &&
-    recipeSchema.type === "object" &&
-    "properties" in recipeSchema
-      ? recipeSchema
-      : propertiesToSchema(recipeSchema as SchemaProperties);
+    "type" in modDefinitionSchema &&
+    modDefinitionSchema.type === "object" &&
+    "properties" in modDefinitionSchema
+      ? modDefinitionSchema
+      : propertiesToSchema(modDefinitionSchema as SchemaProperties);
   const uiSchema: UiSchema = options.uiSchema ?? {};
   uiSchema["ui:order"] = uiSchema["ui:order"] ?? [
     ...sortBy(Object.keys(schema.properties ?? {})),
@@ -71,10 +71,10 @@ function normalizeRecipeOptions(
   return { schema, uiSchema };
 }
 
-function fromJS(rawRecipe: UnnormalizedModDefinition) {
-  return produce(rawRecipe, (draft) => {
-    draft.options = normalizeRecipeOptions(rawRecipe.options);
-    (draft as RegistryModDefinition).id = rawRecipe.metadata.id;
+function fromJS(rawModDefinition: UnnormalizedModDefinition) {
+  return produce(rawModDefinition, (draft) => {
+    draft.options = normalizeModOptions(rawModDefinition.options);
+    (draft as RegistryModDefinition).id = rawModDefinition.metadata.id;
   }) as RegistryModDefinition;
 }
 

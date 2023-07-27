@@ -17,24 +17,26 @@
 
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
-  useOptionalRecipe,
+  useOptionalModDefinition,
   useRequiredModDefinitions,
-} from "@/recipes/recipesHooks";
+} from "@/modDefinitions/modDefinitionHooks";
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { registry } from "@/background/messenger/api";
 
 registry.syncRemote = jest.fn();
 
-describe("useRequiredRecipe", () => {
-  it("only errors if recipe not found after remote fetch", async () => {
+describe("useRequiredModDefinitions", () => {
+  it("only errors if mod definition not found after remote fetch", async () => {
     const deferred = pDefer();
     (registry.syncRemote as jest.Mock).mockImplementation(
       async () => deferred.promise
     );
 
     const wrapper = renderHook(() =>
-      useRequiredModDefinitions([validateRegistryId("nonexistent-recipe")])
+      useRequiredModDefinitions([
+        validateRegistryId("nonexistent-mod-definition"),
+      ])
     );
 
     await wrapper.waitForEffect();
@@ -61,7 +63,7 @@ describe("useRequiredRecipe", () => {
   });
 });
 
-describe("useRecipe", () => {
+describe("useOptionalModDefinition", () => {
   it("returns null if not found", async () => {
     const deferred = pDefer();
     (registry.syncRemote as jest.Mock).mockImplementation(
@@ -69,7 +71,7 @@ describe("useRecipe", () => {
     );
 
     const wrapper = renderHook(() =>
-      useOptionalRecipe(validateRegistryId("nonexistent-recipe"))
+      useOptionalModDefinition(validateRegistryId("nonexistent-mod-definition"))
     );
 
     await wrapper.waitForEffect();

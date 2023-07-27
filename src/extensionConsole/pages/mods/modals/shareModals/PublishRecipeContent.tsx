@@ -29,7 +29,7 @@ import notify from "@/utils/notify";
 import { produce } from "immer";
 import ActivationLink from "@/activation/ActivationLink";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import PublishContentLayout from "./PublishContentLayout";
 import { MARKETPLACE_URL } from "@/utils/strings";
 
@@ -40,7 +40,7 @@ const PublishRecipeContent: React.FunctionComponent = () => {
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
   const { data: recipe, refetch: refetchRecipes } =
-    useOptionalRecipe(blueprintId);
+    useOptionalModDefinition(blueprintId);
 
   const [isPublishing, setPublishing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);

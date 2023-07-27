@@ -21,14 +21,17 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { serializeError } from "serialize-error";
-import { type RecipesRootState, type RecipesState } from "./recipesTypes";
-import recipeRegistry from "./registry";
+import {
+  type ModDefinitionsRootState,
+  type ModDefinitionsState,
+} from "./modDefinitionsTypes";
+import modDefinitionRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
 import { revertAll } from "@/store/commonActions";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { setErrorOnState, setValueOnState } from "@/utils/asyncStateUtils";
 
-export const initialState: RecipesState = Object.freeze({
+export const initialState: ModDefinitionsState = Object.freeze({
   // Standard async state
   data: undefined,
   // Current data will always match data because the slice doesn't consider any input arguments
@@ -49,8 +52,8 @@ export const initialState: RecipesState = Object.freeze({
   isLoadingFromRemote: false,
 });
 
-export const recipesSlice = createSlice({
-  name: "recipes",
+export const modDefinitionsSlice = createSlice({
+  name: "modDefinitions",
   initialState,
   reducers: {
     startFetchingFromCache(state) {
@@ -60,13 +63,13 @@ export const recipesSlice = createSlice({
       state.isCacheUninitialized = false;
       state.isLoadingFromCache = true;
     },
-    setRecipesFromCache(state, action: PayloadAction<ModDefinition[]>) {
+    setModDefinitionsFromCache(state, action: PayloadAction<ModDefinition[]>) {
       // NOTE: there will be a flash of `isFetching: false` before the remote fetch starts
       setValueOnState(state, action.payload);
       state.isLoadingFromCache = false;
     },
     setCacheError(state) {
-      // Don't flash on error on cache failure. The useAllRecipes hook will immediately trigger a remote fetch
+      // Don't flash on error on cache failure. The useAllModDefinitions hook will immediately trigger a remote fetch
       state.isLoadingFromCache = false;
     },
     startFetchingFromRemote(state) {
@@ -74,12 +77,12 @@ export const recipesSlice = createSlice({
         state.isLoadingFromRemote = true;
       }
 
-      // Don't reset currentData, because the recipes slice doesn't take any inputs arguments
+      // Don't reset currentData, because the mod definitions slice doesn't take any inputs arguments
       state.isRemoteUninitialized = false;
       state.isFetching = true;
       state.isFetchingFromRemote = true;
     },
-    setRecipes(state, action: PayloadAction<ModDefinition[]>) {
+    setModDefinitions(state, action: PayloadAction<ModDefinition[]>) {
       setValueOnState(state, action.payload);
       state.isFetchingFromRemote = false;
       state.isLoadingFromRemote = false;
@@ -96,49 +99,51 @@ export const recipesSlice = createSlice({
 });
 
 /**
- * Load recipes from the local database.
+ * Load mod definitions from the local database.
  */
-const loadRecipesFromCache = createAsyncThunk<
+const loadModDefinitionsFromCache = createAsyncThunk<
   void,
   void,
-  { state: RecipesRootState }
->("recipes/loadFromCache", async (arg, { dispatch, getState }) => {
-  if (!getState().recipes.isCacheUninitialized) {
-    throw new Error("Already loaded recipes from cache");
+  { state: ModDefinitionsRootState }
+>("modDefinitions/loadFromCache", async (arg, { dispatch, getState }) => {
+  if (!getState().modDefinitions.isCacheUninitialized) {
+    throw new Error("Already loaded mod definitions from cache");
   }
 
   try {
-    dispatch(recipesSlice.actions.startFetchingFromCache());
-    const recipes = await recipeRegistry.all();
-    dispatch(recipesSlice.actions.setRecipesFromCache(recipes));
+    dispatch(modDefinitionsSlice.actions.startFetchingFromCache());
+    const modDefinitions = await modDefinitionRegistry.all();
+    dispatch(
+      modDefinitionsSlice.actions.setModDefinitionsFromCache(modDefinitions)
+    );
   } catch {
-    dispatch(recipesSlice.actions.setCacheError());
+    dispatch(modDefinitionsSlice.actions.setCacheError());
   }
 });
 
-export const syncRemoteRecipes = createAsyncThunk<
+export const syncRemoteModDefinitions = createAsyncThunk<
   void,
   void,
-  { state: RecipesRootState }
->("recipes/refresh", async (arg, { dispatch, getState }) => {
-  if (getState().recipes.isFetchingFromRemote) {
-    throw new Error("Already fetching recipes from server");
+  { state: ModDefinitionsRootState }
+>("modDefinitions/refresh", async (arg, { dispatch, getState }) => {
+  if (getState().modDefinitions.isFetchingFromRemote) {
+    throw new Error("Already fetching mod definitions from server");
   }
 
   try {
-    dispatch(recipesSlice.actions.startFetchingFromRemote());
+    dispatch(modDefinitionsSlice.actions.startFetchingFromRemote());
     await syncRemotePackages();
-    const recipes = await recipeRegistry.all();
-    dispatch(recipesSlice.actions.setRecipes(recipes));
+    const modDefinitions = await modDefinitionRegistry.all();
+    dispatch(modDefinitionsSlice.actions.setModDefinitions(modDefinitions));
   } catch (error) {
     // Serialize because stored in Redux
     const serializedError = serializeError(error, { useToJSON: false });
-    dispatch(recipesSlice.actions.setError(serializedError));
+    dispatch(modDefinitionsSlice.actions.setError(serializedError));
   }
 });
 
-export const recipesActions = {
-  ...recipesSlice.actions,
-  loadRecipesFromCache,
-  syncRemoteRecipes,
+export const modDefinitionsActions = {
+  ...modDefinitionsSlice.actions,
+  loadModDefinitionsFromCache,
+  syncRemoteModDefinitions,
 };

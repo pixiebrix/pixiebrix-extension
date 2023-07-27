@@ -50,7 +50,7 @@ import RequireMods, {
   type RequiredModDefinition,
 } from "@/sidebar/activateRecipe/RequireMods";
 import { persistor } from "@/sidebar/store";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -247,7 +247,7 @@ const ActivateRecipePanelContent: React.FC<
       Boolean(config)
     );
 
-    const { hasPermissions } = await checkRecipePermissions(
+    const { hasPermissions } = await checkModDefinitionPermissions(
       modDefinition,
       selectedAuths
     );

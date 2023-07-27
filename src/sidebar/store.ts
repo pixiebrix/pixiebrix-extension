@@ -28,7 +28,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -50,7 +50,7 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     // `services` slice is used to determine login state for partner installs
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
-    recipes: recipesSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {

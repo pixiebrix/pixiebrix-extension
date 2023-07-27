@@ -39,7 +39,7 @@ import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
@@ -62,8 +62,8 @@ jest.mock("@/services/api", () => ({
   }),
 }));
 
-jest.mock("@/recipes/recipesHooks", () => ({
-  useAllRecipes: jest.fn().mockReturnValue({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
+  useAllModDefinitions: jest.fn().mockReturnValue({
     data: [],
     isLoading: false,
   }),
@@ -90,7 +90,7 @@ const renderUseSavingWizard = (store: Store) =>
 
 test("maintains wizard open state", () => {
   const recipe = recipeFactory();
-  (useAllRecipes as jest.Mock).mockReturnValue({
+  (useAllModDefinitions as jest.Mock).mockReturnValue({
     data: [recipe],
     isLoading: false,
   });
@@ -182,7 +182,7 @@ describe("saving a Recipe Extension", () => {
     const recipe = recipeFactory({
       options: recipeOptions,
     });
-    (useAllRecipes as jest.Mock).mockReturnValue({
+    (useAllModDefinitions as jest.Mock).mockReturnValue({
       data: [recipe],
       isLoading: false,
     });
