@@ -50,7 +50,7 @@ import {
   formStateFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
@@ -86,7 +86,7 @@ jest.mock("@/modDefinitions/registry", () => ({
 describe("Collecting available vars", () => {
   function mockBlueprintWithOptions(optionsSchema: any) {
     (recipeRegistry.lookup as jest.Mock).mockResolvedValue(
-      recipeFactory({
+      defaultModDefinitionFactory({
         options: {
           schema: optionsSchema,
         },

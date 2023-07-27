@@ -26,7 +26,7 @@ import * as localRegistry from "@/registry/packageRegistry";
 import pDefer from "p-defer";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/components/ConfirmationModal", () => ({
   ...jest.requireActual("@/components/ConfirmationModal"),
@@ -43,7 +43,7 @@ beforeAll(() => {
 // It verifies the proper API calls and the mod definition schema "sent" to the server
 test("load mod definitions and save one", async () => {
   // This is the shape of a mod definition that we get from the API /api/recipes/ endpoint
-  const sourceModDefinition = recipeFactory();
+  const sourceModDefinition = defaultModDefinitionFactory();
 
   const packageId = uuidv4();
   const modDefinitionId = validateRegistryId(sourceModDefinition.metadata.id);

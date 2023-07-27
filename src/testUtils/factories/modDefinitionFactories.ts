@@ -111,17 +111,7 @@ type ExternalStarterBrickParams = {
 export const modDefinitionWithVersionedStarterBrickFactory = ({
   extensionPointId,
 }: ExternalStarterBrickParams = {}) =>
-  define<ModDefinition>({
-    kind: "recipe",
-    apiVersion: "v3",
-    metadata: (n: number) => ({
-      id: validateRegistryId(`test/mod-${n}`),
-      name: `Mod ${n}`,
-      description: "Mod generated from factory",
-      version: validateSemVerString("1.0.0"),
-    }),
-    updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-    sharing: sharingDefinitionFactory,
+  extend<ModDefinition, ModDefinition>(modDefinitionFactory, {
     definitions: undefined,
     options: undefined,
     extensionPoints: (n: number) => [
@@ -167,12 +157,7 @@ export const versionedModDefinitionWithResolvedModComponents = (
     };
   }
 
-  return define<ModDefinition>({
-    kind: "recipe",
-    apiVersion: "v3",
-    metadata: metadataFactory,
-    sharing: sharingDefinitionFactory,
-    updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+  return extend<ModDefinition, ModDefinition>(modDefinitionFactory, {
     definitions,
     options: undefined,
     extensionPoints: modComponentDefinitions,
@@ -211,9 +196,10 @@ export const innerStarterBrickModDefinitionFactory = ({
   });
 
 /**
- * A default Recipe factory
+ * A default Mod Definition factory
  */
-export const recipeFactory = innerStarterBrickModDefinitionFactory();
+export const defaultModDefinitionFactory =
+  innerStarterBrickModDefinitionFactory();
 export const getRecipeWithBuiltInServiceAuths = () => {
   const extensionServices = {
     service1: "@pixiebrix/service1",
@@ -224,7 +210,7 @@ export const getRecipeWithBuiltInServiceAuths = () => {
     services: extensionServices,
   });
 
-  const recipe = recipeFactory({
+  const recipe = defaultModDefinitionFactory({
     extensionPoints: [modComponentDefinition],
   });
 

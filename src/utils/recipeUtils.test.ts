@@ -21,7 +21,7 @@ import {
 } from "./recipeUtils";
 import {
   modComponentDefinitionFactory,
-  recipeFactory,
+  defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
 
@@ -53,13 +53,15 @@ describe("generateRecipeId", () => {
 
 describe("getContainedExtensionPointTypes", () => {
   test("gets types with inner definitions", async () => {
-    const result = await getContainedExtensionPointTypes(recipeFactory());
+    const result = await getContainedExtensionPointTypes(
+      defaultModDefinitionFactory()
+    );
     expect(result).toStrictEqual(["menuItem"]);
   });
 
   test("returns only unique types", async () => {
     const result = await getContainedExtensionPointTypes(
-      recipeFactory({
+      defaultModDefinitionFactory({
         extensionPoints: [
           modComponentDefinitionFactory(),
           modComponentDefinitionFactory(),
@@ -75,7 +77,7 @@ describe("getContainedExtensionPointTypes", () => {
     }));
 
     const result = await getContainedExtensionPointTypes(
-      recipeFactory({
+      defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: undefined,
       })
@@ -88,7 +90,7 @@ describe("getContainedExtensionPointTypes", () => {
     (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
 
     const result = await getContainedExtensionPointTypes(
-      recipeFactory({
+      defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: undefined,
       })
@@ -101,7 +103,7 @@ describe("getContainedExtensionPointTypes", () => {
     (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
 
     const result = await getContainedExtensionPointTypes(
-      recipeFactory({
+      defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: {},
       })

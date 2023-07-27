@@ -46,7 +46,7 @@ import {
   menuItemFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import {
-  recipeFactory,
+  defaultModDefinitionFactory,
   metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
@@ -89,7 +89,7 @@ const renderUseSavingWizard = (store: Store) =>
   });
 
 test("maintains wizard open state", () => {
-  const recipe = recipeFactory();
+  const recipe = defaultModDefinitionFactory();
   (useAllModDefinitions as jest.Mock).mockReturnValue({
     data: [recipe],
     isLoading: false,
@@ -179,7 +179,7 @@ describe("saving a Recipe Extension", () => {
     uiSchema: getMinimalUiSchema(),
   };
   const setupMocks = () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: recipeOptions,
     });
     (useAllModDefinitions as jest.Mock).mockReturnValue({

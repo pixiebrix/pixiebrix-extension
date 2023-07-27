@@ -33,7 +33,7 @@ import { set } from "lodash";
 import {
   modComponentDefinitionFactory,
   starterBrickConfigFactory,
-  recipeFactory,
+  defaultModDefinitionFactory,
   metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
@@ -86,7 +86,7 @@ function setupInputs(): {
   starterBrickConfig.definition.contexts = ["all"];
   starterBrickConfig.definition.documentUrlPatterns = ["*://*/*"];
 
-  const modDefinition = recipeFactory({
+  const modDefinition = defaultModDefinitionFactory({
     extensionPoints: [modComponentDefinition],
     definitions: {
       [extensionPointId]: starterBrickConfig,

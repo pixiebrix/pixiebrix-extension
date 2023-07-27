@@ -30,7 +30,7 @@ import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
 import {
-  recipeFactory,
+  defaultModDefinitionFactory,
   metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
@@ -43,7 +43,7 @@ let renderRecipeEntry: RenderFunctionWithRedux<
 >;
 
 beforeEach(() => {
-  const recipe = recipeFactory();
+  const recipe = defaultModDefinitionFactory();
   const recipeId = recipe.metadata.id;
   renderRecipeEntry = createRenderFunctionWithRedux({
     reducer: {
@@ -87,7 +87,7 @@ test("renders with empty recipe", () => {
 });
 
 test("renders with empty metadata", () => {
-  const recipe = recipeFactory({ metadata: null });
+  const recipe = defaultModDefinitionFactory({ metadata: null });
   const rendered = renderRecipeEntry({
     propsOverride: {
       recipe,
@@ -98,7 +98,7 @@ test("renders with empty metadata", () => {
 });
 
 test("renders the warning icon when has update", () => {
-  const recipe = recipeFactory({
+  const recipe = defaultModDefinitionFactory({
     metadata: metadataFactory({
       version: validateSemVerString("2.0.0"),
     }),

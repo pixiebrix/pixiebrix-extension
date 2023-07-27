@@ -37,7 +37,7 @@ import { modComponentFactory } from "@/testUtils/factories/modComponentFactories
 import {
   modComponentDefinitionFactory,
   getRecipeWithBuiltInServiceAuths,
-  recipeFactory,
+  defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
@@ -80,7 +80,7 @@ describe("installStarterBlueprints", () => {
 
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
-      .reply(200, [recipeFactory()]);
+      .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -122,7 +122,7 @@ describe("installStarterBlueprints", () => {
       services: extensionServices,
     });
 
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       extensionPoints: [starterBrickDefinition],
     });
 
@@ -139,7 +139,7 @@ describe("installStarterBlueprints", () => {
     expect(serviceIds).toEqual([]);
 
     // It works on an array of recipes with no services
-    serviceIds = getAllRequiredServiceIds([recipeFactory()]);
+    serviceIds = getAllRequiredServiceIds([defaultModDefinitionFactory()]);
     expect(serviceIds).toEqual([]);
   });
 
@@ -177,7 +177,7 @@ describe("installStarterBlueprints", () => {
 
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
-      .reply(200, [recipeFactory()]);
+      .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();
@@ -221,7 +221,7 @@ describe("installStarterBlueprints", () => {
   test("starter blueprint already installed", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
 
     const modComponent = modComponentFactory({
       _recipe: { id: recipe.metadata.id } as ModComponentBase["_recipe"],
@@ -255,7 +255,7 @@ describe("installStarterBlueprints", () => {
 
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
-      .reply(200, [recipeFactory()]);
+      .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedInstallStarterBlueprints();
     const { extensions } = await loadOptions();

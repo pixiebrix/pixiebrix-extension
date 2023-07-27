@@ -32,7 +32,7 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
   getRecipeWithBuiltInServiceAuths,
-  recipeFactory,
+  defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import {
@@ -92,7 +92,7 @@ function setupMocksAndRender(
   recipeOverride?: Partial<ModDefinition>,
   { componentOverride }: { componentOverride?: React.ReactElement } = {}
 ) {
-  const recipe = recipeFactory({
+  const recipe = defaultModDefinitionFactory({
     ...recipeOverride,
     metadata: {
       id: validateRegistryId("test-recipe"),

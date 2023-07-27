@@ -27,7 +27,7 @@ import {
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import {
-  recipeFactory,
+  defaultModDefinitionFactory,
   metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -129,7 +129,7 @@ describe("useMods", () => {
     const metadata = metadataFactory();
 
     useAllModDefinitionsMock.mockReturnValue({
-      data: [recipeFactory({ metadata })],
+      data: [defaultModDefinitionFactory({ metadata })],
       error: undefined,
     } as UseCachedQueryResult<ModDefinition[]>);
 

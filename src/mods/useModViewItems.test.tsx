@@ -32,7 +32,7 @@ import {
   modComponentFactory,
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -63,7 +63,7 @@ describe("useModViewItems", () => {
   });
 
   it("creates entry for recipe", async () => {
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
     const activatedModComponent = activatedModComponentFactory({
       _recipe: selectSourceRecipeMetadata(recipe),
     });
@@ -85,7 +85,7 @@ describe("useModViewItems", () => {
   });
 
   it("creates for unavailable recipe", async () => {
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
     const activatedModComponent = activatedModComponentFactory({
       _recipe: selectSourceRecipeMetadata(recipe),
     });

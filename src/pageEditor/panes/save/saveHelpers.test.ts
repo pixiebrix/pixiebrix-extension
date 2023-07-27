@@ -57,7 +57,7 @@ import {
   modComponentDefinitionFactory,
   starterBrickConfigFactory,
   innerStarterBrickModDefinitionFactory,
-  recipeFactory,
+  defaultModDefinitionFactory,
   modDefinitionWithVersionedStarterBrickFactory,
   versionedModDefinitionWithResolvedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
@@ -437,7 +437,7 @@ describe("blueprint options", () => {
     recipeOptions: ModOptionsDefinition,
     elementOptions: ModOptionsDefinition
   ) {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: recipeOptions,
     });
 
@@ -566,7 +566,7 @@ describe("blueprint options", () => {
 
 describe("isRecipeEditable", () => {
   test("returns true if recipe is in editable packages", () => {
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
     const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
@@ -582,7 +582,7 @@ describe("isRecipeEditable", () => {
   });
 
   test("returns false if recipe is not in editable packages", () => {
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
     const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
