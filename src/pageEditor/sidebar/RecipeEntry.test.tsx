@@ -31,7 +31,7 @@ import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
 import {
   recipeFactory,
-  recipeMetadataFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
 let renderRecipeEntry: RenderFunctionWithRedux<
@@ -99,7 +99,7 @@ test("renders with empty metadata", () => {
 
 test("renders the warning icon when has update", () => {
   const recipe = recipeFactory({
-    metadata: recipeMetadataFactory({
+    metadata: metadataFactory({
       version: validateSemVerString("2.0.0"),
     }),
   });

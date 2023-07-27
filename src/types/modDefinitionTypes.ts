@@ -38,7 +38,7 @@ export type ModOptionsDefinition = {
 };
 
 /**
- * An ModComponent defined in a mod.
+ * A ModComponent defined in a mod.
  * @see ModDefinition.extensionPoints
  */
 export type ModComponentDefinition = {

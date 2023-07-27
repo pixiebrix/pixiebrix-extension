@@ -33,7 +33,7 @@ import { type RecipeResponse } from "@/types/contract";
 import {
   modComponentDefinitionFactory,
   recipeFactory,
-  recipeMetadataFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
 registerDefaultWidgets();
@@ -102,7 +102,7 @@ describe("ActivateRecipeCard", () => {
 
   test("activate mod definition with missing required mod definition options", async () => {
     const modDefinition = recipeFactory({
-      metadata: recipeMetadataFactory({
+      metadata: metadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "Mod with Required Options",
       }),
@@ -137,7 +137,7 @@ describe("ActivateRecipeCard", () => {
 
   test("activate mod defintiion permissions", async () => {
     const modDefinition = recipeFactory({
-      metadata: recipeMetadataFactory({
+      metadata: metadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
       }),
@@ -171,7 +171,7 @@ describe("ActivateRecipeCard", () => {
     });
 
     const modDefinition = recipeFactory({
-      metadata: recipeMetadataFactory({
+      metadata: metadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
         name: "A Mod",
       }),

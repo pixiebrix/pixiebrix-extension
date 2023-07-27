@@ -34,7 +34,7 @@ import {
   modComponentDefinitionFactory,
   starterBrickConfigFactory,
   recipeFactory,
-  recipeMetadataFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
@@ -68,7 +68,7 @@ function setupInputs(): {
     id: extensionPointId,
   });
   const starterBrickConfig = starterBrickConfigFactory({
-    metadata: recipeMetadataFactory({
+    metadata: metadataFactory({
       id: extensionPointId,
       name: "Text Starter Brick 1",
     }),

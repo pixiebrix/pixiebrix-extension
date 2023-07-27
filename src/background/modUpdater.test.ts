@@ -33,7 +33,7 @@ import {
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import {
   starterBrickConfigFactory,
-  versionedStarterBrickRecipeFactory,
+  modDefinitionWithVersionedStarterBrickFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { getEditorState } from "@/store/dynamicElementStorage";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -338,7 +338,7 @@ describe("updateModsIfUpdatesAvailable", () => {
   beforeEach(async () => {
     axiosMock.reset();
 
-    publicMod = versionedStarterBrickRecipeFactory()({
+    publicMod = modDefinitionWithVersionedStarterBrickFactory()({
       sharing: sharingDefinitionFactory({ public: true }),
     });
 

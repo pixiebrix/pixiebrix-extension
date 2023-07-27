@@ -65,7 +65,7 @@ exports[`ActivateRecipeCard activate mod definition with missing required mod de
               <div
                 class="wizardDescription"
               >
-                Recipe generated from factory
+                Mod generated from factory
               </div>
             </div>
             <div
@@ -323,7 +323,7 @@ exports[`ActivateRecipeCard activate mod defintiion permissions 1`] = `
               <div
                 class="wizardDescription"
               >
-                Recipe generated from factory
+                Mod generated from factory
               </div>
             </div>
             <div
@@ -438,19 +438,19 @@ exports[`ActivateRecipeCard renders 1`] = `
                   <div
                     class="card-title h5"
                   >
-                    Recipe 1
+                    Mod 1
                   </div>
                   <code
                     class="packageId"
                   >
-                    test/recipe-1
+                    test/mod-1
                   </code>
                 </span>
               </div>
               <div
                 class="wizardDescription"
               >
-                Recipe generated from factory
+                Mod generated from factory
               </div>
             </div>
             <div
