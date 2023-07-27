@@ -276,7 +276,8 @@ async function performConfiguredRequest(
       await authenticate(serviceConfig, requestConfig)
     );
   } catch (error) {
-    // Try again - automatically try to get a new token using the refresh token or have the user login again
+    // Try again - automatically try to get a new token using the refresh token (if applicable)
+    // or have the user login again
 
     const axiosError = selectAxiosError(error);
 
