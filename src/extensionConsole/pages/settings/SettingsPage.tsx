@@ -57,7 +57,7 @@ const SettingsPage: React.FunctionComponent = () => {
         </p>
       }
     >
-      {flagOn("floating-quickbar-button") && (
+      {flagOn("floating-quickbar-button-freemium") && (
         <Section>
           <GeneralSettings />
         </Section>
