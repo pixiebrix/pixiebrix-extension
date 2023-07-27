@@ -129,7 +129,7 @@ export async function getDiagnostics(): Promise<Diagnostics> {
 }
 
 /**
- * Initialize performance monitoring for the top level frame, if performance monitoring is turned on.
+ * Initialize performance monitoring for the top-level frame, if performance tracing setting is enabled.
  */
 export async function initPerformanceMonitoring(): Promise<void> {
   if (isLoadedInIframe()) {

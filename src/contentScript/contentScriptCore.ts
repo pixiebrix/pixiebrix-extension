@@ -73,5 +73,5 @@ export async function init(): Promise<void> {
   initPartnerIntegrations();
   void initFloatingActions();
 
-  initPerformanceMonitoring();
+  void initPerformanceMonitoring();
 }
