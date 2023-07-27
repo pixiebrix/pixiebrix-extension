@@ -35,32 +35,31 @@ export async function refreshGoogleTokens(): Promise<void> {
   expectContext("background");
 
   const googleAuths: IntegrationConfigurationAuthData[] = [];
-  const googleIntegrationConfigs = await serviceLocator.locateAllForService(
+  const googleConfigs = await serviceLocator.locateAllForService(
     GOOGLE_OAUTH_PKCE_INTEGRATION_ID
   );
 
-  for (const integrationConfig of googleIntegrationConfigs) {
-    if (integrationConfig.id) {
-      const integrationConfigCachedAuthData = await getCachedAuthData(
-        integrationConfig.id
-      );
-      if (integrationConfigCachedAuthData) {
-        const authData: IntegrationConfigurationAuthData = {
-          authId: integrationConfig.id,
-          token: integrationConfigCachedAuthData.access_token as string,
-          refreshToken: integrationConfigCachedAuthData.refresh_token as string,
-        };
-        googleAuths.push(authData);
-      }
+  for (const googleConfig of googleConfigs) {
+    // TODO: is there anyway to avoid this await in loop? I don't think so because we need googleConfig.id after the await
+    // eslint-disable-next-line no-await-in-loop
+    const googleCachedAuth = await getCachedAuthData(googleConfig.id);
+
+    if (googleCachedAuth) {
+      const googleAuth: IntegrationConfigurationAuthData = {
+        authId: googleConfig.id,
+        token: googleCachedAuth.access_token as string,
+        refreshToken: googleCachedAuth.refresh_token as string,
+      };
+      googleAuths.push(googleAuth);
     }
   }
 
   // TODO: remove this
   console.info("Refreshing google tokens", googleAuths);
 
-  for (const googleAuthData of googleAuths) {
-    await _refreshGoogleToken(googleAuthData);
-  }
+  await Promise.all(
+    googleAuths.map(async (googleAuth) => _refreshGoogleToken(googleAuth))
+  );
 }
 
 /**
