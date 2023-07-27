@@ -74,7 +74,12 @@ const MultipleSuccessPanel: React.FC<{ results: ModResultPair[] }> = ({
 const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
   mods,
 }) => {
-  const activate = useActivateRecipe("marketplace");
+  // Assume mods work without all permissions. Currently, the only optional permission is `clipboardWrite`, which isn't
+  // actually enforced by Chrome. (Mods can still copy to the clipboard.). The only way a mod would not have all
+  // permissions is if their Enterprise policy has disabled some permissions.
+  const activate = useActivateRecipe("marketplace", {
+    checkPermissions: false,
+  });
 
   // Only activate new mods that the user does not already have activated. If there are updates available, the
   // user will be prompted to update according to marketplace mod updater rules.
@@ -113,7 +118,8 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
 
           if (result.error) {
             throw new Error(
-              `Error activating ${mod.modDefinition.metadata.name}`
+              `Error activating ${mod.modDefinition.metadata.name}`,
+              { cause: new Error(result.error) }
             );
           }
 

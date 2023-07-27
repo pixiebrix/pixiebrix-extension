@@ -63,11 +63,13 @@ function selectActivateEventData(recipe: ModDefinition) {
  * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
  *
  * @param {ActivationSource} source - The source of the activation, only used for reporting purposes
+ * @param {boolean} checkPermissions - Whether to check for permissions before activating the recipe
  * @returns {ActivateRecipeFormCallback} - A callback that can be used to activate a recipe
  * @see useActivateRecipeWizard
  */
 function useActivateRecipe(
-  source: ActivationSource
+  source: ActivationSource,
+  { checkPermissions = false }: { checkPermissions?: boolean } = {}
 ): ActivateRecipeFormCallback {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
@@ -102,25 +104,29 @@ function useActivateRecipe(
           recipe,
           serviceAuths
         );
-        const isPermissionsAcceptedByUser =
-          await ensurePermissionsFromUserGesture(recipePermissions);
-        if (!isPermissionsAcceptedByUser) {
-          if (source === "extensionConsole") {
-            // Note: The prefix "Marketplace" on the telemetry event name
-            // here is legacy terminology from before the public marketplace
-            // was created. It refers to the mod-list part of the extension
-            // console, to distinguish that from the workshop.
-            // It's being kept like this so our metrics history stays clean.
-            reportEvent(Events.MARKETPLACE_REJECT_PERMISSIONS, {
-              ...selectActivateEventData(recipe),
-              reactivate: isReactivate,
-            });
-          }
 
-          return {
-            success: false,
-            error: "You must accept browser permissions to activate.",
-          };
+        if (checkPermissions) {
+          const isPermissionsAcceptedByUser =
+            await ensurePermissionsFromUserGesture(recipePermissions);
+
+          if (!isPermissionsAcceptedByUser) {
+            if (source === "extensionConsole") {
+              // Note: The prefix "Marketplace" on the telemetry event name
+              // here is legacy terminology from before the public marketplace
+              // was created. It refers to the mod-list part of the extension
+              // console, to distinguish that from the workshop.
+              // It's being kept like this so our metrics history stays clean.
+              reportEvent(Events.MARKETPLACE_REJECT_PERMISSIONS, {
+                ...selectActivateEventData(recipe),
+                reactivate: isReactivate,
+              });
+            }
+
+            return {
+              success: false,
+              error: "You must accept browser permissions to activate.",
+            };
+          }
         }
 
         const { optionsArgs, services } = formValues;
@@ -178,6 +184,11 @@ function useActivateRecipe(
         reactivateEveryTab();
       } catch (error) {
         const errorMessage = getErrorMessage(error);
+
+        console.error(`Error activating mod: ${recipe.metadata.id}`, {
+          error,
+        });
+
         if (typeof errorMessage === "string") {
           return {
             success: false,
