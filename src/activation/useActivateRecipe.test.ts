@@ -112,6 +112,10 @@ function setUserAcceptedPermissions(accepted: boolean) {
 }
 
 describe("useActivateRecipe", () => {
+  beforeEach(() => {
+    reactivateEveryTabMock.mockClear();
+  });
+
   it("returns error if permissions are not granted", async () => {
     const { formValues, recipe } = setupInputs();
     setRecipeHasPermissions(false);
