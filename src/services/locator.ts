@@ -325,8 +325,7 @@ class LazyLocatorFactory {
     }
 
     // Proxied configurations have their secrets removed, so can be empty on the client-side.
-    // OAuth2 PKCE services don't require any configurations, so can be empty.
-    // TODO: hitting this for the google/oauth2-pkce service - is this the correct fix?
+    // Some OAuth2 PKCE services, e.g. google/oauth2-pkce, don't require any configurations, so can be empty.
     if (
       isEmpty(match.config) &&
       !isEmpty(service.schema.properties) &&

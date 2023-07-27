@@ -25,6 +25,8 @@ import { locator as serviceLocator } from "@/background/locator";
 
 /**
  * Refresh a Google OAuth2 PKCE token. NOOP if a refresh token is not available.
+ * @returns True if the token was successfully refreshed. False if the token refresh was not attempted.
+ * @throws AxiosError if the token refresh failed or if the integration is not a Google OAuth2 PKCE integration.
  */
 export default async function refreshGoogleToken(
   integrationConfig: SanitizedIntegrationConfig
@@ -57,14 +59,10 @@ export default async function refreshGoogleToken(
     params.append("client_id", context.client_id);
     params.append("client_secret", context.client_secret);
 
-    // On 401, throw the error. In the future, we might consider clearing the partnerAuth. However, currently that
-    // would trigger a re-login, which may not be desirable at arbitrary times.
     const { data } = await axios.post(context.tokenUrl, params);
 
     // The Google refresh token response doesn't include the refresh token. Let's re-add it, so it doesn't get removed.
-    if (!data.refresh_token) {
-      data.refresh_token = cachedAuthData.refresh_token;
-    }
+    data.refresh_token ??= cachedAuthData.refresh_token;
 
     await setCachedAuthData(integrationConfig.id, data);
 
