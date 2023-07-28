@@ -49,9 +49,7 @@ jest.mock("@/contrib/google/initGoogle", () => ({
 }));
 
 jest.mock("@/background/auth", () => ({
-  // If we don't mock return data, we'd also need to mock the launchOAuth2Flow method
-  getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
-  setCachedAuthData: jest.fn(),
+  ...jest.requireActual("@/background/auth"),
   deleteCachedAuthData: jest.fn(),
 }));
 
@@ -74,8 +72,6 @@ jest.mock("@/contrib/google/auth", () => {
 jest.mocked(apiProxyService).mockImplementation(realProxyService);
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
 const ensureGoogleTokenMock = jest.mocked(ensureGoogleToken);
-const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
-const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
 const deleteCachedAuthDataMock = jest.mocked(deleteCachedAuthData);
 
 describe("ensureSheetsReady", () => {
@@ -134,8 +130,6 @@ describe("error handling", () => {
 
     readRawConfigurationsMock.mockResolvedValue([integrationConfig]);
 
-    getCachedAuthDataMock.mockReset();
-    setCachedAuthDataMock.mockReset();
     deleteCachedAuthDataMock.mockReset();
 
     await locator.refresh();
@@ -145,15 +139,14 @@ describe("error handling", () => {
     // Google Request
     axiosMock.onGet().reply(404);
 
-    getCachedAuthDataMock.mockResolvedValue({
-      access_token: "NOTAREALTOKEN",
-      _oauthBrand: undefined,
-    });
-
     const config = await locator.locate(
       googleIntegration.id,
       integrationConfig.id
     );
+
+    await setCachedAuthData(integrationConfig.id, {
+      access_token: "NOTAREALTOKEN",
+    });
 
     await expect(getAllSpreadsheets(config)).rejects.toThrow(
       "Cannot locate the Google drive resource. Have you been granted access?"
@@ -167,15 +160,14 @@ describe("error handling", () => {
     // Google Request
     axiosMock.onGet().reply(400);
 
-    getCachedAuthDataMock.mockResolvedValue({
-      access_token: "NOTAREALTOKEN",
-      _oauthBrand: undefined,
-    });
-
     const config = await locator.locate(
       googleIntegration.id,
       integrationConfig.id
     );
+
+    await setCachedAuthData(integrationConfig.id, {
+      access_token: "NOTAREALTOKEN",
+    });
 
     await expect(getAllSpreadsheets(config)).rejects.toThrow(
       // Generic Bad Request error based on status code
@@ -191,21 +183,22 @@ describe("error handling", () => {
       // Google Request
       axiosMock.onGet().reply(status);
 
-      getCachedAuthDataMock.mockResolvedValue({
-        access_token: "NOTAREALTOKEN",
-        _oauthBrand: undefined,
-      });
-
       const config = await locator.locate(
         googleIntegration.id,
         integrationConfig.id
       );
 
+      await setCachedAuthData(integrationConfig.id, {
+        access_token: "NOTAREALTOKEN",
+      });
+
       await expect(getAllSpreadsheets(config)).rejects.toThrow(
         "Permission denied, re-authenticate with Google and try again."
       );
 
-      expect(setCachedAuthDataMock).not.toHaveBeenCalled();
+      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
+        access_token: "NOTAREALTOKEN",
+      });
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
 
       expect(
@@ -222,22 +215,24 @@ describe("error handling", () => {
       axiosMock.onGet().reply(status);
       axiosMock.onPost().reply(401);
 
-      getCachedAuthDataMock.mockResolvedValue({
-        access_token: "NOTAREALTOKEN",
-        refresh_token: "NOTAREALREFRESHTOKEN",
-        _oauthBrand: undefined,
-      });
-
       const config = await locator.locate(
         googleIntegration.id,
         integrationConfig.id
       );
 
+      await setCachedAuthData(integrationConfig.id, {
+        access_token: "NOTAREALTOKEN",
+        refresh_token: "NOTAREALREFRESHTOKEN",
+      });
+
       await expect(getAllSpreadsheets(config)).rejects.toThrow(
         "Permission denied, re-authenticate with Google and try again."
       );
 
-      expect(setCachedAuthDataMock).not.toHaveBeenCalled();
+      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
+        access_token: "NOTAREALTOKEN",
+        refresh_token: "NOTAREALREFRESHTOKEN",
+      });
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
 
       expect(
@@ -250,40 +245,27 @@ describe("error handling", () => {
   it.each([401, 403])(
     "Retries response on %s if token refresh succeeds",
     async (status: number) => {
-      // Google Requests
+      // Google Requests: Assume the first GET fails because the access token is expired. The second GET succeeds
+      // after the token is refreshed.
       axiosMock.onGet().replyOnce(status).onGet().replyOnce(200);
       axiosMock.onPost().reply(200, {
         access_token: "NOTAREALTOKEN2",
         refresh_token: "NOTAREALREFRESHTOKEN2",
       });
 
-      // First call is in requests.authenticate(). Second call is in refreshGoogleToken().
-      // Third call is in requests.authenticate() after the token refresh.
-      getCachedAuthDataMock
-        .mockResolvedValueOnce({
-          access_token: "NOTAREALTOKEN",
-          refresh_token: "NOTAREALREFRESHTOKEN",
-          _oauthBrand: undefined,
-        })
-        .mockResolvedValueOnce({
-          access_token: "NOTAREALTOKEN",
-          refresh_token: "NOTAREALREFRESHTOKEN",
-          _oauthBrand: undefined,
-        })
-        .mockResolvedValueOnce({
-          access_token: "NOTAREALTOKEN2",
-          refresh_token: "NOTAREALREFRESHTOKEN2",
-          _oauthBrand: undefined,
-        });
-
       const config = await locator.locate(
         googleIntegration.id,
         integrationConfig.id
       );
 
+      await setCachedAuthData(integrationConfig.id, {
+        access_token: "NOTAREALTOKEN",
+        refresh_token: "NOTAREALREFRESHTOKEN",
+      });
+
       await getAllSpreadsheets(config);
 
-      expect(setCachedAuthDataMock).toHaveBeenCalledWith(integrationConfig.id, {
+      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
         access_token: "NOTAREALTOKEN2",
         refresh_token: "NOTAREALREFRESHTOKEN2",
       });
