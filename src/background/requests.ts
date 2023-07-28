@@ -300,8 +300,10 @@ async function performConfiguredRequest(
               error
             );
 
-            // Report a non-axios error to Rollbar, so we can investigate the issue.
-            if (!isAxiosError(error)) {
+            // An authentication error can occur if the refresh token was revoked. Besides that, there should be
+            // no reason for the refresh to fail. Report the error if it's not an authentication error.
+            const axiosError = selectAxiosError(error);
+            if (!axiosError || !isAuthenticationError(axiosError)) {
               reportError(error);
             }
           }
