@@ -37,7 +37,7 @@ import {
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import {
   marketplaceListingFactory,
-  recipeToMarketplacePackage,
+  modDefinitionToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
 import * as messengerApi from "@/contentScript/messenger/api";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
@@ -104,7 +104,7 @@ function setupMocksAndRender(
   );
   const listing = marketplaceListingFactory({
     // Consistent user-visible name for snapshots
-    package: recipeToMarketplacePackage(modDefinition),
+    package: modDefinitionToMarketplacePackage(modDefinition),
   });
 
   // Tests can override by calling before setupMocksAndRender
