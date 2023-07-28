@@ -51,7 +51,7 @@ export type SemVerString = string & {
 };
 
 /**
- * Metadata about a Brick, StarterBrick, Integration, or recipe.
+ * Metadata about a Brick, StarterBrick, Integration, or Mod.
  */
 export interface Metadata {
   /**

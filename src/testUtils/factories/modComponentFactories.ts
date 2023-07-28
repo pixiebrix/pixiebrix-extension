@@ -25,24 +25,21 @@ import {
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import {
-  validateRegistryId,
-  validateSemVerString,
-  validateTimestamp,
-} from "@/types/helpers";
+import { validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { metadataFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type StandaloneModDefinition } from "@/types/contract";
+import { type Metadata } from "@/types/registryTypes";
 
-export const modComponentRecipeFactory = define<ModComponentBase["_recipe"]>({
-  id: (n: number) => validateRegistryId(`test/recipe-${n}`),
-  name: (n: number) => `Recipe ${n}`,
-  description: "Recipe generated from factory",
-  version: validateSemVerString("1.0.0"),
-  updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-  sharing: sharingDefinitionFactory,
-});
+export const modMetadataFactory = extend<Metadata, ModComponentBase["_recipe"]>(
+  metadataFactory,
+  {
+    updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+    sharing: sharingDefinitionFactory,
+  }
+);
+
 export const modComponentFactory = define<ModComponentBase>({
   id: uuidSequence,
   apiVersion: "v3" as ApiVersion,
