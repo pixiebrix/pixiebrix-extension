@@ -78,15 +78,10 @@ const RequireGoogleSheet: React.FC<{
         title: file.name,
       }));
       return {
+        type: "string",
         title: SPREADSHEET_FIELD_TITLE,
         description: SPREADSHEET_FIELD_DESCRIPTION,
-        oneOf: [
-          baseSchema,
-          {
-            type: "string",
-            oneOf: spreadsheetSchemaEnum,
-          },
-        ],
+        oneOf: spreadsheetSchemaEnum,
       } as Schema;
     }
   );

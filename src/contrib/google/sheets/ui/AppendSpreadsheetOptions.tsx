@@ -30,7 +30,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 import { type UnknownObject } from "@/types/objectTypes";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
-import { SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import useAsyncEffect from "use-async-effect";
 import { sheets } from "@/background/messenger/api";
 import hash from "object-hash";
