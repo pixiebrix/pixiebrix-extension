@@ -59,7 +59,7 @@ export const metadataFactory = define<Metadata>({
 
 export const modComponentDefinitionFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
-  label: (n: number) => `Test Extension ${n}`,
+  label: (n: number) => `Test Mod ${n}`,
   services(): Record<OutputKey, RegistryId> {
     return {};
   },
@@ -132,10 +132,10 @@ export const modDefinitionWithVersionedStarterBrickFactory = ({
  * Factory to create a ModDefinition with a definitions section and resolved mod components
  */
 export const versionedModDefinitionWithResolvedModComponents = (
-  extensionCount = 1
+  modComponentCount = 1
 ) => {
   const modComponentDefinitions: ModComponentDefinition[] = [];
-  for (let i = 0; i < extensionCount; i++) {
+  for (let i = 0; i < modComponentCount; i++) {
     // Don't use array(factory, count) here, because it will keep incrementing
     // the modifier number across multiple test runs and cause non-deterministic
     // test execution behavior.
@@ -169,7 +169,7 @@ type InnerStarterBrickParams = {
 };
 
 /**
- * Factory to create a factory that creates a ModDefinition that contains an inner definition
+ * Factory to create a factory that creates a ModDefinition that contains inner definitions
  */
 export const innerStarterBrickModDefinitionFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,
@@ -200,7 +200,8 @@ export const innerStarterBrickModDefinitionFactory = ({
  */
 export const defaultModDefinitionFactory =
   innerStarterBrickModDefinitionFactory();
-export const getRecipeWithBuiltInServiceAuths = () => {
+
+export const getModDefinitionWithBuiltInServiceAuths = () => {
   const extensionServices = {
     service1: "@pixiebrix/service1",
     service2: "@pixiebrix/service2",
@@ -210,7 +211,7 @@ export const getRecipeWithBuiltInServiceAuths = () => {
     services: extensionServices,
   });
 
-  const recipe = defaultModDefinitionFactory({
+  const modDefinition = defaultModDefinitionFactory({
     extensionPoints: [modComponentDefinition],
   });
 
@@ -237,5 +238,5 @@ export const getRecipeWithBuiltInServiceAuths = () => {
     }),
   ];
 
-  return { recipe, builtInServiceAuths };
+  return { modDefinition, builtInServiceAuths };
 };

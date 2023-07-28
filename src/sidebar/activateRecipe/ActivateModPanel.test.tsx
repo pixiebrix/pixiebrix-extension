@@ -31,7 +31,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
-  getRecipeWithBuiltInServiceAuths,
+  getModDefinitionWithBuiltInServiceAuths,
   defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
@@ -89,22 +89,22 @@ beforeAll(() => {
 });
 
 function setupMocksAndRender(
-  recipeOverride?: Partial<ModDefinition>,
+  modDefinitionOverride?: Partial<ModDefinition>,
   { componentOverride }: { componentOverride?: React.ReactElement } = {}
 ) {
-  const recipe = defaultModDefinitionFactory({
-    ...recipeOverride,
+  const modDefinition = defaultModDefinitionFactory({
+    ...modDefinitionOverride,
     metadata: {
-      id: validateRegistryId("test-recipe"),
+      id: validateRegistryId("test-mod"),
       name: "Test Mod",
     },
   });
   useRequiredModDefinitionsMock.mockReturnValue(
-    valueToAsyncCacheState([recipe])
+    valueToAsyncCacheState([modDefinition])
   );
   const listing = marketplaceListingFactory({
     // Consistent user-visible name for snapshots
-    package: recipeToMarketplacePackage(recipe),
+    package: recipeToMarketplacePackage(modDefinition),
   });
 
   // Tests can override by calling before setupMocksAndRender
@@ -112,12 +112,12 @@ function setupMocksAndRender(
   appApiMock.onGet().reply(200, []);
 
   const entry = sidebarEntryFactory("activateMods", {
-    modIds: [recipe.metadata.id],
+    modIds: [modDefinition.metadata.id],
     heading: "Activate Mod",
   });
 
   const element = componentOverride ?? (
-    <ActivateModPanel modId={recipe.metadata.id} />
+    <ActivateModPanel modId={modDefinition.metadata.id} />
   );
 
   return render(element, {
@@ -255,9 +255,9 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("renders with service configuration if no built-in service configs available", async () => {
-    const { recipe } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
 
-    const rendered = setupMocksAndRender(recipe);
+    const rendered = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
@@ -268,11 +268,12 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("activates recipe with built-in services automatically and renders well-done page", async () => {
-    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition, builtInServiceAuths } =
+      getModDefinitionWithBuiltInServiceAuths();
 
     appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
 
-    const rendered = setupMocksAndRender(recipe);
+    const rendered = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
@@ -280,11 +281,11 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("doesn't flicker while built-in auths are loading", async () => {
-    const { recipe } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
 
     onDeferredGet("/api/services/shared/");
 
-    const rendered = setupMocksAndRender(recipe);
+    const rendered = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
@@ -316,13 +317,14 @@ describe("ActivateRecipePanel", () => {
 
 describe("ActivateMultipleModsPanel", () => {
   it("automatically activates single mod", async () => {
-    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition, builtInServiceAuths } =
+      getModDefinitionWithBuiltInServiceAuths();
 
     appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
 
-    const rendered = setupMocksAndRender(recipe, {
+    const rendered = setupMocksAndRender(modDefinition, {
       componentOverride: (
-        <ActivateMultipleModsPanel modIds={[recipe.metadata.id]} />
+        <ActivateMultipleModsPanel modIds={[modDefinition.metadata.id]} />
       ),
     });
 
@@ -332,12 +334,12 @@ describe("ActivateMultipleModsPanel", () => {
   });
 
   it("shows error if any mod requires configuration", async () => {
-    const { recipe } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
 
-    setupMocksAndRender(recipe, {
+    setupMocksAndRender(modDefinition, {
       componentOverride: (
         <ErrorBoundary>
-          <ActivateMultipleModsPanel modIds={[recipe.metadata.id]} />
+          <ActivateMultipleModsPanel modIds={[modDefinition.metadata.id]} />
         </ErrorBoundary>
       ),
     });
