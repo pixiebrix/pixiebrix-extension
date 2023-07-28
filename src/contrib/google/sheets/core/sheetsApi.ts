@@ -40,6 +40,7 @@ import {
   type SpreadsheetProperties,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
+import pTimeout from "p-timeout";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
@@ -80,20 +81,41 @@ async function _ensureSheetsReadyOnce({
   return token;
 }
 
+/**
+ * Ensure the Google Sheets API is ready to be called, and return the user's token.
+ * @param maxRetries the maximum number of retries
+ * @param interactive true to show the Google authentication UI if needed
+ * @param timeoutMillis a timeout for ensuring the token if the Google API is not ready
+ * @return token the user's Google token
+ */
 export async function ensureSheetsReady({
   maxRetries = 3,
   interactive,
+  timeoutMillis = 1000,
 }: {
   maxRetries?: number;
   interactive: boolean;
+  timeoutMillis?: number;
 }): Promise<string> {
   let retry = 0;
   let lastError;
 
   do {
     try {
+      const promise = _ensureSheetsReadyOnce({ interactive });
+
+      if (interactive) {
+        // Can't time out the promise on interactive mode, because it may be waiting for the user to authenticate
+        // with the Google authentication UI.
+        // eslint-disable-next-line no-await-in-loop -- retry loop
+        return await promise;
+      }
+
       // eslint-disable-next-line no-await-in-loop -- retry loop
-      return await _ensureSheetsReadyOnce({ interactive });
+      return await pTimeout(promise, {
+        milliseconds: timeoutMillis,
+        message: "Timeout waiting for Google Sheets API token",
+      });
     } catch (error) {
       console.error("Error ensuring Google Sheets API ready", error, {
         retry,
