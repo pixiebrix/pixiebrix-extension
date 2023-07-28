@@ -65,6 +65,7 @@ import {
 } from "@/types/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import refreshGoogleToken from "@/background/refreshGoogleToken";
+import reportError from "@/telemetry/reportError";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
@@ -299,9 +300,9 @@ async function performConfiguredRequest(
               error
             );
 
-            const axiosError = selectAxiosError(error);
-            if (!axiosError || !isAuthenticationError(axiosError)) {
-              throw error;
+            // Report a non-axios error to Rollbar, so we can investigate the issue.
+            if (!isAxiosError(error)) {
+              reportError(error);
             }
           }
         }
