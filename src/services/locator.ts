@@ -324,8 +324,14 @@ class LazyLocatorFactory {
       );
     }
 
-    // Proxied configurations have their secrets removed, so can be empty on the client-side
-    if (isEmpty(match.config) && !match.proxy && service.hasAuth) {
+    // Proxied configurations have their secrets removed, so can be empty on the client-side.
+    // Some OAuth2 PKCE services, e.g. google/oauth2-pkce, don't require any configurations, so can be empty.
+    if (
+      isEmpty(match.config) &&
+      !isEmpty(service.schema.properties) &&
+      !match.proxy &&
+      service.hasAuth
+    ) {
       console.warn(`Config ${authId} for service ${serviceId} is empty`);
     }
 
