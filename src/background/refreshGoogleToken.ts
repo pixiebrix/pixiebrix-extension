@@ -26,7 +26,7 @@ import { locator as serviceLocator } from "@/background/locator";
 /**
  * Refresh a Google OAuth2 PKCE token. NOOP if a refresh token is not available.
  * @returns True if the token was successfully refreshed. False if the token refresh was not attempted.
- * @throws AxiosError if the token refresh failed or if the integration is not a Google OAuth2 PKCE integration.
+ * @throws AxiosError if the token refresh failed or Error if the integration is not a Google OAuth2 PKCE integration.
  */
 export default async function refreshGoogleToken(
   integrationConfig: SanitizedIntegrationConfig

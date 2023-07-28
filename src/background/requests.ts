@@ -298,6 +298,11 @@ async function performConfiguredRequest(
               `Failed to refresh ${GOOGLE_OAUTH_PKCE_INTEGRATION_ID} token:`,
               error
             );
+
+            const axiosError = selectAxiosError(error);
+            if (!axiosError || !isAuthenticationError(axiosError)) {
+              throw error;
+            }
           }
         }
 

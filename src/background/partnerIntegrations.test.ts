@@ -162,12 +162,13 @@ describe("refresh partner token", () => {
       {
         id: authId,
         serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
-        config: {
+        config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
-        },
-      } as unknown as IntegrationConfig,
+        }),
+      } as IntegrationConfig,
     ]);
 
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
     appApiMock.onPost().reply(200, {
       access_token: "notatoken2",
       refresh_token: "notarefreshtoken2",
@@ -202,15 +203,16 @@ describe("refresh partner token", () => {
     });
 
     readRawConfigurationsMock.mockResolvedValue([
-      integrationConfigFactory({
+      {
         id: authId,
         serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
         }),
-      }),
+      } as IntegrationConfig,
     ]);
 
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
     appApiMock.onPost().reply(401);
 
     await serviceLocator.refreshLocal();
