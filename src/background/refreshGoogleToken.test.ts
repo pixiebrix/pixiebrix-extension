@@ -86,7 +86,7 @@ describe("refresh partner token", () => {
     });
 
     getCachedAuthDataMock.mockResolvedValue({
-      token: "notatoken",
+      access_token: "notatoken",
       _oauthBrand: undefined,
     });
 
@@ -102,7 +102,7 @@ describe("refresh partner token", () => {
     });
 
     getCachedAuthDataMock.mockResolvedValue({
-      token: "notatoken",
+      access_token: "notatoken",
       refresh_token: "notarefreshtoken",
       _oauthBrand: undefined,
     });
@@ -137,7 +137,7 @@ describe("refresh partner token", () => {
     });
 
     getCachedAuthDataMock.mockResolvedValue({
-      token: "notatoken",
+      access_token: "notatoken",
       refresh_token: "notarefreshtoken",
       _oauthBrand: undefined,
     });

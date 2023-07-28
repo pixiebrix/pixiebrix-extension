@@ -42,7 +42,7 @@ import {
 } from "@/contrib/google/sheets/core/types";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
-const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
+export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
 
 export type SpreadsheetTarget = {
   googleAccount: SanitizedIntegrationConfig | null;

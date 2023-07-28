@@ -16,6 +16,7 @@
  */
 
 import {
+  DRIVE_BASE_URL,
   ensureSheetsReady,
   getAllSpreadsheets,
 } from "@/contrib/google/sheets/core/sheetsApi";
@@ -30,7 +31,11 @@ import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "@/services/factory";
 import { readRawConfigurations } from "@/services/registry";
 import { type IntegrationConfig } from "@/types/integrationTypes";
-import { deleteCachedAuthData } from "@/background/auth";
+import {
+  getCachedAuthData,
+  setCachedAuthData,
+  deleteCachedAuthData,
+} from "@/background/auth";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -45,9 +50,8 @@ jest.mock("@/contrib/google/initGoogle", () => ({
 
 jest.mock("@/background/auth", () => ({
   // If we don't mock return data, we'd also need to mock the launchOAuth2Flow method
-  getCachedAuthData: jest.fn().mockResolvedValue({
-    token: "NOTAREALTOKEN",
-  }),
+  getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
+  setCachedAuthData: jest.fn(),
   deleteCachedAuthData: jest.fn(),
 }));
 
@@ -70,6 +74,8 @@ jest.mock("@/contrib/google/auth", () => {
 jest.mocked(apiProxyService).mockImplementation(realProxyService);
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
 const ensureGoogleTokenMock = jest.mocked(ensureGoogleToken);
+const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
+const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
 const deleteCachedAuthDataMock = jest.mocked(deleteCachedAuthData);
 
 describe("ensureSheetsReady", () => {
@@ -117,6 +123,7 @@ describe("error handling", () => {
 
   beforeEach(async () => {
     axiosMock.reset();
+    axiosMock.resetHistory();
 
     integrationConfig = integrationConfigFactory({
       serviceId: googleIntegration.id,
@@ -127,6 +134,8 @@ describe("error handling", () => {
 
     readRawConfigurationsMock.mockResolvedValue([integrationConfig]);
 
+    getCachedAuthDataMock.mockReset();
+    setCachedAuthDataMock.mockReset();
     deleteCachedAuthDataMock.mockReset();
 
     await locator.refresh();
@@ -135,6 +144,11 @@ describe("error handling", () => {
   it("Returns permissions error for 404 message with google integration", async () => {
     // Google Request
     axiosMock.onGet().reply(404);
+
+    getCachedAuthDataMock.mockResolvedValue({
+      access_token: "NOTAREALTOKEN",
+      _oauthBrand: undefined,
+    });
 
     const config = await locator.locate(
       googleIntegration.id,
@@ -153,6 +167,11 @@ describe("error handling", () => {
     // Google Request
     axiosMock.onGet().reply(400);
 
+    getCachedAuthDataMock.mockResolvedValue({
+      access_token: "NOTAREALTOKEN",
+      _oauthBrand: undefined,
+    });
+
     const config = await locator.locate(
       googleIntegration.id,
       integrationConfig.id
@@ -167,10 +186,15 @@ describe("error handling", () => {
   });
 
   it.each([401, 403])(
-    "Returns permissions error on: %s",
+    "Returns permissions error on %s if no refresh token",
     async (status: number) => {
       // Google Request
       axiosMock.onGet().reply(status);
+
+      getCachedAuthDataMock.mockResolvedValue({
+        access_token: "NOTAREALTOKEN",
+        _oauthBrand: undefined,
+      });
 
       const config = await locator.locate(
         googleIntegration.id,
@@ -181,7 +205,101 @@ describe("error handling", () => {
         "Permission denied, re-authenticate with Google and try again."
       );
 
+      expect(setCachedAuthDataMock).not.toHaveBeenCalled();
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
+
+      expect(
+        axiosMock.history.get.filter((x) => x.url.startsWith(DRIVE_BASE_URL))
+      ).toHaveLength(2);
+      expect(axiosMock.history.post).toHaveLength(0);
+    }
+  );
+
+  it.each([401, 403])(
+    "Returns permissions error on %s if token refresh fails",
+    async (status: number) => {
+      // Google Requests
+      axiosMock.onGet().reply(status);
+      axiosMock.onPost().reply(401);
+
+      getCachedAuthDataMock.mockResolvedValue({
+        access_token: "NOTAREALTOKEN",
+        refresh_token: "NOTAREALREFRESHTOKEN",
+        _oauthBrand: undefined,
+      });
+
+      const config = await locator.locate(
+        googleIntegration.id,
+        integrationConfig.id
+      );
+
+      await expect(getAllSpreadsheets(config)).rejects.toThrow(
+        "Permission denied, re-authenticate with Google and try again."
+      );
+
+      expect(setCachedAuthDataMock).not.toHaveBeenCalled();
+      expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
+
+      expect(
+        axiosMock.history.get.filter((x) => x.url.startsWith(DRIVE_BASE_URL))
+      ).toHaveLength(2);
+      expect(axiosMock.history.post).toHaveLength(1);
+    }
+  );
+
+  it.each([401, 403])(
+    "Retries response on %s if token refresh succeeds",
+    async (status: number) => {
+      // Google Requests
+      axiosMock.onGet().replyOnce(status).onGet().replyOnce(200);
+      axiosMock.onPost().reply(200, {
+        access_token: "NOTAREALTOKEN2",
+        refresh_token: "NOTAREALREFRESHTOKEN2",
+      });
+
+      // First call is in requests.authenticate(). Second call is in refreshGoogleToken().
+      // Third call is in requests.authenticate() after the token refresh.
+      getCachedAuthDataMock
+        .mockResolvedValueOnce({
+          access_token: "NOTAREALTOKEN",
+          refresh_token: "NOTAREALREFRESHTOKEN",
+          _oauthBrand: undefined,
+        })
+        .mockResolvedValueOnce({
+          access_token: "NOTAREALTOKEN",
+          refresh_token: "NOTAREALREFRESHTOKEN",
+          _oauthBrand: undefined,
+        })
+        .mockResolvedValueOnce({
+          access_token: "NOTAREALTOKEN2",
+          refresh_token: "NOTAREALREFRESHTOKEN2",
+          _oauthBrand: undefined,
+        });
+
+      const config = await locator.locate(
+        googleIntegration.id,
+        integrationConfig.id
+      );
+
+      await getAllSpreadsheets(config);
+
+      expect(setCachedAuthDataMock).toHaveBeenCalledWith(integrationConfig.id, {
+        access_token: "NOTAREALTOKEN2",
+        refresh_token: "NOTAREALREFRESHTOKEN2",
+      });
+      expect(deleteCachedAuthDataMock).not.toHaveBeenCalled();
+
+      const googleGetRequests = axiosMock.history.get.filter((x) =>
+        x.url.startsWith(DRIVE_BASE_URL)
+      );
+      expect(googleGetRequests).toHaveLength(2);
+      expect(googleGetRequests[0].headers.Authorization).toBe(
+        "Bearer NOTAREALTOKEN"
+      );
+      expect(googleGetRequests[1].headers.Authorization).toBe(
+        "Bearer NOTAREALTOKEN2"
+      );
+      expect(axiosMock.history.post).toHaveLength(1);
     }
   );
 });
