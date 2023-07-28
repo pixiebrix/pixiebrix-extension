@@ -40,46 +40,50 @@ export const modMetadataFactory = extend<Metadata, ModComponentBase["_recipe"]>(
   }
 );
 
+const modComponentConfigFactory = define<ModComponentBase["config"]>({
+  apiVersion: "v3" as ApiVersion,
+  kind: "component",
+  metadata: (n: number) =>
+    metadataFactory({
+      id: validateRegistryId(`test/component-${n}`),
+      name: "Test config",
+    }),
+  inputSchema: {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {},
+    required: [] as string[],
+  },
+
+  // This is the pipeline prop for the menu item starter brick
+  action: [
+    {
+      id: "@pixiebrix/browser/open-tab",
+      config: {
+        url: "http://www.amazon.com/s",
+        params: {
+          url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
+        },
+      },
+    },
+  ],
+});
+
 export const modComponentFactory = define<ModComponentBase>({
   id: uuidSequence,
   apiVersion: "v3" as ApiVersion,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: undefined,
   _deployment: undefined,
   label: "Test label",
   services(): IntegrationDependency[] {
     return [];
   },
-  config: (n: number) => ({
-    apiVersion: "v3" as ApiVersion,
-    kind: "component",
-    metadata: metadataFactory({
-      id: validateRegistryId(`test/component-${n}`),
-      name: "Test config",
-    }),
-    inputSchema: {
-      $schema: "https://json-schema.org/draft/2019-09/schema#",
-      type: "object",
-      properties: {},
-      required: [] as string[],
-    },
-
-    // This is the pipeline prop for the MenuItem extension point, which is the default for extensionPointDefinitionFactory
-    action: [
-      {
-        id: "@pixiebrix/browser/open-tab",
-        config: {
-          url: "http://www.amazon.com/s",
-          params: {
-            url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
-          },
-        },
-      },
-    ],
-  }),
+  config: modComponentConfigFactory,
   active: true,
 });
+
 export const activatedModComponentFactory = extend<
   ModComponentBase,
   ActivatedModComponent
