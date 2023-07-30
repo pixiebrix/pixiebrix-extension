@@ -36,7 +36,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type StarterBrickType } from "@/starterBricks/types";
 import extensionPointRegistry from "@/starterBricks/registry";
-import { getContainedExtensionPointTypes } from "@/utils/recipeUtils";
+import { getContainedStarterBrickTypes } from "@/utils/modDefinitionUtils";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -141,8 +141,11 @@ function hasSourceRecipeWithScope(
   return scope && extension._recipe?.id.startsWith(scope + "/");
 }
 
-function hasRecipeScope(recipe: ModDefinition | UnavailableMod, scope: string) {
-  return Boolean(recipe.metadata?.id.startsWith(scope + "/"));
+function hasRecipeScope(
+  modDefinition: ModDefinition | UnavailableMod,
+  scope: string
+) {
+  return Boolean(modDefinition.metadata?.id.startsWith(scope + "/"));
 }
 
 /**
@@ -193,7 +196,7 @@ export function isDeployment(
 }
 
 /**
- * Returns true if a Blueprint has been made public but is not yet published to the Marketplace.
+ * Returns true if a mod has been made public but is not yet published to the Marketplace.
  */
 export function isRecipePendingPublish(
   recipe: ModDefinition,
@@ -341,11 +344,11 @@ export const StarterBrickMap: Record<StarterBrickType, string> = {
   tour: "Tour",
 };
 
-const getExtensionPointType = async (
-  extension: ResolvedModComponent
+const getStarterBrickType = async (
+  modComponent: ResolvedModComponent
 ): Promise<StarterBrickType> => {
   const extensionPoint = await extensionPointRegistry.lookup(
-    extension.extensionPointId
+    modComponent.extensionPointId
   );
 
   return extensionPoint.kind as StarterBrickType;
@@ -359,8 +362,8 @@ const getExtensionPointTypesContained = async (
   }
 
   return isModDefinition(modViewItem.mod)
-    ? getContainedExtensionPointTypes(modViewItem.mod)
-    : [await getExtensionPointType(modViewItem.mod)];
+    ? getContainedStarterBrickTypes(modViewItem.mod)
+    : [await getStarterBrickType(modViewItem.mod)];
 };
 
 export const getContainedStarterBrickNames = async (

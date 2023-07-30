@@ -22,7 +22,6 @@ import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/bricks/append";
-import { isNullOrBlank, joinName } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/ui/TabField";
@@ -37,6 +36,8 @@ import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { joinName } from "@/utils/formUtils";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",

@@ -27,7 +27,6 @@ import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { validateRegistryId } from "@/types/helpers";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import { isObject } from "@/utils";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
@@ -49,6 +48,7 @@ import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
 import cx from "classnames";
 import { namespaceOptions } from "@/bricks/effects/pageState";
+import { isObject } from "@/utils/objectUtils";
 
 const fields = {
   DescriptionField,

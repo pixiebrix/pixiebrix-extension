@@ -38,7 +38,6 @@ import {
   getVariableKeyForSubPipeline,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
-import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 import {
   type DocumentElement,
@@ -71,6 +70,8 @@ import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBl
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { joinName, joinPathParts } from "@/utils/formUtils";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 

@@ -32,7 +32,6 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { isAbsoluteUrl, isObject } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import {
@@ -66,6 +65,8 @@ import {
 import { type MessageContext } from "@/types/loggerTypes";
 import refreshGoogleToken from "@/background/refreshGoogleToken";
 import reportError from "@/telemetry/reportError";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { isObject } from "@/utils/objectUtils";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)

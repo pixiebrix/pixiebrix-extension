@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { waitForBody } from "@/utils";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import shadowWrap from "@/utils/shadowWrap";
+import { waitForBody } from "@/utils/domUtils";
 
 const TIMEOUT_MS = 3000;
 

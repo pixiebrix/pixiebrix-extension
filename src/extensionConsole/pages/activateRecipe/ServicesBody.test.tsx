@@ -25,7 +25,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/extensionConsole/testHelpers";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import { getRequiredIntegrationIds } from "@/utils/modDefinitionUtils";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
@@ -37,11 +37,11 @@ jest.mock("@/hooks/auth", () => ({
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
-jest.mock("@/utils/recipeUtils", () => ({
-  getRequiredServiceIds: jest.fn(),
+jest.mock("@/utils/modDefinitionUtils", () => ({
+  getRequiredIntegrationIds: jest.fn(),
 }));
 
-const getRequiredServiceIdsMock = jest.mocked(getRequiredServiceIds);
+const getRequiredIntegrationIdsMock = jest.mocked(getRequiredIntegrationIds);
 
 const serviceId1 = validateRegistryId("test/service1");
 const serviceId2 = validateRegistryId("test/service2");
@@ -126,7 +126,7 @@ function expectRefreshButton(count?: number) {
 describe("ServicesBody", () => {
   it("renders with one service and no options and does not render title", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
         services: [{ id: serviceId1, config: null }],
@@ -143,7 +143,7 @@ describe("ServicesBody", () => {
 
   it("renders own title properly", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody blueprint={defaultModDefinitionFactory()} showOwnTitle />,
       {
@@ -161,7 +161,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption2a, sharedOption2b])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -184,7 +184,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption1a, sharedOption1b])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
         services: [{ id: serviceId1, config: sharedOption1a.value }],
@@ -201,7 +201,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption1a, sharedOption1b])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
         services: [{ id: serviceId1, config: sharedOption1a.value }],
@@ -230,7 +230,7 @@ describe("ServicesBody", () => {
         sharedOption2b,
       ])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
         services: [
@@ -251,7 +251,7 @@ describe("ServicesBody", () => {
 
   it("hides one field and label when one built-in option", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState([builtInOption1a]));
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -279,7 +279,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, builtInOption1b])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -307,7 +307,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption1a])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -330,7 +330,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption1a])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -364,7 +364,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption2a, sharedOption2b])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -397,7 +397,7 @@ describe("ServicesBody", () => {
         sharedOption2b,
       ])
     );
-    getRequiredServiceIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}

@@ -26,7 +26,7 @@ import {
   type ToastOptions,
 } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
-import { NOTIFICATIONS_Z_INDEX } from "@/common";
+import { NOTIFICATIONS_Z_INDEX } from "@/domConstants";
 import reportError from "@/telemetry/reportError";
 import { type Except, type RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";

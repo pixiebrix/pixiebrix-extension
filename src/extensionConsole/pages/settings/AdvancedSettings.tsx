@@ -19,7 +19,7 @@ import styles from "./SettingsCard.module.scss";
 
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Card, Form } from "react-bootstrap";
-import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
+import { useConfiguredHost } from "@/services/baseService";
 import React, { useCallback } from "react";
 import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/token";
 import notify from "@/utils/notify";
@@ -35,9 +35,10 @@ import useUserAction from "@/hooks/useUserAction";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
-import { reloadIfNewVersionIsReady } from "@/chrome";
 import useDiagnostics from "@/extensionConsole/pages/settings/useDiagnostics";
 import AsyncButton from "@/components/AsyncButton";
+import { reloadIfNewVersionIsReady } from "@/utils/extensionUtils";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;

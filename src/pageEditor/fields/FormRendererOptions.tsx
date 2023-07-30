@@ -25,7 +25,6 @@ import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useField, useFormikContext } from "formik";
-import { joinName } from "@/utils";
 import { partial } from "lodash";
 import {
   customFormRendererSchema,
@@ -38,6 +37,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { type Options } from "react-select";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import databaseSchema from "@schemas/database.json";
+import { joinName } from "@/utils/formUtils";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 

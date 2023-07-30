@@ -27,8 +27,8 @@ import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTy
 import { getTopLevelFrame } from "webext-messenger";
 import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { SubmitPanelAction } from "@/bricks/errors";
-import { boolean } from "@/utils";
 import cx from "classnames";
+import { boolean } from "@/utils/typeUtils";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BrickPipeline;

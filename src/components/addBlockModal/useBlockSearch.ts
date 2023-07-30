@@ -19,12 +19,12 @@ import { type Brick } from "@/types/brickTypes";
 import { useMemo } from "react";
 import { isEmpty, sortBy } from "lodash";
 import Fuse from "fuse.js";
-import { isNullOrBlank } from "@/utils";
 import {
   type BlockOption,
   type BlockResult,
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { TAG_ALL } from "@/components/addBlockModal/addBlockModalConstants";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 function makeBlockOption(block: Brick): BlockOption {
   return {

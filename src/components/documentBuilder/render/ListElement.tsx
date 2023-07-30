@@ -29,12 +29,13 @@ import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
-import { isNullOrBlank, joinPathParts } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { getTopLevelFrame } from "webext-messenger";
 import useAsyncState from "@/hooks/useAsyncState";
 import DelayedRender from "@/components/DelayedRender";
 import { isDeferExpression } from "@/utils/expressionUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 type DocumentListProps = {
   array: UnknownObject[];

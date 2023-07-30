@@ -16,7 +16,6 @@
  */
 
 import axios, { type AxiosResponse } from "axios";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   computeChallenge,
   generateVerifier,
@@ -25,7 +24,6 @@ import {
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { BusinessError } from "@/errors/businessErrors";
-import { memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
   type AuthData,
@@ -34,6 +32,12 @@ import {
   type IntegrationConfig,
 } from "@/types/integrationTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import {
+  ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 

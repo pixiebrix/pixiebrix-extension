@@ -28,12 +28,11 @@ import {
   sortBySelector,
 } from "./selectorInference";
 import { JSDOM } from "jsdom";
-import { html } from "@/utils";
 import { uniq } from "lodash";
 import { SELECTOR_HINTS } from "@/utils/inference/siteSelectorHints";
-import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
-import { $safeFind } from "@/helpers";
+import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { siteSelectorHintFactory } from "@/testUtils/factories/selectorFactories";
+import { $safeFind, html } from "@/utils/domUtils";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- It's a global namespace

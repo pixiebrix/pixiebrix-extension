@@ -19,12 +19,6 @@
 // https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/object-inspector.js
 
 import { mapValues, partial, unary } from "lodash";
-import {
-  getAllPropertyNames,
-  isGetter,
-  isNullOrBlank,
-  isPrimitive,
-} from "@/utils";
 import { type ReadableComponentAdapter } from "@/pageScript/frameworks/component";
 import {
   FrameworkNotFound,
@@ -32,6 +26,9 @@ import {
 } from "@/pageScript/frameworks/errors";
 import { findElement } from "@/pageScript/frameworks/dom";
 import { type UnknownObject } from "@/types/objectTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { getAllPropertyNames, isGetter } from "@/utils/objectUtils";
+import { isPrimitive } from "@/utils/typeUtils";
 
 const EMBER_MAX_DEPTH = 5;
 

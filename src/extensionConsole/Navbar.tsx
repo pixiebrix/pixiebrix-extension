@@ -22,7 +22,7 @@ import { Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import {
   addListener as addAuthListener,
@@ -36,6 +36,7 @@ import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
 import { type ThemeLogo } from "@/themes/themeUtils";
 import useLinkState from "@/auth/useLinkState";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 function useAdminConsoleUrl(): string {
   // Need to update serviceURL on changes to partner auth data:

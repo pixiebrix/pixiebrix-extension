@@ -18,11 +18,12 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
+
 import {
+  LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
   makeURL,
   URL_INPUT_SPACE_ENCODING_DEFAULT,
-  LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
-} from "@/utils";
+} from "@/utils/urlUtils";
 
 export const URL_INPUT_SPEC: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",

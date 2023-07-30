@@ -16,16 +16,16 @@
  */
 
 import { isEmpty } from "lodash";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isExtensionContext } from "webext-detect-page";
 import { useAsyncEffect } from "use-async-effect";
 import { useCallback, useState } from "react";
 import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
-
-/**
- * The default URL of the app, e.g., https://app.pixiebrix.com
- */
-export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
+import {
+  ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 

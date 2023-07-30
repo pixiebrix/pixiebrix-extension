@@ -16,7 +16,6 @@
  */
 
 import Cookies from "js-cookie";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   type PartnerAuthData,
   type TokenAuthData,
@@ -28,7 +27,12 @@ import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
 import { isEmpty, omit, remove } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
-import { syncRemotePackages } from "@/baseRegistry";
+import { syncRemotePackages } from "../registry/memoryRegistry";
+import {
+  ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
 
 // `chrome.storage.local` keys
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;

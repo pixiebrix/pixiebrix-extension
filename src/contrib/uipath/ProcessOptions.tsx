@@ -25,7 +25,6 @@ import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField"
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type ODataResponseData, type Robot } from "./uipathContract";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { joinName } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
@@ -37,6 +36,7 @@ import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
 
 async function fetchRobots(
   config: SanitizedIntegrationConfig

@@ -33,12 +33,12 @@ import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFiel
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { joinName } from "@/utils";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
 
 function useHooks(): {
   hooks: Webhook[];

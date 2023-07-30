@@ -15,15 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * URL of the marketplace, including `/marketplace/` path, e.g., https://www.pixiebrix.com/marketplace/
- */
-// eslint-disable-next-line prefer-destructuring -- breaks EnvironmentPlugin
-export const MARKETPLACE_URL = process.env.MARKETPLACE_URL;
+import { Primitive } from "type-fest";
 
-export const FieldDescriptions = {
-  BLUEPRINT_ID: "A unique id for the mod",
-  BLUEPRINT_NAME: "A display name for the mod",
-  BLUEPRINT_DESCRIPTION: "A short description of the mod",
-  BLUEPRINT_VERSION: "The current mod version",
-};
+export function isPrimitive(value: unknown): value is Primitive {
+  if (typeof value === "object") {
+    return value === null;
+  }
+
+  return typeof value !== "function";
+}
+
+export function boolean(value: unknown): boolean {
+  if (typeof value === "string") {
+    return ["true", "t", "yes", "y", "on", "1"].includes(
+      value.trim().toLowerCase()
+    );
+  }
+
+  if (typeof value === "number") {
+    return value !== 0;
+  }
+
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  return false;
+}

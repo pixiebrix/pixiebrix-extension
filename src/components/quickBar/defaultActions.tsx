@@ -24,10 +24,8 @@ import {
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import { faSlack } from "@fortawesome/free-brands-svg-icons";
-
-const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
+import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
 
 const PIXIEBRIX_SECTION = "PixieBrix";
 

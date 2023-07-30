@@ -29,12 +29,12 @@ import {
 } from "@/starterBricks/contextMenu";
 import { loadOptions } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { allSettledValues, memoizeUntilSettled } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
 import {
   type ModComponentBase,
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
+import { allSettledValues, memoizeUntilSettled } from "@/utils/promiseUtils";
 
 const MENU_PREFIX = "pixiebrix-";
 

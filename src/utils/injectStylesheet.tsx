@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { waitAnimationFrame } from "@/utils";
 import pDefer from "p-defer";
+import { waitAnimationFrame } from "@/utils/domUtils";
 
 /**
  * Loads a stylesheet URL via `link` tag. Resolves with `link` tag.

@@ -23,7 +23,6 @@ import {
 } from "@/runtime/renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
-import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
@@ -32,6 +31,7 @@ import {
   isTemplateExpression,
   isVarExpression,
 } from "@/utils/expressionUtils";
+import { asyncMapValues } from "@/utils/promiseUtils";
 
 export type Args = string | UnknownObject | UnknownObject[];
 

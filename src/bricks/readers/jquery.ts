@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { asyncMapValues, pollUntilTruthy } from "@/utils";
-import { $safeFind } from "@/helpers";
 import {
   BusinessError,
   MultipleElementsFoundError,
 } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
+import { asyncMapValues, pollUntilTruthy } from "@/utils/promiseUtils";
+import { $safeFind } from "@/utils/domUtils";
 
 type CastType = "string" | "boolean" | "number";
 

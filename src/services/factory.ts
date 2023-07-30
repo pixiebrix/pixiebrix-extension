@@ -21,8 +21,6 @@ import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
 import { type AxiosRequestConfig } from "axios";
-import { isAbsoluteUrl, safeParseUrl } from "@/utils";
-import { missingProperties } from "@/helpers";
 import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -41,6 +39,8 @@ import {
   type TokenContext,
 } from "@/types/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
+import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
+import { missingProperties } from "@/utils/schemaUtils";
 
 /**
  * A service created from a local definition. Has the ability to authenticate requests because it has

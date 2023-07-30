@@ -24,8 +24,8 @@ import {
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
-import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
+import { sleep } from "@/utils/timeUtils";
 
 class Retry extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/retry");

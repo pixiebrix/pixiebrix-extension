@@ -44,13 +44,11 @@ import {
   type ReadOptions,
   type WritePayload,
 } from "@/pageScript/messenger/api";
-import { awaitValue } from "@/utils";
 import {
   type ReadableComponentAdapter,
   traverse,
 } from "@/pageScript/frameworks/component";
 import { elementInfo } from "@/pageScript/frameworks";
-import { findSingleElement } from "@/utils/requireSingleElement";
 import {
   getPropByPath,
   noopProxy,
@@ -60,6 +58,8 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { initialize, type SerializableResponse } from "./messenger/pigeon";
 import { TimeoutError } from "p-timeout";
 import { setCKEditorData } from "@/contrib/ckeditor";
+import { awaitValue } from "@/utils/promiseUtils";
+import { findSingleElement } from "@/utils/domUtils";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");

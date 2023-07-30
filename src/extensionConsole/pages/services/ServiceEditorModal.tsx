@@ -34,7 +34,6 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
 import Form, {
   type OnSubmit,
   type RenderBody,
@@ -48,6 +47,8 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 
+import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
+
 type OwnProps = {
   configuration: IntegrationConfig;
   service: Integration;
@@ -57,7 +58,7 @@ type OwnProps = {
 };
 
 const FORM_RUNTIME_CONTEXT: RuntimeContext = {
-  apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
+  apiVersion: DEFAULT_RUNTIME_API_VERSION,
   allowExpressions: false,
 };
 

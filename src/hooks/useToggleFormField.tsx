@@ -22,11 +22,11 @@ import {
   type FieldInputMode,
   inferInputMode,
 } from "@/components/fields/schemaFields/fieldInputMode";
-import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { type Schema } from "@/types/schemaTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { isObject } from "@/utils/objectUtils";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {

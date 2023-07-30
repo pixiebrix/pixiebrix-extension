@@ -18,7 +18,6 @@
 import { locator as serviceLocator } from "@/background/locator";
 import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
-import { safeParseUrl } from "@/utils";
 import { type RegistryId } from "@/types/registryTypes";
 import { launchOAuth2Flow, setCachedAuthData } from "@/background/auth";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
@@ -32,6 +31,7 @@ import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
+import { safeParseUrl } from "@/utils/urlUtils";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.

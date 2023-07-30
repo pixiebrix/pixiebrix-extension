@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isObject } from "@/utils";
 import { type Except } from "type-fest";
 import { type AxiosError, type AxiosResponse } from "axios";
 import { isEmpty, isPlainObject } from "lodash";
 import { getReasonPhrase } from "http-status-codes";
+import { isObject } from "@/utils/objectUtils";
 
 /**
  * Axios offers its own serialization method, but it doesn't include the response.

@@ -23,7 +23,7 @@ import { type RemoteIntegrationConfig } from "@/types/contract";
 import { type IntegrationConfig } from "@/types/integrationTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import { getRequiredIntegrationIds } from "@/utils/modDefinitionUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
@@ -122,7 +122,7 @@ export function getDefaultAuthOptionsForRecipe(
   recipe: ModDefinition,
   authOptions: AuthOption[]
 ): Record<RegistryId, AuthOption | null> {
-  const requiredServiceIds = getRequiredServiceIds(recipe);
+  const requiredServiceIds = getRequiredIntegrationIds(recipe);
 
   return Object.fromEntries(
     requiredServiceIds.map((serviceId) => {

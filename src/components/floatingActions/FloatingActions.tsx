@@ -25,7 +25,7 @@ import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
 import store from "@/components/floatingActions/store";
 import { getSettingsState } from "@/store/settingsStorage";
 import { syncFlagOn } from "@/store/syncFlags";
-import { isLoadedInIframe } from "@/iframeUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import Draggable from "react-draggable";
 import dragIcon from "@/icons/drag-handle.svg";
 import reportEvent from "@/telemetry/reportEvent";

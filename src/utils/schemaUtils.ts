@@ -15,12 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getErrorMessage,
-  JQUERY_INVALID_SELECTOR_ERROR,
-} from "@/errors/errorHelpers";
-import { InvalidSelectorError } from "@/errors/businessErrors";
-import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { Schema, SchemaProperties } from "@/types/schemaTypes";
+import { split } from "lodash";
+
+/**
+ * Helper method to get the schema of a sub-property. Does not currently handle array indexes or allOf/oneOf/anyOf.
+ * @param schema the JSON Schema
+ * @param path the property path
+ */
+export function getSubSchema(schema: Schema, path: string): Schema {
+  const parts = split(path, ".");
+  let subSchema: Schema | boolean = schema;
+
+  for (const part of parts) {
+    if (typeof subSchema === "boolean") {
+      throw new TypeError(`Invalid property path: ${path}`);
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- expected that this is called locally
+    subSchema = subSchema.properties?.[part];
+  }
+
+  if (subSchema == null) {
+    throw new TypeError(`Invalid property path: ${path}`);
+  }
+
+  if (typeof subSchema === "boolean") {
+    throw new TypeError(`Invalid property path: ${path}`);
+  }
+
+  return subSchema;
+}
 
 /**
  * Return the names of top-level required properties that are missing
@@ -49,26 +74,4 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
   }
 
   return inputSchema as SchemaProperties;
-}
-
-/**
- * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element if it's
- * passed HTML.
- * @param selector a jQuery selector
- * @param parent parent element to search (default=document)
- */
-export function $safeFind<Element extends HTMLElement>(
-  selector: string,
-  parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document
-): JQuery<Element> {
-  try {
-    return $(parent).find<Element>(selector);
-  } catch (error) {
-    const message = getErrorMessage(error);
-    if (message.startsWith(JQUERY_INVALID_SELECTOR_ERROR)) {
-      throw new InvalidSelectorError(message, selector);
-    }
-
-    throw error;
-  }
 }

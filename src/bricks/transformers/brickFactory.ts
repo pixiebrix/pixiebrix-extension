@@ -40,7 +40,6 @@ import {
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type Metadata, type SemVerString } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { inputProperties } from "@/helpers";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
 import { getTopLevelFrame } from "webext-messenger";
@@ -49,6 +48,7 @@ import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
+import { inputProperties } from "@/utils/schemaUtils";
 
 type BrickDefinition = {
   /**

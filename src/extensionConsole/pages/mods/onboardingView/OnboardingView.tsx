@@ -27,7 +27,8 @@ import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
 import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">

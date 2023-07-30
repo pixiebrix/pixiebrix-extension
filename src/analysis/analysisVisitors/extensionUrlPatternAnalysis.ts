@@ -20,9 +20,9 @@ import {
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
+import { joinPathParts } from "@/utils/formUtils";
 
 // See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
 const urlRegexp = /^(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>.*)?$/;

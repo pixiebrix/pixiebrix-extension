@@ -25,11 +25,11 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import AuthWidget from "@/components/auth/AuthWidget";
-import { joinName } from "@/utils";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import { useGetServicesQuery } from "@/services/api";
+import { joinName } from "@/utils/formUtils";
 
 const ServicesRow: React.FunctionComponent<{
   authOptions: AuthOption[];

@@ -20,7 +20,8 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
 import { propertiesToSchema } from "@/validators/generic";
-import { logPromiseDuration } from "@/utils";
+
+import { logPromiseDuration } from "@/utils/promiseUtils";
 
 const NO_PARAMS: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BaseRegistry from "@/baseRegistry";
+import BaseRegistry from "../registry/memoryRegistry";
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import {
   type BrickType,

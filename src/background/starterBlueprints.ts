@@ -25,12 +25,12 @@ import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce, uniq } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
-import { memoizeUntilSettled } from "@/utils";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
-import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import { getRequiredIntegrationIds } from "@/utils/modDefinitionUtils";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -62,7 +62,7 @@ export function getAllRequiredServiceIds(
   blueprints: ModDefinition[]
 ): RegistryId[] {
   const requiredServiceIds = blueprints.flatMap((blueprint) =>
-    getRequiredServiceIds(blueprint)
+    getRequiredIntegrationIds(blueprint)
   );
   return uniq(requiredServiceIds);
 }

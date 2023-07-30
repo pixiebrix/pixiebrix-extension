@@ -6,7 +6,8 @@ import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const BlockDetail: React.FunctionComponent<{
   block: Brick;

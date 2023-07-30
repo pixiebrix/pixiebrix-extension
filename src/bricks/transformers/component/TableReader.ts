@@ -28,8 +28,8 @@ import {
   parseDefinitionList,
   getAllDefinitionLists,
 } from "@/utils/parseDefinitionList";
-import { findSingleElement } from "@/utils/requireSingleElement";
 import { lowerCase } from "lodash";
+import { findSingleElement } from "@/utils/domUtils";
 
 const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
 const TABLE_READER_ALL_ID = validateRegistryId("@pixiebrix/table-reader-all");

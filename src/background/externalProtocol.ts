@@ -16,7 +16,6 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
 import { type Runtime } from "webextension-polyfill";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
@@ -32,6 +31,8 @@ import {
   isErrorResponse,
   type RemoteProcedureCallRequest,
 } from "@/pageScript/messenger/pigeon";
+import { RuntimeNotFoundError } from "@/utils/extensionUtils";
+import { getChromeExtensionId } from "@/store/browserExtensionIdStorage";
 
 type ChromeMessageSender = chrome.runtime.MessageSender;
 

@@ -58,9 +58,8 @@ import { mapArgs } from "@/runtime/mapArgs";
 import { selectAllBlocks } from "@/bricks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { $safeFind } from "@/helpers";
 import sanitize from "@/utils/sanitize";
-import { EXTENSION_POINT_DATA_ATTR } from "@/common";
+import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
 import pluralize from "@/utils/pluralize";
@@ -86,6 +85,7 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
+import { $safeFind } from "@/utils/domUtils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

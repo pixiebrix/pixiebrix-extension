@@ -30,7 +30,8 @@ import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { type StylesConfig } from "react-select";
 import { UserRole } from "@/types/contract";
-import { getScopeAndId } from "@/utils";
+
+import { getScopeAndId } from "@/utils/registryUtils";
 
 const editorRoles = new Set<number>([
   UserRole.admin,

@@ -53,10 +53,10 @@ import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutlin
 import useAllBlocks from "@/bricks/hooks/useAllBlocks";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
-import { joinPathParts } from "@/utils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
+import { joinPathParts } from "@/utils/formUtils";
 
 /**
  * Exclude irrelevant top-level keys.

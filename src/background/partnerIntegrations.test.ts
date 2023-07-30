@@ -30,7 +30,7 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import { setCachedAuthData } from "@/background/auth";
-import { syncRemotePackages } from "@/baseRegistry";
+import { syncRemotePackages } from "../registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IntegrationConfig } from "@/types/integrationTypes";
 import {

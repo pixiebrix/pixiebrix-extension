@@ -29,7 +29,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Effect from "@/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./EditRecipe.module.scss";
-import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
@@ -39,6 +38,7 @@ import { createSelector } from "reselect";
 import { lt } from "semver";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -140,24 +140,24 @@ const EditRecipe: React.VoidFunctionComponent = () => {
           <ConnectedFieldTemplate
             name="id"
             label="Mod ID"
-            description={FieldDescriptions.BLUEPRINT_ID}
+            description={FieldDescriptions.MOD_ID}
             // Blueprint IDs may not be changed after creation
             readOnly
           />
           <ConnectedFieldTemplate
             name="name"
             label="Name"
-            description={FieldDescriptions.BLUEPRINT_NAME}
+            description={FieldDescriptions.MOD_NAME}
           />
           <ConnectedFieldTemplate
             name="version"
             label="Version"
-            description={FieldDescriptions.BLUEPRINT_VERSION}
+            description={FieldDescriptions.MOD_VERSION}
           />
           <ConnectedFieldTemplate
             name="description"
             label="Description"
-            description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
+            description={FieldDescriptions.MOD_DESCRIPTION}
           />
         </Card.Body>
       </Card>

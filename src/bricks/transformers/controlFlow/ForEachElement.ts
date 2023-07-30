@@ -24,11 +24,11 @@ import {
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
-import { $safeFind } from "@/helpers";
 import { castArray } from "lodash";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
+import { $safeFind } from "@/utils/domUtils";
 
 class ForEachElement extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/for-each-element");

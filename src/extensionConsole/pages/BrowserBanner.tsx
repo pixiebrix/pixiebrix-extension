@@ -22,7 +22,8 @@ import Banner from "@/components/banner/Banner";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 import settingsSlice from "@/store/settingsSlice";
-import { isGoogleChrome } from "@/chrome";
+
+import { isGoogleChrome } from "@/utils/browserUtils";
 
 const BrowserBanner: React.VoidFunctionComponent = () => {
   const dispatch = useDispatch();

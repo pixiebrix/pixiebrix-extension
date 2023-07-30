@@ -47,7 +47,6 @@ import {
   type NormalizedAvailability,
   type ReaderConfig,
 } from "@/bricks/types";
-import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
@@ -62,6 +61,9 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { deepPickBy } from "@/utils/objectUtils";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 export interface WizardStep {
   step: string;

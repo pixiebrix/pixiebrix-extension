@@ -15,14 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  readReduxStorage,
-  type ReduxStorageKey,
-  setReduxStorage,
-} from "@/chrome";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createMigrate } from "redux-persist";
-import { boolean } from "@/utils";
 import {
   migrateActiveExtensions,
   migrateExtensionsShape,
@@ -32,6 +26,12 @@ import { type ModComponentOptionsState } from "./extensionsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { type RegistryId } from "@/types/registryTypes";
 import { compact } from "lodash";
+import { boolean } from "@/utils/typeUtils";
+import {
+  readReduxStorage,
+  ReduxStorageKey,
+  setReduxStorage,
+} from "@/utils/storageUtils";
 
 const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
 

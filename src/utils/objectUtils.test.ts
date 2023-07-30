@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { openShortcutsTab } from "@/chrome";
-import manifestJson from "@/manifest.json";
+import { removeUndefined } from "@/utils/objectUtils";
 
-describe("openShortcutsTabs", () => {
-  it("defaults to quickbar shortcut", async () => {
-    (browser.runtime.getManifest as jest.Mock).mockReturnValue(manifestJson);
-    await openShortcutsTab();
-    expect(browser.tabs.create).toHaveBeenCalledExactlyOnceWith({
-      url: "chrome://extensions/shortcuts#:~:text=Toggle%20Quick%20Bar",
+describe("removeUndefined", () => {
+  test("remove top-level undefined", () => {
+    expect(removeUndefined({ foo: undefined, bar: null })).toStrictEqual({
+      bar: null,
+    });
+  });
+  test("remove nested undefined", () => {
+    expect(removeUndefined({ foo: { bar: undefined } })).toStrictEqual({
+      foo: {},
     });
   });
 });

@@ -20,7 +20,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
-import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -29,6 +28,7 @@ import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
 
 export type RequiredModDefinition = {
   /**
@@ -150,9 +150,7 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
               modDefinition,
               authOptions
             ),
-            includesQuickBar: await includesQuickBarExtensionPoint(
-              modDefinition
-            ),
+            includesQuickBar: await includesQuickBarStarterBrick(modDefinition),
             isActive: modComponents.some(
               (x) => x._recipe?.id === modDefinition.metadata.id
             ),

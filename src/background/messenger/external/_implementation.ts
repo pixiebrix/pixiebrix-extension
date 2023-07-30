@@ -23,12 +23,16 @@ import { linkExtension } from "@/auth/token";
 import { type TokenAuthData } from "@/auth/authTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
 import { castArray } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
+import {
+  ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 

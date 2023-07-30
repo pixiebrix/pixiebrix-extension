@@ -22,7 +22,7 @@ import { userSelectElement } from "./elementPicker";
 import * as pageScript from "@/pageScript/messenger/api";
 import { findContainer } from "@/utils/inference/selectorInference";
 import { html as beautifyHTML } from "js-beautify";
-import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/common";
+import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/domConstants";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import { inferButtonHTML } from "@/utils/inference/markupInference";
 

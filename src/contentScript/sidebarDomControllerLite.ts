@@ -20,7 +20,7 @@
  * and imported by browserActionInstantHandler.ts
  */
 
-import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
+import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
 import { expectContext } from "@/utils/expectContext";
 

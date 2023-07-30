@@ -17,6 +17,14 @@
 
 import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 
+/**
+ * The current PixieBrix runtime version.
+ */
+export const DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";
+
+/**
+ * Default template engine for v1 bricks that don't specify a template engine.
+ */
 export const DEFAULT_IMPLICIT_TEMPLATE_ENGINE: TemplateEngine = "mustache";
 
 /**

@@ -20,7 +20,6 @@ import "./SheetsFileWidget.module.scss";
 import React, { useEffect, useState } from "react";
 import { type SheetMeta } from "@/contrib/google/sheets/core/types";
 import { useField, useFormikContext } from "formik";
-import { isNullOrBlank } from "@/utils";
 import { sheets } from "@/background/messenger/api";
 // eslint-disable-next-line no-restricted-imports -- Only using Form.Control here
 import { Form, InputGroup } from "react-bootstrap";
@@ -39,6 +38,7 @@ import { CancelError } from "@/errors/businessErrors";
 import useAsyncState from "@/hooks/useAsyncState";
 import reportError from "@/telemetry/reportError";
 import { isExpression } from "@/utils/expressionUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const { values: formState, setValues: setFormState } = useFormikContext();

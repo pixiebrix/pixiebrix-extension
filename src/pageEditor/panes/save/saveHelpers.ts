@@ -29,7 +29,6 @@ import {
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
-import { freshIdentifier } from "@/utils";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
@@ -49,6 +48,7 @@ import {
 import { type SafeString } from "@/types/stringTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

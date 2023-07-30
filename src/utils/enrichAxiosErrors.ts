@@ -29,9 +29,7 @@ import {
   NO_INTERNET_MESSAGE,
   NO_RESPONSE_MESSAGE,
 } from "@/errors/networkErrorHelpers";
-
-// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
-const SERVICE_URL = process.env.SERVICE_URL;
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 export default function enrichAxiosErrors(): void {
   expectContext("extension");
@@ -58,7 +56,7 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   if (error.response != null && error.response.status !== 0) {
     // Exclude app errors, unless they're proxied requests
     if (
-      url.href.startsWith(SERVICE_URL) &&
+      url.href.startsWith(DEFAULT_SERVICE_URL) &&
       !url.pathname.startsWith("/api/proxy")
     ) {
       // TODO: Maybe handle app errors here too, like we do in `selectServerErrorMessage`

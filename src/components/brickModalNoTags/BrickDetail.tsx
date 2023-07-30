@@ -5,8 +5,8 @@ import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import { type Metadata } from "@/types/registryTypes";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 type BrickDetailProps<T extends Metadata> = {
   brick: T;

@@ -18,7 +18,6 @@
 import { type JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, isEmpty, once, throttle, uniq } from "lodash";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { type UUID } from "@/types/stringTypes";
 import { loadOptions } from "@/store/extensionsStorage";
@@ -36,6 +35,11 @@ import { syncFlagOn } from "@/store/syncFlags";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
+import {
+  ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
 
 const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;

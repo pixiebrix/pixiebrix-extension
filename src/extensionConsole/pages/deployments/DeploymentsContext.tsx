@@ -27,7 +27,6 @@ import { Events } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
-import { getExtensionVersion, reloadIfNewVersionIsReady } from "@/chrome";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "redux";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -43,7 +42,13 @@ import {
 import settingsSlice from "@/store/settingsSlice";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import useAsyncState from "@/hooks/useAsyncState";
-import { logPromiseDuration } from "@/utils";
+
+import { logPromiseDuration } from "@/utils/promiseUtils";
+
+import {
+  getExtensionVersion,
+  reloadIfNewVersionIsReady,
+} from "@/utils/extensionUtils";
 
 const { actions } = extensionsSlice;
 

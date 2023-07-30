@@ -23,7 +23,6 @@ import React, {
   useState,
 } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { freshIdentifier, joinName } from "@/utils";
 import { compact, isEmpty, partial, truncate } from "lodash";
 import { useField } from "formik";
 import {
@@ -52,6 +51,8 @@ import cx from "classnames";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 /**
  * Version of SelectorConfig where fields may be expressions.

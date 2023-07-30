@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { boolean } from "@/utils";
 import { type Schema } from "@/types/schemaTypes";
 import {
   type Execution,
@@ -28,6 +27,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { mapValues } from "lodash";
 import { type Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
+import { boolean } from "@/utils/typeUtils";
 
 const COMMUNITY_CONTROL_ROOM_REGEX =
   /^(https:\/\/)?community\d*\.\S+\.automationanywhere\.digital\/?$/;

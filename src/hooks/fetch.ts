@@ -17,11 +17,11 @@
 
 import axios from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
-import { isAbsoluteUrl } from "@/utils";
 import { isAppUrl } from "@/services/requestErrorUtils";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { EndpointAuthError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
 
 const HTTP_401_UNAUTHENTICATED = 401;
 

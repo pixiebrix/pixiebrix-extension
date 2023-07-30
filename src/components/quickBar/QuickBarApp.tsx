@@ -30,7 +30,7 @@ import EmotionShadowRoot from "react-shadow/emotion";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import { MAX_Z_INDEX } from "@/common";
+import { MAX_Z_INDEX } from "@/domConstants";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";

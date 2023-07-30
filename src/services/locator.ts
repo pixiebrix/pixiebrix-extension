@@ -18,7 +18,6 @@
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { sortBy, isEmpty } from "lodash";
 import servicesRegistry, { readRawConfigurations } from "@/services/registry";
-import { inputProperties } from "@/helpers";
 import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -28,7 +27,7 @@ import {
   MissingConfigurationError,
   NotConfiguredError,
 } from "@/errors/businessErrors";
-import { DoesNotExistError } from "@/baseRegistry";
+import { DoesNotExistError } from "../registry/memoryRegistry";
 import {
   type Integration,
   type IntegrationConfigArgs,
@@ -40,6 +39,7 @@ import {
 } from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { inputProperties } from "@/utils/schemaUtils";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",

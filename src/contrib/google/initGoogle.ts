@@ -20,8 +20,9 @@ import injectScriptTag from "@/utils/injectScriptTag";
 import { isMV3 } from "@/mv3/api";
 import { DISCOVERY_DOCS as SHEETS_DOCS } from "@/contrib/google/sheets/core/sheetsConstants";
 import pDefer from "p-defer";
-import { isGoogleChrome } from "@/chrome";
-import { sleep } from "@/utils";
+
+import { sleep } from "@/utils/timeUtils";
+import { isGoogleChrome } from "@/utils/browserUtils";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 

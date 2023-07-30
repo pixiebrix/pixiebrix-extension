@@ -20,7 +20,6 @@ import {
   arraySchema,
   castSchema,
 } from "@/components/fields/schemaFields/schemaUtils";
-import { boolean, excludeUndefined } from "@/utils";
 import { InputValidationError, OutputValidationError } from "@/bricks/errors";
 import { isEmpty } from "lodash";
 import { type BrickConfig, type BrickWindow } from "@/bricks/types";
@@ -30,19 +29,22 @@ import {
 } from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
-import { $safeFind } from "@/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { isInnerDefinitionRegistryId, validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
 import { type Brick } from "@/types/brickTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {
+  ApiVersion,
   type BrickArgsContext,
   type ElementReference,
-  type SelectorRoot,
   type RenderedArgs,
+  type SelectorRoot,
 } from "@/types/runtimeTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
+import { excludeUndefined } from "@/utils/objectUtils";
+import { boolean } from "@/utils/typeUtils";
+import { $safeFind } from "@/utils/domUtils";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -244,4 +246,14 @@ export function assertModComponentNotResolved<T extends ModComponentBase>(
   if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
     throw new Error("Expected UnresolvedModComponent");
   }
+}
+
+export function isApiVersionAtLeast(
+  is: ApiVersion,
+  atLeast: ApiVersion
+): boolean {
+  const isNum = Number(is.slice(1));
+  const atLeastNum = Number(atLeast.slice(1));
+
+  return isNum >= atLeastNum;
 }

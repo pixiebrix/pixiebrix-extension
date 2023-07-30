@@ -23,8 +23,8 @@ import {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { boolean } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";
+import { boolean } from "@/utils/typeUtils";
 
 class IfElse extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/if-else");

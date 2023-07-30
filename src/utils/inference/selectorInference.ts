@@ -25,12 +25,12 @@ import {
 } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import { type CssSelectorType } from "css-selector-generator/types/types";
-import { $safeFind } from "@/helpers";
-import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
+import {
+  CONTENT_SCRIPT_READY_ATTRIBUTE,
+  EXTENSION_POINT_DATA_ATTR,
+  PIXIEBRIX_DATA_ATTR,
+} from "@/domConstants";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
-import { matchesAnyPattern } from "@/utils";
-import { escapeSingleQuotes } from "@/utils/escape";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
 import {
   getSiteSelectorHint,
   SELECTOR_HINTS,
@@ -41,6 +41,8 @@ import { type ElementInfo } from "@/pageScript/frameworks";
 import { type Framework } from "@/pageScript/messenger/constants";
 import * as pageScript from "@/pageScript/messenger/api";
 import { renderString } from "nunjucks";
+import { escapeSingleQuotes, matchesAnyPattern } from "@/utils/stringUtils";
+import { $safeFind } from "@/utils/domUtils";
 
 export const BUTTON_TAGS: string[] = [
   "li",

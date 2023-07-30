@@ -50,7 +50,6 @@ import {
 } from "@/runtime/runtimeTypes";
 import { type RunBlock } from "@/contentScript/runBlockTypes";
 import { resolveBlockConfig } from "@/bricks/registry";
-import { isObject } from "@/utils";
 import {
   BusinessError,
   CancelError,
@@ -72,6 +71,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { isObject } from "@/utils/objectUtils";
 
 /**
  * CommonOptions for running pipelines and blocks

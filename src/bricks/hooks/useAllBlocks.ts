@@ -17,7 +17,7 @@
 
 import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { isEmpty } from "lodash";
-import { type RegistryChangeListener } from "@/baseRegistry";
+import { type RegistryChangeListener } from "../../registry/memoryRegistry";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";

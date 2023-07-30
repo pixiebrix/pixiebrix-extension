@@ -22,7 +22,6 @@ import { deserializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
@@ -41,7 +40,13 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type UUID } from "@/types/stringTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
-import { memoizeUntilSettled } from "@/utils";
+
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import {
+  ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
