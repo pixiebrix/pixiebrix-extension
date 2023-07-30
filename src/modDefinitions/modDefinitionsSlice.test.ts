@@ -24,7 +24,7 @@ import {
 import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
 import modDefinitionsRegistry from "./registry";
 import { syncRemotePackages } from "@/baseRegistry";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("./registry", () => ({
   __esModule: true,
@@ -50,7 +50,7 @@ const syncRemotePackagesMock = syncRemotePackages as jest.MockedFn<
 describe("loadModDefinitionsFromCache", () => {
   test("calls registry and dispatches setModDefinitionsFromCache action", async () => {
     const dispatch = jest.fn();
-    const cachedModDefinitions = [recipeFactory()];
+    const cachedModDefinitions = [defaultModDefinitionFactory()];
     (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
       cachedModDefinitions
     );
@@ -91,7 +91,7 @@ describe("syncRemoteModDefinitions", () => {
   test("fetches mod definitions and updates the state", async () => {
     const dispatch = jest.fn();
 
-    const cachedModDefinitions = [recipeFactory()];
+    const cachedModDefinitions = [defaultModDefinitionFactory()];
     (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
       cachedModDefinitions
     );
@@ -145,7 +145,7 @@ describe("reducers", () => {
   });
 
   test("sets mod definitions", () => {
-    const modDefinitions = [recipeFactory()];
+    const modDefinitions = [defaultModDefinitionFactory()];
     const state = {
       ...initialState,
       isFetching: true,

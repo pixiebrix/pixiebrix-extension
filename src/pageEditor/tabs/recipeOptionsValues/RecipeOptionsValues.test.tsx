@@ -30,7 +30,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useOptionalModDefinition: jest.fn(),
@@ -59,7 +59,7 @@ beforeEach(() => {
 
 describe("ActivationOptions", () => {
   test("renders empty options", async () => {
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
     mockRecipe(recipe);
     const rendered = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
@@ -76,7 +76,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options", async () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -135,7 +135,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options with additional props", async () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -161,7 +161,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options with uiSchema sort order", async () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -208,7 +208,7 @@ describe("ActivationOptions", () => {
   });
 
   it("renders google sheets field type option if gapi is loaded", async () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",

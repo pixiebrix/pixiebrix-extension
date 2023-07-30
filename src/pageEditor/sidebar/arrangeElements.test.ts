@@ -22,26 +22,26 @@ import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   modComponentFactory,
-  modComponentRecipeFactory,
+  modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import {
-  recipeFactory,
-  recipeMetadataFactory,
+  defaultModDefinitionFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Recipes
 const ID_FOO = validateRegistryId("test/recipe-foo");
-const recipeFoo: ModDefinition = recipeFactory({
-  metadata: recipeMetadataFactory({
+const recipeFoo: ModDefinition = defaultModDefinitionFactory({
+  metadata: metadataFactory({
     id: ID_FOO,
     name: "Foo Recipe",
   }),
 });
 
 const ID_BAR = validateRegistryId("test/recipe-bar");
-const recipeBar: ModDefinition = recipeFactory({
-  metadata: recipeMetadataFactory({
+const recipeBar: ModDefinition = defaultModDefinitionFactory({
+  metadata: metadataFactory({
     id: ID_BAR,
     name: "Bar Recipe",
   }),
@@ -52,7 +52,7 @@ const ID_FOO_A = uuidv4();
 const installedFooA: ModComponentBase = modComponentFactory({
   id: ID_FOO_A,
   label: "A",
-  _recipe: modComponentRecipeFactory({
+  _recipe: modMetadataFactory({
     id: ID_FOO,
   }),
 });
@@ -61,7 +61,7 @@ const ID_FOO_B = uuidv4();
 const dynamicFooB: ActionFormState = menuItemFormStateFactory({
   uuid: ID_FOO_B,
   label: "B",
-  recipe: modComponentRecipeFactory({
+  recipe: modMetadataFactory({
     id: ID_FOO,
   }),
 });
@@ -76,7 +76,7 @@ const ID_BAR_D = uuidv4();
 const installedBarD: ModComponentBase = modComponentFactory({
   id: ID_BAR_D,
   label: "D",
-  _recipe: modComponentRecipeFactory({
+  _recipe: modMetadataFactory({
     id: ID_BAR,
   }),
 });
@@ -85,7 +85,7 @@ const ID_BAR_E = uuidv4();
 const dynamicBarE: ActionFormState = menuItemFormStateFactory({
   uuid: ID_BAR_E,
   label: "E",
-  recipe: modComponentRecipeFactory({
+  recipe: modMetadataFactory({
     id: ID_BAR,
   }),
 });
@@ -94,7 +94,7 @@ const ID_BAR_F = uuidv4();
 const installedBarF: ModComponentBase = modComponentFactory({
   id: ID_BAR_F,
   label: "F",
-  _recipe: modComponentRecipeFactory({
+  _recipe: modMetadataFactory({
     id: ID_BAR,
   }),
 });

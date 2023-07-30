@@ -27,8 +27,8 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
-  recipeFactory,
-  recipeMetadataFactory,
+  defaultModDefinitionFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
@@ -52,8 +52,8 @@ const MarketplaceListingsWrapper: React.FC = ({ children }) => {
 
 beforeEach(() => {
   auth = authStateFactory();
-  blueprint = recipeFactory({
-    metadata: recipeMetadataFactory({
+  blueprint = defaultModDefinitionFactory({
+    metadata: metadataFactory({
       id: validateRegistryId(`${auth.scope}/test`),
     }),
   });

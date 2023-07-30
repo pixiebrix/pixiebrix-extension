@@ -45,12 +45,12 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { services } from "@/background/messenger/api";
-import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
@@ -86,7 +86,7 @@ jest.mock("@/modDefinitions/registry", () => ({
 describe("Collecting available vars", () => {
   function mockBlueprintWithOptions(optionsSchema: any) {
     (recipeRegistry.lookup as jest.Mock).mockResolvedValue(
-      recipeFactory({
+      defaultModDefinitionFactory({
         options: {
           schema: optionsSchema,
         },
@@ -125,7 +125,7 @@ describe("Collecting available vars", () => {
           optionsArgs: {
             foo: "bar",
           },
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -231,7 +231,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -266,7 +266,7 @@ describe("Collecting available vars", () => {
             bar: "qux",
             baz: "quux",
           },
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -302,7 +302,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -332,7 +332,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
           optionsArgs: {

@@ -27,8 +27,8 @@ import {
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import {
-  recipeFactory,
-  recipeMetadataFactory,
+  defaultModDefinitionFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
@@ -69,7 +69,7 @@ describe("useMods", () => {
           extensionsSlice.actions.UNSAFE_setExtensions([
             activatedModComponentFactory({
               _recipe: {
-                ...recipeMetadataFactory(),
+                ...metadataFactory(),
                 updated_at: validateTimestamp(new Date().toISOString()),
                 sharing: { public: false, organizations: [] },
               },
@@ -92,7 +92,7 @@ describe("useMods", () => {
   });
 
   it("multiple unavailable are single mod", async () => {
-    const metadata = recipeMetadataFactory();
+    const metadata = metadataFactory();
 
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
@@ -126,10 +126,10 @@ describe("useMods", () => {
   });
 
   it("handles known recipe", async () => {
-    const metadata = recipeMetadataFactory();
+    const metadata = metadataFactory();
 
     useAllModDefinitionsMock.mockReturnValue({
-      data: [recipeFactory({ metadata })],
+      data: [defaultModDefinitionFactory({ metadata })],
       error: undefined,
     } as UseCachedQueryResult<ModDefinition[]>);
 

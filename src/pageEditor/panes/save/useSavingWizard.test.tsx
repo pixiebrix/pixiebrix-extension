@@ -40,14 +40,14 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
-import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
   menuItemFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import {
-  recipeFactory,
-  recipeMetadataFactory,
+  defaultModDefinitionFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/pageEditor/hooks/useUpsertFormElement");
@@ -89,13 +89,13 @@ const renderUseSavingWizard = (store: Store) =>
   });
 
 test("maintains wizard open state", () => {
-  const recipe = recipeFactory();
+  const recipe = defaultModDefinitionFactory();
   (useAllModDefinitions as jest.Mock).mockReturnValue({
     data: [recipe],
     isLoading: false,
   });
 
-  const recipeMetadata = modComponentRecipeFactory(recipe.metadata);
+  const recipeMetadata = modMetadataFactory(recipe.metadata);
   const element = formStateFactory({
     recipe: recipeMetadata,
   });
@@ -179,7 +179,7 @@ describe("saving a Recipe Extension", () => {
     uiSchema: getMinimalUiSchema(),
   };
   const setupMocks = () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: recipeOptions,
     });
     (useAllModDefinitions as jest.Mock).mockReturnValue({
@@ -342,7 +342,7 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(false);
 
     // Saving with a new Recipe
-    const newRecipeMeta = recipeMetadataFactory();
+    const newRecipeMeta = metadataFactory();
     const savingElementPromise = act(async () =>
       result.current.saveElementAndCreateNewRecipe(newRecipeMeta)
     );
@@ -394,7 +394,7 @@ describe("saving a Recipe Extension", () => {
     });
 
     // Saving with a new Recipe
-    const newRecipeMeta = recipeMetadataFactory();
+    const newRecipeMeta = metadataFactory();
     let creatingRecipePromise: Promise<void>;
     act(() => {
       creatingRecipePromise =
@@ -436,7 +436,7 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(false);
 
     // Saving with a new Recipe
-    const newRecipeMeta = recipeMetadataFactory({ id: recipe.metadata.id });
+    const newRecipeMeta = metadataFactory({ id: recipe.metadata.id });
     const savingElementPromise = act(async () =>
       result.current.saveElementAndUpdateRecipe(newRecipeMeta)
     );
@@ -486,7 +486,7 @@ describe("saving a Recipe Extension", () => {
     });
 
     // Saving with a new Recipe
-    const newRecipeMeta = recipeMetadataFactory();
+    const newRecipeMeta = metadataFactory();
     let updatingRecipePromise: Promise<void>;
     act(() => {
       updatingRecipePromise =

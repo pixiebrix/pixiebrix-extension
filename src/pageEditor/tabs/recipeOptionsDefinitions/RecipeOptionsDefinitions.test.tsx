@@ -24,7 +24,7 @@ import selectEvent from "react-select-event";
 import { screen } from "@testing-library/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import userEvent from "@testing-library/user-event";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/hooks/useFlags", () =>
   jest.fn().mockReturnValue({
@@ -38,7 +38,7 @@ beforeAll(() => {
 
 describe("RecipeOptionsDefinitions", () => {
   it("shows google sheets, and both database field type options", async () => {
-    const modDefinition = recipeFactory();
+    const modDefinition = defaultModDefinitionFactory();
 
     render(<RecipeOptionsDefinition />, {
       setupRedux(dispatch) {

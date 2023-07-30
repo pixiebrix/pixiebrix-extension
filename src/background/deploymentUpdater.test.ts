@@ -42,7 +42,7 @@ import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { setContext } from "@/testUtils/detectPageMock";
 import {
   modComponentFactory,
-  modComponentRecipeFactory,
+  modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
@@ -533,7 +533,7 @@ describe("updateDeployments", () => {
     }) as ActivatedModComponent;
 
     const recipeModComponent = modComponentFactory({
-      _recipe: modComponentRecipeFactory(),
+      _recipe: modMetadataFactory(),
     }) as ActivatedModComponent;
 
     const deploymentStarterBrick = starterBrickConfigFactory();
@@ -545,7 +545,7 @@ describe("updateDeployments", () => {
     const deploymentModComponent = modComponentFactory({
       extensionPointId: deploymentStarterBrick.metadata.id,
       _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
-      _recipe: modComponentRecipeFactory(),
+      _recipe: modMetadataFactory(),
     }) as ActivatedModComponent;
 
     registryFindMock.mockImplementation(async (id) => {

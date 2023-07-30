@@ -37,7 +37,7 @@ import {
 } from "@/starterBricks/types";
 import {
   starterBrickConfigFactory,
-  recipeMetadataFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
@@ -106,7 +106,7 @@ export const triggerFormStateFactory = (
 ) => {
   const defaultTriggerProps = trigger.fromNativeElement(
     "https://test.com",
-    recipeMetadataFactory({
+    metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
@@ -128,7 +128,7 @@ export const sidebarPanelFormStateFactory = (
 ) => {
   const defaultTriggerProps = sidebar.fromNativeElement(
     "https://test.com",
-    recipeMetadataFactory({
+    metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
@@ -151,7 +151,7 @@ export const contextMenuFormStateFactory = (
 ) => {
   const defaultTriggerProps = contextMenu.fromNativeElement(
     "https://test.com",
-    recipeMetadataFactory({
+    metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
@@ -173,7 +173,7 @@ export const quickbarFormStateFactory = (
 ) => {
   const defaultTriggerProps = quickBar.fromNativeElement(
     "https://test.com",
-    recipeMetadataFactory({
+    metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
@@ -195,7 +195,7 @@ export const menuItemFormStateFactory = (
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
     "https://test.com",
-    recipeMetadataFactory({
+    metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),

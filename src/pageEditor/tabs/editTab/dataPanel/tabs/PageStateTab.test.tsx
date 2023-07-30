@@ -24,7 +24,7 @@ import { getPageState } from "@/contentScript/messenger/api";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("PageStateTab", () => {
@@ -61,7 +61,7 @@ describe("PageStateTab", () => {
 
   test("it renders with recipe extension", async () => {
     const formState = formStateFactory({
-      recipe: modComponentRecipeFactory(),
+      recipe: modMetadataFactory(),
     });
     const rendered = await renderPageStateTab(formState);
     expect(rendered.asFragment()).toMatchSnapshot();

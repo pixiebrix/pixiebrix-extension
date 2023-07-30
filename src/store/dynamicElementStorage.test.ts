@@ -30,7 +30,7 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 jest.mock("@/chrome", () => ({
@@ -150,7 +150,7 @@ describe("dynamicElementStorage", () => {
   });
 
   test("removes active recipe", async () => {
-    const recipe = modComponentRecipeFactory();
+    const recipe = modMetadataFactory();
     const element1 = formStateFactory({
       recipe,
     });
@@ -237,7 +237,7 @@ describe("dynamicElementStorage", () => {
   });
 
   test("removes inactive recipe", async () => {
-    const recipe = modComponentRecipeFactory();
+    const recipe = modMetadataFactory();
     const element1 = formStateFactory({
       recipe,
     });
