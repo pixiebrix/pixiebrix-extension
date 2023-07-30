@@ -49,14 +49,26 @@ function useGoogleSpreadsheetPicker(): {
    * True if the user reject permissions from the prompt, or permissions were rejected via Google account policy.
    */
   hasRejectedPermissions: boolean;
+
+  /**
+   * The timestamp when ensureSheetsReady was called, or nu,ll if not waiting for a token. Used to determine if the
+   * Chrome APIs for retrieving the token are hanging.
+   */
+  startTimestamp: number | null;
 } {
   const pickerOrigin = useCurrentOrigin();
 
+  // The timestamp when ensureSheetsReady was called. Used to determine if token is hanging.
+  const [startTimestamp, setStartTimestamp] = useState<number | null>(null);
+
+  // `true` if the user has explicitly rejected permissions when shown the authentication prompt
   const [hasRejectedPermissions, setHasRejectedPermissions] =
     useState<boolean>(false);
 
+  // Get token, showing authentication UI if necessary
   const ensureSheetsToken = useCallback(async () => {
     try {
+      setStartTimestamp(Date.now());
       const token = await ensureSheetsReady({
         maxRetries: 1,
         interactive: true,
@@ -69,8 +81,10 @@ function useGoogleSpreadsheetPicker(): {
       }
 
       throw error;
+    } finally {
+      setStartTimestamp(null);
     }
-  }, [setHasRejectedPermissions]);
+  }, [setHasRejectedPermissions, setStartTimestamp]);
 
   // Version of ensureSheetsToken wrapped with success/error message handlers
   const ensureSheetsTokenAction = useUserAction(
@@ -167,6 +181,7 @@ function useGoogleSpreadsheetPicker(): {
     showPicker,
     ensureSheetsTokenAction,
     hasRejectedPermissions,
+    startTimestamp,
   };
 }
 

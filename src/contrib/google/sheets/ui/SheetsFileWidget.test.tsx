@@ -137,6 +137,7 @@ describe("SheetsFileWidget", () => {
       showPicker: showPickerMock,
       hasRejectedPermissions: false,
       ensureSheetsTokenAction: jest.fn(),
+      startTimestamp: null,
     });
 
     const rendered = render(
@@ -286,6 +287,7 @@ describe("SheetsFileWidget", () => {
       showPicker: jest.fn(),
       hasRejectedPermissions: true,
       ensureSheetsTokenAction: jest.fn(),
+      startTimestamp: null,
     });
 
     render(
@@ -302,5 +304,35 @@ describe("SheetsFileWidget", () => {
         exact: false,
       })
     ).toBeVisible();
+  });
+
+  it("displays isEnsureSheetsHanging message", async () => {
+    jest.useFakeTimers();
+
+    useGoogleSpreadsheetPickerMock.mockReturnValue({
+      showPicker: jest.fn(),
+      hasRejectedPermissions: false,
+      ensureSheetsTokenAction: jest.fn(),
+      startTimestamp: Date.now(),
+    });
+
+    render(
+      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+      {
+        initialValues: { spreadsheetId: null },
+      }
+    );
+
+    jest.advanceTimersByTime(5000);
+
+    await waitForEffect();
+
+    expect(
+      screen.getByText("If Chrome is not displaying an authentication popup", {
+        exact: false,
+      })
+    ).toBeVisible();
+
+    jest.useRealTimers();
   });
 });

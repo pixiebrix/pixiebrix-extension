@@ -39,6 +39,13 @@ import { CancelError } from "@/errors/businessErrors";
 import useAsyncState from "@/hooks/useAsyncState";
 import reportError from "@/telemetry/reportError";
 import { isExpression } from "@/utils/expressionUtils";
+import useTimeoutState from "@/hooks/useTimeoutState";
+import chromeP from "webext-polyfill-kinda";
+
+/**
+ * Timeout indicating that the Chrome identity API may be hanging.
+ */
+const ENSURE_TOKEN_TIMEOUT_MILLIS = 3000;
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const { values: formState, setValues: setFormState } = useFormikContext();
@@ -49,8 +56,12 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     string | Expression
   >(props);
 
-  const { ensureSheetsTokenAction, showPicker, hasRejectedPermissions } =
-    useGoogleSpreadsheetPicker();
+  const {
+    ensureSheetsTokenAction,
+    showPicker,
+    hasRejectedPermissions,
+    startTimestamp,
+  } = useGoogleSpreadsheetPicker();
 
   // Remove unused services from the element - cleanup from deprecated integration support for gsheets
   useEffect(
@@ -70,6 +81,12 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Run once on mount
     []
+  );
+
+  // True if the Chrome APIs for retrieving the token may be hanging. May also indicate Chrome is showing the
+  // authentication popup, but the user hasn't finished interacting with it yet.
+  const isEnsureSheetsHanging = useTimeoutState(
+    startTimestamp ? ENSURE_TOKEN_TIMEOUT_MILLIS : null
   );
 
   const sheetMetaState = useAsyncState<SheetMeta | null>(async () => {
@@ -128,6 +145,34 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
       }
     }
   };
+
+  if (isEnsureSheetsHanging) {
+    return (
+      <div>
+        Continue with your Google Account. If Chrome is not displaying an
+        authentication popup, try clicking below to retry. See{" "}
+        <a
+          href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
+          target="_blank"
+          rel="noreferrer"
+        >
+          troubleshooting information.
+        </a>
+        <AsyncButton
+          onClick={async () => {
+            // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+            await chromeP.identity.clearAllCachedAuthTokens();
+
+            if (await ensureSheetsTokenAction()) {
+              await pickerHandler();
+            }
+          }}
+        >
+          Try Again
+        </AsyncButton>
+      </div>
+    );
+  }
 
   if (pickerError) {
     return (
