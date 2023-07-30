@@ -27,9 +27,9 @@ import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
 import { isEmpty, omit, remove } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
-import { syncRemotePackages } from "../registry/memoryRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 import {
-  ManualStorageKey,
+  type ManualStorageKey,
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";

@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty, negate, ObjectIterator, unary, zip } from "lodash";
+import { isEmpty, negate, type ObjectIterator, unary, zip } from "lodash";
 import pMemoize from "p-memoize";
 import { TimeoutError } from "p-timeout";
-
 import { sleep } from "@/utils/timeUtils";
 
+/**
+ * A promise that never resolves.
+ */
 export const foreverPendingPromise = new Promise(() => {});
 
 /**

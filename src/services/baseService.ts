@@ -21,7 +21,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { useCallback, useState } from "react";
 import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 import {
-  ManualStorageKey,
+  type ManualStorageKey,
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";

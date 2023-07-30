@@ -15,8 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeString } from "@/types/stringTypes";
+import { type SafeString } from "@/types/stringTypes";
 
+/**
+ * Return a fresh variable name based on the root name and array of existing identifiers.
+ * @param root the name of the variable
+ * @param identifiers the array of existing identifiers
+ * @param options identifier numbering options
+ */
 export function freshIdentifier(
   root: SafeString,
   identifiers: string[],

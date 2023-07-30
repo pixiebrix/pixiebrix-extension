@@ -21,7 +21,7 @@ import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "@/contrib/zapier/contract";
-import { pixieServiceFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import { containsPermissions, proxyService } from "@/background/messenger/api";
@@ -47,7 +47,7 @@ function useHooks(): {
 } {
   const [hooks, isPending, error] = useAsyncState(async () => {
     const { data } = await proxyService<{ new_push_fields: Webhook[] }>(
-      await pixieServiceFactory(),
+      await pixiebrixConfigurationFactory(),
       {
         baseURL: await getBaseURL(),
         url: "/api/webhooks/hooks/",

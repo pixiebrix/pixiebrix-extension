@@ -16,7 +16,7 @@
  */
 
 import { refreshServices } from "./locator";
-import { syncRemotePackages } from "../registry/memoryRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { expectContext } from "@/utils/expectContext";
 
 /**

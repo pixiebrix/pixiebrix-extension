@@ -22,7 +22,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
@@ -108,7 +108,7 @@ export function requiresUserConfiguration(
   );
 
   const needsServiceInputs = recipeServiceIds.some((serviceId) => {
-    if (serviceId === PIXIEBRIX_SERVICE_ID) {
+    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
       return false;
     }
 

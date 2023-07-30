@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
+import brickRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { isEmpty } from "lodash";
-import { type RegistryChangeListener } from "../../registry/memoryRegistry";
+import { type RegistryChangeListener } from "@/registry/memoryRegistry";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
@@ -27,17 +27,17 @@ const subscribe = (callback: () => void) => {
     onCacheChanged: callback,
   };
 
-  blockRegistry.addListener(listener);
+  brickRegistry.addListener(listener);
 
   return () => {
-    blockRegistry.removeListener(listener);
+    brickRegistry.removeListener(listener);
   };
 };
 
 /**
  * Load the TypedBlockMap from the block registry, and listen for changes in the registry.
  */
-function useAllBlocks(): {
+function useAllBricks(): {
   allBlocks: TypedBlockMap;
   isLoading: boolean;
 } {
@@ -47,7 +47,7 @@ function useAllBlocks(): {
 
   const allTypedPromise = useSyncExternalStore(
     subscribe,
-    blockRegistry.allTyped.bind(blockRegistry)
+    brickRegistry.allTyped.bind(brickRegistry)
   );
 
   useAsyncEffect(
@@ -70,4 +70,4 @@ function useAllBlocks(): {
   };
 }
 
-export default useAllBlocks;
+export default useAllBricks;

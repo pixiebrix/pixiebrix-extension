@@ -23,7 +23,7 @@ import {
 } from "./modDefinitionsSlice";
 import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
 import modDefinitionsRegistry from "./registry";
-import { syncRemotePackages } from "../registry/memoryRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("./registry", () => ({

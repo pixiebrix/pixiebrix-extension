@@ -17,7 +17,7 @@
 
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type UUID } from "@/types/stringTypes";
-import { type TypedBlock } from "@/bricks/registry";
+import { type TypedBrickPair } from "@/bricks/registry";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { getDocumentPipelinePaths } from "@/pageEditor/utils";
 import { get } from "lodash";
@@ -52,7 +52,7 @@ export type VisitBlockExtra = {
   pipelineFlavor: PipelineFlavor;
 };
 export type VisitResolvedBlockExtra = VisitBlockExtra & {
-  typedBlock: TypedBlock;
+  typedBlock: TypedBrickPair;
 };
 export type VisitPipelineExtra = {
   /**

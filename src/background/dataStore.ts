@@ -17,7 +17,7 @@
 
 import { type JsonObject } from "type-fest";
 import {
-  ManualStorageKey,
+  type ManualStorageKey,
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";

@@ -19,7 +19,7 @@ import { type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, sortBy, uniq, uniqBy } from "lodash";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -182,7 +182,7 @@ export async function findLocalDeploymentServiceConfigurations(
   );
   const unboundServices = deploymentServices.filter(
     (serviceId) =>
-      !boundServices.has(serviceId) && serviceId !== PIXIEBRIX_SERVICE_ID
+      !boundServices.has(serviceId) && serviceId !== PIXIEBRIX_INTEGRATION_ID
   );
 
   // XXX: this is incorrect for server-based OAuth2 integrations, because they're owned by user but still show as proxy

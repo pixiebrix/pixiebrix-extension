@@ -19,7 +19,7 @@ import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { boolean } from "@/utils/typeUtils";
 import {
-  ManualStorageKey,
+  type ManualStorageKey,
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";

@@ -34,7 +34,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import {
-  ManualStorageKey,
+  type ManualStorageKey,
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";

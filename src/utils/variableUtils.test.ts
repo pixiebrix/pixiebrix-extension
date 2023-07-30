@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeString } from "@/types/stringTypes";
+import { type SafeString } from "@/types/stringTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 
 test("can generate fresh identifier", () => {

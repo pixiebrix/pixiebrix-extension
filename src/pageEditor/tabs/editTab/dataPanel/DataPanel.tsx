@@ -50,7 +50,7 @@ import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
-import useAllBlocks from "@/bricks/hooks/useAllBlocks";
+import useAllBricks from "@/bricks/hooks/useAllBricks";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -89,7 +89,7 @@ const DataPanel: React.FC = () => {
     pipeline,
   } = useSelector(selectActiveNodeInfo);
 
-  const { allBlocks } = useAllBlocks();
+  const { allBlocks } = useAllBricks();
   const block = allBlocks.get(blockId);
   const blockType = block?.type;
 

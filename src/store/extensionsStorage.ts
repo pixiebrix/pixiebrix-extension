@@ -29,7 +29,7 @@ import { compact } from "lodash";
 import { boolean } from "@/utils/typeUtils";
 import {
   readReduxStorage,
-  ReduxStorageKey,
+  type ReduxStorageKey,
   setReduxStorage,
 } from "@/utils/storageUtils";
 

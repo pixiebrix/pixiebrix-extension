@@ -21,7 +21,7 @@ import axios, {
   type AxiosResponse,
   type Method,
 } from "axios";
-import { pixieServiceFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/services/locator";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
@@ -36,7 +36,7 @@ import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import {
   GOOGLE_OAUTH_PKCE_INTEGRATION_ID,
-  PIXIEBRIX_SERVICE_ID,
+  PIXIEBRIX_INTEGRATION_ID,
 } from "@/services/constants";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
@@ -149,7 +149,7 @@ async function authenticate(
   const service = await serviceRegistry.lookup(config.serviceId);
 
   // The PixieBrix API doesn't use integration configurations
-  if (service.id === PIXIEBRIX_SERVICE_ID) {
+  if (service.id === PIXIEBRIX_INTEGRATION_ID) {
     const apiKey = await getExtensionToken();
     if (!apiKey) {
       throw new ExtensionNotLinkedError();
@@ -205,7 +205,7 @@ async function proxyRequest<T>(
   }
 
   const authenticatedRequestConfig = await authenticate(
-    await pixieServiceFactory(),
+    await pixiebrixConfigurationFactory(),
     {
       url: await absoluteApiUrl("/api/proxy/"),
       method: "post" as Method,

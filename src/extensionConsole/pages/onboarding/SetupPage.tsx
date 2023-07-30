@@ -28,7 +28,7 @@ import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/Partne
 import { useLocation } from "react-router";
 import { clearServiceCache } from "@/background/messenger/api";
 import notify from "@/utils/notify";
-import { syncRemotePackages } from "../../../registry/memoryRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 import useAsyncState from "@/hooks/useAsyncState";
 
 const Layout: React.FunctionComponent = ({ children }) => (

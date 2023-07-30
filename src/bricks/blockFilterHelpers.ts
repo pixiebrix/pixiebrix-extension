@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TypedBlock } from "@/bricks/registry";
+import { type TypedBrickPair } from "@/bricks/registry";
 import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickType } from "@/starterBricks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
@@ -34,7 +34,7 @@ const alwaysShow = new Set([
   validateRegistryId("@pixiebrix/error"),
 ]);
 
-export type IsBlockAllowedPredicate = (block: TypedBlock) => boolean;
+export type IsBlockAllowedPredicate = (block: TypedBrickPair) => boolean;
 
 export function getRootPipelineFlavor(extensionPointType: StarterBrickType) {
   if (PANEL_TYPES.includes(extensionPointType)) {
@@ -105,6 +105,6 @@ export function makeIsBlockAllowedForPipeline(
     }
   }
 
-  return ({ type, block }: TypedBlock) =>
+  return ({ type, block }: TypedBrickPair) =>
     type !== excludedType || alwaysShow.has(block.id);
 }

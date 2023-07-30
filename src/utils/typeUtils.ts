@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Primitive } from "type-fest";
+import { type Primitive } from "type-fest";
 
+/**
+ * Returns true if the value is a JS primitive. `null` is considered a primitive.
+ * @param value the value to test
+ */
 export function isPrimitive(value: unknown): value is Primitive {
   if (typeof value === "object") {
     return value === null;
@@ -25,6 +29,12 @@ export function isPrimitive(value: unknown): value is Primitive {
   return typeof value !== "function";
 }
 
+/**
+ * Convert a string or number value to a boolean.
+ * - Considers the following string values to be truthy (case and whitespace insensitive): true, t, yest, y, on, 1
+ * - Considers non-zero numbers to be truthy
+ * @param value
+ */
 export function boolean(value: unknown): boolean {
   if (typeof value === "string") {
     return ["true", "t", "yes", "y", "on", "1"].includes(

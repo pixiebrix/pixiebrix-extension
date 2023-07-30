@@ -29,8 +29,8 @@ import {
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_TOKEN_SERVICE_ID,
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/services/constants";
 import { cloneDeep } from "lodash";
 import { getCachedAuthData, getUserData } from "@/background/messenger/api";
@@ -45,11 +45,12 @@ export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
 
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {
-    anyOf: [CONTROL_ROOM_TOKEN_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID].map(
-      (id) => ({
-        $ref: `https://app.pixiebrix.com/schemas/services/${id}`,
-      })
-    ),
+    anyOf: [
+      CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+    ].map((id) => ({
+      $ref: `https://app.pixiebrix.com/schemas/services/${id}`,
+    })),
   },
   workspaceType: {
     type: "string",
@@ -199,7 +200,7 @@ export class RunBot extends TransformerABC {
     let runAsUserIds: number[] = enterpriseBotArgs.runAsUserIds ?? [];
     if (
       enterpriseBotArgs.isAttended &&
-      service.serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID
+      service.serviceId === CONTROL_ROOM_OAUTH_INTEGRATION_ID
     ) {
       // Attended mode uses the authenticated user id as a runAsUserId
 
@@ -221,7 +222,7 @@ export class RunBot extends TransformerABC {
       enterpriseBotArgs.poolIds = [];
     } else if (
       enterpriseBotArgs.isAttended &&
-      service.serviceId === CONTROL_ROOM_TOKEN_SERVICE_ID
+      service.serviceId === CONTROL_ROOM_TOKEN_INTEGRATION_ID
     ) {
       // Attended mode uses the authenticated user id as a runAsUserId
 

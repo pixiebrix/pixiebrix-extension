@@ -21,7 +21,7 @@ import {
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import { compact, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import type {
   StarterBrickDefinition,
   StarterBrickType,
@@ -43,7 +43,7 @@ export const getRequiredIntegrationIds = (
     (modDefinition.extensionPoints ?? [])
       .flatMap((extensionPoint) => Object.values(extensionPoint.services ?? {}))
       // The PixieBrix service gets automatically configured, so no need to include it
-      .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
+      .filter((serviceId) => serviceId !== PIXIEBRIX_INTEGRATION_ID)
   );
 
 const getStarterBrickType = async (

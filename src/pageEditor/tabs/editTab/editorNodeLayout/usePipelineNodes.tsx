@@ -52,7 +52,7 @@ import {
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
-import useAllBlocks from "@/bricks/hooks/useAllBlocks";
+import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
@@ -179,7 +179,7 @@ const usePipelineNodes = (): {
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { allBlocks } = useAllBlocks();
+  const { allBlocks } = useAllBricks();
 
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;

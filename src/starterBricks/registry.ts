@@ -16,7 +16,7 @@
  */
 
 import { fromJS } from "@/starterBricks/factory";
-import BaseRegistry from "../registry/memoryRegistry";
+import BaseRegistry from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BaseRegistry from "../registry/memoryRegistry";
+import BaseRegistry from "@/registry/memoryRegistry";
 import { fromJS } from "@/services/factory";
 import {
   type IntegrationConfig,
   type IntegrationABC,
 } from "@/types/integrationTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { readReduxStorage, ReduxStorageKey } from "@/utils/storageUtils";
+import { readReduxStorage, type ReduxStorageKey } from "@/utils/storageUtils";
 
 const storageKey = "persist:servicesOptions" as ReduxStorageKey;
 

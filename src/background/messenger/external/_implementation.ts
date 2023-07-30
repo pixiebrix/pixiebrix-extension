@@ -29,7 +29,7 @@ import { castArray } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  ManualStorageKey,
+  type ManualStorageKey,
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";

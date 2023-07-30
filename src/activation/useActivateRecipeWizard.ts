@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import type React from "react";
 import { isEmpty, mapValues, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import OptionsBody from "@/extensionConsole/pages/activateRecipe/OptionsBody";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 import PermissionsBody from "@/extensionConsole/pages/activateRecipe/PermissionsBody";
@@ -106,7 +106,7 @@ export function wizardStateFactory({
     switch (step.key) {
       case "services": {
         return serviceIds.some(
-          (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+          (serviceId) => serviceId !== PIXIEBRIX_INTEGRATION_ID
         );
       }
 
@@ -169,7 +169,7 @@ export function wizardStateFactory({
       Yup.object().test(
         "servicesRequired",
         "Please select a configuration",
-        (value) => value.id === PIXIEBRIX_SERVICE_ID || value.config != null
+        (value) => value.id === PIXIEBRIX_INTEGRATION_ID || value.config != null
       )
     ),
     optionsArgs: optionsValidationSchema,

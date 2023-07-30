@@ -25,7 +25,7 @@
 import { expectContext } from "@/utils/expectContext";
 import { type JsonValue } from "type-fest";
 import {
-  ManualStorageKey,
+  type ManualStorageKey,
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";

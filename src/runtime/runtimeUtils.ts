@@ -35,7 +35,7 @@ import { getElementForReference } from "@/contentScript/elementReference";
 import { type Brick } from "@/types/brickTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {
-  ApiVersion,
+  type ApiVersion,
   type BrickArgsContext,
   type ElementReference,
   type RenderedArgs,

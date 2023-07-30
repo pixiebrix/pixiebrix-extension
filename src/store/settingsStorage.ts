@@ -21,7 +21,7 @@ import { mapValues } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import {
   readReduxStorage,
-  ReduxStorageKey,
+  type ReduxStorageKey,
   setReduxStorage,
 } from "@/utils/storageUtils";
 

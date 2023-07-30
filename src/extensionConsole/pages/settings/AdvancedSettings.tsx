@@ -32,7 +32,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pTimeout from "p-timeout";
 import chromeP from "webext-polyfill-kinda";
 import useUserAction from "@/hooks/useUserAction";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
 import useDiagnostics from "@/extensionConsole/pages/settings/useDiagnostics";
@@ -165,7 +165,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
             <Form.Label>Authentication Integration</Form.Label>
             <Form.Control
               type="text"
-              placeholder={PIXIEBRIX_SERVICE_ID}
+              placeholder={PIXIEBRIX_INTEGRATION_ID}
               defaultValue={authServiceId ?? ""}
               onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
                 try {

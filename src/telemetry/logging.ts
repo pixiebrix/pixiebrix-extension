@@ -40,10 +40,9 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type UUID } from "@/types/stringTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
-
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import {
-  ManualStorageKey,
+  type ManualStorageKey,
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";

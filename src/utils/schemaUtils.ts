@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, SchemaProperties } from "@/types/schemaTypes";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { split } from "lodash";
 
 /**

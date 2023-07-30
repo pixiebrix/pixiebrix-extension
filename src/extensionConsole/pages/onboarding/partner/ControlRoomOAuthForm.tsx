@@ -27,7 +27,7 @@ import { Button } from "react-bootstrap";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
-import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import servicesSlice from "@/store/servicesSlice";
 import { selectSettings } from "@/store/settingsSelectors";
 import { type FormikHelpers } from "formik";
@@ -88,7 +88,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
   // `authServiceIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
   const authServiceId = isEmpty(authServiceIdOverride)
-    ? CONTROL_ROOM_OAUTH_SERVICE_ID
+    ? CONTROL_ROOM_OAUTH_INTEGRATION_ID
     : authServiceIdOverride;
 
   const connect = useCallback(
@@ -109,7 +109,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
           dispatch(
             updateServiceConfig({
               id: configurationId,
-              serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+              serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               label: "Primary AARI Account",
               config: {
                 controlRoomUrl: normalizeControlRoomUrl(values.controlRoomUrl),
@@ -125,7 +125,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
         // Ensure PixieBrix can call the Control Room and OAuth2 endpoints
         const requiredPermissions = await collectServiceOriginPermissions({
-          id: CONTROL_ROOM_OAUTH_SERVICE_ID,
+          id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
           config: configurationId,
         });
 

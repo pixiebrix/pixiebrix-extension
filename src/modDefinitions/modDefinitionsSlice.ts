@@ -26,7 +26,7 @@ import {
   type ModDefinitionsState,
 } from "./modDefinitionsTypes";
 import modDefinitionRegistry from "./registry";
-import { syncRemotePackages } from "../registry/memoryRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { revertAll } from "@/store/commonActions";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { setErrorOnState, setValueOnState } from "@/utils/asyncStateUtils";
