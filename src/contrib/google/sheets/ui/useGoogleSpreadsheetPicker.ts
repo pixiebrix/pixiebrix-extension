@@ -58,7 +58,7 @@ function useGoogleSpreadsheetPicker(): {
 } {
   const pickerOrigin = useCurrentOrigin();
 
-  // The timestamp when ensureSheetsReady was called. Used to determine if token is hanging.
+  // The timestamp when ensureSheetsReady was called. Used to determine if the Chrome identity APIs might be hanging.
   const [startTimestamp, setStartTimestamp] = useState<number | null>(null);
 
   // `true` if the user has explicitly rejected permissions when shown the authentication prompt

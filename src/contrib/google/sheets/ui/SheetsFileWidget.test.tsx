@@ -300,9 +300,12 @@ describe("SheetsFileWidget", () => {
     await waitForEffect();
 
     expect(
-      screen.getByText("PixieBrix cannot access your Google Account.", {
-        exact: false,
-      })
+      screen.getByText(
+        "You did not approve access, or your company policy prevents access to Google Sheets.",
+        {
+          exact: false,
+        }
+      )
     ).toBeVisible();
   });
 
