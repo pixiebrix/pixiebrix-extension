@@ -29,3 +29,17 @@ test("useTimeoutState", () => {
   jest.advanceTimersByTime(300);
   expect(result.current).toEqual(true);
 });
+
+test("clear timeout state", () => {
+  const { result, rerender } = renderHook((props) => useTimeoutState(props), {
+    initialProps: 300,
+  });
+
+  expect(result.current).toEqual(false);
+  jest.advanceTimersByTime(30);
+  expect(result.current).toEqual(false);
+  jest.advanceTimersByTime(300);
+  expect(result.current).toEqual(true);
+  rerender(null);
+  expect(result.current).toEqual(false);
+});

@@ -17,10 +17,19 @@
 
 import { useEffect, useState } from "react";
 
-export default function useTimeoutState(millis: number): boolean {
+/**
+ * Hook that returns `true` after `millis` milliseconds.
+ * @param millis milliseconds to wait after mount, or null to clear the timeout
+ */
+export default function useTimeoutState(millis: number | null): boolean {
   const [state, setState] = useState(false);
 
   useEffect(() => {
+    if (millis == null) {
+      setState(false);
+      return;
+    }
+
     const timer = setTimeout(setState, millis, true);
     return () => {
       clearTimeout(timer);

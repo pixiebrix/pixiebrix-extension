@@ -39,6 +39,47 @@ import useAsyncState from "@/hooks/useAsyncState";
 import reportError from "@/telemetry/reportError";
 import { isExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import useTimeoutState from "@/hooks/useTimeoutState";
+import chromeP from "webext-polyfill-kinda";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+
+/**
+ * Timeout indicating that the Chrome identity API may be hanging.
+ */
+const ENSURE_TOKEN_TIMEOUT_MILLIS = 3000;
+
+const ErrorView: React.FC<{
+  message: string;
+  retryHandler: () => Promise<void>;
+}> = ({ message, retryHandler }) => {
+  useEffect(() => {
+    // Report the event. This will provide a false positive while the user is choosing their account
+    // to authenticate with Google. (Because it may take longer than `ENSURE_TOKEN_TIMEOUT_MILLIS` for the
+    // user to select their account.)
+    reportEvent(Events.SELECT_GOOGLE_SPREADSHEET_VIEW_WARNING, {
+      message,
+    });
+  }, [message]);
+
+  return (
+    <div>
+      <div>
+        {message} See{" "}
+        <a
+          href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
+          target="_blank"
+          rel="noreferrer"
+        >
+          troubleshooting information.
+        </a>
+      </div>
+      <div>
+        <AsyncButton onClick={retryHandler}>Try Again</AsyncButton>
+      </div>
+    </div>
+  );
+};
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const { values: formState, setValues: setFormState } = useFormikContext();
@@ -49,8 +90,12 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     string | Expression
   >(props);
 
-  const { ensureSheetsTokenAction, showPicker, hasRejectedPermissions } =
-    useGoogleSpreadsheetPicker();
+  const {
+    ensureSheetsTokenAction,
+    showPicker,
+    hasRejectedPermissions,
+    startTimestamp,
+  } = useGoogleSpreadsheetPicker();
 
   // Remove unused services from the element - cleanup from deprecated integration support for gsheets
   useEffect(
@@ -70,6 +115,12 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Run once on mount
     []
+  );
+
+  // True if the Chrome APIs for retrieving the token may be hanging. May also indicate Chrome is showing the
+  // authentication popup, but the user hasn't finished interacting with it yet.
+  const isEnsureSheetsHanging = useTimeoutState(
+    startTimestamp ? ENSURE_TOKEN_TIMEOUT_MILLIS : null
   );
 
   const sheetMetaState = useAsyncState<SheetMeta | null>(async () => {
@@ -129,49 +180,37 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
     }
   };
 
-  if (pickerError) {
-    return (
-      <div>
-        Error showing Google File Picker. See{" "}
-        <a
-          href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
-          target="_blank"
-          rel="noreferrer"
-        >
-          troubleshooting information.
-        </a>
-        <AsyncButton
-          onClick={async () => {
-            setPickerError(null);
-            if (await ensureSheetsTokenAction()) {
-              await pickerHandler();
-            }
-          }}
-        >
-          Try Again
-        </AsyncButton>
-      </div>
-    );
-  }
-
-  if (hasRejectedPermissions) {
-    return (
-      <div>
-        PixieBrix cannot access your Google Account. See{" "}
-        <a
-          href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
-          target="_blank"
-          rel="noreferrer"
-        >
-          troubleshooting information.
-        </a>
-        <AsyncButton onClick={ensureSheetsTokenAction}>Try Again</AsyncButton>
-      </div>
-    );
-  }
-
   if (isExpression(spreadsheetIdField.value)) {
     return <WorkshopMessageWidget />;
+  }
+
+  if (isEnsureSheetsHanging || pickerError || hasRejectedPermissions) {
+    let message = "Error showing Google File Picker.";
+    if (hasRejectedPermissions) {
+      message =
+        "You did not approve access, or your company policy prevents access to Google Sheets.";
+    } else if (isEnsureSheetsHanging) {
+      message =
+        "Select your Google Account from the popup. If Chrome is not displaying an authentication popup, try clicking below to retry.";
+    }
+
+    return (
+      <ErrorView
+        message={message}
+        retryHandler={async () => {
+          setPickerError(null);
+
+          // Calling `clearAllCachedAuthTokens` will clear out the local Google authentication state and any other
+          // OAuth2 tokens the user has. The Google server might still cache the selected account.
+          // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+          await chromeP.identity.clearAllCachedAuthTokens();
+
+          if (await ensureSheetsTokenAction()) {
+            await pickerHandler();
+          }
+        }}
+      />
+    );
   }
 
   return (
