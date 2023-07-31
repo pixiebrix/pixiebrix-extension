@@ -16,10 +16,38 @@
  */
 
 import {
+  getErrorMessage,
+  JQUERY_INVALID_SELECTOR_ERROR,
+} from "@/errors/errorHelpers";
+import {
   BusinessError,
+  InvalidSelectorError,
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
+import { sleep } from "@/utils/timeUtils";
+
+/**
+ * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element if it's
+ * passed HTML.
+ * @param selector a jQuery selector
+ * @param parent parent element to search (default=document)
+ */
+export function $safeFind<Element extends HTMLElement>(
+  selector: string,
+  parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document
+): JQuery<Element> {
+  try {
+    return $(parent).find<Element>(selector);
+  } catch (error) {
+    const message = getErrorMessage(error);
+    if (message.startsWith(JQUERY_INVALID_SELECTOR_ERROR)) {
+      throw new InvalidSelectorError(message, selector);
+    }
+
+    throw error;
+  }
+}
 
 /**
  * Returns exactly one HTMLElement corresponding to the given selector.
@@ -62,4 +90,44 @@ export function assertSingleElement<Element extends HTMLElement>(
   }
 
   return element as Element;
+}
+
+// Enables highlighting/prettifying when used as html`<div>` or css`.a {}`
+// https://prettier.io/blog/2020/08/24/2.1.0.html
+function concatenateTemplateLiteralTag(
+  strings: TemplateStringsArray,
+  ...keys: string[]
+): string {
+  return strings
+    .map((string, i) => string + (i < keys.length ? keys[i] : ""))
+    .join("");
+}
+
+export const html = concatenateTemplateLiteralTag;
+export const css = concatenateTemplateLiteralTag;
+
+export async function waitAnimationFrame(): Promise<void> {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => {
+      resolve();
+    });
+  });
+}
+
+export async function setAnimationFrameInterval(
+  callback: () => void,
+  { signal }: { signal: AbortSignal }
+): Promise<void> {
+  while (!signal.aborted) {
+    // eslint-disable-next-line no-await-in-loop -- intentional
+    await waitAnimationFrame();
+    callback();
+  }
+}
+
+export async function waitForBody(): Promise<void> {
+  while (!document.body) {
+    // eslint-disable-next-line no-await-in-loop -- Polling pattern
+    await sleep(20);
+  }
 }

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { freshIdentifier } from "@/utils";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import {
@@ -30,6 +29,7 @@ import PipelineVisitor, {
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type SafeString } from "@/types/stringTypes";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 export function showOutputKey(blockType: BrickType): boolean {
   return blockType !== "effect" && blockType !== "renderer";

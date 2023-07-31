@@ -17,7 +17,7 @@
 
 import LazyLocatorFactory from "@/services/locator";
 import { expectContext } from "@/utils/expectContext";
-import { memoizeUntilSettled } from "@/utils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 export const locator = new LazyLocatorFactory();
 

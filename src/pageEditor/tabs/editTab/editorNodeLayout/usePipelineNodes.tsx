@@ -38,7 +38,6 @@ import {
   getVariableKeyForSubPipeline,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
-import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 import {
   type DocumentElement,
@@ -53,7 +52,7 @@ import {
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
-import useAllBlocks from "@/bricks/hooks/useAllBlocks";
+import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
@@ -71,6 +70,8 @@ import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBl
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { joinName, joinPathParts } from "@/utils/formUtils";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -178,7 +179,7 @@ const usePipelineNodes = (): {
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { allBlocks } = useAllBlocks();
+  const { allBlocks } = useAllBricks();
 
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;

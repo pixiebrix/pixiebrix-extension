@@ -20,8 +20,8 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { boolean } from "@/utils";
-import { $safeFind } from "@/helpers";
+import { boolean } from "@/utils/typeUtils";
+import { $safeFind } from "@/utils/domUtils";
 
 type ColorRule =
   | string

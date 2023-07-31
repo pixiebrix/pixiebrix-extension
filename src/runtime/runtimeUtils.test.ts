@@ -15,15 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { openShortcutsTab } from "@/chrome";
-import manifestJson from "@/manifest.json";
+import { isApiVersionAtLeast } from "@/runtime/runtimeUtils";
 
-describe("openShortcutsTabs", () => {
-  it("defaults to quickbar shortcut", async () => {
-    (browser.runtime.getManifest as jest.Mock).mockReturnValue(manifestJson);
-    await openShortcutsTab();
-    expect(browser.tabs.create).toHaveBeenCalledExactlyOnceWith({
-      url: "chrome://extensions/shortcuts#:~:text=Toggle%20Quick%20Bar",
-    });
+describe("isApiVersionAtLeast()", () => {
+  test("v2 is at least v1", () => {
+    expect(isApiVersionAtLeast("v2", "v1")).toStrictEqual(true);
+  });
+  test("v2 is at least v2", () => {
+    expect(isApiVersionAtLeast("v2", "v2")).toStrictEqual(true);
+  });
+  test("v3 is at least v1", () => {
+    expect(isApiVersionAtLeast("v3", "v1")).toStrictEqual(true);
+  });
+  test("v1 is not at least v2", () => {
+    expect(isApiVersionAtLeast("v1", "v2")).toStrictEqual(false);
   });
 });

@@ -41,9 +41,9 @@ import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import notify from "@/utils/notify";
 import BrickHistory from "@/extensionConsole/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
-import { isMac } from "@/utils";
 import LogCard from "@/components/logViewer/LogCard";
 import { type Metadata } from "@/types/registryTypes";
+import { isMac } from "@/utils/browserUtils";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;

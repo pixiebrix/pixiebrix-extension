@@ -19,7 +19,8 @@ import { proxyService } from "@/background/messenger/api";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { boolean } from "@/utils";
+
+import { boolean } from "@/utils/typeUtils";
 
 export class SendSimpleSlackMessage extends EffectABC {
   constructor() {

@@ -7,11 +7,12 @@ import {
   type Framework,
   type FrameworkMeta,
 } from "@/pageScript/messenger/constants";
-import { isNullOrBlank, joinName } from "@/utils";
 import { type Schema } from "@/types/schemaTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { useSelector } from "react-redux";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { joinName } from "@/utils/formUtils";
 
 type FrameworkOption = {
   value: Framework;

@@ -37,12 +37,12 @@ import { type UUID } from "@/types/stringTypes";
 import { type Target } from "@/types/messengerTypes";
 import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/domConstants";
 
 const html = globalThis.document?.documentElement;
 
 // These two must be synched in `getTargetState`
 const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for("content-script-injected");
-export const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
 
 /** Communicates readiness to `ensureContentScript` */
 export const ENSURE_CONTENT_SCRIPT_READY =

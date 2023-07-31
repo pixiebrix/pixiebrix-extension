@@ -21,7 +21,7 @@ import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "@/contrib/zapier/contract";
-import { pixieServiceFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import { containsPermissions, proxyService } from "@/background/messenger/api";
@@ -33,12 +33,12 @@ import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFiel
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { joinName } from "@/utils";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -47,7 +47,7 @@ function useHooks(): {
 } {
   const [hooks, isPending, error] = useAsyncState(async () => {
     const { data } = await proxyService<{ new_push_fields: Webhook[] }>(
-      await pixieServiceFactory(),
+      await pixiebrixConfigurationFactory(),
       {
         baseURL: await getBaseURL(),
         url: "/api/webhooks/hooks/",

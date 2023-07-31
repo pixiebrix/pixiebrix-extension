@@ -22,7 +22,6 @@ import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import { getActivatingModIds } from "@/background/messenger/external/_implementation";
 import {
   modComponentFactory,
@@ -35,6 +34,7 @@ import {
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { isLinked } from "@/auth/token";
 import { array } from "cooky-cutter";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),

@@ -21,10 +21,11 @@ import genericOptionsFactory from "@/components/fields/schemaFields/genericOptio
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
+
+import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
-  apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
+  apiVersion: DEFAULT_RUNTIME_API_VERSION,
   allowExpressions: false,
 };
 

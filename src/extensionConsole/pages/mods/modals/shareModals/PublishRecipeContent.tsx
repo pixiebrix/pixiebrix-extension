@@ -31,7 +31,8 @@ import ActivationLink from "@/activation/ActivationLink";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import PublishContentLayout from "./PublishContentLayout";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const PublishRecipeContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();

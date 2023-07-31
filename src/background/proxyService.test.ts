@@ -18,7 +18,7 @@
 import serviceRegistry from "@/services/registry";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { proxyService } from "./requests";
 import * as token from "@/auth/token";
 import * as locator from "@/services/locator";
@@ -63,16 +63,18 @@ afterEach(() => {
 
 (token.getExtensionToken as jest.Mock).mockResolvedValue("abc123");
 
-// Use real version of pixieServiceFactory
-const { pixieServiceFactory } = jest.requireActual("@/services/locator");
-(locator.pixieServiceFactory as jest.Mock) = pixieServiceFactory;
+// Use real version of pixiebrixConfigurationFactory
+const { pixiebrixConfigurationFactory } =
+  jest.requireActual("@/services/locator");
+(locator.pixiebrixConfigurationFactory as jest.Mock) =
+  pixiebrixConfigurationFactory;
 
 const EXAMPLE_SERVICE_API = validateRegistryId("example/api");
 const EXAMPLE_SERVICE_TOKEN_API = validateRegistryId("example/token");
 
 serviceRegistry.register([
   {
-    id: PIXIEBRIX_SERVICE_ID,
+    id: PIXIEBRIX_INTEGRATION_ID,
     authenticateRequest: (
       serviceConfig: SecretsConfig,
       requestConfig: AxiosRequestConfig

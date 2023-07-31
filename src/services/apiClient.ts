@@ -18,12 +18,12 @@
 import axios, { type AxiosInstance } from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getAuthHeaders } from "@/auth/token";
-import { isAbsoluteUrl } from "@/utils";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,
 } from "@/errors/genericErrors";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL

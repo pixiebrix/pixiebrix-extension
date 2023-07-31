@@ -21,7 +21,8 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { useField } from "formik";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
-import { joinPathParts } from "@/utils";
+
+import { joinPathParts } from "@/utils/formUtils";
 
 type MoveWithinParent = {
   canMoveUp: boolean;

@@ -17,7 +17,6 @@
 import useCurrentOrigin from "@/contrib/google/sheets/core/useCurrentOrigin";
 import { useCallback, useState } from "react";
 import { isAuthRejectedError } from "@/contrib/google/auth";
-import { isNullOrBlank } from "@/utils";
 import { type Data, type Doc } from "@/contrib/google/sheets/core/types";
 import pDefer from "p-defer";
 import reportEvent from "@/telemetry/reportEvent";
@@ -25,6 +24,7 @@ import { Events } from "@/telemetry/events";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors/businessErrors";
 import { ensureSheetsReady } from "@/contrib/google/sheets/core/sheetsApi";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;

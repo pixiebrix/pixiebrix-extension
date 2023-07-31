@@ -20,8 +20,8 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import {
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_TOKEN_SERVICE_ID,
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/services/constants";
 import {
   proxyService,
@@ -85,7 +85,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
           config: {
             controlRoomUrl: CE_CONTROL_ROOM_URL,
           },
@@ -105,7 +105,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       },
       {
         data: {
@@ -143,7 +143,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -166,7 +166,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       },
       {
         data: {
@@ -208,7 +208,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -230,7 +230,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       },
       {
         data: {
@@ -272,7 +272,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -293,7 +293,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       },
       {
         data: {
@@ -338,7 +338,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+          serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -358,7 +358,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
       },
       {
         data: {
@@ -443,7 +443,7 @@ describe("Automation Anywhere - RunBot", () => {
         service: {
           id: tokenAuthId,
           proxy: false,
-          serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+          serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
           config: {
             controlRoomUrl: EE_CONTROL_ROOM_URL,
           },
@@ -465,7 +465,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         id: tokenAuthId,
         proxy: false,
-        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       },
       {
         data: {

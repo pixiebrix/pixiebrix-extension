@@ -20,7 +20,6 @@ import { type BlockOptionProps } from "@/components/fields/schemaFields/genericO
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { joinName } from "@/utils";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
@@ -38,6 +37,7 @@ import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import { joinName } from "@/utils/formUtils";
 
 const HeaderField: React.FunctionComponent<{
   name: string;

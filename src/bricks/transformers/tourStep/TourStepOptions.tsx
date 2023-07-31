@@ -18,7 +18,6 @@
 import React, { type ChangeEvent } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
-import { getSubSchema, joinName } from "@/utils";
 import { Card } from "react-bootstrap";
 import {
   type StepInputs,
@@ -38,6 +37,8 @@ import { DocumentRenderer } from "@/bricks/renderers/document";
 
 import styles from "./TourStepOptions.module.scss";
 import { isPipelineExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
+import { getSubSchema } from "@/utils/schemaUtils";
 
 const Section: React.FunctionComponent<{ title: string }> = ({
   title,

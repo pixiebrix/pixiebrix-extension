@@ -17,7 +17,7 @@
 
 import { ping } from "@/background/messenger/api";
 import { isContextInvalidatedError } from "@/errors/contextInvalidated";
-import { isLoadedInIframe } from "@/iframeUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getSettingsState } from "@/store/settingsStorage";
 
 const PING_INTERVAL_MS = 5 * 1000;

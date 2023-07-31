@@ -25,9 +25,9 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 import { makeServiceContext } from "@/services/serviceUtils";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { pixieServiceFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/services/locator";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
@@ -48,10 +48,13 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     test("pass services in context with __service", async () => {
       (services.locate as any) = jest
         .fn()
-        .mockResolvedValue(pixieServiceFactory());
+        .mockResolvedValue(pixiebrixConfigurationFactory());
 
       const dependencies: IntegrationDependency[] = [
-        { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
+        {
+          id: PIXIEBRIX_INTEGRATION_ID,
+          outputKey: validateOutputKey("pixiebrix"),
+        },
       ];
 
       const result = await reducePipeline(
@@ -69,7 +72,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       expect(result).toStrictEqual({
         "@input": {},
         "@pixiebrix": {
-          __service: await pixieServiceFactory(),
+          __service: await pixiebrixConfigurationFactory(),
         },
         "@options": {},
         ...extraEmptyModStateContext(apiVersion),
@@ -82,10 +85,13 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("pass services for var without __service", async () => {
     (services.locate as any) = jest
       .fn()
-      .mockResolvedValue(pixieServiceFactory());
+      .mockResolvedValue(pixiebrixConfigurationFactory());
 
     const dependencies: IntegrationDependency[] = [
-      { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
+      {
+        id: PIXIEBRIX_INTEGRATION_ID,
+        outputKey: validateOutputKey("pixiebrix"),
+      },
     ];
 
     const result = await reducePipeline(
@@ -100,7 +106,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       testOptions(apiVersion)
     );
     expect(result).toStrictEqual({
-      data: await pixieServiceFactory(),
+      data: await pixiebrixConfigurationFactory(),
     });
   });
 
@@ -142,10 +148,13 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("pass services for var without __service", async () => {
     (services.locate as any) = jest
       .fn()
-      .mockResolvedValue(pixieServiceFactory());
+      .mockResolvedValue(pixiebrixConfigurationFactory());
 
     const dependencies: IntegrationDependency[] = [
-      { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
+      {
+        id: PIXIEBRIX_INTEGRATION_ID,
+        outputKey: validateOutputKey("pixiebrix"),
+      },
     ];
 
     const result = await reducePipeline(
@@ -165,7 +174,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       testOptions(apiVersion)
     );
     expect(result).toStrictEqual({
-      data: await pixieServiceFactory(),
+      data: await pixiebrixConfigurationFactory(),
     });
   });
 

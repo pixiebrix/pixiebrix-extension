@@ -24,9 +24,9 @@ import { forbidContext } from "@/utils/expectContext";
 import chromeP from "webext-polyfill-kinda";
 import { isGoogleInitialized } from "@/contrib/google/initGoogle";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { isObject } from "@/utils";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { isObject } from "@/utils/objectUtils";
 
 /**
  * The user or account policy explicitly denied the permission.

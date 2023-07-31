@@ -21,7 +21,6 @@ import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import injectStylesheet from "@/utils/injectStylesheet";
 import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
-import { $safeFind } from "@/helpers";
 import pDefer from "p-defer";
 import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/bricks/rootModeHelpers";
@@ -33,6 +32,7 @@ import {
 } from "@/starterBricks/tourController";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
+import { $safeFind } from "@/utils/domUtils";
 
 type Step = {
   title: string;

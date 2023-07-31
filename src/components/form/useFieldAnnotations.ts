@@ -31,8 +31,8 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { type FormikContextType } from "formik/dist/types";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
-import { isNullOrBlank } from "@/utils";
 import { AnnotationType } from "@/types/annotationTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,

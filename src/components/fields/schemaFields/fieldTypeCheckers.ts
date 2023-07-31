@@ -22,7 +22,7 @@ import {
   type Schema,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import {
   SERVICE_BASE_SCHEMA,
   SERVICE_FIELD_REFS,
@@ -36,7 +36,8 @@ import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { isVarExpression } from "@/utils/expressionUtils";
 
 export const isAppServiceField = createTypePredicate(
-  (schema) => schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`
+  (schema) =>
+    schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_INTEGRATION_ID}`
 );
 
 export const isServiceField = createTypePredicate(

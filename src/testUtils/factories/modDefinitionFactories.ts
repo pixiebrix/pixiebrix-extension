@@ -41,7 +41,6 @@ import {
   type StarterBrickType,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
-import { freshIdentifier } from "@/utils";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 
@@ -49,6 +48,7 @@ import {
   remoteIntegrationConfigurationFactory,
   remoteIntegrationServiceFactory,
 } from "@/testUtils/factories/integrationFactories";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 export const metadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/mod-${n}`),

@@ -22,8 +22,8 @@ import {
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { type ItemId, type TreeData } from "@atlaskit/tree";
 import { type TreeItem } from "@atlaskit/tree/types";
-import { joinPathParts } from "@/utils";
 import { PARENT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
+import { joinPathParts } from "@/utils/formUtils";
 
 type ElementArgs = {
   element: DocumentElement;

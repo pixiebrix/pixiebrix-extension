@@ -26,7 +26,6 @@ import {
 import { type Framework } from "@/pageScript/messenger/constants";
 import { compact, difference, uniq } from "lodash";
 import * as pageScript from "@/pageScript/messenger/api";
-import { findSingleElement } from "@/utils/requireSingleElement";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import {
   type SelectionHandlerType,
@@ -37,8 +36,8 @@ import {
   CancelError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
-import { $safeFind } from "@/helpers";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
+import { $safeFind, findSingleElement } from "@/utils/domUtils";
 
 /**
  * Primary overlay that moved with the user's mouse/selection.

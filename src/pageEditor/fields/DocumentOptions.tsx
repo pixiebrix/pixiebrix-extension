@@ -17,11 +17,11 @@
 
 import React, { useEffect } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import { joinName } from "@/utils";
 import { useField } from "formik";
 import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { joinName } from "@/utils/formUtils";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 

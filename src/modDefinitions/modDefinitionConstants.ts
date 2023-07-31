@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function escapeSingleQuotes(str: string): string {
-  // https://gist.github.com/getify/3667624
-  return str.replaceAll(/\\([\S\s])|(')/g, "\\$1$2");
-}
+export const FieldDescriptions = {
+  MOD_ID: "A unique id for the mod",
+  MOD_NAME: "A display name for the mod",
+  MOD_DESCRIPTION: "A short description of the mod",
+  MOD_VERSION: "The current mod version",
+};

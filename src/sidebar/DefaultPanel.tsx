@@ -20,9 +20,9 @@ import styles from "./DefaultPanel.module.scss";
 import React from "react";
 import workshopImage from "@img/workshop.svg";
 import { Col, Container, Row } from "react-bootstrap";
-import { isMac } from "@/utils";
 import useFlags from "@/hooks/useFlags";
-import { MARKETPLACE_URL } from "@/utils/strings";
+import { isMac } from "@/utils/browserUtils";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const OnboardingContent: React.FunctionComponent = () => (
   <Container className={styles.root}>

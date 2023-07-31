@@ -16,8 +16,6 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { boolean } from "@/utils";
-import { findSingleElement } from "@/utils/requireSingleElement";
 import { type JsonObject, type RequireExactlyOne } from "type-fest";
 import {
   BusinessError,
@@ -35,6 +33,8 @@ import { type Logger } from "@/types/loggerTypes";
 import { setCKEditorData } from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
 import { hasCKEditorClass } from "@/contrib/ckeditor";
+import { boolean } from "@/utils/typeUtils";
+import { findSingleElement } from "@/utils/domUtils";
 
 type SetValueData = RequireExactlyOne<
   {

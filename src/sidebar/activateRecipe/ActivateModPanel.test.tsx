@@ -25,7 +25,6 @@ import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
@@ -44,6 +43,7 @@ import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import userEvent from "@testing-library/user-event";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
+import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useRequiredModDefinitions: jest.fn(),
@@ -60,12 +60,17 @@ const checkModDefinitionPermissionsMock = jest.mocked(
 const selectSidebarHasModPanelsMock = jest.mocked(selectSidebarHasModPanels);
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
-jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue(true),
-}));
+jest.mock("@/utils/modDefinitionUtils", () => {
+  const actualUtils = jest.requireActual("@/utils/modDefinitionUtils");
 
-const includesQuickBarMock = jest.mocked(includesQuickBarExtensionPoint);
+  return {
+    __esModule: true,
+    ...actualUtils,
+    includesQuickBarStarterBrick: jest.fn().mockResolvedValue(true),
+  };
+});
+
+const includesQuickBarMock = jest.mocked(includesQuickBarStarterBrick);
 
 jest.mock("@/registry/internal", () => ({
   // We're also mocking all the functions that this output is passed to, so we can return empty array

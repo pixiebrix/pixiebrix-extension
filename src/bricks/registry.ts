@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BaseRegistry from "@/baseRegistry";
+// eslint-disable-next-line no-restricted-imports
+import BaseRegistry from "../registry/memoryRegistry";
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import {
   type BrickType,
@@ -27,14 +28,14 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 
 /**
- * A block along with inferred/calculated information
+ * A brick along with inferred/calculated information
  */
-export type TypedBlock = {
+export type TypedBrickPair = {
   block: Brick;
   type: BrickType;
 };
 
-export type TypedBlockMap = Map<RegistryId, TypedBlock>;
+export type TypedBlockMap = Map<RegistryId, TypedBrickPair>;
 
 class BricksRegistry extends BaseRegistry<RegistryId, Brick> {
   constructor() {

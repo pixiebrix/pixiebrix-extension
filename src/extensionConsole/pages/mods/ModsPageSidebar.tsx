@@ -29,7 +29,8 @@ import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers
 import useMilestones from "@/hooks/useMilestones";
 import { useInstallBotGamesBlueprint } from "@/extensionConsole/pages/mods/BotGamesView";
 import { type RegistryId } from "@/types/registryTypes";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 type ModsPageSidebarProps = {
   teamFilters: string[];

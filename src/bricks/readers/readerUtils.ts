@@ -20,10 +20,10 @@ import blockRegistry from "@/bricks/registry";
 import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import { isPlainObject, mapValues } from "lodash";
 import CompositeReader from "@/bricks/readers/CompositeReader";
-import { resolveObj } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { resolveObj } from "@/utils/promiseUtils";
 
 export function selectReaderIds(config: ReaderConfig): RegistryId[] {
   if (typeof config === "string") {

@@ -26,7 +26,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import SourceLabel from "./SourceLabel";
-import useAllBlocks from "@/bricks/hooks/useAllBlocks";
+import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useAsyncEffect } from "use-async-effect";
 import { computePosition, flip, offset, size } from "@floating-ui/dom";
 import getMenuOptions from "./getMenuOptions";
@@ -75,7 +75,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const rootElementRef = useRef<HTMLDivElement>(null);
   const activeElement = useSelector(selectActiveElement);
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
-  const { allBlocks } = useAllBlocks();
+  const { allBlocks } = useAllBricks();
 
   const knownVars = useSelector(selectKnownVarsForActiveNode);
   const trace = useSelector(selectActiveNodeTrace);

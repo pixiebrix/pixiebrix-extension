@@ -19,9 +19,9 @@ import React from "react";
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { sortBy, isPlainObject } from "lodash";
-import { isValidUrl } from "@/utils";
 import { type SafeHTML } from "@/types/stringTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { isValidUrl } from "@/utils/urlUtils";
 
 interface Item {
   key: string;

@@ -20,7 +20,6 @@ import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
-import { boolean } from "@/utils";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import servicesSlice, {
   persistServicesConfig,
@@ -61,6 +60,7 @@ import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesL
 import { createStateSyncMiddleware } from "redux-state-sync";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
+import { boolean } from "@/utils/typeUtils";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 

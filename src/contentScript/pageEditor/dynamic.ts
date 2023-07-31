@@ -23,7 +23,6 @@ import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import Overlay from "@/vendors/Overlay";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
-import { $safeFind } from "@/helpers";
 import { type TriggerDefinition } from "@/starterBricks/triggerExtension";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import {
@@ -34,6 +33,7 @@ import { type TourDefinition } from "@/starterBricks/tourExtension";
 import { type JsonObject } from "type-fest";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
+import { $safeFind } from "@/utils/domUtils";
 
 let _overlay: Overlay | null = null;
 

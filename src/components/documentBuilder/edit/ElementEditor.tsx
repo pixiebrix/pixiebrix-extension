@@ -20,7 +20,6 @@ import styles from "./DocumentEditor.module.scss";
 import { useField } from "formik";
 import React from "react";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { getProperty } from "@/utils";
 import { Col, Row } from "react-bootstrap";
 import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
@@ -28,6 +27,7 @@ import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/components/documentBuilder/edit/useElementOptions";
 import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { getProperty } from "@/utils/objectUtils";
 
 type ElementEditorProps = {
   documentBodyName: string;

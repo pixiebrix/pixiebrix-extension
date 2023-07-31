@@ -30,8 +30,8 @@ import {
   validateTimestamp,
 } from "@/types/helpers";
 import {
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  PIXIEBRIX_SERVICE_ID,
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_ID,
 } from "@/services/constants";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -204,8 +204,8 @@ describe("extractRecipeServiceIds", () => {
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
-                [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+                [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -214,7 +214,7 @@ describe("extractRecipeServiceIds", () => {
     });
 
     expect(extractRecipeServiceIds(deployment.package.config)).toStrictEqual([
-      CONTROL_ROOM_OAUTH_SERVICE_ID,
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
     ]);
   });
 });
@@ -227,7 +227,7 @@ describe("findPersonalServiceConfigurations", () => {
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -239,7 +239,7 @@ describe("findPersonalServiceConfigurations", () => {
     expect(
       await findLocalDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({
-      [CONTROL_ROOM_OAUTH_SERVICE_ID]: [],
+      [CONTROL_ROOM_OAUTH_INTEGRATION_ID]: [],
     });
   });
 
@@ -250,7 +250,7 @@ describe("findPersonalServiceConfigurations", () => {
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -259,14 +259,14 @@ describe("findPersonalServiceConfigurations", () => {
     });
 
     const auth = sanitizedIntegrationConfigFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
     });
 
     const locator = async () => [auth];
     expect(
       await findLocalDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({
-      [CONTROL_ROOM_OAUTH_SERVICE_ID]: [auth],
+      [CONTROL_ROOM_OAUTH_INTEGRATION_ID]: [auth],
     });
   });
 
@@ -305,7 +305,7 @@ describe("findPersonalServiceConfigurations", () => {
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: PIXIEBRIX_SERVICE_ID,
+                [validateOutputKey("foo")]: PIXIEBRIX_INTEGRATION_ID,
               },
             }),
           ],
@@ -314,7 +314,7 @@ describe("findPersonalServiceConfigurations", () => {
     });
 
     const auth = sanitizedIntegrationConfigFactory({
-      serviceId: PIXIEBRIX_SERVICE_ID,
+      serviceId: PIXIEBRIX_INTEGRATION_ID,
     });
 
     const locator = async () => [auth];
@@ -363,7 +363,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -372,14 +372,14 @@ describe("mergeDeploymentServiceConfigurations", () => {
     });
 
     const auth = sanitizedIntegrationConfigFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
     });
 
     const locator = async () => [auth];
     expect(
       await mergeDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({
-      [CONTROL_ROOM_OAUTH_SERVICE_ID]: auth.id,
+      [CONTROL_ROOM_OAUTH_INTEGRATION_ID]: auth.id,
     });
   });
 
@@ -390,7 +390,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -399,7 +399,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
     });
 
     const auth = sanitizedIntegrationConfigFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
       proxy: true,
     });
 
@@ -416,7 +416,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -426,11 +426,11 @@ describe("mergeDeploymentServiceConfigurations", () => {
 
     const locator = async () => [
       sanitizedIntegrationConfigFactory({
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         proxy: false,
       }),
       sanitizedIntegrationConfigFactory({
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         proxy: false,
       }),
     ];

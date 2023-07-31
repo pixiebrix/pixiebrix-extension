@@ -17,8 +17,8 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { neverPromise } from "@/testUtils/testHelpers";
-import { html } from "@/utils";
 import { FormData } from "./FormData";
+import { html } from "@/utils/domUtils";
 
 describe("FormData block", () => {
   test("Basic form serialization", async () => {

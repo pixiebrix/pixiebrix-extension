@@ -21,15 +21,15 @@ import React from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
 import { type IntegrationDependency } from "@/types/integrationTypes";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import AuthWidget from "@/components/auth/AuthWidget";
-import { joinName } from "@/utils";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import { useGetServicesQuery } from "@/services/api";
+import { joinName } from "@/utils/formUtils";
 
 const ServicesRow: React.FunctionComponent<{
   authOptions: AuthOption[];
@@ -45,7 +45,7 @@ const ServicesRow: React.FunctionComponent<{
   }));
 
   const configurable = values.filter(
-    ({ dependency }) => dependency.id !== PIXIEBRIX_SERVICE_ID
+    ({ dependency }) => dependency.id !== PIXIEBRIX_INTEGRATION_ID
   );
 
   if (configurable.length === 0) {

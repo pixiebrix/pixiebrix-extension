@@ -18,17 +18,14 @@
 import { isErrorObject } from "@/errors/errorHelpers";
 import { type AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/bricks/available";
-import {
-  DEFAULT_SERVICE_URL,
-  getBaseURL,
-  withoutTrailingSlash,
-} from "@/services/baseService";
-import { isAbsoluteUrl } from "@/utils";
+import { getBaseURL, withoutTrailingSlash } from "@/services/baseService";
 import urljoin from "url-join";
 import {
   isAxiosError,
   type SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless

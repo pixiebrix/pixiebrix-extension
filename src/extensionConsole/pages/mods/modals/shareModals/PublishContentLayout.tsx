@@ -21,7 +21,6 @@ import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { sortBy } from "lodash";
-import { getScopeAndId } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faInfoCircle,
@@ -33,6 +32,7 @@ import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { RequireScope } from "@/auth/RequireScope";
+import { getScopeAndId } from "@/utils/registryUtils";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 

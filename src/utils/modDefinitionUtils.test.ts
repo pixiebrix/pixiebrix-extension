@@ -15,52 +15,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  generateRecipeId,
-  getContainedExtensionPointTypes,
-} from "./recipeUtils";
+import { getContainedStarterBrickTypes } from "./modDefinitionUtils";
 import {
   modComponentDefinitionFactory,
   defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
+import { generatePackageId } from "@/utils/registryUtils";
 
 extensionPointRegistry.lookup = jest.fn();
 
 describe("generateRecipeId", () => {
   test("no special chars", () => {
-    expect(generateRecipeId("@test", "This Is a Test")).toEqual(
+    expect(generatePackageId("@test", "This Is a Test")).toEqual(
       "@test/this-is-a-test"
     );
   });
 
   test("handle colon", () => {
-    expect(generateRecipeId("@test", "This: Is a Test")).toEqual(
+    expect(generatePackageId("@test", "This: Is a Test")).toEqual(
       "@test/this-is-a-test"
     );
   });
 
   test("collapse spaces", () => {
-    expect(generateRecipeId("@test", "This   Is a Test")).toEqual(
+    expect(generatePackageId("@test", "This   Is a Test")).toEqual(
       "@test/this-is-a-test"
     );
   });
 
   test("return empty on invalid", () => {
-    expect(generateRecipeId("", "This   Is a Test")).toBe("");
+    expect(generatePackageId("", "This   Is a Test")).toBe("");
   });
 });
 
 describe("getContainedExtensionPointTypes", () => {
   test("gets types with inner definitions", async () => {
-    const result = await getContainedExtensionPointTypes(
+    const result = await getContainedStarterBrickTypes(
       defaultModDefinitionFactory()
     );
     expect(result).toStrictEqual(["menuItem"]);
   });
 
   test("returns only unique types", async () => {
-    const result = await getContainedExtensionPointTypes(
+    const result = await getContainedStarterBrickTypes(
       defaultModDefinitionFactory({
         extensionPoints: [
           modComponentDefinitionFactory(),
@@ -76,7 +74,7 @@ describe("getContainedExtensionPointTypes", () => {
       kind: "menuItem",
     }));
 
-    const result = await getContainedExtensionPointTypes(
+    const result = await getContainedStarterBrickTypes(
       defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: undefined,
@@ -89,7 +87,7 @@ describe("getContainedExtensionPointTypes", () => {
   test("returns non-null values", async () => {
     (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
 
-    const result = await getContainedExtensionPointTypes(
+    const result = await getContainedStarterBrickTypes(
       defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: undefined,
@@ -102,7 +100,7 @@ describe("getContainedExtensionPointTypes", () => {
   test("inner definition not found", async () => {
     (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
 
-    const result = await getContainedExtensionPointTypes(
+    const result = await getContainedStarterBrickTypes(
       defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: {},

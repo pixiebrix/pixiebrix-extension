@@ -26,7 +26,8 @@ import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInput
 import { type UnknownObject } from "@/types/objectTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
-import { waitAnimationFrame } from "@/utils";
+
+import { waitAnimationFrame } from "@/utils/domUtils";
 
 type Props = {
   inputMode: FieldInputMode;

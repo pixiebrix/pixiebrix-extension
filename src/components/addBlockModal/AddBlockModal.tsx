@@ -44,7 +44,7 @@ import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import useAllBlocks from "@/bricks/hooks/useAllBlocks";
+import useAllBricks from "@/bricks/hooks/useAllBricks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
 import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
@@ -131,7 +131,7 @@ const AddBlockModal: React.FC = () => {
 
   const gridRef = useRef<LazyGrid>();
 
-  const { allBlocks, isLoading: isLoadingAllBlocks } = useAllBlocks();
+  const { allBlocks, isLoading: isLoadingAllBlocks } = useAllBricks();
 
   const reduxDispatch = useDispatch();
   const closeModal = useCallback(() => {

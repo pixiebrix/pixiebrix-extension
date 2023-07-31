@@ -23,7 +23,7 @@ import {
   clearServiceCache,
   services as serviceAuthRegistry,
 } from "@/background/messenger/api";
-import { syncRemotePackages } from "@/baseRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 
 const syncServiceAuths = async () => {
   await serviceAuthRegistry.refresh();

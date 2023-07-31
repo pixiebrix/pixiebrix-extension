@@ -22,12 +22,12 @@ import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isTemplateString } from "@/pageEditor/starterBricks/upgrade";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
-import { isAbsoluteUrl } from "@/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call

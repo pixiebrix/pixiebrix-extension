@@ -22,7 +22,6 @@ import {
 } from "@cfworker/json-schema";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import serviceRegistry from "@/services/registry";
-import { inputProperties } from "@/helpers";
 import { isEmpty, pickBy } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
 import urljoin from "url-join";
@@ -47,6 +46,7 @@ import databaseSchema from "@schemas/database.json";
 import elementSchema from "@schemas/element.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { type JSONSchema7 } from "json-schema";
+import { inputProperties } from "@/utils/schemaUtils";
 
 const SCHEMA_URLS: Record<string, UnknownObject> = {
   "http://json-schema.org/draft-07/schema": draft07,

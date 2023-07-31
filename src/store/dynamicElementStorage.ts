@@ -15,11 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  readReduxStorage,
-  type ReduxStorageKey,
-  setReduxStorage,
-} from "@/chrome";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
@@ -29,6 +24,11 @@ import {
   removeElement,
   removeRecipeData,
 } from "@/pageEditor/slices/editorSliceHelpers";
+import {
+  readReduxStorage,
+  type ReduxStorageKey,
+  setReduxStorage,
+} from "@/utils/storageUtils";
 
 const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
 

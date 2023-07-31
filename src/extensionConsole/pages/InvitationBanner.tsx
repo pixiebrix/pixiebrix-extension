@@ -20,9 +20,7 @@ import Banner from "@/components/banner/Banner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { useGetInvitationsQuery } from "@/services/api";
-
-// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
-const SERVICE_URL = process.env.SERVICE_URL;
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const InvitationBanner: React.FunctionComponent = () => {
   const { data: invitations } = useGetInvitationsQuery();
@@ -42,7 +40,11 @@ const InvitationBanner: React.FunctionComponent = () => {
         ✉️
       </span>
       &nbsp; Visit the{" "}
-      <a href={`${SERVICE_URL}`} target="_blank" rel="noopener noreferrer">
+      <a
+        href={`${DEFAULT_SERVICE_URL}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Admin Console <FontAwesomeIcon icon={faExternalLinkAlt} />
       </a>{" "}
       to view them.

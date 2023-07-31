@@ -48,13 +48,13 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
-import { isNullOrBlank } from "@/utils";
 import {
   isDatabaseField,
   isGoogleSheetIdField,
 } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
 import { AnnotationType } from "@/types/annotationTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",

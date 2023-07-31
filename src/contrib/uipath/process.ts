@@ -17,7 +17,6 @@
 
 import { proxyService } from "@/background/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { pollUntilTruthy } from "@/utils";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
@@ -25,6 +24,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { pollUntilTruthy } from "@/utils/promiseUtils";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",

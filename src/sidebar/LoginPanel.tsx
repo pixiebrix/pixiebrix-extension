@@ -23,9 +23,7 @@ import marketplaceImage from "@img/marketplace.svg";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-
-// eslint-disable-next-line prefer-destructuring -- process.env variable
-const SERVICE_URL = process.env.SERVICE_URL;
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const DefaultLogin: React.FunctionComponent = () => (
   <Col className="text-center">
@@ -35,7 +33,7 @@ const DefaultLogin: React.FunctionComponent = () => (
 
     <Button
       className="mt-4"
-      href={SERVICE_URL}
+      href={DEFAULT_SERVICE_URL}
       target="_blank"
       variant="primary"
     >

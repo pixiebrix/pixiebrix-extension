@@ -9,9 +9,9 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { useField, useFormikContext } from "formik";
-import { joinName } from "@/utils";
 import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DebounceOptions } from "@/starterBricks/types";
+import { joinName } from "@/utils/formUtils";
 
 const DebounceFieldSet: React.FC<{
   isLocked: boolean;

@@ -19,9 +19,9 @@ import { type Kind } from "@/registry/packageRegistry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import { memoizeUntilSettled } from "@/utils";
 import { type RegistryId } from "@/types/registryTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 type Source =
   // From the remote brick registry

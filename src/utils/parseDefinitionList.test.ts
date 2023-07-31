@@ -20,7 +20,8 @@ import {
   getAllDefinitionLists,
 } from "./parseDefinitionList";
 import { JSDOM } from "jsdom";
-import { html } from "@/utils";
+
+import { html } from "@/utils/domUtils";
 
 function getDL(
   html: string,

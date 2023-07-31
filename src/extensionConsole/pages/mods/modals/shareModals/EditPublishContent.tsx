@@ -22,7 +22,8 @@ import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/m
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const EditPublishContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();

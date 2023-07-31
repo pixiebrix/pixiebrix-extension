@@ -36,14 +36,15 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { inferRecipeOptions } from "@/store/extensionsUtils";
 import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
-import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
+import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
+
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
-  apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
+  apiVersion: DEFAULT_RUNTIME_API_VERSION,
   allowExpressions: false,
 };
 

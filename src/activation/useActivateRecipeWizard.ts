@@ -20,12 +20,10 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import type React from "react";
 import { isEmpty, mapValues, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { isPrimitive } from "@/utils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import OptionsBody from "@/extensionConsole/pages/activateRecipe/OptionsBody";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 import PermissionsBody from "@/extensionConsole/pages/activateRecipe/PermissionsBody";
-import { inputProperties } from "@/helpers";
 import * as Yup from "yup";
 import { type AnyObjectSchema } from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
@@ -41,6 +39,8 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
+import { isPrimitive } from "@/utils/typeUtils";
+import { inputProperties } from "@/utils/schemaUtils";
 
 const STEPS: WizardStep[] = [
   // OptionsBody takes only a slice of the ModDefinition, however the types aren't set up in a way for TypeScript
@@ -106,7 +106,7 @@ export function wizardStateFactory({
     switch (step.key) {
       case "services": {
         return serviceIds.some(
-          (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+          (serviceId) => serviceId !== PIXIEBRIX_INTEGRATION_ID
         );
       }
 
@@ -169,7 +169,7 @@ export function wizardStateFactory({
       Yup.object().test(
         "servicesRequired",
         "Please select a configuration",
-        (value) => value.id === PIXIEBRIX_SERVICE_ID || value.config != null
+        (value) => value.id === PIXIEBRIX_INTEGRATION_ID || value.config != null
       )
     ),
     optionsArgs: optionsValidationSchema,

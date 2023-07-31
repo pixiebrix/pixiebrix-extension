@@ -17,7 +17,6 @@
 
 import React, { type ChangeEventHandler } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { joinName } from "@/utils";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
@@ -32,6 +31,7 @@ import {
 import { produce } from "immer";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { useField } from "formik";
+import { joinName } from "@/utils/formUtils";
 
 type ListOptionsProps = {
   elementName: string;

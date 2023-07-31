@@ -16,7 +16,7 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { pixieServiceFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
 import { type Webhook } from "@/contrib/zapier/contract";
@@ -69,7 +69,7 @@ export class PushZap extends EffectABC {
   ): Promise<void> {
     const { data: webhooks } = await proxyService<{
       new_push_fields: Webhook[];
-    }>(await pixieServiceFactory(), {
+    }>(await pixiebrixConfigurationFactory(), {
       baseURL: await getBaseURL(),
       url: "/api/webhooks/hooks/",
       method: "get",

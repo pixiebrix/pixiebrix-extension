@@ -39,10 +39,10 @@ import {
 } from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelButton, type PanelPayload } from "@/types/sidebarTypes";
 import { getCurrentTour, markTourStep } from "@/starterBricks/tourController";
-import { $safeFind } from "@/helpers";
 import { addOverlay } from "@/bricks/transformers/tourStep/overlay";
 import { cancelTemporaryPanels } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { AbortPanelAction } from "@/bricks/errors";
+import { $safeFind } from "@/utils/domUtils";
 
 export type StepInputs = {
   title: string;

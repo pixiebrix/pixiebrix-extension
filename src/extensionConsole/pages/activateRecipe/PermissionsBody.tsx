@@ -25,10 +25,10 @@ import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { useFormikContext } from "formik";
-import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import useRecipePermissions from "./useRecipePermissions";
-import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import useAsyncState from "@/hooks/useAsyncState";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
+import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
 
 function selectedAuths(values: WizardValues): IntegrationConfigPair[] {
   return values.services.filter((x) => x.config);
@@ -70,7 +70,7 @@ const PermissionsBody: React.FunctionComponent<{
   const { isConfigured: isShortcutConfigured } = useQuickbarShortcut();
 
   const { data: hasQuickBar } = useAsyncState(
-    async () => includesQuickBarExtensionPoint(blueprint),
+    async () => includesQuickBarStarterBrick(blueprint),
     [],
     { initialValue: false }
   );

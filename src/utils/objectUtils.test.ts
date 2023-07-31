@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * URL of the marketplace, including `/marketplace/` path, e.g., https://www.pixiebrix.com/marketplace/
- */
-// eslint-disable-next-line prefer-destructuring -- breaks EnvironmentPlugin
-export const MARKETPLACE_URL = process.env.MARKETPLACE_URL;
+import { removeUndefined } from "@/utils/objectUtils";
 
-export const FieldDescriptions = {
-  BLUEPRINT_ID: "A unique id for the mod",
-  BLUEPRINT_NAME: "A display name for the mod",
-  BLUEPRINT_DESCRIPTION: "A short description of the mod",
-  BLUEPRINT_VERSION: "The current mod version",
-};
+describe("removeUndefined", () => {
+  test("remove top-level undefined", () => {
+    expect(removeUndefined({ foo: undefined, bar: null })).toStrictEqual({
+      bar: null,
+    });
+  });
+  test("remove nested undefined", () => {
+    expect(removeUndefined({ foo: { bar: undefined } })).toStrictEqual({
+      foo: {},
+    });
+  });
+});

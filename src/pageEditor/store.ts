@@ -23,7 +23,6 @@ import {
   persistEditorConfig,
 } from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
-import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/services/api";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
@@ -48,6 +47,7 @@ import {
 } from "@/store/sessionChanges/sessionChangesSlice";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
+import { boolean } from "@/utils/typeUtils";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 

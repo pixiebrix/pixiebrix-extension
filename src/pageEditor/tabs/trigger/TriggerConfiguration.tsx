@@ -25,7 +25,6 @@ import { getDefaultReportModeForTrigger } from "@/starterBricks/triggerExtension
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { partial } from "lodash";
-import { joinName } from "@/utils";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import { type DebounceOptions } from "@/starterBricks/types";
@@ -34,6 +33,7 @@ import { type Trigger } from "@/starterBricks/triggerExtensionTypes";
 import { useSelector } from "react-redux";
 import { selectExtensionKnownEventNames } from "@/pageEditor/slices/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import { joinName } from "@/utils/formUtils";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval", "selectionchange", "statechange"].includes(

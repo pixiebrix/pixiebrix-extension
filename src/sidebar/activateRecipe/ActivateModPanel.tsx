@@ -38,7 +38,6 @@ import cx from "classnames";
 import { isEmpty } from "lodash";
 import ActivateModInputs from "@/sidebar/activateRecipe/ActivateModInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import { Button } from "react-bootstrap";
 import useActivateRecipe from "@/activation/useActivateRecipe";
 import { type WizardValues } from "@/activation/wizardTypes";
@@ -54,6 +53,8 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
+
+import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 
 const { actions } = sidebarSlice;
 

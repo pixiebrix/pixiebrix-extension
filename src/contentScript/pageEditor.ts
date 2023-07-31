@@ -26,7 +26,6 @@ import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import {
@@ -46,6 +45,7 @@ import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { $safeFind } from "@/utils/domUtils";
 
 export type RunBlockArgs = {
   /**

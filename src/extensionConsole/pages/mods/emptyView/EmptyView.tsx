@@ -23,7 +23,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card } from "react-bootstrap";
 import workshopImage from "@img/workshop.svg";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const EmptyView: React.VoidFunctionComponent<{
   tableInstance: TableInstance<ModViewItem>;

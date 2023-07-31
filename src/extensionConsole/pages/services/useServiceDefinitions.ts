@@ -22,7 +22,7 @@ import { useMemo } from "react";
 import { sortBy } from "lodash";
 import registry from "@/services/registry";
 import { useAsyncState } from "@/hooks/common";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
 import {
   type Integration,
@@ -52,7 +52,7 @@ function useServiceDefinitions(): IntegrationDefinitions {
     async () =>
       sortBy(
         // eslint-disable-next-line unicorn/no-await-expression-member
-        (await registry.all()).filter((x) => x.id !== PIXIEBRIX_SERVICE_ID),
+        (await registry.all()).filter((x) => x.id !== PIXIEBRIX_INTEGRATION_ID),
         (x) => x.id
       ),
     []

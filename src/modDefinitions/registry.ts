@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BaseRegistry from "@/baseRegistry";
+import BaseRegistry from "@/registry/memoryRegistry";
 import { propertiesToSchema } from "@/validators/generic";
 import produce from "immer";
 import { sortBy } from "lodash";

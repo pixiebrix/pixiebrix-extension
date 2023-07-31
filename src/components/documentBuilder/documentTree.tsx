@@ -31,11 +31,12 @@ import {
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
-import { boolean, joinPathParts } from "@/utils";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
+import { boolean } from "@/utils/typeUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 // Legacy header components, where each header type was a separate element
 const headerComponents = {

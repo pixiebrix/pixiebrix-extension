@@ -23,7 +23,6 @@ import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldCont
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import SelectWidget, {
   type Option,
@@ -37,8 +36,9 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getType from "@/runtime/getType";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { inputProperties } from "@/helpers";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import { joinName } from "@/utils/formUtils";
+import { inputProperties } from "@/utils/schemaUtils";
 
 const rootModeOptions = [
   { label: "Document", value: "document" },

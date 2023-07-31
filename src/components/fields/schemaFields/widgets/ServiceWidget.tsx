@@ -23,7 +23,6 @@ import React, {
 } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { freshIdentifier } from "@/utils";
 import { type AuthOption } from "@/auth/authTypes";
 import {
   keyToFieldValue,
@@ -49,6 +48,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 export type ServiceWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */

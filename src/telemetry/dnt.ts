@@ -15,10 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
-import { boolean } from "@/utils";
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
+import { boolean } from "@/utils/typeUtils";
+import {
+  type ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
 
 export const DNT_STORAGE_KEY = "DNT" as ManualStorageKey;
 

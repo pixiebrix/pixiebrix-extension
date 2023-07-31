@@ -24,9 +24,9 @@ import {
   ENSURE_CONTENT_SCRIPT_READY,
   getTargetState,
 } from "@/contentScript/ready";
-import { memoizeUntilSettled } from "@/utils";
 import { Runtime } from "webextension-polyfill";
 import MessageSender = Runtime.MessageSender;
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 const debug = console.debug.bind(console, "ensureContentScript:");
 

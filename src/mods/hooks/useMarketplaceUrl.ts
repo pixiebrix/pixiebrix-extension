@@ -16,7 +16,8 @@
  */
 
 import { type ModViewItem } from "@/types/modTypes";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 function useMarketplaceUrl(modViewItem: ModViewItem): string | null {
   const { sharing } = modViewItem;

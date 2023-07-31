@@ -18,20 +18,19 @@
 import { locator as serviceLocator } from "@/background/locator";
 import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
-import { safeParseUrl } from "@/utils";
 import { type RegistryId } from "@/types/registryTypes";
 import { launchOAuth2Flow, setCachedAuthData } from "@/background/auth";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import serviceRegistry from "@/services/registry";
-
 import {
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_TOKEN_SERVICE_ID,
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/services/constants";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
+import { safeParseUrl } from "@/utils/urlUtils";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
@@ -55,8 +54,8 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
   expectContext("background");
 
   const partnerIds = [
-    CONTROL_ROOM_OAUTH_SERVICE_ID,
-    CONTROL_ROOM_TOKEN_SERVICE_ID,
+    CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+    CONTROL_ROOM_TOKEN_INTEGRATION_ID,
   ];
 
   const auths = flatten(
@@ -113,7 +112,7 @@ export async function launchAuthIntegration({
   const config = await serviceLocator.findIntegrationConfig(localAuths[0].id);
   const data = await launchOAuth2Flow(service, config);
 
-  if (serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID) {
+  if (serviceId === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     // Hard-coding headers for now. In the future, will want to add support for defining in the service definition.
 
     if (isEmpty(config.config.controlRoomUrl)) {
@@ -182,7 +181,9 @@ export async function _refreshPartnerToken(): Promise<void> {
   if (authData.authId && authData.refreshToken) {
     console.debug("Refreshing partner JWT");
 
-    const service = await serviceRegistry.lookup(CONTROL_ROOM_OAUTH_SERVICE_ID);
+    const service = await serviceRegistry.lookup(
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID
+    );
     const config = await serviceLocator.findIntegrationConfig(authData.authId);
     const context = service.getOAuth2Context(config.config);
 

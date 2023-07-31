@@ -30,7 +30,7 @@ import Select, {
   type MenuListProps,
 } from "react-select";
 
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
 
 // CustomStyles.js
@@ -89,7 +89,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
     [field.value, authOptions]
   );
 
-  if (serviceId === PIXIEBRIX_SERVICE_ID) {
+  if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
     return (
       <Form.Group controlId={field.name}>
         <Form.Control type="text" readOnly value="Automatic" />
