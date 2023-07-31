@@ -41,32 +41,45 @@ import reportError from "@/telemetry/reportError";
 import { isExpression } from "@/utils/expressionUtils";
 import useTimeoutState from "@/hooks/useTimeoutState";
 import chromeP from "webext-polyfill-kinda";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 /**
- * Timeout indicating that the Chrome identity API may be hanging. Make large enough for the file picker to load.
+ * Timeout indicating that the Chrome identity API may be hanging.
  */
 const ENSURE_TOKEN_TIMEOUT_MILLIS = 3000;
 
 const ErrorView: React.FC<{
   message: string;
   retryHandler: () => Promise<void>;
-}> = ({ message, retryHandler }) => (
-  <div>
+}> = ({ message, retryHandler }) => {
+  useEffect(() => {
+    // Report the event. This will provide a false positive while the user is choosing their account
+    // to authenticate with Google. (Because it may take longer than `ENSURE_TOKEN_TIMEOUT_MILLIS` for the
+    // user to select their account.)
+    reportEvent(Events.SELECT_GOOGLE_SPREADSHEET_VIEW_WARNING, {
+      message,
+    });
+  }, [message]);
+
+  return (
     <div>
-      {message} See{" "}
-      <a
-        href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
-        target="_blank"
-        rel="noreferrer"
-      >
-        troubleshooting information.
-      </a>
+      <div>
+        {message} See{" "}
+        <a
+          href="https://docs.pixiebrix.com/integrations/troubleshooting-google-integration-errors"
+          target="_blank"
+          rel="noreferrer"
+        >
+          troubleshooting information.
+        </a>
+      </div>
+      <div>
+        <AsyncButton onClick={retryHandler}>Try Again</AsyncButton>
+      </div>
     </div>
-    <div>
-      <AsyncButton onClick={retryHandler}>Try Again</AsyncButton>
-    </div>
-  </div>
-);
+  );
+};
 
 const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
   const { values: formState, setValues: setFormState } = useFormikContext();
