@@ -84,7 +84,7 @@ async function _ensureSheetsReadyOnce({
 /**
  * Ensure the Google Sheets API is ready to be called, and return the user's token.
  * @param maxRetries the maximum number of retries
- * @param interactive true to show the Google authentication UI if needed
+ * @param interactive true to show the Google authentication UI, if authentication is required
  * @param timeoutMillis a timeout for ensuring the token if the Google API is not ready
  * @return token the user's Google token
  */
