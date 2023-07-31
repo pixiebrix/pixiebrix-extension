@@ -51,7 +51,7 @@ function useGoogleSpreadsheetPicker(): {
   hasRejectedPermissions: boolean;
 
   /**
-   * The timestamp when ensureSheetsReady was called, or nu,ll if not waiting for a token. Used to determine if the
+   * The timestamp when ensureSheetsReady was called, or null if not waiting for a token. Used to determine if the
    * Chrome APIs for retrieving the token are hanging.
    */
   startTimestamp: number | null;
