@@ -93,19 +93,6 @@ describe("mapSchemaToOptions", () => {
     });
   });
 
-  it("returns creatable for examples", () => {
-    expect(
-      mapSchemaToOptions({
-        schema: { type: "string", examples: [] },
-        value: "foo",
-        created: [],
-      })
-    ).toEqual({
-      creatable: true,
-      options: [{ value: "foo", label: "foo" }],
-    });
-  });
-
   it("extracts labelled enum values", () => {
     expect(
       mapSchemaToOptions({

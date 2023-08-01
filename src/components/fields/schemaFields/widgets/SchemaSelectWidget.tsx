@@ -20,10 +20,10 @@ import Select, { type Options } from "react-select";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty, uniq } from "lodash";
 import { useField } from "formik";
-import Creatable from "react-select/creatable";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { isExpression } from "@/utils/expressionUtils";
 import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
+import Creatable from "react-select/creatable";
 
 export type StringOption = {
   value: string;
@@ -49,6 +49,8 @@ const SchemaSelectWidget: React.VFC<
   // from the new value.
   const value = isExpression(fieldValue) ? fieldValue.__value__ : fieldValue;
 
+  const [textInputValue, setTextInputValue] = useState("");
+
   const { creatable, options } = useMemo(
     () =>
       mapSchemaToOptions({
@@ -58,6 +60,20 @@ const SchemaSelectWidget: React.VFC<
       }),
     [schema, created, value]
   );
+
+  // Disabled placeholder option to indicate that a user can create an option
+  // If you change this, make sure you change the equivalent in SelectWidget.tsx
+  const creatablePlaceholder = {
+    value: "",
+    label: "Start typing to filter or create new entry",
+    isDisabled: true,
+  };
+
+  // Show placeholder if users can create new options and the search is empty
+  const optionsWithPlaceholder =
+    creatable && textInputValue.length === 0
+      ? [creatablePlaceholder, ...options]
+      : options;
 
   const selectedValue = options.find((x) => x.value === value) ?? {
     value: null,
@@ -78,7 +94,7 @@ const SchemaSelectWidget: React.VFC<
     <Creatable
       inputId={name}
       isClearable={!isRequired}
-      options={options}
+      options={optionsWithPlaceholder}
       onCreateOption={(value) => {
         setValue(value);
         setCreated(uniq([...created, value]));
@@ -88,6 +104,7 @@ const SchemaSelectWidget: React.VFC<
       ref={elementRef}
       placeholder={placeholder}
       openMenuOnFocus={true}
+      onInputChange={setTextInputValue}
     />
   ) : (
     <Select
