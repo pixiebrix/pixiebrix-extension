@@ -34,7 +34,7 @@ import { sheets } from "@/background/messenger/api";
 import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const ANONYMOUS_OBJECT_SCHEMA: Schema = {
   type: "object",
