@@ -17,7 +17,7 @@
 
 import { services } from "@/background/messenger/api";
 import { findGoogleAccountIntegrationConfig } from "@/contrib/google/sheets/core/useGoogleAccount";
-import { IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
