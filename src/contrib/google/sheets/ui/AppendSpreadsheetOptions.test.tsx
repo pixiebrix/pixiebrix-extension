@@ -1068,6 +1068,32 @@ describe("AppendSpreadsheetOptions", () => {
     );
   });
 
+  test("given selected tabName and entered rowValues, when tab changed, removes invalid rowValues properties", async () => {
+    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: TEST_SPREADSHEET_ID,
+          tabName: "Tab2",
+          rowValues: {
+            Foo: makeTemplateExpression("nunjucks", "valueA"),
+            Bar: makeTemplateExpression("nunjucks", "valueB"),
+          },
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    const tabChooser = await screen.findByLabelText("Tab Name");
+
+    // Choose Tab2
+    await userEvent.click(tabChooser);
+    const tab1Option = await screen.findByText("Tab1");
+    await userEvent.click(tab1Option);
+
+    expectTab1Selected();
+  });
+
   // eslint-disable-next-line jest/no-disabled-tests -- Legacy behavior test, not sure if needed anymore, does not pass currently
   it.skip("does not clear selected tabName and rowValues fieldValues until a different spreadsheetId is loaded", async () => {
     const initialValues = {

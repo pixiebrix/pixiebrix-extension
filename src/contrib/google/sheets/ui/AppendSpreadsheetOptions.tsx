@@ -34,6 +34,7 @@ import { sheets } from "@/background/messenger/api";
 import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
+import { UnknownObject } from "@/types/objectTypes";
 
 const ANONYMOUS_OBJECT_SCHEMA: Schema = {
   type: "object",
@@ -46,6 +47,9 @@ const RowValuesField: React.FunctionComponent<{
   spreadsheetId: string | null;
   tabName: string | Expression;
 }> = ({ name, googleAccount, spreadsheetId, tabName }) => {
+  const [{ value: rowValues }, , { setValue: setRowValues }] =
+    useField<UnknownObject>(name);
+
   const [fieldSchema, setFieldSchema] = useState<Schema>(
     ANONYMOUS_OBJECT_SCHEMA
   );
@@ -71,6 +75,20 @@ const RowValuesField: React.FunctionComponent<{
       if (isEmpty(headerProperties)) {
         setFieldSchema(ANONYMOUS_OBJECT_SCHEMA);
         return;
+      }
+
+      // Remove any invalid rowValues values
+      const invalidKeys = Object.keys(rowValues).filter(
+        (header) => !headers.includes(header)
+      );
+      if (invalidKeys.length > 0) {
+        const newRowValues = { ...rowValues };
+        for (const key of invalidKeys) {
+          // eslint-disable-next-line security/detect-object-injection -- not user input, filtered keys
+          delete newRowValues[key];
+        }
+
+        setRowValues(newRowValues);
       }
 
       setFieldSchema({
