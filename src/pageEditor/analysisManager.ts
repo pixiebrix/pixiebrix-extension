@@ -237,6 +237,8 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     matcher: isAnyOf(
       editorActions.showVariablePopover,
+      // Include selectElement so that variable analysis is ready when user first types
+      editorActions.selectElement,
       editorActions.editElement,
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions
