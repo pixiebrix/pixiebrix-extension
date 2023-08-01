@@ -30,16 +30,18 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
-import { GetPageState } from "@/bricks/effects/pageState";
 import { cloneDeep } from "lodash";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { setContext } from "@/testUtils/detectPageMock";
+import { validateRegistryId } from "@/types/helpers";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 
 setContext("contentScript");
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([contextBrick, new GetPageState()]);
+  blockRegistry.register([contextBrick]);
+  registerBuiltinBlocks();
   ContextBrick.clearContexts();
 });
 
@@ -183,6 +185,66 @@ test("inner pipelines receive correct context", async () => {
     },
     ...extraEmptyModStateContext("v3"),
     "@options": {},
+  });
+});
+
+describe("getModVariableSchema", () => {
+  it("compiles mod variables", async () => {
+    const json = {
+      apiVersion: "v3",
+      kind: "component",
+      metadata: {
+        id: "test/pipeline-echo",
+        name: "State Brick",
+      },
+      inputSchema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {},
+      },
+      pipeline: [
+        {
+          id: "@pixiebrix/state/assign",
+          label: "Assign Foo",
+          config: {
+            variableName: "foo",
+            value: 42,
+          },
+          outputKey: "ignore",
+        },
+        {
+          id: "@pixiebrix/state/assign",
+          label: "Assign Bar",
+          config: {
+            variableName: "bar",
+            value: 42,
+          },
+          outputKey: "ignore",
+        },
+        {
+          id: "test/context",
+          label: "Pipeline Echo Brick Context",
+          config: {},
+          outputKey: "ignore",
+        },
+      ],
+    };
+
+    const brick = fromJS(json);
+    await expect(
+      brick.getModVariableSchema({
+        id: validateRegistryId("test/pipeline-echo"),
+        config: {},
+      })
+    ).resolves.toEqual({
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        foo: true,
+        bar: true,
+      },
+      required: [],
+    });
   });
 });
 
