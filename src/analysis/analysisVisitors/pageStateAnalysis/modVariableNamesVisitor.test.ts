@@ -25,7 +25,7 @@ beforeAll(() => {
   registerBuiltinBlocks();
 });
 
-describe("collectEventNamesAnalysis", () => {
+describe("CollectNamesVisitor", () => {
   it("collects event name from a template literal", async () => {
     const formState = formStateFactory();
     formState.extension.blockPipeline[0] = {
