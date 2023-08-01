@@ -154,7 +154,7 @@ export type InitialValues = {
   serviceContext: ServiceContext;
   /**
    * The document root for root-aware bricks, including readers
-   * @see IBlock.isRootAware
+   * @see Brick.isRootAware
    */
   root: SelectorRoot | null;
 };
@@ -174,7 +174,7 @@ export type IntermediateState = {
   context: BrickArgsContext;
   /**
    * The document root for root-aware bricks
-   * @see IBlock.isRootAware
+   * @see Brick.isRootAware
    */
   root: SelectorRoot | null;
   /**
@@ -213,7 +213,7 @@ type BlockProps<TArgs extends RenderedArgs | BrickArgs = RenderedArgs> = {
 
   /**
    * The root for root-aware bricks
-   * @see IBlock.isRootAware
+   * @see Brick.isRootAware
    */
   root: SelectorRoot | null;
 };

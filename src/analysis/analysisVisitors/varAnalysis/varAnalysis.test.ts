@@ -101,7 +101,7 @@ describe("Collecting available vars", () => {
 
   describe("general", () => {
     beforeEach(() => {
-      analysis = new VarAnalysis({ trace: [], modState: {} });
+      analysis = new VarAnalysis();
     });
 
     test("collects the context vars", async () => {
@@ -205,7 +205,7 @@ describe("Collecting available vars", () => {
 
   describe("mod variables", () => {
     it("collects actual mod variables", async () => {
-      const analysis = new VarAnalysis({ trace: [], modState: { foo: 42 } });
+      const analysis = new VarAnalysis({ modState: { foo: 42 } });
 
       const extension = formStateFactory({}, [brickConfigFactory()]);
 
@@ -223,7 +223,7 @@ describe("Collecting available vars", () => {
 
   describe("blueprint @options", () => {
     beforeEach(() => {
-      analysis = new VarAnalysis({ trace: [], modState: {} });
+      analysis = new VarAnalysis();
     });
 
     test.each([{}, null, undefined])("no options", async (optionsSchema) => {
@@ -700,7 +700,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(undefined, [documentRendererBrick]);
 
-      analysis = new VarAnalysis({ trace: [], modState: {} });
+      analysis = new VarAnalysis();
       await analysis.run(extension);
     });
 
@@ -762,7 +762,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(undefined, [documentRendererBrick]);
 
-      analysis = new VarAnalysis({ trace: [], modState: {} });
+      analysis = new VarAnalysis();
       await analysis.run(extension);
     });
 
@@ -812,7 +812,7 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      analysis = new VarAnalysis({ trace: [], modState: {} });
+      analysis = new VarAnalysis();
       await analysis.run(extension);
     });
 
@@ -852,7 +852,7 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      analysis = new VarAnalysis({ trace: [], modState: {} });
+      analysis = new VarAnalysis();
       await analysis.run(extension);
     });
 
@@ -888,7 +888,7 @@ describe("Collecting available vars", () => {
         brickConfigFactory(),
       ]);
 
-      analysis = new VarAnalysis({ trace: [], modState: {} });
+      analysis = new VarAnalysis();
       await analysis.run(extension);
     });
 
@@ -984,7 +984,7 @@ describe("Invalid template", () => {
 
     extension = formStateFactory(undefined, [invalidEchoBlock, validEchoBlock]);
 
-    analysis = new VarAnalysis({ trace: [], modState: {} });
+    analysis = new VarAnalysis();
   });
 
   test("analysis doesn't throw", async () => {
@@ -1017,7 +1017,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis({ trace: [], modState: {} });
+    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     expect(analysis.getAnnotations()).toHaveLength(0);
@@ -1033,7 +1033,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis({ trace: [], modState: {} });
+    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     expect(analysis.getAnnotations()).toHaveLength(0);
@@ -1049,7 +1049,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis({ trace: [], modState: {} });
+    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1069,7 +1069,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis({ trace: [], modState: {} });
+    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1087,7 +1087,7 @@ describe("var expression annotations", () => {
       },
     ]);
 
-    const analysis = new VarAnalysis({ trace: [], modState: {} });
+    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1112,7 +1112,7 @@ describe("var analysis integration tests", () => {
 
     extension.extensionPoint.definition.trigger = "keypress";
 
-    const analysis = new VarAnalysis({ trace: [], modState: {} });
+    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1134,7 +1134,7 @@ describe("var analysis integration tests", () => {
 
     extension.extensionPoint.definition.trigger = "custom";
 
-    const analysis = new VarAnalysis({ trace: [], modState: {} });
+    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();
@@ -1157,7 +1157,7 @@ describe("var analysis integration tests", () => {
 
     extension.extensionPoint.definition.trigger = "selectionchange";
 
-    const analysis = new VarAnalysis({ trace: [], modState: {} });
+    const analysis = new VarAnalysis();
     await analysis.run(extension);
 
     const annotations = analysis.getAnnotations();

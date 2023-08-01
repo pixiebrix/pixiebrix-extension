@@ -178,7 +178,7 @@ describe("arrays", () => {
 
 describe("mod variables", () => {
   test("it includes mod variables entry", async () => {
-    const analysis = new VarAnalysis({ trace: [], modState: { foo: 42 } });
+    const analysis = new VarAnalysis({ modState: { foo: 42 } });
     const extension = formStateFactory({}, [brickConfigFactory()]);
     await analysis.run(extension);
 
