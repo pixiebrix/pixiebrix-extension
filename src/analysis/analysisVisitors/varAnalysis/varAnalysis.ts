@@ -178,12 +178,12 @@ type SetVarsFromSchemaArgs = {
 };
 
 /**
- * Helper method to set variables based on a JSON Schema
+ * Helper method to set variables based on a JSON Schema.
  *
  * Examples:
  * - Blueprint input schema
  * - Brick output schema
- * - Service configuration schema
+ * - Integration configuration schema
  */
 function setVarsFromSchema({
   schema = {},
@@ -205,11 +205,11 @@ function setVarsFromSchema({
   }
 
   for (const [key, propertySchema] of Object.entries(properties)) {
-    if (typeof propertySchema === "boolean") {
+    if (propertySchema === false) {
       continue;
     }
 
-    if (propertySchema.type === "object") {
+    if (propertySchema === true || propertySchema.type === "object") {
       const nodePath = [...parentPath, key];
 
       const existence =
@@ -220,6 +220,7 @@ function setVarsFromSchema({
       // If additionalProperties, then we allow any child to simplify the validation logic, even
       // if it declares additional property constraints
       const allowAnyChild =
+        propertySchema === true ||
         propertySchema.additionalProperties != null ||
         !isEmpty(propertySchema.additionalProperties);
 
@@ -233,7 +234,8 @@ function setVarsFromSchema({
       });
 
       setVarsFromSchema({
-        schema: propertySchema,
+        // If "true", pass a schema that allows any value
+        schema: propertySchema === true ? {} : propertySchema,
         contextVars,
         source,
         parentPath: [...parentPath, key],
@@ -328,13 +330,27 @@ async function setOptionsVars(
 }
 
 async function setModVariables(
-  modVariables: UnknownObject,
+  modVariableNames: string[],
+  modState: UnknownObject,
   contextVars: VarMap
 ): Promise<void> {
+  setVarsFromSchema({
+    schema: {
+      type: "object",
+      properties: Object.fromEntries(
+        modVariableNames.map((name) => [name, {}])
+      ),
+      additionalProperties: true,
+    },
+    contextVars,
+    source: KnownSources.MOD,
+    parentPath: [MOD_VARIABLE_REFERENCE],
+  });
+
   // In the future, we'll also calculate the likely schema based on the setMod bricks
   contextVars.setExistenceFromValues({
     source: KnownSources.MOD,
-    values: modVariables,
+    values: modState,
     parentPath: MOD_VARIABLE_REFERENCE,
   });
 }
@@ -350,6 +366,12 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * The current mod page state
    */
   private readonly modState: UnknownObject;
+
+  /**
+   * Statically-inferred mod variable names.
+   * @since 1.7.36
+   */
+  private readonly modVariables: string[];
 
   /**
    * Accumulator for known variables at each block visited. Mapping from block path to VarMap.
@@ -425,17 +447,22 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   /**
    * @param trace the trace for the latest run of the extension
    * @param modState the current mod page state
+   * @param modVariables statically-inferred mod variable names
+   * @see CollectNamesVisitor
    */
   constructor({
-    trace,
-    modState,
+    trace = [],
+    modState = {},
+    modVariables = [],
   }: {
-    trace: TraceRecord[];
-    modState: UnknownObject;
-  }) {
+    trace?: TraceRecord[];
+    modState?: UnknownObject;
+    modVariables?: string[];
+  } = {}) {
     super();
     this.trace = trace;
     this.modState = modState;
+    this.modVariables = modVariables;
   }
 
   /**
@@ -629,7 +656,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     // Order of the following calls will determine the order of the sources in the UI
     const contextVars = new VarMap();
     await setOptionsVars(extension, contextVars);
-    await setModVariables(this.modState, contextVars);
+    await setModVariables(this.modVariables, this.modState, contextVars);
     await setServiceVars(extension, contextVars);
     await setInputVars(extension, contextVars);
 

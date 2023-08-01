@@ -55,6 +55,17 @@ export interface Brick extends Metadata {
   getOutputSchema?: (config: BrickConfig) => Schema | undefined;
 
   /**
+   * An optional method to generate a JSON schema describing the mod variables set by the brick.
+   *
+   * Returns `undefined` if `isPageStateAware` is false.
+   *
+   * @param config the brick configuration
+   * @see isPageStateAware
+   * @since 1.7.36
+   */
+  getModVariableSchema?: (config: BrickConfig) => Promise<Schema | undefined>;
+
+  /**
    * Returns the optional permissions required to run this brick.
    *
    * Only includes this brick's permissions, not the permissions of any bricks passed as inputs to the brick.
@@ -155,6 +166,12 @@ export abstract class BrickABC implements Brick {
 
   getOutputSchema(_config: BrickConfig): Schema | undefined {
     return this.outputSchema;
+  }
+
+  async getModVariableSchema(
+    _config: BrickConfig
+  ): Promise<Schema | undefined> {
+    return undefined;
   }
 
   protected constructor(

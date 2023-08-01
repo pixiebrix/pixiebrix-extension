@@ -5,6 +5,8 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import { setPageState } from "@/contentScript/pageState";
 import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickConfig } from "@/bricks/types";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 
 /**
  * A simple brick to assign a value to a Mod Variable.
@@ -27,6 +29,36 @@ class AssignModVariable extends EffectABC {
 
   override async isPageStateAware(): Promise<boolean> {
     return true;
+  }
+
+  override async getModVariableSchema(
+    _config: BrickConfig
+  ): Promise<Schema | undefined> {
+    const { variableName: variableExpression } = _config.config;
+
+    let name = "";
+    try {
+      name = castTextLiteralOrThrow(variableExpression);
+    } catch {
+      return;
+    }
+
+    if (name) {
+      return {
+        type: "object",
+        properties: {
+          // For now, only provide existence information for the variable
+          [name]: true,
+        },
+        additionalProperties: false,
+        required: [name],
+      };
+    }
+
+    return {
+      type: "object",
+      additionalProperties: true,
+    };
   }
 
   inputSchema: Schema = propertiesToSchema(

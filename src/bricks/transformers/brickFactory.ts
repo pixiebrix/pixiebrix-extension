@@ -21,7 +21,7 @@ import {
   type Schema as ValidatorSchema,
   Validator,
 } from "@cfworker/json-schema";
-import { castArray, cloneDeep, pickBy } from "lodash";
+import { castArray, cloneDeep, compact, pickBy } from "lodash";
 import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
@@ -37,7 +37,11 @@ import {
   type BrickOptions,
   validateBrickArgsContext,
 } from "@/types/runtimeTypes";
-import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import {
+  type Schema,
+  type SchemaDefinition,
+  type UiSchema,
+} from "@/types/schemaTypes";
 import { type Metadata, type SemVerString } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
@@ -48,7 +52,10 @@ import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
-import { inputProperties } from "@/utils/schemaUtils";
+import {
+  inputProperties,
+  unionSchemaDefinitionTypes,
+} from "@/utils/schemaUtils";
 
 type BrickDefinition = {
   /**
@@ -194,6 +201,39 @@ class UserDefinedBrick extends BrickABC {
     );
 
     return awareness.some(Boolean);
+  }
+
+  override async getModVariableSchema(
+    _config: BrickConfig
+  ): Promise<Schema | undefined> {
+    const pipeline = castArray(this.component.pipeline);
+
+    const schemas = await Promise.all(
+      pipeline.map(async (blockConfig) => {
+        const block = await blockRegistry.lookup(blockConfig.id);
+        return block.getModVariableSchema?.(blockConfig);
+      })
+    );
+
+    // Start with an empty object
+    let result: SchemaDefinition = {
+      type: "object",
+      properties: {},
+      additionalProperties: false,
+    };
+
+    for (const schema of compact(schemas)) {
+      result = unionSchemaDefinitionTypes(result, schema);
+    }
+
+    // Can't happen in practice because the initial value is an object
+    if (!result) {
+      throw new Error("Internal error: got false for schema definition");
+    }
+
+    return typeof result === "object"
+      ? result
+      : { type: "object", additionalProperties: true };
   }
 
   async inferType(): Promise<BrickType | null> {

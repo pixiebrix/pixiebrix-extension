@@ -19,6 +19,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { type BrickOptions } from "@/types/runtimeTypes";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
 beforeEach(() => {
   // Isolate extension state between test
@@ -114,6 +115,46 @@ describe("@pixiebrix/state/set", () => {
       obj: { a: 42, b: 1 },
       objectArray: [{ a: 42, b: 1 }, { a: 2 }],
     });
+  });
+
+  it("returns mod variables", async () => {
+    const { SetPageState } = await import("@/bricks/effects/pageState");
+    const brick = new SetPageState();
+
+    await expect(
+      brick.getModVariableSchema({
+        id: brick.id,
+        config: {
+          data: {
+            foo: makeTemplateExpression("nunjucks", "{{ @hello }}"),
+          },
+        },
+      })
+    ).resolves.toEqual({
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        foo: true,
+      },
+      required: ["foo"],
+    });
+  });
+
+  it("ignores private variables", async () => {
+    const { SetPageState } = await import("@/bricks/effects/pageState");
+    const brick = new SetPageState();
+
+    await expect(
+      brick.getModVariableSchema({
+        id: brick.id,
+        config: {
+          namespace: "extension",
+          data: {
+            foo: makeTemplateExpression("nunjucks", "{{ @hello }}"),
+          },
+        },
+      })
+    ).resolves.toBeUndefined();
   });
 });
 

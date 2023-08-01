@@ -18,16 +18,38 @@
 import React, { useMemo } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
-import { useFormikContext } from "formik";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
-import useAsyncState from "@/hooks/useAsyncState";
-import { getPageState } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { type UnknownObject } from "@/types/objectTypes";
 import { joinName } from "@/utils/formUtils";
+import { useSelector } from "react-redux";
+import { selectKnownVarsForActiveNode } from "@/components/fields/schemaFields/widgets/varPopup/varSelectors";
+import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
+import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
+import type VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
+
+function schemaWithKnownVariableNames(varMap: VarMap | null): Schema {
+  const map = varMap?.getMap() ?? {};
+  // eslint-disable-next-line security/detect-object-injection -- compile time constant
+  const modVars = map[KnownSources.MOD]?.[MOD_VARIABLE_REFERENCE];
+  // Filter out the symbols on the ExistenceNode
+  const knownVariableNames = Object.keys(modVars ?? {}).filter(
+    (x) => typeof x === "string"
+  );
+
+  const schema = new AssignModVariable().inputSchema;
+  return {
+    properties: {
+      ...schema.properties,
+      variableName: {
+        ...(schema.properties.variableName as UnknownObject),
+        // Provide as examples, the creator can still create a new variable
+        examples: knownVariableNames,
+      },
+    },
+  };
+}
 
 const AssignModVariableOptions: React.FC<BlockOptionProps> = ({
   name,
@@ -35,44 +57,24 @@ const AssignModVariableOptions: React.FC<BlockOptionProps> = ({
 }) => {
   const basePath = joinName(name, configKey);
   const configName = partial(joinName, basePath);
+  const varMap = useSelector(selectKnownVarsForActiveNode);
 
-  const {
-    values: { uuid: extensionId, recipe },
-  } = useFormikContext<ModComponentFormState>();
-
-  const { data: modState } = useAsyncState(
-    async () =>
-      getPageState(thisTab, {
-        namespace: "blueprint",
-        extensionId,
-        blueprintId: recipe?.id,
-      }),
-    []
+  // Add examples to the schema
+  const { properties } = useMemo(
+    () => schemaWithKnownVariableNames(varMap),
+    [varMap]
   );
-
-  const inputSchema = useMemo(() => {
-    const schema = new AssignModVariable().inputSchema;
-    return {
-      properties: {
-        value: schema.properties.value,
-        variableName: {
-          ...(schema.properties.variableName as UnknownObject),
-          examples: Object.keys(modState ?? {}),
-        },
-      },
-    };
-  }, [modState]);
 
   return (
     <>
       <SchemaField
         name={configName("variableName")}
-        schema={inputSchema.properties.variableName as Schema}
+        schema={properties.variableName as Schema}
         isRequired
       />
       <SchemaField
         name={configName("value")}
-        schema={inputSchema.properties.value as Schema}
+        schema={properties.value as Schema}
         isRequired
       />
     </>

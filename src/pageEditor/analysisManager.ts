@@ -43,6 +43,7 @@ import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
+import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableNamesVisitor";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -178,13 +179,22 @@ async function varAnalysisFactory(
   const trace = selectActiveElementTraces(state);
   const extension = selectActiveElement(state);
 
+  // The potential mod known mod variables
+  const formStates = await selectActiveModFormStates(state);
+  const variables = await ModVariableNames.collectNames(formStates);
+
+  // The actual mod variables
   const modState = await getPageState(thisTab, {
     namespace: "blueprint",
     extensionId: extension.uuid,
     blueprintId: extension.recipe?.id,
   });
 
-  return new VarAnalysis({ trace, modState });
+  return new VarAnalysis({
+    trace,
+    modState,
+    modVariables: variables.knownNames,
+  });
 }
 
 // OutputKeyAnalysis seems to be the slowest one, so we register it in the end
@@ -227,6 +237,8 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     matcher: isAnyOf(
       editorActions.showVariablePopover,
+      // Include selectElement so that variable analysis is ready when user first types
+      editorActions.selectElement,
       editorActions.editElement,
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions
