@@ -16,7 +16,6 @@
  */
 
 import { propertiesToSchema } from "@/validators/generic";
-import { isNullOrBlank, isObject } from "@/utils";
 import { isEqual, isPlainObject, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
@@ -30,6 +29,8 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { isObject } from "@/utils/objectUtils";
 
 type CellValue = string | number | null;
 

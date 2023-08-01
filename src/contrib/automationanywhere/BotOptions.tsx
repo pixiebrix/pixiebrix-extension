@@ -29,7 +29,6 @@ import useDependency from "@/services/useDependency";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
-import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import {
   cachedFetchBotFile,
@@ -51,6 +50,7 @@ import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
+import { joinName } from "@/utils/formUtils";
 
 const WORKSPACE_OPTIONS = [
   { value: "public", label: "Public" },

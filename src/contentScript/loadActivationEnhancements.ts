@@ -19,9 +19,8 @@ import { getActivatedModIds } from "@/store/extensionsStorage";
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { isReadyInThisDocument } from "@/contentScript/ready";
-import { pollUntilTruthy } from "@/utils";
-import { MARKETPLACE_URL } from "@/utils/strings";
-import { DEFAULT_SERVICE_URL } from "@/services/baseService";
+import { pollUntilTruthy } from "@/utils/promiseUtils";
+import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;

@@ -16,7 +16,6 @@
  */
 
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
-import { joinPathParts } from "@/utils";
 import { type Expression } from "@/types/runtimeTypes";
 import PipelineVisitor, {
   nestedPosition,
@@ -25,6 +24,7 @@ import PipelineVisitor, {
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 export type VisitDocumentElementArgs = {
   /**

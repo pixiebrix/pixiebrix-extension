@@ -26,15 +26,15 @@ import { useField } from "formik";
 import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
-import { joinName } from "@/utils";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
-import { getRequiredServiceIds } from "@/utils/recipeUtils";
+import { getRequiredIntegrationIds } from "@/utils/modDefinitionUtils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
 import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
+import { joinName } from "@/utils/formUtils";
 
 interface OwnProps {
   blueprint: ModDefinition;
@@ -62,7 +62,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
   const { data: serviceConfigs } = useGetServicesQuery();
 
   const requiredServiceIds = useMemo(
-    () => getRequiredServiceIds(blueprint),
+    () => getRequiredIntegrationIds(blueprint),
     [blueprint]
   );
 

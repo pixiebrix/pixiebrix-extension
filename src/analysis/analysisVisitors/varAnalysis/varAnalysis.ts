@@ -35,9 +35,8 @@ import {
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
-import recipesRegistry from "@/recipes/registry";
+import recipesRegistry from "@/modDefinitions/registry";
 import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
-import { joinPathParts } from "@/utils";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS } from "@/starterBricks/factory";
@@ -52,6 +51,7 @@ import {
 } from "@/utils/expressionUtils";
 import { type UnknownObject } from "@/types/objectTypes";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
+import { joinPathParts } from "@/utils/formUtils";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 

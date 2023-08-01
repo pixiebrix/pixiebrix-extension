@@ -21,7 +21,6 @@ import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
-import { logPromiseDuration, waitAnimationFrame } from "@/utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import {
   insertSidebarFrame,
@@ -43,6 +42,8 @@ import type {
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
+import { logPromiseDuration } from "@/utils/promiseUtils";
+import { waitAnimationFrame } from "@/utils/domUtils";
 
 export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -160,6 +161,10 @@ export async function ensureSidebar(): Promise<void> {
   }
 }
 
+/**
+ * Hide the sidebar. Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
+ * @see HIDE_SIDEBAR_EVENT_NAME
+ */
 export function hideSidebar(): void {
   console.debug("sidebarController:hideSidebar", {
     isSidebarFrameVisible: isSidebarFrameVisible(),

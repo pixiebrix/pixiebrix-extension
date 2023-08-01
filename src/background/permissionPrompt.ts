@@ -17,8 +17,8 @@
 
 import { type Tabs, type Windows } from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
-import { isMac } from "@/utils";
-import { onTabClose } from "@/chrome";
+import { isMac } from "@/utils/browserUtils";
+import { onTabClose } from "@/background/eventUtils";
 
 const POPUP_WIDTH_PX = 400; // Makes the native prompt appear centered
 const POPUP_HEIGHT_PX = 215; // Includes titlebar height, must fit the content and error to avoid scrollbars

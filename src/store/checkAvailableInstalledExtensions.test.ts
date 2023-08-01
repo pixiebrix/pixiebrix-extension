@@ -36,7 +36,7 @@ import {
 } from "@/starterBricks/quickBarExtension";
 import {
   starterBrickConfigFactory,
-  recipeMetadataFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
@@ -74,7 +74,7 @@ describe("checkAvailableInstalledExtensions", () => {
 
     const availableButtonStarterBrickConfig = starterBrickConfigFactory({
       metadata(): Metadata {
-        return recipeMetadataFactory({
+        return metadataFactory({
           id: availableButtonId,
         });
       },
@@ -96,7 +96,7 @@ describe("checkAvailableInstalledExtensions", () => {
 
     const availableQuickbarStarterBrickConfig = starterBrickConfigFactory({
       metadata(): Metadata {
-        return recipeMetadataFactory({
+        return metadataFactory({
           id: availableQbId,
         });
       },

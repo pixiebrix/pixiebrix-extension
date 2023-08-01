@@ -28,7 +28,7 @@ import Form, {
 } from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
-import { CONTROL_ROOM_TOKEN_SERVICE_ID } from "@/services/constants";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 import { useHistory } from "react-router";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { selectConfiguredServices } from "@/store/servicesSelectors";
@@ -64,7 +64,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
 
   // `authServiceIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
   const authServiceId = isEmpty(authServiceIdOverride)
-    ? CONTROL_ROOM_TOKEN_SERVICE_ID
+    ? CONTROL_ROOM_TOKEN_INTEGRATION_ID
     : authServiceIdOverride;
 
   const handleSubmit = async (formValues: ControlRoomConfiguration) => {

@@ -5,7 +5,7 @@
 // - check if Element type is defined
 // - use $safeFind to catch invalid selectors #3061
 
-import { $safeFind } from "@/helpers";
+import { $safeFind } from "@/utils/domUtils";
 import { throttle } from "lodash";
 
 var combinators = [" ", ">", "+", "~"]; // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors#Combinators

@@ -18,11 +18,11 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { $safeFind } from "@/helpers";
 import { validateRegistryId } from "@/types/helpers";
 import { getTextNodes } from "@/bricks/effects/replaceText";
 import { escape } from "lodash";
 import sanitize from "@/utils/sanitize";
+import { $safeFind } from "@/utils/domUtils";
 
 const highlightId = validateRegistryId("@pixiebrix/html/highlight-text");
 

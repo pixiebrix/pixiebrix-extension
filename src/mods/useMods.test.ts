@@ -19,7 +19,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import useMods from "@/mods/useMods";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateTimestamp } from "@/types/helpers";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
@@ -27,25 +27,25 @@ import {
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import {
-  recipeFactory,
-  recipeMetadataFactory,
+  defaultModDefinitionFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 
-jest.mock("@/recipes/recipesHooks", () => ({
-  useAllRecipes: jest.fn(),
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
+  useAllModDefinitions: jest.fn(),
 }));
 
-const useAllRecipesMock = jest.mocked(useAllRecipes);
+const useAllModDefinitionsMock = jest.mocked(useAllModDefinitions);
 
 describe("useMods", () => {
   beforeEach(() => {
     appApiMock.reset();
     appApiMock.onGet("/api/extensions/").reply(200, []);
 
-    useAllRecipesMock.mockReset();
-    useAllRecipesMock.mockReturnValue({
+    useAllModDefinitionsMock.mockReset();
+    useAllModDefinitionsMock.mockReturnValue({
       data: undefined,
     } as UseCachedQueryResult<ModDefinition[]>);
   });
@@ -69,7 +69,7 @@ describe("useMods", () => {
           extensionsSlice.actions.UNSAFE_setExtensions([
             activatedModComponentFactory({
               _recipe: {
-                ...recipeMetadataFactory(),
+                ...metadataFactory(),
                 updated_at: validateTimestamp(new Date().toISOString()),
                 sharing: { public: false, organizations: [] },
               },
@@ -92,7 +92,7 @@ describe("useMods", () => {
   });
 
   it("multiple unavailable are single mod", async () => {
-    const metadata = recipeMetadataFactory();
+    const metadata = metadataFactory();
 
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
@@ -126,10 +126,10 @@ describe("useMods", () => {
   });
 
   it("handles known recipe", async () => {
-    const metadata = recipeMetadataFactory();
+    const metadata = metadataFactory();
 
-    useAllRecipesMock.mockReturnValue({
-      data: [recipeFactory({ metadata })],
+    useAllModDefinitionsMock.mockReturnValue({
+      data: [defaultModDefinitionFactory({ metadata })],
       error: undefined,
     } as UseCachedQueryResult<ModDefinition[]>);
 

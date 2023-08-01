@@ -17,7 +17,6 @@
 
 import React, { useMemo } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { joinName } from "@/utils";
 import { partial } from "lodash";
 import { useFormikContext } from "formik";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
@@ -28,6 +27,7 @@ import { thisTab } from "@/pageEditor/utils";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { type UnknownObject } from "@/types/objectTypes";
+import { joinName } from "@/utils/formUtils";
 
 const AssignModVariableOptions: React.FC<BlockOptionProps> = ({
   name,

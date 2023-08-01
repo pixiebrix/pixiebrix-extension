@@ -42,3 +42,57 @@ export function trimEndOnce(value: string, chars: string): string {
 
   return value;
 }
+
+const punctuation = [...".,;:?!"];
+
+/**
+ * Appends a period to a string as long as it doesn't end with one.
+ * Considers quotes and parentheses, and it always trims the trailing spaces.
+ */
+export function smartAppendPeriod(string: string): string {
+  const trimmed = string.trimEnd();
+  const [secondLastChar, lastChar] = trimmed.slice(-2);
+  if (punctuation.includes(lastChar) || punctuation.includes(secondLastChar)) {
+    // Already punctuated
+    return trimmed;
+  }
+
+  // Else: No punctuation, find where to place it
+
+  if (lastChar === '"' || lastChar === "'") {
+    return trimmed.slice(0, -1) + "." + lastChar;
+  }
+
+  return trimmed + ".";
+}
+
+export function isNullOrBlank(value: unknown): boolean {
+  if (value == null) {
+    return true;
+  }
+
+  return typeof value === "string" && value.trim() === "";
+}
+
+/** Tests a target string against a list of strings (full match) or regexes (can be mixed) */
+export function matchesAnyPattern(
+  target: string,
+  patterns: Array<string | RegExp | ((x: string) => boolean)>
+): boolean {
+  return patterns.some((pattern) => {
+    if (typeof pattern === "string") {
+      return pattern === target;
+    }
+
+    if (typeof pattern === "function") {
+      return pattern(target);
+    }
+
+    return pattern.test(target);
+  });
+}
+
+export function escapeSingleQuotes(str: string): string {
+  // https://gist.github.com/getify/3667624
+  return str.replaceAll(/\\([\S\s])|(')/g, "\\$1$2");
+}

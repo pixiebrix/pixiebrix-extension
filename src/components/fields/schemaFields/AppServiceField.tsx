@@ -18,7 +18,7 @@
 import type React from "react";
 import { useEffect } from "react";
 import { useField, useFormikContext } from "formik";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { produce } from "immer";
 import { isEqual, set } from "lodash";
 import { keyToFieldValue, type ServiceSlice } from "./serviceFieldUtils";
@@ -57,7 +57,7 @@ const AppServiceField: React.FunctionComponent<{ name: string }> = ({
     () => {
       if (serviceOutputKey == null) {
         const match = root.services.find(
-          (service) => service.id === PIXIEBRIX_SERVICE_ID
+          (service) => service.id === PIXIEBRIX_INTEGRATION_ID
         );
         if (match?.outputKey) {
           // If the service is already being used, default to the currently configured auth
@@ -73,7 +73,7 @@ const AppServiceField: React.FunctionComponent<{ name: string }> = ({
           setRootValues(
             produce(root, (draft) => {
               draft.services.push({
-                id: PIXIEBRIX_SERVICE_ID,
+                id: PIXIEBRIX_INTEGRATION_ID,
                 // XXX: in practice it the pixiebrix outputKey won't be used by any other service. However, we might
                 // consider using fresh identifier here to eliminate the possibility of colliding with a different
                 // service that is somehow already using the @pixiebrix key

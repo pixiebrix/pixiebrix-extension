@@ -24,13 +24,13 @@ import tokenIntegrationDefinition from "@contrib/integrations/automation-anywher
 import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { locator as serviceLocator } from "@/background/locator";
 import {
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_TOKEN_SERVICE_ID,
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import { setCachedAuthData } from "@/background/auth";
-import { syncRemotePackages } from "@/baseRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IntegrationConfig } from "@/types/integrationTypes";
 import {
@@ -41,8 +41,8 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { registry } from "@/background/messenger/api";
 
 const integrationDefinitionMap = new Map([
-  [CONTROL_ROOM_TOKEN_SERVICE_ID, tokenIntegrationDefinition],
-  [CONTROL_ROOM_OAUTH_SERVICE_ID, oauthIntegrationDefinition],
+  [CONTROL_ROOM_TOKEN_INTEGRATION_ID, tokenIntegrationDefinition],
+  [CONTROL_ROOM_OAUTH_INTEGRATION_ID, oauthIntegrationDefinition],
 ]);
 
 jest.mock("@/auth/token", () => ({
@@ -107,7 +107,7 @@ describe("getPartnerPrincipals", () => {
     // Local configuration
     readRawConfigurationsMock.mockResolvedValue([
       integrationConfigFactory({
-        serviceId: CONTROL_ROOM_TOKEN_SERVICE_ID,
+        serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://control-room.example.com",
           username: "bot_creator",
@@ -161,13 +161,14 @@ describe("refresh partner token", () => {
     readRawConfigurationsMock.mockResolvedValue([
       {
         id: authId,
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
-        config: {
+        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
-        },
-      } as unknown as IntegrationConfig,
+        }),
+      } as IntegrationConfig,
     ]);
 
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
     appApiMock.onPost().reply(200, {
       access_token: "notatoken2",
       refresh_token: "notarefreshtoken2",
@@ -202,15 +203,16 @@ describe("refresh partner token", () => {
     });
 
     readRawConfigurationsMock.mockResolvedValue([
-      integrationConfigFactory({
+      {
         id: authId,
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
         }),
-      }),
+      } as IntegrationConfig,
     ]);
 
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
     appApiMock.onPost().reply(401);
 
     await serviceLocator.refreshLocal();

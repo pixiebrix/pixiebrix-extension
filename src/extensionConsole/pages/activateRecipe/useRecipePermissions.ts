@@ -19,7 +19,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { services as serviceLocator } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type IntegrationConfigPair } from "@/types/integrationTypes";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type AsyncState } from "@/types/sliceTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
@@ -49,7 +49,7 @@ function useRecipePermissions(
     async () => {
       // Refresh services because the user may have created a team integration since the last refresh.
       await serviceLocator.refresh();
-      return checkRecipePermissions(blueprint, serviceAuths);
+      return checkModDefinitionPermissions(blueprint, serviceAuths);
     },
     [serviceAuths, browserPermissions],
     {

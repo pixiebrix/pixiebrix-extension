@@ -18,17 +18,16 @@
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { sortBy, isEmpty } from "lodash";
 import servicesRegistry, { readRawConfigurations } from "@/services/registry";
-import { inputProperties } from "@/helpers";
 import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 import {
   MissingConfigurationError,
   NotConfiguredError,
 } from "@/errors/businessErrors";
-import { DoesNotExistError } from "@/baseRegistry";
+import { DoesNotExistError } from "@/registry/memoryRegistry";
 import {
   type Integration,
   type IntegrationConfigArgs,
@@ -40,6 +39,7 @@ import {
 } from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { inputProperties } from "@/utils/schemaUtils";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -53,7 +53,7 @@ enum Visibility {
 }
 
 /** Return config excluding any secrets/keys. */
-function excludeSecrets(
+function sanitizeConfig(
   service: Integration,
   config: IntegrationConfigArgs
 ): SanitizedConfig {
@@ -69,10 +69,10 @@ function excludeSecrets(
   return result;
 }
 
-export async function pixieServiceFactory(): Promise<SanitizedIntegrationConfig> {
+export async function pixiebrixConfigurationFactory(): Promise<SanitizedIntegrationConfig> {
   return {
     id: undefined,
-    serviceId: PIXIEBRIX_SERVICE_ID,
+    serviceId: PIXIEBRIX_INTEGRATION_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
     config: {} as SanitizedConfig,
@@ -254,9 +254,9 @@ class LazyLocatorFactory {
       await this.refresh();
     }
 
-    if (serviceId === PIXIEBRIX_SERVICE_ID) {
+    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
       // HACK: for now use the separate storage for the extension key
-      return [await pixieServiceFactory()];
+      return [await pixiebrixConfigurationFactory()];
     }
 
     let service: IntegrationABC;
@@ -281,7 +281,7 @@ class LazyLocatorFactory {
         id: match.id,
         serviceId,
         proxy: match.proxy,
-        config: excludeSecrets(service, match.config),
+        config: sanitizeConfig(service, match.config),
       }));
   }
 
@@ -298,9 +298,9 @@ class LazyLocatorFactory {
       await this.refresh();
     }
 
-    if (serviceId === PIXIEBRIX_SERVICE_ID) {
+    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
       // HACK: for now use the separate storage for the extension key
-      return pixieServiceFactory();
+      return pixiebrixConfigurationFactory();
     }
 
     if (!authId) {
@@ -324,8 +324,14 @@ class LazyLocatorFactory {
       );
     }
 
-    // Proxied configurations have their secrets removed, so can be empty on the client-side
-    if (isEmpty(match.config) && !match.proxy && service.hasAuth) {
+    // Proxied configurations have their secrets removed, so can be empty on the client-side.
+    // Some OAuth2 PKCE services, e.g. google/oauth2-pkce, don't require any configurations, so can be empty.
+    if (
+      isEmpty(match.config) &&
+      !isEmpty(service.schema.properties) &&
+      !match.proxy &&
+      service.hasAuth
+    ) {
       console.warn(`Config ${authId} for service ${serviceId} is empty`);
     }
 
@@ -341,7 +347,7 @@ class LazyLocatorFactory {
       id: authId,
       serviceId,
       proxy: match.proxy,
-      config: excludeSecrets(service, match.config),
+      config: sanitizeConfig(service, match.config),
     };
   }
 }

@@ -16,7 +16,6 @@
  */
 
 import { useField, useFormikContext } from "formik";
-import { joinName } from "@/utils";
 import { type ServiceSlice } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEmpty } from "lodash";

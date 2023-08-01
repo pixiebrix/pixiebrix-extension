@@ -19,13 +19,13 @@ import styles from "./AdvancedLinks.module.scss";
 
 import { type BlockIf, type BrickWindow } from "@/bricks/types";
 import { type TemplateEngine } from "@/types/runtimeTypes";
-import { joinName } from "@/utils";
 import { useField } from "formik";
 import { partial } from "lodash";
 import React, { type MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
 
 import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
 export const DEFAULT_WINDOW_VALUE: BrickWindow = "self";

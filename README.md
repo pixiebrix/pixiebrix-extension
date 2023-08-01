@@ -50,6 +50,15 @@ more information.
 
 See the wiki for [instructions for setting up a local build](https://github.com/pixiebrix/pixiebrix-extension/wiki/Local-build-setup).
 
+## License
+
+PixieBrix provides this project under a dual license model to meet the development and distribution needs of both
+commercial distributors (such as OEMs and VARs) and open source projects.
+
+Developers who use or distribute open source applications under the AGPL can use the AGPL-licensed PixieBrix software,
+and OEMs and VARs that do not want to combine or distribute the PixieBrix software with their own commercial
+software under an AGPL license can purchase a commercial license.
+
 ## Why not _X_?
 
 We're avid users of browser extensions, bookmarklets, and userscripts. They'll always each have

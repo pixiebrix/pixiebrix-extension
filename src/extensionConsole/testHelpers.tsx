@@ -25,9 +25,9 @@ import {
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import servicesSlice from "@/store/servicesSlice";
 import workshopSlice from "@/store/workshopSlice";
 
@@ -39,7 +39,7 @@ const configureStoreForTests = () =>
       options: extensionsSlice.reducer,
       modModals: modModalsSlice.reducer,
       modsPage: modsPageSlice.reducer,
-      recipes: recipesSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       services: servicesSlice.reducer,
       workshop: workshopSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
@@ -48,7 +48,7 @@ const configureStoreForTests = () =>
       /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware()
         .concat(appApi.middleware)
-        .concat(recipesMiddleware);
+        .concat(modDefinitionsMiddleware);
       /* eslint-enable unicorn/prefer-spread */
     },
   });

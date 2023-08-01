@@ -55,7 +55,6 @@ import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
-import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -63,11 +62,13 @@ import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
-import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
+import {
+  useAllModDefinitions,
+  useOptionalModDefinition,
+} from "@/modDefinitions/modDefinitionHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import {
@@ -78,6 +79,8 @@ import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { generatePackageId } from "@/utils/registryUtils";
+import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -300,7 +303,7 @@ function useInitialFormState({
   // Handle creating a new blueprint from a selected extension
   if (activeElement) {
     return {
-      id: generateRecipeId(scope, activeElement.label),
+      id: generatePackageId(scope, activeElement.label),
       name: activeElement.label,
       version: validateSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
@@ -312,7 +315,7 @@ function useInitialFormState({
 
 function useFormSchema() {
   const newRecipeIds = useSelector(selectNewRecipeIds);
-  const { data: recipes } = useAllRecipes();
+  const { data: recipes } = useAllModDefinitions();
   const savedRecipeIds: RegistryId[] = (recipes ?? []).map(
     (x) => x.metadata.id
   );
@@ -350,7 +353,7 @@ const CreateRecipeModalBody: React.FC = () => {
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
   const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
   const { data: activeRecipe, isFetching: isRecipeFetching } =
-    useOptionalRecipe(activeRecipeId);
+    useOptionalModDefinition(activeRecipeId);
 
   const formSchema = useFormSchema();
 
@@ -398,7 +401,7 @@ const CreateRecipeModalBody: React.FC = () => {
       <ConnectedFieldTemplate
         name="id"
         label="Mod ID"
-        description={FieldDescriptions.BLUEPRINT_ID}
+        description={FieldDescriptions.MOD_ID}
         widerLabel
         as={RegistryIdWidget}
       />
@@ -406,19 +409,19 @@ const CreateRecipeModalBody: React.FC = () => {
         name="name"
         label="Name"
         widerLabel
-        description={FieldDescriptions.BLUEPRINT_NAME}
+        description={FieldDescriptions.MOD_NAME}
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
         widerLabel
-        description={FieldDescriptions.BLUEPRINT_VERSION}
+        description={FieldDescriptions.MOD_VERSION}
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
         widerLabel
-        description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
+        description={FieldDescriptions.MOD_DESCRIPTION}
       />
     </Modal.Body>
   );

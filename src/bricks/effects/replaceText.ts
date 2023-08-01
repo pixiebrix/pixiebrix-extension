@@ -18,8 +18,8 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { $safeFind } from "@/helpers";
 import { uniq } from "lodash";
+import { $safeFind } from "@/utils/domUtils";
 
 // Adapted from https://github.com/refined-github/refined-github/blob/main/source/helpers/get-text-nodes.ts
 export function getTextNodes(roots: Node[]): Text[] {

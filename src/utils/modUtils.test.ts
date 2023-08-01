@@ -26,7 +26,7 @@ import { type Mod, type UnavailableMod } from "@/types/modTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 describe("getSharingType", () => {
   test("personal extension", () => {
@@ -99,7 +99,7 @@ describe("getSharingType", () => {
   });
 
   test("team mod", () => {
-    const mod = recipeFactory();
+    const mod = defaultModDefinitionFactory();
     const orgId = uuidv4();
 
     mod.sharing.organizations = [orgId];
@@ -124,7 +124,7 @@ describe("getSharingType", () => {
   });
 
   test("public mod", () => {
-    const mod: Mod = recipeFactory({
+    const mod: Mod = defaultModDefinitionFactory({
       sharing: sharingDefinitionFactory({ public: true }),
     }) as any;
 
@@ -147,14 +147,14 @@ describe("isExtension", () => {
   });
 
   it("returns false for a recipe", () => {
-    const mod = recipeFactory();
+    const mod = defaultModDefinitionFactory();
     expect(isResolvedModComponent(mod)).toBe(false);
   });
 });
 
 describe("isUnavailableMod", () => {
   it("returns false for a recipe definition", () => {
-    const mod = recipeFactory();
+    const mod = defaultModDefinitionFactory();
     expect(isUnavailableMod(mod)).toBe(false);
   });
 

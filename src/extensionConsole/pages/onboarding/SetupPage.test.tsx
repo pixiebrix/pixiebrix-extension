@@ -19,7 +19,7 @@ import React from "react";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import { act, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import userEvent from "@testing-library/user-event";
@@ -104,7 +104,7 @@ describe("SetupPage", () => {
         setupRedux(dispatch) {
           dispatch(
             settingsSlice.actions.setAuthServiceId({
-              serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+              serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
             })
           );
         },

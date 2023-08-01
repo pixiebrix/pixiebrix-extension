@@ -28,8 +28,8 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { defaultBlockConfig } from "@/bricks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { joinName } from "@/utils";
 import styles from "./ArrayWidget.module.scss";
+import { joinName } from "@/utils/formUtils";
 
 type ArrayWidgetProps = SchemaFieldProps & {
   addButtonCaption?: string;

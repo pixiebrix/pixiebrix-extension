@@ -27,8 +27,8 @@ import {
   setReadyInThisDocument,
   unsetReadyInThisDocument,
 } from "@/contentScript/ready";
-import { logPromiseDuration } from "@/utils";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
+import { logPromiseDuration } from "@/utils/promiseUtils";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;

@@ -18,7 +18,6 @@
 import { type JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, isEmpty, once, throttle, uniq } from "lodash";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { type UUID } from "@/types/stringTypes";
 import { loadOptions } from "@/store/extensionsStorage";
@@ -33,6 +32,14 @@ import { deleteDatabase } from "@/utils/idbUtils";
 import { detectBrowser } from "@/vendors/mixpanel";
 import { type RegistryId } from "@/types/registryTypes";
 import { syncFlagOn } from "@/store/syncFlags";
+import { count as registrySize } from "@/registry/packageRegistry";
+import { count as logSize } from "@/telemetry/logging";
+import { count as traceSize } from "@/telemetry/trace";
+import {
+  type ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
 
 const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
@@ -41,11 +48,106 @@ const TELEMETRY_DB_NAME = "telemetrydb";
 const TELEMETRY_DB_VERSION_NUMBER = 1;
 const TELEMETRY_EVENT_OBJECT_STORE = "events";
 
+/**
+ * Timestamp when the background page was initialized.
+ */
+const initTimestamp = Date.now();
+
 interface UserTelemetryEvent {
+  /**
+   * A unique identifier for the event.
+   */
   uid: string;
+  /**
+   * The name of the event.
+   * @see Events
+   */
   event: string;
+  /**
+   * Timestamp when the event occurred.
+   */
   timestamp: number;
+  /**
+   * Event data/payload.
+   */
   data: JsonObject;
+}
+
+interface UserSummary {
+  /**
+   * The version from the manifest.
+   */
+  version: string;
+
+  /**
+   * The version_name from the manifest.
+   */
+  versionName: string;
+
+  /**
+   * The number of active mod components.
+   */
+  numActiveExtensions: number;
+
+  /**
+   * The number of active mods.
+   */
+  numActiveBlueprints: number;
+
+  /**
+   * The number of active starer bricks.
+   */
+  numActiveExtensionPoints: number;
+
+  /**
+   * The detected operating system.
+   */
+  $os: string;
+
+  /**
+   * The detected browser.
+   */
+  $browser: string;
+}
+
+/**
+ * Diagnostic data to report for performance debugging.
+ */
+export interface Diagnostics extends UserSummary {
+  /**
+   * The timestamp the diagnostic data was collected.
+   */
+  timestamp: number;
+
+  /**
+   * Time since the background page was initialized.
+   */
+  timeAliveMS: number;
+
+  /**
+   * The number of tabs currently open.
+   */
+  tabCount: number;
+
+  /**
+   * The number of packages in the user's local IDB registry.
+   */
+  packageCount: number;
+
+  /**
+   * The number of logs in the user's local IDB log store.
+   */
+  logCount: number;
+
+  /**
+   * The number of traces in the user's local IDB trace store.
+   */
+  traceCount: number;
+
+  /**
+   * The number of buffered telemetry events in the user's local IDB telemetry store.
+   */
+  eventCount: number;
 }
 
 interface TelemetryDB extends DBSchema {
@@ -205,7 +307,7 @@ export async function TEST_flushAll(): Promise<void> {
   return debouncedFlush.flush();
 }
 
-async function userSummary() {
+async function collectUserSummary(): Promise<UserSummary> {
   const { os } = await browser.runtime.getPlatformInfo();
   const { version, version_name: versionName } = browser.runtime.getManifest();
   // Not supported on Chromium, and may require additional permissions
@@ -245,7 +347,7 @@ async function init(): Promise<void> {
     const client = await getLinkedApiClient();
     await client.post("/api/identify/", {
       uid: await uid(),
-      data: await userSummary(),
+      data: await collectUserSummary(),
     });
   }
 }
@@ -318,4 +420,32 @@ export async function sendDeploymentAlert({
 }) {
   const client = await getLinkedApiClient();
   await client.post(`/api/deployments/${deploymentId}/alerts/`, data);
+}
+
+/**
+ * Return a ping response with the current timestamp.
+ */
+export async function pong(): Promise<{ timestamp: number }> {
+  return {
+    timestamp: Date.now(),
+  };
+}
+
+/**
+ * Collect performance diagnostics for the current browser session.
+ */
+export async function collectPerformanceDiagnostics(): Promise<Diagnostics> {
+  const timestamp = Date.now();
+  const allTabs = await browser.tabs.query({});
+
+  return {
+    timestamp,
+    ...(await collectUserSummary()),
+    timeAliveMS: timestamp - initTimestamp,
+    tabCount: allTabs.length,
+    packageCount: await registrySize(),
+    logCount: await logSize(),
+    traceCount: await traceSize(),
+    eventCount: await count(),
+  };
 }

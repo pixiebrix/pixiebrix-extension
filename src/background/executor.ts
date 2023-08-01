@@ -17,7 +17,6 @@
 
 import { type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
-import { asyncForEach } from "@/utils";
 import {
   errorTabDoesntExist,
   errorTargetClosedEarly,
@@ -31,6 +30,7 @@ import type { RunBlock } from "@/contentScript/runBlockTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { SessionMap } from "@/mv3/SessionStorage";
+import { asyncForEach } from "@/utils/promiseUtils";
 
 type TabId = number;
 

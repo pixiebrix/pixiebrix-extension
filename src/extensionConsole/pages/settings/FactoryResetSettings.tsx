@@ -19,7 +19,7 @@ import { Card } from "react-bootstrap";
 import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
-import { clearPackages } from "@/baseRegistry";
+import { clearPackages } from "@/registry/memoryRegistry";
 import { clearLogs, reactivateEveryTab } from "@/background/messenger/api";
 import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import AsyncButton from "@/components/AsyncButton";

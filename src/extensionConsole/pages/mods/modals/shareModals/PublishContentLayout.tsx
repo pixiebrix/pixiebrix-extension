@@ -21,7 +21,6 @@ import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { sortBy } from "lodash";
-import { getScopeAndId } from "@/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faInfoCircle,
@@ -31,8 +30,9 @@ import {
 import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { RequireScope } from "@/auth/RequireScope";
+import { getScopeAndId } from "@/utils/registryUtils";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
@@ -49,7 +49,7 @@ const PublishContentLayout: React.FunctionComponent<
   const { blueprintId } = useSelector(selectShowPublishContext);
   const { scope: userScope, organizations: userOrganizations } =
     useSelector(selectAuth);
-  const { data: recipe } = useOptionalRecipe(blueprintId);
+  const { data: recipe } = useOptionalModDefinition(blueprintId);
 
   // Sorting returns new array, so it safe to mutate it
   const sortedOrganizations = sortOrganizations(userOrganizations);

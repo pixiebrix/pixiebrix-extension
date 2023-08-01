@@ -17,11 +17,11 @@
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
-import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React from "react";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import databaseSchema from "@schemas/database.json";
+import { joinName } from "@/utils/formUtils";
 
 const keySchema: Schema = {
   type: "string",

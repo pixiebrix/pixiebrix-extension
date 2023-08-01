@@ -31,17 +31,17 @@ export const marketplaceTagFactory = define<MarketplaceTag>({
 
 /**
  * Create a MarketplaceListing.package for a ModDefinition.
- * @param recipe
+ * @param modDefinition
  */
-export function recipeToMarketplacePackage(
-  recipe: ModDefinition
+export function modDefinitionToMarketplacePackage(
+  modDefinition: ModDefinition
 ): MarketplaceListing["package"] {
   return {
-    id: recipe.metadata.id,
-    name: recipe.metadata.name,
-    description: recipe.metadata.description,
-    version: recipe.metadata.version,
-    config: recipe as unknown as UnknownObject,
+    id: modDefinition.metadata.id,
+    name: modDefinition.metadata.name,
+    description: modDefinition.metadata.description,
+    version: modDefinition.metadata.version,
+    config: modDefinition as unknown as UnknownObject,
     kind: "recipe",
     author: {},
     organization: {},

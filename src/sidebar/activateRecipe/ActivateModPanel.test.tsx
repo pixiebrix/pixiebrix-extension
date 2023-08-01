@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useRequiredModDefinitions } from "@/recipes/recipesHooks";
+import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { render, screen } from "@/sidebar/testHelpers";
 import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -25,27 +25,27 @@ import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { validateRegistryId } from "@/types/helpers";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
-  getRecipeWithBuiltInServiceAuths,
-  recipeFactory,
+  getModDefinitionWithBuiltInServiceAuths,
+  defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import {
   marketplaceListingFactory,
-  recipeToMarketplacePackage,
+  modDefinitionToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
 import * as messengerApi from "@/contentScript/messenger/api";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import userEvent from "@testing-library/user-event";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
+import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
 
-jest.mock("@/recipes/recipesHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useRequiredModDefinitions: jest.fn(),
 }));
 
@@ -54,16 +54,23 @@ jest.mock("@/sidebar/sidebarSelectors", () => ({
 }));
 
 const useRequiredModDefinitionsMock = jest.mocked(useRequiredModDefinitions);
-const checkRecipePermissionsMock = jest.mocked(checkRecipePermissions);
+const checkModDefinitionPermissionsMock = jest.mocked(
+  checkModDefinitionPermissions
+);
 const selectSidebarHasModPanelsMock = jest.mocked(selectSidebarHasModPanels);
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
-jest.mock("@/utils/includesQuickBarExtensionPoint", () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue(true),
-}));
+jest.mock("@/utils/modDefinitionUtils", () => {
+  const actualUtils = jest.requireActual("@/utils/modDefinitionUtils");
 
-const includesQuickBarMock = jest.mocked(includesQuickBarExtensionPoint);
+  return {
+    __esModule: true,
+    ...actualUtils,
+    includesQuickBarStarterBrick: jest.fn().mockResolvedValue(true),
+  };
+});
+
+const includesQuickBarMock = jest.mocked(includesQuickBarStarterBrick);
 
 jest.mock("@/registry/internal", () => ({
   // We're also mocking all the functions that this output is passed to, so we can return empty array
@@ -87,22 +94,22 @@ beforeAll(() => {
 });
 
 function setupMocksAndRender(
-  recipeOverride?: Partial<ModDefinition>,
+  modDefinitionOverride?: Partial<ModDefinition>,
   { componentOverride }: { componentOverride?: React.ReactElement } = {}
 ) {
-  const recipe = recipeFactory({
-    ...recipeOverride,
+  const modDefinition = defaultModDefinitionFactory({
+    ...modDefinitionOverride,
     metadata: {
-      id: validateRegistryId("test-recipe"),
+      id: validateRegistryId("test-mod"),
       name: "Test Mod",
     },
   });
   useRequiredModDefinitionsMock.mockReturnValue(
-    valueToAsyncCacheState([recipe])
+    valueToAsyncCacheState([modDefinition])
   );
   const listing = marketplaceListingFactory({
     // Consistent user-visible name for snapshots
-    package: recipeToMarketplacePackage(recipe),
+    package: modDefinitionToMarketplacePackage(modDefinition),
   });
 
   // Tests can override by calling before setupMocksAndRender
@@ -110,12 +117,12 @@ function setupMocksAndRender(
   appApiMock.onGet().reply(200, []);
 
   const entry = sidebarEntryFactory("activateMods", {
-    modIds: [recipe.metadata.id],
+    modIds: [modDefinition.metadata.id],
     heading: "Activate Mod",
   });
 
   const element = componentOverride ?? (
-    <ActivateModPanel modId={recipe.metadata.id} />
+    <ActivateModPanel modId={modDefinition.metadata.id} />
   );
 
   return render(element, {
@@ -137,7 +144,7 @@ beforeEach(() => {
     isConfigured: false,
   });
 
-  checkRecipePermissionsMock.mockResolvedValue({
+  checkModDefinitionPermissionsMock.mockResolvedValue({
     hasPermissions: true,
     permissions: {},
   });
@@ -145,7 +152,7 @@ beforeEach(() => {
 
 describe("ActivateRecipePanel", () => {
   it("renders with options, permissions info", async () => {
-    jest.mocked(checkRecipePermissions).mockResolvedValue({
+    jest.mocked(checkModDefinitionPermissions).mockResolvedValue({
       hasPermissions: false,
       permissions: { origins: ["https://newurl.com"] },
     });
@@ -253,9 +260,9 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("renders with service configuration if no built-in service configs available", async () => {
-    const { recipe } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
 
-    const rendered = setupMocksAndRender(recipe);
+    const rendered = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
@@ -266,11 +273,12 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("activates recipe with built-in services automatically and renders well-done page", async () => {
-    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition, builtInServiceAuths } =
+      getModDefinitionWithBuiltInServiceAuths();
 
     appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
 
-    const rendered = setupMocksAndRender(recipe);
+    const rendered = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
@@ -278,11 +286,11 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("doesn't flicker while built-in auths are loading", async () => {
-    const { recipe } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
 
     onDeferredGet("/api/services/shared/");
 
-    const rendered = setupMocksAndRender(recipe);
+    const rendered = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
@@ -314,13 +322,14 @@ describe("ActivateRecipePanel", () => {
 
 describe("ActivateMultipleModsPanel", () => {
   it("automatically activates single mod", async () => {
-    const { recipe, builtInServiceAuths } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition, builtInServiceAuths } =
+      getModDefinitionWithBuiltInServiceAuths();
 
     appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
 
-    const rendered = setupMocksAndRender(recipe, {
+    const rendered = setupMocksAndRender(modDefinition, {
       componentOverride: (
-        <ActivateMultipleModsPanel modIds={[recipe.metadata.id]} />
+        <ActivateMultipleModsPanel modIds={[modDefinition.metadata.id]} />
       ),
     });
 
@@ -330,12 +339,12 @@ describe("ActivateMultipleModsPanel", () => {
   });
 
   it("shows error if any mod requires configuration", async () => {
-    const { recipe } = getRecipeWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
 
-    setupMocksAndRender(recipe, {
+    setupMocksAndRender(modDefinition, {
       componentOverride: (
         <ErrorBoundary>
-          <ActivateMultipleModsPanel modIds={[recipe.metadata.id]} />
+          <ActivateMultipleModsPanel modIds={[modDefinition.metadata.id]} />
         </ErrorBoundary>
       ),
     });

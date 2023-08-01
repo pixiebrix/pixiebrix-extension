@@ -22,7 +22,6 @@ import { useAsyncEffect } from "use-async-effect";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
-import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
@@ -36,6 +35,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
 
 function useLocalRobot() {
   expectContext(

@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { type JsonObject } from "type-fest";
+import {
+  type ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils";
 
 const LOCAL_DATA_STORE = "LOCAL_DATA_STORE" as ManualStorageKey;
 const KEY_PREFIX = "@@";

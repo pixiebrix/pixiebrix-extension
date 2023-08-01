@@ -83,7 +83,7 @@ export const Events = {
 
   PIXIEBRIX_INSTALL: "PixieBrixInstall",
   PIXIEBRIX_RELOAD: "PixieBrixReload",
-  PIXIEBRIX_UNINSTALL: "PixieBrixUninstall",
+  PIXIEBRIX_UPDATE: "PixieBrixUpdate",
 
   SELECT_GOOGLE_SPREADSHEET_CANCELLED: "SelectGoogleSpreadsheetCancelled",
   SELECT_GOOGLE_SPREADSHEET_ENSURE_TOKEN_START:
@@ -94,6 +94,7 @@ export const Events = {
   SELECT_GOOGLE_SPREADSHEET_SHOW_PICKER_START:
     "SelectGoogleSpreadsheetShowPickerStart",
   SELECT_GOOGLE_SPREADSHEET_START: "SelectGoogleSpreadsheetStart",
+  SELECT_GOOGLE_SPREADSHEET_VIEW_WARNING: "SelectGoogleSpreadsheetViewWarning",
 
   SIDE_PANEL_HIDE: "SidePanelHide",
   SIDE_BAR_SHOW: "SidePanelShow",

@@ -17,12 +17,12 @@
 
 import React from "react";
 import Centered from "@/components/Centered";
-import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
 import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
 import { useSelector } from "react-redux";
 import { selectIsContextInvalidated } from "@/pageEditor/tabState/tabStateSelectors";
 import { CONTEXT_INVALIDATED_MESSAGE } from "@/pageEditor/tabState/tabStateSlice";
+import { safeParseUrl } from "@/utils/urlUtils";
 
 function getPageLabel(url: string): string {
   const { hostname } = safeParseUrl(url);

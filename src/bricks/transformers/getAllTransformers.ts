@@ -50,6 +50,7 @@ import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { type Brick } from "@/types/brickTypes";
 import { SelectElement } from "@/bricks/transformers/selectElement";
 import Run from "@/bricks/transformers/controlFlow/Run";
+import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -81,6 +82,7 @@ function getAllTransformers(): Brick[] {
     new RandomNumber(),
     new TraverseElements(),
     new SelectElement(),
+    new ExtensionDiagnostics(),
 
     // Control Flow Bricks
     new ForEach(),

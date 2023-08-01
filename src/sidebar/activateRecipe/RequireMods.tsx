@@ -17,18 +17,18 @@
 
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useRequiredModDefinitions } from "@/recipes/recipesHooks";
+import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
-import includesQuickBarExtensionPoint from "@/utils/includesQuickBarExtensionPoint";
 import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
 import { isEmpty, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
 
 export type RequiredModDefinition = {
   /**
@@ -65,9 +65,9 @@ type Props = {
  *
  * @param recipe the recipe definition
  * @param authOptions the integration configurations available to the user
- * @see checkRecipePermissions
+ * @see checkModDefinitionPermissions
  */
-function requiresUserConfiguration(
+export function requiresUserConfiguration(
   recipe: ModDefinition,
   authOptions: AuthOption[]
 ): boolean {
@@ -76,28 +76,29 @@ function requiresUserConfiguration(
     authOptions
   );
 
-  const recipeOptions = recipe.options?.schema?.properties;
+  const { properties: recipeOptions, required: requiredOptions = [] } =
+    recipe.options?.schema ?? {};
 
   const needsOptionsInputs =
     !isEmpty(recipeOptions) &&
-    Object.values(recipeOptions).some((optionSchema) => {
+    Object.entries(recipeOptions).some(([name, optionSchema]) => {
       // This should not occur in practice, but it's here for type narrowing
       if (typeof optionSchema === "boolean") {
         return false;
       }
 
-      // We return false here for any option that does not need user input
-      // and can be auto-activated in the marketplace activation flow.
+      // We return false here for any option that does not need user input and can be auto-activated in the marketplace
+      // activation flow.
       // Options that allow auto-activation:
       // - Database fields with format "preview"
-      // TODO: add more safe-default option types here
+      // - Options not marked as required
 
       if (isDatabaseField(optionSchema) && optionSchema.format === "preview") {
         return false;
       }
 
       // We require user input for any option that isn't explicitly excluded, so we return true here
-      return true;
+      return requiredOptions.includes(name);
     });
 
   const recipeServiceIds = uniq(
@@ -107,7 +108,7 @@ function requiresUserConfiguration(
   );
 
   const needsServiceInputs = recipeServiceIds.some((serviceId) => {
-    if (serviceId === PIXIEBRIX_SERVICE_ID) {
+    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
       return false;
     }
 
@@ -149,9 +150,7 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
               modDefinition,
               authOptions
             ),
-            includesQuickBar: await includesQuickBarExtensionPoint(
-              modDefinition
-            ),
+            includesQuickBar: await includesQuickBarStarterBrick(modDefinition),
             isActive: modComponents.some(
               (x) => x._recipe?.id === modDefinition.metadata.id
             ),

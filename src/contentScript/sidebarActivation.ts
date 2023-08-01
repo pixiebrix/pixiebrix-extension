@@ -30,7 +30,7 @@ import {
 } from "@/background/messenger/external/_implementation";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { isLoadedInIframe } from "@/iframeUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 
 let listener: EventListener | null;

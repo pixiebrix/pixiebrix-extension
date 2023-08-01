@@ -44,9 +44,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { sleep, waitAnimationFrame } from "@/utils";
 import initialize from "@/vendors/initialize";
-import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
 import { PromiseCancelled } from "@/errors/genericErrors";
@@ -80,6 +78,8 @@ import {
   isContextInvalidatedError,
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
+import { sleep } from "@/utils/timeUtils";
+import { $safeFind, waitAnimationFrame } from "@/utils/domUtils";
 
 export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;

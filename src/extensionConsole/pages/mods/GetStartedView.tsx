@@ -21,13 +21,13 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row } from "react-bootstrap";
-import { isMac } from "@/utils";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RegistryId } from "@/types/registryTypes";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ModIcon from "@/mods/ModIcon";
-import { MARKETPLACE_URL } from "@/utils/strings";
+import { isMac } from "@/utils/browserUtils";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const ExternalLink: React.VoidFunctionComponent<{
   linkText: string;
@@ -56,7 +56,7 @@ const GetStartedView: React.VoidFunctionComponent<{
     ?.metadata?.blueprintId as RegistryId;
 
   const { data: recipe, isFetching: isFetchingRecipe } =
-    useOptionalRecipe(onboardingModId);
+    useOptionalModDefinition(onboardingModId);
 
   const { data: listings } = useGetMarketplaceListingsQuery(
     { package__name: onboardingModId },

@@ -21,10 +21,10 @@ import React from "react";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
-import { sleep } from "@/utils";
 import { act } from "react-dom/test-utils";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { type Option } from "@/components/form/widgets/SelectWidget";
+import { sleep } from "@/utils/timeUtils";
 
 const id = "widget";
 const name = "widget";

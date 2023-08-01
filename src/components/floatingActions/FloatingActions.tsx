@@ -25,7 +25,7 @@ import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
 import store from "@/components/floatingActions/store";
 import { getSettingsState } from "@/store/settingsStorage";
 import { syncFlagOn } from "@/store/syncFlags";
-import { isLoadedInIframe } from "@/iframeUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import Draggable from "react-draggable";
 import dragIcon from "@/icons/drag-handle.svg";
 import reportEvent from "@/telemetry/reportEvent";
@@ -109,7 +109,9 @@ export async function initFloatingActions(): Promise<void> {
   // XXX: consider moving checks into React component, so we can use the Redux context
   if (
     settings.isFloatingActionButtonEnabled &&
-    syncFlagOn("floating-quickbar-button") &&
+    // XXX: there's likely a race here with when syncFlagOn gets the flag from localStorage. But in practice, this
+    // seems to work fine. (Likely because the flags will be loaded by the time the Promise.all above resolves)
+    syncFlagOn("floating-quickbar-button-freemium") &&
     !isEnterpriseOrPartnerUser
   ) {
     const container = document.createElement("div");

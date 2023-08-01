@@ -29,7 +29,6 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
-import { joinPathParts } from "@/utils";
 import { type BrickConfig } from "@/bricks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
@@ -38,6 +37,7 @@ import { produce } from "immer";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
+import { joinPathParts } from "@/utils/formUtils";
 
 type TestAddBlockResult = {
   error?: string;

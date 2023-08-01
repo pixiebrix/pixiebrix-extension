@@ -30,9 +30,9 @@ import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabe
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import cx from "classnames";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const { blockId, path: blockFieldName } = useSelector(selectActiveNodeInfo);

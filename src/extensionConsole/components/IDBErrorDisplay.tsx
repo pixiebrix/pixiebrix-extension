@@ -34,7 +34,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { sleep } from "@/utils";
 import { type StorageEstimate } from "@/types/browserTypes";
 import { expectContext } from "@/utils/expectContext";
 import AsyncStateGate from "@/components/AsyncStateGate";
@@ -42,6 +41,7 @@ import { round } from "lodash";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import useAsyncState from "@/hooks/useAsyncState";
+import { sleep } from "@/utils/timeUtils";
 
 const ConnectionErrorDisplay: React.FC<ErrorDisplayProps> = ({
   errorMessage,

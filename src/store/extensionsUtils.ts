@@ -16,7 +16,7 @@
  */
 
 import { compact, groupBy, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -53,7 +53,7 @@ export function inferRecipeAuths(
   const result: Record<RegistryId, UUID> = {};
   for (const [id, auths] of Object.entries(serviceAuths)) {
     const configs = uniq(compact(auths.map(({ config }) => config)));
-    if (id !== PIXIEBRIX_SERVICE_ID && configs.length === 0 && !optional) {
+    if (id !== PIXIEBRIX_INTEGRATION_ID && configs.length === 0 && !optional) {
       // PIXIEBRIX_SERVICE_ID gets the implicit configuration
       throw new Error(`Service ${id} is not configured`);
     }

@@ -21,7 +21,7 @@ import axios, {
   type AxiosResponse,
   type Method,
 } from "axios";
-import { pixieServiceFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/services/locator";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
@@ -32,10 +32,12 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { isAbsoluteUrl, isObject } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import {
+  GOOGLE_OAUTH_PKCE_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/services/constants";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   selectRemoteResponseErrorMessage,
@@ -61,6 +63,10 @@ import {
   type SecretsConfig,
 } from "@/types/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
+import refreshGoogleToken from "@/background/refreshGoogleToken";
+import reportError from "@/telemetry/reportError";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { isObject } from "@/utils/objectUtils";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
@@ -143,7 +149,7 @@ async function authenticate(
   const service = await serviceRegistry.lookup(config.serviceId);
 
   // The PixieBrix API doesn't use integration configurations
-  if (service.id === PIXIEBRIX_SERVICE_ID) {
+  if (service.id === PIXIEBRIX_INTEGRATION_ID) {
     const apiKey = await getExtensionToken();
     if (!apiKey) {
       throw new ExtensionNotLinkedError();
@@ -199,7 +205,7 @@ async function proxyRequest<T>(
   }
 
   const authenticatedRequestConfig = await authenticate(
-    await pixieServiceFactory(),
+    await pixiebrixConfigurationFactory(),
     {
       url: await absoluteApiUrl("/api/proxy/"),
       method: "post" as Method,
@@ -272,14 +278,41 @@ async function performConfiguredRequest(
       await authenticate(serviceConfig, requestConfig)
     );
   } catch (error) {
-    // Try again - have the user login again, or automatically try to get a new token
+    // Try again - automatically try to get a new token using the refresh token (if applicable)
+    // or have the user login again
 
     const axiosError = selectAxiosError(error);
 
     if (axiosError && isAuthenticationError(axiosError)) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
+        if (service.id === GOOGLE_OAUTH_PKCE_INTEGRATION_ID) {
+          try {
+            const isTokenRefreshed = await refreshGoogleToken(serviceConfig);
+
+            if (isTokenRefreshed) {
+              return serializableAxiosRequest(
+                await authenticate(serviceConfig, requestConfig)
+              );
+            }
+          } catch (error) {
+            console.warn(
+              `Failed to refresh ${GOOGLE_OAUTH_PKCE_INTEGRATION_ID} token:`,
+              error
+            );
+
+            // An authentication error can occur if the refresh token was revoked. Besides that, there should be
+            // no reason for the refresh to fail. Report the error if it's not an authentication error.
+            const axiosError = selectAxiosError(error);
+            if (!axiosError || !isAuthenticationError(axiosError)) {
+              reportError(error);
+            }
+          }
+        }
+
+        // Delete all cached auth data, which will require the user to login again.
         await deleteCachedAuthData(serviceConfig.id);
+
         return serializableAxiosRequest(
           await authenticate(serviceConfig, requestConfig)
         );

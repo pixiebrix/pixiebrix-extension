@@ -18,13 +18,13 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
-import { isNullOrBlank } from "@/utils";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 export class GetAPITransformer extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/get");

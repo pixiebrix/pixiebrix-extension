@@ -38,7 +38,6 @@ import cx from "classnames";
 import { isEmpty } from "lodash";
 import ActivateModInputs from "@/sidebar/activateRecipe/ActivateModInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { openShortcutsTab, SHORTCUTS_URL } from "@/chrome";
 import { Button } from "react-bootstrap";
 import useActivateRecipe from "@/activation/useActivateRecipe";
 import { type WizardValues } from "@/activation/wizardTypes";
@@ -50,10 +49,12 @@ import RequireMods, {
   type RequiredModDefinition,
 } from "@/sidebar/activateRecipe/RequireMods";
 import { persistor } from "@/sidebar/store";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
+
+import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 
 const { actions } = sidebarSlice;
 
@@ -221,6 +222,7 @@ const ActivateRecipePanelContent: React.FC<
   wizardSteps,
   initialValues,
   validationSchema,
+  isActive,
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useActivateRecipe("marketplace");
@@ -247,7 +249,7 @@ const ActivateRecipePanelContent: React.FC<
       Boolean(config)
     );
 
-    const { hasPermissions } = await checkRecipePermissions(
+    const { hasPermissions } = await checkModDefinitionPermissions(
       modDefinition,
       selectedAuths
     );
@@ -293,14 +295,16 @@ const ActivateRecipePanelContent: React.FC<
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, []);
 
-  // Trigger auto-activation if the recipe does not require permissions or user
-  // configuration, and there's no error
+  // Trigger auto-activation if the recipe does not require permissions or user configuration, and there's no error.
+  // Additionally, always show the options if this is a reactivation.  (Reactivation, in practice, is used to
+  // reconfigure mod options)
   useEffect(() => {
     if (
       state.needsPermissions != null &&
       !state.needsPermissions &&
       !requiresConfiguration &&
-      !state.activationError
+      !state.activationError &&
+      !isActive
     ) {
       // State is checked inside activateRecipe to prevent double-activation
       void activateRecipe();
@@ -311,6 +315,7 @@ const ActivateRecipePanelContent: React.FC<
     requiresConfiguration,
     state.needsPermissions,
     state.activationError,
+    isActive,
   ]);
 
   // Show loader if panel is determining if it can auto-activate, or if it's activating.

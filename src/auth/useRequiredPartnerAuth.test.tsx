@@ -28,7 +28,7 @@ import { type AuthState } from "@/auth/authTypes";
 import settingsSlice from "@/store/settingsSlice";
 import { type SettingsState } from "@/store/settingsTypes";
 
-import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import { type Me } from "@/types/contract";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type IntegrationConfig } from "@/types/integrationTypes";
@@ -127,7 +127,7 @@ describe("useRequiredPartnerAuth", () => {
       services: servicesSlice.getInitialState(),
       settings: {
         ...settingsSlice.getInitialState(),
-        authServiceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        authServiceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         authMethod: "partner-oauth2",
       },
     });
@@ -294,7 +294,7 @@ describe("useRequiredPartnerAuth", () => {
         ...servicesSlice.getInitialState(),
         configured: {
           [uuidv4()]: {
-            serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+            serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
           } as IntegrationConfig,
         },
       },

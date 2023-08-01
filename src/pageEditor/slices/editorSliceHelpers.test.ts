@@ -48,7 +48,7 @@ import {
   selectElements,
   selectExpandedRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("ensureElementUIState", () => {
@@ -351,7 +351,7 @@ describe("removeElement", () => {
 
 describe("removeRecipeData", () => {
   test("removes expanded active recipe", () => {
-    const recipe = modComponentRecipeFactory();
+    const recipe = modMetadataFactory();
     const element1 = formStateFactory({ recipe });
     const element2 = formStateFactory({ recipe });
     const orphanElement = formStateFactory();
@@ -429,7 +429,7 @@ describe("removeRecipeData", () => {
 
 describe("selectRecipeId", () => {
   test("select unselected recipe", () => {
-    const recipe = modComponentRecipeFactory();
+    const recipe = modMetadataFactory();
     const newState = produce(initialState, (draft) => {
       selectRecipeId(draft, recipe.id);
     });
@@ -438,7 +438,7 @@ describe("selectRecipeId", () => {
   });
 
   test("re-select selected recipe", () => {
-    const recipe = modComponentRecipeFactory();
+    const recipe = modMetadataFactory();
     const state: EditorState = {
       ...initialState,
       activeRecipeId: recipe.id,

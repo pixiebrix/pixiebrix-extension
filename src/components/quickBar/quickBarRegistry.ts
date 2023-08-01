@@ -148,7 +148,7 @@ class QuickBarRegistry {
   }
 
   /**
-   * Add a action change handler.
+   * Add an action change handler.
    * @param handler the action change handler
    */
   addListener(handler: ActionsChangeHandler): void {
@@ -204,7 +204,7 @@ class QuickBarRegistry {
 }
 
 /**
- * Singleton registry for the content script
+ * Singleton registry for the content script.
  */
 const quickBarRegistry = new QuickBarRegistry();
 

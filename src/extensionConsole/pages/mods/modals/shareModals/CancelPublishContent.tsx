@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
@@ -37,7 +37,7 @@ const CancelPublishContent: React.FunctionComponent = () => {
 
   const { blueprintId } = useSelector(selectShowPublishContext);
   const { data: recipe, refetch: refetchRecipes } =
-    useOptionalRecipe(blueprintId);
+    useOptionalModDefinition(blueprintId);
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
 

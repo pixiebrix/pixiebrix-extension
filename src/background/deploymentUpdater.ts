@@ -19,7 +19,6 @@ import { type Deployment, type Me } from "@/types/contract";
 import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/messenger/api";
-import { getExtensionVersion } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -61,6 +60,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
+
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;

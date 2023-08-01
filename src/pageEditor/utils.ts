@@ -26,7 +26,6 @@ import {
   isListElement,
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { joinPathParts } from "@/utils";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
@@ -39,9 +38,10 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
-import { inputProperties } from "@/helpers";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
+import { inputProperties } from "@/utils/schemaUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");

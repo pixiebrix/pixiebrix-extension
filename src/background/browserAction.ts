@@ -18,10 +18,11 @@
 import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
-import { memoizeUntilSettled, isMac } from "@/utils";
 import { notify } from "@/extensionConsole/messenger/api";
 import { browserAction, type Tab } from "@/mv3/api";
 import { isScriptableUrl } from "@/permissions/permissionsUtils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { isMac } from "@/utils/browserUtils";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";

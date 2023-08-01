@@ -17,7 +17,7 @@
 
 import { type Permissions } from "webextension-polyfill";
 import serviceRegistry from "@/services/registry";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { locateWithRetry } from "@/services/serviceUtils";
 import { expectContext } from "@/utils/expectContext";
 import { type IntegrationConfigPair } from "@/types/integrationTypes";
@@ -30,7 +30,7 @@ export async function collectServiceOriginPermissions(
 ): Promise<Permissions.Permissions> {
   expectContext("extension");
 
-  if (dependency.id === PIXIEBRIX_SERVICE_ID) {
+  if (dependency.id === PIXIEBRIX_INTEGRATION_ID) {
     // Already included in the required permissions for the extension
     return { origins: [] };
   }

@@ -17,7 +17,8 @@
 
 import { isEmpty } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { isAbsoluteUrl, safeParseUrl } from "@/utils";
+
+import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
 
 /**
  * Returns an https: schema URL, or throws a BusinessError

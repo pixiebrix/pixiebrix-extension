@@ -17,7 +17,6 @@
 
 import { type RJSFSchema } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
-import { freshIdentifier } from "@/utils";
 import { produce } from "immer";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import databaseSchema from "@schemas/database.json";
@@ -31,6 +30,7 @@ import {
   type UiSchema,
 } from "@/types/schemaTypes";
 import { type SafeString } from "@/types/stringTypes";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",

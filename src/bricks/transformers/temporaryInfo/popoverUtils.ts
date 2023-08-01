@@ -6,7 +6,8 @@ import injectStylesheet from "@/utils/injectStylesheet";
 import { uuidv4, validateUUID } from "@/types/helpers";
 import { setTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 import { getThisFrame } from "webext-messenger";
-import { setAnimationFrameInterval } from "@/utils";
+
+import { setAnimationFrameInterval } from "@/utils/domUtils";
 
 /**
  * Attaches a tooltip container to the DOM.

@@ -31,10 +31,7 @@ import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/con
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
 
-const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
-
-// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
-const SERVICE_URL = process.env.SERVICE_URL;
+import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -56,8 +53,8 @@ export async function openInstallPage() {
       // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
       // invalid URL match pattern
       url: [
-        new URL("setup", SERVICE_URL).href,
-        `${new URL("start", SERVICE_URL).href}?*`,
+        new URL("setup", DEFAULT_SERVICE_URL).href,
+        `${new URL("start", DEFAULT_SERVICE_URL).href}?*`,
       ],
     }),
   ]);
@@ -167,7 +164,7 @@ export async function requirePartnerAuth(): Promise<void> {
         const [adminConsoleTab] = await browser.tabs.query({
           // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
           // invalid URL match pattern
-          url: [new URL(SERVICE_URL).href],
+          url: [new URL(DEFAULT_SERVICE_URL).href],
         });
 
         if (adminConsoleTab) {
@@ -224,7 +221,7 @@ async function install({
         version,
       });
     } else {
-      reportEvent(Events.PIXIEBRIX_UNINSTALL, {
+      reportEvent(Events.PIXIEBRIX_UPDATE, {
         version,
         previousVersion,
       });

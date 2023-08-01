@@ -30,15 +30,15 @@ import {
   validateTimestamp,
 } from "@/types/helpers";
 import {
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  PIXIEBRIX_SERVICE_ID,
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_ID,
 } from "@/services/constants";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   modComponentDefinitionFactory,
-  recipeFactory,
+  defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
@@ -200,12 +200,12 @@ describe("extractRecipeServiceIds", () => {
   test("find unique service ids", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
-                [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+                [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -214,7 +214,7 @@ describe("extractRecipeServiceIds", () => {
     });
 
     expect(extractRecipeServiceIds(deployment.package.config)).toStrictEqual([
-      CONTROL_ROOM_OAUTH_SERVICE_ID,
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
     ]);
   });
 });
@@ -223,11 +223,11 @@ describe("findPersonalServiceConfigurations", () => {
   test("missing personal service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -239,18 +239,18 @@ describe("findPersonalServiceConfigurations", () => {
     expect(
       await findLocalDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({
-      [CONTROL_ROOM_OAUTH_SERVICE_ID]: [],
+      [CONTROL_ROOM_OAUTH_INTEGRATION_ID]: [],
     });
   });
 
   test("found personal service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -259,14 +259,14 @@ describe("findPersonalServiceConfigurations", () => {
     });
 
     const auth = sanitizedIntegrationConfigFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
     });
 
     const locator = async () => [auth];
     expect(
       await findLocalDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({
-      [CONTROL_ROOM_OAUTH_SERVICE_ID]: [auth],
+      [CONTROL_ROOM_OAUTH_INTEGRATION_ID]: [auth],
     });
   });
 
@@ -276,7 +276,7 @@ describe("findPersonalServiceConfigurations", () => {
     const deployment = deploymentFactory({
       bindings: [{ auth: { id: uuidv4(), service_id: registryId } }],
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -301,11 +301,11 @@ describe("findPersonalServiceConfigurations", () => {
   test("exclude pixiebrix service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: PIXIEBRIX_SERVICE_ID,
+                [validateOutputKey("foo")]: PIXIEBRIX_INTEGRATION_ID,
               },
             }),
           ],
@@ -314,7 +314,7 @@ describe("findPersonalServiceConfigurations", () => {
     });
 
     const auth = sanitizedIntegrationConfigFactory({
-      serviceId: PIXIEBRIX_SERVICE_ID,
+      serviceId: PIXIEBRIX_INTEGRATION_ID,
     });
 
     const locator = async () => [auth];
@@ -332,7 +332,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
     const deployment = deploymentFactory({
       bindings: [{ auth: { id: boundId, service_id: registryId } }],
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
@@ -359,11 +359,11 @@ describe("mergeDeploymentServiceConfigurations", () => {
   test("take local service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -372,25 +372,25 @@ describe("mergeDeploymentServiceConfigurations", () => {
     });
 
     const auth = sanitizedIntegrationConfigFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
     });
 
     const locator = async () => [auth];
     expect(
       await mergeDeploymentServiceConfigurations(deployment, locator)
     ).toStrictEqual({
-      [CONTROL_ROOM_OAUTH_SERVICE_ID]: auth.id,
+      [CONTROL_ROOM_OAUTH_INTEGRATION_ID]: auth.id,
     });
   });
 
   test("ignore personal remote service", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -399,7 +399,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
     });
 
     const auth = sanitizedIntegrationConfigFactory({
-      serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+      serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
       proxy: true,
     });
 
@@ -412,11 +412,11 @@ describe("mergeDeploymentServiceConfigurations", () => {
   test("reject multiple personal configurations", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: recipeFactory({
+        config: defaultModDefinitionFactory({
           extensionPoints: [
             modComponentDefinitionFactory({
               services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_SERVICE_ID,
+                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
               },
             }),
           ],
@@ -426,11 +426,11 @@ describe("mergeDeploymentServiceConfigurations", () => {
 
     const locator = async () => [
       sanitizedIntegrationConfigFactory({
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         proxy: false,
       }),
       sanitizedIntegrationConfigFactory({
-        serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         proxy: false,
       }),
     ];

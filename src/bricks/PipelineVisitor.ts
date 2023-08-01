@@ -16,9 +16,8 @@
  */
 
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
-import { joinPathParts } from "@/utils";
 import { type UUID } from "@/types/stringTypes";
-import { type TypedBlock } from "@/bricks/registry";
+import { type TypedBrickPair } from "@/bricks/registry";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { getDocumentPipelinePaths } from "@/pageEditor/utils";
 import { get } from "lodash";
@@ -30,6 +29,7 @@ import { type StarterBrickType } from "@/starterBricks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { isPipelineExpression } from "@/utils/expressionUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 export const ROOT_POSITION = Object.freeze({
   path: PIPELINE_BLOCKS_FIELD_NAME,
@@ -52,7 +52,7 @@ export type VisitBlockExtra = {
   pipelineFlavor: PipelineFlavor;
 };
 export type VisitResolvedBlockExtra = VisitBlockExtra & {
-  typedBlock: TypedBlock;
+  typedBlock: TypedBrickPair;
 };
 export type VisitPipelineExtra = {
   /**

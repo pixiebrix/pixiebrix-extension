@@ -17,8 +17,9 @@
 
 import { identity, toPath } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { cleanValue, InvalidPathError, isObject, joinName } from "@/utils";
 import { type UnknownObject } from "@/types/objectTypes";
+import { cleanValue, isObject } from "@/utils/objectUtils";
+import { joinName } from "@/utils/formUtils";
 
 // First part of the path can be global context with a @
 const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
@@ -68,6 +69,22 @@ type GetPropOptions = {
    */
   maxDepth?: number;
 };
+
+/**
+ * Error indicating input elements to a block did not match the schema.
+ */
+export class InvalidPathError extends Error {
+  override name = "InvalidPathError";
+
+  public readonly path: string;
+
+  readonly input: unknown;
+
+  constructor(message: string, path: string) {
+    super(message);
+    this.path = path;
+  }
+}
 
 export function getPropByPath(
   obj: UnknownObject,

@@ -26,20 +26,20 @@ import { reactivateEveryTab } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
-import { checkRecipePermissions } from "@/recipes/recipePermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
 import {
   modComponentDefinitionFactory,
   starterBrickConfigFactory,
-  recipeFactory,
-  recipeMetadataFactory,
+  defaultModDefinitionFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 
-const checkPermissionsMock = jest.mocked(checkRecipePermissions);
+const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);
 const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
@@ -68,7 +68,7 @@ function setupInputs(): {
     id: extensionPointId,
   });
   const starterBrickConfig = starterBrickConfigFactory({
-    metadata: recipeMetadataFactory({
+    metadata: metadataFactory({
       id: extensionPointId,
       name: "Text Starter Brick 1",
     }),
@@ -86,7 +86,7 @@ function setupInputs(): {
   starterBrickConfig.definition.contexts = ["all"];
   starterBrickConfig.definition.documentUrlPatterns = ["*://*/*"];
 
-  const modDefinition = recipeFactory({
+  const modDefinition = defaultModDefinitionFactory({
     extensionPoints: [modComponentDefinition],
     definitions: {
       [extensionPointId]: starterBrickConfig,
@@ -112,6 +112,10 @@ function setUserAcceptedPermissions(accepted: boolean) {
 }
 
 describe("useActivateRecipe", () => {
+  beforeEach(() => {
+    reactivateEveryTabMock.mockClear();
+  });
+
   it("returns error if permissions are not granted", async () => {
     const { formValues, recipe } = setupInputs();
     setRecipeHasPermissions(false);
@@ -136,6 +140,28 @@ describe("useActivateRecipe", () => {
     expect(dispatch).not.toHaveBeenCalled();
     expect(uninstallRecipeMock).not.toHaveBeenCalled();
     expect(reactivateEveryTabMock).not.toHaveBeenCalled();
+  });
+
+  it("ignores permissions if flag set", async () => {
+    const { formValues, recipe } = setupInputs();
+    setRecipeHasPermissions(false);
+    setUserAcceptedPermissions(false);
+
+    const {
+      result: { current: activateRecipe },
+    } = renderHook(
+      () => useActivateRecipe("marketplace", { checkPermissions: false }),
+      {
+        setupRedux(dispatch, { store }) {
+          jest.spyOn(store, "dispatch");
+        },
+      }
+    );
+
+    const { success, error } = await activateRecipe(formValues, recipe);
+
+    expect(success).toBe(true);
+    expect(error).toBeUndefined();
   });
 
   it("calls uninstallRecipe, installs to extensionsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {

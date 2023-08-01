@@ -19,7 +19,6 @@ import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
-import { logPromiseDuration, pollUntilTruthy } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
@@ -27,7 +26,6 @@ import { compact, groupBy, intersection, once, uniq } from "lodash";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
-import { $safeFind } from "@/helpers";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { getThisFrame } from "webext-messenger";
@@ -41,6 +39,8 @@ import {
   getReloadOnNextNavigate,
   setReloadOnNextNavigate,
 } from "@/contentScript/ready";
+import { logPromiseDuration, pollUntilTruthy } from "@/utils/promiseUtils";
+import { $safeFind } from "@/utils/domUtils";
 
 /**
  * True if handling the initial page load.

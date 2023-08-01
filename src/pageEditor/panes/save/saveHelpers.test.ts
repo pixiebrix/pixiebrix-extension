@@ -56,10 +56,10 @@ import { modComponentFactory } from "@/testUtils/factories/modComponentFactories
 import {
   modComponentDefinitionFactory,
   starterBrickConfigFactory,
-  innerStarterBrickRecipeFactory,
-  recipeFactory,
-  versionedStarterBrickRecipeFactory,
-  versionedRecipeWithResolvedExtensions,
+  innerStarterBrickModDefinitionFactory,
+  defaultModDefinitionFactory,
+  modDefinitionWithVersionedStarterBrickFactory,
+  versionedModDefinitionWithResolvedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/background/contextMenus");
@@ -90,7 +90,7 @@ describe("generatePersonalBrickId", () => {
 describe("replaceRecipeExtension round trip", () => {
   test("single extension with versioned extensionPoint", async () => {
     const starterBrick = starterBrickConfigFactory();
-    const recipe = versionedStarterBrickRecipeFactory({
+    const recipe = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })();
 
@@ -131,7 +131,7 @@ describe("replaceRecipeExtension round trip", () => {
   test("does not modify other starter brick", async () => {
     const starterBrick = starterBrickConfigFactory();
 
-    const recipe = versionedStarterBrickRecipeFactory({
+    const recipe = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })();
 
@@ -175,7 +175,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("single starter brick with innerDefinition", async () => {
-    const recipe = innerStarterBrickRecipeFactory()();
+    const recipe = innerStarterBrickModDefinitionFactory()();
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
@@ -222,7 +222,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("generate fresh identifier definition changed", async () => {
-    const recipe = innerStarterBrickRecipeFactory()();
+    const recipe = innerStarterBrickModDefinitionFactory()();
 
     recipe.extensionPoints.push({
       ...recipe.extensionPoints[0],
@@ -284,7 +284,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("reuse identifier definition for multiple if extensionPoint not modified", async () => {
-    const recipe = innerStarterBrickRecipeFactory()();
+    const recipe = innerStarterBrickModDefinitionFactory()();
 
     recipe.extensionPoints.push({
       ...recipe.extensionPoints[0],
@@ -341,7 +341,7 @@ describe("replaceRecipeExtension round trip", () => {
     });
 
     const extensionPointId = starterBrick.metadata.id;
-    const recipe = innerStarterBrickRecipeFactory({
+    const recipe = innerStarterBrickModDefinitionFactory({
       extensionPointRef: extensionPointId as any,
     })({
       apiVersion: "v2",
@@ -389,7 +389,7 @@ describe("replaceRecipeExtension round trip", () => {
 
   test("throws when API version mismatch and cannot update recipe", async () => {
     const starterBrick = starterBrickConfigFactory();
-    const recipe = versionedStarterBrickRecipeFactory({
+    const recipe = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })({
       apiVersion: "v2",
@@ -437,7 +437,7 @@ describe("blueprint options", () => {
     recipeOptions: ModOptionsDefinition,
     elementOptions: ModOptionsDefinition
   ) {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: recipeOptions,
     });
 
@@ -566,7 +566,7 @@ describe("blueprint options", () => {
 
 describe("isRecipeEditable", () => {
   test("returns true if recipe is in editable packages", () => {
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
     const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
@@ -582,7 +582,7 @@ describe("isRecipeEditable", () => {
   });
 
   test("returns false if recipe is not in editable packages", () => {
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
     const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
@@ -775,7 +775,8 @@ describe("buildRecipe", () => {
       const extensionCount = cleanExtensionCount + dirtyExtensionCount;
 
       // Create a recipe
-      const recipe = versionedRecipeWithResolvedExtensions(extensionCount)();
+      const recipe =
+        versionedModDefinitionWithResolvedModComponents(extensionCount)();
 
       // Install the recipe
       const state = extensionsSlice.reducer(

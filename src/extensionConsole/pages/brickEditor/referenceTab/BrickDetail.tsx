@@ -32,9 +32,9 @@ import DetailSection from "./DetailSection";
 import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BrickIcon from "@/components/BrickIcon";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
 import { type Metadata } from "@/types/registryTypes";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";

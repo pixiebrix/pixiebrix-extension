@@ -39,7 +39,6 @@ import { compact, sortBy } from "lodash";
 import { useDebounce } from "use-debounce";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
-import { isNullOrBlank } from "@/utils";
 import { FixedSizeList as LazyList } from "react-window";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import BrickResult from "./BrickResult";
@@ -52,6 +51,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 type BrickOption<T extends Metadata = Brick> = {
   data: T;

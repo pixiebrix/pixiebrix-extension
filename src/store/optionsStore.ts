@@ -20,7 +20,6 @@ import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
-import { boolean } from "@/utils";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import servicesSlice, {
   persistServicesConfig,
@@ -49,8 +48,8 @@ import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import {
   persistSessionChangesConfig,
@@ -61,6 +60,7 @@ import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesL
 import { createStateSyncMiddleware } from "redux-state-sync";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
+import { boolean } from "@/utils/typeUtils";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -104,7 +104,7 @@ const store = configureStore({
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     modModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
-    recipes: recipesSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     session: sessionSlice.reducer,
     sessionChanges: persistReducer(
       persistSessionChangesConfig,
@@ -121,7 +121,7 @@ const store = configureStore({
       },
     })
       .concat(appApi.middleware)
-      .concat(recipesMiddleware)
+      .concat(modDefinitionsMiddleware)
       .concat(routerMiddleware(hashHistory))
       .concat(conditionalMiddleware)
       .concat(sessionChangesMiddleware)

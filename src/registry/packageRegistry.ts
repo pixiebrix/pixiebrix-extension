@@ -20,10 +20,10 @@ import { flatten, groupBy, sortBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
 import { fetch } from "@/hooks/fetch";
 import { type Except } from "type-fest";
-import { memoizeUntilSettled } from "@/utils";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";

@@ -17,7 +17,6 @@
 
 import { isEmpty } from "lodash";
 import { type Metadata } from "@/types/registryTypes";
-import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
@@ -27,6 +26,7 @@ import {
 import { type Schema } from "@/types/schemaTypes";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 /**
  * Infer optionsSchema from the options provided to the extension.

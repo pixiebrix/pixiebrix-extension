@@ -30,8 +30,8 @@ import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
 import { appApi } from "@/services/api";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import { faSlack } from "@fortawesome/free-brands-svg-icons";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 

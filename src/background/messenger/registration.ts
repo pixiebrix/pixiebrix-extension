@@ -63,7 +63,9 @@ import {
   clearTraces,
 } from "@/telemetry/trace";
 import {
+  collectPerformanceDiagnostics,
   initTelemetry,
+  pong,
   recordBrickRun,
   recordEvent,
   sendDeploymentAlert,
@@ -105,6 +107,9 @@ declare global {
 
     GET_UID: typeof uid;
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
+
+    PING: typeof pong;
+    COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
 
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
@@ -183,6 +188,9 @@ export default function registerMessenger(): void {
 
     GET_UID: uid,
     WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
+
+    PING: pong,
+    COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
 
     ACTIVATE_TAB: activateTab,
     REACTIVATE_EVERY_TAB: reactivateEveryTab,

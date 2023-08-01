@@ -29,7 +29,6 @@ import extensionPointRegistry from "@/starterBricks/registry";
 import blockRegistry from "@/bricks/registry";
 import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
 import { fromJS as blockFactory } from "@/bricks/transformers/brickFactory";
-import { resolveObj } from "@/utils";
 import {
   type ModDefinition,
   type ResolvedModComponentDefinition,
@@ -48,6 +47,7 @@ import {
 } from "@/types/modComponentTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Brick } from "@/types/brickTypes";
+import { resolveObj } from "@/utils/promiseUtils";
 
 type InnerExtensionPoint = Pick<StarterBrickConfig, "definition" | "kind">;
 type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
@@ -65,7 +65,7 @@ export function makeInternalId(obj: UnknownObject): RegistryId {
 async function resolveBrickDefinition(
   definitions: InnerDefinitions,
   innerDefinition: InnerDefinition
-) {
+): Promise<Brick> {
   // Don't include outputSchema in because it can't affect functionality
   const obj = pick(innerDefinition, [
     "inputSchema",

@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { splitStartingEmoji, trimEndOnce } from "@/utils/stringUtils";
+import {
+  matchesAnyPattern,
+  smartAppendPeriod,
+  splitStartingEmoji,
+  trimEndOnce,
+} from "@/utils/stringUtils";
 
 describe("string utilities", () => {
   test("splitStartingEmoji", () => {
@@ -92,5 +97,60 @@ describe("trimEndOnce", () => {
 
   test("it trims only if match", () => {
     expect(trimEndOnce("ab", "a")).toBe("ab");
+  });
+});
+
+describe("matchesAnyPattern", () => {
+  test("matches a string array", () => {
+    expect(matchesAnyPattern("hello", ["hi", "howdy", "hello"])).toBeTruthy();
+    expect(
+      matchesAnyPattern("hello", ["hi", "howdy", "hello y’all"])
+    ).toBeFalsy();
+    expect(matchesAnyPattern("yellow", ["hi", "howdy", "hello"])).toBeFalsy();
+  });
+  test("matches a regex array", () => {
+    expect(matchesAnyPattern("hello", [/^hel+o/, /(ho ){3}/])).toBeTruthy();
+    expect(matchesAnyPattern("hello", [/^Hello$/])).toBeFalsy();
+  });
+});
+
+describe("smartAppendPeriod", () => {
+  it("adds when missing", () => {
+    expect(smartAppendPeriod("add")).toBe("add.");
+
+    // After ])
+    expect(smartAppendPeriod("append (parens)")).toBe("append (parens).");
+    expect(smartAppendPeriod("append [bracket]")).toBe("append [bracket].");
+
+    // Before "'
+    expect(smartAppendPeriod("prepend 'apos'")).toBe("prepend 'apos.'");
+    expect(smartAppendPeriod('prepend "quotes"')).toBe('prepend "quotes."');
+  });
+
+  it("keeps it if present", () => {
+    const punctuation = ",.;:?!";
+    const strings = [
+      "keep",
+      "keep (parens)",
+      "keep [bracket]",
+      "keep 'apos'",
+      'keep "quotes"',
+    ];
+
+    for (const string of strings) {
+      for (const piece of punctuation) {
+        // Test trailing punctuation
+        expect(smartAppendPeriod(string + piece)).toBe(string + piece);
+
+        // Test punctuation to the left of )]"'
+        if (/\W$/.test(string)) {
+          const punctuationBeforeWrapper = [...string];
+          punctuationBeforeWrapper.splice(-1, 0, piece); // Add punctuation
+          expect(smartAppendPeriod(punctuationBeforeWrapper.join(""))).toBe(
+            punctuationBeforeWrapper.join("")
+          );
+        }
+      }
+    }
   });
 });

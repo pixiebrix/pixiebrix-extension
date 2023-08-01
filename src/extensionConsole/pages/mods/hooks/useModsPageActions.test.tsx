@@ -39,7 +39,7 @@ import {
   standaloneModDefinitionFactory,
   modComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/mods/hooks/useModPermissions", () => jest.fn());
@@ -88,7 +88,7 @@ const modViewItemFactory = ({
   unavailable?: boolean;
 }) =>
   ({
-    mod: isExtension ? modComponentFactory() : recipeFactory(),
+    mod: isExtension ? modComponentFactory() : defaultModDefinitionFactory(),
     sharing: {
       source: {
         type: sharingType,
@@ -321,7 +321,7 @@ describe("useModsPageActions", () => {
       mockHooks();
 
       blueprintItem = {
-        mod: recipeFactory({
+        mod: defaultModDefinitionFactory({
           sharing: { public: true, organizations: [] },
         }),
         sharing: {

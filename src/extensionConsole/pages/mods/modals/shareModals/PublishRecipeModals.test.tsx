@@ -27,16 +27,16 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
-  recipeFactory,
-  recipeMetadataFactory,
+  defaultModDefinitionFactory,
+  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
 let blueprint: ModDefinition;
 let auth: AuthState;
 
-jest.mock("@/recipes/recipesHooks", () => ({
-  useOptionalRecipe: jest.fn().mockImplementation(() => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
+  useOptionalModDefinition: jest.fn().mockImplementation(() => ({
     data: blueprint,
     isFetching: false,
   })),
@@ -52,8 +52,8 @@ const MarketplaceListingsWrapper: React.FC = ({ children }) => {
 
 beforeEach(() => {
   auth = authStateFactory();
-  blueprint = recipeFactory({
-    metadata: recipeMetadataFactory({
+  blueprint = defaultModDefinitionFactory({
+    metadata: metadataFactory({
       id: validateRegistryId(`${auth.scope}/test`),
     }),
   });

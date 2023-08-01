@@ -21,8 +21,8 @@ import EmotionShadowRoot from "react-shadow/emotion";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
-import { joinPathParts } from "@/utils";
 import { Stylesheets } from "@/components/Stylesheets";
+import { joinPathParts } from "@/utils/formUtils";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,

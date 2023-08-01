@@ -19,7 +19,11 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { openTab } from "@/background/messenger/api";
 import { URL_INPUT_SPEC } from "@/bricks/transformers/url";
-import { LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT, makeURL } from "@/utils";
+
+import {
+  LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
+  makeURL,
+} from "@/utils/urlUtils";
 
 export class NavigateURLEffect extends EffectABC {
   constructor() {

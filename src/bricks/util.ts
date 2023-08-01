@@ -16,7 +16,6 @@
  */
 
 import { mapValues, pickBy } from "lodash";
-import { removeUndefined } from "@/utils";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import blockRegistry from "@/bricks/registry";
 import pipelineSchema from "@schemas/pipeline.json";
@@ -25,6 +24,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Brick } from "@/types/brickTypes";
 import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
+import { removeUndefined } from "@/utils/objectUtils";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");

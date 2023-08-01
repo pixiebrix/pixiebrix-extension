@@ -39,12 +39,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { type Schema } from "@/types/schemaTypes";
 import { produce } from "immer";
-import { joinName } from "@/utils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import LayoutWidget from "@/components/LayoutWidget";
 import { findLast } from "lodash";
+import { joinName } from "@/utils/formUtils";
 
 export type FormEditorProps = {
   name: string;

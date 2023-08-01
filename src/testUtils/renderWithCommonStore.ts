@@ -21,7 +21,7 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
 import { appApi } from "@/services/api";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
@@ -40,7 +40,7 @@ function configureCommonStoreForTests(initialState?: any) {
       /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware()
         .concat(appApi.middleware)
-        .concat(recipesMiddleware);
+        .concat(modDefinitionsMiddleware);
       /* eslint-enable unicorn/prefer-spread */
     },
     preloadedState: initialState,

@@ -17,7 +17,6 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { awaitElementOnce } from "@/starterBricks/helpers";
-import { sleep } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import pTimeout, { TimeoutError } from "p-timeout";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/bricks/rootModeHelpers";
@@ -27,6 +26,7 @@ import {
   type BrickOptions,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
+import { sleep } from "@/utils/timeUtils";
 
 export class WaitEffect extends EffectABC {
   constructor() {

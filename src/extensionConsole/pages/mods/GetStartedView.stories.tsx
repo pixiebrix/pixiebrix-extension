@@ -27,7 +27,7 @@ import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
-import { recipesSlice } from "@/recipes/recipesSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 
@@ -40,7 +40,7 @@ function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
       modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
-      recipes: recipesSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,
     },

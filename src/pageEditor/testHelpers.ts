@@ -33,8 +33,8 @@ import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { appApi } from "@/services/api";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -50,7 +50,7 @@ const configureStoreForTests = () =>
       logs: logSlice.reducer,
       analysis: analysisSlice.reducer,
       tabState: tabStateSlice.reducer,
-      recipes: recipesSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
@@ -58,7 +58,7 @@ const configureStoreForTests = () =>
       return getDefaultMiddleware()
         .concat(appApi.middleware)
         .concat(pageEditorAnalysisManager.middleware)
-        .concat(recipesMiddleware);
+        .concat(modDefinitionsMiddleware);
       /* eslint-enable unicorn/prefer-spread */
     },
   });

@@ -17,7 +17,6 @@
 
 import { services } from "@/background/messenger/api";
 import { pickBy } from "lodash";
-import { memoizeUntilSettled, resolveObj } from "@/utils";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { MissingConfigurationError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
@@ -28,6 +27,7 @@ import {
 } from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ServiceContext } from "@/types/runtimeTypes";
+import { memoizeUntilSettled, resolveObj } from "@/utils/promiseUtils";
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",

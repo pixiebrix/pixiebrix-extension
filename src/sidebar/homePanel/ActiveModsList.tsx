@@ -25,7 +25,8 @@ import Loader from "@/components/Loader";
 import { ActiveModListItem } from "@/sidebar/homePanel/ActiveModListItem";
 import { isEmpty } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const columns: Array<Column<ModViewItem>> = [
   {

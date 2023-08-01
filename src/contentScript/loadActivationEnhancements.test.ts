@@ -22,11 +22,10 @@ import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { MARKETPLACE_URL } from "@/utils/strings";
 import { getActivatingModIds } from "@/background/messenger/external/_implementation";
 import {
   modComponentFactory,
-  modComponentRecipeFactory,
+  modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import {
   loadActivationEnhancements,
@@ -35,6 +34,7 @@ import {
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { isLinked } from "@/auth/token";
 import { array } from "cooky-cutter";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ensureSidebar: jest.fn(),
@@ -104,7 +104,7 @@ describe("marketplace enhancements", () => {
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
-      _recipe: modComponentRecipeFactory({
+      _recipe: modMetadataFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;
@@ -135,7 +135,7 @@ describe("marketplace enhancements", () => {
       modComponentFactory,
       2
     )({
-      _recipe: modComponentRecipeFactory,
+      _recipe: modMetadataFactory,
     });
 
     const modIds = components.map((x) => x._recipe?.id);
@@ -207,7 +207,7 @@ describe("marketplace enhancements", () => {
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
-      _recipe: modComponentRecipeFactory({
+      _recipe: modMetadataFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;
@@ -230,7 +230,7 @@ describe("marketplace enhancements", () => {
     window.location.assign(MARKETPLACE_URL);
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
-      _recipe: modComponentRecipeFactory({
+      _recipe: modMetadataFactory({
         id: recipeId1,
       }),
     }) as ActivatedModComponent;

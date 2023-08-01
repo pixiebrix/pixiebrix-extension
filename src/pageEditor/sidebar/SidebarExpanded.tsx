@@ -57,13 +57,14 @@ import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { useDebounce } from "use-debounce";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
-  const { data: allRecipes, isLoading: isAllRecipesLoading } = useAllRecipes();
+  const { data: allRecipes, isLoading: isAllRecipesLoading } =
+    useAllModDefinitions();
 
   useEffect(() => {
     if (!isAllRecipesLoading) {

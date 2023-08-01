@@ -20,7 +20,6 @@ import { type BlockOptionProps } from "@/components/fields/schemaFields/genericO
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { joinName } from "@/utils";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readReduxStorage, setReduxStorage } from "@/chrome";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { initialState } from "@/pageEditor/slices/editorSlice";
 import { type UUID } from "@/types/stringTypes";
@@ -30,26 +29,26 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  jsonifyObject,
+  readReduxStorage,
+  setReduxStorage,
+} from "@/utils/storageUtils";
 
-jest.mock("@/chrome", () => ({
-  readReduxStorage: jest.fn(),
-  setReduxStorage: jest.fn(),
-}));
+jest.mock("@/utils/storageUtils", () => {
+  const actual = jest.requireActual("@/utils/storageUtils");
 
-const readReduxStorageMock = readReduxStorage as jest.MockedFunction<
-  typeof readReduxStorage
->;
-const setReduxStorageMock = setReduxStorage as jest.MockedFunction<
-  typeof setReduxStorage
->;
+  return {
+    ...actual,
+    readReduxStorage: jest.fn(),
+    setReduxStorage: jest.fn(),
+  };
+});
 
-function jsonifyObject<T>(object: T): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => [key, JSON.stringify(value)])
-  );
-}
+const readReduxStorageMock = jest.mocked(readReduxStorage);
+const setReduxStorageMock = jest.mocked(setReduxStorage);
 
 describe("dynamicElementStorage", () => {
   test("removes one active element", async () => {
@@ -150,7 +149,7 @@ describe("dynamicElementStorage", () => {
   });
 
   test("removes active recipe", async () => {
-    const recipe = modComponentRecipeFactory();
+    const recipe = modMetadataFactory();
     const element1 = formStateFactory({
       recipe,
     });
@@ -237,7 +236,7 @@ describe("dynamicElementStorage", () => {
   });
 
   test("removes inactive recipe", async () => {
-    const recipe = modComponentRecipeFactory();
+    const recipe = modMetadataFactory();
     const element1 = formStateFactory({
       recipe,
     });

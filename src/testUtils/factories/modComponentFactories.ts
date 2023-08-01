@@ -25,64 +25,65 @@ import {
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import {
-  validateRegistryId,
-  validateSemVerString,
-  validateTimestamp,
-} from "@/types/helpers";
+import { validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { recipeMetadataFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type StandaloneModDefinition } from "@/types/contract";
+import { type Metadata } from "@/types/registryTypes";
 
-export const modComponentRecipeFactory = define<ModComponentBase["_recipe"]>({
-  id: (n: number) => validateRegistryId(`test/recipe-${n}`),
-  name: (n: number) => `Recipe ${n}`,
-  description: "Recipe generated from factory",
-  version: validateSemVerString("1.0.0"),
-  updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-  sharing: sharingDefinitionFactory,
+export const modMetadataFactory = extend<Metadata, ModComponentBase["_recipe"]>(
+  metadataFactory,
+  {
+    updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+    sharing: sharingDefinitionFactory,
+  }
+);
+
+const modComponentConfigFactory = define<ModComponentBase["config"]>({
+  apiVersion: "v3" as ApiVersion,
+  kind: "component",
+  metadata: (n: number) =>
+    metadataFactory({
+      id: validateRegistryId(`test/component-${n}`),
+      name: "Test config",
+    }),
+  inputSchema: {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {},
+    required: [] as string[],
+  },
+
+  // This is the pipeline prop for the menu item starter brick
+  action: [
+    {
+      id: "@pixiebrix/browser/open-tab",
+      config: {
+        url: "http://www.amazon.com/s",
+        params: {
+          url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
+        },
+      },
+    },
+  ],
 });
+
 export const modComponentFactory = define<ModComponentBase>({
   id: uuidSequence,
   apiVersion: "v3" as ApiVersion,
   extensionPointId: (n: number) =>
-    validateRegistryId(`test/extension-point-${n}`),
+    validateRegistryId(`test/starter-brick-${n}`),
   _recipe: undefined,
   _deployment: undefined,
   label: "Test label",
   services(): IntegrationDependency[] {
     return [];
   },
-  config: (n: number) => ({
-    apiVersion: "v3" as ApiVersion,
-    kind: "component",
-    metadata: recipeMetadataFactory({
-      id: validateRegistryId(`test/component-${n}`),
-      name: "Test config",
-    }),
-    inputSchema: {
-      $schema: "https://json-schema.org/draft/2019-09/schema#",
-      type: "object",
-      properties: {},
-      required: [] as string[],
-    },
-
-    // This is the pipeline prop for the MenuItem extension point, which is the default for extensionPointDefinitionFactory
-    action: [
-      {
-        id: "@pixiebrix/browser/open-tab",
-        config: {
-          url: "http://www.amazon.com/s",
-          params: {
-            url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
-          },
-        },
-      },
-    ],
-  }),
+  config: modComponentConfigFactory,
   active: true,
 });
+
 export const activatedModComponentFactory = extend<
   ModComponentBase,
   ActivatedModComponent

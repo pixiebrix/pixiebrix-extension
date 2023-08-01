@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { pollUntilTruthy } from "@/utils";
 import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
 import { isEmpty, once, remove } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import pMemoize, { pMemoizeClear } from "p-memoize";
+import { pollUntilTruthy } from "@/utils/promiseUtils";
 
 const MAX_MANAGED_STORAGE_WAIT_MILLIS = 2000;
 

@@ -31,7 +31,6 @@ import {
 } from "@/services/api";
 import { type FormikHelpers } from "formik";
 import notify from "@/utils/notify";
-import { getScopeAndId } from "@/utils";
 import { produce } from "immer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -45,11 +44,12 @@ import styles from "./ShareModals.module.scss";
 import { selectAuth } from "@/auth/authSelectors";
 import { type Organization, UserRole } from "@/types/contract";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useOptionalRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ActivationLink from "@/activation/ActivationLink";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import Loader from "@/components/Loader";
+import { getScopeAndId } from "@/utils/registryUtils";
 
 type ShareModFormState = {
   organizations: UUID[];
@@ -80,7 +80,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
     data: recipe,
     isFetching: isFetchingRecipe,
     refetch: refetchRecipes,
-  } = useOptionalRecipe(blueprintId);
+  } = useOptionalModDefinition(blueprintId);
 
   const closeModal = () => {
     dispatch(modModalsSlice.actions.closeModal());

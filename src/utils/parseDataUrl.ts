@@ -16,7 +16,8 @@
  */
 
 import MIMEType from "whatwg-mimetype";
-import { safeParseUrl } from "@/utils";
+
+import { safeParseUrl } from "@/utils/urlUtils";
 
 const base64Ending = /; *base64$/; // Step 11, 11.4, 11.5
 

@@ -34,7 +34,6 @@
 
 import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
-import { ensureJsonObject, isObject } from "@/utils";
 import { BusinessError } from "@/errors/businessErrors";
 import selectionController from "@/utils/selectionController";
 import {
@@ -42,6 +41,7 @@ import {
   type Trigger,
 } from "@/starterBricks/triggerExtensionTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 
 export function pickEventProperties(nativeEvent: Event): JsonObject {
   if (nativeEvent instanceof KeyboardEvent) {

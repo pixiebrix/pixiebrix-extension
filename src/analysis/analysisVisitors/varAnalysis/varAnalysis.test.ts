@@ -31,7 +31,7 @@ import {
 } from "@/runtime/expressionCreators";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import recipeRegistry from "@/recipes/registry";
+import recipeRegistry from "@/modDefinitions/registry";
 import blockRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
@@ -45,12 +45,12 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { services } from "@/background/messenger/api";
-import { modComponentRecipeFactory } from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   formStateFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
@@ -76,7 +76,7 @@ jest.mock("@/bricks/registry", () => ({
   },
 }));
 
-jest.mock("@/recipes/registry", () => ({
+jest.mock("@/modDefinitions/registry", () => ({
   __esModule: true,
   default: {
     lookup: jest.fn(),
@@ -86,7 +86,7 @@ jest.mock("@/recipes/registry", () => ({
 describe("Collecting available vars", () => {
   function mockBlueprintWithOptions(optionsSchema: any) {
     (recipeRegistry.lookup as jest.Mock).mockResolvedValue(
-      recipeFactory({
+      defaultModDefinitionFactory({
         options: {
           schema: optionsSchema,
         },
@@ -125,7 +125,7 @@ describe("Collecting available vars", () => {
           optionsArgs: {
             foo: "bar",
           },
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -231,7 +231,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -266,7 +266,7 @@ describe("Collecting available vars", () => {
             bar: "qux",
             baz: "quux",
           },
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -302,7 +302,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
         },
@@ -332,7 +332,7 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          recipe: modComponentRecipeFactory({
+          recipe: modMetadataFactory({
             id: validateRegistryId("test/recipe"),
           }),
           optionsArgs: {

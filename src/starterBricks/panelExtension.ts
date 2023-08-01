@@ -24,7 +24,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { boolean } from "@/utils";
 import {
   acquireElement,
   awaitElementOnce,
@@ -51,7 +50,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { PIXIEBRIX_DATA_ATTR } from "@/common";
+import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type IconConfig } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -62,6 +61,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
+import { boolean } from "@/utils/typeUtils";
 
 export type PanelConfig = {
   heading?: string;

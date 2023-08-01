@@ -18,7 +18,6 @@
 import React, { useMemo } from "react";
 import { selectScope } from "@/auth/authSelectors";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { generateRecipeId } from "@/utils/recipeUtils";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModalsContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
@@ -42,15 +41,16 @@ import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBluepri
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { FieldDescriptions } from "@/utils/strings";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { type StylesConfig } from "react-select";
 import { RequireScope } from "@/auth/RequireScope";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { selectSourceRecipeMetadata } from "@/types/modComponentTypes";
+import { generatePackageId } from "@/utils/registryUtils";
+import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 
 type ConvertModFormState = {
   blueprintId: RegistryId;
@@ -131,7 +131,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
 
   const initialValues: ConvertModFormState = useMemo(
     () => ({
-      blueprintId: generateRecipeId(scope, extension.label),
+      blueprintId: generatePackageId(scope, extension.label),
       name: extension.label,
       version: validateSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
@@ -144,7 +144,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
     dispatch(modModalsSlice.actions.closeModal());
   };
 
-  const { refetch: refetchRecipes } = useAllRecipes();
+  const { refetch: refetchRecipes } = useAllModDefinitions();
 
   const convertToRecipe = async (
     formValues: ConvertModFormState,
@@ -249,24 +249,24 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
           <ConnectedFieldTemplate
             name="blueprintId"
             label="Mod ID"
-            description={FieldDescriptions.BLUEPRINT_ID}
+            description={FieldDescriptions.MOD_ID}
             as={RegistryIdWidget}
             selectStyles={selectStylesOverride}
           />
           <ConnectedFieldTemplate
             name="name"
             label="Name"
-            description={FieldDescriptions.BLUEPRINT_NAME}
+            description={FieldDescriptions.MOD_NAME}
           />
           <ConnectedFieldTemplate
             name="version"
             label="Version"
-            description={FieldDescriptions.BLUEPRINT_VERSION}
+            description={FieldDescriptions.MOD_VERSION}
           />
           <ConnectedFieldTemplate
             name="description"
             label="Description"
-            description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
+            description={FieldDescriptions.MOD_DESCRIPTION}
           />
         </Modal.Body>
       </Form>

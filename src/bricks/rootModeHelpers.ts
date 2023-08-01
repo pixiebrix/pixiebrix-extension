@@ -17,9 +17,9 @@
 
 import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
-import { $safeFind } from "@/helpers";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { $safeFind } from "@/utils/domUtils";
 
 /**
  * Special prop used to upgrade DOM bricks to be root-aware

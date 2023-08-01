@@ -32,7 +32,7 @@ import { type UUID } from "@/types/stringTypes";
 import { Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faMagic } from "@fortawesome/free-solid-svg-icons";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import AsyncButton from "@/components/AsyncButton";
 import Form, { type RenderBody } from "@/components/form/Form";
 import { object } from "yup";
@@ -44,7 +44,7 @@ const ActivateButton: React.FunctionComponent = () => {
   const { submitForm, values, isSubmitting } = useFormikContext<FormState>();
 
   const anyUnconfigured = values.services.some(
-    ({ id, config }) => id !== PIXIEBRIX_SERVICE_ID && config == null
+    ({ id, config }) => id !== PIXIEBRIX_INTEGRATION_ID && config == null
   );
 
   return (
@@ -63,7 +63,7 @@ const validationSchema = object().shape({
     Yup.object().test(
       "servicesRequired",
       "Please select a configuration",
-      (value) => value.id === PIXIEBRIX_SERVICE_ID || value.config != null
+      (value) => value.id === PIXIEBRIX_INTEGRATION_ID || value.config != null
     )
   ),
 });

@@ -19,13 +19,13 @@ import type React from "react";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import { inputProperties } from "@/helpers";
 import {
   isDatabaseField,
   isServiceField,
 } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import pipelineSchema from "@schemas/pipeline.json";
 import { isEmpty, sortBy } from "lodash";
+import { inputProperties } from "@/utils/schemaUtils";
 
 export function makeLabelForSchemaField({
   name,

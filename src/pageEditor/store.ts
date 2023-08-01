@@ -23,7 +23,6 @@ import {
   persistEditorConfig,
 } from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
-import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/services/api";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
@@ -38,8 +37,8 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import { type StorageInterface } from "@/store/StorageInterface";
 import {
   persistSessionChangesConfig,
@@ -48,6 +47,7 @@ import {
 } from "@/store/sessionChanges/sessionChangesSlice";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
+import { boolean } from "@/utils/typeUtils";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -91,7 +91,7 @@ const store = configureStore({
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
-    recipes: recipesSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
@@ -105,7 +105,7 @@ const store = configureStore({
     })
       .concat(appApi.middleware)
       .concat(pageEditorAnalysisManager.middleware)
-      .concat(recipesMiddleware)
+      .concat(modDefinitionsMiddleware)
       .concat(conditionalMiddleware)
       .concat(sessionChangesMiddleware)
       .concat(

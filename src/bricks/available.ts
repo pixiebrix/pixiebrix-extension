@@ -18,9 +18,9 @@
 import { patternToRegex } from "webext-patterns";
 import { castArray } from "lodash";
 import { type Availability } from "@/bricks/types";
-import { $safeFind } from "@/helpers";
 import { type Entries } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
+import { $safeFind } from "@/utils/domUtils";
 
 export function testMatchPatterns(
   patterns: string[],

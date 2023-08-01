@@ -22,16 +22,19 @@ import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOpt
 import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
-import { useAllRecipes, useOptionalRecipe } from "@/recipes/recipesHooks";
+import {
+  useAllModDefinitions,
+  useOptionalModDefinition,
+} from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
-import { recipeFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("@/recipes/recipesHooks", () => ({
-  useOptionalRecipe: jest.fn(),
-  useAllRecipes: jest.fn(),
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
+  useOptionalModDefinition: jest.fn(),
+  useAllModDefinitions: jest.fn(),
 }));
 
 jest.mock("@/contrib/google/initGoogle", () => ({
@@ -42,10 +45,10 @@ jest.mock("@/contrib/google/initGoogle", () => ({
 }));
 
 function mockRecipe(recipe: ModDefinition) {
-  (useAllRecipes as jest.Mock).mockReturnValue(
+  (useAllModDefinitions as jest.Mock).mockReturnValue(
     valueToAsyncCacheState([recipe])
   );
-  (useOptionalRecipe as jest.Mock).mockReturnValue(
+  (useOptionalModDefinition as jest.Mock).mockReturnValue(
     valueToAsyncCacheState(recipe)
   );
 }
@@ -56,7 +59,7 @@ beforeEach(() => {
 
 describe("ActivationOptions", () => {
   test("renders empty options", async () => {
-    const recipe = recipeFactory();
+    const recipe = defaultModDefinitionFactory();
     mockRecipe(recipe);
     const rendered = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
@@ -73,7 +76,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options", async () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -132,7 +135,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options with additional props", async () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -158,7 +161,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options with uiSchema sort order", async () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -205,7 +208,7 @@ describe("ActivationOptions", () => {
   });
 
   it("renders google sheets field type option if gapi is loaded", async () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
