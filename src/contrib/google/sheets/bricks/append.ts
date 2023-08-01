@@ -49,9 +49,10 @@ type Shape = KnownShape | "infer";
 export const APPEND_SCHEMA: Schema = propertiesToSchema(
   {
     googleAccount: {
+      title: "Google Account",
       oneOf: [
         {
-          $ref: "https://app.pixiebrix.com/schemas/services/google/ouath2-pkce",
+          $ref: "https://app.pixiebrix.com/schemas/services/google/oauth2-pkce",
         },
       ],
     },

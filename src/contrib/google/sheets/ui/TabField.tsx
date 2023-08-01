@@ -15,110 +15,70 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { useAsyncState } from "@/hooks/common";
-import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
-import { getErrorMessage } from "@/errors/errorHelpers";
-import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
+import { isExpression } from "@/utils/expressionUtils";
+import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 
-const TabField: React.FC<SchemaFieldProps & { spreadsheetId: string }> = ({
-  name,
-  spreadsheetId,
-}) => {
+// Use a module constant for the sake of memo dependencies
+const emptyTabNames: string[] = [];
+
+const TabField: React.FC<
+  SchemaFieldProps & { spreadsheet: Spreadsheet | null }
+> = ({ name, spreadsheet }) => {
   const inputRef = useRef<HTMLTextAreaElement>();
 
-  const [
-    { value: tabNameValue },
-    ,
-    { setValue: setTabNameValue, setError: setTabNameError },
-  ] = useField<string | Expression>(name);
+  const [{ value: tabName }, , { setValue: setTabName }] = useField<
+    string | Expression
+  >(name);
 
-  const [tabNames, loading, error] = useAsyncState(
-    async () => {
-      if (spreadsheetId) {
-        return sheets.getTabNames(spreadsheetId);
-      }
+  const tabNames =
+    spreadsheet?.sheets?.map((sheet) => sheet.properties.title) ??
+    emptyTabNames;
+  const fieldSchema: Schema = {
+    type: "string",
+    title: "Tab Name",
+    description: "The spreadsheet tab",
+    enum: tabNames,
+  };
 
-      return [];
-    },
-    [spreadsheetId],
-    []
-  );
-
-  const lastGoodSpreadsheetId = useRef<string | null>(spreadsheetId);
-
-  // Clear tab name when spreadsheetId changes, if the current value is not
-  // an expression, which means it is a selected tab name from another sheet.
-  useOnChangeEffect(spreadsheetId, (newValue: string, oldValue: string) => {
-    // `spreadsheetId` is null when useAsyncState is loading
-    // Do not clear values until a new spreadsheetId is available
-    if (oldValue == null || isEmpty(newValue)) {
-      return;
-    }
-
-    // Do not clear values if the new spreadsheetId is the same as the last good one
-    if (newValue === lastGoodSpreadsheetId.current) {
-      return;
-    }
-
-    lastGoodSpreadsheetId.current = newValue;
-
-    if (!isTemplateExpression(tabNameValue)) {
-      setTabNameValue(makeTemplateExpression("nunjucks", ""));
-      setTabNameError(null);
-    }
-  });
-
-  // If we've loaded tab names and the tab name is not set, set it to the first tab name.
-  // Check to make sure there's not an error, so we're not setting it to the first value
-  // of a stale list of tabs, and check the tab name value itself to prevent an infinite
-  // re-render loop here. Don't automatically modify the input if it's currently focused.
-  useEffect(() => {
-    if (
-      loading ||
-      error ||
-      isEmpty(tabNames) ||
-      document.activeElement === inputRef.current
-    ) {
-      return;
-    }
-
-    if (
-      !tabNameValue ||
-      (isExpression(tabNameValue) && isEmpty(tabNameValue.__value__))
-    ) {
-      setTabNameValue(tabNames[0]);
-      setTabNameError(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- don't include formik helpers
-  }, [error, loading, tabNameValue, tabNames]);
-
-  const fieldSchema = useMemo<Schema>(
-    () => ({
-      type: "string",
-      title: "Tab Name",
-      description: "The spreadsheet tab",
-      enum: tabNames ?? [],
-    }),
-    [tabNames]
-  );
-
+  const allTabNames = tabNames.join(",");
   useEffect(
     () => {
-      if (!loading && error) {
-        setTabNameError("Error loading tab names: " + getErrorMessage(error));
+      // Don't modify the field if it's currently focused
+      if (document.activeElement === inputRef.current) {
+        return;
       }
+
+      // Don't modify if it's a non-empty expression (user-typed text, or variable)
+      if (isExpression(tabName) && !isEmpty(tabName.__value__)) {
+        return;
+      }
+
+      // Set to empty nunjucks expression if no tab names have loaded
+      if (isEmpty(tabNames)) {
+        setTabName(makeTemplateExpression("nunjucks", ""));
+        return;
+      }
+
+      // Don't modify if the tab name is still valid
+      if (typeof tabName === "string" && tabNames.includes(tabName)) {
+        return;
+      }
+
+      // Remaining cases are either empty expression or invalid, selected tab name, so set to first tab name
+      setTabName(tabNames[0]);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik setters change on every render
-    [error, loading]
+    // We shouldn't include the setTabName formik helper due to unstable reference, the allTabNames string covers
+    // the tabNames dependency, and we're setting tabName here so don't want to run this side effect when it changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [spreadsheet?.spreadsheetId, allTabNames]
   );
 
   // TODO: re-add info message that tab will be created

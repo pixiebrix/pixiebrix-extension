@@ -27,7 +27,7 @@ import {
   createFormikTemplate,
   fireTextInput,
   fireFormSubmit,
-  selectSchemaFieldType,
+  selectSchemaFieldInputMode,
 } from "@/testUtils/formHelpers";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor, { type FormEditorProps } from "./FormEditor";
@@ -354,7 +354,7 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
-    await selectSchemaFieldType(
+    await selectSchemaFieldInputMode(
       `${RJSF_SCHEMA_PROPERTY_NAME}.schema.properties.${fieldName}.default`,
       "string"
     );

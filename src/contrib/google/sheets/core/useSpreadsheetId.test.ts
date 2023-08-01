@@ -45,12 +45,13 @@ describe("useSpreadsheetId", () => {
   });
 
   test("works with string value", async () => {
-    const { result } = renderHook(() => useSpreadsheetId(""), {
+    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: TEST_SPREADSHEET_ID,
       },
     });
-    expect(result.current).toEqual(TEST_SPREADSHEET_ID);
+    await waitForEffect();
+    expect(result.current.data).toEqual(TEST_SPREADSHEET_ID);
   });
 
   test("works with service value", async () => {
@@ -69,7 +70,7 @@ describe("useSpreadsheetId", () => {
 
     await waitForEffect();
 
-    expect(result.current).toBe(TEST_SPREADSHEET_ID);
+    expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
   });
 
   test("works with legacy service usage", async () => {
@@ -88,7 +89,7 @@ describe("useSpreadsheetId", () => {
 
     await waitForEffect();
 
-    expect(result.current).toBe(TEST_SPREADSHEET_ID);
+    expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
   });
 
   test("works with mod input", async () => {
@@ -103,7 +104,7 @@ describe("useSpreadsheetId", () => {
 
     await waitForEffect();
 
-    expect(result.current).toBe(TEST_SPREADSHEET_ID);
+    expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
   });
 
   test("returns null when options value doesn't exist", async () => {
@@ -119,7 +120,7 @@ describe("useSpreadsheetId", () => {
 
     await waitForEffect();
 
-    expect(result.current).toBeNull();
+    expect(result.current.data).toBeNull();
   });
 
   test("returns null with no services and variable field value", async () => {
@@ -131,6 +132,6 @@ describe("useSpreadsheetId", () => {
 
     await waitForEffect();
 
-    expect(result.current).toBeNull();
+    expect(result.current.data).toBeNull();
   });
 });

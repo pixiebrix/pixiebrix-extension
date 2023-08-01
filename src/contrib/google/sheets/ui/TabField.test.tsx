@@ -21,31 +21,49 @@ import { render } from "@/pageEditor/testHelpers";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { sheets } from "@/background/messenger/api";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
-import { FormErrorContext } from "@/components/form/FormErrorContext";
-
-jest.mock("@/background/messenger/api", () => ({
-  sheets: {
-    getTabNames: jest.fn().mockResolvedValue(["Tab1", "Tab2"]),
-  },
-}));
-
-const getTabNamesMock = sheets.getTabNames as jest.MockedFunction<
-  typeof sheets.getTabNames
->;
+import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
+import { screen } from "@testing-library/react";
+import { selectSchemaFieldInputMode } from "@/testUtils/formHelpers";
+import userEvent from "@testing-library/user-event";
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
+const TEST_SPREADSHEET: Spreadsheet = {
+  spreadsheetId: "testId",
+  properties: {
+    title: "Test Spreadsheet",
+  },
+  sheets: [
+    {
+      properties: {
+        sheetId: 123,
+        title: "Tab1",
+      },
+    },
+    {
+      properties: {
+        sheetId: 456,
+        title: "Tab2",
+      },
+    },
+  ],
+};
+
+function expectTab1Selected() {
+  expect(screen.getByText("Tab1")).toBeVisible();
+  expect(screen.queryByText("Tab2")).not.toBeInTheDocument();
+}
+
 describe("TabField", () => {
   it("Renders select and variable toggle options", async () => {
-    const rendered = render(
+    render(
       <TabField
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
-        spreadsheetId={"testId"}
+        spreadsheet={TEST_SPREADSHEET}
       />,
       {
         initialValues: {
@@ -56,15 +74,19 @@ describe("TabField", () => {
 
     await waitForEffect();
 
-    await expectToggleOptions(rendered.container, ["select", "string", "var"]);
+    await expectToggleOptions(screen.getByTestId("toggle-tabName"), [
+      "select",
+      "string",
+      "var",
+    ]);
   });
 
   it("defaults to the first tab name when value is null literal", async () => {
-    const rendered = render(
+    render(
       <TabField
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
-        spreadsheetId={"testId"}
+        spreadsheet={TEST_SPREADSHEET}
       />,
       {
         initialValues: {
@@ -75,17 +97,15 @@ describe("TabField", () => {
 
     await waitForEffect();
 
-    // Should have defaulted
-    expect(rendered.queryByText("Select...")).not.toBeInTheDocument();
-    expect(rendered.queryByText("Tab1")).toBeInTheDocument();
+    expectTab1Selected();
   });
 
-  it("defaults to the first tab name when value is nunjucks expression", async () => {
-    const rendered = render(
+  it("defaults to the first tab name when value is empty nunjucks expression", async () => {
+    render(
       <TabField
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
-        spreadsheetId={"testId"}
+        spreadsheet={TEST_SPREADSHEET}
       />,
       {
         initialValues: {
@@ -96,43 +116,229 @@ describe("TabField", () => {
 
     await waitForEffect();
 
-    // Should have defaulted
-    expect(rendered.queryByText("Select...")).not.toBeInTheDocument();
-    expect(rendered.queryByText("Tab1")).toBeInTheDocument();
+    expectTab1Selected();
   });
 
-  it("shows error message", async () => {
-    getTabNamesMock.mockRejectedValue(new Error("Test error"));
-
-    const rendered = render(
-      <FormErrorContext.Provider
-        value={{
-          shouldUseAnalysis: false,
-          showUntouchedErrors: true,
-          showFieldActions: false,
-        }}
-      >
-        <TabField
-          name="tabName"
-          schema={{}} // Does not currently check the passed-in schema
-          spreadsheetId={"testId"}
-        />
-      </FormErrorContext.Provider>,
+  test("given invalid tabName, when input is focused, then does not change the value", async () => {
+    const { rerender } = render(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={TEST_SPREADSHEET}
+      />,
       {
         initialValues: {
-          tabName: makeTemplateExpression("nunjucks", ""),
+          tabName: null,
         },
       }
     );
 
     await waitForEffect();
 
-    // Should have defaulted
-    expect(rendered.queryByText("Select...")).not.toBeInTheDocument();
+    expectTab1Selected();
 
-    // XXX: can this do partial matches? In any case, it's not in the document
-    expect(
-      rendered.getByText("Error loading tab names: Test error")
-    ).toBeVisible();
+    // Change field to text and type something
+    await selectSchemaFieldInputMode("tabName", "string");
+    const input = screen.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "InvalidTab");
+
+    // Change spreadsheet
+    rerender(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={{
+          ...TEST_SPREADSHEET,
+          sheets: [
+            {
+              properties: {
+                sheetId: 123,
+                title: "Foo",
+              },
+            },
+            {
+              properties: {
+                sheetId: 456,
+                title: "Bar",
+              },
+            },
+          ],
+        }}
+      />
+    );
+
+    await waitForEffect();
+
+    screen.debug();
+
+    expect(screen.queryByText("Foo")).not.toBeInTheDocument();
+    expect(screen.getByText("InvalidTab")).toBeVisible();
+  });
+
+  test("given string tabName value, when spreadsheet changes, then updates the value", async () => {
+    const { rerender } = render(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={TEST_SPREADSHEET}
+      />,
+      {
+        initialValues: {
+          tabName: null,
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expectTab1Selected();
+
+    // Change spreadsheet
+    rerender(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={{
+          ...TEST_SPREADSHEET,
+          sheets: [
+            {
+              properties: {
+                sheetId: 123,
+                title: "Foo",
+              },
+            },
+            {
+              properties: {
+                sheetId: 456,
+                title: "Bar",
+              },
+            },
+          ],
+        }}
+      />
+    );
+
+    await waitForEffect();
+
+    // Should have selected first tab automatically
+    expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
+    expect(screen.getByText("Foo")).toBeVisible();
+  });
+
+  test("given non-empty expression tabName value, when spreadsheet changes, does not clear the value", async () => {
+    const { rerender } = render(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={TEST_SPREADSHEET}
+      />,
+      {
+        initialValues: {
+          tabName: null,
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expectTab1Selected();
+
+    // Change field to text and type something
+    await selectSchemaFieldInputMode("tabName", "string");
+    const input = screen.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "InvalidTab");
+
+    // Clear input focus
+    (document.activeElement as HTMLElement).blur();
+
+    // Change spreadsheet
+    rerender(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={{
+          ...TEST_SPREADSHEET,
+          sheets: [
+            {
+              properties: {
+                sheetId: 123,
+                title: "Foo",
+              },
+            },
+            {
+              properties: {
+                sheetId: 456,
+                title: "Bar",
+              },
+            },
+          ],
+        }}
+      />
+    );
+
+    await waitForEffect();
+
+    // Should have selected first tab automatically
+    expect(screen.queryByText("Foo")).not.toBeInTheDocument();
+    expect(screen.getByText("InvalidTab")).toBeVisible();
+  });
+
+  test("given empty expression tabName value, when spreadsheet changes, then updates the value", async () => {
+    const { rerender } = render(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={TEST_SPREADSHEET}
+      />,
+      {
+        initialValues: {
+          tabName: null,
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expectTab1Selected();
+
+    // Change field to text and clear the input
+    await selectSchemaFieldInputMode("tabName", "string");
+    await userEvent.clear(screen.getByRole("textbox"));
+
+    // Clear input focus
+    (document.activeElement as HTMLElement).blur();
+
+    // Change spreadsheet
+    rerender(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={{
+          ...TEST_SPREADSHEET,
+          sheets: [
+            {
+              properties: {
+                sheetId: 123,
+                title: "Foo",
+              },
+            },
+            {
+              properties: {
+                sheetId: 456,
+                title: "Bar",
+              },
+            },
+          ],
+        }}
+      />
+    );
+
+    await waitForEffect();
+
+    // Should have selected first tab automatically
+    expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
+    expect(screen.getByText("Foo")).toBeVisible();
   });
 });
