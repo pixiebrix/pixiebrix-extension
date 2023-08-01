@@ -22,6 +22,10 @@ import { type JsonObject } from "type-fest";
 import { getPageState, setPageState } from "@/contentScript/pageState";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
+import { type BrickConfig } from "@/bricks/types";
+import { isObject } from "@/utils/objectUtils";
+import { mapValues } from "lodash";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 export type Namespace = "blueprint" | "extension" | "shared";
@@ -96,6 +100,35 @@ export class SetPageState extends TransformerABC {
   uiSchema = {
     "ui:order": ["namespace", "mergeStrategy", "data"],
   };
+
+  override async getModVariableSchema(
+    _config: BrickConfig
+  ): Promise<Schema | undefined> {
+    const { data, namespace = "blueprint" } = _config.config;
+
+    try {
+      if (castTextLiteralOrThrow(namespace) !== "blueprint") {
+        return;
+      }
+    } catch {
+      return;
+    }
+
+    if (isObject(data)) {
+      return {
+        type: "object",
+        // Only track the existence of the properties, not their values
+        properties: mapValues(data, () => true),
+        required: Object.keys(data),
+        additionalProperties: false,
+      };
+    }
+
+    return {
+      type: "object",
+      additionalProperties: true,
+    };
+  }
 
   async transform(
     {

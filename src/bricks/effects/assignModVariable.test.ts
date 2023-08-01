@@ -105,4 +105,20 @@ describe("@pixiebrix/state/assign", () => {
       getPageState({ namespace: "blueprint", blueprintId, extensionId })
     ).toEqual({ foo: 42, bar: 0 });
   });
+
+  test("it returns mod variables", async () => {
+    await expect(
+      brick.getModVariableSchema({
+        id: brick.id,
+        config: { variableName: "foo" },
+      })
+    ).resolves.toEqual({
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        foo: true,
+      },
+      required: ["foo"],
+    });
+  });
 });

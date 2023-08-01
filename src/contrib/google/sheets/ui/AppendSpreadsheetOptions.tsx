@@ -15,71 +15,96 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
-import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/bricks/append";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/ui/TabField";
-import { dereference } from "@/validators/generic";
-import Loader from "@/components/Loader";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
-import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
-import { isEmpty, isEqual } from "lodash";
-import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
+import { isEmpty } from "lodash";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
-import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import { isExpression } from "@/utils/expressionUtils";
+import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import useAsyncEffect from "use-async-effect";
+import { sheets } from "@/background/messenger/api";
+import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
+import { type UnknownObject } from "@/types/objectTypes";
 
-const DEFAULT_FIELDS_SCHEMA: Schema = {
+const ANONYMOUS_OBJECT_SCHEMA: Schema = {
   type: "object",
   additionalProperties: true,
 };
 
-const PropertiesField: React.FunctionComponent<{
+const RowValuesField: React.FunctionComponent<{
   name: string;
+  googleAccount: SanitizedIntegrationConfig | null;
   spreadsheetId: string | null;
   tabName: string | Expression;
-}> = ({ name, spreadsheetId, tabName }) => {
-  const [sheetSchema, , schemaError] = useAsyncState<Schema>(
-    async () => {
-      if (spreadsheetId && tabName) {
-        if (isExpression(tabName)) {
-          return {
-            type: "object",
-            additionalProperties: true,
-          };
-        }
+}> = ({ name, googleAccount, spreadsheetId, tabName }) => {
+  const [{ value: rowValues }, , { setValue: setRowValues }] =
+    useField<UnknownObject>(name);
 
-        const target: SpreadsheetTarget = {
-          googleAccount: null,
-          spreadsheetId,
-          tabName,
-        };
-        const headers = await sheets.getHeaders(target);
+  const [fieldSchema, setFieldSchema] = useState<Schema>(
+    ANONYMOUS_OBJECT_SCHEMA
+  );
 
-        return {
-          type: "object",
-          properties: Object.fromEntries(
-            headers
-              .filter((x) => !isNullOrBlank(x))
-              .map((header) => [header, { type: "string" }])
-          ),
-        };
+  useAsyncEffect(
+    async (isMounted) => {
+      const headers = await sheets.getHeaders({
+        googleAccount,
+        spreadsheetId,
+        tabName: isExpression(tabName) ? tabName.__value__ : tabName,
+      });
+
+      if (!isMounted()) {
+        return;
       }
 
-      return DEFAULT_FIELDS_SCHEMA;
+      const headerProperties = Object.fromEntries(
+        headers
+          .filter((x) => !isNullOrBlank(x))
+          .map((header) => [header, { type: "string" }])
+      );
+
+      if (isEmpty(headerProperties)) {
+        setFieldSchema(ANONYMOUS_OBJECT_SCHEMA);
+        return;
+      }
+
+      // Remove any invalid rowValues values
+      const invalidKeys = Object.keys(rowValues).filter(
+        (header) => !headers.includes(header)
+      );
+      if (invalidKeys.length > 0) {
+        const newRowValues = { ...rowValues };
+        for (const key of invalidKeys) {
+          // eslint-disable-next-line security/detect-object-injection -- not user input, filtered keys
+          delete newRowValues[key];
+        }
+
+        setRowValues(newRowValues);
+      }
+
+      setFieldSchema({
+        type: "object",
+        properties: Object.fromEntries(
+          headers
+            .filter((x) => !isNullOrBlank(x))
+            .map((header) => [header, { type: "string" }])
+        ),
+      });
     },
-    [spreadsheetId, tabName],
-    DEFAULT_FIELDS_SCHEMA
+    // Hash just in case tabName is an expression, and we
+    // don't need to run the effect when googleAccount changes,
+    // because we can keep headers loaded if the new user
+    // still has access to the same spreadsheetId and tabName.
+    [hash({ spreadsheetId, tabName })]
   );
 
   return (
@@ -87,14 +112,7 @@ const PropertiesField: React.FunctionComponent<{
       name={name}
       label="Row Values"
       isRequired
-      description={
-        schemaError ? (
-          <span className="text-warning">
-            Error determining columns: {getErrorMessage(schemaError)}
-          </span>
-        ) : null
-      }
-      schema={sheetSchema ?? DEFAULT_FIELDS_SCHEMA}
+      schema={fieldSchema}
     />
   );
 };
@@ -103,70 +121,53 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const basePath = joinName(name, configKey);
-  const spreadsheetId = useSpreadsheetId(basePath);
+  const blockConfigPath = joinName(name, configKey);
 
-  const [{ value: tabNameValue }] = useField<string | Expression>(
-    joinName(basePath, "tabName")
-  );
-
-  const [{ value: rowValuesValue }, , { setValue: setRowValuesValue }] =
-    useField(joinName(basePath, "rowValues"));
-
-  // Clear row values when tabName changes, if the value is not an expression, or is empty
-  useOnChangeEffect(
-    tabNameValue,
-    () => {
-      if (
-        !isTemplateExpression(rowValuesValue) ||
-        isEmpty(rowValuesValue.__value__)
-      ) {
-        setRowValuesValue({});
-      }
-    },
-    isEqual
-  );
-
-  const [sheetSchema, isLoadingSheetSchema] = useAsyncState(
-    dereference(BASE_SHEET_SCHEMA),
-    [],
-    BASE_SHEET_SCHEMA
+  const [{ value: tabName }] = useField<string | Expression>(
+    joinName(blockConfigPath, "tabName")
   );
 
   return (
     <div className="my-2">
-      {isLoadingSheetSchema ? (
-        <Loader />
-      ) : (
-        <FormErrorContext.Provider
-          value={{
-            shouldUseAnalysis: false,
-            showUntouchedErrors: true,
-            showFieldActions: false,
-          }}
-        >
-          <SchemaField
-            name={joinName(basePath, "spreadsheetId")}
-            schema={sheetSchema}
-            isRequired
-          />
-          {
-            // The problem with including this inside the nested FormErrorContext.Provider is that we
-            // would like analysis to run if this is in text/template mode, but not if it's in select mode.
-            // Select mode is more important, so we're leaving it like this for now.
-            <TabField
-              name={joinName(basePath, "tabName")}
-              schema={APPEND_SCHEMA.properties.tabName as Schema}
-              spreadsheetId={spreadsheetId}
-            />
-          }
-        </FormErrorContext.Provider>
-      )}
-      <PropertiesField
-        name={joinName(basePath, "rowValues")}
-        spreadsheetId={spreadsheetId}
-        tabName={tabNameValue}
+      <SchemaField
+        name={joinName(blockConfigPath, "googleAccount")}
+        schema={APPEND_SCHEMA.properties.googleAccount as Schema}
       />
+      <RequireGoogleSheet blockConfigPath={blockConfigPath}>
+        {({ googleAccount, spreadsheet, schema }) => (
+          <>
+            <FormErrorContext.Provider
+              value={{
+                shouldUseAnalysis: false,
+                showUntouchedErrors: true,
+                showFieldActions: false,
+              }}
+            >
+              <SchemaField
+                name={joinName(blockConfigPath, "spreadsheetId")}
+                schema={schema}
+                isRequired
+              />
+              {
+                // The problem with including this inside the nested FormErrorContext.Provider is that we
+                // would like analysis to run if this is in text/template mode, but not if it's in select mode.
+                // Select mode is more important, so we're leaving it like this for now.
+                <TabField
+                  name={joinName(blockConfigPath, "tabName")}
+                  schema={APPEND_SCHEMA.properties.tabName as Schema}
+                  spreadsheet={spreadsheet}
+                />
+              }
+            </FormErrorContext.Provider>
+            <RowValuesField
+              name={joinName(blockConfigPath, "rowValues")}
+              googleAccount={googleAccount}
+              spreadsheetId={spreadsheet?.spreadsheetId}
+              tabName={tabName}
+            />
+          </>
+        )}
+      </RequireGoogleSheet>
     </div>
   );
 };

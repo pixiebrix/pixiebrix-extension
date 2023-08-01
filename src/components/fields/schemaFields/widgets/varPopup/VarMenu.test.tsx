@@ -98,7 +98,7 @@ describe("VarMenu", () => {
           );
 
           // Run analysis directly
-          const analysis = new VarAnalysis({ trace: [], modState: {} });
+          const analysis = new VarAnalysis();
           await analysis.run(formState);
 
           dispatch(
@@ -142,7 +142,7 @@ describe("VarMenu", () => {
           );
 
           // Run analysis directly
-          const analysis = new VarAnalysis({ trace: [], modState: {} });
+          const analysis = new VarAnalysis();
           await analysis.run(formState);
 
           dispatch(

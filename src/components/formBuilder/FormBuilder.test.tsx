@@ -20,7 +20,7 @@ import {
   createFormikTemplate,
   fireTextInput,
   RJSF_SCHEMA_PROPERTY_NAME,
-  selectSchemaFieldType,
+  selectSchemaFieldInputMode,
 } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render, type RenderResult, screen } from "@/pageEditor/testHelpers";
@@ -117,7 +117,7 @@ describe("Dropdown field", () => {
 
   async function setVarValue() {
     // Switch to @var and insert "@data"
-    await selectSchemaFieldType(
+    await selectSchemaFieldInputMode(
       `form.schema.properties.${defaultFieldName}.enum`,
       "var"
     );
@@ -244,7 +244,7 @@ describe("Dropdown with labels field", () => {
 
   async function setVarValue() {
     // Switch to @var and inset "@data"
-    await selectSchemaFieldType(
+    await selectSchemaFieldInputMode(
       `form.schema.properties.${defaultFieldName}.oneOf`,
       "var"
     );

@@ -53,10 +53,12 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   ...schemaFieldProps
 }) => {
   const [{ value }, , { setValue }] = useField(schemaFieldProps.name);
+
   const { inputMode, onOmitField } = useToggleFormField(
     schemaFieldProps.name,
     schemaFieldProps.schema
   );
+
   const defaultInputRef = useRef<HTMLElement>();
   const inputRef = inputRefProp ?? defaultInputRef;
   const selectedOption = getOptionForInputMode(inputModeOptions, inputMode);

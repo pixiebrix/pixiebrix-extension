@@ -56,11 +56,11 @@ export const fireTextInput = (input: Element, text: string) => {
 };
 
 /**
- * Changes the selected input type of a field with SchemaToggle
+ * Changes the input mode for a SchemaField
  */
-export const selectSchemaFieldType = async (
+export const selectSchemaFieldInputMode = async (
   fieldName: string,
-  typeToSelect: FieldInputMode
+  fieldInputMode: FieldInputMode
 ) => {
   const fieldToggleButton = screen
     .getByTestId(`toggle-${fieldName}`)
@@ -68,7 +68,7 @@ export const selectSchemaFieldType = async (
   await userEvent.click(fieldToggleButton);
   await waitForEffect();
 
-  const textOption = screen.getByTestId(typeToSelect);
+  const textOption = screen.getByTestId(fieldInputMode);
   await userEvent.click(textOption);
   await waitForEffect();
 };
