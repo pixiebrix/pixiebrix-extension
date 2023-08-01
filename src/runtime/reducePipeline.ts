@@ -48,7 +48,7 @@ import {
   type ResolvedBrickConfig,
   unsafeAssumeValidArg,
 } from "@/runtime/runtimeTypes";
-import { type RunBlock } from "@/contentScript/runBlockTypes";
+import { type RunBrick } from "@/contentScript/messenger/runBrickTypes";
 import { resolveBlockConfig } from "@/bricks/registry";
 import {
   BusinessError,
@@ -314,7 +314,7 @@ async function executeBlockWithValidatedProps(
     messageContext: options.logger.context,
   };
 
-  const request: RunBlock = {
+  const request: RunBrick = {
     blockId: config.id,
     blockArgs: args,
     options: commonOptions,
@@ -334,7 +334,11 @@ async function executeBlockWithValidatedProps(
     }
 
     case "broadcast": {
-      return requestRun.inAll(request);
+      return requestRun.inOtherTabs(request);
+    }
+
+    case "all_frames": {
+      return requestRun.inAllFrames(request);
     }
 
     case "self": {

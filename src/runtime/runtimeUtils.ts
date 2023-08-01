@@ -22,7 +22,11 @@ import {
 } from "@/components/fields/schemaFields/schemaUtils";
 import { InputValidationError, OutputValidationError } from "@/bricks/errors";
 import { isEmpty } from "lodash";
-import { type BrickConfig, type BrickWindow } from "@/bricks/types";
+import {
+  type BrickConfig,
+  type BrickWindow,
+  hasMultipleTargets,
+} from "@/bricks/types";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
@@ -88,7 +92,7 @@ export async function logIfInvalidOutput(
   if (!isEmpty(brick.outputSchema)) {
     const baseSchema = castSchema(brick.outputSchema);
     const validationResult = await validateOutput(
-      window === "broadcast" ? arraySchema(baseSchema) : baseSchema,
+      hasMultipleTargets(window) ? arraySchema(baseSchema) : baseSchema,
       excludeUndefined(output)
     );
     if (!validationResult.valid) {

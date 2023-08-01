@@ -47,11 +47,12 @@ const rootModeOptions = [
 ];
 
 const targetOptions: Array<Option<BrickWindow>> = [
-  { label: "Current Tab (self)", value: "self" },
-  { label: "Opener Tab (opener)", value: "opener" },
-  { label: "Target Tab (target)", value: "target" },
-  { label: "Top-level Frame (top)", value: "top" },
-  { label: "All Tabs (broadcast)", value: "broadcast" },
+  { label: "Current Tab/Frame", value: "self" },
+  { label: "Top-level Frame", value: "top" },
+  { label: "All Frames", value: "all_frames" },
+  { label: "Opener Tab", value: "opener" },
+  { label: "Target Tab", value: "target" },
+  { label: "All Other Tabs", value: "broadcast" },
 ];
 
 const BlockConfiguration: React.FunctionComponent<{

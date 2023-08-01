@@ -26,13 +26,16 @@ import { runBrick } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import type { RunBlock } from "@/contentScript/runBlockTypes";
+import type { RunBrick } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { SessionMap } from "@/mv3/SessionStorage";
 import { asyncForEach } from "@/utils/promiseUtils";
+import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 
 type TabId = number;
+
+type FrameId = number;
 
 // TODO: One tab could have multiple targets, but `tabToTarget` currently only supports one at a time
 const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
@@ -47,13 +50,16 @@ function rememberOpener(newTabId: TabId, openerTabId: TabId): void {
   void tabToOpener.set(String(newTabId), openerTabId);
 }
 
-async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
+async function safelyRunBrick(
+  { tabId, frameId }: Target,
+  request: RunBrick
+): Promise<unknown> {
   try {
-    return await runBrick({ tabId }, request);
+    return await runBrick({ tabId, frameId }, request);
   } catch (error) {
     const errorMessage = getErrorMessage(error);
 
-    // Repackage tab-lifecycle-related errors as BusinessErrors
+    // Re-package tab-lifecycle-related errors as BusinessErrors
     if ([errorTargetClosedEarly, errorTabDoesntExist].includes(errorMessage)) {
       throw new BusinessError(errorMessage);
     }
@@ -88,7 +94,7 @@ export async function waitForTargetByUrl(url: string): Promise<Target> {
  */
 export async function requestRunInOpener(
   this: MessengerMeta,
-  request: RunBlock
+  request: RunBrick
 ): Promise<unknown> {
   let { id: sourceTabId, openerTabId } = this.trace[0].tab;
 
@@ -102,6 +108,7 @@ export async function requestRunInOpener(
 
   const opener = {
     tabId: openerTabId,
+    frameId: TOP_LEVEL_FRAME_ID,
   };
   const subRequest = { ...request, sourceTabId };
   return safelyRunBrick(opener, subRequest);
@@ -113,7 +120,7 @@ export async function requestRunInOpener(
  */
 export async function requestRunInTarget(
   this: MessengerMeta,
-  request: RunBlock
+  request: RunBrick
 ): Promise<unknown> {
   const sourceTabId = this.trace[0].tab.id;
   const target = await tabToTarget.get(String(sourceTabId));
@@ -123,7 +130,10 @@ export async function requestRunInTarget(
   }
 
   const subRequest = { ...request, sourceTabId };
-  return safelyRunBrick({ tabId: target }, subRequest);
+  return safelyRunBrick(
+    { tabId: target, frameId: TOP_LEVEL_FRAME_ID },
+    subRequest
+  );
 }
 
 /**
@@ -131,17 +141,24 @@ export async function requestRunInTarget(
  */
 export async function requestRunInTop(
   this: MessengerMeta,
-  request: RunBlock
+  request: RunBrick
 ): Promise<unknown> {
   const sourceTabId = this.trace[0].tab.id;
 
   const subRequest = { ...request, sourceTabId };
-  return safelyRunBrick({ tabId: sourceTabId }, subRequest);
+  return safelyRunBrick(
+    { tabId: sourceTabId, frameId: TOP_LEVEL_FRAME_ID },
+    subRequest
+  );
 }
 
+/**
+ * Run a brick in the top-level frame of all OTHER tabs.
+ * @param request the run request
+ */
 export async function requestRunInBroadcast(
   this: MessengerMeta,
-  request: RunBlock
+  request: RunBrick
 ): Promise<unknown[]> {
   const sourceTabId = this.trace[0].tab.id;
   const subRequest = { ...request, sourceTabId };
@@ -158,10 +175,50 @@ export async function requestRunInBroadcast(
     }
 
     try {
-      const response = safelyRunBrick({ tabId: tab.id }, subRequest);
+      const response = safelyRunBrick(
+        { tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID },
+        subRequest
+      );
       fulfilled.set(tab.id, await response);
     } catch (error) {
       rejected.set(tab.id, error);
+    }
+  });
+
+  if (rejected.size > 0) {
+    console.warn(`Broadcast rejected for ${rejected.size} tabs`, { rejected });
+  }
+
+  return [...fulfilled].map(([, value]) => value);
+}
+
+export async function requestRunInAllFrames(
+  this: MessengerMeta,
+  request: RunBrick
+): Promise<unknown[]> {
+  const sourceTabId = this.trace[0].tab.id;
+  const subRequest = { ...request, sourceTabId };
+
+  const fulfilled = new Map<FrameId, unknown>();
+  const rejected = new Map<FrameId, unknown>();
+
+  const frames = await browser.webNavigation.getAllFrames({
+    tabId: sourceTabId,
+  });
+
+  console.debug("requestRunInAllFrames", { frames });
+
+  debugger;
+
+  await asyncForEach(frames, async ({ frameId }) => {
+    try {
+      const response = safelyRunBrick(
+        { tabId: sourceTabId, frameId },
+        subRequest
+      );
+      fulfilled.set(frameId, await response);
+    } catch (error) {
+      rejected.set(frameId, error);
     }
   });
 
