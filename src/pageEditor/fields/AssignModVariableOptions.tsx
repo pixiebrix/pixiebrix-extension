@@ -29,7 +29,7 @@ import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysi
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import type VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
 
-function schemaWithKnownVariableNames(varMap: VarMap): Schema {
+function schemaWithKnownVariableNames(varMap: VarMap | null): Schema {
   const map = varMap?.getMap() ?? {};
   // eslint-disable-next-line security/detect-object-injection -- compile time constant
   const modVars = map[KnownSources.MOD]?.[MOD_VARIABLE_REFERENCE];
