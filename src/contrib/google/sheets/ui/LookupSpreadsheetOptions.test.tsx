@@ -50,9 +50,7 @@ function newId(): UUID {
   return uuidSequence(idSequence++);
 }
 
-const servicesLocateMock = services.locate as jest.MockedFunction<
-  typeof services.locate
->;
+const servicesLocateMock = jest.mocked(services.locate);
 
 jest.mock("@/contrib/google/initGoogle", () => ({
   isGoogleInitialized: jest.fn(),

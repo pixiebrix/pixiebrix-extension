@@ -26,16 +26,15 @@ import { type Expression } from "@/types/runtimeTypes";
 import { joinName } from "@/utils";
 import useAsyncState from "@/hooks/useAsyncState";
 import hash from "object-hash";
-import { isEmpty } from "lodash";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isVarExpression } from "@/utils/expressionUtils";
 
-async function findGoogleAccountIntegrationConfig(
+export async function findGoogleAccountIntegrationConfig(
   servicesValue: IntegrationDependency[],
   googleAccountValue: Expression | undefined
 ): Promise<SanitizedIntegrationConfig | null> {
-  if (!isVarExpression(googleAccountValue) || isEmpty(servicesValue)) {
+  if (!isVarExpression(googleAccountValue)) {
     return null;
   }
 

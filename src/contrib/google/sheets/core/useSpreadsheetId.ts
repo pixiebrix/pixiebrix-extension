@@ -31,7 +31,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import hash from "object-hash";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 
-async function findSpreadsheetId(
+export async function findSpreadsheetId(
   servicesValue: IntegrationDependency[],
   spreadsheetIdValue: string | Expression | null,
   optionsArgs: OptionsArgs
