@@ -68,4 +68,31 @@ describe("CollectNamesVisitor", () => {
       knownNames: ["foo", "bar"],
     });
   });
+
+  it("does not duplicate names", async () => {
+    const formState = formStateFactory();
+    formState.extension.blockPipeline[0] = {
+      id: AssignModVariable.BRICK_ID,
+      config: {
+        variableName: "foo",
+      },
+    };
+
+    const otherFormState = formStateFactory();
+    otherFormState.extension.blockPipeline[0] = {
+      id: AssignModVariable.BRICK_ID,
+      config: {
+        variableName: "foo",
+      },
+    };
+
+    const result = CollectNamesVisitor.collectNames([
+      formState,
+      otherFormState,
+    ]);
+
+    await expect(result).resolves.toEqual({
+      knownNames: ["foo"],
+    });
+  });
 });

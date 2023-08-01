@@ -219,6 +219,22 @@ describe("Collecting available vars", () => {
       expect(foundationKnownVars.isVariableDefined("@mod.foo")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@mod.bar")).toBeFalse();
     });
+
+    it("handles inferred mod variables", async () => {
+      const analysis = new VarAnalysis({ modVariables: ["foo"] });
+
+      const extension = formStateFactory({}, [brickConfigFactory()]);
+
+      await analysis.run(extension);
+
+      const foundationKnownVars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0");
+
+      expect(foundationKnownVars.isVariableDefined("@mod")).toBeTrue();
+      expect(foundationKnownVars.isVariableDefined("@mod.foo")).toBeTrue();
+      expect(foundationKnownVars.isVariableDefined("@mod.bar")).toBeFalse();
+    });
   });
 
   describe("blueprint @options", () => {
@@ -430,6 +446,21 @@ describe("Collecting available vars", () => {
       // The output key allows any property
       expect(
         secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
+      ).toBeTrue();
+    });
+
+    test("supports true definition in output schema", async () => {
+      const secondBlockKnownVars = await runAnalysisWithOutputSchema({
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          foo: true,
+        },
+      });
+
+      // The output key allows any property
+      expect(
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.foo`)
       ).toBeTrue();
     });
 
