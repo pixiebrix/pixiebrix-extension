@@ -55,72 +55,52 @@ const RequireGoogleSheet: React.FC<{
     }
   );
 
-  const spreadsheetSchemaState = useDeriveAsyncState(
+  const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
     googleAccountAsyncState,
+    spreadsheetIdAsyncState,
     baseSchemaAsyncState,
     async (
       googleAccount: SanitizedIntegrationConfig | null,
+      spreadsheetId: string | null,
       baseSchema: Schema
     ) => {
-      if (googleAccount == null) {
-        return baseSchema;
+      let schema = baseSchema;
+      let spreadsheet = null;
+
+      if (googleAccount != null) {
+        const spreadsheetFileList = await sheets.getAllSpreadsheets(
+          googleAccount
+        );
+        if (!isEmpty(spreadsheetFileList.files)) {
+          const spreadsheetSchemaEnum = spreadsheetFileList.files.map(
+            (file) => ({
+              const: file.id,
+              title: file.name,
+            })
+          );
+          schema = {
+            type: "string",
+            title: SPREADSHEET_FIELD_TITLE,
+            description: SPREADSHEET_FIELD_DESCRIPTION,
+            oneOf: spreadsheetSchemaEnum,
+          } as Schema;
+        }
       }
 
-      const spreadsheetFileList = await sheets.getAllSpreadsheets(
-        googleAccount
-      );
-      if (isEmpty(spreadsheetFileList.files)) {
-        return baseSchema;
+      if (spreadsheetId != null) {
+        // Sheets api handles fallback situation when googleAccount is null
+        spreadsheet = await sheets.getSpreadsheet({
+          googleAccount,
+          spreadsheetId,
+        });
       }
 
-      const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
-        const: file.id,
-        title: file.name,
-      }));
       return {
-        type: "string",
-        title: SPREADSHEET_FIELD_TITLE,
-        description: SPREADSHEET_FIELD_DESCRIPTION,
-        oneOf: spreadsheetSchemaEnum,
-      } as Schema;
-    }
-  );
-
-  const spreadsheetAsyncState = useDeriveAsyncState(
-    googleAccountAsyncState,
-    spreadsheetIdAsyncState,
-    // Include spreadsheetSchemaState here to block and prevent double-call to
-    // Google sheets api before the user has completed Google login
-    spreadsheetSchemaState,
-    async (
-      googleAccount: SanitizedIntegrationConfig | null,
-      spreadsheetId: string | null
-    ) => {
-      if (spreadsheetId == null) {
-        return null;
-      }
-
-      // Sheets api handles fallback situation when googleAccount is null
-      return sheets.getSpreadsheet({
         googleAccount,
-        spreadsheetId,
-      });
+        spreadsheet,
+        schema,
+      };
     }
-  );
-
-  const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
-    googleAccountAsyncState,
-    spreadsheetAsyncState,
-    spreadsheetSchemaState,
-    async (
-      googleAccount: SanitizedIntegrationConfig | null,
-      spreadsheet: Spreadsheet,
-      schema
-    ) => ({
-      googleAccount,
-      spreadsheet,
-      schema,
-    })
   );
 
   return (
