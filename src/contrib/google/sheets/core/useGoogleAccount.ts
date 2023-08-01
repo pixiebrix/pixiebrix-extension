@@ -23,12 +23,12 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { useField, useFormikContext } from "formik";
 import { type ServiceSlice } from "@/components/fields/schemaFields/serviceFieldUtils";
 import { type Expression } from "@/types/runtimeTypes";
-import { joinName } from "@/utils";
 import useAsyncState from "@/hooks/useAsyncState";
 import hash from "object-hash";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isVarExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
 
 export async function findGoogleAccountIntegrationConfig(
   servicesValue: IntegrationDependency[],

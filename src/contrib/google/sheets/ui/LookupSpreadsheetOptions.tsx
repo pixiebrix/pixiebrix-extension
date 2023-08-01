@@ -33,6 +33,7 @@ import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { sheets } from "@/background/messenger/api";
 import useAsyncEffect from "use-async-effect";
 import hash from "object-hash";
+import { joinName } from "@/utils/formUtils";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {
   return {

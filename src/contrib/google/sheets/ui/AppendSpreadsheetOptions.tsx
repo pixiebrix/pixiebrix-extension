@@ -20,7 +20,6 @@ import { type BlockOptionProps } from "@/components/fields/schemaFields/genericO
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/bricks/append";
-import { isNullOrBlank, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
@@ -33,6 +32,8 @@ import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import useAsyncEffect from "use-async-effect";
 import { sheets } from "@/background/messenger/api";
 import hash from "object-hash";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { joinName } from "@/utils/formUtils";
 
 const ANONYMOUS_OBJECT_SCHEMA: Schema = {
   type: "object",
