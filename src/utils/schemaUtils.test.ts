@@ -124,4 +124,14 @@ describe("unionSchemaDefinitionTypes", () => {
       required: [],
     });
   });
+
+  it("handles object and primitive", () => {
+    expect(
+      unionSchemaDefinitionTypes(fooObjectSchema, {
+        type: "number",
+      })
+    ).toEqual({
+      anyOf: [fooObjectSchema, { type: "number" }],
+    });
+  });
 });
