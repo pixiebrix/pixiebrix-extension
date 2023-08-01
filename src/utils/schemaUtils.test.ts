@@ -75,6 +75,23 @@ describe("unionSchemaDefinitionTypes", () => {
     });
   });
 
+  it("intersects required properties excludes mismatch", () => {
+    expect(
+      unionSchemaDefinitionTypes(
+        { ...barObjectSchema, required: ["bar"] },
+        { ...fooObjectSchema, required: ["foo"] }
+      )
+    ).toEqual({
+      type: "object",
+      properties: {
+        foo: { type: "string" },
+        bar: { type: "string" },
+      },
+      additionalProperties: false,
+      required: [],
+    });
+  });
+
   it("unions types", () => {
     expect(
       unionSchemaDefinitionTypes({ type: "string" }, { type: "number" })
