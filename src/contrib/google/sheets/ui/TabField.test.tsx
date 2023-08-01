@@ -303,9 +303,12 @@ describe("TabField", () => {
 
     expectTab1Selected();
 
-    // Change field to text and type something
+    // Change field to text and clear the input
     await selectSchemaFieldInputMode("tabName", "string");
     await userEvent.clear(screen.getByRole("textbox"));
+
+    // Clear input focus
+    (document.activeElement as HTMLElement).blur();
 
     // Change spreadsheet
     rerender(

@@ -28,70 +28,177 @@ import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
 import { services, sheets } from "@/background/messenger/api";
-import {
-  isGoogleInitialized,
-  isGAPISupported,
-} from "@/contrib/google/initGoogle";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  type FileList,
+  type Spreadsheet,
+} from "@/contrib/google/sheets/core/types";
+import { type UUID } from "@/types/stringTypes";
+import { useAuthOptions } from "@/hooks/auth";
+import { type AuthOption } from "@/auth/authTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import {
+  isGAPISupported,
+  isGoogleInitialized,
+} from "@/contrib/google/initGoogle";
 
-const TEST_SPREADSHEET_ID = uuidSequence(1);
-const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
+let idSequence = 0;
+function newId(): UUID {
+  return uuidSequence(idSequence++);
+}
 
 const servicesLocateMock = services.locate as jest.MockedFunction<
   typeof services.locate
 >;
 
 jest.mock("@/contrib/google/initGoogle", () => ({
-  isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGAPISupported: jest.fn().mockReturnValue(true),
+  isGoogleInitialized: jest.fn(),
+  isGAPISupported: jest.fn(),
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
 const isGAPISupportedMock = jest.mocked(isGAPISupported);
 const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
 
-jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
-  ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
-  // Mock so we don't have to have full Page Editor state in tests
-  produceExcludeUnusedDependencies: jest.fn().mockImplementation((x: any) => x),
-}));
-
 jest.mock("@/hooks/auth", () => ({
-  __esModule: true,
-  useAuthOptions: jest.fn().mockReturnValue([[], () => {}]),
+  useAuthOptions: jest.fn(),
 }));
 
-const getSheetPropertiesMock = sheets.getSheetProperties as jest.MockedFunction<
-  typeof sheets.getSheetProperties
->;
+const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
-const getTabNamesMock = sheets.getTabNames as jest.MockedFunction<
-  typeof sheets.getTabNames
->;
+const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
+const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
+const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
+const getTabNamesMock = jest.mocked(sheets.getTabNames);
+const getHeadersMock = jest.mocked(sheets.getHeaders);
 
-const getHeadersMock = sheets.getHeaders as jest.MockedFunction<
-  typeof sheets.getHeaders
->;
+const TEST_SPREADSHEET_ID = newId();
+const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
+const GOOGLE_PKCE_SERVICE_ID = validateRegistryId("google/oauth2-pkce");
+const GOOGLE_PKCE_AUTH_CONFIG = newId();
+const TEST_SPREADSHEET_AUTH_CONFIG = newId();
 
-beforeEach(() => {
-  isGoogleInitializedMock.mockReturnValue(true);
-  isGAPISupportedMock.mockReturnValue(true);
-});
+const TEST_SPREADSHEET_NAME = "Test Spreadsheet";
+
+const servicesLookup = {
+  [GOOGLE_SHEET_SERVICE_ID]: sanitizedIntegrationConfigFactory({
+    serviceId: GOOGLE_SHEET_SERVICE_ID,
+    config: {
+      _sanitizedConfigBrand: null,
+      spreadsheetId: TEST_SPREADSHEET_ID,
+    },
+  }),
+  [GOOGLE_PKCE_SERVICE_ID]: sanitizedIntegrationConfigFactory({
+    serviceId: GOOGLE_PKCE_SERVICE_ID,
+  }),
+};
+
+const googlePKCEAuthOption: AuthOption = {
+  serviceId: GOOGLE_PKCE_SERVICE_ID,
+  label: "Google OAuth2 PKCE",
+  local: true,
+  value: GOOGLE_PKCE_AUTH_CONFIG,
+  sharingType: "private",
+};
+
+const testSpreadsheetAuthOption: AuthOption = {
+  serviceId: GOOGLE_SHEET_SERVICE_ID,
+  label: "Test Spreadsheet",
+  local: true,
+  value: TEST_SPREADSHEET_AUTH_CONFIG,
+  sharingType: "private",
+};
+
+const googlePKCEIntegrationDependency: IntegrationDependency = {
+  id: GOOGLE_PKCE_SERVICE_ID,
+  outputKey: validateOutputKey("google"),
+  config: GOOGLE_PKCE_AUTH_CONFIG,
+};
+
+const testSpreadsheet: Spreadsheet = {
+  spreadsheetId: TEST_SPREADSHEET_ID,
+  properties: {
+    title: TEST_SPREADSHEET_NAME,
+  },
+  sheets: [
+    {
+      properties: {
+        sheetId: 123,
+        title: "Tab1",
+      },
+    },
+    {
+      properties: {
+        sheetId: 456,
+        title: "Tab2",
+      },
+    },
+  ],
+};
+
+const fileListResponse: FileList = {
+  kind: "drive#fileList",
+  incompleteSearch: false,
+  files: [
+    {
+      kind: "drive#file",
+      mimeType: "application/vnd.google-apps.spreadsheet",
+      id: TEST_SPREADSHEET_ID,
+      name: TEST_SPREADSHEET_NAME,
+    },
+  ],
+};
+
+async function expectTabsAndHeadersToBeLoaded() {
+  const tabChooser = await screen.findByLabelText("Tab Name");
+  let headerChooser = await screen.findByLabelText("Column Header");
+  // Shows the header names for Tab1 in the dropdown
+  selectEvent.openMenu(headerChooser);
+  // Input value and select option in the dropdown, 2 instances
+  const column1Options = screen.getAllByText("Column1");
+  expect(column1Options).toHaveLength(2);
+  expect(column1Options[0]).toBeVisible();
+  expect(column1Options[1]).toBeVisible();
+  expect(screen.getByText("Column2")).toBeVisible();
+  // Does not show headers for Tab2
+  expect(screen.queryByText("Foo")).not.toBeInTheDocument();
+  expect(screen.queryByText("Bar")).not.toBeInTheDocument();
+
+  // Choose Tab2
+  await act(async () => {
+    await selectEvent.select(tabChooser, "Tab2");
+  });
+
+  // Need to grab the chooser again because props changed and the header select component was re-rendered
+  headerChooser = await screen.findByLabelText("Column Header");
+
+  // Shows the header names for Tab2 in the dropdown
+  selectEvent.openMenu(headerChooser);
+  // Input value and select option in the dropdown, 2 instances
+  const fooOptions = screen.getAllByText("Foo");
+  expect(fooOptions).toHaveLength(2);
+  expect(fooOptions[0]).toBeVisible();
+  expect(fooOptions[1]).toBeVisible();
+  expect(screen.getByText("Bar")).toBeVisible();
+  // Does not show the headers for Tab1
+  expect(screen.queryByText("Column1")).not.toBeInTheDocument();
+  expect(screen.queryByText("Column2")).not.toBeInTheDocument();
+}
 
 beforeAll(() => {
   registerDefaultWidgets();
-  servicesLocateMock.mockResolvedValue(
-    sanitizedIntegrationConfigFactory({
-      serviceId: GOOGLE_SHEET_SERVICE_ID,
-      // @ts-expect-error -- The type here is a record with a _brand field, so casting doesn't work
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-      },
-    })
+  servicesLocateMock.mockImplementation(
+    async (serviceId) => servicesLookup[serviceId]
   );
-  getSheetPropertiesMock.mockResolvedValue({ title: "Test Sheet" });
+  useAuthOptionsMock.mockReturnValue(
+    valueToAsyncState([googlePKCEAuthOption, testSpreadsheetAuthOption])
+  );
+  getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
+  getSpreadsheetMock.mockResolvedValue(testSpreadsheet);
+  getSheetPropertiesMock.mockResolvedValue({ title: TEST_SPREADSHEET_NAME });
   getTabNamesMock.mockResolvedValue(["Tab1", "Tab2"]);
   getHeadersMock.mockImplementation(async ({ tabName }) => {
     if (tabName === "Tab1") {
@@ -102,8 +209,17 @@ beforeAll(() => {
   });
 });
 
+beforeEach(() => {
+  isGoogleInitializedMock.mockReturnValue(true);
+  isGAPISupportedMock.mockReturnValue(true);
+});
+
 describe("LookupSpreadsheetOptions", () => {
-  it("should render successfully with string spreadsheetId value and empty nunjucks tabName", async () => {
+  /**
+   * Snapshots
+   */
+
+  test("given empty googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
     const rendered = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
       {
@@ -124,28 +240,7 @@ describe("LookupSpreadsheetOptions", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  it("should render successfully with string spreadsheetId value and null tabName", async () => {
-    const rendered = render(
-      <LookupSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: null,
-            header: makeTemplateExpression("nunjucks", ""),
-            query: makeTemplateExpression("nunjucks", ""),
-            multi: false,
-          },
-        },
-      }
-    );
-
-    await waitForEffect();
-
-    expect(rendered.asFragment()).toMatchSnapshot();
-  });
-
-  it("should render successfully with string spreadsheetId value and selected tabName", async () => {
+  test("given empty googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
     const rendered = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
       {
@@ -153,8 +248,8 @@ describe("LookupSpreadsheetOptions", () => {
           config: {
             spreadsheetId: TEST_SPREADSHEET_ID,
             tabName: "Tab2",
-            header: makeTemplateExpression("nunjucks", ""),
-            query: makeTemplateExpression("nunjucks", ""),
+            header: "Bar",
+            query: makeTemplateExpression("nunjucks", "test query"),
             multi: false,
           },
         },
@@ -166,7 +261,57 @@ describe("LookupSpreadsheetOptions", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  it("loads in tab names and header values with string spreadsheetId value and empty nunjucks tabName", async () => {
+  test("given test googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            googleAccount: makeVariableExpression("@google"),
+            spreadsheetId: TEST_SPREADSHEET_ID,
+            tabName: makeTemplateExpression("nunjucks", ""),
+            header: makeTemplateExpression("nunjucks", ""),
+            query: makeTemplateExpression("nunjucks", ""),
+            multi: false,
+          },
+          services: [googlePKCEIntegrationDependency],
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("given test googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
+    const rendered = render(
+      <LookupSpreadsheetOptions name="" configKey="config" />,
+      {
+        initialValues: {
+          config: {
+            googleAccount: makeVariableExpression("@google"),
+            spreadsheetId: TEST_SPREADSHEET_ID,
+            tabName: "Tab2",
+            header: "Bar",
+            query: makeTemplateExpression("nunjucks", "test query"),
+            multi: false,
+          },
+          services: [googlePKCEIntegrationDependency],
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  /**
+   * Basic Render Tests
+   */
+
+  test("given empty googleAccount and string spreadsheetId, when rendered, loads tab names and header values", async () => {
     render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
@@ -181,46 +326,13 @@ describe("LookupSpreadsheetOptions", () => {
 
     await waitForEffect();
 
-    const tabChooser = await screen.findByLabelText("Tab Name");
-
     // Tab1 will be picked automatically since it's first in the list
     expect(screen.getByText("Tab1")).toBeVisible();
 
-    let headerChooser = await screen.findByLabelText("Column Header");
-    // Shows the header names for Tab1 in the dropdown
-    selectEvent.openMenu(headerChooser);
-    // Input value and select option in the dropdown, 2 instances
-    const column1Options = screen.getAllByText("Column1");
-    expect(column1Options).toHaveLength(2);
-    expect(column1Options[0]).toBeVisible();
-    expect(column1Options[1]).toBeVisible();
-    expect(screen.getByText("Column2")).toBeVisible();
-    // Does not show headers for Tab2
-    expect(screen.queryByText("Foo")).not.toBeInTheDocument();
-    expect(screen.queryByText("Bar")).not.toBeInTheDocument();
-
-    // Choose Tab2
-    await act(async () => {
-      await selectEvent.select(tabChooser, "Tab2");
-    });
-
-    // Need to grab the chooser again because props changed and the header select component was re-rendered
-    headerChooser = await screen.findByLabelText("Column Header");
-
-    // Shows the header names for Tab2 in the dropdown
-    selectEvent.openMenu(headerChooser);
-    // Input value and select option in the dropdown, 2 instances
-    const fooOptions = screen.getAllByText("Foo");
-    expect(fooOptions).toHaveLength(2);
-    expect(fooOptions[0]).toBeVisible();
-    expect(fooOptions[1]).toBeVisible();
-    expect(screen.getByText("Bar")).toBeVisible();
-    // Does not show the headers for Tab1
-    expect(screen.queryByText("Column1")).not.toBeInTheDocument();
-    expect(screen.queryByText("Column2")).not.toBeInTheDocument();
+    await expectTabsAndHeadersToBeLoaded();
   });
 
-  it("loads in tab names and header values with mod input variable spreadsheetId value and empty nunjucks tabName", async () => {
+  test("given empty googleAccount and mod input spreadsheetId, when rendered, loads tab names and header values", async () => {
     render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
@@ -238,53 +350,130 @@ describe("LookupSpreadsheetOptions", () => {
 
     await waitForEffect();
 
-    const tabChooser = await screen.findByLabelText("Tab Name");
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    await expectTabsAndHeadersToBeLoaded();
+  });
+
+  test("given test googleAccount and string spreadsheetId, when rendered, loads tab names and header values", async () => {
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          googleAccount: makeVariableExpression("@google"),
+          spreadsheetId: TEST_SPREADSHEET_ID,
+          tabName: makeTemplateExpression("nunjucks", ""),
+          header: makeTemplateExpression("nunjucks", ""),
+          query: makeTemplateExpression("nunjucks", ""),
+          multi: false,
+        },
+        services: [googlePKCEIntegrationDependency],
+      },
+    });
+
+    await waitForEffect();
 
     // Tab1 will be picked automatically since it's first in the list
     expect(screen.getByText("Tab1")).toBeVisible();
 
-    // Shows the header names for Tab1 in the dropdown
-    let headerChooser = await screen.findByLabelText("Column Header");
-    selectEvent.openMenu(headerChooser);
-    // Input value and select option in the dropdown, 2 instances
-    const column1Options = screen.getAllByText("Column1");
-    expect(column1Options).toHaveLength(2);
-    expect(column1Options[0]).toBeVisible();
-    expect(column1Options[1]).toBeVisible();
-    expect(screen.getByText("Column2")).toBeVisible();
-    // Does not show headers for Tab2
-    expect(screen.queryByText("Foo")).not.toBeInTheDocument();
-    expect(screen.queryByText("Bar")).not.toBeInTheDocument();
-
-    // Choose Tab2
-    await act(async () => {
-      await selectEvent.select(tabChooser, "Tab2");
-    });
-
-    // Need to grab the chooser again because props changed and the header select component was re-rendered
-    headerChooser = await screen.findByLabelText("Column Header");
-
-    // Shows the header names for Tab2 in the dropdown
-    selectEvent.openMenu(headerChooser);
-    // Input value and select option in the dropdown, 2 instances
-    const fooOptions = screen.getAllByText("Foo");
-    expect(fooOptions).toHaveLength(2);
-    expect(fooOptions[0]).toBeVisible();
-    expect(fooOptions[1]).toBeVisible();
-
-    expect(screen.getByText("Bar")).toBeVisible();
-    expect(screen.queryByText("Column1")).not.toBeInTheDocument();
-    expect(screen.queryByText("Column2")).not.toBeInTheDocument();
+    await expectTabsAndHeadersToBeLoaded();
   });
 
-  it("does not clear initial tabName and header values with string spreadsheetId value", async () => {
+  test("given test googleAccount and mod input spreadsheetId, when rendered, loads tab names and header values", async () => {
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          googleAccount: makeVariableExpression("@google"),
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: makeTemplateExpression("nunjucks", ""),
+          header: makeTemplateExpression("nunjucks", ""),
+          query: makeTemplateExpression("nunjucks", ""),
+          multi: false,
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+        services: [googlePKCEIntegrationDependency],
+      },
+    });
+
+    await waitForEffect();
+
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    await expectTabsAndHeadersToBeLoaded();
+  });
+
+  test("given test googleAccount and null spreadsheetId, when spreadsheet selected, loads tab names and header values", async () => {
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          googleAccount: makeVariableExpression("@google"),
+          spreadsheetId: null,
+          tabName: makeTemplateExpression("nunjucks", ""),
+          header: makeTemplateExpression("nunjucks", ""),
+          query: makeTemplateExpression("nunjucks", ""),
+          multi: false,
+        },
+        services: [googlePKCEIntegrationDependency],
+      },
+    });
+
+    await waitForEffect();
+
+    // Select the first spreadsheet
+    const spreadsheetSelect = screen.getByRole("combobox", {
+      name: "Google Sheet",
+    });
+    await act(async () => {
+      await selectEvent.select(spreadsheetSelect, TEST_SPREADSHEET_NAME);
+    });
+
+    // Tab1 will be picked automatically since it's first in the list
+    expect(screen.getByText("Tab1")).toBeVisible();
+
+    await expectTabsAndHeadersToBeLoaded();
+  });
+
+  /**
+   * Does Not Clear Initial Values
+   */
+
+  test("given empty googleAccount and mod input spreadsheetId value, when rendered, does not clear initial tabName and header values", async () => {
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          spreadsheetId: makeVariableExpression("@options.sheetId"),
+          tabName: "Tab2",
+          header: "Bar",
+          query: makeTemplateExpression("nunjucks", "test query"),
+          multi: true,
+        },
+        optionsArgs: {
+          sheetId: TEST_SPREADSHEET_ID,
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    expect(screen.getByDisplayValue("@options.sheetId")).toBeVisible();
+    // Use getByText for react-select value
+    expect(screen.getByText("Tab2")).toBeVisible();
+    // Use getByText for react-select value
+    expect(screen.getByText("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("test query")).toBeVisible();
+  });
+
+  test("given empty googleAccount and string spreadsheetId value, when rendered, does not clear initial tabName and header values", async () => {
     render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
           spreadsheetId: TEST_SPREADSHEET_ID,
           tabName: "Tab2",
           header: "Bar",
-          query: makeTemplateExpression("nunjucks", "testQuery"),
+          query: makeTemplateExpression("nunjucks", "test query"),
           multi: true,
         },
       },
@@ -292,39 +481,72 @@ describe("LookupSpreadsheetOptions", () => {
 
     await waitForEffect();
 
-    // Ensure title loaded
-    expect(screen.getByDisplayValue("Test Sheet")).toBeVisible();
-    // Ensure tab name has not changed -- use getByText for react-select value
+    // Spreadsheet ID should not be user-visible
+    expect(screen.queryByText(TEST_SPREADSHEET_ID)).not.toBeInTheDocument();
+    // Legacy sheet picker is an input; need to use getByDisplayValue
+    expect(screen.getByDisplayValue(TEST_SPREADSHEET_NAME)).toBeVisible();
+    // Use getByText for react-select value
     expect(screen.getByText("Tab2")).toBeVisible();
-    // Ensure header has not changed -- use getByText for react-select value
+    // Use getByText for react-select value
     expect(screen.getByText("Bar")).toBeVisible();
-    expect(screen.getByDisplayValue("testQuery")).toBeVisible();
+    expect(screen.getByDisplayValue("test query")).toBeVisible();
   });
 
-  it("does not clear initial variable values", async () => {
+  test("given test googleAccount and mod input spreadsheetId value, when rendered, does not clear variable values", async () => {
     render(<LookupSpreadsheetOptions name="" configKey="config" />, {
       initialValues: {
         config: {
+          googleAccount: makeVariableExpression("@google"),
           spreadsheetId: makeVariableExpression("@options.sheetId"),
           tabName: makeVariableExpression("@myTab"),
           header: makeVariableExpression("@myHeader"),
           query: makeVariableExpression("@query"),
-          multi: true,
+          multi: false,
         },
         optionsArgs: {
           sheetId: TEST_SPREADSHEET_ID,
         },
+        services: [googlePKCEIntegrationDependency],
       },
     });
 
     await waitForEffect();
 
-    // Ensure tab name has not changed -- use getByText for react-select value
     expect(screen.getByDisplayValue("@options.sheetId")).toBeVisible();
     expect(screen.getByDisplayValue("@myTab")).toBeVisible();
     expect(screen.getByDisplayValue("@myHeader")).toBeVisible();
     expect(screen.getByDisplayValue("@query")).toBeVisible();
   });
+
+  test("given test googleAccount and string spreadsheetId value, when rendered, does not clear variable values", async () => {
+    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
+      initialValues: {
+        config: {
+          googleAccount: makeVariableExpression("@google"),
+          spreadsheetId: TEST_SPREADSHEET_ID,
+          tabName: makeVariableExpression("@myTab"),
+          header: makeVariableExpression("@myHeader"),
+          query: makeVariableExpression("@query"),
+          multi: false,
+        },
+        services: [googlePKCEIntegrationDependency],
+      },
+    });
+
+    await waitForEffect();
+
+    // Spreadsheet ID should not be user-visible
+    expect(screen.queryByText(TEST_SPREADSHEET_ID)).not.toBeInTheDocument();
+    // Loaded spreadsheets use select widget, which renders the selected value into the DOM as text, so can use getByText
+    expect(screen.getByText(TEST_SPREADSHEET_NAME)).toBeVisible();
+    expect(screen.getByDisplayValue("@myTab")).toBeVisible();
+    expect(screen.getByDisplayValue("@myHeader")).toBeVisible();
+    expect(screen.getByDisplayValue("@query")).toBeVisible();
+  });
+
+  /**
+   * Require Google HOC Tests
+   */
 
   it("should require GAPI support", async () => {
     isGoogleInitializedMock.mockReturnValue(false);

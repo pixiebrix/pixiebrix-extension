@@ -48,6 +48,7 @@ const TabField: React.FC<
     enum: tabNames,
   };
 
+  const allTabNames = tabNames.join(",");
   useEffect(
     () => {
       // Don't modify the field if it's currently focused
@@ -55,25 +56,29 @@ const TabField: React.FC<
         return;
       }
 
-      // If tabName value is a string, that means it is a selected tab from a loaded spreadsheet
-      if (!isExpression(tabName) && !isEmpty(tabName)) {
-        if (isEmpty(tabNames)) {
-          setTabName(makeTemplateExpression("nunjucks", ""));
-        } else if (!tabNames.includes(tabName)) {
-          setTabName(tabNames[0]);
-        }
+      // Don't modify if it's a non-empty expression (user-typed text, or variable)
+      if (isExpression(tabName) && !isEmpty(tabName.__value__)) {
+        return;
       }
 
-      // Also set to the first tab if the field value is an empty expression or null (initial value)
-      if (
-        tabName == null ||
-        (isExpression(tabName) && isEmpty(tabName.__value__))
-      ) {
-        setTabName(tabNames[0]);
+      // Set to empty nunjucks expression if no tab names have loaded
+      if (isEmpty(tabNames)) {
+        setTabName(makeTemplateExpression("nunjucks", ""));
+        return;
       }
+
+      // Don't modify if the tab name is still valid
+      if (typeof tabName === "string" && tabNames.includes(tabName)) {
+        return;
+      }
+
+      // Remaining cases are either empty expression or invalid, selected tab name, so set to first tab name
+      setTabName(tabNames[0]);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- tabNames are strings, and we're setting tabName
-    [spreadsheet?.spreadsheetId, ...tabNames]
+    // We shouldn't include the setTabName formik helper due to unstable reference, the allTabNames string covers
+    // the tabNames dependency, and we're setting tabName here so don't want to run this side effect when it changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [spreadsheet?.spreadsheetId, allTabNames]
   );
 
   // TODO: re-add info message that tab will be created

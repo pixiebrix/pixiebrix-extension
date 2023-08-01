@@ -29,12 +29,13 @@ import hash from "object-hash";
 import { isEmpty } from "lodash";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { isVarExpression } from "@/utils/expressionUtils";
 
-async function deriveGoogleAccountIntegrationConfig(
+async function findGoogleAccountIntegrationConfig(
   servicesValue: IntegrationDependency[],
   googleAccountValue: Expression | undefined
 ): Promise<SanitizedIntegrationConfig | null> {
-  if (googleAccountValue == null || isEmpty(servicesValue)) {
+  if (!isVarExpression(googleAccountValue) || isEmpty(servicesValue)) {
     return null;
   }
 
@@ -45,7 +46,7 @@ async function deriveGoogleAccountIntegrationConfig(
 
   if (integrationDependency == null) {
     throw new Error(
-      `Could not find service with output key ${serviceOutputKey}`
+      `Could not find integration configuration with output key ${serviceOutputKey}`
     );
   }
 
@@ -56,7 +57,9 @@ async function deriveGoogleAccountIntegrationConfig(
 }
 
 /**
- * Hook to get the Google account from an integration configuration or direct input.
+ * Hook to get the Google account for a block config assumed to be within a
+ * Formik form with a standard mod form state
+ * @see ModComponentFormState
  */
 function useGoogleAccount(
   blockConfigPath: string
@@ -71,7 +74,7 @@ function useGoogleAccount(
 
   return useAsyncState(async () => {
     try {
-      return await deriveGoogleAccountIntegrationConfig(
+      return await findGoogleAccountIntegrationConfig(
         servicesValue,
         fieldValue
       );
@@ -79,7 +82,7 @@ function useGoogleAccount(
       setError(getErrorMessage(error));
       return null;
     }
-  }, [hash(servicesValue)]);
+  }, [hash({ servicesValue })]);
 }
 
 export default useGoogleAccount;

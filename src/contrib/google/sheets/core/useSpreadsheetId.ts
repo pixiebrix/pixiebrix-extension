@@ -31,7 +31,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import hash from "object-hash";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 
-async function deriveSpreadsheetId(
+async function findSpreadsheetId(
   servicesValue: IntegrationDependency[],
   spreadsheetIdValue: string | Expression | null,
   optionsArgs: OptionsArgs
@@ -114,7 +114,7 @@ function useSpreadsheetId(
 
   return useAsyncState<string | null>(async () => {
     try {
-      return await deriveSpreadsheetId(servicesValue, fieldValue, optionsArgs);
+      return await findSpreadsheetId(servicesValue, fieldValue, optionsArgs);
     } catch (error: unknown) {
       setError(getErrorMessage(error));
       return null;

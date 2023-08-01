@@ -106,10 +106,6 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     inputRef,
   };
 
-  if (selectedOption?.fieldSchemaOverride != null) {
-    widgetProps.schema = selectedOption.fieldSchemaOverride;
-  }
-
   if (inputMode === "omit") {
     const optionValues = new Set(
       inputModeOptions.map((option) => option.value)

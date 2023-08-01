@@ -28,7 +28,7 @@ import { isEmpty } from "lodash";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
-import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
+import { isExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { sheets } from "@/background/messenger/api";
@@ -60,6 +60,10 @@ const HeaderField: React.FunctionComponent<{
 
   useAsyncEffect(
     async (isMounted) => {
+      if (!spreadsheetId) {
+        return;
+      }
+
       const headers = await sheets.getHeaders({
         googleAccount,
         spreadsheetId,
@@ -72,22 +76,24 @@ const HeaderField: React.FunctionComponent<{
 
       setFieldSchema(headerFieldSchemaForHeaders(headers));
 
-      // Clear header when tabName changes, if the current value is not
-      // an expression, which means it is a selected header from another tab.
-      if (!isTemplateExpression(header)) {
-        setHeader(makeTemplateExpression("nunjucks", ""));
-      }
-
-      if (isEmpty(headers)) {
+      // Don't modify if it's a non-empty expression (user-typed text, or variable)
+      if (isExpression(header) && !isEmpty(header.__value__)) {
         return;
       }
 
-      // If we've loaded headers and the current header value is not valid,
-      // then set it to the first loaded header
-      const currentHeader = isExpression(header) ? header?.__value__ : header;
-      if (!headers.includes(currentHeader)) {
-        setHeader(headers[0]);
+      // Set to empty nunjucks expression if no headers have loaded
+      if (isEmpty(headers)) {
+        setHeader(makeTemplateExpression("nunjucks", ""));
+        return;
       }
+
+      // Don't modify if the header name is still valid
+      if (typeof header === "string" && headers.includes(header)) {
+        return;
+      }
+
+      // Remaining cases are either empty expression or invalid, selected header, so set to first header
+      setHeader(headers[0]);
     },
     // Hash just in case tabName is an expression, and we
     // don't need to run the effect when googleAccount changes,
@@ -124,53 +130,55 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
         {({ googleAccount, spreadsheet, schema }) => (
-          <FormErrorContext.Provider
-            value={{
-              shouldUseAnalysis: false,
-              showUntouchedErrors: true,
-              showFieldActions: false,
-            }}
-          >
+          <>
+            <FormErrorContext.Provider
+              value={{
+                shouldUseAnalysis: false,
+                showUntouchedErrors: true,
+                showFieldActions: false,
+              }}
+            >
+              <SchemaField
+                name={joinName(blockConfigPath, "spreadsheetId")}
+                schema={schema}
+                isRequired
+              />
+              {
+                // The problem with including these inside the nested FormErrorContext.Provider is that we
+                // would like analysis to run if they are in text/template mode, but not in select mode.
+                // Select mode is more important, so we're leaving it like this for now.
+                <>
+                  <TabField
+                    name={joinName(blockConfigPath, "tabName")}
+                    schema={LOOKUP_SCHEMA.properties.tabName as Schema}
+                    spreadsheet={spreadsheet}
+                  />
+                  <HeaderField
+                    name={joinName(blockConfigPath, "header")}
+                    googleAccount={googleAccount}
+                    spreadsheetId={spreadsheet?.spreadsheetId}
+                    tabName={tabName}
+                  />
+                </>
+              }
+            </FormErrorContext.Provider>
             <SchemaField
-              name={joinName(blockConfigPath, "spreadsheetId")}
-              schema={schema}
+              name={joinName(blockConfigPath, "query")}
+              label="Query"
+              description="Value to search for in the column"
+              schema={LOOKUP_SCHEMA.properties.query as Schema}
               isRequired
             />
-            {
-              // The problem with including these inside the nested FormErrorContext.Provider is that we
-              // would like analysis to run if they are in text/template mode, but not in select mode.
-              // Select mode is more important, so we're leaving it like this for now.
-              <>
-                <TabField
-                  name={joinName(blockConfigPath, "tabName")}
-                  schema={LOOKUP_SCHEMA.properties.tabName as Schema}
-                  spreadsheet={spreadsheet}
-                />
-                <HeaderField
-                  name={joinName(blockConfigPath, "header")}
-                  googleAccount={googleAccount}
-                  spreadsheetId={spreadsheet?.spreadsheetId}
-                  tabName={tabName}
-                />
-              </>
-            }
-          </FormErrorContext.Provider>
+            <SchemaField
+              name={joinName(blockConfigPath, "multi")}
+              label="All Matches"
+              description="Toggle on to return an array of matches"
+              schema={LOOKUP_SCHEMA.properties.multi as Schema}
+              isRequired
+            />
+          </>
         )}
       </RequireGoogleSheet>
-      <SchemaField
-        name={joinName(blockConfigPath, "query")}
-        label="Query"
-        description="Value to search for in the column"
-        schema={LOOKUP_SCHEMA.properties.query as Schema}
-        isRequired
-      />
-      <SchemaField
-        name={joinName(blockConfigPath, "multi")}
-        label="All Matches"
-        description="Toggle on to return an array of matches"
-        schema={LOOKUP_SCHEMA.properties.multi as Schema}
-        isRequired
-      />
     </div>
   );
 };

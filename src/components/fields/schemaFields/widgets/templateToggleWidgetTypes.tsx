@@ -21,7 +21,6 @@ import { type Expression } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type JSONSchema7Array } from "json-schema";
-import { type Schema } from "@/types/schemaTypes";
 
 interface InputModeOptionBase<
   TValue extends FieldInputMode,
@@ -33,7 +32,6 @@ interface InputModeOptionBase<
   Widget: As;
   description?: React.ReactNode;
   interpretValue?: (oldValue: unknown) => unknown;
-  fieldSchemaOverride?: Schema;
 }
 
 export type StringOption = InputModeOptionBase<"string" | "select" | "var"> & {

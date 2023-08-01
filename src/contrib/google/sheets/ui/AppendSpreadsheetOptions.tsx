@@ -27,8 +27,7 @@ import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { isEmpty } from "lodash";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
-import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
-import { type UnknownObject } from "@/types/objectTypes";
+import { isExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import useAsyncEffect from "use-async-effect";
@@ -46,9 +45,6 @@ const RowValuesField: React.FunctionComponent<{
   spreadsheetId: string | null;
   tabName: string | Expression;
 }> = ({ name, googleAccount, spreadsheetId, tabName }) => {
-  const [{ value: rowValues }, , { setValue: setRowValues }] =
-    useField<UnknownObject>(name);
-
   const [fieldSchema, setFieldSchema] = useState<Schema>(
     ANONYMOUS_OBJECT_SCHEMA
   );
@@ -63,11 +59,6 @@ const RowValuesField: React.FunctionComponent<{
 
       if (!isMounted()) {
         return;
-      }
-
-      // Clear rowValues field, if the value is not an expression, or is empty
-      if (!isTemplateExpression(rowValues) || isEmpty(rowValues.__value__)) {
-        setRowValues({});
       }
 
       const headerProperties = Object.fromEntries(
@@ -152,7 +143,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
             <RowValuesField
               name={joinName(blockConfigPath, "rowValues")}
               googleAccount={googleAccount}
-              spreadsheetId={spreadsheet.spreadsheetId}
+              spreadsheetId={spreadsheet?.spreadsheetId}
               tabName={tabName}
             />
           </>

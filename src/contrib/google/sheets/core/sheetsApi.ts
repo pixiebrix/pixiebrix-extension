@@ -138,6 +138,9 @@ export async function getAllSpreadsheets(
   const requestConfig: AxiosRequestConfig<never> = {
     url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'`,
     method: "get",
+    params: {
+      orderBy: "modifiedTime desc,name",
+    },
   };
   return executeRequest<FileList>(requestConfig, googleAccount);
 }
@@ -235,8 +238,9 @@ export async function getSpreadsheet({
 }: SpreadsheetTarget): Promise<Spreadsheet> {
   // Construct a file mask to return metadata for each sheet (tab) in the spreadsheet, without
   // hydrating the actual grid data for the sheet
+  // Note: This only works if spreadsheetId is at the end of the list for some reason ¯\_(ツ)_/¯
   const fileMask =
-    "spreadsheetId,properties(title),sheets.properties(sheetId,title)";
+    "properties(title),sheets.properties(sheetId,title),spreadsheetId";
 
   return executeRequest<Spreadsheet>(
     {
