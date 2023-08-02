@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,27 +14,48 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors";
 
-import styles from "@/pageEditor/panes/Pane.module.scss";
+.activeModsHeading {
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
 
-import React from "react";
-import Centered from "@/components/Centered";
-import IntroButtons from "./IntroButtons";
+.illustration {
+  width: 254px;
+  margin: 40px 0;
+}
 
-const NoExtensionSelectedPane: React.FunctionComponent = () => (
-  <Centered>
-    <div className={styles.title}>No mod selected</div>
+.emptyViewRoot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 9vh;
+  height: -webkit-fill-available;
 
-    <div className="text-left">
-      <p>Select a mod in the sidebar to edit</p>
-      <p>
-        Or, click the <span className="text-info">Add</span> button in the
-        sidebar to add a mod to the page.
-      </p>
+  p {
+    color: $N600;
+    font-size: 16px;
+    margin-bottom: 2px;
+    text-align: center;
+  }
 
-      <IntroButtons />
-    </div>
-  </Centered>
-);
+  h4 {
+    color: $N800;
+    font-size: 20px;
+    font-weight: 700;
+  }
 
-export default NoExtensionSelectedPane;
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  div + p {
+    font-weight: 700;
+    margin-bottom: 9vh;
+  }
+}

@@ -21,7 +21,8 @@ import {
   type SidebarEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
+import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { getBodyForStaticPanel } from "./staticPanelUtils";
 import { type UUID } from "@/types/stringTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -125,6 +126,7 @@ const Tabs: React.FC = () => {
     reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
+      source: "tabClick",
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
   };
@@ -160,15 +162,6 @@ const Tabs: React.FC = () => {
           className={styles.tabContainer}
           onSelect={onSelect}
         >
-          {staticPanels.map((staticPanel) => (
-            <TabWithDivider
-              key={staticPanel.key}
-              active={isPanelActive(staticPanel)}
-              eventKey={eventKeyForEntry(staticPanel)}
-            >
-              <span className={styles.tabTitle}>{staticPanel.heading}</span>
-            </TabWithDivider>
-          ))}
           {panels.map((panel) => (
             <TabWithDivider
               key={panel.extensionId}
@@ -180,6 +173,7 @@ const Tabs: React.FC = () => {
               </span>
             </TabWithDivider>
           ))}
+
           {forms.map((form) => (
             <TabWithDivider
               key={form.extensionId}
@@ -206,6 +200,7 @@ const Tabs: React.FC = () => {
               />
             </TabWithDivider>
           ))}
+
           {modActivationPanel && (
             <TabWithDivider
               // Use eventKeyForEntry which generates a string key
@@ -218,25 +213,18 @@ const Tabs: React.FC = () => {
               </span>
             </TabWithDivider>
           )}
-        </Nav>
-        <Tab.Content className="p-0 border-0 full-height bg-white">
+
           {staticPanels.map((staticPanel) => (
-            <Tab.Pane
-              className={cx("h-100", styles.paneOverrides)}
+            <TabWithDivider
               key={staticPanel.key}
+              active={isPanelActive(staticPanel)}
               eventKey={eventKeyForEntry(staticPanel)}
             >
-              <ErrorBoundary
-                onError={() => {
-                  reportEvent(Events.VIEW_ERROR, {
-                    panelType: staticPanel.type,
-                  });
-                }}
-              >
-                {getBodyForStaticPanel(staticPanel.key)}
-              </ErrorBoundary>
-            </Tab.Pane>
+              <span className={styles.tabTitle}>{staticPanel.heading}</span>
+            </TabWithDivider>
           ))}
+        </Nav>
+        <Tab.Content className="p-0 border-0 full-height bg-white">
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}
@@ -265,6 +253,7 @@ const Tabs: React.FC = () => {
               </ErrorBoundary>
             </Tab.Pane>
           ))}
+
           {forms.map((form) => (
             <Tab.Pane
               className="full-height flex-grow"
@@ -284,9 +273,11 @@ const Tabs: React.FC = () => {
               </ErrorBoundary>
             </Tab.Pane>
           ))}
+
           {temporaryPanels.map((panel) => (
             <TemporaryPanelTabPane panel={panel} key={panel.nonce} />
           ))}
+
           {modActivationPanel && (
             <Tab.Pane
               className={cx("h-100", styles.paneOverrides)}
@@ -314,6 +305,24 @@ const Tabs: React.FC = () => {
               </ErrorBoundary>
             </Tab.Pane>
           )}
+
+          {staticPanels.map((staticPanel) => (
+            <Tab.Pane
+              className={cx("h-100", styles.paneOverrides)}
+              key={staticPanel.key}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <ErrorBoundary
+                onError={() => {
+                  reportEvent(Events.VIEW_ERROR, {
+                    panelType: staticPanel.type,
+                  });
+                }}
+              >
+                {getBodyForStaticPanel(staticPanel.key)}
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
         </Tab.Content>
       </div>
     </Tab.Container>
