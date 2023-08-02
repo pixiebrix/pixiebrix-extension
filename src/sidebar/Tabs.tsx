@@ -21,7 +21,8 @@ import {
   type SidebarEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { eventKeyForEntry, getBodyForStaticPanel } from "@/sidebar/utils";
+import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { getBodyForStaticPanel } from "./staticPanelUtils";
 import { type UUID } from "@/types/stringTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";

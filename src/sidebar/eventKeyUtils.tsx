@@ -16,8 +16,6 @@
  */
 
 import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
-import React, { type ReactNode } from "react";
-import ModLauncher from "@/sidebar/modLauncher/ModLauncher";
 import {
   isModActivationPanelEntry,
   isPanelEntry,
@@ -25,15 +23,6 @@ import {
 } from "@/types/sidebarTypes";
 import hash from "object-hash";
 import { sortBy } from "lodash";
-
-export const STATIC_PANEL_BODY_MAP: Record<string, ReactNode> = {
-  modLauncher: <ModLauncher />,
-};
-
-export function getBodyForStaticPanel(key: string): ReactNode {
-  // eslint-disable-next-line security/detect-object-injection -- key is not user generated
-  return STATIC_PANEL_BODY_MAP[key];
-}
 
 export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
   if (entry == null) {

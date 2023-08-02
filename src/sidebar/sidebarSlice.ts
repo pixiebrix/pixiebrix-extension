@@ -27,7 +27,7 @@ import type {
 } from "@/types/sidebarTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
-import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
+import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
   cancelForm,
   cancelTemporaryPanel,

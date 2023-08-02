@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defaultEventKey, eventKeyForEntry } from "@/sidebar/utils";
+import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
 
