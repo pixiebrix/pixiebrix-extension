@@ -34,6 +34,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker";
 import { act, screen } from "@testing-library/react";
+import { FormikValues } from "formik";
 
 jest.mock("@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker", () => ({
   __esModule: true,
@@ -64,6 +65,19 @@ const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
 const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
 const isGAPISupportedMock = jest.mocked(isGAPISupported);
 
+const renderWithValuesAndWait = async (initialValues: FormikValues) => {
+  const rendered = render(
+    <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+    {
+      initialValues,
+    }
+  );
+
+  await waitForEffect();
+
+  return rendered;
+};
+
 describe("SheetsFileWidget", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -72,29 +86,14 @@ describe("SheetsFileWidget", () => {
   });
 
   it("smoke test", async () => {
-    const rendered = render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: null },
-      }
-    );
-
-    await waitForEffect();
-
+    const rendered = await renderWithValuesAndWait({ spreadsheetId: null });
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   it("requires gapi", async () => {
     isGoogleInitializedMock.mockReturnValue(false);
 
-    render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: null },
-      }
-    );
-
-    await waitForEffect();
+    await renderWithValuesAndWait({ spreadsheetId: null });
 
     expect(
       screen.getByText(
@@ -106,14 +105,7 @@ describe("SheetsFileWidget", () => {
   it("requires gapi support", async () => {
     isGAPISupportedMock.mockReturnValue(false);
 
-    render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: null },
-      }
-    );
-
-    await waitForEffect();
+    await renderWithValuesAndWait({ spreadsheetId: null });
 
     // Text provided by the requireGoogleHOC
     expect(
@@ -140,14 +132,7 @@ describe("SheetsFileWidget", () => {
       startTimestamp: null,
     });
 
-    const rendered = render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: null },
-      }
-    );
-
-    await waitForEffect();
+    const rendered = await renderWithValuesAndWait({ spreadsheetId: null });
 
     await act(async () => {
       await userEvent.click(screen.getByText("Select"));
@@ -164,14 +149,7 @@ describe("SheetsFileWidget", () => {
       title: "Test Sheet",
     });
 
-    render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: "abc123" },
-      }
-    );
-
-    await waitForEffect();
+    await renderWithValuesAndWait({ spreadsheetId: "abc123" });
 
     // Verify it's showing the sheet title and not the sheet unique id
     expect(screen.getByRole("textbox")).toHaveDisplayValue("Test Sheet");
@@ -182,14 +160,7 @@ describe("SheetsFileWidget", () => {
       new Error("Error fetching sheet properties")
     );
 
-    render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: "abc123" },
-      }
-    );
-
-    await waitForEffect();
+    await renderWithValuesAndWait({ spreadsheetId: "abc123" });
 
     expect(screen.getByRole("textbox")).toHaveDisplayValue("abc123");
   });
@@ -233,15 +204,7 @@ describe("SheetsFileWidget", () => {
       ]
     );
 
-    const { getFormState } = render(
-      <SheetsFileWidget
-        name="extension.blockPipeline[0].config.spreadsheetId"
-        schema={BASE_SHEET_SCHEMA}
-      />,
-      { initialValues }
-    );
-
-    await waitForEffect();
+    const { getFormState } = await renderWithValuesAndWait(initialValues);
 
     expect(getFormState().services).toHaveLength(0);
   });
@@ -266,15 +229,7 @@ describe("SheetsFileWidget", () => {
       ]
     );
 
-    const { getFormState } = render(
-      <SheetsFileWidget
-        name="extension.blockPipeline[0].config.spreadsheetId"
-        schema={BASE_SHEET_SCHEMA}
-      />,
-      { initialValues }
-    );
-
-    await waitForEffect();
+    const { getFormState } = await renderWithValuesAndWait(initialValues);
 
     const formState = getFormState();
 
@@ -290,14 +245,7 @@ describe("SheetsFileWidget", () => {
       startTimestamp: null,
     });
 
-    render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: null },
-      }
-    );
-
-    await waitForEffect();
+    await renderWithValuesAndWait({ spreadsheetId: null });
 
     expect(
       screen.getByText(
@@ -319,16 +267,11 @@ describe("SheetsFileWidget", () => {
       startTimestamp: Date.now(),
     });
 
-    render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: null },
-      }
-    );
+    await renderWithValuesAndWait({ spreadsheetId: null });
 
-    jest.advanceTimersByTime(5000);
-
-    await waitForEffect();
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
 
     expect(
       screen.getByText("If Chrome is not displaying an authentication popup", {
