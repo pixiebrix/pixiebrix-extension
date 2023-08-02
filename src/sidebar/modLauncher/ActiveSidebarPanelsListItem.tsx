@@ -22,23 +22,37 @@ import { type Mod } from "@/types/modTypes";
 import { ListGroup } from "react-bootstrap";
 import ModIcon from "@/mods/ModIcon";
 import { type PanelEntry } from "@/types/sidebarTypes";
+import { useDispatch, useSelector } from "react-redux";
+import sidebarSlice from "@/sidebar/sidebarSlice";
+import { selectEventData } from "@/telemetry/deployments";
+import reportEvent from "@/telemetry/reportEvent";
+import { selectExtensionFromEventKey } from "@/sidebar/sidebarSelectors";
+import { Events } from "@/telemetry/events";
+import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 
 export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
   mod?: Mod;
   panel: PanelEntry;
 }> = ({ mod, panel }) => {
+  const dispatch = useDispatch();
+  const getModComponentFromEventKey = useSelector(selectExtensionFromEventKey);
   const { heading } = panel;
 
+  const onClick = () => {
+    const eventKey = eventKeyForEntry(panel);
+    reportEvent(Events.VIEW_SIDE_BAR_PANEL_MOD_LAUNCHER, {
+      ...selectEventData(getModComponentFromEventKey(eventKey)),
+      initialLoad: false,
+    });
+    dispatch(sidebarSlice.actions.selectTab(eventKey));
+  };
+
   return (
-    <ListGroup.Item className={styles.root}>
-      <div className={styles.mainContent}>
-        <div className={styles.icon}>
-          <ModIcon mod={mod} />
-        </div>
-        <div>
-          <h5 className={styles.lineClampOneLine}>{heading}</h5>
-        </div>
+    <ListGroup.Item className={styles.root} onClick={onClick}>
+      <div className={styles.icon}>
+        <ModIcon mod={mod} />
       </div>
+      <h5 className={styles.lineClampOneLine}>{heading}</h5>
     </ListGroup.Item>
   );
 };

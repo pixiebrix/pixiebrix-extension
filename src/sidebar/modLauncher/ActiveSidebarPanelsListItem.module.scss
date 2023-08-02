@@ -20,17 +20,13 @@
   display: flex;
   border: none;
   border-bottom: $S1 1px solid;
-  height: 90px;
-  padding: 16px;
+  height: 4.5rem;
+  padding: 1.5rem 1rem;
+  align-items: center;
 
   &:hover {
     background-color: $mod-page-list-item-hover;
   }
-}
-
-.mainContent {
-  display: flex;
-  flex-grow: 1;
 }
 
 .lineClampOneLine {
@@ -41,38 +37,8 @@
   overflow: hidden;
 }
 
-.lineClampTwoLines {
-  margin: 0;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
-.starterBricksList {
-  color: $N400;
-  font-size: 14px;
-}
-
 .icon {
   // The line height for the header is 1.2em, so adjust the icon to make the alignment match.
   margin-top: 0.2em;
   padding-right: 1rem;
-}
-
-.warningLink {
-  padding: 0;
-  margin: 0;
-  font-weight: 500;
-  font-size: 12px;
-  color: $W70;
-
-  &:hover {
-    color: $W70;
-  }
-
-  &:focus,
-  &:active {
-    color: $W70;
-  }
 }

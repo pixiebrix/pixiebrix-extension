@@ -106,26 +106,23 @@ export const ActiveSidebarPanelsList: React.FunctionComponent<{
   const renderBody = isEmpty(activeMods) ? (
     <NoActiveSidebarPanelsView />
   ) : (
-    <>
-      <h3 className={styles.activeModsHeading}>Active mods</h3>
-      <Row>
-        <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
-          {tableInstance.rows.map((row) => {
-            tableInstance.prepareRow(row);
-            const { mod } =
-              getModViewItemForPanel(activeMods, row.original) ?? {};
+    <Row>
+      <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
+        {tableInstance.rows.map((row) => {
+          tableInstance.prepareRow(row);
+          const { mod } =
+            getModViewItemForPanel(activeMods, row.original) ?? {};
 
-            return (
-              <ActiveSidebarPanelsListItem
-                key={row.original.extensionId}
-                panel={row.original}
-                mod={mod}
-              />
-            );
-          })}
-        </ListGroup>
-      </Row>
-    </>
+          return (
+            <ActiveSidebarPanelsListItem
+              key={row.original.extensionId}
+              panel={row.original}
+              mod={mod}
+            />
+          );
+        })}
+      </ListGroup>
+    </Row>
   );
 
   return isLoading ? <Loader /> : renderBody;
