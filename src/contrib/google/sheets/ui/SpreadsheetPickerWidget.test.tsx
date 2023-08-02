@@ -17,7 +17,7 @@
 
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
-import SheetsFileWidget from "@/contrib/google/sheets/ui/SheetsFileWidget";
+import SheetsFileWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { sheets } from "@/background/messenger/api";

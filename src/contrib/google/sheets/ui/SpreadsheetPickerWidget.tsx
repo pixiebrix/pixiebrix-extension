@@ -81,7 +81,7 @@ const ErrorView: React.FC<{
   );
 };
 
-const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
+const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
   const { values: formState, setValues: setFormState } = useFormikContext();
 
   const [pickerError, setPickerError] = useState<unknown>(null);
@@ -243,4 +243,4 @@ const SheetsFileWidget: React.FC<SchemaFieldProps> = (props) => {
 };
 
 // Ensure Google API is loaded before trying to render widget during mod activation, etc.
-export default requireGoogleHOC(SheetsFileWidget);
+export default requireGoogleHOC(SpreadsheetPickerWidget);
