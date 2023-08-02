@@ -14,35 +14,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-@import "@/themes/colors";
+@import "@/themes/colors.scss";
 
-.activeModsHeading {
-  margin-top: 16px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.illustration {
-  width: 254px;
-  margin: 40px 0;
-}
-
-.emptyViewRoot {
+.root {
   display: flex;
-  flex-direction: column;
+  border: none;
+  border-bottom: $S1 1px solid;
+  height: 4.5rem;
+  padding: 1.5rem 1rem;
   align-items: center;
-  margin-top: 9vh;
 
-  p {
-    color: $N600;
-    font-size: 16px;
-    margin-bottom: 2px;
-    text-align: center;
+  &:hover {
+    background-color: $mod-page-list-item-hover;
   }
+}
 
-  h4 {
-    color: $N800;
-    font-size: 20px;
-    font-weight: 700;
-  }
+.lineClampOneLine {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.icon {
+  // The line height for the header is 1.2em, so adjust the icon to make the alignment match.
+  margin-top: 0.2em;
+  padding-right: 1rem;
+}
+
+.noIcon {
+  // using em because the icon is 1.25em
+  width: 1.25em;
+  margin-right: 1rem;
 }
