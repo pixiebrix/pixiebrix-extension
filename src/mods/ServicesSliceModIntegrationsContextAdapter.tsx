@@ -28,7 +28,7 @@ const ServicesSliceModIntegrationsContextAdapter: React.FC<{
   const { values } = useFormikContext<ServiceSlice>();
 
   const contextValue: ModIntegrationsContextValue = {
-    integrationDependencies: values.services,
+    integrationDependencies: values.services ?? [],
   };
 
   return (

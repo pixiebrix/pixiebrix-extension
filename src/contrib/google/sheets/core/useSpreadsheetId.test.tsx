@@ -23,6 +23,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import ServicesSliceModIntegrationsContextAdapter from "@/mods/ServicesSliceModIntegrationsContextAdapter";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -66,6 +67,7 @@ describe("useSpreadsheetId", () => {
           },
         ],
       },
+      wrapper: ServicesSliceModIntegrationsContextAdapter,
     });
 
     await waitForEffect();
@@ -85,6 +87,7 @@ describe("useSpreadsheetId", () => {
           },
         ],
       },
+      wrapper: ServicesSliceModIntegrationsContextAdapter,
     });
 
     await waitForEffect();
