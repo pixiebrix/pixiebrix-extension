@@ -13,6 +13,7 @@ describe("sidebarSelectors", () => {
         staticPanels: [],
         modActivationPanel: null,
         pendingActivePanel: null,
+        closedTabs: {},
       },
       options: { extensions: [] },
     };

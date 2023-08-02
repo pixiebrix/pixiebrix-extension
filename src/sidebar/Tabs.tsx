@@ -45,11 +45,13 @@ import {
   selectSidebarModActivationPanel,
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
+  selectClosedTabs,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
+import useFlags from "@/hooks/useFlags";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -113,6 +115,7 @@ const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
 );
 
 const Tabs: React.FC = () => {
+  const { flagOn } = useFlags();
   const dispatch = useDispatch();
   const activeKey = useSelector(selectSidebarActiveTabKey);
   const panels = useSelector(selectSidebarPanels);
@@ -121,6 +124,8 @@ const Tabs: React.FC = () => {
   const modActivationPanel = useSelector(selectSidebarModActivationPanel);
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
+  const closedTabs = useSelector(selectClosedTabs);
+  const hasModLauncher = flagOn("sidebar-home-tab");
 
   const onSelect = (eventKey: string) => {
     reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
@@ -214,15 +219,32 @@ const Tabs: React.FC = () => {
             </TabWithDivider>
           )}
 
-          {staticPanels.map((staticPanel) => (
-            <TabWithDivider
-              key={staticPanel.key}
-              active={isPanelActive(staticPanel)}
-              eventKey={eventKeyForEntry(staticPanel)}
-            >
-              <span className={styles.tabTitle}>{staticPanel.heading}</span>
-            </TabWithDivider>
-          ))}
+          {staticPanels.map((staticPanel) => {
+            const eventKey = eventKeyForEntry(staticPanel);
+            // eslint-disable-next-line security/detect-object-injection -- checked for eventKey
+            const hidePanel = eventKey in closedTabs && closedTabs[eventKey];
+
+            return hidePanel ? null : (
+              <TabWithDivider
+                key={staticPanel.key}
+                active={isPanelActive(staticPanel)}
+                eventKey={eventKeyForEntry(staticPanel)}
+              >
+                <span className={styles.tabTitle}>{staticPanel.heading}</span>
+                {hasModLauncher && (
+                  <CloseButton
+                    onClick={() => {
+                      dispatch(
+                        sidebarSlice.actions.closeTab(
+                          eventKeyForEntry(staticPanel)
+                        )
+                      );
+                    }}
+                  />
+                )}
+              </TabWithDivider>
+            );
+          })}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height bg-white">
           {panels.map((panel: PanelEntry) => (
@@ -306,23 +328,29 @@ const Tabs: React.FC = () => {
             </Tab.Pane>
           )}
 
-          {staticPanels.map((staticPanel) => (
-            <Tab.Pane
-              className={cx("h-100", styles.paneOverrides)}
-              key={staticPanel.key}
-              eventKey={eventKeyForEntry(staticPanel)}
-            >
-              <ErrorBoundary
-                onError={() => {
-                  reportEvent(Events.VIEW_ERROR, {
-                    panelType: staticPanel.type,
-                  });
-                }}
+          {staticPanels.map((staticPanel) => {
+            const eventKey = eventKeyForEntry(staticPanel);
+            // eslint-disable-next-line security/detect-object-injection -- checked for eventKey
+            const hidePanel = eventKey in closedTabs && closedTabs[eventKey];
+
+            return hidePanel ? null : (
+              <Tab.Pane
+                className={cx("h-100", styles.paneOverrides)}
+                key={staticPanel.key}
+                eventKey={eventKey}
               >
-                {getBodyForStaticPanel(staticPanel.key)}
-              </ErrorBoundary>
-            </Tab.Pane>
-          ))}
+                <ErrorBoundary
+                  onError={() => {
+                    reportEvent(Events.VIEW_ERROR, {
+                      panelType: staticPanel.type,
+                    });
+                  }}
+                >
+                  {getBodyForStaticPanel(staticPanel.key)}
+                </ErrorBoundary>
+              </Tab.Pane>
+            );
+          })}
         </Tab.Content>
       </div>
     </Tab.Container>
