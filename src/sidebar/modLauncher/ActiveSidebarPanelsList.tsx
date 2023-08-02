@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import styles from "@/sidebar/modLauncher/ActiveModsList.module.scss";
+import styles from "@/sidebar/modLauncher/ActiveSidebarPanelsList.module.scss";
 
 import React from "react";
 import { type Mod, type ModViewItem } from "@/types/modTypes";
@@ -41,15 +41,27 @@ const columns: Array<Column<PanelEntry>> = [
 
 const NoActiveSidebarPanelsView: React.FunctionComponent = () => (
   <div className={styles.emptyViewRoot}>
-    <p>You don&apos;t have any mods activated</p>
-    <h4>But we have a solution for that</h4>
-    <img
-      src={workshopIllustration}
-      className={styles.illustration}
-      alt="Workshop"
-    />
+    <div>
+      <p>We didn&apos;t find any mods to run</p>
+      <h4>Don&apos;t worry, there&apos;s a solution</h4>
+      <img
+        src={workshopIllustration}
+        className={styles.illustration}
+        alt="Workshop"
+      />
+      <p>
+        Some mods don&apos;t run on every page.
+        <br />
+        And other mods don&apos;t run in the Sidebar.
+        <br />
+        <br />
+        Check that the mod is configured correctly.
+      </p>
+    </div>
     <p>
-      There are hundreds of mods to use on the{" "}
+      Looking for new mods?
+      <br />
+      Check out the{" "}
       <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
         PixieBrix Marketplace
       </a>

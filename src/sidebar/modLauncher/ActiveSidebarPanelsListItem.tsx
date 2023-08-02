@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/sidebar/modLauncher/ActiveModListItem.module.scss";
+import styles from "@/sidebar/modLauncher/ActiveSidebarPanelsListItem.module.scss";
 
 import React from "react";
 import { type Mod } from "@/types/modTypes";
