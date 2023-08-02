@@ -21,15 +21,14 @@ import React from "react";
 import Centered from "@/components/Centered";
 import IntroButtons from "./IntroButtons";
 
-const NoExtensionSelectedPane: React.FunctionComponent = () => (
-  <Centered>
-    <div className={styles.title}>No mod selected</div>
+const NoModsPane: React.FunctionComponent = () => (
+  <Centered isScrollable>
+    <div className={styles.title}>No mods on the page</div>
 
     <div className="text-left">
-      <p>Select a mod in the sidebar to edit</p>
       <p>
-        Or, click the <span className="text-info">Add</span> button in the
-        sidebar to add a mod to the page.
+        Click <span className="text-info">Add</span> in the Mods Panel to add a
+        mod to the page.
       </p>
 
       <IntroButtons />
@@ -37,4 +36,4 @@ const NoExtensionSelectedPane: React.FunctionComponent = () => (
   </Centered>
 );
 
-export default NoExtensionSelectedPane;
+export default NoModsPane;
