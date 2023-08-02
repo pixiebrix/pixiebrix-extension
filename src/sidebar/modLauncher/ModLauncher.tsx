@@ -19,7 +19,7 @@ import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container } from "react-bootstrap";
 import useMods from "@/mods/useMods";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import { ActiveSidebarPanelsList } from "@/sidebar/modLauncher/ActiveSidebarPanelsList";
+import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsList";
 
 const ModLauncher: React.FunctionComponent = () => {
   const { mods, error } = useMods();
@@ -30,7 +30,7 @@ const ModLauncher: React.FunctionComponent = () => {
         {error ? (
           <ErrorDisplay error={error} />
         ) : (
-          <ActiveSidebarPanelsList mods={mods} />
+          <ActiveSidebarModsList mods={mods} />
         )}
       </Container>
     </div>

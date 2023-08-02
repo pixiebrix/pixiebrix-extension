@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import styles from "@/sidebar/modLauncher/ActiveSidebarPanelsList.module.scss";
+import styles from "@/sidebar/modLauncher/ActiveSidebarModsList.module.scss";
 
 import React from "react";
 import { type Mod, type ModViewItem } from "@/types/modTypes";
@@ -22,7 +22,7 @@ import { ListGroup, Row } from "react-bootstrap";
 import useModViewItems from "@/mods/useModViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
-import { ActiveSidebarPanelsListItem } from "@/sidebar/modLauncher/ActiveSidebarPanelsListItem";
+import { ActiveSidebarModsListItem } from "@/sidebar/modLauncher/ActiveSidebarModsListItem";
 import { isEmpty } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
 
@@ -96,7 +96,7 @@ function getModViewItemForPanel(
   );
 }
 
-export const ActiveSidebarPanelsList: React.FunctionComponent<{
+export const ActiveSidebarModsList: React.FunctionComponent<{
   mods: Mod[];
 }> = ({ mods }) => {
   const { modViewItems, isLoading } = useModViewItems(mods);
@@ -122,7 +122,7 @@ export const ActiveSidebarPanelsList: React.FunctionComponent<{
             getModViewItemForPanel(activeMods, row.original) ?? {};
 
           return (
-            <ActiveSidebarPanelsListItem
+            <ActiveSidebarModsListItem
               key={row.original.extensionId}
               panel={row.original}
               mod={mod}
@@ -136,4 +136,4 @@ export const ActiveSidebarPanelsList: React.FunctionComponent<{
   return isLoading ? <Loader /> : renderBody;
 };
 
-export default ActiveSidebarPanelsList;
+export default ActiveSidebarModsList;

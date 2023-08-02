@@ -117,7 +117,6 @@ export const Events = {
 
   VIEW_ERROR: "ViewError",
   VIEW_SIDE_BAR_PANEL: "ViewSidePanelPanel",
-  VIEW_SIDE_BAR_PANEL_MOD_LAUNCHER: "ViewSidePanelPanelModLauncher",
 
   ZAPIER_KEY_COPY: "ZapierKeyCopy",
 } as const;

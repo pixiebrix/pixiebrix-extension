@@ -126,6 +126,7 @@ const Tabs: React.FC = () => {
     reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
+      source: "tabClick",
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
   };

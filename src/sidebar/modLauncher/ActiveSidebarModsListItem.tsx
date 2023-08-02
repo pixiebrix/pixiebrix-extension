@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/sidebar/modLauncher/ActiveSidebarPanelsListItem.module.scss";
+import styles from "@/sidebar/modLauncher/ActiveSidebarModsListItem.module.scss";
 
 import React from "react";
 import { type Mod } from "@/types/modTypes";
@@ -31,7 +31,7 @@ import { Events } from "@/telemetry/events";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import cx from "classnames";
 
-export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
+export const ActiveSidebarModsListItem: React.FunctionComponent<{
   mod?: Mod;
   panel: PanelEntry;
 }> = ({ mod, panel }) => {
@@ -41,9 +41,10 @@ export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
 
   const onClick = () => {
     const eventKey = eventKeyForEntry(panel);
-    reportEvent(Events.VIEW_SIDE_BAR_PANEL_MOD_LAUNCHER, {
+    reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
       ...selectEventData(getModComponentFromEventKey(eventKey)),
       initialLoad: false,
+      source: "modLauncher",
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
   };
@@ -58,4 +59,4 @@ export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
   );
 };
 
-export default ActiveSidebarPanelsListItem;
+export default ActiveSidebarModsListItem;
