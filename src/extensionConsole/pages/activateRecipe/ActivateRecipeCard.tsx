@@ -40,6 +40,7 @@ import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
 import ModIcon from "@/mods/ModIcon";
+import WizardValuesModIntegrationsContextAdapter from "@/mods/WizardValuesModIntegrationsContextAdapter";
 
 const ActivateRecipeCard: React.FC = () => {
   const dispatch = useDispatch();
@@ -79,8 +80,10 @@ const ActivateRecipeCard: React.FC = () => {
 
   const { wizardSteps, initialValues, validationSchema } = wizardState;
 
-  const renderBody: RenderBody = ({ values, isSubmitting }) => (
-    <>
+  const renderBody: RenderBody = ({ isSubmitting }) => (
+    <WizardValuesModIntegrationsContextAdapter
+      modComponentDefinitions={recipe.extensionPoints}
+    >
       <BlockFormSubmissionViaEnterIfFirstChild />
       <Card>
         <Card.Header className={styles.wizardHeader}>
@@ -127,7 +130,7 @@ const ActivateRecipeCard: React.FC = () => {
           ))}
         </Card.Body>
       </Card>
-    </>
+    </WizardValuesModIntegrationsContextAdapter>
   );
 
   const onSubmit: OnSubmit<WizardValues> = async (values, helpers) => {

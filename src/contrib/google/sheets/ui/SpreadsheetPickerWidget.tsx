@@ -43,6 +43,17 @@ import useTimeoutState from "@/hooks/useTimeoutState";
 import chromeP from "webext-polyfill-kinda";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { isEmpty } from "lodash";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import {
+  SPREADSHEET_FIELD_DESCRIPTION,
+  SPREADSHEET_FIELD_TITLE,
+} from "@/contrib/google/sheets/core/schemas";
+import { type Schema } from "@/types/schemaTypes";
+import AsyncStateGate from "@/components/AsyncStateGate";
+import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 
 /**
  * Timeout indicating that the Chrome identity API may be hanging.
@@ -81,14 +92,20 @@ const ErrorView: React.FC<{
   );
 };
 
-const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
+// Const IntegrationSpreadsheetPickerWidget: React.FC<SchemaFieldProps & { googleAccount: SanitizedIntegrationConfig }> = ({ name, googleAccount }) => {
+//
+// };
+
+const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
+  name,
+}) => {
   const { values: formState, setValues: setFormState } = useFormikContext();
 
   const [pickerError, setPickerError] = useState<unknown>(null);
 
   const [spreadsheetIdField, , spreadsheetIdFieldHelpers] = useField<
     string | Expression
-  >(props);
+  >(name);
 
   const {
     ensureSheetsTokenAction,
@@ -239,6 +256,54 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
         </AsyncButton>
       </InputGroup.Append>
     </InputGroup>
+  );
+};
+
+function isBaseSchema(schema: Schema): boolean {
+  // Cover both the normalized and de-referenced base schema
+  return Object.hasOwn(schema, "$ref") || Object.hasOwn(schema, "$id");
+}
+
+const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
+  const { schema: baseSchema } = props;
+  const googleAccountAsyncState = useGoogleAccount();
+  const schemaAsyncState = useDeriveAsyncState(
+    googleAccountAsyncState,
+    async (googleAccount: SanitizedIntegrationConfig) => {
+      if (!googleAccount) {
+        return baseSchema;
+      }
+
+      const spreadsheetFileList = await sheets.getAllSpreadsheets(
+        googleAccount
+      );
+      if (isEmpty(spreadsheetFileList.files)) {
+        return baseSchema;
+      }
+
+      const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
+        const: file.id,
+        title: file.name,
+      }));
+      return {
+        type: "string",
+        title: SPREADSHEET_FIELD_TITLE,
+        description: SPREADSHEET_FIELD_DESCRIPTION,
+        oneOf: spreadsheetSchemaEnum,
+      } as Schema;
+    }
+  );
+
+  return (
+    <AsyncStateGate state={schemaAsyncState} renderLoader={() => null}>
+      {({ data: schema }) =>
+        isBaseSchema(schema) ? (
+          <LegacySpreadsheetPickerWidget {...props} />
+        ) : (
+          <SchemaSelectWidget {...props} schema={schema} />
+        )
+      }
+    </AsyncStateGate>
   );
 };
 

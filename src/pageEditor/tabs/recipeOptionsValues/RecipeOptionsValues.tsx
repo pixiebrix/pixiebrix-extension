@@ -40,8 +40,9 @@ import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptions
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
+import { uniqBy } from "lodash";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -87,16 +88,27 @@ const RecipeOptionsValuesContent: React.FC = () => {
     [optionsDefinition]
   );
 
-  const initialValues = useMemo(() => {
-    if (modifiedOptionValues) {
-      return modifiedOptionValues;
-    }
+  const recipeExtensions = useMemo(
+    () =>
+      installedExtensions.filter(
+        (extension) => extension._recipe?.id === recipeId
+      ),
+    [installedExtensions, recipeId]
+  );
 
-    const recipeExtensions = installedExtensions.filter(
-      (extension) => extension._recipe?.id === recipeId
-    );
-    return inferRecipeOptions(recipeExtensions);
-  }, [installedExtensions, modifiedOptionValues, recipeId]);
+  const initialValues = useMemo(
+    () => modifiedOptionValues ?? inferRecipeOptions(recipeExtensions),
+    [modifiedOptionValues, recipeExtensions]
+  );
+
+  const integrationDependencies = useMemo(
+    () =>
+      uniqBy(
+        recipeExtensions.flatMap(({ services }) => services),
+        JSON.stringify
+      ),
+    [recipeExtensions]
+  );
 
   const updateRedux = useCallback(
     (options: OptionsArgs) => {
@@ -116,7 +128,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
   }
 
   const renderBody: RenderBody = ({ values }) => (
-    <>
+    <ModIntegrationsContext.Provider value={{ integrationDependencies }}>
       <Effect values={values} onChange={updateRedux} delayMillis={300} />
       <Card>
         <Card.Header>Mod Input Options</Card.Header>
@@ -126,7 +138,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
           </FieldRuntimeContext.Provider>
         </Card.Body>
       </Card>
-    </>
+    </ModIntegrationsContext.Provider>
   );
 
   return (

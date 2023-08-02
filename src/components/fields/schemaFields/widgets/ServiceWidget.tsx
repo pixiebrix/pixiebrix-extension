@@ -104,13 +104,13 @@ function lookupAuthId(
  * change the other auths for that service too
  */
 // eslint-disable-next-line max-params -- internal method where all the arguments have different types
-function produceServiceAuths(
+function setServiceSelectionForField(
   state: ServiceSlice,
   fieldName: string,
   serviceId: UUID,
   serviceIds: RegistryId[],
   options: AuthOption[]
-) {
+): ServiceSlice {
   const option = options.find((x) => x.value === serviceId);
 
   let outputKey: OutputKey;
@@ -157,7 +157,7 @@ function produceServiceAuths(
   return nextState;
 }
 
-function clearServiceSelection(
+function clearIntegrationSelection(
   state: ServiceSlice,
   fieldName: string
 ): ServiceSlice {
@@ -200,8 +200,14 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
       // Value will be null when the selection is "cleared"
       const newState =
         value == null
-          ? clearServiceSelection(root, field.name)
-          : produceServiceAuths(root, field.name, value, serviceIds, options);
+          ? clearIntegrationSelection(root, field.name)
+          : setServiceSelectionForField(
+              root,
+              field.name,
+              value,
+              serviceIds,
+              options
+            );
       setRootValues(newState);
       // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
       helpers.setError(undefined);

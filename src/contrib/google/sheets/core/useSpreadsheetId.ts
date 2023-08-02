@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useField, useFormikContext } from "formik";
-import { type ServiceSlice } from "@/components/fields/schemaFields/serviceFieldUtils";
+import { useField } from "formik";
 import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEmpty } from "lodash";
 import { pickDependency } from "@/services/useDependency";
@@ -30,9 +29,11 @@ import useAsyncState from "@/hooks/useAsyncState";
 import hash from "object-hash";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { joinName } from "@/utils/formUtils";
+import { useContext } from "react";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
 export async function findSpreadsheetId(
-  servicesValue: IntegrationDependency[],
+  integrationDependencies: IntegrationDependency[],
   spreadsheetIdValue: string | Expression | null,
   optionsArgs: OptionsArgs
 ): Promise<string | null> {
@@ -62,24 +63,26 @@ export async function findSpreadsheetId(
     throw new Error("Invalid spreadsheetId value");
   }
 
-  if (isEmpty(servicesValue)) {
+  if (isEmpty(integrationDependencies)) {
     throw new Error(
       "Invalid spreadsheetId variable, please use a Mod Inputs variable instead"
     );
   }
 
   const serviceOutputKey = getSheetServiceOutputKey(spreadsheetIdValue);
-  const sheetsService = servicesValue.find(
+  const baseDependency = integrationDependencies.find(
     (service) => service.outputKey === serviceOutputKey
   );
 
-  if (!sheetsService) {
+  if (!baseDependency) {
     throw new Error(
       "Unable to locate a matching Google Sheets service integration on this mod, please use a Mod Inputs variable instead"
     );
   }
 
-  const dependency = pickDependency(servicesValue, [sheetsService.id]);
+  const dependency = pickDependency(integrationDependencies, [
+    baseDependency.id,
+  ]);
   const sanitizedIntegrationConfig = await services.locate(
     dependency.id,
     dependency.config
@@ -102,9 +105,7 @@ export async function findSpreadsheetId(
 function useSpreadsheetId(
   blockConfigPath: string
 ): FetchableAsyncState<string | null> {
-  const {
-    values: { services: servicesValue },
-  } = useFormikContext<ServiceSlice>();
+  const { integrationDependencies } = useContext(ModIntegrationsContext);
 
   const [{ value: fieldValue }, , { setError }] = useField<string | Expression>(
     joinName(blockConfigPath, "spreadsheetId")
@@ -114,12 +115,16 @@ function useSpreadsheetId(
 
   return useAsyncState<string | null>(async () => {
     try {
-      return await findSpreadsheetId(servicesValue, fieldValue, optionsArgs);
+      return await findSpreadsheetId(
+        integrationDependencies,
+        fieldValue,
+        optionsArgs
+      );
     } catch (error: unknown) {
       setError(getErrorMessage(error));
       return null;
     }
-  }, [hash({ fieldValue, servicesValue, optionsArgs })]);
+  }, [hash({ fieldValue, integrationDependencies, optionsArgs })]);
 }
 
 export default useSpreadsheetId;

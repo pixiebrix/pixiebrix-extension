@@ -18,10 +18,12 @@
 import { createContext } from "react";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 
-export type ModIntegrationsContextValues = {
+export type ModIntegrationsContextValue = {
   integrationDependencies: IntegrationDependency[];
 };
 
-const ModIntegrationsContext = createContext<ModIntegrationsContextValues>({
+const ModIntegrationsContext = createContext<ModIntegrationsContextValue>({
   integrationDependencies: [],
 });
+
+export default ModIntegrationsContext;
