@@ -25,8 +25,8 @@ import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
 import EditorPane from "@/pageEditor/panes/EditorPane";
 import RecipePane from "@/pageEditor/panes/RecipePane";
-import NoExtensionSelectedPane from "@/pageEditor/panes/NoExtensionSelectedPane";
-import NoExtensionsPane from "@/pageEditor/panes/NoExtensionsPane";
+import NoModSelectedPane from "@/pageEditor/panes/NoModSelectedPane";
+import NoModsPane from "@/pageEditor/panes/NoModsPane";
 import WelcomePane from "@/pageEditor/panes/WelcomePane";
 import {
   selectActiveElementId,
@@ -133,11 +133,11 @@ const EditorContent: React.FC = () => {
   }
 
   if (availableDynamicIds?.length > 0 || installed.length > unavailableCount) {
-    return <NoExtensionSelectedPane />;
+    return <NoModSelectedPane />;
   }
 
   if (installed.length > 0) {
-    return <NoExtensionsPane unavailableCount={unavailableCount} />;
+    return <NoModsPane />;
   }
 
   return <WelcomePane />;
