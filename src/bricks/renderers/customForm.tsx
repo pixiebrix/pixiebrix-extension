@@ -27,6 +27,7 @@ import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { validateRegistryId } from "@/types/helpers";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrapOverrides from "@/bootstrapOverrides.scss?loadAsUrl";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
@@ -102,7 +103,7 @@ const CustomFormComponent: React.FunctionComponent<{
     })}
   >
     <ErrorBoundary>
-      <Stylesheets href={[bootstrap, custom]}>
+      <Stylesheets href={[bootstrap, bootstrapOverrides, custom]}>
         <JsonSchemaForm
           schema={schema}
           uiSchema={uiSchema}

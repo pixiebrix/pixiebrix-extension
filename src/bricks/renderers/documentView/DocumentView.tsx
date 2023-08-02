@@ -19,6 +19,8 @@ import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
 import React from "react";
 import EmotionShadowRoot from "react-shadow/emotion";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrapOverrides from "@/bootstrapOverrides.scss?loadAsUrl";
+
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { Stylesheets } from "@/components/Stylesheets";
@@ -44,7 +46,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, meta, onAction }}>
       <EmotionShadowRoot.div className="h-100">
-        <Stylesheets href={bootstrap}>
+        <Stylesheets href={[bootstrap, bootstrapOverrides]}>
           {body.map((documentElement, index) => {
             const documentBranch = buildDocumentBranch(documentElement, {
               staticId: joinPathParts("body", "children"),
