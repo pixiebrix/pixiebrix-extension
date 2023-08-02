@@ -24,6 +24,7 @@ import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { isExpression } from "@/utils/expressionUtils";
 import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 import Creatable from "react-select/creatable";
+import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
 
 export type StringOption = {
   value: string;
@@ -61,19 +62,12 @@ const SchemaSelectWidget: React.VFC<
     [schema, created, value]
   );
 
-  // Disabled placeholder option to indicate that a user can create an option
-  // If you change this, make sure you change the equivalent in SelectWidget.tsx
-  const creatablePlaceholder = {
-    value: "",
-    label: "Start typing to filter or create new entry",
-    isDisabled: true,
-  };
-
   // Show placeholder if users can create new options and the search is empty
-  const optionsWithPlaceholder =
-    creatable && textInputValue.length === 0
-      ? [creatablePlaceholder, ...options]
-      : options;
+  const optionsWithPlaceholder = useAddCreatablePlaceholder({
+    creatable,
+    options,
+    textInputValue,
+  });
 
   const selectedValue = options.find((x) => x.value === value) ?? {
     value: null,

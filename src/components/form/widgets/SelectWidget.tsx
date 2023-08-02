@@ -24,6 +24,7 @@ import Select, {
 } from "react-select";
 import Creatable from "react-select/creatable";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
 
 // Type of the Select options
 export type Option<TValue = string> = {
@@ -90,6 +91,12 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
 }: SelectWidgetProps<TOption>) => {
   const [textInputValue, setTextInputValue] = useState("");
 
+  const optionsWithPlaceholder = useAddCreatablePlaceholder({
+    creatable,
+    options,
+    textInputValue,
+  });
+
   if (loadError) {
     return (
       <div className="text-danger">
@@ -110,20 +117,6 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     options?.find((option: TOption) => value === option.value) ?? null;
 
   const Component = creatable ? Creatable : Select;
-
-  // Disabled placeholder option to indicate that a user can create an option
-  // If you change this, make sure you change the equivalent in SchemaSelectWidget.tsx
-  const creatablePlaceholder = {
-    value: "",
-    label: "Start typing to filter or create new entry",
-    isDisabled: true,
-  };
-
-  // Show placeholder if users can create new options and the search is empty
-  const optionsWithPlaceholder =
-    creatable && textInputValue.length === 0
-      ? [creatablePlaceholder, ...options]
-      : options;
 
   return (
     <Component
