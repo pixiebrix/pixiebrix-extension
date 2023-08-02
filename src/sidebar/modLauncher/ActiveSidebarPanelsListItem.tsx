@@ -18,36 +18,16 @@
 import styles from "@/sidebar/modLauncher/ActiveModListItem.module.scss";
 
 import React from "react";
-import { type ModViewItem } from "@/types/modTypes";
-import { Button, ListGroup } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExclamationCircle,
-  faStore,
-} from "@fortawesome/free-solid-svg-icons";
-import { getContainedStarterBrickNames } from "@/utils/modUtils";
-import useAsyncState from "@/hooks/useAsyncState";
+import { type Mod } from "@/types/modTypes";
+import { ListGroup } from "react-bootstrap";
 import ModIcon from "@/mods/ModIcon";
-import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
-import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
-import cx from "classnames";
-import useReportError from "@/hooks/useReportError";
+import { type PanelEntry } from "@/types/sidebarTypes";
 
 export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
-  modViewItem: ModViewItem;
-}> = ({ modViewItem }) => {
-  const { name, mod } = modViewItem;
-  const marketplaceListingUrl = useMarketplaceUrl(modViewItem);
-  const requestPermissions = useRequestPermissionsAction(modViewItem);
-
-  const { data: starterBricksContained = [], error } = useAsyncState(
-    async () => getContainedStarterBrickNames(modViewItem),
-    [],
-    { initialValue: [] }
-  );
-
-  useReportError(error);
+  mod?: Mod;
+  panel: PanelEntry;
+}> = ({ mod, panel }) => {
+  const { heading } = panel;
 
   return (
     <ListGroup.Item className={styles.root}>
@@ -56,45 +36,8 @@ export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
           <ModIcon mod={mod} />
         </div>
         <div>
-          <div>
-            <h5 className={styles.lineClampOneLine}>{name}</h5>
-            <span
-              className={cx(
-                styles.starterBricksList,
-                requestPermissions
-                  ? styles.lineClampOneLine
-                  : styles.lineClampTwoLines
-              )}
-            >
-              {starterBricksContained.join(" • ")}
-            </span>
-          </div>
-          {requestPermissions && (
-            <Button
-              variant="link"
-              size="sm"
-              className={styles.warningLink}
-              onClick={requestPermissions}
-            >
-              <FontAwesomeIcon icon={faExclamationCircle} /> Grant Permissions
-            </Button>
-          )}
+          <h5 className={styles.lineClampOneLine}>{heading}</h5>
         </div>
-      </div>
-      <div className="flex-shrink-1">
-        <EllipsisMenu
-          items={[
-            {
-              title: (
-                <>
-                  <FontAwesomeIcon fixedWidth icon={faStore} /> View Mod Details
-                </>
-              ),
-              href: marketplaceListingUrl,
-              disabled: !marketplaceListingUrl,
-            },
-          ]}
-        />
       </div>
     </ListGroup.Item>
   );

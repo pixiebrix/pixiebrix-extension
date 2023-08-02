@@ -27,16 +27,15 @@ import { isEmpty } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { type PanelEntry } from "@/types/sidebarTypes";
+import { useSelector } from "react-redux";
+import { selectSidebarPanels } from "@/sidebar/sidebarSelectors";
+import { isModDefinition, isResolvedModComponent } from "@/utils/modUtils";
 
-const columns: Array<Column<ModViewItem>> = [
+const columns: Array<Column<PanelEntry>> = [
   {
     Header: "Name",
-    accessor: "name",
-  },
-  {
-    Header: "Last updated",
-    accessor: "updatedAt",
-    sortInverted: true,
+    accessor: "heading",
   },
 ];
 
@@ -58,18 +57,38 @@ const NoActiveSidebarPanelsView: React.FunctionComponent = () => (
   </div>
 );
 
+function getModViewItemForPanel(
+  modViewItems: ModViewItem[],
+  panel: PanelEntry
+): ModViewItem | null {
+  return (
+    modViewItems.find(({ mod }) => {
+      if (isModDefinition(mod) && "id" in mod) {
+        return mod.id === panel.blueprintId;
+      }
+
+      if (isResolvedModComponent(mod)) {
+        return mod.id === panel.extensionId;
+      }
+
+      return false;
+    }) ?? null
+  );
+}
+
 export const ActiveSidebarPanelsList: React.FunctionComponent<{
   mods: Mod[];
 }> = ({ mods }) => {
   const { modViewItems, isLoading } = useModViewItems(mods);
+  const sidebarPanels = useSelector(selectSidebarPanels);
 
   const activeMods = modViewItems.filter(
     (modViewItem) => modViewItem.status === "Active" && !modViewItem.unavailable
   );
 
-  const tableInstance = useTable<ModViewItem>({
+  const tableInstance = useTable<PanelEntry>({
     columns,
-    data: activeMods,
+    data: sidebarPanels,
   });
 
   const renderBody = isEmpty(activeMods) ? (
@@ -81,10 +100,14 @@ export const ActiveSidebarPanelsList: React.FunctionComponent<{
         <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
           {tableInstance.rows.map((row) => {
             tableInstance.prepareRow(row);
+            const { mod } =
+              getModViewItemForPanel(activeMods, row.original) ?? {};
+
             return (
               <ActiveSidebarPanelsListItem
-                key={`${row.original.sharing.packageId}-${row.original.name}`}
-                modViewItem={row.original}
+                key={row.original.extensionId}
+                panel={row.original}
+                mod={mod}
               />
             );
           })}
