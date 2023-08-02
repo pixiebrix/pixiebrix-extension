@@ -19,7 +19,7 @@ import { type StaticPanelEntry } from "@/types/sidebarTypes";
 import { Container } from "react-bootstrap";
 import useMods from "@/mods/useMods";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import { ActiveModsList } from "@/sidebar/homePanel/ActiveModsList";
+import { ActiveModsList } from "@/sidebar/modLauncher/ActiveModsList";
 
 const HomePanel: React.FunctionComponent = () => {
   const { mods, error } = useMods();

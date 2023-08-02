@@ -20,7 +20,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
-import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
+import { HOME_PANEL } from "@/sidebar/modLauncher/HomePanel";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {

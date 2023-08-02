@@ -17,7 +17,7 @@
 
 import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
 import React, { type ReactNode } from "react";
-import HomePanel from "@/sidebar/homePanel/HomePanel";
+import HomePanel from "@/sidebar/modLauncher/HomePanel";
 import {
   isModActivationPanelEntry,
   isPanelEntry,
