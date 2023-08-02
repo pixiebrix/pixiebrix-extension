@@ -143,7 +143,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
             <span
               id="aria-context"
             >
-              option otherevent focused, 1 of 1. 1 result available. Use Up and Down to choose options, press Enter to select the currently focused option, press Escape to exit the menu, press Tab to select the option and exit the menu.
+              option Start typing to filter or create new entry focused disabled, 1 of 2. 2 results available. Use Up and Down to choose options, press Escape to exit the menu, press Tab to select the option and exit the menu.
             </span>
           </span>
           <div
@@ -229,9 +229,17 @@ exports[`TriggerConfiguration renders custom event field with known event names 
               class=" css-1n6sfyn-MenuList"
             >
               <div
-                aria-disabled="false"
-                class=" css-d7l1ni-option"
+                aria-disabled="true"
+                class=" css-sp6brv-option"
                 id="react-select-2-option-0"
+                tabindex="-1"
+              >
+                Start typing to filter or create new entry
+              </div>
+              <div
+                aria-disabled="false"
+                class=" css-10wo9uf-option"
+                id="react-select-2-option-1"
                 tabindex="-1"
               >
                 otherevent
