@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/sidebar/homePanel/ActiveModListItem.module.scss";
+import styles from "@/sidebar/modLauncher/ActiveModListItem.module.scss";
 
 import React from "react";
 import { type ModViewItem } from "@/types/modTypes";
@@ -34,7 +34,7 @@ import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsActio
 import cx from "classnames";
 import useReportError from "@/hooks/useReportError";
 
-export const ActiveModListItem: React.FunctionComponent<{
+export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
   modViewItem: ModViewItem;
 }> = ({ modViewItem }) => {
   const { name, mod } = modViewItem;
@@ -100,4 +100,4 @@ export const ActiveModListItem: React.FunctionComponent<{
   );
 };
 
-export default ActiveModListItem;
+export default ActiveSidebarPanelsListItem;

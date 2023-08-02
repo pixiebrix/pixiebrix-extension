@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import styles from "@/sidebar/homePanel/ActiveModsList.module.scss";
+import styles from "@/sidebar/modLauncher/ActiveModsList.module.scss";
 
 import React from "react";
 import { type Mod, type ModViewItem } from "@/types/modTypes";
@@ -22,7 +22,7 @@ import { ListGroup, Row } from "react-bootstrap";
 import useModViewItems from "@/mods/useModViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
-import { ActiveModListItem } from "@/sidebar/modLauncher/ActiveModListItem";
+import { ActiveSidebarPanelsListItem } from "@/sidebar/modLauncher/ActiveSidebarPanelsListItem";
 import { isEmpty } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
 
@@ -40,7 +40,7 @@ const columns: Array<Column<ModViewItem>> = [
   },
 ];
 
-const NoActiveModsView: React.FunctionComponent = () => (
+const NoActiveSidebarPanelsView: React.FunctionComponent = () => (
   <div className={styles.emptyViewRoot}>
     <p>You don&apos;t have any mods activated</p>
     <h4>But we have a solution for that</h4>
@@ -58,7 +58,7 @@ const NoActiveModsView: React.FunctionComponent = () => (
   </div>
 );
 
-export const ActiveModsList: React.FunctionComponent<{
+export const ActiveSidebarPanelsList: React.FunctionComponent<{
   mods: Mod[];
 }> = ({ mods }) => {
   const { modViewItems, isLoading } = useModViewItems(mods);
@@ -73,7 +73,7 @@ export const ActiveModsList: React.FunctionComponent<{
   });
 
   const renderBody = isEmpty(activeMods) ? (
-    <NoActiveModsView />
+    <NoActiveSidebarPanelsView />
   ) : (
     <>
       <h3 className={styles.activeModsHeading}>Active mods</h3>
@@ -82,7 +82,7 @@ export const ActiveModsList: React.FunctionComponent<{
           {tableInstance.rows.map((row) => {
             tableInstance.prepareRow(row);
             return (
-              <ActiveModListItem
+              <ActiveSidebarPanelsListItem
                 key={`${row.original.sharing.packageId}-${row.original.name}`}
                 modViewItem={row.original}
               />
@@ -96,4 +96,4 @@ export const ActiveModsList: React.FunctionComponent<{
   return isLoading ? <Loader /> : renderBody;
 };
 
-export default ActiveModsList;
+export default ActiveSidebarPanelsList;

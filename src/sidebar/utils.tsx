@@ -17,7 +17,7 @@
 
 import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
 import React, { type ReactNode } from "react";
-import HomePanel from "@/sidebar/modLauncher/HomePanel";
+import ModLauncher from "@/sidebar/modLauncher/ModLauncher";
 import {
   isModActivationPanelEntry,
   isPanelEntry,
@@ -27,7 +27,7 @@ import hash from "object-hash";
 import { sortBy } from "lodash";
 
 export const STATIC_PANEL_BODY_MAP: Record<string, ReactNode> = {
-  home: <HomePanel />,
+  modLauncher: <ModLauncher />,
 };
 
 export function getBodyForStaticPanel(key: string): ReactNode {

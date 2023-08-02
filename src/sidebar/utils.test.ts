@@ -20,7 +20,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
-import { HOME_PANEL } from "@/sidebar/modLauncher/HomePanel";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {
@@ -75,10 +75,10 @@ describe("defaultEventKey", () => {
       forms: [],
       temporaryPanels: [],
       panels: [],
-      staticPanels: [HOME_PANEL],
+      staticPanels: [MOD_LAUNCHER],
     } as unknown as SidebarEntries;
 
-    expect(defaultEventKey(args)).toBe(eventKeyForEntry(HOME_PANEL));
+    expect(defaultEventKey(args)).toBe(eventKeyForEntry(MOD_LAUNCHER));
     expect(defaultEventKey(args)).not.toBe("panel-undefined");
   });
 });
