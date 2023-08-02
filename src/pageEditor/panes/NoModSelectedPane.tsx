@@ -21,21 +21,15 @@ import React from "react";
 import Centered from "@/components/Centered";
 import IntroButtons from "./IntroButtons";
 
-const NoExtensionsPane: React.FunctionComponent<{
-  unavailableCount: number;
-}> = ({ unavailableCount }) => (
-  <Centered isScrollable>
-    <div className={styles.title}>No mods on the page</div>
+const NoModSelectedPane: React.FunctionComponent = () => (
+  <Centered>
+    <div className={styles.title}>No mod selected</div>
 
     <div className="text-left">
+      <p>Select a mod in the sidebar to edit</p>
       <p>
-        Click <span className="text-info">Add</span> in the sidebar to add an
-        element to the page.
-      </p>
-
-      <p>
-        Check the &ldquo;Show {unavailableCount ?? 1} unavailable&rdquo; box to
-        list mods that are activated but aren&apos;t available on this page.
+        Or, click the <span className="text-info">Add</span> button in the Mods
+        Panel to add a mod to the page.
       </p>
 
       <IntroButtons />
@@ -43,4 +37,4 @@ const NoExtensionsPane: React.FunctionComponent<{
   </Centered>
 );
 
-export default NoExtensionsPane;
+export default NoModSelectedPane;

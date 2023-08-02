@@ -16,7 +16,7 @@
  */
 
 import sidebarSlice, { fixActiveTabOnRemove } from "@/sidebar/sidebarSlice";
-import { eventKeyForEntry } from "@/sidebar/utils";
+import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
   cancelForm,
   cancelTemporaryPanel,

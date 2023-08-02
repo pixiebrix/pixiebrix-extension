@@ -38,7 +38,7 @@ import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
-import { HOME_PANEL } from "@/sidebar/homePanel/HomePanel";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import {
   ensureExtensionPointsInstalled,
   getReservedSidebarEntries,
@@ -89,11 +89,11 @@ function useConnectedListener(): SidebarListener {
 }
 
 const ConnectedSidebar: React.VFC = () => {
-  const { flagOn, permit } = useFlags();
+  const { flagOn } = useFlags();
   const dispatch = useDispatch();
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
-  const showHomePanel = flagOn("sidebar-home-tab") && permit("marketplace");
+  const showModLauncher = flagOn("sidebar-home-tab");
 
   // `useAsyncEffect` will run once on component mount since listener and formsRef don't change on renders.
   // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
@@ -107,7 +107,7 @@ const ConnectedSidebar: React.VFC = () => {
     const { panels, temporaryPanels, forms, modActivationPanel } =
       await getReservedSidebarEntries(topFrame);
 
-    const staticPanels = showHomePanel ? [HOME_PANEL] : [];
+    const staticPanels = showModLauncher ? [MOD_LAUNCHER] : [];
 
     // Log to help debug race conditions with lifecycle
     console.debug("ConnectedSidebar:sidebarSlice.actions.setInitialPanels", {
@@ -136,8 +136,8 @@ const ConnectedSidebar: React.VFC = () => {
       // for PANEL_HIDING_EVENT. (and the only time this SidebarApp would unmount is if the sidebar was closing)
       removeListener(listener);
     };
-    // Excluding showHomePanel from deps. The flags detect shouldn't change after initial mount. And if they somehow do,
-    // we don't want to attempt to change home panel visibility after initial mount.
+    // Excluding showModLauncher from deps. The flags detect shouldn't change after initial mount. And if they somehow do,
+    // we don't want to attempt to change mod launcher panel visibility after initial mount.
   }, [listener]);
 
   // Wire up a click handler on the document to handle activate link clicks

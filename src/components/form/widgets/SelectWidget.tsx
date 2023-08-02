@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ChangeEvent } from "react";
+import React, { type ChangeEvent, useState } from "react";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import Select, {
   type GroupBase,
@@ -24,6 +24,7 @@ import Select, {
 } from "react-select";
 import Creatable from "react-select/creatable";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
 
 // Type of the Select options
 export type Option<TValue = string> = {
@@ -62,7 +63,7 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     /**
      * True if the user can create new options. Default is false.
      */
-    createable?: boolean;
+    creatable?: boolean;
   };
 
 export const makeStringOptions = (...items: string[]): Option[] =>
@@ -85,9 +86,17 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   components,
   className,
   styles,
-  createable = false,
+  creatable = false,
   isSearchable = true,
 }: SelectWidgetProps<TOption>) => {
+  const [textInputValue, setTextInputValue] = useState("");
+
+  const optionsWithPlaceholder = useAddCreatablePlaceholder({
+    creatable,
+    options,
+    textInputValue,
+  });
+
   if (loadError) {
     return (
       <div className="text-danger">
@@ -107,7 +116,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   const selectedOption =
     options?.find((option: TOption) => value === option.value) ?? null;
 
-  const Component = createable ? Creatable : Select;
+  const Component = creatable ? Creatable : Select;
 
   return (
     <Component
@@ -118,7 +127,8 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       isDisabled={disabled}
       isLoading={isLoading}
       isClearable={isClearable}
-      options={options}
+      options={optionsWithPlaceholder}
+      onInputChange={setTextInputValue}
       value={selectedOption}
       onChange={patchedOnChange}
       components={components}

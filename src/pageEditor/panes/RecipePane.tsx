@@ -77,7 +77,7 @@ const RecipePane: React.VFC = () => {
   if (!activeRecipeId) {
     return (
       <Centered>
-        <Alert variant="danger">Recipe not found</Alert>
+        <Alert variant="danger">Mod not found</Alert>
       </Centered>
     );
   }

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const TOP_LEVEL_FRAME_ID = 0;
-
 export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
 
 export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher
@@ -27,7 +25,7 @@ export const PANEL_FRAME_ID = "pixiebrix-extension";
 
 export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 
-export const PIXIEBRIX_QUICKBAR_CONTAINER_ID = "pixiebrix-quickbar-container";
+export const PIXIEBRIX_QUICK_BAR_CONTAINER_ID = "pixiebrix-quickbar-container";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
@@ -39,7 +37,7 @@ export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 // When adding additional properties, be sure to make sure they're compatible with :not
 export const PRIVATE_ATTRIBUTES_SELECTOR = `
   #${PANEL_FRAME_ID},
-  #${PIXIEBRIX_QUICKBAR_CONTAINER_ID},
+  #${PIXIEBRIX_QUICK_BAR_CONTAINER_ID},
   [${PIXIEBRIX_DATA_ATTR}],
   [${CONTENT_SCRIPT_READY_ATTRIBUTE}],
   [${EXTENSION_POINT_DATA_ATTR}]

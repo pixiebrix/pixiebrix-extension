@@ -20,7 +20,7 @@ import {
   type SidebarRootState,
 } from "@/types/sidebarTypes";
 import { isEmpty } from "lodash";
-import { eventKeyForEntry } from "@/sidebar/utils";
+import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&

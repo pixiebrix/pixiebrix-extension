@@ -30,7 +30,7 @@ import EmotionShadowRoot from "react-shadow/emotion";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import { MAX_Z_INDEX, PIXIEBRIX_QUICKBAR_CONTAINER_ID } from "@/domConstants";
+import { MAX_Z_INDEX, PIXIEBRIX_QUICK_BAR_CONTAINER_ID } from "@/domConstants";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
@@ -174,12 +174,11 @@ export const initQuickBarApp = once(() => {
   expectContext("contentScript");
 
   if (isLoadedInIframe()) {
-    // Only include quick bar in top-level frame
     return;
   }
 
   const container = document.createElement("div");
-  container.id = PIXIEBRIX_QUICKBAR_CONTAINER_ID;
+  container.id = PIXIEBRIX_QUICK_BAR_CONTAINER_ID;
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
 
