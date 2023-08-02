@@ -29,6 +29,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { selectExtensionFromEventKey } from "@/sidebar/sidebarSelectors";
 import { Events } from "@/telemetry/events";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import cx from "classnames";
 
 export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
   mod?: Mod;
@@ -49,8 +50,8 @@ export const ActiveSidebarPanelsListItem: React.FunctionComponent<{
 
   return (
     <ListGroup.Item className={styles.root} onClick={onClick}>
-      <div className={styles.icon}>
-        <ModIcon mod={mod} />
+      <div className={cx(styles.icon, { [styles.noIcon]: !mod })}>
+        {Boolean(mod) && <ModIcon mod={mod} />}
       </div>
       <h5 className={styles.lineClampOneLine}>{heading}</h5>
     </ListGroup.Item>

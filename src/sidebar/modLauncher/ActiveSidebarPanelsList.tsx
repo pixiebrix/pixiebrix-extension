@@ -30,7 +30,11 @@ import { MARKETPLACE_URL } from "@/urlConstants";
 import { type PanelEntry } from "@/types/sidebarTypes";
 import { useSelector } from "react-redux";
 import { selectSidebarPanels } from "@/sidebar/sidebarSelectors";
-import { isModDefinition, isResolvedModComponent } from "@/utils/modUtils";
+import {
+  isModDefinition,
+  isResolvedModComponent,
+  isUnavailableMod,
+} from "@/utils/modUtils";
 
 const columns: Array<Column<PanelEntry>> = [
   {
@@ -75,6 +79,10 @@ function getModViewItemForPanel(
 ): ModViewItem | null {
   return (
     modViewItems.find(({ mod }) => {
+      if (isUnavailableMod(mod)) {
+        return false;
+      }
+
       if (isModDefinition(mod) && "id" in mod) {
         return mod.id === panel.blueprintId;
       }
