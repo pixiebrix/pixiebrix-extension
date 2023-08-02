@@ -30,7 +30,7 @@ import EmotionShadowRoot from "react-shadow/emotion";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import { MAX_Z_INDEX } from "@/domConstants";
+import { MAX_Z_INDEX, PIXIEBRIX_QUICK_BAR_CONTAINER_ID } from "@/domConstants";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
@@ -39,6 +39,7 @@ import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
 import FocusLock from "react-focus-lock";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -172,8 +173,12 @@ export const QuickBarApp: React.FC = () => (
 export const initQuickBarApp = once(() => {
   expectContext("contentScript");
 
+  if (isLoadedInIframe()) {
+    return;
+  }
+
   const container = document.createElement("div");
-  container.id = "pixiebrix-quickbar-container";
+  container.id = PIXIEBRIX_QUICK_BAR_CONTAINER_ID;
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
 
