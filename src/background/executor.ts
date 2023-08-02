@@ -156,7 +156,7 @@ export async function requestRunInTop(
  * Run a brick in the top-level frame of all OTHER tabs.
  * @param request the run request
  */
-export async function requestRunInBroadcast(
+export async function requestRunInOtherTabs(
   this: MessengerMeta,
   request: RunBrick
 ): Promise<unknown[]> {
@@ -205,10 +205,6 @@ export async function requestRunInAllFrames(
   const frames = await browser.webNavigation.getAllFrames({
     tabId: sourceTabId,
   });
-
-  console.debug("requestRunInAllFrames", { frames });
-
-  debugger;
 
   await asyncForEach(frames, async ({ frameId }) => {
     try {

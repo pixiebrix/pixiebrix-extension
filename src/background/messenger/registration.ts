@@ -30,7 +30,7 @@ import {
   closeTab,
   openTab,
   requestRunInAllFrames,
-  requestRunInBroadcast,
+  requestRunInOtherTabs,
   requestRunInOpener,
   requestRunInTarget,
   requestRunInTop,
@@ -129,7 +129,7 @@ declare global {
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
     REQUEST_RUN_IN_TOP: typeof requestRunInTop;
-    REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInBroadcast;
+    REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
 
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
@@ -211,7 +211,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,
     REQUEST_RUN_IN_TOP: requestRunInTop,
-    REQUEST_RUN_IN_OTHER_TABS: requestRunInBroadcast,
+    REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
 
     DELETE_CACHED_AUTH: deleteCachedAuthData,
