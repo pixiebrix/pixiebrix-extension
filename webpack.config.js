@@ -308,6 +308,10 @@ module.exports = (env, options) =>
       alias: {
         ...mockHeavyDependencies(),
 
+        // Transparently swap with tree-shakable lodash-es
+        // See corresponding entry in tsconfig.json
+        lodash: "lodash-es",
+
         ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
           ? { "redux-logger": false }
           : {}),

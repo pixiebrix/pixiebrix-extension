@@ -34,9 +34,9 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
-import { initFloatingActions } from "@/components/floatingActions/FloatingActions";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
+import initFloatingActions from "@/components/floatingActions/initFloatingActions";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -53,6 +53,9 @@ export async function init(): Promise<void> {
 
   registerMessenger();
   registerExternalMessenger();
+
+  // Need to register even if there are no mods on the page because mods may run bricks in this frame.
+  // For performance, would be nice to find a way to lazy-load
   registerBuiltinBlocks();
   registerContribBlocks();
 
