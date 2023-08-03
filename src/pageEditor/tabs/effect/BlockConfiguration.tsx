@@ -24,11 +24,9 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useAsyncState } from "@/hooks/common";
-import SelectWidget, {
-  type Option,
-} from "@/components/form/widgets/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BrickConfig, type BrickWindow } from "@/bricks/types";
+import { type BrickConfig } from "@/bricks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
@@ -39,20 +37,10 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
 import { inputProperties } from "@/utils/schemaUtils";
-
-const rootModeOptions = [
-  { label: "Document", value: "document" },
-  { label: "Element", value: "element" },
-  { label: "Inherit", value: "inherit" },
-];
-
-const targetOptions: Array<Option<BrickWindow>> = [
-  { label: "Current Tab (self)", value: "self" },
-  { label: "Opener Tab (opener)", value: "opener" },
-  { label: "Target Tab (target)", value: "target" },
-  { label: "Top-level Frame (top)", value: "top" },
-  { label: "All Tabs (broadcast)", value: "broadcast" },
-];
+import {
+  rootModeOptions,
+  windowOptions,
+} from "@/pageEditor/tabs/effect/configurationConstants";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -203,7 +191,7 @@ const BlockConfiguration: React.FunctionComponent<{
               name={configName("window")}
               label="Target Tab/Frame"
               as={SelectWidget}
-              options={targetOptions}
+              options={windowOptions}
               blankValue={DEFAULT_WINDOW_VALUE}
               description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
             />

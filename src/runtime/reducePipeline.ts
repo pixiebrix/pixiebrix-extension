@@ -36,7 +36,11 @@ import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "@/runtime/apiVersionOptions";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import {
+  type BrickConfig,
+  type BrickPipeline,
+  hasMultipleTargets,
+} from "@/bricks/types";
 import {
   logIfInvalidOutput,
   selectBlockRootElement,
@@ -48,7 +52,7 @@ import {
   type ResolvedBrickConfig,
   unsafeAssumeValidArg,
 } from "@/runtime/runtimeTypes";
-import { type RunBlock } from "@/contentScript/runBlockTypes";
+import { type RunBrick } from "@/contentScript/messenger/runBrickTypes";
 import { resolveBlockConfig } from "@/bricks/registry";
 import {
   BusinessError,
@@ -314,7 +318,7 @@ async function executeBlockWithValidatedProps(
     messageContext: options.logger.context,
   };
 
-  const request: RunBlock = {
+  const request: RunBrick = {
     blockId: config.id,
     blockArgs: args,
     options: commonOptions,
@@ -334,7 +338,11 @@ async function executeBlockWithValidatedProps(
     }
 
     case "broadcast": {
-      return requestRun.inAll(request);
+      return requestRun.inOtherTabs(request);
+    }
+
+    case "all_frames": {
+      return requestRun.inAllFrames(request);
     }
 
     case "self": {
@@ -779,7 +787,8 @@ export async function blockReducer(
       logger.warn(`Ignoring output key for effect ${blockConfig.id}`);
     }
 
-    if (output != null) {
+    // If run against multiple targets, the output at this point will be an array
+    if (output != null && !hasMultipleTargets(resolvedConfig.config.window)) {
       console.warn(`Effect ${blockConfig.id} produced an output`, { output });
       logger.warn(`Ignoring output produced by effect ${blockConfig.id}`);
     }
