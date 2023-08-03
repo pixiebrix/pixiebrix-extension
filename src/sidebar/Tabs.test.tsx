@@ -21,7 +21,7 @@ import { render } from "@/sidebar/testHelpers";
 import { type PanelEntry } from "@/types/sidebarTypes";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import useFlags from "@/hooks/useFlags";
 import { waitForEffect } from "@/testUtils/testHelpers";
