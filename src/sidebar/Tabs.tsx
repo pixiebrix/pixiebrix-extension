@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
-import { type PanelEntry, type SidebarEntry } from "@/types/sidebarTypes";
+import React, { useEffect, type MouseEvent } from "react";
+import {
+  type StaticPanelEntry,
+  type PanelEntry,
+  type SidebarEntry,
+} from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
 import { type UUID } from "@/types/stringTypes";
@@ -55,6 +59,8 @@ import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultiple
 import useFlags from "@/hooks/useFlags";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
+import { getTopLevelFrame } from "webext-messenger";
+import { hideSidebar } from "@/contentScript/messenger/api";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -62,7 +68,7 @@ const permanentSidebarPanelAction = () => {
 
 const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
   <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
-    <Nav.Link {...props} className={styles.tabHeader}>
+    <Nav.Link {...props} className={styles.tabHeader} target="_self">
       {children}
     </Nav.Link>
     <div className={styles.tabDivider} />
@@ -107,10 +113,29 @@ const Tabs: React.FC = () => {
       source: "modLauncer open button",
     });
 
-    if (isModLauncherOpen) {
-      dispatch(sidebarSlice.actions.selectTab(modLauncherEventKey));
-    } else {
+    if (!isModLauncherOpen) {
       dispatch(sidebarSlice.actions.openTab(modLauncherEventKey));
+    }
+
+    dispatch(sidebarSlice.actions.selectTab(modLauncherEventKey));
+  };
+
+  const onCloseStaticPanel = async (
+    event: MouseEvent<HTMLButtonElement>,
+    staticPanel: StaticPanelEntry
+  ) => {
+    // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
+    event.stopPropagation();
+
+    // The mod launcher is a special case where we want to hide the sidebar if all other tabs are closed
+    if (
+      staticPanel.key === MOD_LAUNCHER.key &&
+      panels.every((panel) => closedTabs[eventKeyForEntry(panel)])
+    ) {
+      const topLevelFrame = await getTopLevelFrame();
+      await hideSidebar(topLevelFrame);
+    } else {
+      dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(staticPanel)));
     }
   };
 
@@ -206,13 +231,9 @@ const Tabs: React.FC = () => {
               >
                 <span className={styles.tabTitle}>{staticPanel.heading}</span>
                 <CloseButton
-                  onClick={() => {
-                    dispatch(
-                      sidebarSlice.actions.closeTab(
-                        eventKeyForEntry(staticPanel)
-                      )
-                    );
-                  }}
+                  onClick={async (event) =>
+                    onCloseStaticPanel(event, staticPanel)
+                  }
                 />
               </TabWithDivider>
             );
@@ -312,29 +333,23 @@ const Tabs: React.FC = () => {
             </Tab.Pane>
           )}
 
-          {staticPanels.map((staticPanel) => {
-            const eventKey = eventKeyForEntry(staticPanel);
-            // eslint-disable-next-line security/detect-object-injection -- checked for eventKey
-            const hidePanel = eventKey in closedTabs && closedTabs[eventKey];
-
-            return hidePanel ? null : (
-              <Tab.Pane
-                className={cx("h-100", styles.paneOverrides)}
-                key={staticPanel.key}
-                eventKey={eventKey}
+          {staticPanels.map((staticPanel) => (
+            <Tab.Pane
+              className={cx("h-100", styles.paneOverrides)}
+              key={staticPanel.key}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <ErrorBoundary
+                onError={() => {
+                  reportEvent(Events.VIEW_ERROR, {
+                    panelType: staticPanel.type,
+                  });
+                }}
               >
-                <ErrorBoundary
-                  onError={() => {
-                    reportEvent(Events.VIEW_ERROR, {
-                      panelType: staticPanel.type,
-                    });
-                  }}
-                >
-                  {getBodyForStaticPanel(staticPanel.key)}
-                </ErrorBoundary>
-              </Tab.Pane>
-            );
-          })}
+                {getBodyForStaticPanel(staticPanel.key)}
+              </ErrorBoundary>
+            </Tab.Pane>
+          ))}
         </Tab.Content>
       </div>
     </Tab.Container>
