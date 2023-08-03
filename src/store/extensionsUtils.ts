@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, groupBy, uniq } from "lodash";
+import { compact, flatten, groupBy, uniq, uniqBy } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe
@@ -68,4 +70,21 @@ export function inferRecipeAuths(
   }
 
   return result;
+}
+
+/**
+ * Infer all unique integration dependencies for a recipe
+ */
+export function inferRecipeDependencies(
+  installedRecipeExtensions: ModComponentBase[],
+  dirtyRecipeElements: ModComponentFormState[]
+): IntegrationDependency[] {
+  const withServices: Array<{ services?: IntegrationDependency[] }> = [
+    ...installedRecipeExtensions,
+    ...dirtyRecipeElements,
+  ];
+  return uniqBy(
+    flatten(withServices.map(({ services }) => services ?? [])),
+    JSON.stringify
+  );
 }

@@ -255,11 +255,6 @@ const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
   );
 };
 
-function isBaseSchema(schema: Schema): boolean {
-  // Cover both the normalized and de-referenced base schema
-  return Object.hasOwn(schema, "$ref") || Object.hasOwn(schema, "$id");
-}
-
 const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
   const { schema: baseSchema } = props;
   const googleAccountAsyncState = useGoogleAccount();
@@ -293,7 +288,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
   return (
     <AsyncStateGate state={schemaAsyncState} renderLoader={() => null}>
       {({ data: schema }) =>
-        isBaseSchema(schema) ? (
+        schema === baseSchema ? (
           <LegacySpreadsheetPickerWidget {...props} />
         ) : (
           <SchemaSelectWidget {...props} schema={schema} />

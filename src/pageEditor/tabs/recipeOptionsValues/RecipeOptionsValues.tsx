@@ -21,6 +21,7 @@ import {
   selectActiveRecipeId,
   selectDirtyOptionDefinitionsForRecipeId,
   selectDirtyOptionValuesForRecipeId,
+  selectNotDeletedElements,
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
@@ -34,14 +35,16 @@ import Loader from "@/components/Loader";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { inferRecipeOptions } from "@/store/extensionsUtils";
+import {
+  inferRecipeDependencies,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
-import { uniqBy } from "lodash";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
@@ -64,6 +67,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
     selectDirtyOptionValuesForRecipeId(recipeId)
   );
   const installedExtensions = useSelector(selectNotDeletedExtensions);
+  const dirtyElements = useSelector(selectNotDeletedElements);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyRecipeOptions) {
@@ -101,13 +105,14 @@ const RecipeOptionsValuesContent: React.FC = () => {
     [modifiedOptionValues, recipeExtensions]
   );
 
+  const recipeElements = useMemo(
+    () => dirtyElements.filter((element) => element.recipe?.id === recipeId),
+    [dirtyElements, recipeId]
+  );
+
   const integrationDependencies = useMemo(
-    () =>
-      uniqBy(
-        recipeExtensions.flatMap(({ services }) => services),
-        JSON.stringify
-      ),
-    [recipeExtensions]
+    () => inferRecipeDependencies(recipeExtensions, recipeElements),
+    [recipeExtensions, recipeElements]
   );
 
   const updateRedux = useCallback(

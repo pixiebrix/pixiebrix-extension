@@ -22,7 +22,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
-import servicesSlice from "@/store/servicesSlice";
+import servicesSlice from "@/store/services/servicesSlice";
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";

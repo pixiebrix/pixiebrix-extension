@@ -17,7 +17,7 @@
 
 import * as Yup from "yup";
 import React, { useContext } from "react";
-import servicesSlice from "@/store/servicesSlice";
+import servicesSlice from "@/store/services/servicesSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
@@ -31,7 +31,7 @@ import { Button } from "react-bootstrap";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 import { useHistory } from "react-router";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
-import { selectConfiguredServices } from "@/store/servicesSelectors";
+import { selectConfiguredServices } from "@/store/services/servicesSelectors";
 import { selectSettings } from "@/store/settingsSelectors";
 import { isEmpty } from "lodash";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";

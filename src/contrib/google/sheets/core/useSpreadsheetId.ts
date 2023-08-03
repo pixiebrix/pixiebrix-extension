@@ -70,18 +70,18 @@ export async function findSpreadsheetId(
   }
 
   const serviceOutputKey = getSheetServiceOutputKey(spreadsheetIdValue);
-  const baseDependency = integrationDependencies.find(
+  const integrationDependency = integrationDependencies.find(
     (service) => service.outputKey === serviceOutputKey
   );
 
-  if (!baseDependency) {
+  if (!integrationDependency) {
     throw new Error(
-      "Unable to locate a matching Google Sheets service integration on this mod, please use a Mod Inputs variable instead"
+      "Unable to locate a matching Google Sheets integration configuration on this mod, please use a Mod Inputs variable instead"
     );
   }
 
   const dependency = pickDependency(integrationDependencies, [
-    baseDependency.id,
+    integrationDependency.id,
   ]);
   const sanitizedIntegrationConfig = await services.locate(
     dependency.id,
@@ -91,7 +91,7 @@ export async function findSpreadsheetId(
 
   if (!configSpreadsheetId) {
     throw new Error(
-      "Could not find spreadsheetId in service configuration: " +
+      "Could not find spreadsheetId in integration configuration: " +
         JSON.stringify(sanitizedIntegrationConfig)
     );
   }

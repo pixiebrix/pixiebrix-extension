@@ -19,7 +19,7 @@ import styles from "@/extensionConsole/pages/services/PrivateServicesCard.module
 
 import React, { useCallback, useContext, useState } from "react";
 import { connect } from "react-redux";
-import servicesSlice from "@/store/servicesSlice";
+import servicesSlice from "@/store/services/servicesSlice";
 import Page from "@/layout/Page";
 import { Card, Col, Row } from "react-bootstrap";
 import { push } from "connected-react-router";

@@ -40,7 +40,7 @@ import { isUUID } from "@/types/helpers";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import WizardValuesModIntegrationsContextAdapter from "@/mods/WizardValuesModIntegrationsContextAdapter";
+import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 
 type ActivateRecipeInputsProps = {
   recipe: ModDefinition;

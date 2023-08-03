@@ -23,7 +23,9 @@ import { persistReducer } from "redux-persist";
 import { appApi, useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import servicesSlice, {
+  persistServicesConfig,
+} from "@/store/services/servicesSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { type Me } from "@/types/contract";
 

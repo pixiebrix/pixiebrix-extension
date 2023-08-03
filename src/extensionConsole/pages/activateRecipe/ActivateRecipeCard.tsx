@@ -40,7 +40,7 @@ import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
 import ModIcon from "@/mods/ModIcon";
-import WizardValuesModIntegrationsContextAdapter from "@/mods/WizardValuesModIntegrationsContextAdapter";
+import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 
 const ActivateRecipeCard: React.FC = () => {
   const dispatch = useDispatch();

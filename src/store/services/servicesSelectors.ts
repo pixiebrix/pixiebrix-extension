@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ServicesState } from "@/store/servicesSlice";
+import { type ServicesState } from "@/store/services/servicesSlice";
 import { type IntegrationConfig } from "@/types/integrationTypes";
 
 export const selectConfiguredServices = ({

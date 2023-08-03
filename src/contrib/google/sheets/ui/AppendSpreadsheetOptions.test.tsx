@@ -47,7 +47,7 @@ import { type AuthOption } from "@/auth/authTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import selectEvent from "react-select-event";
-import ServicesSliceModIntegrationsContextAdapter from "@/mods/ServicesSliceModIntegrationsContextAdapter";
+import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
 import { FormikValues } from "formik";
 
 let idSequence = 0;

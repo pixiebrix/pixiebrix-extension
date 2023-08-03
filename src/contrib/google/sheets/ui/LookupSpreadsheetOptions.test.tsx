@@ -45,7 +45,7 @@ import {
   isGoogleInitialized,
 } from "@/contrib/google/initGoogle";
 import { FormikValues } from "formik";
-import ServicesSliceModIntegrationsContextAdapter from "@/mods/ServicesSliceModIntegrationsContextAdapter";
+import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
 
 let idSequence = 0;
 function newId(): UUID {

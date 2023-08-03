@@ -26,7 +26,7 @@ import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
-import servicesSlice from "@/store/servicesSlice";
+import servicesSlice from "@/store/services/servicesSlice";
 
 function configureCommonStoreForTests(initialState?: any) {
   return configureStore({

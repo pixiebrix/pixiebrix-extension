@@ -34,7 +34,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker";
 import { act, screen } from "@testing-library/react";
-import { FormikValues } from "formik";
+import { type FormikValues } from "formik";
 
 jest.mock("@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker", () => ({
   __esModule: true,

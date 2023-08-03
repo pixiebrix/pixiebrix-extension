@@ -24,14 +24,15 @@ import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { validateRegistryId } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
 
+const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
+
 /**
  * Hook to get the Google account from mod integrations context
  */
 function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | null> {
   const { integrationDependencies } = useContext(ModIntegrationsContext);
-  const googleIntegrationId = validateRegistryId("google/oauth2-pkce");
   const googleDependency = integrationDependencies.find(
-    (dependency) => dependency.id === googleIntegrationId
+    (dependency) => dependency.id === GOOGLE_PKCE_INTEGRATION_ID
   );
 
   return useAsyncState(async () => {
