@@ -99,7 +99,7 @@ export const requestRun = {
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
   inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
   inTop: getMethod("REQUEST_RUN_IN_TOP", bg),
-  inAll: getMethod("REQUEST_RUN_IN_ALL", bg),
+  inOtherTabs: getMethod("REQUEST_RUN_IN_OTHER_TABS", bg),
 };
 
 export const contextMenus = {

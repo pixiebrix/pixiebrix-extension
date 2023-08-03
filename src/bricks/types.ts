@@ -77,14 +77,33 @@ export type ReaderConfig =
 
 /**
  * Where to execute the brick
- * - self: the current tab
+ * - self: the current tab/frame
  * - opener: the tab that opened the current tab
  * - target: the last tab that the current tab opened
  * - top: the top-most frame in the window
+ * - all_frames: all frames in the window
  * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
  * @see {@link BrickConfig.window}
+ * @since 1.7.36 - added all_frames
  */
-export type BrickWindow = "self" | "opener" | "target" | "top" | "broadcast";
+export type BrickWindow =
+  | "self"
+  | "opener"
+  | "target"
+  | "top"
+  | "broadcast"
+  | "all_frames";
+
+/**
+ * Returns true if the BrickWindow targets multiple tabs and/or frames.
+ *
+ * The runtime will return an array of results (one for each successful target)
+ */
+export function hasMultipleTargets(
+  window: BrickWindow
+): window is "broadcast" | "all_frames" {
+  return window === "broadcast" || window === "all_frames";
+}
 
 /**
  * Condition expression written in templateEngine for deciding if the step should be run.

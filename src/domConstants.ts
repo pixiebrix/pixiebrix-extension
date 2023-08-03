@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export const TOP_LEVEL_FRAME_ID = 0;
+
 export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
 
 export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher

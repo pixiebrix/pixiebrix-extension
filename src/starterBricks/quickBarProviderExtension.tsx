@@ -62,6 +62,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 export type QuickBarProviderConfig = {
   /**
@@ -355,6 +356,11 @@ export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarte
   }
 
   async isAvailable(): Promise<boolean> {
+    // The quick bar lives on the top-level frame. So any actions contributed will never be visible
+    if (isLoadedInIframe()) {
+      return false;
+    }
+
     if (
       !isEmpty(this._definition.isAvailable) &&
       (await checkAvailable(this._definition.isAvailable))

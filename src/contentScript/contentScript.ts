@@ -79,8 +79,9 @@ async function initContentScript() {
   }
 }
 
-if (location.protocol === "https:" || DEBUG) {
-  // eslint-disable-next-line promise/prefer-await-to-then -- Top-level await isn't available
+// Support running in secure pages and about: pages, which are used by srcdoc frames
+if (["https:", "about:"].includes(location.protocol) || DEBUG) {
+  // eslint-disable-next-line promise/prefer-await-to-then -- top-level await isn't available
   void initContentScript().catch((error) => {
     throw new Error("Error initializing contentScript", { cause: error });
   });

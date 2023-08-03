@@ -20,17 +20,17 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 
-export interface RemoteBlockOptions {
+export interface RemoteBrickOptions {
   ctxt: unknown;
   messageContext: MessageContext;
   maxRetries?: number;
   isAvailable?: Availability;
 }
 
-export interface RunBlock {
+export interface RunBrick {
   sourceTabId?: number;
   nonce?: string;
   blockId: RegistryId;
   blockArgs: BrickArgs;
-  options: RemoteBlockOptions;
+  options: RemoteBrickOptions;
 }
