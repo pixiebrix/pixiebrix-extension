@@ -15,12 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
-import {
-  type PanelEntry,
-  type SidebarEntry,
-  type TemporaryPanelEntry,
-} from "@/types/sidebarTypes";
+import React, { useEffect } from "react";
+import { type PanelEntry, type SidebarEntry } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
 import { type UUID } from "@/types/stringTypes";
@@ -40,7 +36,6 @@ import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
-import { type SubmitPanelAction } from "@/bricks/errors";
 import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -58,58 +53,11 @@ import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import useFlags from "@/hooks/useFlags";
+import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
-
-// Need to memoize this to make sure it doesn't rerender unless its entry actually changes
-// This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646
-const TemporaryPanelTabPane: React.FC<{
-  panel: TemporaryPanelEntry;
-}> = React.memo(({ panel }) => {
-  const dispatch = useDispatch();
-  const onAction = useCallback(
-    (action: SubmitPanelAction) => {
-      dispatch(
-        sidebarSlice.actions.resolveTemporaryPanel({
-          nonce: panel.nonce,
-          action,
-        })
-      );
-    },
-    [dispatch, panel.nonce]
-  );
-  const { type, extensionId, blueprintId, payload } = panel;
-
-  return (
-    <Tab.Pane
-      className={cx("full-height flex-grow", styles.paneOverrides)}
-      eventKey={eventKeyForEntry(panel)}
-    >
-      <ErrorBoundary
-        onError={() => {
-          reportEvent(Events.VIEW_ERROR, {
-            panelType: type,
-            extensionId,
-            blueprintId,
-          });
-        }}
-      >
-        <PanelBody
-          isRootPanel={false}
-          payload={payload}
-          context={{
-            extensionId,
-            blueprintId,
-          }}
-          onAction={onAction}
-        />
-      </ErrorBoundary>
-    </Tab.Pane>
-  );
-});
-TemporaryPanelTabPane.displayName = "TemporaryPanelTabPane";
 
 const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
   <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
