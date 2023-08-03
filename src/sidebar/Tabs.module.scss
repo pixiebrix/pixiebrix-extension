@@ -190,6 +190,11 @@
   // 3px is the default margin-right for the bootstrap link-variant button
   margin-right: calc(0.5rem + 3px);
 
+  svg {
+    width: 0.625rem;
+    margin-left: 0.125rem;
+  }
+
   &:hover {
     color: $N800;
     background-color: rgba(0, 0, 0, 0.07);
