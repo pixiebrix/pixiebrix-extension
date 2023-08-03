@@ -365,7 +365,7 @@ class DisplayTemporaryInfo extends TransformerABC {
         title: "Refresh Trigger",
         oneOf: [
           { const: "manual", title: "Manual" },
-          { const: "statechange", title: "Mod Variable/Page State Change" },
+          { const: "statechange", title: "Mod Variable/Page State Changed" },
         ],
         description: "An optional trigger for refreshing the document",
       },
