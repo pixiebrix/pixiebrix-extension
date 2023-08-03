@@ -93,7 +93,10 @@ export interface StarterBrick extends Metadata {
    *
    * Safe to call multiple times.
    *
+   * Does not install if `isAvailable` returns false.
+   *
    * @see runModComponents
+   * @see isAvailable
    */
   install(): Promise<boolean>;
 

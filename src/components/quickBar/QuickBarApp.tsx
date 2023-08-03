@@ -173,7 +173,9 @@ export const QuickBarApp: React.FC = () => (
 export const initQuickBarApp = once(() => {
   expectContext("contentScript");
 
+  // The QuickBarApp only lives in the top-level frame
   if (isLoadedInIframe()) {
+    console.warn("initQuickBarApp called in iframe");
     return;
   }
 
