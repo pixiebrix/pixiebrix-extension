@@ -66,6 +66,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 export type SidebarConfig = {
   heading: string;
@@ -502,7 +503,8 @@ class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
   }
 
   async isAvailable(): Promise<boolean> {
-    return checkAvailable(this.definition.isAvailable);
+    // Persistent sidebar panels are not available in iframes. They should be installed on the top frame.
+    return !isLoadedInIframe() && checkAvailable(this.definition.isAvailable);
   }
 }
 
