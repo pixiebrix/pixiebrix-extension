@@ -30,10 +30,11 @@ const id = "connection-lost";
  * all communication becomes impossible.
  */
 export async function notifyContextInvalidated(): Promise<void> {
-  // `import()` is only needed to avoid execution of its dependencies, not to lazy-load it
+  // `import()` is needed to avoid execution of its dependencies (telemetry)
+  // Also, lazily importing avoid importing React unnecessarily
   // https://github.com/pixiebrix/pixiebrix-extension/issues/4058#issuecomment-1217391772
-  // eslint-disable-next-line import/dynamic-import-chunkname
-  const { notify } = await import(/* webpackMode: "eager" */ "@/utils/notify");
+  // eslint-disable-next-line import/dynamic-import-chunkname -- avoid importing react
+  const { notify } = await import(/* webpackMode: "lazy" */ "@/utils/notify");
   notify.error({
     id,
     message: "PixieBrix was updated or restarted. Reload the page to continue",
@@ -51,6 +52,9 @@ export function isContextInvalidatedError(possibleError: unknown): boolean {
   );
 }
 
+/**
+ * Return true if the browser extension context has been invalidated, e.g., due to a restart/update/crash.
+ */
 export const wasContextInvalidated = () => !chrome.runtime?.id;
 
 /**

@@ -225,6 +225,7 @@
     "@types/webpack-env": "^1.18.1",
     "@types/whatwg-mimetype": "^3.0.0",
     "axios-mock-adapter": "^1.21.5",
+    "browserslist": "^4.21.10",
     "compass-mixins": "^0.12.10",
     "concurrently": "^8.2.0",
     "cooky-cutter": "^1.5.4",
@@ -284,5 +285,9 @@
   },
   "msw": {
     "workerDirectory": "public"
-  }
+  },
+  "browserslist": [
+    "chrome >= 95",
+    "edge >= 95"
+  ]
 }

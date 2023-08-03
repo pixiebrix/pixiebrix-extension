@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { valid as semVerValid } from "semver";
+// Don't import from "semver" b/c tree-shaking doesn't work and this file is included in the contentScript
+import semVerValid from "semver/functions/valid";
 import { startsWith } from "lodash";
 import validUuidRegex from "@/vendors/validateUuid";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
