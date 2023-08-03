@@ -156,7 +156,7 @@ const extensionsSlice = createSlice({
         label,
         config,
         // Optional
-        services: integrationKeys,
+        services: integrationOutputKeyMap,
         permissions,
         templateEngine,
       } of extensionPoints) {
@@ -201,8 +201,8 @@ const extensionsSlice = createSlice({
 
         // Set optional fields only if the source extension has a value. Normalizing the values
         // here makes testing harder because we then have to account for the normalized value in assertions.
-        if (integrationKeys) {
-          extension.services = Object.entries(integrationKeys).map(
+        if (integrationOutputKeyMap) {
+          extension.services = Object.entries(integrationOutputKeyMap).map(
             ([outputKey, id]: [OutputKey, RegistryId]) => ({
               outputKey,
               config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
