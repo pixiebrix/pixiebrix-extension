@@ -91,7 +91,7 @@ describe("Tabs", () => {
     });
 
     test("can close the mod launcher", () => {
-      setupPanelsAndRender([], true);
+      setupPanelsAndRender([panel], true);
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
@@ -101,7 +101,7 @@ describe("Tabs", () => {
     });
 
     test("can open the mod launcher", () => {
-      setupPanelsAndRender([], true);
+      setupPanelsAndRender([panel], true);
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
 

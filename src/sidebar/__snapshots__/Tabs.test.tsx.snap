@@ -20,6 +20,7 @@ exports[`Tabs Mod Launcher renders with mod launcher when flag is enabled 1`] = 
           href="#"
           id="panel-container-tab-static-modLauncher-panel"
           role="tab"
+          target="_self"
         >
           <span
             class="tabTitle"
