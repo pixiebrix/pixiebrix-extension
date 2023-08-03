@@ -54,6 +54,7 @@ export default async function initFloatingActions(): Promise<void> {
     !isEnterpriseOrPartnerUser
   ) {
     const { renderFloatingActions } = await import(
+      /* webpackMode: "lazy" */
       /* webpackChunkName: "fab" */ "@/components/floatingActions/FloatingActions"
     );
     await renderFloatingActions();
