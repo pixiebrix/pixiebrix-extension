@@ -22,6 +22,7 @@ import { services } from "@/background/messenger/api";
 import { useContext } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { validateRegistryId } from "@/types/helpers";
+import reportError from "@/telemetry/reportError";
 
 /**
  * Hook to get the Google account from mod integrations context
@@ -33,13 +34,21 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
     (dependency) => dependency.id === googleIntegrationId
   );
 
-  return useAsyncState(
-    async () =>
-      googleDependency?.config == null
-        ? null
-        : services.locate(googleDependency.id, googleDependency.config),
-    [googleDependency]
-  );
+  return useAsyncState(async () => {
+    if (googleDependency?.config == null) {
+      return;
+    }
+
+    try {
+      return await services.locate(
+        googleDependency.id,
+        googleDependency.config
+      );
+    } catch (error: unknown) {
+      reportError(error);
+      return null;
+    }
+  }, [googleDependency]);
 }
 
 export default useGoogleAccount;

@@ -92,10 +92,6 @@ const ErrorView: React.FC<{
   );
 };
 
-// Const IntegrationSpreadsheetPickerWidget: React.FC<SchemaFieldProps & { googleAccount: SanitizedIntegrationConfig }> = ({ name, googleAccount }) => {
-//
-// };
-
 const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
   name,
 }) => {
