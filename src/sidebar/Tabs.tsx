@@ -97,8 +97,8 @@ const Tabs: React.FC = () => {
 
   const onOpenModLauncher = () => {
     const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
-    // eslint-disable-next-line security/detect-object-injection -- checked for modLauncherEventKey
     const isModLauncherOpen =
+      // eslint-disable-next-line security/detect-object-injection -- checked for modLauncherEventKey
       !(modLauncherEventKey in closedTabs) || !closedTabs[modLauncherEventKey];
 
     reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
@@ -205,29 +205,30 @@ const Tabs: React.FC = () => {
                 eventKey={eventKeyForEntry(staticPanel)}
               >
                 <span className={styles.tabTitle}>{staticPanel.heading}</span>
-                {hasModLauncher && (
-                  <CloseButton
-                    onClick={() => {
-                      dispatch(
-                        sidebarSlice.actions.closeTab(
-                          eventKeyForEntry(staticPanel)
-                        )
-                      );
-                    }}
-                  />
-                )}
+                <CloseButton
+                  onClick={() => {
+                    dispatch(
+                      sidebarSlice.actions.closeTab(
+                        eventKeyForEntry(staticPanel)
+                      )
+                    );
+                  }}
+                />
               </TabWithDivider>
             );
           })}
 
-          <Button
-            size="sm"
-            variant="link"
-            className={styles.addButton}
-            onClick={onOpenModLauncher}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </Button>
+          {hasModLauncher && (
+            <Button
+              size="sm"
+              variant="link"
+              className={styles.addButton}
+              aria-label="open mod launcher"
+              onClick={onOpenModLauncher}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </Button>
+          )}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height bg-white">
           {panels.map((panel: PanelEntry) => (
