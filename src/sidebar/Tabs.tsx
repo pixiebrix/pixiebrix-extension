@@ -54,6 +54,7 @@ import ErrorBoundary from "@/sidebar/ErrorBoundary";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import useFlags from "@/hooks/useFlags";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -92,6 +93,25 @@ const Tabs: React.FC = () => {
 
   const onCloseTemporaryTab = (nonce: UUID) => {
     dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+  };
+
+  const onOpenModLauncher = () => {
+    const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
+    // eslint-disable-next-line security/detect-object-injection -- checked for modLauncherEventKey
+    const isModLauncherOpen =
+      !(modLauncherEventKey in closedTabs) || !closedTabs[modLauncherEventKey];
+
+    reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
+      ...selectEventData(getExtensionFromEventKey(modLauncherEventKey)),
+      initialLoad: false,
+      source: "modLauncer open button",
+    });
+
+    if (isModLauncherOpen) {
+      dispatch(sidebarSlice.actions.selectTab(modLauncherEventKey));
+    } else {
+      dispatch(sidebarSlice.actions.openTab(modLauncherEventKey));
+    }
   };
 
   useEffect(
@@ -200,7 +220,12 @@ const Tabs: React.FC = () => {
             );
           })}
 
-          <Button size="sm" variant="link" className={styles.addButton}>
+          <Button
+            size="sm"
+            variant="link"
+            className={styles.addButton}
+            onClick={onOpenModLauncher}
+          >
             <FontAwesomeIcon icon={faPlus} />
           </Button>
         </Nav>
