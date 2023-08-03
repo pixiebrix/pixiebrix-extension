@@ -80,7 +80,7 @@ describe("Advanced options", () => {
       {
         window: "target",
       },
-      "Target: target",
+      "Target: Target Tab",
     ],
   ])("shows changed advanced options", (blockConfig, expectedOptionText) => {
     renderAdvancedLinks(blockConfig);
