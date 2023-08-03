@@ -111,7 +111,7 @@ export const ActiveSidebarModsList: React.FunctionComponent<{
     data: sidebarPanels,
   });
 
-  const renderBody = isEmpty(activeMods) ? (
+  const renderBody = isEmpty(sidebarPanels) ? (
     <NoActiveSidebarPanelsView />
   ) : (
     <Row>
