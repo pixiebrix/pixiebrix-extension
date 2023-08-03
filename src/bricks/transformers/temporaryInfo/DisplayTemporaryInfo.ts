@@ -351,13 +351,22 @@ class DisplayTemporaryInfo extends TransformerABC {
       },
       location: {
         type: "string",
-        enum: ["panel", "modal", "popover"],
+        title: "Location",
+        oneOf: [
+          { const: "panel", title: "Sidebar" },
+          { const: "modal", title: "Modal" },
+          { const: "popover", title: "Popover" },
+        ],
         default: "panel",
-        description: "The location of the information (default='panel')",
+        description: "The location of the information (default='Sidebar')",
       },
       refreshTrigger: {
         type: "string",
-        enum: ["manual", "statechange"],
+        title: "Refresh Trigger",
+        oneOf: [
+          { const: "manual", title: "Manual" },
+          { const: "statechange", title: "Mod Variable/Page State Change" },
+        ],
         description: "An optional trigger for refreshing the document",
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,

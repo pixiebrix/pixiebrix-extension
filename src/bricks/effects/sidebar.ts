@@ -42,13 +42,15 @@ export class ShowSidebar extends EffectABC {
     {
       panelHeading: {
         type: "string",
+        title: "Panel Heading",
         description:
           "The panel to show in the sidebar. If not provided, defaults to a sidebar panel in this mod",
       },
       forcePanel: {
         type: "boolean",
+        title: "Force Panel",
         description:
-          "If the sidebar is already showing a panel, force switch the active panel",
+          "If the sidebar is already showing a panel, force switch the active panel (default=false)",
         default: false,
       },
     },
