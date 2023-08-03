@@ -44,7 +44,7 @@ import {
   isGAPISupported,
   isGoogleInitialized,
 } from "@/contrib/google/initGoogle";
-import { FormikValues } from "formik";
+import { type FormikValues } from "formik";
 import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
 
 let idSequence = 0;

@@ -47,8 +47,8 @@ import { type AuthOption } from "@/auth/authTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import selectEvent from "react-select-event";
+import { type FormikValues } from "formik";
 import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
-import { FormikValues } from "formik";
 
 let idSequence = 0;
 function newId(): UUID {
