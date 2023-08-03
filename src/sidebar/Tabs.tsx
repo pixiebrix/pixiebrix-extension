@@ -26,9 +26,15 @@ import { getBodyForStaticPanel } from "./staticPanelUtils";
 import { type UUID } from "@/types/stringTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { CloseButton, Nav, type NavLinkProps, Tab } from "react-bootstrap";
+import {
+  CloseButton,
+  Nav,
+  type NavLinkProps,
+  Tab,
+  Button,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
@@ -245,6 +251,10 @@ const Tabs: React.FC = () => {
               </TabWithDivider>
             );
           })}
+
+          <Button size="sm" variant="link" className={styles.addButton}>
+            <FontAwesomeIcon icon={faPlus} />
+          </Button>
         </Nav>
         <Tab.Content className="p-0 border-0 full-height bg-white">
           {panels.map((panel: PanelEntry) => (
