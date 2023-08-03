@@ -23,11 +23,12 @@ import { useField } from "formik";
 import { partial } from "lodash";
 import React, { type MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
-
 import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
+import { windowOptions } from "@/pageEditor/tabs/effect/configurationConstants";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
+
 export const DEFAULT_WINDOW_VALUE: BrickWindow = "self";
 
 type AdvancedLinksProps = {
@@ -35,6 +36,10 @@ type AdvancedLinksProps = {
   scrollToRef: MutableRefObject<HTMLElement>;
 };
 
+/**
+ * Links to the Advanced Configuration section. Used to indicate if any advanced settings that impact brick
+ * runtime behavior are set.
+ */
 const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
   const configName = partial(joinName, name);
 
@@ -79,7 +84,9 @@ const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
       )}
       {customWindowSet && (
         <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
-          Target: {windowValue}
+          Target:{" "}
+          {windowOptions.find((x) => x.value === windowValue)?.label ??
+            windowValue}
         </Button>
       )}
     </div>

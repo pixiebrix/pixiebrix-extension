@@ -219,7 +219,7 @@ export async function requestRunInAllFrames(
   });
 
   if (rejected.size > 0) {
-    console.warn(`Broadcast rejected for ${rejected.size} tabs`, { rejected });
+    console.warn(`Broadcast rejected for ${rejected.size} frame`, { rejected });
   }
 
   return [...fulfilled].map(([, value]) => value);
