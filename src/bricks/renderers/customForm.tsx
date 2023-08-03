@@ -27,7 +27,7 @@ import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { validateRegistryId } from "@/types/helpers";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import bootstrapOverrides from "@/bootstrapOverrides.scss?loadAsUrl";
+import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import safeJsonStringify from "json-stringify-safe";
