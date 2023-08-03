@@ -89,7 +89,19 @@
   padding-right: 0.5rem;
 }
 
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .row {
   margin-right: -0.5rem;
   margin-left: -0.5rem;
+}
+
+@media (min-width: 576px) {
+  .card-deck {
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+  }
 }
