@@ -53,7 +53,6 @@ import {
   unsafeAssumeValidArg,
 } from "@/runtime/runtimeTypes";
 import { type RunBrick } from "@/contentScript/messenger/runBrickTypes";
-import { resolveBlockConfig } from "@/bricks/registry";
 import {
   BusinessError,
   CancelError,
@@ -76,6 +75,9 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { isObject } from "@/utils/objectUtils";
+import getType from "@/runtime/getType";
+import registry from "@/bricks/registry";
+import pMemoize from "p-memoize";
 
 /**
  * CommonOptions for running pipelines and blocks
@@ -270,6 +272,42 @@ type RunBlockOptions = CommonOptions & {
    */
   trace: TraceMetadata | null;
 };
+
+let registerJavascriptBricks: () => Promise<void>;
+
+/**
+ * Set a method to register Javascript built-in bricks for use by the runtime.
+ * @param register method to register built-ins.
+ */
+export function setRegisterJavascriptBricks(
+  register: () => Promise<void>
+): void {
+  registerJavascriptBricks = pMemoize(register);
+}
+
+/**
+ * Helper method to look up a brick and it's metadata.
+ *
+ * Ensures native bricks are registered before performing the lookup
+ *
+ * @see registerJavascriptBricks
+ * @param config the brick configuration
+ */
+async function resolveBrickConfig(
+  config: BrickConfig
+): Promise<ResolvedBrickConfig> {
+  if (registerJavascriptBricks) {
+    await registerJavascriptBricks();
+  }
+
+  const block = await registry.lookup(config.id);
+
+  return {
+    config,
+    block,
+    type: await getType(block),
+  };
+}
 
 /**
  * Get the lexical environment for running a pipeline. Currently, we're just tracking on the pipeline arg itself.
@@ -659,7 +697,7 @@ export async function blockReducer(
       ? context
       : { ...context, ...(previousOutput as UnknownObject) };
 
-  const resolvedConfig = await resolveBlockConfig(blockConfig);
+  const resolvedConfig = await resolveBrickConfig(blockConfig);
 
   const optionsWithTraceRef = {
     ...options,
@@ -873,6 +911,11 @@ function throwBlockError(
   );
 }
 
+/**
+ * Return the child logger for running a brick in a pipeline
+ * @param blockConfig the brick in the pipeline
+ * @param pipelineLogger the parent logger for the pipeline
+ */
 async function getStepLogger(
   blockConfig: BrickConfig,
   pipelineLogger: Logger
@@ -880,7 +923,7 @@ async function getStepLogger(
   let resolvedConfig: ResolvedBrickConfig;
 
   try {
-    resolvedConfig = await resolveBlockConfig(blockConfig);
+    resolvedConfig = await resolveBrickConfig(blockConfig);
   } catch {
     // NOP
   }

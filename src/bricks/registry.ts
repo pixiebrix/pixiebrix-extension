@@ -18,12 +18,8 @@
 // eslint-disable-next-line no-restricted-imports
 import BaseRegistry from "../registry/memoryRegistry";
 import { fromJS } from "@/bricks/transformers/brickFactory";
-import {
-  type BrickType,
-  type ResolvedBrickConfig,
-} from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
-import { type BrickConfig } from "@/bricks/types";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 
@@ -103,17 +99,7 @@ class BrickRegistry extends BaseRegistry<RegistryId, Brick> {
   }
 }
 
+/** Singleton brick registry */
 const registry = new BrickRegistry();
 
 export default registry;
-
-export async function resolveBlockConfig(
-  config: BrickConfig
-): Promise<ResolvedBrickConfig> {
-  const block = await registry.lookup(config.id);
-  return {
-    config,
-    block,
-    type: await getType(block),
-  };
-}

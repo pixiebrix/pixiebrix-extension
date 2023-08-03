@@ -22,8 +22,6 @@ import "@/extensionContext";
 // Normal imports
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
@@ -37,6 +35,7 @@ import { onUncaughtError } from "@/errors/errorHelpers";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import initFloatingActions from "@/components/floatingActions/initFloatingActions";
+import { setRegisterJavascriptBricks } from "@/runtime/reducePipeline";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -54,10 +53,21 @@ export async function init(): Promise<void> {
   registerMessenger();
   registerExternalMessenger();
 
-  // Need to register even if there are no mods on the page because mods may run bricks in this frame.
-  // For performance, would be nice to find a way to lazy-load
-  registerBuiltinBlocks();
-  registerContribBlocks();
+  // Pass as a callback to avoid importing bricks in content scripts without mods
+  setRegisterJavascriptBricks(async () => {
+    const [{ default: registerBricks }, { default: registerContrib }] =
+      await Promise.all([
+        import(
+          /* webpackChunkName: "bricks" */ "@/bricks/registerBuiltinBlocks"
+        ),
+        import(
+          /* webpackChunkName: "bricks" */ "@/contrib/registerContribBlocks"
+        ),
+      ]);
+
+    registerBricks();
+    registerContrib();
+  });
 
   initTelemetry();
   initToaster();
