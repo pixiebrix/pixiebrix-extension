@@ -23,7 +23,9 @@ import { appApi } from "@/services/api";
 import { uuidv4 } from "@/types/helpers";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import servicesSlice, { type ServicesState } from "@/store/servicesSlice";
+import servicesSlice, {
+  type ServicesState,
+} from "@/store/services/servicesSlice";
 import { type AuthState } from "@/auth/authTypes";
 import settingsSlice from "@/store/settingsSlice";
 import { type SettingsState } from "@/store/settingsTypes";

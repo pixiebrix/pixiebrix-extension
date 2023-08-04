@@ -40,6 +40,7 @@ import { isUUID } from "@/types/helpers";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 
 type ActivateRecipeInputsProps = {
   recipe: ModDefinition;
@@ -99,8 +100,15 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
     <div className={cx("scrollable-area", styles.formBody)}>
       <Effect values={values} onChange={onChange} delayMillis={200} />
       {header}
+      <ServicesBody
+        blueprint={recipe}
+        hideBuiltInServiceIntegrations
+        showOwnTitle
+      />
       {optionsWizardStep && (
-        <>
+        <WizardValuesModIntegrationsContextAdapter
+          modComponentDefinitions={recipe.extensionPoints}
+        >
           <div>
             <h4>{optionsWizardStep.label}</h4>
           </div>
@@ -118,13 +126,8 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
               reinstall={isReinstall}
             />
           </Col>
-        </>
+        </WizardValuesModIntegrationsContextAdapter>
       )}
-      <ServicesBody
-        blueprint={recipe}
-        hideBuiltInServiceIntegrations
-        showOwnTitle
-      />
       {needsPermissions && (
         <Alert variant="info" className="mt-3">
           <span className={styles.permissionsBold}>

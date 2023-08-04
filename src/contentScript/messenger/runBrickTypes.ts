@@ -15,11 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ServicesState } from "@/store/servicesSlice";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type Availability } from "@/bricks/types";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 
-export const selectConfiguredServices = ({
-  services,
-}: {
-  services: ServicesState;
-}): IntegrationConfig[] => Object.values(services.configured);
+export interface RemoteBrickOptions {
+  ctxt: unknown;
+  messageContext: MessageContext;
+  maxRetries?: number;
+  isAvailable?: Availability;
+}
+
+export interface RunBrick {
+  sourceTabId?: number;
+  nonce?: string;
+  blockId: RegistryId;
+  blockArgs: BrickArgs;
+  options: RemoteBrickOptions;
+}

@@ -448,6 +448,11 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
               extensionPointId
             );
 
+            if (!(await extensionPoint.isAvailable())) {
+              // For efficiency, just skip synchronization/adding because it won't be available
+              return;
+            }
+
             extensionPoint.synchronizeModComponents(extensions);
 
             // Mark the extensions as installed

@@ -44,6 +44,8 @@ import {
   isGAPISupported,
   isGoogleInitialized,
 } from "@/contrib/google/initGoogle";
+import { type FormikValues } from "formik";
+import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
 
 let idSequence = 0;
 function newId(): UUID {
@@ -212,95 +214,81 @@ beforeEach(() => {
   isGAPISupportedMock.mockReturnValue(true);
 });
 
+const renderWithValuesAndWait = async (initialValues: FormikValues) => {
+  const rendered = render(
+    <LookupSpreadsheetOptions name="" configKey="config" />,
+    {
+      initialValues,
+      wrapper: ServicesSliceModIntegrationsContextAdapter,
+    }
+  );
+
+  await waitForEffect();
+
+  return rendered;
+};
+
 describe("LookupSpreadsheetOptions", () => {
   /**
    * Snapshots
    */
 
   test("given empty googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    const rendered = render(
-      <LookupSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: makeTemplateExpression("nunjucks", ""),
-            header: makeTemplateExpression("nunjucks", ""),
-            query: makeTemplateExpression("nunjucks", ""),
-            multi: false,
-          },
-        },
-      }
-    );
-
-    await waitForEffect();
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        header: makeTemplateExpression("nunjucks", ""),
+        query: makeTemplateExpression("nunjucks", ""),
+        multi: false,
+      },
+    });
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("given empty googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
-    const rendered = render(
-      <LookupSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: "Tab2",
-            header: "Bar",
-            query: makeTemplateExpression("nunjucks", "test query"),
-            multi: false,
-          },
-        },
-      }
-    );
-
-    await waitForEffect();
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Tab2",
+        header: "Bar",
+        query: makeTemplateExpression("nunjucks", "test query"),
+        multi: false,
+      },
+    });
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    const rendered = render(
-      <LookupSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            googleAccount: makeVariableExpression("@google"),
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: makeTemplateExpression("nunjucks", ""),
-            header: makeTemplateExpression("nunjucks", ""),
-            query: makeTemplateExpression("nunjucks", ""),
-            multi: false,
-          },
-          services: [googlePKCEIntegrationDependency],
-        },
-      }
-    );
-
-    await waitForEffect();
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        header: makeTemplateExpression("nunjucks", ""),
+        query: makeTemplateExpression("nunjucks", ""),
+        multi: false,
+      },
+      services: [googlePKCEIntegrationDependency],
+    });
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
-    const rendered = render(
-      <LookupSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            googleAccount: makeVariableExpression("@google"),
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: "Tab2",
-            header: "Bar",
-            query: makeTemplateExpression("nunjucks", "test query"),
-            multi: false,
-          },
-          services: [googlePKCEIntegrationDependency],
-        },
-      }
-    );
-
-    await waitForEffect();
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Tab2",
+        header: "Bar",
+        query: makeTemplateExpression("nunjucks", "test query"),
+        multi: false,
+      },
+      services: [googlePKCEIntegrationDependency],
+    });
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -310,19 +298,15 @@ describe("LookupSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId, when rendered, loads tab names and header values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeTemplateExpression("nunjucks", ""),
-          header: makeTemplateExpression("nunjucks", ""),
-          query: makeTemplateExpression("nunjucks", ""),
-          multi: false,
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        header: makeTemplateExpression("nunjucks", ""),
+        query: makeTemplateExpression("nunjucks", ""),
+        multi: false,
       },
     });
-
-    await waitForEffect();
 
     // Tab1 will be picked automatically since it's first in the list
     expect(screen.getByText("Tab1")).toBeVisible();
@@ -331,22 +315,18 @@ describe("LookupSpreadsheetOptions", () => {
   });
 
   test("given empty googleAccount and mod input spreadsheetId, when rendered, loads tab names and header values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: makeTemplateExpression("nunjucks", ""),
-          header: makeTemplateExpression("nunjucks", ""),
-          query: makeTemplateExpression("nunjucks", ""),
-          multi: false,
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeTemplateExpression("nunjucks", ""),
+        header: makeTemplateExpression("nunjucks", ""),
+        query: makeTemplateExpression("nunjucks", ""),
+        multi: false,
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
       },
     });
-
-    await waitForEffect();
 
     // Tab1 will be picked automatically since it's first in the list
     expect(screen.getByText("Tab1")).toBeVisible();
@@ -355,21 +335,17 @@ describe("LookupSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and string spreadsheetId, when rendered, loads tab names and header values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeTemplateExpression("nunjucks", ""),
-          header: makeTemplateExpression("nunjucks", ""),
-          query: makeTemplateExpression("nunjucks", ""),
-          multi: false,
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        header: makeTemplateExpression("nunjucks", ""),
+        query: makeTemplateExpression("nunjucks", ""),
+        multi: false,
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Tab1 will be picked automatically since it's first in the list
     expect(screen.getByText("Tab1")).toBeVisible();
@@ -378,24 +354,20 @@ describe("LookupSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and mod input spreadsheetId, when rendered, loads tab names and header values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: makeTemplateExpression("nunjucks", ""),
-          header: makeTemplateExpression("nunjucks", ""),
-          query: makeTemplateExpression("nunjucks", ""),
-          multi: false,
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeTemplateExpression("nunjucks", ""),
+        header: makeTemplateExpression("nunjucks", ""),
+        query: makeTemplateExpression("nunjucks", ""),
+        multi: false,
       },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Tab1 will be picked automatically since it's first in the list
     expect(screen.getByText("Tab1")).toBeVisible();
@@ -404,21 +376,17 @@ describe("LookupSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and null spreadsheetId, when spreadsheet selected, loads tab names and header values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: null,
-          tabName: makeTemplateExpression("nunjucks", ""),
-          header: makeTemplateExpression("nunjucks", ""),
-          query: makeTemplateExpression("nunjucks", ""),
-          multi: false,
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: null,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        header: makeTemplateExpression("nunjucks", ""),
+        query: makeTemplateExpression("nunjucks", ""),
+        multi: false,
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Select the first spreadsheet
     const spreadsheetSelect = screen.getByRole("combobox", {
@@ -439,22 +407,18 @@ describe("LookupSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and mod input spreadsheetId value, when rendered, does not clear initial tabName and header values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: "Tab2",
-          header: "Bar",
-          query: makeTemplateExpression("nunjucks", "test query"),
-          multi: true,
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: "Tab2",
+        header: "Bar",
+        query: makeTemplateExpression("nunjucks", "test query"),
+        multi: true,
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
       },
     });
-
-    await waitForEffect();
 
     expect(screen.getByDisplayValue("@options.sheetId")).toBeVisible();
     // Use getByText for react-select value
@@ -465,19 +429,15 @@ describe("LookupSpreadsheetOptions", () => {
   });
 
   test("given empty googleAccount and string spreadsheetId value, when rendered, does not clear initial tabName and header values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: "Tab2",
-          header: "Bar",
-          query: makeTemplateExpression("nunjucks", "test query"),
-          multi: true,
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Tab2",
+        header: "Bar",
+        query: makeTemplateExpression("nunjucks", "test query"),
+        multi: true,
       },
     });
-
-    await waitForEffect();
 
     // Spreadsheet ID should not be user-visible
     expect(screen.queryByText(TEST_SPREADSHEET_ID)).not.toBeInTheDocument();
@@ -491,24 +451,20 @@ describe("LookupSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and mod input spreadsheetId value, when rendered, does not clear variable values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: makeVariableExpression("@myTab"),
-          header: makeVariableExpression("@myHeader"),
-          query: makeVariableExpression("@query"),
-          multi: false,
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeVariableExpression("@myTab"),
+        header: makeVariableExpression("@myHeader"),
+        query: makeVariableExpression("@query"),
+        multi: false,
       },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     expect(screen.getByDisplayValue("@options.sheetId")).toBeVisible();
     expect(screen.getByDisplayValue("@myTab")).toBeVisible();
@@ -517,21 +473,17 @@ describe("LookupSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and string spreadsheetId value, when rendered, does not clear variable values", async () => {
-    render(<LookupSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeVariableExpression("@myTab"),
-          header: makeVariableExpression("@myHeader"),
-          query: makeVariableExpression("@query"),
-          multi: false,
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeVariableExpression("@myTab"),
+        header: makeVariableExpression("@myHeader"),
+        query: makeVariableExpression("@query"),
+        multi: false,
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Spreadsheet ID should not be user-visible
     expect(screen.queryByText(TEST_SPREADSHEET_ID)).not.toBeInTheDocument();

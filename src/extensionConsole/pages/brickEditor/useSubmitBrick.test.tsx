@@ -20,7 +20,9 @@ import useSubmitBrick from "@/extensionConsole/pages/brickEditor/useSubmitBrick"
 import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import { type AuthState } from "@/auth/authTypes";
-import servicesSlice, { type ServicesState } from "@/store/servicesSlice";
+import servicesSlice, {
+  type ServicesState,
+} from "@/store/services/servicesSlice";
 import { type SettingsState } from "@/store/settingsTypes";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";

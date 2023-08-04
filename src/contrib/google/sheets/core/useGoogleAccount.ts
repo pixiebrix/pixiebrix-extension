@@ -15,73 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type IntegrationDependency,
-  type SanitizedIntegrationConfig,
-} from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
-import { useField, useFormikContext } from "formik";
-import { type ServiceSlice } from "@/components/fields/schemaFields/serviceFieldUtils";
-import { type Expression } from "@/types/runtimeTypes";
 import useAsyncState from "@/hooks/useAsyncState";
-import hash from "object-hash";
 import { services } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors/errorHelpers";
-import { isVarExpression } from "@/utils/expressionUtils";
-import { joinName } from "@/utils/formUtils";
+import { useContext } from "react";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
+import { validateRegistryId } from "@/types/helpers";
+import reportError from "@/telemetry/reportError";
 
-export async function findGoogleAccountIntegrationConfig(
-  servicesValue: IntegrationDependency[],
-  googleAccountValue: Expression | undefined
-): Promise<SanitizedIntegrationConfig | null> {
-  if (!isVarExpression(googleAccountValue)) {
-    return null;
-  }
-
-  const serviceOutputKey = googleAccountValue.__value__.replace(/^@/, "");
-  const integrationDependency = servicesValue.find(
-    (service) => service.outputKey === serviceOutputKey
-  );
-
-  if (integrationDependency == null) {
-    throw new Error(
-      `Could not find integration configuration with output key ${serviceOutputKey}`
-    );
-  }
-
-  return services.locate(
-    integrationDependency.id,
-    integrationDependency.config
-  );
-}
+const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
 
 /**
- * Hook to get the Google account for a block config assumed to be within a
- * Formik form with a standard mod form state
- * @see ModComponentFormState
+ * Hook to get the Google account from mod integrations context
  */
-function useGoogleAccount(
-  blockConfigPath: string
-): FetchableAsyncState<SanitizedIntegrationConfig | null> {
-  const {
-    values: { services: servicesValue },
-  } = useFormikContext<ServiceSlice>();
-
-  const [{ value: fieldValue }, , { setError }] = useField<
-    Expression | undefined
-  >(joinName(blockConfigPath, "googleAccount"));
+function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | null> {
+  const { integrationDependencies } = useContext(ModIntegrationsContext);
+  const googleDependency = integrationDependencies.find(
+    (dependency) => dependency.id === GOOGLE_PKCE_INTEGRATION_ID
+  );
 
   return useAsyncState(async () => {
-    try {
-      return await findGoogleAccountIntegrationConfig(
-        servicesValue,
-        fieldValue
-      );
-    } catch (error: unknown) {
-      setError(getErrorMessage(error));
+    if (googleDependency?.config == null) {
       return null;
     }
-  }, [hash({ servicesValue })]);
+
+    try {
+      return await services.locate(
+        googleDependency.id,
+        googleDependency.config
+      );
+    } catch (error: unknown) {
+      reportError(error);
+      return null;
+    }
+  }, [googleDependency]);
 }
 
 export default useGoogleAccount;

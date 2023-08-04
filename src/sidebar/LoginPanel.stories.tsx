@@ -22,7 +22,7 @@ import LoginPanel from "@/sidebar/LoginPanel";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import settingsSlice from "@/store/settingsSlice";
-import servicesSlice from "@/store/servicesSlice";
+import servicesSlice from "@/store/services/servicesSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";

@@ -17,10 +17,13 @@
 
 import blockRegistry from "@/bricks/registry";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { type RunBlock } from "@/contentScript/runBlockTypes";
+import { type RunBrick } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
-export async function runBrick(request: RunBlock): Promise<unknown> {
+/**
+ * Handle a remote brick run request from another tab/frame.
+ */
+export async function runBrick(request: RunBrick): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request;
   const block = await blockRegistry.lookup(blockId);
