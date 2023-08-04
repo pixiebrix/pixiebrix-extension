@@ -285,5 +285,9 @@
   },
   "msw": {
     "workerDirectory": "public"
-  }
+  },
+  "browserslist": [
+    "chrome >= 95",
+    "edge >= 95"
+  ]
 }
