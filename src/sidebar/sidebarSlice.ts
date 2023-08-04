@@ -48,6 +48,7 @@ const emptySidebarState: SidebarState = {
   modActivationPanel: null,
   activeKey: null,
   pendingActivePanel: null,
+  closedTabs: {},
 };
 
 function eventKeyExists(state: SidebarState, query: string | null): boolean {
@@ -371,6 +372,16 @@ const sidebarSlice = createSlice({
       const { modActivationPanel: entry } = state;
       state.modActivationPanel = null;
       fixActiveTabOnRemove(state, entry);
+    },
+    closeTab(state, action: PayloadAction<string>) {
+      state.closedTabs[action.payload] = true;
+
+      if (state.activeKey === action.payload) {
+        state.activeKey = defaultEventKey(state);
+      }
+    },
+    openTab(state, action: PayloadAction<string>) {
+      state.closedTabs[action.payload] = false;
     },
   },
 });

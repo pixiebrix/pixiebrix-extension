@@ -27,11 +27,13 @@ import {
 } from "@/testUtils/testHelpers";
 import { appApi } from "@/services/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 
 const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       options: extensionsSlice.reducer,
       sidebar: sidebarSlice.reducer,
       settings: settingsSlice.reducer,

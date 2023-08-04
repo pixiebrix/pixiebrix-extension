@@ -77,3 +77,6 @@ export const selectExtensionFromEventKey =
       (extension) => extension.id === sidebarEntry.extensionId
     );
   };
+
+export const selectClosedTabs = ({ sidebar }: SidebarRootState) =>
+  sidebar.closedTabs;

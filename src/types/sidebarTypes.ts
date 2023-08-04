@@ -329,6 +329,8 @@ export type SidebarState = SidebarEntries & {
    * request in order to fulfill it once the panel is registered.
    */
   pendingActivePanel: ActivatePanelOptions | null;
+
+  closedTabs: Record<string, boolean>;
 };
 
 export interface SidebarRootState {

@@ -15,26 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect, type MouseEvent } from "react";
 import {
+  type StaticPanelEntry,
   type PanelEntry,
   type SidebarEntry,
-  type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
 import { type UUID } from "@/types/stringTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { CloseButton, Nav, type NavLinkProps, Tab } from "react-bootstrap";
+import {
+  CloseButton,
+  Nav,
+  type NavLinkProps,
+  Tab,
+  Button,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
-import { type SubmitPanelAction } from "@/bricks/errors";
 import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -45,67 +50,29 @@ import {
   selectSidebarModActivationPanel,
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
+  selectClosedTabs,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
+import useFlags from "@/hooks/useFlags";
+import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
+import { getTopLevelFrame } from "webext-messenger";
+import { hideSidebar } from "@/contentScript/messenger/api";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
-// Need to memoize this to make sure it doesn't rerender unless its entry actually changes
-// This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646
-const TemporaryPanelTabPane: React.FC<{
-  panel: TemporaryPanelEntry;
-}> = React.memo(({ panel }) => {
-  const dispatch = useDispatch();
-  const onAction = useCallback(
-    (action: SubmitPanelAction) => {
-      dispatch(
-        sidebarSlice.actions.resolveTemporaryPanel({
-          nonce: panel.nonce,
-          action,
-        })
-      );
-    },
-    [dispatch, panel.nonce]
-  );
-  const { type, extensionId, blueprintId, payload } = panel;
-
-  return (
-    <Tab.Pane
-      className={cx("full-height flex-grow", styles.paneOverrides)}
-      eventKey={eventKeyForEntry(panel)}
-    >
-      <ErrorBoundary
-        onError={() => {
-          reportEvent(Events.VIEW_ERROR, {
-            panelType: type,
-            extensionId,
-            blueprintId,
-          });
-        }}
-      >
-        <PanelBody
-          isRootPanel={false}
-          payload={payload}
-          context={{
-            extensionId,
-            blueprintId,
-          }}
-          onAction={onAction}
-        />
-      </ErrorBoundary>
-    </Tab.Pane>
-  );
-});
-TemporaryPanelTabPane.displayName = "TemporaryPanelTabPane";
-
 const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
   <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
-    <Nav.Link {...props} className={styles.tabHeader}>
+    {/* added `target="_self"` due to stopPropogation on onCloseStaticPanel
+     * without it, the default behavior of the ancher tag (Nav.Link) is triggered
+     * and a new tab is opened
+     */}
+    <Nav.Link {...props} className={styles.tabHeader} target="_self">
       {children}
     </Nav.Link>
     <div className={styles.tabDivider} />
@@ -113,6 +80,7 @@ const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
 );
 
 const Tabs: React.FC = () => {
+  const { flagOn } = useFlags();
   const dispatch = useDispatch();
   const activeKey = useSelector(selectSidebarActiveTabKey);
   const panels = useSelector(selectSidebarPanels);
@@ -121,6 +89,8 @@ const Tabs: React.FC = () => {
   const modActivationPanel = useSelector(selectSidebarModActivationPanel);
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
+  const closedTabs = useSelector(selectClosedTabs);
+  const hasModLauncherEnabled = flagOn("sidebar-home-tab");
 
   const onSelect = (eventKey: string) => {
     reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
@@ -133,6 +103,44 @@ const Tabs: React.FC = () => {
 
   const onCloseTemporaryTab = (nonce: UUID) => {
     dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+  };
+
+  const onOpenModLauncher = () => {
+    const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
+    const isModLauncherOpen =
+      // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
+      !closedTabs[modLauncherEventKey];
+
+    reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
+      ...selectEventData(getExtensionFromEventKey(modLauncherEventKey)),
+      initialLoad: false,
+      source: "modLauncer open button",
+    });
+
+    if (!isModLauncherOpen) {
+      dispatch(sidebarSlice.actions.openTab(modLauncherEventKey));
+    }
+
+    dispatch(sidebarSlice.actions.selectTab(modLauncherEventKey));
+  };
+
+  const onCloseStaticPanel = async (
+    event: MouseEvent<HTMLButtonElement>,
+    staticPanel: StaticPanelEntry
+  ) => {
+    // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
+    event.stopPropagation();
+
+    // The mod launcher is a special case where we want to hide the sidebar if all other tabs are closed
+    if (
+      staticPanel.key === MOD_LAUNCHER.key &&
+      panels.every((panel) => closedTabs[eventKeyForEntry(panel)])
+    ) {
+      const topLevelFrame = await getTopLevelFrame();
+      await hideSidebar(topLevelFrame);
+    } else {
+      dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(staticPanel)));
+    }
   };
 
   useEffect(
@@ -214,15 +222,38 @@ const Tabs: React.FC = () => {
             </TabWithDivider>
           )}
 
-          {staticPanels.map((staticPanel) => (
-            <TabWithDivider
-              key={staticPanel.key}
-              active={isPanelActive(staticPanel)}
-              eventKey={eventKeyForEntry(staticPanel)}
+          {staticPanels.map((staticPanel) => {
+            const eventKey = eventKeyForEntry(staticPanel);
+            // eslint-disable-next-line security/detect-object-injection -- eventKey is not user input
+            const isPanelHidden = closedTabs[eventKey];
+
+            return isPanelHidden ? null : (
+              <TabWithDivider
+                key={staticPanel.key}
+                active={isPanelActive(staticPanel)}
+                eventKey={eventKeyForEntry(staticPanel)}
+              >
+                <span className={styles.tabTitle}>{staticPanel.heading}</span>
+                <CloseButton
+                  onClick={async (event) =>
+                    onCloseStaticPanel(event, staticPanel)
+                  }
+                />
+              </TabWithDivider>
+            );
+          })}
+
+          {hasModLauncherEnabled && (
+            <Button
+              size="sm"
+              variant="link"
+              className={styles.addButton}
+              aria-label="open mod launcher"
+              onClick={onOpenModLauncher}
             >
-              <span className={styles.tabTitle}>{staticPanel.heading}</span>
-            </TabWithDivider>
-          ))}
+              <FontAwesomeIcon icon={faPlus} />
+            </Button>
+          )}
         </Nav>
         <Tab.Content className="p-0 border-0 full-height bg-white">
           {panels.map((panel: PanelEntry) => (

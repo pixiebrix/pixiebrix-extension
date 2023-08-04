@@ -180,3 +180,20 @@
   text-overflow: ellipsis;
   min-width: 0; // Avoid stretching the flex parent
 }
+
+.addButton {
+  color: $N300;
+  // 0.5rem is the default padding for the header
+  // 3px is the default margin-right for the bootstrap link-variant button
+  margin-right: calc(0.5rem + 3px);
+
+  svg {
+    width: 0.625rem;
+    margin-left: 0.125rem;
+  }
+
+  &:hover {
+    color: $N800;
+    background-color: rgba(0, 0, 0, 0.07);
+  }
+}
