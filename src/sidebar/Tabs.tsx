@@ -68,6 +68,10 @@ const permanentSidebarPanelAction = () => {
 
 const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
   <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
+    {/* added `target="_self"` due to stopPropogation on onCloseStaticPanel
+     * without it, the default behavior of the ancher tag (Nav.Link) is triggered
+     * and a new tab is opened
+     */}
     <Nav.Link {...props} className={styles.tabHeader} target="_self">
       {children}
     </Nav.Link>
@@ -86,7 +90,7 @@ const Tabs: React.FC = () => {
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
   const closedTabs = useSelector(selectClosedTabs);
-  const hasModLauncher = flagOn("sidebar-home-tab");
+  const hasModLauncherEnabled = flagOn("sidebar-home-tab");
 
   const onSelect = (eventKey: string) => {
     reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
@@ -104,8 +108,8 @@ const Tabs: React.FC = () => {
   const onOpenModLauncher = () => {
     const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
     const isModLauncherOpen =
-      // eslint-disable-next-line security/detect-object-injection -- checked for modLauncherEventKey
-      !(modLauncherEventKey in closedTabs) || !closedTabs[modLauncherEventKey];
+      // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
+      !closedTabs[modLauncherEventKey];
 
     reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(modLauncherEventKey)),
@@ -220,10 +224,10 @@ const Tabs: React.FC = () => {
 
           {staticPanels.map((staticPanel) => {
             const eventKey = eventKeyForEntry(staticPanel);
-            // eslint-disable-next-line security/detect-object-injection -- checked for eventKey
-            const hidePanel = eventKey in closedTabs && closedTabs[eventKey];
+            // eslint-disable-next-line security/detect-object-injection -- eventKey is not user input
+            const isPanelHidden = closedTabs[eventKey];
 
-            return hidePanel ? null : (
+            return isPanelHidden ? null : (
               <TabWithDivider
                 key={staticPanel.key}
                 active={isPanelActive(staticPanel)}
@@ -239,7 +243,7 @@ const Tabs: React.FC = () => {
             );
           })}
 
-          {hasModLauncher && (
+          {hasModLauncherEnabled && (
             <Button
               size="sm"
               variant="link"
