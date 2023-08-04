@@ -28,7 +28,7 @@ import {
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
-import SheetsFileWidget from "@/contrib/google/sheets/ui/SheetsFileWidget";
+import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
@@ -36,8 +36,8 @@ import { selectSchemaFieldInputMode } from "@/testUtils/formHelpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
-  type Spreadsheet,
   type FileList,
+  type Spreadsheet,
 } from "@/contrib/google/sheets/core/types";
 import { type UUID } from "@/types/stringTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
@@ -47,6 +47,8 @@ import { type AuthOption } from "@/auth/authTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import selectEvent from "react-select-event";
+import { type FormikValues } from "formik";
+import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
 
 let idSequence = 0;
 function newId(): UUID {
@@ -250,7 +252,7 @@ describe("getToggleOptions", () => {
     expect(result).toEqual([
       // The Google File Picker
       expect.objectContaining({
-        Widget: SheetsFileWidget,
+        Widget: SpreadsheetPickerWidget,
         value: "string",
       }),
       // Variable
@@ -338,72 +340,65 @@ async function expectTabSelectWorksProperly() {
   expectTab2Selected();
 }
 
+const renderWithValuesAndWait = async (initialValues: FormikValues) => {
+  const rendered = render(
+    <AppendSpreadsheetOptions name="" configKey="config" />,
+    {
+      initialValues,
+      wrapper: ServicesSliceModIntegrationsContextAdapter,
+    }
+  );
+
+  await waitForEffect();
+
+  return rendered;
+};
+
 describe("AppendSpreadsheetOptions", () => {
   /**
    * Snapshots
    */
 
   test("given empty googleAccount and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
-    const rendered = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: makeTemplateExpression("nunjucks", ""),
-            rowValues: {},
-          },
-        },
-      }
-    );
-
-    await waitForEffect();
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        rowValues: {},
+      },
+    });
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("given empty googleAccount and string spreadsheetId and selected tabName and entered rowValues, when rendered, matches snapshot", async () => {
-    const rendered = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: "Tab2",
-            rowValues: {
-              Foo: makeTemplateExpression("nunjucks", "fooValue"),
-              Bar: makeTemplateExpression("nunjucks", "barValue"),
-            },
-          },
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Tab2",
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "fooValue"),
+          Bar: makeTemplateExpression("nunjucks", "barValue"),
         },
-      }
-    );
-
-    await waitForEffect();
+      },
+    });
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId value and selected tabName and column values, when rendered, matches snapshot", async () => {
-    const rendered = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            googleAccount: makeVariableExpression("@google"),
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: "Tab2",
-            rowValues: {
-              Foo: "fooValue",
-              Bar: "barValue",
-            },
-          },
-          services: [googlePKCEIntegrationDependency],
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Tab2",
+        rowValues: {
+          Foo: "fooValue",
+          Bar: "barValue",
         },
-      }
-    );
-
-    await waitForEffect();
+      },
+      services: [googlePKCEIntegrationDependency],
+    });
 
     expect(rendered.asFragment()).toMatchSnapshot();
   });
@@ -413,34 +408,26 @@ describe("AppendSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when rendered, loads spreadsheet/tabName/headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: null,
-          rowValues: {},
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: null,
+        rowValues: {},
       },
     });
-
-    await waitForEffect();
 
     expectLegacyTestSpreadsheetLoaded();
   });
 
   test("given empty googleAccount/rowValues and null tabName and legacy integration-based spreadsheetId, when rendered, loads tabName/headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@google"),
-          tabName: null,
-          rowValues: {},
-        },
-        services: [testSpreadsheetIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@google"),
+        tabName: null,
+        rowValues: {},
       },
+      services: [testSpreadsheetIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Legacy service widget for spreadsheet isn't supported anymore, so title won't load,
     // but tabName/header should still work with old form states
@@ -448,37 +435,29 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given empty googleAccount/rowValues and null tabName and mod input spreadsheetId, when rendered, loads tabName/headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: null,
-          rowValues: {},
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: null,
+        rowValues: {},
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
       },
     });
-
-    await waitForEffect();
 
     // Mod input var field won't render title
     expectTab1Selected();
   });
 
   test("given empty googleAccount and string spreadsheetId and var tabName, when rendered, allows any rowValues fields", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeVariableExpression("@mySheetTab"),
-          rowValues: {},
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeVariableExpression("@mySheetTab"),
+        rowValues: {},
       },
     });
-
-    await waitForEffect();
 
     // Ensure that no header names have been loaded into the rowValues field
     expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
@@ -488,19 +467,15 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and null tabName, when spreadsheet selected, loads spreadsheet/tabName/headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: null,
-          tabName: null,
-          rowValues: {},
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: null,
+        tabName: null,
+        rowValues: {},
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Select the first spreadsheet
     const spreadsheetSelect = screen.getByRole("combobox", {
@@ -514,59 +489,47 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and string spreadsheetId and empty tabName/rowValues, when rendered, loads tabName/headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: null,
-          rowValues: {},
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: null,
+        rowValues: {},
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     expectGoogleAccountTestSpreadsheetLoaded();
   });
 
   test("given test googleAccount/rowValues and null tabName and mod input spreadsheetId, when rendered, loads tabName/headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: null,
-          rowValues: {},
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: null,
+        rowValues: {},
       },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Mod input var field won't render title
     expectTab1Selected();
   });
 
   test("given test googleAccount and string spreadsheetId and var tabName, when rendered, allows any rowValues fields", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeVariableExpression("@mySheetTab"),
-          rowValues: {},
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeVariableExpression("@mySheetTab"),
+        rowValues: {},
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Ensure that no header names have been loaded into the rowValues field
     expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
@@ -580,92 +543,72 @@ describe("AppendSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when tabs are selected, loads headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeTemplateExpression("nunjucks", ""),
-          rowValues: {},
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        rowValues: {},
       },
     });
-
-    await waitForEffect();
 
     await expectTabSelectWorksProperly();
   });
 
   test("given empty googleAccount/tabName/rowValues and legacy integration-based spreadsheetId, when tabs are selected, loads headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@google"),
-          tabName: makeTemplateExpression("nunjucks", ""),
-          rowValues: {},
-        },
-        services: [testSpreadsheetIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@google"),
+        tabName: makeTemplateExpression("nunjucks", ""),
+        rowValues: {},
       },
+      services: [testSpreadsheetIntegrationDependency],
     });
-
-    await waitForEffect();
 
     await expectTabSelectWorksProperly();
   });
 
   test("given empty googleAccount/tabName/rowValues and mod input spreadsheetId, when tabs are selected, loads headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: makeTemplateExpression("nunjucks", ""),
-          rowValues: {},
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeTemplateExpression("nunjucks", ""),
+        rowValues: {},
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
       },
     });
-
-    await waitForEffect();
 
     await expectTabSelectWorksProperly();
   });
 
   test("given test googleAccount and string spreadsheetId and empty tabName/rowValues, when tabs are selected, loads headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeTemplateExpression("nunjucks", ""),
-          rowValues: {},
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        rowValues: {},
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     await expectTabSelectWorksProperly();
   });
 
   test("given test googleAccount and mod input spreadsheetId and empty tabName/rowValues, when tabs are selected, loads headers", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: makeTemplateExpression("nunjucks", ""),
-          rowValues: {},
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
-        services: [googlePKCEIntegrationDependency],
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeTemplateExpression("nunjucks", ""),
+        rowValues: {},
       },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     await expectTabSelectWorksProperly();
   });
@@ -675,20 +618,16 @@ describe("AppendSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and selected tabName and nunjucks rowValues, when rendered, does not clear initial values", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: "Tab2",
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Tab2",
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
       },
     });
-
-    await waitForEffect();
 
     expectLegacySpreadsheetTitleLoaded();
     expectTab2Selected();
@@ -699,20 +638,16 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given empty googleAccount and string spreadsheetId and nunjucks tabName/rowValues, when rendered, does not clear initial values", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeTemplateExpression("nunjucks", "Tab2"),
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", "Tab2"),
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
       },
     });
-
-    await waitForEffect();
 
     expectLegacySpreadsheetTitleLoaded();
     expectTab2Selected();
@@ -723,23 +658,19 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given empty googleAccount and mod input spreadsheetId and nunjucks tabName/rowValues, when rendered, does not clear initial values", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: makeTemplateExpression("nunjucks", "Tab2"),
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeTemplateExpression("nunjucks", "Tab2"),
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
       },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
     });
-
-    await waitForEffect();
 
     // Mod input var field won't render title, tabName is nunjucks input
     expect(screen.getByDisplayValue("Tab2")).toBeVisible();
@@ -752,23 +683,19 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given empty googleAccount and mod input spreadsheetId and selected tabName and nunjucks rowValues, when rendered, does not clear initial values", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: "Tab2",
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
-        },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: "Tab2",
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
       },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
     });
-
-    await waitForEffect();
 
     // Mod input var field won't render title
     expectTab2Selected();
@@ -779,22 +706,18 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and string spreadsheetId and selected tabName and nunjucks rowValues, when rendered, does not clear initial values", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: "Tab2",
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Tab2",
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
-        services: [googlePKCEIntegrationDependency],
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     expectGoogleAccountSpreadsheetTitleLoaded();
     expectTab2Selected();
@@ -805,22 +728,18 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and string spreadsheetId and nunjucks tabName/rowValues, when rendered, does not clear initial values", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: makeTemplateExpression("nunjucks", "Tab2"),
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", "Tab2"),
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
-        services: [googlePKCEIntegrationDependency],
       },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     expectGoogleAccountSpreadsheetTitleLoaded();
     expectTab2Selected();
@@ -831,25 +750,21 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and mod input spreadsheetId and nunjucks tabName/rowValues, when rendered, does not clear initial values", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: makeTemplateExpression("nunjucks", "Tab2"),
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeTemplateExpression("nunjucks", "Tab2"),
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
-        services: [googlePKCEIntegrationDependency],
       },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Mod input var field won't render title, tabName is nunjucks input
     expect(screen.getByDisplayValue("Tab2")).toBeVisible();
@@ -862,25 +777,21 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and mod input spreadsheetId and selected tabName and nunjucks rowValues, when rendered, does not clear initial values", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          googleAccount: makeVariableExpression("@google"),
-          spreadsheetId: makeVariableExpression("@options.sheetId"),
-          tabName: "Tab2",
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: "Tab2",
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
-        optionsArgs: {
-          sheetId: TEST_SPREADSHEET_ID,
-        },
-        services: [googlePKCEIntegrationDependency],
       },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      services: [googlePKCEIntegrationDependency],
     });
-
-    await waitForEffect();
 
     // Mod input var field won't render title
     expectTab2Selected();
@@ -895,23 +806,16 @@ describe("AppendSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and nunjucks tabName/rowValues, when tabName cleared, does not auto-pick first tabName", async () => {
-    const { getFormState } = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: makeTemplateExpression("nunjucks", "Tab2"),
-            rowValues: {
-              Foo: makeTemplateExpression("nunjucks", "valueA"),
-              Bar: makeTemplateExpression("nunjucks", "valueB"),
-            },
-          },
+    const { getFormState } = await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", "Tab2"),
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
-      }
-    );
-
-    await waitForEffect();
+      },
+    });
 
     expectLegacySpreadsheetTitleLoaded();
 
@@ -937,26 +841,19 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given empty googleAccount and mod input spreadsheetId and nunjucks tabName/rowValues, when tabName cleared, does not auto-pick first tabName", async () => {
-    const { getFormState } = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            spreadsheetId: makeVariableExpression("@options.sheetId"),
-            tabName: makeTemplateExpression("nunjucks", "Tab2"),
-            rowValues: {
-              Foo: makeTemplateExpression("nunjucks", "valueA"),
-              Bar: makeTemplateExpression("nunjucks", "valueB"),
-            },
-          },
-          optionsArgs: {
-            sheetId: TEST_SPREADSHEET_ID,
-          },
+    const { getFormState } = await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeTemplateExpression("nunjucks", "Tab2"),
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
-      }
-    );
-
-    await waitForEffect();
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+    });
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
@@ -980,25 +877,18 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and string spreadsheetId and nunjucks tabName/rowValues, when tabName cleared, does not auto-pick first tabName", async () => {
-    const { getFormState } = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            googleAccount: makeVariableExpression("@google"),
-            spreadsheetId: TEST_SPREADSHEET_ID,
-            tabName: makeTemplateExpression("nunjucks", "Tab2"),
-            rowValues: {
-              Foo: makeTemplateExpression("nunjucks", "valueA"),
-              Bar: makeTemplateExpression("nunjucks", "valueB"),
-            },
-          },
-          services: [googlePKCEIntegrationDependency],
+    const { getFormState } = await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", "Tab2"),
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
-      }
-    );
-
-    await waitForEffect();
+      },
+      services: [googlePKCEIntegrationDependency],
+    });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
 
@@ -1024,28 +914,21 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given test googleAccount and mod input spreadsheetId and nunjucks tabName/rowValues, when tabName cleared, does not auto-pick first tabName", async () => {
-    const { getFormState } = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: {
-          config: {
-            googleAccount: makeVariableExpression("@google"),
-            spreadsheetId: makeVariableExpression("@options.sheetId"),
-            tabName: makeTemplateExpression("nunjucks", "Tab2"),
-            rowValues: {
-              Foo: makeTemplateExpression("nunjucks", "valueA"),
-              Bar: makeTemplateExpression("nunjucks", "valueB"),
-            },
-          },
-          optionsArgs: {
-            sheetId: TEST_SPREADSHEET_ID,
-          },
-          services: [googlePKCEIntegrationDependency],
+    const { getFormState } = await renderWithValuesAndWait({
+      config: {
+        googleAccount: makeVariableExpression("@google"),
+        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        tabName: makeTemplateExpression("nunjucks", "Tab2"),
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
-      }
-    );
-
-    await waitForEffect();
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      services: [googlePKCEIntegrationDependency],
+    });
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
@@ -1069,20 +952,16 @@ describe("AppendSpreadsheetOptions", () => {
   });
 
   test("given selected tabName and entered rowValues, when tab changed, removes invalid rowValues properties", async () => {
-    render(<AppendSpreadsheetOptions name="" configKey="config" />, {
-      initialValues: {
-        config: {
-          spreadsheetId: TEST_SPREADSHEET_ID,
-          tabName: "Tab2",
-          rowValues: {
-            Foo: makeTemplateExpression("nunjucks", "valueA"),
-            Bar: makeTemplateExpression("nunjucks", "valueB"),
-          },
+    await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Tab2",
+        rowValues: {
+          Foo: makeTemplateExpression("nunjucks", "valueA"),
+          Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
       },
     });
-
-    await waitForEffect();
 
     const tabChooser = await screen.findByLabelText("Tab Name");
 

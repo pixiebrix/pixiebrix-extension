@@ -21,6 +21,7 @@ import {
   selectActiveRecipeId,
   selectDirtyOptionDefinitionsForRecipeId,
   selectDirtyOptionValuesForRecipeId,
+  selectNotDeletedElements,
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
@@ -34,14 +35,17 @@ import Loader from "@/components/Loader";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { inferRecipeOptions } from "@/store/extensionsUtils";
+import {
+  inferRecipeDependencies,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -63,6 +67,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
     selectDirtyOptionValuesForRecipeId(recipeId)
   );
   const installedExtensions = useSelector(selectNotDeletedExtensions);
+  const dirtyElements = useSelector(selectNotDeletedElements);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyRecipeOptions) {
@@ -87,16 +92,28 @@ const RecipeOptionsValuesContent: React.FC = () => {
     [optionsDefinition]
   );
 
-  const initialValues = useMemo(() => {
-    if (modifiedOptionValues) {
-      return modifiedOptionValues;
-    }
+  const recipeExtensions = useMemo(
+    () =>
+      installedExtensions.filter(
+        (extension) => extension._recipe?.id === recipeId
+      ),
+    [installedExtensions, recipeId]
+  );
 
-    const recipeExtensions = installedExtensions.filter(
-      (extension) => extension._recipe?.id === recipeId
-    );
-    return inferRecipeOptions(recipeExtensions);
-  }, [installedExtensions, modifiedOptionValues, recipeId]);
+  const initialValues = useMemo(
+    () => modifiedOptionValues ?? inferRecipeOptions(recipeExtensions),
+    [modifiedOptionValues, recipeExtensions]
+  );
+
+  const recipeElements = useMemo(
+    () => dirtyElements.filter((element) => element.recipe?.id === recipeId),
+    [dirtyElements, recipeId]
+  );
+
+  const integrationDependencies = useMemo(
+    () => inferRecipeDependencies(recipeExtensions, recipeElements),
+    [recipeExtensions, recipeElements]
+  );
 
   const updateRedux = useCallback(
     (options: OptionsArgs) => {
@@ -116,7 +133,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
   }
 
   const renderBody: RenderBody = ({ values }) => (
-    <>
+    <ModIntegrationsContext.Provider value={{ integrationDependencies }}>
       <Effect values={values} onChange={updateRedux} delayMillis={300} />
       <Card>
         <Card.Header>Mod Input Options</Card.Header>
@@ -126,7 +143,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
           </FieldRuntimeContext.Provider>
         </Card.Body>
       </Card>
-    </>
+    </ModIntegrationsContext.Provider>
   );
 
   return (

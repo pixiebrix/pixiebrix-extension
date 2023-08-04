@@ -33,6 +33,7 @@ import {
   selectActiveElement,
   selectSelectionSeq,
 } from "@/pageEditor/slices/editorSelectors";
+import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -63,14 +64,14 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   }, [element.uuid, element.recipe, dispatch]);
 
   return (
-    <>
+    <ServicesSliceModIntegrationsContextAdapter>
       <Effect
         values={element}
         onChange={syncReduxState}
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
       <ElementWizard element={element} />
-    </>
+    </ServicesSliceModIntegrationsContextAdapter>
   );
 };
 

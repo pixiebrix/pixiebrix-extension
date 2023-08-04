@@ -43,6 +43,7 @@ import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 
 const STEPS: WizardStep[] = [
+  { key: "services", label: "Integrations", Component: ServicesBody },
   // OptionsBody takes only a slice of the ModDefinition, however the types aren't set up in a way for TypeScript
   // to realize it's OK to pass in a whole ModDefinition for something that just needs the options prop
   {
@@ -52,7 +53,6 @@ const STEPS: WizardStep[] = [
       blueprint: ModDefinition;
     }>,
   },
-  { key: "services", label: "Integrations", Component: ServicesBody },
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
 

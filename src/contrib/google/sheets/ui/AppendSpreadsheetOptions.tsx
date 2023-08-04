@@ -134,7 +134,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         schema={APPEND_SCHEMA.properties.googleAccount as Schema}
       />
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
-        {({ googleAccount, spreadsheet, schema }) => (
+        {({ googleAccount, spreadsheet, spreadsheetFieldSchema }) => (
           <>
             <FormErrorContext.Provider
               value={{
@@ -145,7 +145,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
             >
               <SchemaField
                 name={joinName(blockConfigPath, "spreadsheetId")}
-                schema={schema}
+                schema={spreadsheetFieldSchema}
                 isRequired
               />
               {

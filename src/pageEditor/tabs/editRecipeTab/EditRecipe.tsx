@@ -39,6 +39,7 @@ import { lt } from "semver";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
+import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -117,7 +118,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
   }
 
   const renderBody: RenderBody = ({ values }) => (
-    <>
+    <ServicesSliceModIntegrationsContextAdapter>
       <Effect values={values} onChange={updateRedux} delayMillis={100} />
 
       <Card>
@@ -161,7 +162,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
           />
         </Card.Body>
       </Card>
-    </>
+    </ServicesSliceModIntegrationsContextAdapter>
   );
 
   return (

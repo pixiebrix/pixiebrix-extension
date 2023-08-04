@@ -22,29 +22,24 @@ import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
 import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
 import useAsyncState from "@/hooks/useAsyncState";
 import { dereference } from "@/validators/generic";
-import {
-  BASE_SHEET_SCHEMA,
-  SPREADSHEET_FIELD_DESCRIPTION,
-  SPREADSHEET_FIELD_TITLE,
-} from "@/contrib/google/sheets/core/schemas";
+import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { sheets } from "@/background/messenger/api";
-import { isEmpty } from "lodash";
 import { type AsyncState } from "@/types/sliceTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
   spreadsheet: Spreadsheet;
-  schema: Schema;
+  spreadsheetFieldSchema: Schema;
 };
 
 const RequireGoogleSheet: React.FC<{
   blockConfigPath: string;
   children: (props: GoogleSheetState) => ReactElement;
 }> = ({ blockConfigPath, children }) => {
-  const googleAccountAsyncState = useGoogleAccount(blockConfigPath);
+  const googleAccountAsyncState = useGoogleAccount();
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
 
   const baseSchemaAsyncState = useAsyncState(
@@ -63,44 +58,16 @@ const RequireGoogleSheet: React.FC<{
       googleAccount: SanitizedIntegrationConfig | null,
       spreadsheetId: string | null,
       baseSchema: Schema
-    ) => {
-      let schema = baseSchema;
-      let spreadsheet = null;
-
-      if (googleAccount != null) {
-        const spreadsheetFileList = await sheets.getAllSpreadsheets(
-          googleAccount
-        );
-        if (!isEmpty(spreadsheetFileList.files)) {
-          const spreadsheetSchemaEnum = spreadsheetFileList.files.map(
-            (file) => ({
-              const: file.id,
-              title: file.name,
-            })
-          );
-          schema = {
-            type: "string",
-            title: SPREADSHEET_FIELD_TITLE,
-            description: SPREADSHEET_FIELD_DESCRIPTION,
-            oneOf: spreadsheetSchemaEnum,
-          } as Schema;
-        }
-      }
-
-      if (spreadsheetId != null) {
-        // Sheets api handles fallback situation when googleAccount is null
-        spreadsheet = await sheets.getSpreadsheet({
-          googleAccount,
-          spreadsheetId,
-        });
-      }
-
-      return {
-        googleAccount,
-        spreadsheet,
-        schema,
-      };
-    }
+    ) => ({
+      googleAccount,
+      spreadsheet: spreadsheetId
+        ? await sheets.getSpreadsheet({
+            googleAccount,
+            spreadsheetId,
+          })
+        : null,
+      spreadsheetFieldSchema: baseSchema,
+    })
   );
 
   return (

@@ -157,7 +157,7 @@ type SetupRedux = (
   }
 ) => void;
 
-type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
+type WrapperOptions = RenderOptions & {
   initialValues?: FormikValues;
   initialErrors?: FormikErrors<FormikValues>;
   setupRedux?: SetupRedux;
@@ -200,6 +200,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
       initialValues,
       initialErrors,
       setupRedux = noop,
+      wrapper,
       ...renderOptions
     }: WrapperOptions = {}
   ): WrapperResult => {
@@ -214,7 +215,9 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
       shouldValidate?: boolean
     ) => void = noop;
 
-    const Wrapper: React.FC = initialValues
+    const ExtraWrapper = wrapper ?? (({ children }) => <>{children}</>);
+
+    const Wrapper: React.FC<{ children: React.ReactElement }> = initialValues
       ? ({ children }) => (
           <Provider store={store}>
             <Formik
@@ -227,7 +230,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
                 updateFormState = setValues;
                 return (
                   <Form onSubmit={handleSubmit}>
-                    {children}
+                    <ExtraWrapper>{children}</ExtraWrapper>
                     <button type="submit">Submit</button>
                   </Form>
                 );
@@ -290,8 +293,6 @@ type HookWrapperResult<
   getFormState(): FormikValues;
 };
 
-const DefaultExtraWrapper: React.FC = ({ children }) => <>{children}</>;
-
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
   return <TProps, TResult>(
     hook: (props: TProps) => TResult,
@@ -309,7 +310,7 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
     let formValues: FormikValues = null;
 
     const ExtraWrapper: WrapperComponent<TProps> =
-      wrapper ?? DefaultExtraWrapper;
+      wrapper ?? (({ children }) => <>{children}</>);
 
     const Wrapper: WrapperComponent<TProps> = initialValues
       ? (props) => (

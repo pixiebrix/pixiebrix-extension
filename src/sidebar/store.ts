@@ -26,7 +26,9 @@ import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
 import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import servicesSlice, {
+  persistServicesConfig,
+} from "@/store/services/servicesSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { boolean } from "@/utils/typeUtils";
 

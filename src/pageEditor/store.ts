@@ -29,7 +29,9 @@ import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import servicesSlice, {
+  persistServicesConfig,
+} from "@/store/services/servicesSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";

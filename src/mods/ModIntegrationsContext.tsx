@@ -15,11 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ServicesState } from "@/store/servicesSlice";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { createContext } from "react";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
-export const selectConfiguredServices = ({
-  services,
-}: {
-  services: ServicesState;
-}): IntegrationConfig[] => Object.values(services.configured);
+export type ModIntegrationsContextValue = {
+  integrationDependencies: IntegrationDependency[];
+};
+
+const ModIntegrationsContext = createContext<ModIntegrationsContextValue>({
+  integrationDependencies: [],
+});
+
+export default ModIntegrationsContext;
