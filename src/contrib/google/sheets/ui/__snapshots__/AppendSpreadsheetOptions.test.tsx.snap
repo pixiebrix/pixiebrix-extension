@@ -608,7 +608,7 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
               >
                 <span
                   class="css-1f43avz-a11yText-A11yText"
-                  id="react-select-3-live-region"
+                  id="react-select-4-live-region"
                 />
                 <span
                   aria-atomic="false"
@@ -932,7 +932,7 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
                   >
                     <span
                       class="css-1f43avz-a11yText-A11yText"
-                      id="react-select-4-live-region"
+                      id="react-select-6-live-region"
                     />
                     <span
                       aria-atomic="false"
@@ -1134,7 +1134,7 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
               >
                 <span
                   class="css-1f43avz-a11yText-A11yText"
-                  id="react-select-6-live-region"
+                  id="react-select-8-live-region"
                 />
                 <span
                   aria-atomic="false"
@@ -1267,7 +1267,7 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
               >
                 <span
                   class="css-1f43avz-a11yText-A11yText"
-                  id="react-select-5-live-region"
+                  id="react-select-7-live-region"
                 />
                 <span
                   aria-atomic="false"

@@ -37,7 +37,7 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
 
   return useAsyncState(async () => {
     if (googleDependency?.config == null) {
-      return;
+      return null;
     }
 
     try {

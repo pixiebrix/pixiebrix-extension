@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SheetsFileWidget selects from file picker 1`] = `
+exports[`SpreadsheetPickerWidget selects from file picker 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -13,7 +13,7 @@ exports[`SheetsFileWidget selects from file picker 1`] = `
         disabled=""
         id="spreadsheetId"
         type="text"
-        value="Test Sheet"
+        value="Test Spreadsheet"
       />
       <div
         class="input-group-append"
@@ -35,7 +35,7 @@ exports[`SheetsFileWidget selects from file picker 1`] = `
 </DocumentFragment>
 `;
 
-exports[`SheetsFileWidget smoke test 1`] = `
+exports[`SpreadsheetPickerWidget smoke test 1`] = `
 <DocumentFragment>
   <form
     action="#"

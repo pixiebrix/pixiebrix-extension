@@ -54,6 +54,7 @@ import {
 import { type Schema } from "@/types/schemaTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 /**
  * Timeout indicating that the Chrome identity API may be hanging.
@@ -257,10 +258,14 @@ const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
 
 const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
   const { schema: baseSchema } = props;
+  // Need to lift this into an AsyncState to force the useDeriveAsyncState() call below to
+  // recalculate when baseSchema changes
+  const baseSchemaAsyncState = valueToAsyncState(baseSchema);
   const googleAccountAsyncState = useGoogleAccount();
   const schemaAsyncState = useDeriveAsyncState(
+    baseSchemaAsyncState,
     googleAccountAsyncState,
-    async (googleAccount: SanitizedIntegrationConfig) => {
+    async (baseSchema: Schema, googleAccount: SanitizedIntegrationConfig) => {
       if (!googleAccount) {
         return baseSchema;
       }

@@ -17,13 +17,12 @@
 
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
-import SheetsFileWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
+import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { sheets } from "@/background/messenger/api";
+import { services, sheets } from "@/background/messenger/api";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { validateRegistryId } from "@/types/helpers";
-import { type OutputKey } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
@@ -35,6 +34,15 @@ import userEvent from "@testing-library/user-event";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker";
 import { act, screen } from "@testing-library/react";
 import { type FormikValues } from "formik";
+import { dereference } from "@/validators/generic";
+import { type UUID } from "@/types/stringTypes";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { type IntegrationDependency } from "@/types/integrationTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { type FileList } from "@/contrib/google/sheets/core/types";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import selectEvent from "react-select-event";
 
 jest.mock("@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker", () => ({
   __esModule: true,
@@ -52,24 +60,81 @@ jest.mock("@/contrib/google/initGoogle", () => ({
   subscribe: jest.fn(() => () => {}),
 }));
 
-jest.mock("@/background/messenger/api", () => ({
-  sheets: {
-    getSheetProperties: jest
-      .fn()
-      .mockRejectedValue(new Error("Not implemented")),
-  },
-}));
-
 const useGoogleSpreadsheetPickerMock = jest.mocked(useGoogleSpreadsheetPicker);
 const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
 const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
 const isGAPISupportedMock = jest.mocked(isGAPISupported);
+const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
+
+let idSequence = 0;
+function newId(): UUID {
+  return uuidSequence(idSequence++);
+}
+
+const servicesLocateMock = jest.mocked(services.locate);
+
+const TEST_SPREADSHEET_ID = newId();
+const OTHER_TEST_SPREADSHEET_ID = newId();
+const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
+const GOOGLE_PKCE_SERVICE_ID = validateRegistryId("google/oauth2-pkce");
+const GOOGLE_PKCE_AUTH_CONFIG = newId();
+const TEST_SPREADSHEET_AUTH_CONFIG = newId();
+
+const TEST_SPREADSHEET_NAME = "Test Spreadsheet";
+const OTHER_TEST_SPREADSHEET_NAME = "Other Spreadsheet";
+
+const servicesLookup = {
+  [GOOGLE_SHEET_SERVICE_ID]: sanitizedIntegrationConfigFactory({
+    serviceId: GOOGLE_SHEET_SERVICE_ID,
+    config: {
+      _sanitizedConfigBrand: null,
+      spreadsheetId: TEST_SPREADSHEET_ID,
+    },
+  }),
+  [GOOGLE_PKCE_SERVICE_ID]: sanitizedIntegrationConfigFactory({
+    serviceId: GOOGLE_PKCE_SERVICE_ID,
+  }),
+};
+
+const googlePKCEIntegrationDependency: IntegrationDependency = {
+  id: GOOGLE_PKCE_SERVICE_ID,
+  outputKey: validateOutputKey("google"),
+  config: GOOGLE_PKCE_AUTH_CONFIG,
+};
+
+const testSpreadsheetIntegrationDependency: IntegrationDependency = {
+  id: GOOGLE_SHEET_SERVICE_ID,
+  outputKey: validateOutputKey("google"),
+  config: TEST_SPREADSHEET_AUTH_CONFIG,
+};
+
+const fileListResponse: FileList = {
+  kind: "drive#fileList",
+  incompleteSearch: false,
+  files: [
+    {
+      kind: "drive#file",
+      mimeType: "application/vnd.google-apps.spreadsheet",
+      id: TEST_SPREADSHEET_ID,
+      name: TEST_SPREADSHEET_NAME,
+    },
+    {
+      kind: "drive#file",
+      mimeType: "application/vnd.google-apps.spreadsheet",
+      id: OTHER_TEST_SPREADSHEET_ID,
+      name: OTHER_TEST_SPREADSHEET_NAME,
+    },
+  ],
+};
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
+  const baseSchema = await dereference(BASE_SHEET_SCHEMA);
+
   const rendered = render(
-    <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
+    <SpreadsheetPickerWidget name="spreadsheetId" schema={baseSchema} />,
     {
       initialValues,
+      wrapper: ServicesSliceModIntegrationsContextAdapter,
     }
   );
 
@@ -78,7 +143,20 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
   return rendered;
 };
 
-describe("SheetsFileWidget", () => {
+beforeAll(() => {
+  registerDefaultWidgets();
+  servicesLocateMock.mockImplementation(
+    async (serviceId) => servicesLookup[serviceId]
+  );
+  getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
+  getSheetPropertiesMock.mockImplementation(async (spreadsheetId: string) =>
+    spreadsheetId === TEST_SPREADSHEET_ID
+      ? { title: TEST_SPREADSHEET_NAME }
+      : { title: OTHER_TEST_SPREADSHEET_NAME }
+  );
+});
+
+describe("SpreadsheetPickerWidget", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     isGoogleInitializedMock.mockReturnValue(true);
@@ -117,12 +195,12 @@ describe("SheetsFileWidget", () => {
 
   it("selects from file picker", async () => {
     const showPickerMock = jest.fn().mockResolvedValue({
-      id: "abc123",
-      name: "Test Sheet",
+      id: TEST_SPREADSHEET_ID,
+      name: TEST_SPREADSHEET_NAME,
     });
 
     getSheetPropertiesMock.mockResolvedValue({
-      title: "Test Sheet",
+      title: TEST_SPREADSHEET_NAME,
     });
 
     useGoogleSpreadsheetPickerMock.mockReturnValue({
@@ -146,13 +224,15 @@ describe("SheetsFileWidget", () => {
 
   it("renders valid sheet on load", async () => {
     getSheetPropertiesMock.mockResolvedValue({
-      title: "Test Sheet",
+      title: TEST_SPREADSHEET_NAME,
     });
 
-    await renderWithValuesAndWait({ spreadsheetId: "abc123" });
+    await renderWithValuesAndWait({ spreadsheetId: TEST_SPREADSHEET_ID });
 
     // Verify it's showing the sheet title and not the sheet unique id
-    expect(screen.getByRole("textbox")).toHaveDisplayValue("Test Sheet");
+    expect(screen.getByRole("textbox")).toHaveDisplayValue(
+      TEST_SPREADSHEET_NAME
+    );
   });
 
   it("falls back to spreadsheet id if fetching properties fails", async () => {
@@ -160,20 +240,15 @@ describe("SheetsFileWidget", () => {
       new Error("Error fetching sheet properties")
     );
 
-    await renderWithValuesAndWait({ spreadsheetId: "abc123" });
+    await renderWithValuesAndWait({ spreadsheetId: TEST_SPREADSHEET_ID });
 
-    expect(screen.getByRole("textbox")).toHaveDisplayValue("abc123");
+    expect(screen.getByRole("textbox")).toHaveDisplayValue(TEST_SPREADSHEET_ID);
   });
 
   it("shows workshop fallback on expression", async () => {
-    render(
-      <SheetsFileWidget name="spreadsheetId" schema={BASE_SHEET_SCHEMA} />,
-      {
-        initialValues: { spreadsheetId: makeVariableExpression("@sheet") },
-      }
-    );
-
-    await waitForEffect();
+    await renderWithValuesAndWait({
+      spreadsheetId: makeVariableExpression("@sheet"),
+    });
 
     expect(screen.getByRole("textbox")).toHaveDisplayValue(
       "Use Workshop to edit"
@@ -182,23 +257,17 @@ describe("SheetsFileWidget", () => {
 
   it("removes unused service on mount", async () => {
     getSheetPropertiesMock.mockResolvedValue({
-      title: "Test Sheet",
+      title: TEST_SPREADSHEET_NAME,
     });
 
     const initialValues = formStateFactory(
       {
-        services: [
-          {
-            id: validateRegistryId("google/sheet"),
-            outputKey: "google" as OutputKey,
-            config: uuidSequence(1),
-          },
-        ],
+        services: [testSpreadsheetIntegrationDependency],
       },
       [
         brickConfigFactory({
           config: {
-            spreadsheetId: "abc123",
+            spreadsheetId: TEST_SPREADSHEET_ID,
           },
         }),
       ]
@@ -210,15 +279,9 @@ describe("SheetsFileWidget", () => {
   });
 
   it("does not remove used service on mount", async () => {
-    const service = {
-      id: validateRegistryId("google/sheet"),
-      outputKey: "google" as OutputKey,
-      config: uuidSequence(1),
-    };
-
     const initialValues = formStateFactory(
       {
-        services: [service],
+        services: [testSpreadsheetIntegrationDependency],
       },
       [
         brickConfigFactory({
@@ -234,7 +297,7 @@ describe("SheetsFileWidget", () => {
     const formState = getFormState();
 
     expect(formState.services).toHaveLength(1);
-    expect(formState.services[0]).toEqual(service);
+    expect(formState.services[0]).toEqual(testSpreadsheetIntegrationDependency);
   });
 
   it("displays rejected permissions message", async () => {
@@ -280,5 +343,51 @@ describe("SheetsFileWidget", () => {
     ).toBeVisible();
 
     jest.useRealTimers();
+  });
+
+  it("shows working spreadsheet dropdown picker when using test google account PKCE", async () => {
+    const initialValues = formStateFactory(
+      {
+        services: [googlePKCEIntegrationDependency],
+      },
+      [
+        brickConfigFactory({
+          config: {
+            spreadsheetId: makeVariableExpression("@google"),
+          },
+        }),
+      ]
+    );
+
+    await renderWithValuesAndWait(initialValues);
+
+    // Dropdown should show both spreadsheets
+    selectEvent.openMenu(screen.getByRole("combobox"));
+    expect(screen.getByText(TEST_SPREADSHEET_NAME)).toBeVisible();
+    expect(screen.getByText(OTHER_TEST_SPREADSHEET_NAME)).toBeVisible();
+
+    // Pick the first one
+    await act(async () => {
+      await selectEvent.select(
+        screen.getByRole("combobox"),
+        TEST_SPREADSHEET_NAME
+      );
+    });
+
+    expect(screen.getByText(TEST_SPREADSHEET_NAME)).toBeVisible();
+    expect(
+      screen.queryByText(OTHER_TEST_SPREADSHEET_NAME)
+    ).not.toBeInTheDocument();
+
+    // Switch spreadsheets
+    await act(async () => {
+      await selectEvent.select(
+        screen.getByRole("combobox"),
+        OTHER_TEST_SPREADSHEET_NAME
+      );
+    });
+
+    expect(screen.queryByText(TEST_SPREADSHEET_NAME)).not.toBeInTheDocument();
+    expect(screen.getByText(OTHER_TEST_SPREADSHEET_NAME)).toBeVisible();
   });
 });
