@@ -512,6 +512,8 @@ exports[`ActivateRecipeCard renders 1`] = `
 </DocumentFragment>
 `;
 
+exports[`ActivateRecipeCard renders successfully with null services property 1`] = `<DocumentFragment />`;
+
 exports[`ActivateRecipeCard renders with missing services property 1`] = `
 <DocumentFragment>
   <form
