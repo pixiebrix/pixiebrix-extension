@@ -251,7 +251,7 @@ export async function getAllRows(
 export async function getHeaders(target: SpreadsheetTarget): Promise<string[]> {
   // Lookup the headers in the first row
   const { values } = await getRows(target, `A1:${columnToLetter(256)}1`);
-  return values[0]?.map(String);
+  return values[0]?.map(String) ?? [];
 }
 
 export async function getSpreadsheet({

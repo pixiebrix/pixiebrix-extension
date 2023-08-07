@@ -40,7 +40,7 @@ const WizardValuesModIntegrationsContextAdapter: React.FC<Props> = ({
   );
   const integrationDependencies: IntegrationDependency[] =
     modComponentDefinitions.flatMap((component) => {
-      const integrationOutputKeyMap = component.services;
+      const integrationOutputKeyMap = component.services ?? {};
       return Object.entries(integrationOutputKeyMap).map(
         ([outputKey, id]: [OutputKey, RegistryId]) => ({
           id,

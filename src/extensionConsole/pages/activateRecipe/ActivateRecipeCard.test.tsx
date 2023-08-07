@@ -100,6 +100,17 @@ describe("ActivateRecipeCard", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
+  test("renders successfully with null services property", async () => {
+    setupRecipe(
+      defaultModDefinitionFactory({
+        extensionPoints: [modComponentDefinitionFactory({ services: null })],
+      })
+    );
+    const rendered = render(<RecipeCard />);
+    await waitForEffect();
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
   test("activate mod definition with missing required mod definition options", async () => {
     const modDefinition = defaultModDefinitionFactory({
       metadata: metadataFactory({

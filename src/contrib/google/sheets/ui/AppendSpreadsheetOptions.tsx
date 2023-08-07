@@ -66,7 +66,7 @@ const RowValuesField: React.FunctionComponent<{
         return;
       }
 
-      const headerProperties = Object.fromEntries(
+      const headerProperties: Record<string, Schema> = Object.fromEntries(
         headers
           .filter((x) => !isNullOrBlank(x))
           .map((header) => [header, { type: "string" }])
@@ -93,11 +93,7 @@ const RowValuesField: React.FunctionComponent<{
 
       setFieldSchema({
         type: "object",
-        properties: Object.fromEntries(
-          headers
-            .filter((x) => !isNullOrBlank(x))
-            .map((header) => [header, { type: "string" }])
-        ),
+        properties: headerProperties,
       });
     },
     // Hash just in case tabName is an expression, and we
