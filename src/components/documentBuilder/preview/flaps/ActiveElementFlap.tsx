@@ -44,8 +44,8 @@ const ActiveElementFlap: React.FunctionComponent<ActiveElementFlapProps> = ({
   };
 
   const deleteElement = useDeleteElement(documentBodyName);
-  const onDelete = () => {
-    deleteElement(elementName);
+  const onDelete = async () => {
+    await deleteElement(elementName);
   };
 
   const { canMoveUp, canMoveDown, moveElement } =

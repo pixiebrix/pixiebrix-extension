@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  type ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { type ChangeEvent, useCallback, useMemo, useState } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact, isEmpty, partial, truncate } from "lodash";
 import { useField } from "formik";
@@ -53,6 +47,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
+import useAsyncEffect from "use-async-effect";
 
 /**
  * Version of SelectorConfig where fields may be expressions.
@@ -388,8 +383,8 @@ const SelectorsOptions: React.FC<{
   );
 
   const setSelectorItems = useCallback(
-    (items: SelectorItem[]) => {
-      fieldHelpers.setValue(
+    async (items: SelectorItem[]) => {
+      await fieldHelpers.setValue(
         Object.fromEntries(items.map(({ name, selector }) => [name, selector]))
       );
     },
@@ -402,14 +397,14 @@ const SelectorsOptions: React.FC<{
     Object.values(rawSelectors).some((x) => isVarExpression(x));
 
   // Normalize simple configuration to object to ensure Formik paths work
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (
       !containsUnsupportedVariable &&
       Object.values(rawSelectors).some(
         (x) => typeof x === "string" || isTemplateExpression(x)
       )
     ) {
-      setSelectorItems(selectorItems);
+      await setSelectorItems(selectorItems);
     }
   }, [
     rawSelectors,
@@ -427,8 +422,8 @@ const SelectorsOptions: React.FC<{
       <Button
         className="mb-3"
         size="sm"
-        onClick={() => {
-          setSelectorItems([
+        onClick={async () => {
+          await setSelectorItems([
             ...selectorItems,
             {
               name: freshIdentifier(
@@ -451,8 +446,8 @@ const SelectorsOptions: React.FC<{
             selectorDefinition={selector}
             // It's safe to use name because the SelectorCard only commits name changes on blur.
             key={name}
-            onChange={(item) => {
-              setSelectorItems(
+            onChange={async (item) => {
+              await setSelectorItems(
                 produce(selectorItems, (draft) => {
                   // eslint-disable-next-line security/detect-object-injection -- index is a number
                   draft[index] = item;
@@ -461,8 +456,8 @@ const SelectorsOptions: React.FC<{
             }}
             onDelete={
               selectorItems.length > 1
-                ? () => {
-                    setSelectorItems(
+                ? async () => {
+                    await setSelectorItems(
                       selectorItems.filter((_, i) => i !== index)
                     );
                   }
