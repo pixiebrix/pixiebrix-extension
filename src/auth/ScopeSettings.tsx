@@ -48,7 +48,7 @@ const VALIDATION_SCHEMA = Yup.object({
   scope: Yup.string()
     .matches(
       SCOPE_REGEX,
-      "Your account alias must start with @ followed by lowercase letters and numbers"
+      "Your account alias must start with an @ symbol and consist of lowercase alphanumeric characters and dashes, e.g. @my-account-alias"
     )
     .required(),
 });
@@ -151,7 +151,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
       <Alert variant="info" className="mt-2">
         <p>
-          <FontAwesomeIcon icon={faEyeSlash} /> You account alias will not be
+          <FontAwesomeIcon icon={faEyeSlash} /> Your account alias will not be
           visible to anyone unless you choose to share a brick or mod.
         </p>
       </Alert>
