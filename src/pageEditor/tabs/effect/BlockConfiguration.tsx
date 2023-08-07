@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { getIn, useField, useFormikContext } from "formik";
 import useBrickOptions from "@/hooks/useBrickOptions";
@@ -41,6 +41,7 @@ import {
   rootModeOptions,
   windowOptions,
 } from "@/pageEditor/tabs/effect/configurationConstants";
+import useAsyncEffect from "use-async-effect";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -74,14 +75,14 @@ const BlockConfiguration: React.FunctionComponent<{
 
   const advancedOptionsRef = useRef<HTMLDivElement>();
 
-  useEffect(
-    () => {
+  useAsyncEffect(
+    async () => {
       // Effect to clear out unused `root` field. Technically, `root` could contain a selector when used with `document`
       // or `inherit` mode, but we don't want to support that in the Page Editor because it's legacy behavior.
       if (config.value.rootMode !== "element") {
-        rootFieldHelpers.setValue(null);
+        await rootFieldHelpers.setValue(null);
       }
-    }, // eslint-disable-next-line react-hooks/exhaustive-deps -- rootFieldHelpers changes reference every render
+    }, // Dependencies - rootFieldHelpers changes reference every render
     [config.value.rootMode]
   );
 

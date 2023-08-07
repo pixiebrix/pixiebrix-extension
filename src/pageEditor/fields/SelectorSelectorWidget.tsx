@@ -207,10 +207,10 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   );
 
   const onTextChanged = useCallback(
-    (value: string) => {
+    async (value: string) => {
       disableSelector();
       enableSelector(value);
-      setValue(value);
+      await setValue(value);
     },
     [disableSelector, enableSelector, setValue]
   );
@@ -252,7 +252,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         sort && !selected.isMulti ? sortBySelector(selectors) : selectors;
 
       console.debug("Setting selector", { selected, firstSelector });
-      setValue(firstSelector);
+      await setValue(firstSelector);
     } catch (error) {
       if (isSpecificError(error, CancelError)) {
         return;
