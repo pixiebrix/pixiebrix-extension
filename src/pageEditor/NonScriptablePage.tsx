@@ -20,7 +20,6 @@ import styles from "./NonScriptablePage.module.scss";
 import React from "react";
 import { Col, Row, Container } from "react-bootstrap";
 import workshopImage from "@img/workshop.svg";
-import Alert from "@/components/Alert";
 
 const GetStarted: React.FunctionComponent = () => (
   <>
@@ -68,13 +67,7 @@ const NonScriptablePage: React.FunctionComponent<{ url: string }> = ({
     <div className="my-auto">
       <Row className={styles.paneRow}>
         <Col lg={9}>
-          {url?.startsWith("http://") ? (
-            <Alert variant="warning">
-              PixieBrix cannot modify insecure HTTP pages
-            </Alert>
-          ) : (
-            <GetStarted />
-          )}
+          <GetStarted />
         </Col>
 
         <Col
