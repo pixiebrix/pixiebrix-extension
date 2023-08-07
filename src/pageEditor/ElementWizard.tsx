@@ -103,7 +103,7 @@ const ElementWizard: React.FunctionComponent<{
         return;
       }
 
-      setFormState(newState);
+      await setFormState(newState);
       dispatch(actions.showV3UpgradeMessage());
     }
   }, []);

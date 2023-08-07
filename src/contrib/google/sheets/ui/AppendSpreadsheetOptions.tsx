@@ -88,7 +88,7 @@ const RowValuesField: React.FunctionComponent<{
           delete newRowValues[key];
         }
 
-        setRowValues(newRowValues);
+        await setRowValues(newRowValues);
       }
 
       setFieldSchema({

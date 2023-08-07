@@ -64,13 +64,13 @@ const SharingTable: React.FunctionComponent = () => {
                 onlabel=" "
                 offlabel=" "
                 checked={organizationsField.value.includes(organization.id)}
-                onChange={(checked: boolean) => {
+                onChange={async (checked: boolean) => {
                   const next = checked
                     ? uniq([...organizationsField.value, organization.id])
                     : organizationsField.value.filter(
                         (x: string) => x !== organization.id
                       );
-                  setOrganizations(next);
+                  await setOrganizations(next);
                 }}
               />
             </td>
