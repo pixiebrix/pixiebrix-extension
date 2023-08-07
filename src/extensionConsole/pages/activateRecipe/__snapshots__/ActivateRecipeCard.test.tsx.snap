@@ -512,9 +512,7 @@ exports[`ActivateRecipeCard renders 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipeCard renders successfully with null services property 1`] = `<DocumentFragment />`;
-
-exports[`ActivateRecipeCard renders with missing services property 1`] = `
+exports[`ActivateRecipeCard renders successfully with null services property 1`] = `
 <DocumentFragment>
   <form
     class=""
@@ -567,12 +565,12 @@ exports[`ActivateRecipeCard renders with missing services property 1`] = `
                   <div
                     class="card-title h5"
                   >
-                    Mod 1
+                    Mod 2
                   </div>
                   <code
                     class="packageId"
                   >
-                    test/mod-1
+                    test/mod-2
                   </code>
                 </span>
               </div>

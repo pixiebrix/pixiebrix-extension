@@ -15,51 +15,44 @@ exports[`renders cancel publish modal 1`] = `
       class="modal-content"
     >
       <div
-        class="modal-header"
-      >
-        <div
-          class="modal-title h4"
-        >
-          Cancel Publish?
-        </div>
-        <button
-          class="close"
-          type="button"
-        >
-          <span
-            aria-hidden="true"
-          >
-            ×
-          </span>
-          <span
-            class="sr-only"
-          >
-            Close
-          </span>
-        </button>
-      </div>
-      <div
         class="modal-body"
       >
-        <p>
-          Your marketplace submission will not be published and the public link to your mod will no longer work.
-        </p>
-      </div>
-      <div
-        class="modal-footer"
-      >
-        <button
-          class="btn btn-info"
-          type="button"
+        <div
+          class="root"
+          data-testid="loader"
         >
-          Never mind
-        </button>
-        <button
-          class="btn btn-danger"
-          type="button"
-        >
-          Yes, Cancel Publish
-        </button>
+          <span
+            style="width: 57px; font-size: 0px; display: inline-block;"
+          >
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.06444705606819s 0.26444705606819013s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.3487942280284695s 0.5487942280284694s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.9424787069565245s 0.14247870695652448s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.6040398729413513s -0.19596012705864868s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.40489940599664s 0.6048994059966399s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.9841883751436941s 0.18418837514369407s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.9794749739806473s 0.17947497398064732s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.57230410370597s 0.7723041037059699s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.0586418776970006s 0.2586418776970007s infinite ease;"
+            />
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -81,110 +74,44 @@ exports[`renders edit publish modal 1`] = `
       class="modal-content"
     >
       <div
-        class="modal-header"
-      >
-        <div
-          class="modal-title h4"
-        >
-          Edit Pending Publish
-        </div>
-        <button
-          class="close"
-          type="button"
-        >
-          <span
-            aria-hidden="true"
-          >
-            ×
-          </span>
-          <span
-            class="sr-only"
-          >
-            Close
-          </span>
-        </button>
-      </div>
-      <div
         class="modal-body"
       >
-        <p>
-          The
-           
-          <a
-            href="https://www.pixiebrix.com/marketplace/"
-            rel="noreferrer noopener"
-            target="blank"
-          >
-            PixieBrix Marketplace
-          </a>
-           
-          admin team is working on publishing your mod. You'll receive an email when it is live in the Marketplace. Contact
-           
-          <a
-            href="mailto:support@pixiebrix.com"
-          >
-            support@pixiebrix.com
-          </a>
-           if you need help.
-        </p>
-        <p>
-          While you wait, the public link below will work for anyone, so you can start sharing right away!
-        </p>
-        <p
-          class="mb-1"
-        >
-          Public link to share:
-        </p>
         <div
-          class="input-group"
+          class="root"
+          data-testid="loader"
         >
-          <input
-            class="form-control"
-            readonly=""
-            type="text"
-            value="https://app.pixiebrix.com/activate?id=@user2/test"
-          />
-          <div
-            class="input-group-append"
+          <span
+            style="width: 57px; font-size: 0px; display: inline-block;"
           >
-            <button
-              class="btn btn-info"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="svg-inline--fa fa-copy fa-w-14 "
-                data-icon="copy"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                viewBox="0 0 448 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                  fill="currentColor"
-                />
-              </svg>
-            </button>
-          </div>
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.3392299487066919s 0.5392299487066918s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.1334504568999262s 0.3334504568999263s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.2151793963667465s 0.41517939636674644s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.985847862421927s 0.18584786242192702s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.376280072053373s 0.576280072053373s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.9004810700961631s 0.10048107009616308s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.973598794428227s 0.17359879442822707s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 0.9390783395255372s 0.13907833952553722s infinite ease;"
+            />
+            <span
+              style="display: inline-block; background-color: rgb(0, 0, 0); width: 15px; height: 15px; margin: 2px; border-radius: 100%; animation-fill-mode: both; animation: react-spinners-GridLoader-grid 1.2735336356892586s 0.4735336356892587s infinite ease;"
+            />
+          </span>
         </div>
-      </div>
-      <div
-        class="modal-footer"
-      >
-        <button
-          class="btn btn-danger"
-          type="button"
-        >
-          Cancel Publish
-        </button>
-        <button
-          class="btn btn-info"
-          type="button"
-        >
-          Close
-        </button>
       </div>
     </div>
   </div>
