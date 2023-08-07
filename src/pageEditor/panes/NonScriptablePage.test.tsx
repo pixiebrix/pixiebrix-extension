@@ -17,8 +17,7 @@
 
 import React from "react";
 import NonScriptablePage from "@/pageEditor/NonScriptablePage";
-import { render, screen } from "@/pageEditor/testHelpers";
-import { waitFor } from "@testing-library/react";
+import { render } from "@/pageEditor/testHelpers";
 
 describe("NonScriptablePage", () => {
   test("it renders", () => {
@@ -26,13 +25,9 @@ describe("NonScriptablePage", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  test("it renders right copy when the URL is HTTP", async () => {
-    render(<NonScriptablePage url="http://example.com" />);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("PixieBrix cannot modify insecure HTTP pages")
-      ).not.toBeNull();
-    });
+  // Since 1.7.36 http: URLs are permitted
+  test("it renders http snapshot", () => {
+    const rendered = render(<NonScriptablePage url="http://test.url" />);
+    expect(rendered.asFragment()).toMatchSnapshot();
   });
 });
