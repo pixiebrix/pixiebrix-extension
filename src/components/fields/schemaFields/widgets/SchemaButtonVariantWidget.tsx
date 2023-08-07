@@ -97,8 +97,8 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
         isSearchable={false}
         // Set clearable to false because the input looks off next to the button preview
         isClearable={false}
-        onChange={(event: StringOption) => {
-          setValue(event.value);
+        onChange={async (event: StringOption) => {
+          await setValue(event.value);
         }}
         components={{
           Option: OptionComponent,

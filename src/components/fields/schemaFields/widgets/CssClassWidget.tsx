@@ -544,8 +544,8 @@ const CssClassWidget: React.VFC<
   );
 
   const toggleClass = useCallback(
-    (className: string, on: boolean, group?: ClassFlag[]) => {
-      setValue(calculateNextValue(value, className, on, group));
+    async (className: string, on: boolean, group?: ClassFlag[]) => {
+      await setValue(calculateNextValue(value, className, on, group));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik bug where setValue changes on each render
     [value]
@@ -687,8 +687,8 @@ const CssClassWidget: React.VFC<
               className="mr-2"
               classes={classes}
               disabled={disableControls}
-              onUpdate={(update) => {
-                setValue(calculateNextSpacing(value, "m", update));
+              onUpdate={async (update) => {
+                await setValue(calculateNextSpacing(value, "m", update));
               }}
             />
           )}
@@ -699,8 +699,8 @@ const CssClassWidget: React.VFC<
               className="mx-2"
               classes={classes}
               disabled={disableControls}
-              onUpdate={(update) => {
-                setValue(calculateNextSpacing(value, "p", update));
+              onUpdate={async (update) => {
+                await setValue(calculateNextSpacing(value, "p", update));
               }}
             />
           )}

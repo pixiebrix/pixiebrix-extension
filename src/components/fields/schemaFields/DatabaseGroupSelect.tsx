@@ -20,8 +20,9 @@ import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { appApi } from "@/services/api";
 import { validateUUID } from "@/types/helpers";
 import { useField } from "formik";
-import React, { useEffect } from "react";
+import React from "react";
 import { type UUID } from "@/types/stringTypes";
+import useAsyncEffect from "use-async-effect";
 
 const groupIdFieldName = "groupId";
 
@@ -34,12 +35,12 @@ const DatabaseGroupSelect = () => {
     loadOrganizationGroups,
     { data: organizationGroups, isLoading: isGroupsLoading },
   ] = appApi.endpoints.getGroups.useLazyQuery();
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (selectedOrganizationId) {
       void loadOrganizationGroups(selectedOrganizationId, true);
     }
 
-    setGroupId("" as UUID, false);
+    await setGroupId("" as UUID, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- not including setGroupId, it's guaranteed to work
   }, [loadOrganizationGroups, selectedOrganizationId]);
 

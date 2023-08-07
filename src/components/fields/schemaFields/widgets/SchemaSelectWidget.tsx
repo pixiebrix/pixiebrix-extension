@@ -74,8 +74,8 @@ const SchemaSelectWidget: React.VFC<
   };
 
   const selectOnChange = useCallback(
-    (option: StringOption) => {
-      setValue(option?.value ?? null);
+    async (option: StringOption) => {
+      await setValue(option?.value ?? null);
     },
     [setValue]
   );
@@ -89,8 +89,8 @@ const SchemaSelectWidget: React.VFC<
       inputId={name}
       isClearable={!isRequired}
       options={optionsWithPlaceholder}
-      onCreateOption={(value) => {
-        setValue(value);
+      onCreateOption={async (value) => {
+        await setValue(value);
         setCreated(uniq([...created, value]));
       }}
       value={selectedValue}
