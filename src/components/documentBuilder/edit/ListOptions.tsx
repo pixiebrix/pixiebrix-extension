@@ -48,7 +48,9 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
     description: "An array/list of elements to render in the document",
   };
 
-  const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+  const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = async (
+    event
+  ) => {
     const nextType = event.target.value as DocumentElementType;
 
     const nextDocumentElement = produce(
@@ -58,7 +60,7 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
       }
     );
 
-    setDocumentElement(nextDocumentElement);
+    await setDocumentElement(nextDocumentElement);
   };
 
   return (

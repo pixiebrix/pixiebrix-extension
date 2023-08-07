@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
@@ -36,6 +30,7 @@ import useToggleFormField from "@/hooks/useToggleFormField";
 import { getFieldValidator } from "@/components/fields/fieldUtils";
 import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 import { isExpression } from "@/utils/expressionUtils";
+import useAsyncEffect from "use-async-effect";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
@@ -122,15 +117,14 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const annotations = useFieldAnnotations(name);
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
     if (value === undefined && isRequired && !isEmpty(inputModeOptions)) {
-      setValue(inputModeOptions[0].interpretValue(value));
+      await setValue(inputModeOptions[0].interpretValue(value));
     }
     // We only want to run this on mount, but also for some reason, sometimes the formik
     // helpers reference (setValue) changes, so we need to account for that in the dependencies
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/2269
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setValue]);
 
   const { onOmitField } = useToggleFormField(name, normalizedSchema);

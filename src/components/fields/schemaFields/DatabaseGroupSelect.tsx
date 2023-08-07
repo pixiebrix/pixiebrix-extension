@@ -41,7 +41,6 @@ const DatabaseGroupSelect = () => {
     }
 
     await setGroupId("" as UUID, false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- not including setGroupId, it's guaranteed to work
   }, [loadOrganizationGroups, selectedOrganizationId]);
 
   const groupOptions = (

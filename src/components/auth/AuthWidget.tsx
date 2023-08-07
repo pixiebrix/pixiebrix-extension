@@ -106,7 +106,7 @@ const AuthWidget: React.FunctionComponent<{
       // Don't need to track changes locally via setCreated; the new auth automatically flows
       // through via the redux selectors
 
-      helpers.setValue(id);
+      await helpers.setValue(id);
 
       setShowServiceModal(false);
     },

@@ -31,7 +31,7 @@ function useDeleteElement(documentBodyName: string) {
   const dispatch = useDispatch();
 
   return useCallback(
-    (elementName: string) => {
+    async (elementName: string) => {
       dispatch(editorActions.setNodePreviewActiveElement(null));
 
       const { collectionName, elementIndex } = getElementCollectionName(
@@ -47,7 +47,7 @@ function useDeleteElement(documentBodyName: string) {
       // If the element used a service, remove the service link as well
       nextState = produceExcludeUnusedDependencies(nextState);
 
-      setFormState(nextState);
+      await setFormState(nextState);
     },
     [setFormState, formState, dispatch, documentBodyName]
   );
