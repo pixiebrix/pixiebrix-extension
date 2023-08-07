@@ -68,8 +68,8 @@ const RowValuesField: React.FunctionComponent<{
 
       const headerProperties: Record<string, Schema> = Object.fromEntries(
         headers
-          ?.filter((x) => !isNullOrBlank(x))
-          .map((header) => [header, { type: "string" }]) ?? []
+          .filter((x) => !isNullOrBlank(x))
+          .map((header) => [header, { type: "string" }])
       );
 
       if (isEmpty(headerProperties)) {
