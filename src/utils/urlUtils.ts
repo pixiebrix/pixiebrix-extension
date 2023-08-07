@@ -63,6 +63,11 @@ export function safeParseUrl(url: string, baseUrl?: string): URL {
   }
 }
 
+/**
+ * Returns true if `value` is a valid absolute URL with a protocol in `protocols`
+ * @param value the value to check
+ * @param protocols valid protocols including colon, defaults to http: and https:
+ */
 export function isValidUrl(
   value: string,
   { protocols = ["http:", "https:"] }: { protocols?: string[] } = {}

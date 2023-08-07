@@ -21,7 +21,7 @@
   "content_security_policy": "script-src 'self' https://apis.google.com 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; frame-src 'self' https: https://*.googleapis.com https://docs.google.com",
   "content_scripts": [
     {
-      "matches": ["https://*/*"],
+      "matches": ["https://*/*", "http://*/*"],
       "js": ["contentScript.js"],
       "css": ["contentScript.css"],
       "all_frames": true,

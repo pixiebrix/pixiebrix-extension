@@ -68,13 +68,7 @@ const NonScriptablePage: React.FunctionComponent<{ url: string }> = ({
     <div className="my-auto">
       <Row className={styles.paneRow}>
         <Col lg={9}>
-          {url?.startsWith("http://") ? (
-            <Alert variant="warning">
-              PixieBrix cannot modify insecure HTTP pages
-            </Alert>
-          ) : (
-            <GetStarted />
-          )}
+          <GetStarted />
         </Col>
 
         <Col

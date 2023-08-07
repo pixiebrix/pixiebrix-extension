@@ -33,6 +33,18 @@ import { logPromiseDuration } from "@/utils/promiseUtils";
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
 
+/**
+ * Protocol allowlist for running the content script. See manifest.json for content script registration.
+ * @since 1.7.36 allow http protocol to support some enterprise development use cases without https tunnel
+ * @since 1.7.36 allow about: protocol to support srcdoc iframes
+ */
+const ALLOWED_PROTOCOLS = [
+  "https:",
+  "http:",
+  // Does not appear in manifest.json, because it corresponds to iframes using srcdoc
+  "about:",
+];
+
 // Track module load so we hear something from content script in the console if Chrome attempted to import the module.
 console.debug("contentScript: module load");
 
@@ -80,7 +92,7 @@ async function initContentScript() {
 }
 
 // Support running in secure pages and about: pages, which are used by srcdoc frames
-if (["https:", "about:"].includes(location.protocol) || DEBUG) {
+if (ALLOWED_PROTOCOLS.includes(location.protocol) || DEBUG) {
   // eslint-disable-next-line promise/prefer-await-to-then -- top-level await isn't available
   void initContentScript().catch((error) => {
     throw new Error("Error initializing contentScript", { cause: error });
