@@ -215,9 +215,10 @@ const sidebarSlice = createSlice({
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
       // Calling selectTab with a stale event key shouldn't change the current tab
-      state.activeKey = eventKeyExists(state, action.payload)
-        ? action.payload
-        : state.activeKey;
+      if (eventKeyExists(state, action.payload)) {
+        state.activeKey = action.payload;
+        state.closedTabs[action.payload] = false;
+      }
 
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;
@@ -377,7 +378,7 @@ const sidebarSlice = createSlice({
       state.closedTabs[action.payload] = true;
 
       if (state.activeKey === action.payload) {
-        state.activeKey = defaultEventKey(state);
+        state.activeKey = defaultEventKey(state, state.closedTabs);
       }
     },
     openTab(state, action: PayloadAction<string>) {

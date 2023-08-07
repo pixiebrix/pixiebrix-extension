@@ -51,6 +51,7 @@ import {
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
   selectClosedTabs,
+  selectVisiblePanelCount,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
@@ -66,18 +67,35 @@ const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
-const TabWithDivider = ({ children, active, ...props }: NavLinkProps) => (
-  <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
-    {/* added `target="_self"` due to stopPropogation on onCloseStaticPanel
-     * without it, the default behavior of the ancher tag (Nav.Link) is triggered
-     * and a new tab is opened
-     */}
-    <Nav.Link {...props} className={styles.tabHeader} target="_self">
-      {children}
-    </Nav.Link>
-    <div className={styles.tabDivider} />
-  </Nav.Item>
-);
+const TabWithDivider = ({
+  children,
+  active,
+  eventKey,
+  ...props
+}: NavLinkProps) => {
+  const closedTabs = useSelector(selectClosedTabs);
+
+  // eslint-disable-next-line security/detect-object-injection -- eventKey is not user input
+  const isPanelHidden = closedTabs[eventKey];
+
+  return isPanelHidden ? null : (
+    <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
+      {/* added `target="_self"` due to stopPropogation on onCloseStaticPanel
+       * without it, the default behavior of the ancher tag (Nav.Link) is triggered
+       * and a new tab is opened
+       */}
+      <Nav.Link
+        {...props}
+        className={styles.tabHeader}
+        target="_self"
+        eventKey={eventKey}
+      >
+        {children}
+      </Nav.Link>
+      <div className={styles.tabDivider} />
+    </Nav.Item>
+  );
+};
 
 const Tabs: React.FC = () => {
   const { flagOn } = useFlags();
@@ -89,6 +107,7 @@ const Tabs: React.FC = () => {
   const modActivationPanel = useSelector(selectSidebarModActivationPanel);
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
+  const visiblePanelCount = useSelector(selectVisiblePanelCount);
   const closedTabs = useSelector(selectClosedTabs);
   const hasModLauncherEnabled = flagOn("sidebar-home-tab");
 
@@ -99,10 +118,6 @@ const Tabs: React.FC = () => {
       source: "tabClick",
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
-  };
-
-  const onCloseTemporaryTab = (nonce: UUID) => {
-    dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
   };
 
   const onOpenModLauncher = () => {
@@ -124,22 +139,23 @@ const Tabs: React.FC = () => {
     dispatch(sidebarSlice.actions.selectTab(modLauncherEventKey));
   };
 
-  const onCloseStaticPanel = async (
+  const onCloseTemporaryTab = (nonce: UUID) => {
+    dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+  };
+
+  const onClosePanel = async (
     event: MouseEvent<HTMLButtonElement>,
-    staticPanel: StaticPanelEntry
+    panel: StaticPanelEntry | PanelEntry
   ) => {
     // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
     event.stopPropagation();
 
-    // The mod launcher is a special case where we want to hide the sidebar if all other tabs are closed
-    if (
-      staticPanel.key === MOD_LAUNCHER.key &&
-      panels.every((panel) => closedTabs[eventKeyForEntry(panel)])
-    ) {
+    // If all other panels are closed, close the sidebar
+    if (visiblePanelCount > 1) {
+      dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(panel)));
+    } else {
       const topLevelFrame = await getTopLevelFrame();
       await hideSidebar(topLevelFrame);
-    } else {
-      dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(staticPanel)));
     }
   };
 
@@ -179,6 +195,11 @@ const Tabs: React.FC = () => {
               <span className={styles.tabTitle}>
                 {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
               </span>
+              {hasModLauncherEnabled && (
+                <CloseButton
+                  onClick={async (event) => onClosePanel(event, panel)}
+                />
+              )}
             </TabWithDivider>
           ))}
 
@@ -222,26 +243,18 @@ const Tabs: React.FC = () => {
             </TabWithDivider>
           )}
 
-          {staticPanels.map((staticPanel) => {
-            const eventKey = eventKeyForEntry(staticPanel);
-            // eslint-disable-next-line security/detect-object-injection -- eventKey is not user input
-            const isPanelHidden = closedTabs[eventKey];
-
-            return isPanelHidden ? null : (
-              <TabWithDivider
-                key={staticPanel.key}
-                active={isPanelActive(staticPanel)}
-                eventKey={eventKeyForEntry(staticPanel)}
-              >
-                <span className={styles.tabTitle}>{staticPanel.heading}</span>
-                <CloseButton
-                  onClick={async (event) =>
-                    onCloseStaticPanel(event, staticPanel)
-                  }
-                />
-              </TabWithDivider>
-            );
-          })}
+          {staticPanels.map((staticPanel) => (
+            <TabWithDivider
+              key={staticPanel.key}
+              active={isPanelActive(staticPanel)}
+              eventKey={eventKeyForEntry(staticPanel)}
+            >
+              <span className={styles.tabTitle}>{staticPanel.heading}</span>
+              <CloseButton
+                onClick={async (event) => onClosePanel(event, staticPanel)}
+              />
+            </TabWithDivider>
+          ))}
 
           {hasModLauncherEnabled && (
             <Button

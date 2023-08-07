@@ -17,7 +17,7 @@
 
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type SidebarEntries } from "@/types/sidebarTypes";
+import { type SidebarState, type SidebarEntries } from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
@@ -59,15 +59,38 @@ describe("defaultEventKey", () => {
     expect(defaultEventKey(args)).not.toBe("temporaryPanel-undefined");
   });
 
-  it("prefers first panel", () => {
-    const args = {
-      forms: [],
-      temporaryPanels: [],
-      panels: [{ extensionId: uuidv4() }, { extensionId: uuidv4() }],
-    } as SidebarEntries;
+  describe("panels", () => {
+    it("prefers first panel", () => {
+      const entries = {
+        forms: [],
+        temporaryPanels: [],
+        panels: [{ extensionId: uuidv4() }, { extensionId: uuidv4() }],
+      } as SidebarEntries;
 
-    expect(defaultEventKey(args)).toBe(eventKeyForEntry(args.panels[0]));
-    expect(defaultEventKey(args)).not.toBe("panel-undefined");
+      expect(defaultEventKey(entries)).toBe(
+        eventKeyForEntry(entries.panels[0])
+      );
+      expect(defaultEventKey(entries)).not.toBe("panel-undefined");
+    });
+
+    it("ignores closed panels", () => {
+      const firstPanel = sidebarEntryFactory("panel");
+      const secondPanel = sidebarEntryFactory("panel");
+      const entries = {
+        forms: [],
+        temporaryPanels: [],
+        panels: [firstPanel, secondPanel],
+      } as SidebarEntries;
+
+      const closedTabs: SidebarState["closedTabs"] = {
+        [eventKeyForEntry(firstPanel)]: true,
+      };
+
+      expect(defaultEventKey(entries, closedTabs)).toBe(
+        eventKeyForEntry(entries.panels[1])
+      );
+      expect(defaultEventKey(entries, closedTabs)).not.toBe("panel-undefined");
+    });
   });
 
   it("returns static panel as last resort before returning null", () => {
