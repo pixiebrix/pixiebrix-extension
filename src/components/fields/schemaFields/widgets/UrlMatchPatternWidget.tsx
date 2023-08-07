@@ -85,7 +85,7 @@ const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
               key={caption}
               caption={caption}
               onClick={async () => {
-                setValue([...value, await getPattern()]);
+                await setValue([...value, await getPattern()]);
               }}
             />
           ))}

@@ -76,7 +76,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   ]);
 
   const onModeChange = useCallback(
-    (newInputMode: FieldInputMode) => {
+    async (newInputMode: FieldInputMode) => {
       if (newInputMode === inputMode) {
         // Don't execute anything on "re-select", we don't want to
         // overwrite the field with the default value again.
@@ -94,7 +94,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
       );
 
       // Already handled "omit" and returned above
-      setValue(interpretValue(value));
+      await setValue(interpretValue(value));
       setFocusInput(true);
     },
     [inputMode, inputModeOptions, setValue, value, onOmitField]
@@ -110,9 +110,9 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     const optionValues = new Set(
       inputModeOptions.map((option) => option.value)
     );
-    widgetProps.onClick = (event) => {
+    widgetProps.onClick = async (event) => {
       if (defaultType != null) {
-        onModeChange(defaultType);
+        await onModeChange(defaultType);
       }
 
       // Order matters here, for ex. we want select to take precedence over string
@@ -127,7 +127,8 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
       ];
       for (const fieldInputMode of fieldInputModePriorities) {
         if (optionValues.has(fieldInputMode)) {
-          onModeChange(fieldInputMode);
+          // eslint-disable-next-line no-await-in-loop -- awaiting doesn't matter here because of the break statement
+          await onModeChange(fieldInputMode);
           break;
         }
       }
@@ -135,12 +136,12 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   }
 
   const stringValue = isTemplateExpression(value) ? value.__value__ : "";
-  const setNewValueFromString = (newValue: string) => {
+  const setNewValueFromString = async (newValue: string) => {
     if (inputMode !== "var" && inputMode !== "string") {
       return;
     }
 
-    setValue(selectedOption.interpretValue(newValue));
+    await setValue(selectedOption.interpretValue(newValue));
   };
 
   return (

@@ -78,7 +78,7 @@ const TabField: React.FC<
     },
     // We shouldn't include the setTabName formik helper due to unstable reference, the allTabNames string covers
     // the tabNames dependency, and we're setting tabName here so don't want to run this side effect when it changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [spreadsheet?.spreadsheetId, allTabNames]
   );
 

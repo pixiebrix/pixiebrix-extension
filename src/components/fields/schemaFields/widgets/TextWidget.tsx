@@ -174,7 +174,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
 
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
-      const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
+      const onChange: React.ChangeEventHandler<HTMLInputElement> = async ({
         target,
       }) => {
         const nextValue = target.value;
@@ -183,7 +183,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
           templateEngine !== "var" &&
           (isVarValue(nextValue) || nextValue === "@")
         ) {
-          setValue(makeVariableExpression(nextValue));
+          await setValue(makeVariableExpression(nextValue));
         } else if (
           // Automatically switch from var to text if the user starts typing text
           templateEngine === "var" &&
@@ -195,9 +195,9 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
           const templateValue = isVarValue(trimmed)
             ? nextValue.replace(trimmed, `{{${trimmed}}}`)
             : nextValue;
-          setValue(makeTemplateExpression("nunjucks", templateValue));
+          await setValue(makeTemplateExpression("nunjucks", templateValue));
         } else {
-          setValue(makeTemplateExpression(templateEngine, nextValue));
+          await setValue(makeTemplateExpression(templateEngine, nextValue));
         }
       };
 
@@ -224,8 +224,8 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     const onChange: React.ChangeEventHandler<HTMLInputElement> =
       allowExpressions
         ? onChangeForTemplate("nunjucks")
-        : (event) => {
-            setValue(event.target.value);
+        : async (event) => {
+            await setValue(event.target.value);
           };
 
     return [fieldValue, onChange];
