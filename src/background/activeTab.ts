@@ -1,11 +1,15 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
+import { isValidUrl } from "@/utils/urlUtils";
 
 type TabId = number;
 
 export async function getTabsWithAccess(): Promise<TabId[]> {
   const { origins } = await browser.permissions.getAll();
   const tabs = await browser.tabs.query({ url: origins });
-  return tabs.map((x) => x.id);
+
+  // Because we allow access to all urls, exclude tabs that can't have the content script injected
+  // Otherwise, we'll attempt to message a tab that can't receive messages
+  return tabs.filter((tab) => isValidUrl(tab.url)).map((x) => x.id);
 }
 
 /**
