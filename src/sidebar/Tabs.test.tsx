@@ -18,7 +18,7 @@
 import React from "react";
 import Tabs from "@/sidebar/Tabs";
 import { render } from "@/sidebar/testHelpers";
-import { type PanelEntry } from "@/types/sidebarTypes";
+import { type SidebarEntries } from "@/types/sidebarTypes";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { screen, within } from "@testing-library/react";
@@ -31,23 +31,21 @@ jest.mock("@/hooks/useFlags", () =>
   jest.fn().mockReturnValue({ flagOn: jest.fn() })
 );
 
-async function setupPanelsAndRender(
-  panels: PanelEntry[] = [],
-  hasModLauncher = false
-) {
+async function setupPanelsAndRender(sidebarEntries: Partial<SidebarEntries>) {
   (useFlags as jest.Mock).mockReturnValue({
-    flagOn: jest.fn().mockReturnValue(hasModLauncher),
+    flagOn: jest.fn().mockReturnValue(sidebarEntries.staticPanels?.length > 0),
   });
 
   const renderResult = render(<Tabs />, {
     setupRedux(dispatch) {
       dispatch(
         sidebarSlice.actions.setInitialPanels({
-          panels,
-          staticPanels: hasModLauncher ? [MOD_LAUNCHER] : [],
+          panels: [],
+          staticPanels: [],
           temporaryPanels: [],
           forms: [],
           modActivationPanel: undefined,
+          ...sidebarEntries,
         })
       );
     },
@@ -67,20 +65,22 @@ describe("Tabs", () => {
   });
 
   test("renders with panels", async () => {
-    await setupPanelsAndRender([panel]);
+    await setupPanelsAndRender({ panels: [panel] });
 
     expect(screen.getByText("Panel Test 1")).toBeInTheDocument();
   });
 
   describe("Mod Launcher", () => {
     test("renders with mod launcher when flag is enabled", async () => {
-      const { asFragment } = await setupPanelsAndRender([], true);
+      const { asFragment } = await setupPanelsAndRender({
+        staticPanels: [MOD_LAUNCHER],
+      });
 
       expect(asFragment()).toMatchSnapshot();
     });
 
     test("displays no active sidebar panels view when no panels are active", async () => {
-      await setupPanelsAndRender([], true);
+      await setupPanelsAndRender({ staticPanels: [MOD_LAUNCHER] });
 
       expect(
         screen.getByText("We didn't find any mods to run")
@@ -91,7 +91,10 @@ describe("Tabs", () => {
     });
 
     test("can close the mod launcher", async () => {
-      await setupPanelsAndRender([panel], true);
+      await setupPanelsAndRender({
+        panels: [panel],
+        staticPanels: [MOD_LAUNCHER],
+      });
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
@@ -100,12 +103,15 @@ describe("Tabs", () => {
         .click();
 
       expect(
-        screen.queryByRole("tabs", { name: /mods/i })
+        screen.queryByRole("tab", { name: /mods/i })
       ).not.toBeInTheDocument();
     });
 
     test("can open the mod launcher", async () => {
-      await setupPanelsAndRender([panel], true);
+      await setupPanelsAndRender({
+        panels: [panel],
+        staticPanels: [MOD_LAUNCHER],
+      });
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
@@ -121,7 +127,7 @@ describe("Tabs", () => {
     });
 
     test("clicking open the mod launcher multiple times does not open multiple mod launchers", async () => {
-      await setupPanelsAndRender([], true);
+      await setupPanelsAndRender({ staticPanels: [MOD_LAUNCHER] });
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
@@ -135,19 +141,22 @@ describe("Tabs", () => {
 
   describe("Persistent Panels", () => {
     test("can close a panel when mod launcher is available", async () => {
-      await setupPanelsAndRender([panel], true);
+      await setupPanelsAndRender({
+        panels: [panel],
+        staticPanels: [MOD_LAUNCHER],
+      });
 
       within(screen.getByRole("tab", { name: /panel test 1/i }))
         .getByRole("button", { name: "Close" })
         .click();
 
       expect(
-        screen.queryByRole("tabs", { name: /panel test 1/i })
+        screen.queryByRole("tab", { name: /panel test 1/i })
       ).not.toBeInTheDocument();
     });
 
     test("cannot close panel when mod launcher is unavailable", async () => {
-      await setupPanelsAndRender([panel], false);
+      await setupPanelsAndRender({ panels: [panel] });
 
       expect(
         within(screen.getByRole("tab", { name: /panel test 1/i })).queryByRole(
@@ -158,7 +167,10 @@ describe("Tabs", () => {
     });
 
     test("can open a closed panel when mod launcher is available", async () => {
-      await setupPanelsAndRender([panel], true);
+      await setupPanelsAndRender({
+        panels: [panel],
+        staticPanels: [MOD_LAUNCHER],
+      });
 
       within(screen.getByRole("tab", { name: /panel test 1/i }))
         .getByRole("button", { name: "Close" })
@@ -173,6 +185,56 @@ describe("Tabs", () => {
       expect(
         screen.getByRole("tab", { name: /panel test 1/i })
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("Temporary Panels", () => {
+    const temporaryPanel = sidebarEntryFactory("temporaryPanel");
+
+    test("can close a temporary panel when mod launcher is available", async () => {
+      await setupPanelsAndRender({
+        temporaryPanels: [temporaryPanel],
+        staticPanels: [MOD_LAUNCHER],
+      });
+
+      within(screen.getByRole("tab", { name: /temporary panel test 1/i }))
+        .getByRole("button", { name: "Close" })
+        .click();
+
+      expect(
+        screen.queryByRole("tab", { name: /temporary panel test 1/i })
+      ).not.toBeInTheDocument();
+    });
+
+    test("can close a tempoarary panel when mod launcher is unavailable", async () => {
+      await setupPanelsAndRender({ temporaryPanels: [temporaryPanel] });
+
+      within(screen.getByRole("tab", { name: /temporary panel test 1/i }))
+        .getByRole("button", { name: "Close" })
+        .click();
+
+      expect(
+        screen.queryByRole("tab", { name: /temporary panel test 1/i })
+      ).not.toBeInTheDocument();
+    });
+
+    test("cannot re-open a closed temporary panel with the mod launcher", async () => {
+      await setupPanelsAndRender({
+        temporaryPanels: [temporaryPanel],
+        staticPanels: [MOD_LAUNCHER],
+      });
+
+      within(screen.getByRole("tab", { name: /temporary panel test 1/i }))
+        .getByRole("button", { name: "Close" })
+        .click();
+
+      expect(
+        screen.queryByRole("tab", { name: /temporary panel test 1/i })
+      ).not.toBeInTheDocument();
+
+      expect(
+        screen.queryByRole("heading", { name: /temporary panel test 1/i })
+      ).not.toBeInTheDocument();
     });
   });
 });
