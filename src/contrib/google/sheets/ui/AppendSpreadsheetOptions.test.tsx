@@ -248,10 +248,10 @@ beforeEach(() => {
     permit: jest.fn(),
     restrict: jest.fn(),
     flagOn(flag: string) {
-      return flag === "gsheets-pkce-integration";
+      return true;
     },
     flagOff(flag: string) {
-      return flag !== "gsheets-pkce-integration";
+      return false;
     },
   });
 });

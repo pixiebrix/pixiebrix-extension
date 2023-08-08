@@ -43,6 +43,7 @@ import { type FileList } from "@/contrib/google/sheets/core/types";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
+import useFlags from "@/hooks/useFlags";
 
 jest.mock("@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker", () => ({
   __esModule: true,
@@ -127,6 +128,13 @@ const fileListResponse: FileList = {
   ],
 };
 
+jest.mock("@/hooks/useFlags", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useFlagsMock = jest.mocked(useFlags);
+
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
   const baseSchema = await dereference(BASE_SHEET_SCHEMA);
 
@@ -161,9 +169,35 @@ describe("SpreadsheetPickerWidget", () => {
     jest.clearAllMocks();
     isGoogleInitializedMock.mockReturnValue(true);
     isGAPISupportedMock.mockReturnValue(true);
+    useFlagsMock.mockReturnValue({
+      permit: jest.fn(),
+      restrict: jest.fn(),
+      flagOn(flag: string) {
+        return true;
+      },
+      flagOff(flag: string) {
+        return false;
+      },
+    });
   });
 
   it("smoke test", async () => {
+    useFlagsMock.mockReturnValue({
+      permit: jest.fn(),
+      restrict: jest.fn(),
+      flagOn(flag: string) {
+        return false;
+      },
+      flagOff(flag: string) {
+        return true;
+      },
+    });
+
+    const rendered = await renderWithValuesAndWait({ spreadsheetId: null });
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  it("smoke test with feature flag off", async () => {
     const rendered = await renderWithValuesAndWait({ spreadsheetId: null });
     expect(rendered.asFragment()).toMatchSnapshot();
   });

@@ -70,3 +70,39 @@ exports[`SpreadsheetPickerWidget smoke test 1`] = `
   </form>
 </DocumentFragment>
 `;
+
+exports[`SpreadsheetPickerWidget smoke test with feature flag off 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="input-group"
+    >
+      <input
+        class="form-control"
+        disabled=""
+        id="spreadsheetId"
+        name="spreadsheetId"
+        type="text"
+        value=""
+      />
+      <div
+        class="input-group-append"
+      >
+        <button
+          class="btn btn-info"
+          type="button"
+        >
+          Select
+        </button>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
