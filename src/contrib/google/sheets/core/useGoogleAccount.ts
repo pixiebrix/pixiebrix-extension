@@ -23,19 +23,26 @@ import { useContext } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { validateRegistryId } from "@/types/helpers";
 import reportError from "@/telemetry/reportError";
+import useFlags from "@/hooks/useFlags";
 
 const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
 
 /**
  * Hook to get the Google account from mod integrations context
+ * Note: 2023-08-08: Currently gated to just the internal team using the feature flag gsheets-pkce-integration
  */
 function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | null> {
   const { integrationDependencies } = useContext(ModIntegrationsContext);
   const googleDependency = integrationDependencies.find(
     (dependency) => dependency.id === GOOGLE_PKCE_INTEGRATION_ID
   );
+  const { flagOff } = useFlags();
 
   return useAsyncState(async () => {
+    if (flagOff("gsheets-pkce-integration")) {
+      return null;
+    }
+
     if (googleDependency?.config == null) {
       return null;
     }
