@@ -51,6 +51,7 @@ import { type Brick } from "@/types/brickTypes";
 import { SelectElement } from "@/bricks/transformers/selectElement";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
+import { Readable } from "@/bricks/transformers/readable";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -72,6 +73,7 @@ function getAllTransformers(): Brick[] {
     new TemplateTransformer(),
     new UrlParams(),
     new JQueryReader(),
+    new Readable(),
     new ComponentReader(),
     new TableReader(),
     new TablesReader(),
