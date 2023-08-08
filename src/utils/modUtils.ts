@@ -20,7 +20,6 @@ import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
   type Mod,
-  type ModViewItem,
   type SharingSource,
   type SharingType,
   type UnavailableMod,
@@ -34,9 +33,6 @@ import {
 } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type StarterBrickType } from "@/starterBricks/types";
-import extensionPointRegistry from "@/starterBricks/registry";
-import { getContainedStarterBrickTypes } from "@/utils/modDefinitionUtils";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -332,54 +328,3 @@ export const selectExtensionsFromMod = createSelector(
         )
       : installedExtensions.filter((x) => x.id === mod.id)
 );
-
-export const StarterBrickMap: Record<StarterBrickType, string> = {
-  panel: "Sidebar Panel",
-  menuItem: "Button",
-  trigger: "Trigger",
-  contextMenu: "Context Menu",
-  actionPanel: "Sidebar",
-  quickBar: "Quick Bar Action",
-  quickBarProvider: "Dynamic Quick Bar",
-  tour: "Tour",
-};
-
-const getStarterBrickType = async (
-  modComponent: ResolvedModComponent
-): Promise<StarterBrickType> => {
-  const extensionPoint = await extensionPointRegistry.lookup(
-    modComponent.extensionPointId
-  );
-
-  return extensionPoint.kind as StarterBrickType;
-};
-
-const getExtensionPointTypesContained = async (
-  modViewItem: ModViewItem
-): Promise<StarterBrickType[]> => {
-  if (isUnavailableMod(modViewItem.mod)) {
-    return [];
-  }
-
-  return isModDefinition(modViewItem.mod)
-    ? getContainedStarterBrickTypes(modViewItem.mod)
-    : [await getStarterBrickType(modViewItem.mod)];
-};
-
-export const getContainedStarterBrickNames = async (
-  modViewItem: ModViewItem
-): Promise<string[]> => {
-  const extensionPointTypes = await getExtensionPointTypesContained(
-    modViewItem
-  );
-  const starterBricksContained = [];
-  for (const extensionPointType of extensionPointTypes) {
-    // eslint-disable-next-line security/detect-object-injection -- extensionPointType is type ExtensionPointType
-    const starterBrick = StarterBrickMap[extensionPointType];
-    if (starterBrick) {
-      starterBricksContained.push(starterBrick);
-    }
-  }
-
-  return starterBricksContained;
-};
