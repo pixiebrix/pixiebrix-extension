@@ -46,6 +46,7 @@ import {
 } from "@/contrib/google/initGoogle";
 import { type FormikValues } from "formik";
 import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import useFlags from "@/hooks/useFlags";
 
 let idSequence = 0;
 function newId(): UUID {
@@ -188,6 +189,13 @@ async function expectTabsAndHeadersToBeLoaded() {
   expect(screen.queryByText("Column2")).not.toBeInTheDocument();
 }
 
+jest.mock("@/hooks/useFlags", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useFlagsMock = jest.mocked(useFlags);
+
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockImplementation(
@@ -212,6 +220,16 @@ beforeAll(() => {
 beforeEach(() => {
   isGoogleInitializedMock.mockReturnValue(true);
   isGAPISupportedMock.mockReturnValue(true);
+  useFlagsMock.mockReturnValue({
+    permit: jest.fn(),
+    restrict: jest.fn(),
+    flagOn(flag: string) {
+      return flag === "gsheets-pkce-integration";
+    },
+    flagOff(flag: string) {
+      return flag !== "gsheets-pkce-integration";
+    },
+  });
 });
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
@@ -234,6 +252,31 @@ describe("LookupSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        header: makeTemplateExpression("nunjucks", ""),
+        query: makeTemplateExpression("nunjucks", ""),
+        multi: false,
+      },
+    });
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("given feature flag off and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
+    useFlagsMock.mockReturnValue({
+      permit: jest.fn(),
+      restrict: jest.fn(),
+      flagOn(flag: string) {
+        return false;
+      },
+      flagOff(flag: string) {
+        return true;
+      },
+    });
+
     const rendered = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,

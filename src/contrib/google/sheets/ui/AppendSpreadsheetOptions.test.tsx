@@ -49,6 +49,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
 import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import useFlags from "@/hooks/useFlags";
 
 let idSequence = 0;
 function newId(): UUID {
@@ -189,6 +190,13 @@ const fileListResponse: FileList = {
   ],
 };
 
+jest.mock("@/hooks/useFlags", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useFlagsMock = jest.mocked(useFlags);
+
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockImplementation(
@@ -232,6 +240,19 @@ beforeAll(() => {
         return ["OtherFoo", "OtherBar"];
       }
     }
+  });
+});
+
+beforeEach(() => {
+  useFlagsMock.mockReturnValue({
+    permit: jest.fn(),
+    restrict: jest.fn(),
+    flagOn(flag: string) {
+      return flag === "gsheets-pkce-integration";
+    },
+    flagOff(flag: string) {
+      return flag !== "gsheets-pkce-integration";
+    },
   });
 });
 
@@ -360,6 +381,29 @@ describe("AppendSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
+    const rendered = await renderWithValuesAndWait({
+      config: {
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: makeTemplateExpression("nunjucks", ""),
+        rowValues: {},
+      },
+    });
+
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  test("given feature flag off and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
+    useFlagsMock.mockReturnValue({
+      permit: jest.fn(),
+      restrict: jest.fn(),
+      flagOn(flag: string) {
+        return false;
+      },
+      flagOff(flag: string) {
+        return true;
+      },
+    });
+
     const rendered = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
