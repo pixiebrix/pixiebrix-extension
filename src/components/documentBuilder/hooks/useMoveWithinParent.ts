@@ -47,7 +47,7 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
   const canMoveUp = elementIndex > 0;
   const canMoveDown = elementIndex < elementsCollection.length - 1;
 
-  const moveElement = (direction: "up" | "down") => {
+  const moveElement = async (direction: "up" | "down") => {
     const newElementsCollection = [...elementsCollection];
     const toIndex = direction === "up" ? elementIndex - 1 : elementIndex + 1;
 
@@ -58,7 +58,7 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
     ];
     /* eslint-enable security/detect-object-injection */
 
-    setElementsCollection(newElementsCollection);
+    await setElementsCollection(newElementsCollection);
     setActiveElement(joinPathParts(collectionName, toIndex));
   };
 

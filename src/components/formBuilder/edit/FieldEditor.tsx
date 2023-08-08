@@ -110,7 +110,7 @@ const FieldEditor: React.FC<{
     setInternalPropertyName(nextName);
   };
 
-  const updatePropertyName = () => {
+  const updatePropertyName = async () => {
     const nextName = internalPropertyName;
     if (nextName === propertyName) {
       return;
@@ -126,11 +126,11 @@ const FieldEditor: React.FC<{
       propertyName,
       nextName
     );
-    setRjsfSchema(nextRjsfSchema);
+    await setRjsfSchema(nextRjsfSchema);
     setActiveField(nextName);
   };
 
-  const onUiTypeChange: SelectWidgetOnChange = (event) => {
+  const onUiTypeChange: SelectWidgetOnChange = async (event) => {
     const { value } = event.target;
     if (!value) {
       return;
@@ -142,7 +142,7 @@ const FieldEditor: React.FC<{
       value
     );
 
-    setRjsfSchema(nextRjsfSchema);
+    await setRjsfSchema(nextRjsfSchema);
   };
 
   const getSelectedUiTypeOption = () => {
@@ -183,7 +183,7 @@ const FieldEditor: React.FC<{
     return selected ?? UNKNOWN_OPTION;
   };
 
-  const onRequiredChange = ({
+  const onRequiredChange = async ({
     target: { value: nextIsRequired },
   }: React.ChangeEvent<CheckBoxLike>) => {
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
@@ -202,7 +202,7 @@ const FieldEditor: React.FC<{
       }
     });
 
-    setRjsfSchema(nextRjsfSchema);
+    await setRjsfSchema(nextRjsfSchema);
   };
 
   const isRequired = (schema.required ?? []).includes(propertyName);

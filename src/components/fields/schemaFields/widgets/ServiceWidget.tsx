@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  type ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { type ChangeEvent, useCallback, useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { type AuthOption } from "@/auth/authTypes";
@@ -49,6 +44,7 @@ import { type SafeString, type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
+import useAsyncEffect from "use-async-effect";
 
 export type ServiceWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
@@ -196,7 +192,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   }, [authOptions, schema]);
 
   const onChange: SelectWidgetOnChange<AuthOption> = useCallback(
-    ({ target: { value, options } }) => {
+    async ({ target: { value, options } }) => {
       // Value will be null when the selection is "cleared"
       const newState =
         value == null
@@ -208,7 +204,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
               serviceIds,
               options
             );
-      setRootValues(newState);
+      await setRootValues(newState);
       // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
       helpers.setError(undefined);
     },
@@ -216,8 +212,8 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
     [root, setRootValues, serviceIds, field.name]
   );
 
-  useEffect(
-    () => {
+  useAsyncEffect(
+    async () => {
       if (value == null && detectDefault) {
         if (root.services == null) {
           throw new TypeError(
@@ -236,7 +232,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
             match.outputKey,
             { root, match }
           );
-          helpers.setValue(keyToFieldValue(match.outputKey));
+          await helpers.setValue(keyToFieldValue(match.outputKey));
         } else if (options.length === 1) {
           // This condition is only true when the auth services have been filtered by the schema
 
@@ -262,10 +258,10 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
         // preceding if-branch to execute again, which runs the "detectDefault" logic
         // and then calls the service-select change handler, which in turn will configure
         // root.services properly for the extension.
-        helpers.setValue(null);
+        await helpers.setValue(null);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
+    // Only run on mount
     [serviceIds, options]
   );
 

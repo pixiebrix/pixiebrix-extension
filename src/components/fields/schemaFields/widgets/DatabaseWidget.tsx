@@ -83,11 +83,11 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
 
   const checkIsMounted = useIsMounted();
 
-  const setDatabaseId = (databaseId: UUID) => {
+  const setDatabaseId = async (databaseId: UUID) => {
     if (allowExpressions) {
-      setFieldValue(makeTemplateExpression("nunjucks", databaseId));
+      await setFieldValue(makeTemplateExpression("nunjucks", databaseId));
     } else {
-      setFieldValue(databaseId);
+      await setFieldValue(databaseId);
     }
   };
 
@@ -99,13 +99,13 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
     setShowModal(false);
   };
 
-  const onDatabaseCreated = (databaseId: UUID) => {
+  const onDatabaseCreated = async (databaseId: UUID) => {
     if (!checkIsMounted()) {
       return;
     }
 
     onModalClose();
-    setDatabaseId(databaseId);
+    await setDatabaseId(databaseId);
   };
 
   return (
@@ -122,8 +122,10 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
         isLoading={isLoadingDatabaseOptions}
         isClearable={!isRequired || isLoadingDatabaseOptions}
         value={isExpression(fieldValue) ? fieldValue.__value__ : fieldValue}
-        onChange={(event: React.ChangeEvent<SelectLike<Option<UUID>>>) => {
-          setDatabaseId(event.target.value);
+        onChange={async (
+          event: React.ChangeEvent<SelectLike<Option<UUID>>>
+        ) => {
+          await setDatabaseId(event.target.value);
         }}
         components={{
           MenuList: createMenuListWithAddButton(() => {

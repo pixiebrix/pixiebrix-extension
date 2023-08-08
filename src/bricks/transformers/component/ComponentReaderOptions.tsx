@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
+import useAsyncEffect from "use-async-effect";
 
 type FrameworkOption = {
   value: Framework;
@@ -80,11 +81,11 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const frameworkOptions = useFrameworkOptions(meta?.frameworks ?? []);
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (isNullOrBlank(framework)) {
       const option = frameworkOptions.find((x) => x.detected);
       console.debug("Defaulting framework", { option, frameworkOptions });
-      frameworkHelpers.setValue(option?.value ?? "react");
+      await frameworkHelpers.setValue(option?.value ?? "react");
     }
   }, [framework, frameworkHelpers, frameworkOptions]);
 

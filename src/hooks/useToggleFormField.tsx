@@ -66,7 +66,7 @@ function useToggleFormField(
     [fieldName, value, schema]
   );
 
-  const onOmitField = useCallback(() => {
+  const onOmitField = useCallback(async () => {
     const newFormState = produce(formState, (draft) => {
       if (parentFieldName) {
         const parentField = getIn(draft, parentFieldName);
@@ -84,7 +84,7 @@ function useToggleFormField(
       }
     });
 
-    setFormState(newFormState);
+    await setFormState(newFormState);
   }, [fieldName, formState, name, parentFieldName, setFormState]);
 
   return {

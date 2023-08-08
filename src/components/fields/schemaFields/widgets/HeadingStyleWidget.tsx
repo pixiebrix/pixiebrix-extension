@@ -39,8 +39,8 @@ const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
             })}
             variant="light"
             size="sm"
-            onClick={() => {
-              setValue(headingTag);
+            onClick={async () => {
+              await setValue(headingTag);
             }}
           >
             {headingTag.toUpperCase()}

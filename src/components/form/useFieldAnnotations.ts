@@ -57,7 +57,7 @@ function makeFieldActionForAnnotationAction(
       // browser permissions are present when the app re-renders
       // (analysis runs again, permissions toolbar updates, etc.).
       // TBD if this is the correct long-term approach or not.
-      formik.setValues(newValues, true);
+      await formik.setValues(newValues, true);
     },
   };
 }

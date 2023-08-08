@@ -55,6 +55,7 @@ import { type Schema } from "@/types/schemaTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import useAsyncEffect from "use-async-effect";
 
 /**
  * Timeout indicating that the Chrome identity API may be hanging.
@@ -112,8 +113,8 @@ const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
   } = useGoogleSpreadsheetPicker();
 
   // Remove unused services from the element - cleanup from deprecated integration support for gsheets
-  useEffect(
-    () => {
+  useAsyncEffect(
+    async () => {
       // This widget is also used outside the Edit tab of the Page Editor,
       // so this won't always be FormState. We only need to clean up services
       // when it is FormState.
@@ -125,9 +126,9 @@ const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
         produceExcludeUnusedDependencies(draft)
       );
 
-      setFormState(newState);
+      await setFormState(newState);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Run once on mount
+    // Run once on mount
     []
   );
 
@@ -179,7 +180,7 @@ const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
       const doc = await showPicker();
       // We have the name from the doc. However, just set the field value, which will trigger a fetch of the
       // metadata to check/verify API access to the sheet
-      spreadsheetIdFieldHelpers.setValue(doc.id);
+      await spreadsheetIdFieldHelpers.setValue(doc.id);
     } catch (error) {
       if (!isSpecificError(error, CancelError)) {
         setPickerError(error);

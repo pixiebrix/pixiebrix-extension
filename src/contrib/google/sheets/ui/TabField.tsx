@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
@@ -25,6 +25,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
+import useAsyncEffect from "use-async-effect";
 
 // Use a module constant for the sake of memo dependencies
 const emptyTabNames: string[] = [];
@@ -49,8 +50,8 @@ const TabField: React.FC<
   };
 
   const allTabNames = tabNames.join(",");
-  useEffect(
-    () => {
+  useAsyncEffect(
+    async () => {
       // Don't modify the field if it's currently focused
       if (document.activeElement === inputRef.current) {
         return;
@@ -63,7 +64,7 @@ const TabField: React.FC<
 
       // Set to empty nunjucks expression if no tab names have loaded
       if (isEmpty(tabNames)) {
-        setTabName(makeTemplateExpression("nunjucks", ""));
+        await setTabName(makeTemplateExpression("nunjucks", ""));
         return;
       }
 
@@ -73,11 +74,11 @@ const TabField: React.FC<
       }
 
       // Remaining cases are either empty expression or invalid, selected tab name, so set to first tab name
-      setTabName(tabNames[0]);
+      await setTabName(tabNames[0]);
     },
     // We shouldn't include the setTabName formik helper due to unstable reference, the allTabNames string covers
     // the tabNames dependency, and we're setting tabName here so don't want to run this side effect when it changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [spreadsheet?.spreadsheetId, allTabNames]
   );
 

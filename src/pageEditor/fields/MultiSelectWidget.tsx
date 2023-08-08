@@ -48,8 +48,8 @@ const MultiSelectWidget: React.FC<MultiSelectWidgetProps> = ({
       value={options.filter((option: Option) =>
         (field.value ?? []).includes(option.value)
       )}
-      onChange={(values) => {
-        helpers.setValue(values.map((x) => x.value));
+      onChange={async (values) => {
+        await helpers.setValue(values.map((x) => x.value));
       }}
     />
   );

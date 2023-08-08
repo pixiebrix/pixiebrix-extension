@@ -67,10 +67,10 @@ const NumberWidget: React.VFC<
     []
   );
 
-  const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(() => {
+  const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(async () => {
     const numberValue = Number(value);
     const newValue = step ? round(numberValue / step) * step : numberValue;
-    setFormValue(newValue);
+    await setFormValue(newValue);
     setValue(String(newValue));
   }, [setFormValue, step, value]);
 

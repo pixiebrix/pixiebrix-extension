@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import SelectWidget, {
@@ -32,6 +32,7 @@ import { type StylesConfig } from "react-select";
 import { UserRole } from "@/types/contract";
 
 import { getScopeAndId } from "@/utils/registryUtils";
+import useAsyncEffect from "use-async-effect";
 
 const editorRoles = new Set<number>([
   UserRole.admin,
@@ -56,28 +57,30 @@ const RegistryIdWidget: React.VFC<{
 
   const [scopeValue = userScope, idValue] = getScopeAndId(value);
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     // Don't validate here with validateRegistryId(), that should be done through form validation
     const fullValue = `${scopeValue}/${idValue}` as RegistryId;
     if (value !== fullValue) {
-      setValue(fullValue, true);
+      await setValue(fullValue, true);
     }
   }, [scopeValue, idValue, setValue, value]);
 
-  const onChangeScope: SelectWidgetOnChange = (event) => {
+  const onChangeScope: SelectWidgetOnChange = async (event) => {
     const newScope =
       options.find((option) => option.value === event.target.value)?.value ??
       scopeValue;
     // Don't validate here with validateRegistryId(), that should be done through form validation
     const newValue = `${newScope}/${idValue}` as RegistryId;
-    setValue(newValue);
+    await setValue(newValue);
   };
 
-  const onChangeId: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+  const onChangeId: React.ChangeEventHandler<HTMLInputElement> = async (
+    event
+  ) => {
     const newId = event.target.value;
     // Don't validate here with validateRegistryId(), that should be done through form validation
     const newValue = `${scopeValue}/${newId}` as RegistryId;
-    setValue(newValue);
+    await setValue(newValue);
   };
 
   return (

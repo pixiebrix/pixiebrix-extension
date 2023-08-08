@@ -38,19 +38,19 @@ type IconValue = {
 const IconWidget: CustomFieldWidget = (props) => {
   const [field, meta, helpers] = useField<IconValue>(props);
 
-  const handleSelect = (option: IconOption | null) => {
+  const handleSelect = async (option: IconOption | null) => {
     if (option) {
       const { value } = option;
-      helpers.setValue({
+      await helpers.setValue({
         id: value.id,
         library: value.library,
         size: field.value?.size ?? 16,
       });
     } else {
-      helpers.setValue(null);
+      await helpers.setValue(null);
     }
 
-    helpers.setTouched(true);
+    await helpers.setTouched(true);
   };
 
   return (

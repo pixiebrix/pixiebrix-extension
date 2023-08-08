@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
@@ -37,6 +37,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
+import useAsyncEffect from "use-async-effect";
 
 async function fetchRobots(
   config: SanitizedIntegrationConfig
@@ -76,9 +77,9 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     configName("releaseKey")
   );
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (strategy === "JobsCount" && jobsCount == null) {
-      jobsCountHelpers.setValue(1);
+      await jobsCountHelpers.setValue(1);
     }
   }, [strategy, jobsCount, jobsCountHelpers, strategyHelpers]);
 

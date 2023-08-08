@@ -17,7 +17,7 @@
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
@@ -38,6 +38,7 @@ import Select, { type Options } from "react-select";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import databaseSchema from "@schemas/database.json";
 import { joinName } from "@/utils/formUtils";
+import useAsyncEffect from "use-async-effect";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -54,10 +55,10 @@ function usePruneUnusedServiceDependencies() {
   const { values: formState, setValues: setFormState } =
     useFormikContext<ModComponentFormState>();
 
-  return useCallback(() => {
+  return useCallback(async () => {
     const nextState = produceExcludeUnusedDependencies(formState);
 
-    setFormState(nextState);
+    await setFormState(nextState);
   }, [formState, setFormState]);
 }
 
@@ -96,31 +97,36 @@ const FormRendererOptions: React.FC<{
 
   // Sets the storage type and clears out any other values the user might have configured
   // If the next type is "database", the AppServiceField will initialize the "service" variable
-  const changeStorageType = (nextStorageType: string) => {
+  const changeStorageType = async (nextStorageType: string) => {
     if (nextStorageType === "state") {
-      setStorageValue({ type: "state", namespace: "blueprint" } as Storage);
+      await setStorageValue({
+        type: "state",
+        namespace: "blueprint",
+      } as Storage);
     } else {
-      setStorageValue({ type: nextStorageType } as Storage);
+      await setStorageValue({ type: nextStorageType } as Storage);
     }
   };
 
   // If the storage type changes from "database" to something else, ensure the service record at root is cleared
   const [previousStorageType, setPreviousStorageType] = useState(storageType);
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (
       previousStorageType === "database" &&
       storageType !== previousStorageType
     ) {
       setPreviousStorageType(storageType);
-      pruneDependencies();
+      await pruneDependencies();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- useEffect is the only place that changes the previousStorageType, no need to depend on it
+    // This is the only place that changes the previousStorageType, no need to depend on it
   }, [storageType, pruneDependencies]);
 
-  // Set the default storage type
-  if (storageType == null) {
-    changeStorageType(DEFAULT_STORAGE_TYPE);
-  }
+  useAsyncEffect(async () => {
+    // Set the default storage type
+    if (storageType == null) {
+      await changeStorageType(DEFAULT_STORAGE_TYPE);
+    }
+  }, [storageType, changeStorageType]);
 
   return (
     <div>
@@ -131,8 +137,8 @@ const FormRendererOptions: React.FC<{
         as={Select}
         options={storageTypeOptions}
         value={storageTypeOptions.find((x) => x.value === storageType)}
-        onChange={({ value: nextStorageType }: StringOption) => {
-          changeStorageType(nextStorageType);
+        onChange={async ({ value: nextStorageType }: StringOption) => {
+          await changeStorageType(nextStorageType);
         }}
       />
 

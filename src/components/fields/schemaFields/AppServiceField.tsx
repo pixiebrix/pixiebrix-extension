@@ -16,7 +16,6 @@
  */
 
 import type React from "react";
-import { useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { produce } from "immer";
@@ -27,6 +26,7 @@ import {
   type OutputKey,
   type ServiceVarRef,
 } from "@/types/runtimeTypes";
+import useAsyncEffect from "use-async-effect";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 
@@ -53,8 +53,8 @@ const AppServiceField: React.FunctionComponent<{ name: string }> = ({
       isEqual(keyToFieldValue(service.outputKey), serviceOutputKey)
     );
 
-  useEffect(
-    () => {
+  useAsyncEffect(
+    async () => {
       if (serviceOutputKey == null) {
         const match = root.services.find(
           (service) => service.id === PIXIEBRIX_INTEGRATION_ID
@@ -67,10 +67,10 @@ const AppServiceField: React.FunctionComponent<{ name: string }> = ({
             match.outputKey,
             { root, match }
           );
-          setServiceOutputKey(keyToFieldValue(match.outputKey));
+          await setServiceOutputKey(keyToFieldValue(match.outputKey));
         } else {
           console.debug("Adding PixieBrix API dependency");
-          setRootValues(
+          await setRootValues(
             produce(root, (draft) => {
               draft.services.push({
                 id: PIXIEBRIX_INTEGRATION_ID,
@@ -89,10 +89,10 @@ const AppServiceField: React.FunctionComponent<{ name: string }> = ({
       } else if (isBadValue) {
         // Clearing this "bad value" value will enable the preceding if-branch to
         // execute again, and that will configure root.services properly
-        setServiceOutputKey(null);
+        await setServiceOutputKey(null);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run on mount, or if we detect a "bad value" (see comment above)
+    // Run on mount, or if we detect a "bad value" (see comment above)
     [isBadValue]
   );
 

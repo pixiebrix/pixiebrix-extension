@@ -90,7 +90,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     async (isMounted) => {
       if (config && isCommunityControlRoom(config.config.controlRoomUrl)) {
         // In community edition, each user just works in their own private workspace
-        setWorkspaceType("private");
+        await setWorkspaceType("private");
       }
 
       // `workspaceType` is optional because it's not required to run the bot. However, we need it to populate dropdowns
@@ -100,7 +100,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
         const workspaceType =
           result.workspaceType === "PUBLIC" ? "public" : "private";
         if (isMounted()) {
-          setWorkspaceType(workspaceType);
+          await setWorkspaceType(workspaceType);
         }
       }
 

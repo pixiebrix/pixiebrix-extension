@@ -83,7 +83,7 @@ const HeaderField: React.FunctionComponent<{
 
       // Set to empty nunjucks expression if no headers have loaded
       if (isEmpty(headers)) {
-        setHeader(makeTemplateExpression("nunjucks", ""));
+        await setHeader(makeTemplateExpression("nunjucks", ""));
         return;
       }
 
@@ -93,7 +93,7 @@ const HeaderField: React.FunctionComponent<{
       }
 
       // Remaining cases are either empty expression or invalid, selected header, so set to first header
-      setHeader(headers[0]);
+      await setHeader(headers[0]);
     },
     // Hash just in case tabName is an expression, and we
     // don't need to run the effect when googleAccount changes,

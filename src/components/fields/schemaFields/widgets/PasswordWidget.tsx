@@ -50,8 +50,8 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   useAutoFocusConfiguration({ elementRef: inputRef, focus: focusInput });
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    ({ target }) => {
-      setValue(target.value);
+    async ({ target }) => {
+      await setValue(target.value);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- don't include formik helpers
     []

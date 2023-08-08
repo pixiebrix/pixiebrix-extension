@@ -80,8 +80,8 @@ const DocumentOutline = ({
             setActiveElement(elementName);
           }}
           dragItem={dragItemId ? tree.items[dragItemId] : null}
-          onDelete={() => {
-            onDelete(elementName);
+          onDelete={async () => {
+            await onDelete(elementName);
           }}
         />
       );
@@ -101,14 +101,14 @@ const DocumentOutline = ({
     [dispatch, treeExpandedState]
   );
 
-  const onDragEnd = (
+  const onDragEnd = async (
     sourcePosition: TreeSourcePosition,
     destinationPosition?: TreeDestinationPosition
   ) => {
     setDragItemId(null);
 
     if (destinationPosition) {
-      onMove(sourcePosition, destinationPosition);
+      await onMove(sourcePosition, destinationPosition);
     }
   };
 

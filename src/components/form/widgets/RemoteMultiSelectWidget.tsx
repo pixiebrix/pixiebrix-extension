@@ -83,8 +83,8 @@ const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
           (field.value ?? []).includes(option.value)
         ) ?? []
       }
-      onChange={(options) => {
-        helpers.setValue(options.map((option) => option.value));
+      onChange={async (options) => {
+        await helpers.setValue(options.map((option) => option.value));
       }}
     />
   );

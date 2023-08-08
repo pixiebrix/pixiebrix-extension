@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  type ComponentType,
-  type CSSProperties,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { type ComponentType, type CSSProperties, useMemo } from "react";
 import { useField } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
@@ -32,6 +27,7 @@ import Select, {
 
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
+import useAsyncEffect from "use-async-effect";
 
 // CustomStyles.js
 const colors = {
@@ -78,9 +74,9 @@ const ServiceAuthSelector: React.FunctionComponent<{
   );
 
   // Automatically default the field value if there's only one option available
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (authOptions.length === 1 && field.value == null) {
-      helpers.setValue(authOptions[0].value);
+      await helpers.setValue(authOptions[0].value);
     }
   }, [helpers, authOptions, field.value]);
 
@@ -106,9 +102,9 @@ const ServiceAuthSelector: React.FunctionComponent<{
         value={value}
         placeholder={"Select configuration..."}
         components={components}
-        onChange={(x: AuthOption) => {
+        onChange={async (x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
-          helpers.setValue(x.value);
+          await helpers.setValue(x.value);
         }}
       />
     </Form.Group>

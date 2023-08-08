@@ -47,16 +47,18 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
     DocumentElement[]
   >(elementsCollectionName);
 
-  const addElement = (elementType: Parameters<typeof createNewElement>[0]) => {
+  const addElement = async (
+    elementType: Parameters<typeof createNewElement>[0]
+  ) => {
     const element = createNewElement(elementType);
-    setValue([...elementsCollection, element]);
+    await setValue([...elementsCollection, element]);
   };
 
   const elementItems = allowedTypes.map((elementType) => ({
     // eslint-disable-next-line security/detect-object-injection -- type checked
     title: elementTypeLabels[elementType],
-    action() {
-      addElement(elementType);
+    async action() {
+      await addElement(elementType);
     },
   }));
 
@@ -65,8 +67,8 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
     ? [
         {
           title: "Form",
-          action() {
-            addElement("form");
+          async action() {
+            await addElement("form");
           },
         },
       ]

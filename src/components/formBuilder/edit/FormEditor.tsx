@@ -112,7 +112,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   const propertyKeys = Object.keys(schema?.properties ?? {});
 
-  const addProperty = () => {
+  const addProperty = async () => {
     const propertyName = generateNewPropertyName(propertyKeys);
     const newProperty: Schema = {
       title: propertyName,
@@ -145,20 +145,20 @@ const FormEditor: React.FC<FormEditorProps> = ({
       // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       draft.uiSchema[UI_ORDER] = nextUiOrder;
     });
-    setRjsfSchema(nextRjsfSchema);
+    await setRjsfSchema(nextRjsfSchema);
     setActiveField(propertyName);
   };
 
-  const moveProperty = (direction: "up" | "down") => {
+  const moveProperty = async (direction: "up" | "down") => {
     const nextUiOrder = moveStringInArray(
       getNormalizedUiOrder(propertyKeys, uiOrder),
       activeField,
       direction
     );
-    setUiOrder(nextUiOrder);
+    await setUiOrder(nextUiOrder);
   };
 
-  const removeProperty = () => {
+  const removeProperty = async () => {
     const propertyToRemove = activeField;
     const nextUiOrder = replaceStringInArray(
       getNormalizedUiOrder(propertyKeys, uiOrder),
@@ -191,7 +191,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
       delete draft.uiSchema[propertyToRemove];
     });
 
-    setRjsfSchema(nextRjsfSchema);
+    await setRjsfSchema(nextRjsfSchema);
   };
 
   // The uiOrder field may not be initialized yet
@@ -258,12 +258,12 @@ const FormEditor: React.FC<FormEditorProps> = ({
           label="Field Order"
           as={LayoutWidget}
           canMoveUp={canMoveUp}
-          moveUp={() => {
-            moveProperty("up");
+          moveUp={async () => {
+            await moveProperty("up");
           }}
           canMoveDown={canMoveDown}
-          moveDown={() => {
-            moveProperty("down");
+          moveDown={async () => {
+            await moveProperty("down");
           }}
         />
       )}

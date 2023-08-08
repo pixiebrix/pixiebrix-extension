@@ -109,14 +109,14 @@ function useMoveElement(documentBodyName: string) {
   );
 
   return useCallback(
-    (
+    async (
       sourcePosition: TreeSourcePosition,
       destinationPosition?: TreeDestinationPosition
     ) => {
       // For now, just clear out the active element to ensure the active elementName is valid in the new tree
       setActiveElement(null);
 
-      setValue(moveElement(body, sourcePosition, destinationPosition));
+      await setValue(moveElement(body, sourcePosition, destinationPosition));
     },
     [body, setValue, setActiveElement]
   );
