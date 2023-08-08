@@ -98,6 +98,12 @@ type SubPipeline = {
   inputKey?: string;
 };
 
+function getNodePreviewElementId(brickConfig: BrickConfig, path: string) {
+  if (brickConfig.id === DocumentRenderer.BLOCK_ID) {
+    console.log("*** getNodePreviewElementId ***", path);
+  }
+}
+
 /**
  *
  * @param block the block, or null if the resolved block is not available yet
@@ -437,6 +443,7 @@ const usePipelineNodes = (): {
       } of subPipelines) {
         const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
+        getNodePreviewElementId(blockConfig, path);
 
         const headerActions: NodeAction[] = [
           {
