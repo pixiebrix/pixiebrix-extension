@@ -27,10 +27,10 @@ export type PipelineHeaderNodeProps = {
   headerLabel: string;
   nestingLevel: number;
   nodeActions: NodeAction[];
+  nodePreviewElementId: string | null;
   pipelineInputKey?: string;
   active?: boolean;
   nestedActive?: boolean;
-  nodePreviewElementId: string | null;
 };
 
 const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
@@ -40,30 +40,43 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   pipelineInputKey,
   active,
   nestedActive,
-}) => (
-  <>
-    <div className={styles.root}>
-      <PipelineOffsetView
-        nestingLevel={nestingLevel}
-        nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
-        isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
-      />
+  nodePreviewElementId,
+}) => {
+  const onClickHandler = (event: React.MouseEvent) => {
+    //event.stopPropagation();
+    console.log("You clicked me!", nodePreviewElementId);
+  };
+
+  return (
+    <>
       <div
-        className={cx(styles.header, {
-          [styles.active]: active,
-          [styles.nestedActive]: nestedActive,
-        })}
+        className={styles.root}
+        onClick={nodePreviewElementId ? onClickHandler : null}
       >
-        <div className={styles.headerPipeLineTop} />
-        <div className={styles.headerPipeLineBottom} />
-        <div className={styles.subPipelineLabel}>{headerLabel}</div>
-        {pipelineInputKey && (
-          <div className={styles.subPipelineInputKey}>@{pipelineInputKey}</div>
-        )}
+        <PipelineOffsetView
+          nestingLevel={nestingLevel}
+          nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
+          isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
+        />
+        <div
+          className={cx(styles.header, {
+            [styles.active]: active,
+            [styles.nestedActive]: nestedActive,
+          })}
+        >
+          <div className={styles.headerPipeLineTop} />
+          <div className={styles.headerPipeLineBottom} />
+          <div className={styles.subPipelineLabel}>{headerLabel}</div>
+          {pipelineInputKey && (
+            <div className={styles.subPipelineInputKey}>
+              @{pipelineInputKey}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-    <NodeActionsView nodeActions={nodeActions} />
-  </>
-);
+      <NodeActionsView nodeActions={nodeActions} />
+    </>
+  );
+};
 
 export default PipelineHeaderNode;
