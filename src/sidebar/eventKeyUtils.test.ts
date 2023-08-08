@@ -93,16 +93,38 @@ describe("defaultEventKey", () => {
     });
   });
 
-  it("returns static panel as last resort before returning null", () => {
-    const args = {
-      forms: [],
-      temporaryPanels: [],
-      panels: [],
-      staticPanels: [MOD_LAUNCHER],
-    } as unknown as SidebarEntries;
+  describe("staticPanels", () => {
+    it("returns static panel as last resort before returning null", () => {
+      const args = {
+        forms: [],
+        temporaryPanels: [],
+        panels: [],
+        staticPanels: [MOD_LAUNCHER],
+      } as unknown as SidebarEntries;
 
-    expect(defaultEventKey(args)).toBe(eventKeyForEntry(MOD_LAUNCHER));
-    expect(defaultEventKey(args)).not.toBe("panel-undefined");
+      expect(defaultEventKey(args)).toBe(eventKeyForEntry(MOD_LAUNCHER));
+      expect(defaultEventKey(args)).not.toBe("panel-undefined");
+    });
+
+    it("ignores closed static panels", () => {
+      const firstPanel = sidebarEntryFactory("staticPanel");
+      const secondPanel = sidebarEntryFactory("staticPanel");
+      const args = {
+        forms: [],
+        temporaryPanels: [],
+        panels: [],
+        staticPanels: [firstPanel, secondPanel],
+      } as unknown as SidebarEntries;
+
+      const closedTabs: SidebarState["closedTabs"] = {
+        [eventKeyForEntry(firstPanel)]: true,
+      };
+
+      expect(defaultEventKey(args, closedTabs)).toBe(
+        eventKeyForEntry(args.staticPanels[1])
+      );
+      expect(defaultEventKey(args, closedTabs)).not.toBe("panel-undefined");
+    });
   });
 });
 

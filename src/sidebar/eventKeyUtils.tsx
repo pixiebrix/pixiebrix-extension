@@ -75,9 +75,7 @@ export function defaultEventKey(
     return eventKeyForEntry(temporaryPanels.at(-1));
   }
 
-  const openPanels = panels.filter(
-    (panel) => !closedTabs[eventKeyForEntry(panel)]
-  );
+  const openPanels = getOpenPanelEntries(panels, closedTabs);
   if (openPanels.length > 0) {
     return eventKeyForEntry(openPanels.at(0));
   }
@@ -86,9 +84,17 @@ export function defaultEventKey(
     return eventKeyForEntry(modActivationPanel);
   }
 
-  if (staticPanels.length > 0) {
-    return eventKeyForEntry(staticPanels.at(0));
+  const openStaticPanels = getOpenPanelEntries(staticPanels, closedTabs);
+  if (openStaticPanels.length > 0) {
+    return eventKeyForEntry(openStaticPanels.at(0));
   }
 
   return null;
+}
+
+function getOpenPanelEntries(
+  entries: SidebarEntry[],
+  closedTabs: SidebarState["closedTabs"]
+): SidebarEntry[] {
+  return entries.filter((entry) => !closedTabs[eventKeyForEntry(entry)]);
 }

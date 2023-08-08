@@ -191,6 +191,12 @@ export type TemporaryPanelEntry = BaseModComponentPanelEntry & {
   showCloseButton?: boolean;
 };
 
+export function isTemporaryPanelEntry(
+  panel: unknown
+): panel is TemporaryPanelEntry {
+  return (panel as TemporaryPanelEntry)?.type === "temporaryPanel";
+}
+
 /**
  * An ephemeral form to show in the sidebar. Only one form can be shown from an extension at a time.
  * @see ModalTransformer

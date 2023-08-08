@@ -20,6 +20,7 @@ import {
   type StaticPanelEntry,
   type PanelEntry,
   type SidebarEntry,
+  isTemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
@@ -62,10 +63,21 @@ import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import { getTopLevelFrame } from "webext-messenger";
 import { hideSidebar } from "@/contentScript/messenger/api";
+import { type Dispatch } from "redux";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
+
+function closeTab(panel: SidebarEntry) {
+  return function (dispatch: Dispatch) {
+    if (isTemporaryPanelEntry(panel)) {
+      dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
+    } else {
+      dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(panel)));
+    }
+  };
+}
 
 const TabWithDivider = ({
   children,
@@ -139,23 +151,20 @@ const Tabs: React.FC = () => {
     dispatch(sidebarSlice.actions.selectTab(modLauncherEventKey));
   };
 
-  const onCloseTemporaryTab = (nonce: UUID) => {
-    dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
-  };
-
   const onClosePanel = async (
     event: MouseEvent<HTMLButtonElement>,
-    panel: StaticPanelEntry | PanelEntry
+    panel: SidebarEntry
   ) => {
     // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
     event.stopPropagation();
 
-    // If all other panels are closed, close the sidebar
+    // If there are any other panels open, close the panel
     if (visiblePanelCount > 1) {
-      dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(panel)));
+      dispatch(closeTab(panel));
     } else {
+      // If all other panels are closed, close the sidebar
       const topLevelFrame = await getTopLevelFrame();
-      await hideSidebar(topLevelFrame);
+      void hideSidebar(topLevelFrame);
     }
   };
 
@@ -223,9 +232,7 @@ const Tabs: React.FC = () => {
             >
               <span className={styles.tabTitle}>{panel.heading}</span>
               <CloseButton
-                onClick={() => {
-                  onCloseTemporaryTab(panel.nonce);
-                }}
+                onClick={async (event) => onClosePanel(event, panel)}
               />
             </TabWithDivider>
           ))}
