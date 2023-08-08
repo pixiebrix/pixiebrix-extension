@@ -61,7 +61,6 @@ import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import { getTopLevelFrame } from "webext-messenger";
 import { hideSidebar } from "@/contentScript/messenger/api";
-import { type Dispatch } from "redux";
 import useAsyncEffect from "use-async-effect";
 
 const permanentSidebarPanelAction = () => {
