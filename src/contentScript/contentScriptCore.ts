@@ -34,7 +34,7 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
-import { initFloatingActions } from "@/components/floatingActions/FloatingActions";
+import initFloatingActions from "@/components/floatingActions/initFloatingActions";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 
