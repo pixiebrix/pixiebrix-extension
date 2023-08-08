@@ -19,6 +19,7 @@ import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 import validUuidRegex from "@/vendors/validateUuid";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { v4 } from "uuid";
 import {
   INNER_SCOPE,
   type RegistryId,
@@ -28,8 +29,14 @@ import {
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
+/**
+ * Return a random v4 UUID.
+ */
 export function uuidv4(): UUID {
-  return crypto.randomUUID() as UUID;
+  // Use uuidv4 from uuid package instead of crypto.randomUUID because randomUUID is not available in insecure contexts.
+  // This is safe for content scripts because they're in a separate JS context from the host page.
+  // https://developer.mozilla.org/en-US/docs/Web/API/crypto_property
+  return v4() as UUID;
 }
 
 export function isUUID(uuid: string): uuid is UUID {
