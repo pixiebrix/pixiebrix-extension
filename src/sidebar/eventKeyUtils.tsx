@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { SidebarEntries, SidebarEntry } from "@/types/sidebarTypes";
+import type {
+  SidebarEntries,
+  SidebarEntry,
+  SidebarState,
+} from "@/types/sidebarTypes";
 import {
   isModActivationPanelEntry,
   isPanelEntry,
@@ -53,13 +57,16 @@ export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
  * - Most recent temporary panel
  * - First panel
  */
-export function defaultEventKey({
-  forms = [],
-  panels = [],
-  temporaryPanels = [],
-  staticPanels = [],
-  modActivationPanel = null,
-}: SidebarEntries): string | null {
+export function defaultEventKey(
+  {
+    forms = [],
+    panels = [],
+    temporaryPanels = [],
+    staticPanels = [],
+    modActivationPanel = null,
+  }: SidebarEntries,
+  closedTabs: SidebarState["closedTabs"] = {}
+): string | null {
   if (forms.length > 0) {
     return eventKeyForEntry(forms.at(-1));
   }
@@ -68,17 +75,26 @@ export function defaultEventKey({
     return eventKeyForEntry(temporaryPanels.at(-1));
   }
 
-  if (panels.length > 0) {
-    return eventKeyForEntry(panels.at(0));
+  const openPanels = getOpenPanelEntries(panels, closedTabs);
+  if (openPanels.length > 0) {
+    return eventKeyForEntry(openPanels.at(0));
   }
 
   if (modActivationPanel) {
     return eventKeyForEntry(modActivationPanel);
   }
 
-  if (staticPanels.length > 0) {
-    return eventKeyForEntry(staticPanels.at(0));
+  const openStaticPanels = getOpenPanelEntries(staticPanels, closedTabs);
+  if (openStaticPanels.length > 0) {
+    return eventKeyForEntry(openStaticPanels.at(0));
   }
 
   return null;
+}
+
+function getOpenPanelEntries(
+  entries: SidebarEntry[],
+  closedTabs: SidebarState["closedTabs"]
+): SidebarEntry[] {
+  return entries.filter((entry) => !closedTabs[eventKeyForEntry(entry)]);
 }

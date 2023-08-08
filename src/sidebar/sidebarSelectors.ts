@@ -80,3 +80,27 @@ export const selectExtensionFromEventKey =
 
 export const selectClosedTabs = ({ sidebar }: SidebarRootState) =>
   sidebar.closedTabs;
+
+export const selectVisiblePanelCount = ({ sidebar }: SidebarRootState) => {
+  const {
+    panels,
+    forms,
+    temporaryPanels,
+    staticPanels,
+    modActivationPanel,
+    closedTabs,
+  } = sidebar;
+
+  // Temporary Panels are removed from the sidebar state when they are closed, so we don't need to filter them out
+  const closablePanels = [...panels, ...staticPanels];
+  const openPanels = closablePanels.filter(
+    (panel) => !closedTabs[eventKeyForEntry(panel)]
+  );
+
+  return (
+    openPanels.length +
+    forms.length +
+    temporaryPanels.length +
+    (modActivationPanel ? 1 : 0)
+  );
+};
