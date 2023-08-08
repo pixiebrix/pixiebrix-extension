@@ -179,10 +179,11 @@ async function requestPermissionsFromUserGesture(
 
 /**
  * Determines whether a URL can potentially execute a content script.
- * This excludes non-https URLs and extension gallery pages.
+ * @since 1.7.36 this includes http urls
+ *
  */
 export function isScriptableUrl(url?: string): boolean {
-  return url?.startsWith("https") && _isScriptableUrl(url);
+  return _isScriptableUrl(url);
 }
 
 /**
@@ -192,6 +193,5 @@ export function isScriptableUrl(url?: string): boolean {
 export async function canAccessTab(tab: number | Target): Promise<boolean> {
   const urlPromise = getTabUrl(tab);
   const accessPromise = _canAccessTab(tab);
-  // We may have `activeTab` (_canAccessTab), but we don't support non-HTTPS websites (!isScriptableUrl)
   return isScriptableUrl(await urlPromise) && accessPromise;
 }
