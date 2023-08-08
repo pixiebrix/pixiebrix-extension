@@ -63,7 +63,10 @@ export class Readable extends TransformerABC {
     },
   });
 
-  async transform(_args: never, { root }: BrickOptions): Promise<unknown> {
+  async transform(
+    _args: never,
+    { root = document }: BrickOptions
+  ): Promise<unknown> {
     if (root !== document) {
       throw new BusinessError("Only document target is supported");
     }
@@ -73,7 +76,7 @@ export class Readable extends TransformerABC {
     );
 
     // https://github.com/mozilla/readability#parse
-    const documentClone = document.cloneNode(true);
+    const documentClone = root.cloneNode(true);
 
     try {
       return new Readability(documentClone as Document).parse();
