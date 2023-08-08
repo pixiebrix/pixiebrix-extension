@@ -17,14 +17,12 @@
 
 import React, { useEffect, type MouseEvent } from "react";
 import {
-  type StaticPanelEntry,
   type PanelEntry,
   type SidebarEntry,
   isTemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
-import { type UUID } from "@/types/stringTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
@@ -64,20 +62,11 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import { getTopLevelFrame } from "webext-messenger";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { type Dispatch } from "redux";
+import useAsyncEffect from "use-async-effect";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
-
-function closeTab(panel: SidebarEntry) {
-  return function (dispatch: Dispatch) {
-    if (isTemporaryPanelEntry(panel)) {
-      dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
-    } else {
-      dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(panel)));
-    }
-  };
-}
 
 const TabWithDivider = ({
   children,
@@ -158,13 +147,10 @@ const Tabs: React.FC = () => {
     // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
     event.stopPropagation();
 
-    // If there are any other panels open, close the panel
-    if (visiblePanelCount > 1) {
-      dispatch(closeTab(panel));
+    if (isTemporaryPanelEntry(panel)) {
+      dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
     } else {
-      // If all other panels are closed, close the sidebar
-      const topLevelFrame = await getTopLevelFrame();
-      void hideSidebar(topLevelFrame);
+      dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(panel)));
     }
   };
 
@@ -177,6 +163,16 @@ const Tabs: React.FC = () => {
     },
     // Only run on initial mount, other views are handled by onSelect
     []
+  );
+
+  useAsyncEffect(
+    async (isMounted) => {
+      if (isMounted && visiblePanelCount === 0) {
+        const topLevelFrame = await getTopLevelFrame();
+        void hideSidebar(topLevelFrame);
+      }
+    },
+    [visiblePanelCount]
   );
 
   const isPanelActive = (key: SidebarEntry) =>
