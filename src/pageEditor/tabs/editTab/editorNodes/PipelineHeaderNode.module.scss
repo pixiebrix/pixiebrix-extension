@@ -42,6 +42,15 @@ $headerPipeLineHeight: 4px;
   }
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.documentPreviewIcon {
+  position: absolute;
+  right: 0;
+}
+
 .subPipelineLabel {
   display: inline-block;
   width: auto;

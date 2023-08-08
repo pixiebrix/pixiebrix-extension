@@ -22,6 +22,8 @@ import NodeActionsView, {
 import styles from "./PipelineHeaderNode.module.scss";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 
 export type PipelineHeaderNodeProps = {
   headerLabel: string;
@@ -42,16 +44,18 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   nestedActive,
   nodePreviewElementId,
 }) => {
-  const onClickHandler = (event: React.MouseEvent) => {
-    //event.stopPropagation();
+  const onClickHandler = () => {
     console.log("You clicked me!", nodePreviewElementId);
   };
 
   return (
     <>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events -- TODO: make a decision about what to do here */}
       <div
-        className={styles.root}
-        onClick={nodePreviewElementId ? onClickHandler : null}
+        className={cx(styles.root, {
+          [styles.clickable]: nodePreviewElementId,
+        })}
+        onClick={nodePreviewElementId ? onClickHandler : undefined}
       >
         <PipelineOffsetView
           nestingLevel={nestingLevel}
@@ -71,6 +75,12 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
             <div className={styles.subPipelineInputKey}>
               @{pipelineInputKey}
             </div>
+          )}
+          {nodePreviewElementId && (
+            <FontAwesomeIcon
+              icon={faSignInAlt}
+              className={styles.documentPreviewIcon}
+            />
           )}
         </div>
       </div>
