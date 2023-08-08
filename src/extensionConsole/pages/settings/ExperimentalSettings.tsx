@@ -25,6 +25,8 @@ import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectSettings } from "@/store/settingsSelectors";
 import { type SkunkworksSettings } from "@/store/settingsTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 const ExperimentalFeature: React.FunctionComponent<{
   id: keyof SkunkworksSettings;
@@ -64,6 +66,21 @@ const ExperimentalSettings: React.FunctionComponent = () => {
     performanceTracing,
   } = useSelector(selectSettings);
 
+  const flagChangeHandlerFactory =
+    (flag: keyof SkunkworksSettings) => (value: boolean) => {
+      reportEvent(Events.SKUNKWORKS_CONFIGURE, {
+        name: flag,
+        value,
+      });
+
+      dispatch(
+        settingsSlice.actions.setFlag({
+          flag,
+          value,
+        })
+      );
+    };
+
   return (
     <Card>
       <Card.Header>
@@ -77,14 +94,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             description="Toggle on to enable element suggestions/filtering in Page Editor
             selection mode"
             isEnabled={suggestElements}
-            onChange={(value) => {
-              dispatch(
-                settingsSlice.actions.setFlag({
-                  flag: "suggestElements",
-                  value,
-                })
-              );
-            }}
+            onChange={flagChangeHandlerFactory("suggestElements")}
           />
           <ExperimentalFeature
             id="excludeRandomClasses"
@@ -92,56 +102,28 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             description="Toggle on to avoid using randomly-generated classes when picking
             elements from a website"
             isEnabled={excludeRandomClasses}
-            onChange={(value) => {
-              dispatch(
-                settingsSlice.actions.setFlag({
-                  flag: "excludeRandomClasses",
-                  value,
-                })
-              );
-            }}
+            onChange={flagChangeHandlerFactory("excludeRandomClasses")}
           />
           <ExperimentalFeature
             id="selectionTools"
             label="Detect and Support Multi-Element Selection Tools:"
             description="Toggle on to support multi-element selection tools"
             isEnabled={selectionTools}
-            onChange={(value) => {
-              dispatch(
-                settingsSlice.actions.setFlag({
-                  flag: "selectionTools",
-                  value,
-                })
-              );
-            }}
+            onChange={flagChangeHandlerFactory("selectionTools")}
           />
           <ExperimentalFeature
             id="varAutosuggest"
             label="Autosuggest Variables in Page Editor:"
             description="Toggle on to enable variable autosuggest for variable and text template entry modes"
             isEnabled={varAutosuggest}
-            onChange={(value) => {
-              dispatch(
-                settingsSlice.actions.setFlag({
-                  flag: "varAutosuggest",
-                  value,
-                })
-              );
-            }}
+            onChange={flagChangeHandlerFactory("varAutosuggest")}
           />
           <ExperimentalFeature
             id="performanceTracing"
             label="Performance Tracing:"
             description="Toggle on to trace runtime performance"
             isEnabled={performanceTracing}
-            onChange={(value) => {
-              dispatch(
-                settingsSlice.actions.setFlag({
-                  flag: "performanceTracing",
-                  value,
-                })
-              );
-            }}
+            onChange={flagChangeHandlerFactory("performanceTracing")}
           />
         </Form>
       </Card.Body>
