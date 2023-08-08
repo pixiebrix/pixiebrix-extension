@@ -103,7 +103,7 @@ export const Events = {
   SIDE_BAR_SHOW: "SidePanelShow",
 
   SNOOZE_UPDATES: "SnoozeUpdates",
-  SKUNKWORKS_CONFIGURE: "SkunkworksConfigure",
+  SETTINGS_EXPERIMENTAL_CONFIGURE: "SettingsExperimentalConfigure",
 
   START_MOD_ACTIVATE: "StartInstallBlueprint",
 

@@ -68,7 +68,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
 
   const flagChangeHandlerFactory =
     (flag: keyof SkunkworksSettings) => (value: boolean) => {
-      reportEvent(Events.SKUNKWORKS_CONFIGURE, {
+      reportEvent(Events.SETTINGS_EXPERIMENTAL_CONFIGURE, {
         name: flag,
         value,
       });
