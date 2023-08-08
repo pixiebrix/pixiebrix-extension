@@ -30,7 +30,7 @@ export type PipelineHeaderNodeProps = {
   pipelineInputKey?: string;
   active?: boolean;
   nestedActive?: boolean;
-  nodePreviewElementId?: string;
+  nodePreviewElementId: string | null;
 };
 
 const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
