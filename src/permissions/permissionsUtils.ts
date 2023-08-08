@@ -179,7 +179,8 @@ async function requestPermissionsFromUserGesture(
 
 /**
  * Determines whether a URL can potentially execute a content script.
- * Note: This no longer excludes http urls
+ * @since 1.7.36 this includes http urls
+ *
  */
 export function isScriptableUrl(url?: string): boolean {
   return _isScriptableUrl(url);
