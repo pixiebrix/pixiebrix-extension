@@ -65,10 +65,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   const isHovered = hoveredElement === elementName && !isActive;
 
   useEffect(() => {
-    console.log("*** isActive", isActive, elementName);
-    console.log("*** scroll element ref", elementRef);
     if (isActive && elementRef.current) {
-      console.log("*** scrolling into view");
       elementRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
