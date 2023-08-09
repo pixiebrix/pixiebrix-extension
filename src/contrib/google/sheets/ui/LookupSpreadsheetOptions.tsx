@@ -34,6 +34,7 @@ import { sheets } from "@/background/messenger/api";
 import useAsyncEffect from "use-async-effect";
 import hash from "object-hash";
 import { joinName } from "@/utils/formUtils";
+import useFlags from "@/hooks/useFlags";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {
   return {
@@ -122,12 +123,16 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     joinName(blockConfigPath, "tabName")
   );
 
+  const { flagOn } = useFlags();
+
   return (
     <div className="my-2">
-      <SchemaField
-        name={joinName(blockConfigPath, "googleAccount")}
-        schema={LOOKUP_SCHEMA.properties.googleAccount as Schema}
-      />
+      {flagOn("gsheets-pkce-integration") && (
+        <SchemaField
+          name={joinName(blockConfigPath, "googleAccount")}
+          schema={LOOKUP_SCHEMA.properties.googleAccount as Schema}
+        />
+      )}
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
         {({ googleAccount, spreadsheet, spreadsheetFieldSchema }) => (
           <>

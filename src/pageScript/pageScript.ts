@@ -22,7 +22,6 @@
  * See for more information: https://github.com/pixiebrix/pixiebrix-extension/issues/4058
  */
 
-import { uuidv4 } from "@/types/helpers";
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
@@ -60,6 +59,7 @@ import { TimeoutError } from "p-timeout";
 import { setCKEditorData } from "@/contrib/ckeditor";
 import { awaitValue } from "@/utils/promiseUtils";
 import { findSingleElement } from "@/utils/domUtils";
+import { uuidv4 } from "@/types/helpers";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
@@ -79,6 +79,7 @@ if (window[PAGESCRIPT_SYMBOL]) {
   );
 }
 
+// Safe to use uuidv4 polyfill here because the value is opaque/doesn't matter. It's just to detect double-injection.
 // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
 window[PAGESCRIPT_SYMBOL] = uuidv4();
 

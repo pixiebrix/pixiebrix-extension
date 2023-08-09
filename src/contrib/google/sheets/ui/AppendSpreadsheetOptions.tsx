@@ -35,6 +35,7 @@ import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
 import { type UnknownObject } from "@/types/objectTypes";
+import useFlags from "@/hooks/useFlags";
 
 const ANONYMOUS_OBJECT_SCHEMA: Schema = {
   type: "object",
@@ -123,12 +124,16 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     joinName(blockConfigPath, "tabName")
   );
 
+  const { flagOn } = useFlags();
+
   return (
     <div className="my-2">
-      <SchemaField
-        name={joinName(blockConfigPath, "googleAccount")}
-        schema={APPEND_SCHEMA.properties.googleAccount as Schema}
-      />
+      {flagOn("gsheets-pkce-integration") && (
+        <SchemaField
+          name={joinName(blockConfigPath, "googleAccount")}
+          schema={APPEND_SCHEMA.properties.googleAccount as Schema}
+        />
+      )}
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
         {({ googleAccount, spreadsheet, spreadsheetFieldSchema }) => (
           <>

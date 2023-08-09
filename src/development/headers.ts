@@ -16,8 +16,6 @@
  */
 
 import fs from "node:fs";
-// eslint-disable-next-line import/no-unassigned-import -- Until Node adds the global
-import "./cryptoNodePolyfill.js";
 import brickRegistry from "@/bricks/registry";
 
 // Import for side-effects (these modules register the blocks)
@@ -27,7 +25,7 @@ import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
-const EXPECTED_HEADER_COUNT = 118;
+const EXPECTED_HEADER_COUNT = 119;
 
 registerBuiltinBlocks();
 registerContribBlocks();

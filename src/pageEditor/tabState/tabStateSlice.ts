@@ -34,6 +34,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";
 import { BusinessError } from "@/errors/businessErrors";
+import reportError from "@/telemetry/reportError";
 
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,

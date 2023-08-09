@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { replaceLikelyVariable } from "./likelyVariableUtils";
 import VarMenu from "./VarMenu";
 import fitTextarea from "fit-textarea";
 import { getPathFromArray } from "@/runtime/pathHelpers";
 import useAttachPopup from "@/components/fields/schemaFields/widgets/varPopup/useAttachPopup";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 type VarPopupProps = {
   /**
@@ -54,11 +56,21 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
     value,
   });
 
+  useEffect(() => {
+    if (isMenuShowing) {
+      reportEvent(Events.VAR_POPOVER_SHOW, {
+        inputMode,
+      });
+    }
+  }, [isMenuShowing, inputMode]);
+
   if (!isMenuShowing) {
     return null;
   }
 
   const onVarSelect = (selectedPath: string[]) => {
+    reportEvent(Events.VAR_POPOVER_SELECT);
+
     const fullVariableName = getPathFromArray(selectedPath);
 
     switch (inputMode) {

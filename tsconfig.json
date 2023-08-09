@@ -25,6 +25,10 @@
         "src/contrib/uipath/quietLogger/*"
       ],
 
+      // Vendor json-schema until this PR is merged upstream: https://github.com/cfworker/cfworker/issues/247
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/6206
+      "@cfworker/json-schema": ["src/vendors/jsonSchema/*"],
+
       // Silently improve tree-shakeability and AMD-related errors like #943
       "lodash": ["node_modules/lodash-es"],
 

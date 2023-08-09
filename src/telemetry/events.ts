@@ -79,6 +79,9 @@ export const Events = {
   PAGE_EDITOR_SESSION_START: "PageEditorSessionStart",
   PAGE_EDITOR_SESSION_END: "PageEditorSessionEnd",
 
+  VAR_POPOVER_SHOW: "VarPopoverShow",
+  VAR_POPOVER_SELECT: "VarPopoverSelect",
+
   PANEL_ADD: "PanelAdd",
 
   PIXIEBRIX_INSTALL: "PixieBrixInstall",
@@ -100,6 +103,7 @@ export const Events = {
   SIDE_BAR_SHOW: "SidePanelShow",
 
   SNOOZE_UPDATES: "SnoozeUpdates",
+  SETTINGS_EXPERIMENTAL_CONFIGURE: "SettingsExperimentalConfigure",
 
   START_MOD_ACTIVATE: "StartInstallBlueprint",
 

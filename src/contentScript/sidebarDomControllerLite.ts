@@ -23,6 +23,7 @@
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
 import { expectContext } from "@/utils/expectContext";
+import { uuidv4 } from "@/types/helpers";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
@@ -97,7 +98,7 @@ export function insertSidebarFrame(): boolean {
   }
 
   storeOriginalCSSOnce();
-  const nonce = crypto.randomUUID();
+  const nonce = uuidv4();
   const actionURL = browser.runtime.getURL("sidebar.html");
 
   setSidebarWidth(SIDEBAR_WIDTH_PX);
