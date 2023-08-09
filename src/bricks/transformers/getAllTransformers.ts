@@ -53,6 +53,7 @@ import Run from "@/bricks/transformers/controlFlow/Run";
 import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
 import { Readable } from "@/bricks/transformers/readable";
 import { Split } from "@/bricks/transformers/split";
+import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -95,6 +96,7 @@ function getAllTransformers(): Brick[] {
     new ForEachElement(),
     new Retry(),
     new Run(),
+    new MapValues(),
 
     // Render Pipelines
     new DisplayTemporaryInfo(),
