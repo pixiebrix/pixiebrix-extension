@@ -67,13 +67,13 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   const isHovered = hoveredElement === elementName && !isActive;
 
   useEffect(() => {
-    window.addEventListener(`${SCROLL_TO_ELEMENT_EVENT}-${elementName}`, () => {
+    if (isActive && elementRef.current) {
       elementRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
-    });
-  }, [elementName, elementRef]);
+    }
+  }, [isActive, elementRef]);
 
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
