@@ -45,7 +45,10 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import {
+  actions as editorActions,
+  actions,
+} from "@/pageEditor/slices/editorSlice";
 import BrickIcon from "@/components/BrickIcon";
 import {
   decideBlockStatus,
@@ -493,7 +496,18 @@ const usePipelineNodes = (): {
           pipelineInputKey: inputKey,
           active: nodeIsActive,
           nestedActive: parentIsActive,
-          nodePreviewElementId,
+          nodePreviewElement: nodePreviewElementId
+            ? {
+                focus() {
+                  dispatch(
+                    editorActions.setNodePreviewActiveElement(
+                      nodePreviewElementId
+                    )
+                  );
+                  setActiveNodeId(blockConfig.instanceId);
+                },
+              }
+            : null,
         };
 
         const {

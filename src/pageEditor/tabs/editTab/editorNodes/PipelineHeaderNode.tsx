@@ -25,14 +25,14 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import { ListGroup } from "react-bootstrap";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { useDispatch } from "react-redux";
 
 export type PipelineHeaderNodeProps = {
   headerLabel: string;
   nestingLevel: number;
   nodeActions: NodeAction[];
-  nodePreviewElementId: string | null;
+  nodePreviewElement: {
+    focus: () => void;
+  } | null;
   pipelineInputKey?: string;
   active?: boolean;
   nestedActive?: boolean;
@@ -45,54 +45,42 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   pipelineInputKey,
   active,
   nestedActive,
-  nodePreviewElementId,
-}) => {
-  const dispatch = useDispatch();
-  const onClickHandler = () => {
-    console.log("You clicked me!", nodePreviewElementId);
-    if (nodePreviewElementId) {
-      dispatch(editorActions.setNodePreviewActiveElement(nodePreviewElementId));
-    }
-  };
-
-  return (
-    <>
-      <ListGroup.Item
-        className={cx(styles.root, {
-          [styles.clickable]: nodePreviewElementId,
+  nodePreviewElement,
+}) => (
+  <>
+    <ListGroup.Item
+      className={cx(styles.root, {
+        [styles.clickable]: Boolean(nodePreviewElement),
+      })}
+      onClick={nodePreviewElement?.focus}
+    >
+      <PipelineOffsetView
+        nestingLevel={nestingLevel}
+        nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
+        isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
+      />
+      <div
+        className={cx(styles.header, {
+          [styles.active]: active,
+          [styles.nestedActive]: nestedActive,
         })}
-        onClick={nodePreviewElementId ? onClickHandler : undefined}
       >
-        <PipelineOffsetView
-          nestingLevel={nestingLevel}
-          nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
-          isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
-        />
-        <div
-          className={cx(styles.header, {
-            [styles.active]: active,
-            [styles.nestedActive]: nestedActive,
-          })}
-        >
-          <div className={styles.headerPipeLineTop} />
-          <div className={styles.headerPipeLineBottom} />
-          <div className={styles.subPipelineLabel}>{headerLabel}</div>
-          {pipelineInputKey && (
-            <div className={styles.subPipelineInputKey}>
-              @{pipelineInputKey}
-            </div>
-          )}
-          {nodePreviewElementId && (
-            <FontAwesomeIcon
-              icon={faSignInAlt}
-              className={styles.documentPreviewIcon}
-            />
-          )}
-        </div>
-      </ListGroup.Item>
-      <NodeActionsView nodeActions={nodeActions} />
-    </>
-  );
-};
+        <div className={styles.headerPipeLineTop} />
+        <div className={styles.headerPipeLineBottom} />
+        <div className={styles.subPipelineLabel}>{headerLabel}</div>
+        {pipelineInputKey && (
+          <div className={styles.subPipelineInputKey}>@{pipelineInputKey}</div>
+        )}
+        {nodePreviewElement && (
+          <FontAwesomeIcon
+            icon={faSignInAlt}
+            className={styles.documentPreviewIcon}
+          />
+        )}
+      </div>
+    </ListGroup.Item>
+    <NodeActionsView nodeActions={nodeActions} />
+  </>
+);
 
 export default PipelineHeaderNode;
