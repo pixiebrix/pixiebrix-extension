@@ -52,6 +52,7 @@ export const CONTEXT_INVALIDATED_ERROR = "Extension context invalidated.";
  */
 const IGNORED_ERROR_PATTERNS = [
   "ResizeObserver loop limit exceeded",
+  "ResizeObserver loop completed with undelivered notifications",
   "Network Error",
   "Promise was cancelled",
   "Action cancelled",
