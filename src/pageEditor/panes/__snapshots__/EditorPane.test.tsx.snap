@@ -421,7 +421,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="root"
                 />
                 <div
-                  class="root"
+                  class="root list-group-item"
                 >
                   <div
                     class="header"

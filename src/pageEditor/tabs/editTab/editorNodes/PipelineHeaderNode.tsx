@@ -24,6 +24,7 @@ import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOf
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { ListGroup } from "react-bootstrap";
 
 export type PipelineHeaderNodeProps = {
   headerLabel: string;
@@ -50,8 +51,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
 
   return (
     <>
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events -- TODO: make a decision about what to do here */}
-      <div
+      <ListGroup.Item
         className={cx(styles.root, {
           [styles.clickable]: nodePreviewElementId,
         })}
@@ -83,7 +83,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
             />
           )}
         </div>
-      </div>
+      </ListGroup.Item>
       <NodeActionsView nodeActions={nodeActions} />
     </>
   );
