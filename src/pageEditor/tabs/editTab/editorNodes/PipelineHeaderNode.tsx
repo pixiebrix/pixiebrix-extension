@@ -25,6 +25,8 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import { ListGroup } from "react-bootstrap";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { useDispatch } from "react-redux";
 
 export type PipelineHeaderNodeProps = {
   headerLabel: string;
@@ -45,8 +47,12 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   nestedActive,
   nodePreviewElementId,
 }) => {
+  const dispatch = useDispatch();
   const onClickHandler = () => {
     console.log("You clicked me!", nodePreviewElementId);
+    if (nodePreviewElementId) {
+      dispatch(editorActions.setNodePreviewActiveElement(nodePreviewElementId));
+    }
   };
 
   return (
