@@ -27,6 +27,8 @@ import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 
+export const SCROLL_TO_ELEMENT_EVENT = "scroll-to-document-preview-element";
+
 export type ElementPreviewProps = {
   /**
    * Formik name of the root element
@@ -65,14 +67,13 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   const isHovered = hoveredElement === elementName && !isActive;
 
   useEffect(() => {
-    if (isActive && elementRef.current) {
+    window.addEventListener(`${SCROLL_TO_ELEMENT_EVENT}-${elementName}`, () => {
       elementRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
-        inline: "center",
       });
-    }
-  }, [isActive, elementRef]);
+    });
+  }, [elementName]);
 
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
