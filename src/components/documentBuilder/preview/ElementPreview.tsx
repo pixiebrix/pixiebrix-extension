@@ -27,8 +27,6 @@ import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 
-export const SCROLL_TO_ELEMENT_EVENT = "scroll-to-document-preview-element";
-
 export type ElementPreviewProps = {
   /**
    * Formik name of the root element
