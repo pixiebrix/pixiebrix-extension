@@ -499,7 +499,9 @@ const usePipelineNodes = (): {
           nodePreviewElement: nodePreviewElementId
             ? {
                 focus() {
+                  console.log("*** focus", nodePreviewElementId);
                   setActiveNodeId(blockConfig.instanceId);
+                  dispatch(editorActions.setNodePreviewActiveElement(null));
                   dispatch(
                     editorActions.setNodePreviewActiveElement(
                       nodePreviewElementId

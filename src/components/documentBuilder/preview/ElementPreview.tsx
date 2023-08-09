@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type MouseEventHandler, useMemo } from "react";
+import React, { type MouseEventHandler, useEffect, useMemo } from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
@@ -60,8 +60,23 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   setHoveredElement,
   menuBoundary,
 }) => {
+  const elementRef = React.useRef(null);
   const isActive = activeElement === elementName;
   const isHovered = hoveredElement === elementName && !isActive;
+
+  useEffect(() => {
+    console.log("*** isActive", isActive, elementName);
+    console.log("*** scroll element ref", elementRef);
+    if (isActive && elementRef.current) {
+      console.log("*** scrolling into view");
+      elementRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    }
+  }, [isActive, elementRef]);
+
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
     event.preventDefault();
@@ -102,60 +117,62 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   );
 
   return (
-    <PreviewComponent
-      {...props}
-      onClick={onClick}
-      className={cx(styles.root, {
-        [styles.active]: isActive,
-        [styles.hovered]: isHovered,
-        "btn-block": isFullWidth,
-      })}
-      onMouseOver={onMouseOver}
-      onMouseLeave={onMouseLeave}
-      documentBodyName={documentBodyName}
-      elementName={elementName}
-      isHovered={isHovered}
-      isActive={isActive}
-    >
-      {props?.children}
-      {isContainer &&
-        previewElement.children.map((childElement, i) => {
-          const childElementName = `${elementName}.children.${i}`;
-          return (
-            <ElementPreview
-              key={childElementName}
-              documentBodyName={documentBodyName}
-              elementName={childElementName}
-              previewElement={childElement}
-              activeElement={activeElement}
-              setActiveElement={setActiveElement}
-              menuBoundary={menuBoundary}
-              hoveredElement={hoveredElement}
-              setHoveredElement={setHoveredElement}
-            />
-          );
+    <div ref={elementRef}>
+      <PreviewComponent
+        {...props}
+        onClick={onClick}
+        className={cx(styles.root, {
+          [styles.active]: isActive,
+          [styles.hovered]: isHovered,
+          "btn-block": isFullWidth,
         })}
-      {isContainer && (
-        <AddElementAction
-          elementsCollectionName={`${documentBodyName}.${elementName}.children`}
-          allowedTypes={getAllowedChildTypes(previewElement)}
-          className={styles.addElement}
-          menuBoundary={menuBoundary}
-        />
-      )}
-      {isList && (
-        <ElementPreview
-          documentBodyName={documentBodyName}
-          elementName={`${elementName}.config.element.__value__`}
-          previewElement={previewElement.config.element.__value__}
-          activeElement={activeElement}
-          setActiveElement={setActiveElement}
-          menuBoundary={menuBoundary}
-          hoveredElement={hoveredElement}
-          setHoveredElement={setHoveredElement}
-        />
-      )}
-    </PreviewComponent>
+        onMouseOver={onMouseOver}
+        onMouseLeave={onMouseLeave}
+        documentBodyName={documentBodyName}
+        elementName={elementName}
+        isHovered={isHovered}
+        isActive={isActive}
+      >
+        {props?.children}
+        {isContainer &&
+          previewElement.children.map((childElement, i) => {
+            const childElementName = `${elementName}.children.${i}`;
+            return (
+              <ElementPreview
+                key={childElementName}
+                documentBodyName={documentBodyName}
+                elementName={childElementName}
+                previewElement={childElement}
+                activeElement={activeElement}
+                setActiveElement={setActiveElement}
+                menuBoundary={menuBoundary}
+                hoveredElement={hoveredElement}
+                setHoveredElement={setHoveredElement}
+              />
+            );
+          })}
+        {isContainer && (
+          <AddElementAction
+            elementsCollectionName={`${documentBodyName}.${elementName}.children`}
+            allowedTypes={getAllowedChildTypes(previewElement)}
+            className={styles.addElement}
+            menuBoundary={menuBoundary}
+          />
+        )}
+        {isList && (
+          <ElementPreview
+            documentBodyName={documentBodyName}
+            elementName={`${elementName}.config.element.__value__`}
+            previewElement={previewElement.config.element.__value__}
+            activeElement={activeElement}
+            setActiveElement={setActiveElement}
+            menuBoundary={menuBoundary}
+            hoveredElement={hoveredElement}
+            setHoveredElement={setHoveredElement}
+          />
+        )}
+      </PreviewComponent>
+    </div>
   );
 };
 

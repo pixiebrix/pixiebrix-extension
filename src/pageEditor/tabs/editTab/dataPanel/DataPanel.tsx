@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { isEmpty, isEqual, pickBy } from "lodash";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
@@ -162,6 +162,10 @@ const DataPanel: React.FC = () => {
     selectNodePreviewActiveElement,
     editorActions.setNodePreviewActiveElement
   );
+
+  useEffect(() => {
+    console.log("*** useEffect", nodePreviewActiveElement);
+  }, [nodePreviewActiveElement]);
 
   const popupBoundary = showDocumentPreview
     ? document.querySelector(`.${dataPanelStyles.tabContent}`)
