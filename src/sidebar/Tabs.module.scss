@@ -67,11 +67,13 @@
   &::after {
     right: -30px;
     border-bottom-left-radius: 10px;
+    pointer-events: none;
   }
   &::before {
     // 2px left extra to account for the border that hides the left divider
     left: -32px;
     border-bottom-right-radius: 10px;
+    pointer-events: none;
   }
 
   &:hover {
