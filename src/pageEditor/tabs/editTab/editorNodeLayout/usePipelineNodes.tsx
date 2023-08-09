@@ -499,12 +499,12 @@ const usePipelineNodes = (): {
           nodePreviewElement: nodePreviewElementId
             ? {
                 focus() {
+                  setActiveNodeId(blockConfig.instanceId);
                   dispatch(
                     editorActions.setNodePreviewActiveElement(
                       nodePreviewElementId
                     )
                   );
-                  setActiveNodeId(blockConfig.instanceId);
                 },
               }
             : null,
