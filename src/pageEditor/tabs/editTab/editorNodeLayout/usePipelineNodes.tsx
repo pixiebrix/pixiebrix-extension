@@ -106,8 +106,9 @@ function getNodePreviewElementId(
   path: string
 ): string | null {
   if (brickConfig.id === DocumentRenderer.BLOCK_ID) {
-    // Regex to extract the substring between config.body and config.* of a path, e.g.
-    // config.body.0.children.9.children.0.children.0.config.onClick.__value__ --> 0.children.9.children.0.children.0
+    // The Document Preview element name is a substring of the header node path, e.g.
+    // SubPipeline.path: config.body.0.children.9.children.0.children.0.config.onClick.__value__0.children.9.children.0.children.0
+    // Document element: 0.children.9.children.0.children.0
     const regex = /config\.body\.(.*)\.config\..*$/;
     const result = regex.exec(path);
     if (result) {
@@ -457,9 +458,7 @@ const usePipelineNodes = (): {
       } of subPipelines) {
         const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
-        // TODO: is it possible to only set the nodePreviewElementId if the element exists?
         const nodePreviewElementId = getNodePreviewElementId(blockConfig, path);
-        console.log("*** nodePreviewElementId", nodePreviewElementId);
 
         const headerActions: NodeAction[] = [
           {
