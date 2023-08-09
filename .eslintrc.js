@@ -69,6 +69,14 @@ module.exports = {
       },
     ],
 
+    "no-restricted-syntax": [
+      "error",
+      {
+        message: "Don't use randomUUID. It's not available in http: contexts",
+        selector: 'MemberExpression > Identifier[name="randomUUID"]',
+      },
+    ],
+
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
