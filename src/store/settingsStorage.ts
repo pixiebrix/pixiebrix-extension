@@ -17,13 +17,14 @@
 
 import { localStorage } from "redux-persist-webextension-storage";
 import { type SettingsState } from "@/store/settingsTypes";
-import { mapValues } from "lodash";
+import { isEmpty, mapValues } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import {
   readReduxStorage,
   type ReduxStorageKey,
   setReduxStorage,
 } from "@/utils/storageUtils";
+import { initialSettingsState } from "@/store/settingsSlice";
 
 const SETTINGS_STORAGE_KEY = "persist:settings" as ReduxStorageKey;
 
@@ -34,6 +35,10 @@ export async function getSettingsState(): Promise<SettingsState> {
   expectContext("extension");
 
   const rawSettings = await readReduxStorage(SETTINGS_STORAGE_KEY, {});
+  if (isEmpty(rawSettings)) {
+    return initialSettingsState;
+  }
+
   const parsedSettings = mapValues(rawSettings, (setting) =>
     JSON.parse(setting)
   ) as SettingsState;
