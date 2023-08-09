@@ -67,16 +67,22 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
       >
         <div className={styles.headerPipeLineTop} />
         <div className={styles.headerPipeLineBottom} />
-        <div className={styles.subPipelineLabel}>{headerLabel}</div>
-        {pipelineInputKey && (
-          <div className={styles.subPipelineInputKey}>@{pipelineInputKey}</div>
-        )}
-        {nodePreviewElement && (
-          <FontAwesomeIcon
-            icon={faSignInAlt}
-            className={styles.documentPreviewIcon}
-          />
-        )}
+        <div className={styles.headerContent}>
+          <div className={styles.labelAndInputKey}>
+            <div className={styles.subPipelineLabel}>{headerLabel}</div>
+            {pipelineInputKey && (
+              <div className={styles.subPipelineInputKey}>
+                @{pipelineInputKey}
+              </div>
+            )}
+          </div>
+          {nodePreviewElement && (
+            <FontAwesomeIcon
+              icon={faSignInAlt}
+              className={styles.documentPreviewIcon}
+            />
+          )}
+        </div>
       </div>
     </ListGroup.Item>
     <NodeActionsView nodeActions={nodeActions} />

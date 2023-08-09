@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   type DocumentComponent,
   type PreviewComponentProps,
@@ -27,22 +27,30 @@ type UnknownProps = PreviewComponentProps & {
   documentComponent: DocumentComponent;
 };
 
-const Unknown: React.FunctionComponent<UnknownProps> = ({
-  documentComponent: { Component, props },
-  children,
-  className,
-  documentBodyName,
-  elementName,
-  isHovered,
-  isActive,
-  ...restPreviewProps
-}) => (
-  <div
-    className={cx(documentTreeStyles.shiftRightWrapper, className)}
-    {...restPreviewProps}
-  >
-    <Component {...props} />
-  </div>
+const Unknown: React.FunctionComponent<UnknownProps> = forwardRef(
+  (
+    {
+      documentComponent: { Component, props },
+      children,
+      className,
+      documentBodyName,
+      elementName,
+      isHovered,
+      isActive,
+      ...restPreviewProps
+    },
+    ref
+  ) => (
+    <div
+      className={cx(documentTreeStyles.shiftRightWrapper, className)}
+      {...restPreviewProps}
+      ref={ref}
+    >
+      <Component {...props} />
+    </div>
+  )
 );
+
+Unknown.displayName = "Unknown";
 
 export default Unknown;

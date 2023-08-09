@@ -529,9 +529,6 @@ export const editorSlice = createSlice({
       const activeElement = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
 
-      console.log("*** ActiveNodeId", elementUIState.activeNodeId);
-      console.log("*** ElementUIState before:", elementUIState);
-
       elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
         DataPanelTabKey.Preview
       ].activeElement = activeElement;
@@ -539,7 +536,6 @@ export const editorSlice = createSlice({
       elementUIState.nodeUIStates[elementUIState.activeNodeId].dataPanel[
         DataPanelTabKey.Outline
       ].activeElement = activeElement;
-      console.log("*** ElementUIState after:", elementUIState);
     },
 
     copyBlockConfig(state, action: PayloadAction<BrickConfig>) {

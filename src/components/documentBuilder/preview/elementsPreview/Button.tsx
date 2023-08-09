@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   type ButtonDocumentConfig,
   type ButtonDocumentElement,
@@ -33,56 +33,64 @@ type ButtonProps = PreviewComponentProps & {
   buttonProps: ButtonDocumentConfig;
 };
 
-const Button: React.FunctionComponent<ButtonProps> = ({
-  element,
-  children,
-  className,
-  documentBodyName,
-  elementName,
-  isHovered,
-  isActive,
-  buttonProps,
-  ...restPreviewProps
-}) => {
-  // NOTE: not passing through "disabled" prop because that prevents the user from clicking the button in the preview
-  // to select the element in the Document Builder.
-  const {
-    title,
-    variant,
-    size,
-    fullWidth,
-    className: buttonClassName,
-  } = buttonProps;
+const Button: React.FunctionComponent<ButtonProps> = forwardRef(
+  (
+    {
+      element,
+      children,
+      className,
+      documentBodyName,
+      elementName,
+      isHovered,
+      isActive,
+      buttonProps,
+      ...restPreviewProps
+    },
+    ref
+  ) => {
+    // NOTE: not passing through "disabled" prop because that prevents the user from clicking the button in the preview
+    // to select the element in the Document Builder.
+    const {
+      title,
+      variant,
+      size,
+      fullWidth,
+      className: buttonClassName,
+    } = buttonProps;
 
-  return (
-    <div>
-      <div
-        className={cx(className, documentTreeStyles.inlineWrapper)}
-        {...restPreviewProps}
-      >
-        <Flaps
-          className={documentTreeStyles.flapShiftRight}
-          elementType={element.type}
-          documentBodyName={documentBodyName}
-          elementName={elementName}
-          isHovered={isHovered}
-          isActive={isActive}
-        />
-        <BsButton
-          onClick={() => {}}
-          // Not resolving expressions in Preview
-          className={cx(
-            isExpression(buttonClassName) ? undefined : buttonClassName,
-            { "btn-block": fullWidth }
-          )}
-          variant={isExpression(variant) ? undefined : variant}
-          size={isExpression(size) ? undefined : size}
+    return (
+      <div>
+        <div
+          className={cx(className, documentTreeStyles.inlineWrapper)}
+          {...restPreviewProps}
+          ref={ref}
         >
-          {title}
-        </BsButton>
+          <Flaps
+            className={documentTreeStyles.flapShiftRight}
+            elementType={element.type}
+            documentBodyName={documentBodyName}
+            elementName={elementName}
+            isHovered={isHovered}
+            isActive={isActive}
+          />
+          <BsButton
+            onClick={() => {}}
+            // Not resolving expressions in Preview
+            className={cx(
+              isExpression(buttonClassName) ? undefined : buttonClassName,
+              { "btn-block": fullWidth }
+            )}
+            variant={isExpression(variant) ? undefined : variant}
+            size={isExpression(size) ? undefined : size}
+          >
+            {title}
+          </BsButton>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
+
+Button.displayName = "Button";
 
 export default Button;

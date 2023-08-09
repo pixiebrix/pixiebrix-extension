@@ -21,7 +21,7 @@ import {
   type Expression,
   type PipelineExpression,
 } from "@/types/runtimeTypes";
-import { type ElementType, type MouseEventHandler } from "react";
+import { type ElementType, type MouseEventHandler, Ref } from "react";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header",
@@ -135,6 +135,7 @@ export type BuildDocumentBranch = (
 
 export type PreviewComponentProps = {
   className?: string;
+  ref?: Ref<HTMLDivElement>;
   documentBodyName: string;
   elementName: string;
   isHovered: boolean;

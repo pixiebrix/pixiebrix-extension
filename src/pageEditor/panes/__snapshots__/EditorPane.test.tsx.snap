@@ -433,14 +433,22 @@ exports[`renders an extension with sub pipeline 1`] = `
                       class="headerPipeLineBottom"
                     />
                     <div
-                      class="subPipelineLabel"
+                      class="headerContent"
                     >
-                      body
-                    </div>
-                    <div
-                      class="subPipelineInputKey"
-                    >
-                      @element
+                      <div
+                        class="labelAndInputKey"
+                      >
+                        <div
+                          class="subPipelineLabel"
+                        >
+                          body
+                        </div>
+                        <div
+                          class="subPipelineInputKey"
+                        >
+                          @element
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

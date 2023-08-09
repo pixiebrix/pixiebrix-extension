@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   type DocumentComponent,
   type DocumentElementType,
@@ -30,31 +30,39 @@ type BasicProps = PreviewComponentProps & {
   documentComponent: DocumentComponent;
 };
 
-const Basic: React.FunctionComponent<BasicProps> = ({
-  elementType,
-  documentComponent: { Component, props },
-  children,
-  className,
-  documentBodyName,
-  elementName,
-  isHovered,
-  isActive,
-  ...restPreviewProps
-}) => (
-  <div
-    className={cx(documentTreeStyles.shiftRightWrapper, className)}
-    {...restPreviewProps}
-  >
-    <Flaps
-      className={documentTreeStyles.flapShiftRight}
-      elementType={elementType}
-      documentBodyName={documentBodyName}
-      elementName={elementName}
-      isHovered={isHovered}
-      isActive={isActive}
-    />
-    <Component {...props} />
-  </div>
+const Basic: React.FunctionComponent<BasicProps> = forwardRef(
+  (
+    {
+      elementType,
+      documentComponent: { Component, props },
+      children,
+      className,
+      documentBodyName,
+      elementName,
+      isHovered,
+      isActive,
+      ...restPreviewProps
+    },
+    ref
+  ) => (
+    <div
+      className={cx(documentTreeStyles.shiftRightWrapper, className)}
+      {...restPreviewProps}
+      ref={ref}
+    >
+      <Flaps
+        className={documentTreeStyles.flapShiftRight}
+        elementType={elementType}
+        documentBodyName={documentBodyName}
+        elementName={elementName}
+        isHovered={isHovered}
+        isActive={isActive}
+      />
+      <Component {...props} />
+    </div>
+  )
 );
+
+Basic.displayName = "Basic";
 
 export default Basic;

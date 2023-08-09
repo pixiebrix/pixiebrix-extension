@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   type DocumentComponent,
   type DocumentElement,
@@ -31,39 +31,47 @@ type CardProps = PreviewComponentProps & {
   documentComponent: DocumentComponent;
 };
 
-const Card: React.FunctionComponent<CardProps> = ({
-  element,
-  documentComponent: { Component, props },
-  children,
-  className,
-  isHovered,
-  isActive,
-  documentBodyName,
-  elementName,
-  ...restPreviewProps
-}) => {
-  const { bodyClassName, ...restCardProps } = props;
-  return (
-    <div
-      className={cx(documentTreeStyles.shiftRightWrapper, className)}
-      {...restPreviewProps}
-    >
-      <Flaps
-        className={documentTreeStyles.flapShiftRight}
-        elementType={element.type}
-        documentBodyName={documentBodyName}
-        elementName={elementName}
-        isHovered={isHovered}
-        isActive={isActive}
-      />
-      <Component
-        {...restCardProps}
-        bodyClassName={cx(bodyClassName, styles.cardBody)}
+const Card: React.FunctionComponent<CardProps> = forwardRef(
+  (
+    {
+      element,
+      documentComponent: { Component, props },
+      children,
+      className,
+      isHovered,
+      isActive,
+      documentBodyName,
+      elementName,
+      ...restPreviewProps
+    },
+    ref
+  ) => {
+    const { bodyClassName, ...restCardProps } = props;
+    return (
+      <div
+        className={cx(documentTreeStyles.shiftRightWrapper, className)}
+        {...restPreviewProps}
+        ref={ref}
       >
-        {children}
-      </Component>
-    </div>
-  );
-};
+        <Flaps
+          className={documentTreeStyles.flapShiftRight}
+          elementType={element.type}
+          documentBodyName={documentBodyName}
+          elementName={elementName}
+          isHovered={isHovered}
+          isActive={isActive}
+        />
+        <Component
+          {...restCardProps}
+          bodyClassName={cx(bodyClassName, styles.cardBody)}
+        >
+          {children}
+        </Component>
+      </div>
+    );
+  }
+);
+
+Card.displayName = "Card";
 
 export default Card;

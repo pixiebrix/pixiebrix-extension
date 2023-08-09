@@ -500,15 +500,15 @@ const usePipelineNodes = (): {
           nodePreviewElement: nodePreviewElementId
             ? {
                 focus() {
-                  window.dispatchEvent(
-                    new Event(
-                      `${SCROLL_TO_ELEMENT_EVENT}-${nodePreviewElementId}`
-                    )
-                  );
                   setActiveNodeId(blockConfig.instanceId);
                   dispatch(
                     editorActions.setNodePreviewActiveElement(
                       nodePreviewElementId
+                    )
+                  );
+                  window.dispatchEvent(
+                    new Event(
+                      `${SCROLL_TO_ELEMENT_EVENT}-${nodePreviewElementId}`
                     )
                   );
                 },

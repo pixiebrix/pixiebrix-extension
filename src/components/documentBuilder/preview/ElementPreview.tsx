@@ -73,7 +73,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
         block: "center",
       });
     });
-  }, [elementName]);
+  }, [elementName, elementRef]);
 
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
@@ -115,62 +115,61 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   );
 
   return (
-    <div ref={elementRef}>
-      <PreviewComponent
-        {...props}
-        onClick={onClick}
-        className={cx(styles.root, {
-          [styles.active]: isActive,
-          [styles.hovered]: isHovered,
-          "btn-block": isFullWidth,
+    <PreviewComponent
+      {...props}
+      onClick={onClick}
+      className={cx(styles.root, {
+        [styles.active]: isActive,
+        [styles.hovered]: isHovered,
+        "btn-block": isFullWidth,
+      })}
+      onMouseOver={onMouseOver}
+      onMouseLeave={onMouseLeave}
+      documentBodyName={documentBodyName}
+      elementName={elementName}
+      isHovered={isHovered}
+      isActive={isActive}
+      ref={elementRef}
+    >
+      {props?.children}
+      {isContainer &&
+        previewElement.children.map((childElement, i) => {
+          const childElementName = `${elementName}.children.${i}`;
+          return (
+            <ElementPreview
+              key={childElementName}
+              documentBodyName={documentBodyName}
+              elementName={childElementName}
+              previewElement={childElement}
+              activeElement={activeElement}
+              setActiveElement={setActiveElement}
+              menuBoundary={menuBoundary}
+              hoveredElement={hoveredElement}
+              setHoveredElement={setHoveredElement}
+            />
+          );
         })}
-        onMouseOver={onMouseOver}
-        onMouseLeave={onMouseLeave}
-        documentBodyName={documentBodyName}
-        elementName={elementName}
-        isHovered={isHovered}
-        isActive={isActive}
-      >
-        {props?.children}
-        {isContainer &&
-          previewElement.children.map((childElement, i) => {
-            const childElementName = `${elementName}.children.${i}`;
-            return (
-              <ElementPreview
-                key={childElementName}
-                documentBodyName={documentBodyName}
-                elementName={childElementName}
-                previewElement={childElement}
-                activeElement={activeElement}
-                setActiveElement={setActiveElement}
-                menuBoundary={menuBoundary}
-                hoveredElement={hoveredElement}
-                setHoveredElement={setHoveredElement}
-              />
-            );
-          })}
-        {isContainer && (
-          <AddElementAction
-            elementsCollectionName={`${documentBodyName}.${elementName}.children`}
-            allowedTypes={getAllowedChildTypes(previewElement)}
-            className={styles.addElement}
-            menuBoundary={menuBoundary}
-          />
-        )}
-        {isList && (
-          <ElementPreview
-            documentBodyName={documentBodyName}
-            elementName={`${elementName}.config.element.__value__`}
-            previewElement={previewElement.config.element.__value__}
-            activeElement={activeElement}
-            setActiveElement={setActiveElement}
-            menuBoundary={menuBoundary}
-            hoveredElement={hoveredElement}
-            setHoveredElement={setHoveredElement}
-          />
-        )}
-      </PreviewComponent>
-    </div>
+      {isContainer && (
+        <AddElementAction
+          elementsCollectionName={`${documentBodyName}.${elementName}.children`}
+          allowedTypes={getAllowedChildTypes(previewElement)}
+          className={styles.addElement}
+          menuBoundary={menuBoundary}
+        />
+      )}
+      {isList && (
+        <ElementPreview
+          documentBodyName={documentBodyName}
+          elementName={`${elementName}.config.element.__value__`}
+          previewElement={previewElement.config.element.__value__}
+          activeElement={activeElement}
+          setActiveElement={setActiveElement}
+          menuBoundary={menuBoundary}
+          hoveredElement={hoveredElement}
+          setHoveredElement={setHoveredElement}
+        />
+      )}
+    </PreviewComponent>
   );
 };
 

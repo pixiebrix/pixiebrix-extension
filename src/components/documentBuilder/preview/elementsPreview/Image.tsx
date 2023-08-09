@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   type DocumentComponent,
   type DocumentElementType,
@@ -33,45 +33,53 @@ type ImageProps = PreviewComponentProps & {
   documentComponent: DocumentComponent;
 };
 
-const Image: React.FunctionComponent<ImageProps> = ({
-  elementType,
-  documentComponent: { Component, props },
-  children,
-  className,
-  documentBodyName,
-  elementName,
-  isHovered,
-  isActive,
-  ...restPreviewProps
-}) => {
-  // If it's not a valid URL, show a placeholder
-  const renderPlaceholder =
-    typeof props.src !== "string" ||
-    !isValidUrl(props.src, { protocols: ["https:"] });
+const Image: React.FunctionComponent<ImageProps> = forwardRef(
+  (
+    {
+      elementType,
+      documentComponent: { Component, props },
+      children,
+      className,
+      documentBodyName,
+      elementName,
+      isHovered,
+      isActive,
+      ...restPreviewProps
+    },
+    ref
+  ) => {
+    // If it's not a valid URL, show a placeholder
+    const renderPlaceholder =
+      typeof props.src !== "string" ||
+      !isValidUrl(props.src, { protocols: ["https:"] });
 
-  return (
-    <div
-      className={cx(documentTreeStyles.imageWrapper, className)}
-      {...restPreviewProps}
-    >
-      <Flaps
-        className={documentTreeStyles.flapShiftRight}
-        elementType={elementType}
-        documentBodyName={documentBodyName}
-        elementName={elementName}
-        isHovered={isHovered}
-        isActive={isActive}
-      />
-      {renderPlaceholder ? (
-        <ImagePlaceholder
-          height={isEmpty(props.height) ? "50" : (props.height as number)}
-          width={isEmpty(props.width) ? "100" : (props.width as number)}
+    return (
+      <div
+        className={cx(documentTreeStyles.imageWrapper, className)}
+        {...restPreviewProps}
+        ref={ref}
+      >
+        <Flaps
+          className={documentTreeStyles.flapShiftRight}
+          elementType={elementType}
+          documentBodyName={documentBodyName}
+          elementName={elementName}
+          isHovered={isHovered}
+          isActive={isActive}
         />
-      ) : (
-        <Component {...props} />
-      )}
-    </div>
-  );
-};
+        {renderPlaceholder ? (
+          <ImagePlaceholder
+            height={isEmpty(props.height) ? "50" : (props.height as number)}
+            width={isEmpty(props.width) ? "100" : (props.width as number)}
+          />
+        ) : (
+          <Component {...props} />
+        )}
+      </div>
+    );
+  }
+);
+
+Image.displayName = "Image";
 
 export default Image;
