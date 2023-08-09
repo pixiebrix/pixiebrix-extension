@@ -52,6 +52,7 @@ import { SelectElement } from "@/bricks/transformers/selectElement";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
 import { Readable } from "@/bricks/transformers/readable";
+import { Split } from "@/bricks/transformers/split";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -72,6 +73,7 @@ function getAllTransformers(): Brick[] {
     new Base64Decode(),
     new TemplateTransformer(),
     new UrlParams(),
+    new Split(),
     new JQueryReader(),
     new Readable(),
     new ComponentReader(),

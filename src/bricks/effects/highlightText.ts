@@ -23,8 +23,7 @@ import { getTextNodes } from "@/bricks/effects/replaceText";
 import { escape } from "lodash";
 import sanitize from "@/utils/sanitize";
 import { $safeFind } from "@/utils/domUtils";
-
-const highlightId = validateRegistryId("@pixiebrix/html/highlight-text");
+import escapeStringRegexp from "escape-string-regexp";
 
 /**
  * Recursively wrap text in an element and its children.
@@ -64,9 +63,13 @@ function wrapText({
 }
 
 class HighlightText extends EffectABC {
+  static readonly BRICK_ID = validateRegistryId(
+    "@pixiebrix/html/highlight-text"
+  );
+
   constructor() {
     super(
-      highlightId,
+      HighlightText.BRICK_ID,
       "Highlight Text",
       "Highlight text within an HTML document or subtree"
     );
@@ -76,10 +79,12 @@ class HighlightText extends EffectABC {
     type: "object",
     properties: {
       pattern: {
+        title: "Pattern",
         type: "string",
         description: "A string or regular expression to match",
       },
       color: {
+        title: "Color",
         type: "string",
         description:
           "The highlight color value or hex code: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value",
@@ -87,11 +92,19 @@ class HighlightText extends EffectABC {
         examples: ["yellow", "red", "green"],
       },
       isRegex: {
+        title: "Regular Expression",
         type: "boolean",
         description: "Whether the pattern is a regular expression",
         default: false,
       },
+      isCaseInsensitive: {
+        title: "Case Insensitive",
+        type: "boolean",
+        description: "Whether the search is case-insensitive",
+        default: false,
+      },
       selector: {
+        title: "Selector",
         type: "string",
         format: "selector",
         description:
@@ -110,10 +123,12 @@ class HighlightText extends EffectABC {
       pattern,
       color = "yellow",
       selector,
+      isCaseInsensitive = false,
       isRegex = false,
     }: BrickArgs<{
       pattern: string;
       color?: string;
+      isCaseInsensitive?: boolean;
       isRegex?: boolean;
       selector?: string;
     }>,
@@ -127,7 +142,13 @@ class HighlightText extends EffectABC {
 
     const $elements = selector ? $safeFind(selector, root) : $(root);
 
-    const convertedPattern = isRegex ? new RegExp(pattern, "g") : pattern;
+    const flags = isCaseInsensitive ? "gi" : "g";
+
+    // eslint-disable-next-line security/detect-non-literal-regexp -- mod argument
+    const convertedPattern = new RegExp(
+      isRegex ? pattern : escapeStringRegexp(pattern),
+      flags
+    );
 
     wrapText({
       nodes: $elements.get(),

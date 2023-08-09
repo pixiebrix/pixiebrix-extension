@@ -50,6 +50,51 @@ describe("ReplaceTextEffect", () => {
     }
   );
 
+  test("case insensitive match", async () => {
+    const document = getDocument("<div>fOobAr</div>");
+    const brick = new HighlightText();
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "foo",
+        isCaseInsensitive: true,
+      }),
+      { logger, root: document } as BrickOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      '<div><mark style="background-color: yellow;">fOo</mark>bAr</div>'
+    );
+  });
+
+  test("case sensitive default", async () => {
+    const document = getDocument("<div>fOobAr</div>");
+    const brick = new HighlightText();
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "foo",
+      }),
+      { logger, root: document } as BrickOptions
+    );
+
+    expect(document.body.innerHTML).toEqual("<div>fOobAr</div>");
+  });
+
+  test("escapes special chars in regex", async () => {
+    const document = getDocument("<div>[fOo]bAr</div>");
+    const brick = new HighlightText();
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "[foo]",
+        isCaseInsensitive: true,
+      }),
+      { logger, root: document } as BrickOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      '<div><mark style="background-color: yellow;">[fOo]</mark>bAr</div>'
+    );
+  });
+
   test("replace text end of div", async () => {
     const document = getDocument("<div>foobar</div>");
     const brick = new HighlightText();
