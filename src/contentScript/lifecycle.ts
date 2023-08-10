@@ -116,6 +116,11 @@ async function runExtensionPoint(
   // Could potentially call _activeExtensionPoints.delete here, but assume the extension point is still available
   // until we know for sure that it's not
 
+  if (!(await extensionPoint.isAvailable())) {
+    // `extensionPoint.install` should short-circuit return false if it's not available. But be defensive.
+    return;
+  }
+
   let installed = false;
 
   // Details to make it easier to debug extension point lifecycle
@@ -403,6 +408,8 @@ function cleanUpDeactivatedExtensionPoints(
 /**
  * Add extensions to their respective extension points.
  *
+ * Includes starter bricks that are not available on the page.
+ *
  * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
  */
 async function loadPersistedExtensions(): Promise<StarterBrick[]> {
@@ -448,10 +455,9 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
               extensionPointId
             );
 
-            if (!(await extensionPoint.isAvailable())) {
-              // For efficiency, just skip synchronization/adding because it won't be available
-              return;
-            }
+            // It's tempting to call extensionPoint.isAvailable here and skip if it's not available.
+            // However, that would cause the extension point to be unavailable for the entire session
+            // even if the SPA redirects to a page that matches.
 
             extensionPoint.synchronizeModComponents(extensions);
 
