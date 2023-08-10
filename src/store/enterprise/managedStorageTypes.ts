@@ -47,4 +47,9 @@ export type ManagedStorageState = {
    * PixieBrix service URL
    */
   serviceUrl?: string;
+  /**
+   * Disable the browser warning for non-Chrome browsers, e.g., Microsoft Edge
+   * @since 1.7.36
+   */
+  disableBrowserWarning?: boolean;
 };
