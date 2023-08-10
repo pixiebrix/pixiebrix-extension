@@ -54,6 +54,7 @@ import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
 import { Readable } from "@/bricks/transformers/readable";
 import { Split } from "@/bricks/transformers/split";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
+import ConvertDocument from "@/bricks/transformers/convertDocument";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -81,6 +82,7 @@ function getAllTransformers(): Brick[] {
     new TableReader(),
     new TablesReader(),
     new ParseCsv(),
+    new ConvertDocument(),
     new ParseDataUrl(),
     new ParseDate(),
     new ScreenshotTab(),
