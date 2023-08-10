@@ -28,7 +28,7 @@ import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import injectScriptTag from "@/utils/injectScriptTag";
-import { getThisFrame } from "webext-messenger";
+import { type FrameTarget, getThisFrame } from "webext-messenger";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -566,11 +566,11 @@ export async function handleNavigate({
 }: { force?: boolean } = {}): Promise<void> {
   const runReason = decideRunReason({ force });
 
-  const thisTarget = await getThisFrame();
-  if (thisTarget.frameId == null) {
-    console.debug(
-      "Ignoring handleNavigate because thisTarget.frameId is not set yet"
-    );
+  let thisTarget: FrameTarget;
+  try {
+    thisTarget = await getThisFrame();
+  } catch (error: unknown) {
+    console.debug("Ignoring handleNavigate because getThisFrame failed", error);
     return;
   }
 
