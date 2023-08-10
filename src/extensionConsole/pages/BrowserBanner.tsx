@@ -24,14 +24,23 @@ import { Button } from "react-bootstrap";
 import settingsSlice from "@/store/settingsSlice";
 
 import { isGoogleChrome } from "@/utils/browserUtils";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 const BrowserBanner: React.VoidFunctionComponent = () => {
   const dispatch = useDispatch();
+
   const browserWarningDismissed = useSelector<RootState, boolean>(
     selectBrowserWarningDismissed
   );
 
-  if (browserWarningDismissed || isGoogleChrome()) {
+  const enterpriseState = useManagedStorageState();
+
+  if (
+    browserWarningDismissed ||
+    isGoogleChrome() ||
+    enterpriseState.isLoading ||
+    enterpriseState.data?.disableBrowserWarning
+  ) {
     return null;
   }
 
