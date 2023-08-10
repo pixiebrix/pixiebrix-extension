@@ -570,7 +570,9 @@ export async function handleNavigate({
   try {
     // Note: We used to check for invalid (undefined) frameId after calling
     // this, but now getThisFrame will throw an error itself internally if
-    // the frameId is not a valid number.
+    // the frameId is not a valid number. An example situation where this
+    // happens is when the dynamic gsheets code loads a frame within the
+    // extension background page.
     thisTarget = await getThisFrame();
   } catch (error: unknown) {
     console.debug("Ignoring handleNavigate because getThisFrame failed", error);
