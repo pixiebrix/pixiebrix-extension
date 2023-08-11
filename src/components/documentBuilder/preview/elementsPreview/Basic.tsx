@@ -39,11 +39,13 @@ const Basic: React.FunctionComponent<BasicProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => (
   <div
     className={cx(documentTreeStyles.shiftRightWrapper, className)}
     {...restPreviewProps}
+    ref={elementRef}
   >
     <Flaps
       className={documentTreeStyles.flapShiftRight}

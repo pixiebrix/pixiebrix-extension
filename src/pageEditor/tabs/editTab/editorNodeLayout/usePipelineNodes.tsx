@@ -45,7 +45,10 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import {
+  actions as editorActions,
+  actions,
+} from "@/pageEditor/slices/editorSlice";
 import BrickIcon from "@/components/BrickIcon";
 import {
   decideBlockStatus,
@@ -72,6 +75,7 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
+import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/components/documentBuilder/preview/ElementPreview";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -97,6 +101,24 @@ type SubPipeline = {
 
   inputKey?: string;
 };
+
+function getNodePreviewElementId(
+  brickConfig: BrickConfig,
+  path: string
+): string | null {
+  if (brickConfig.id === DocumentRenderer.BLOCK_ID) {
+    // The Document Preview element name is a substring of the header node path, e.g.
+    // SubPipeline.path: config.body.0.children.9.children.0.children.0.config.onClick.__value__0.children.9.children.0.children.0
+    // Document element: 0.children.9.children.0.children.0
+    const regex = /config\.body\.(.*)\.config\..*$/;
+    const result = regex.exec(path);
+    if (result) {
+      return result[1];
+    }
+  }
+
+  return null;
+}
 
 /**
  *
@@ -437,6 +459,7 @@ const usePipelineNodes = (): {
       } of subPipelines) {
         const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
+        const nodePreviewElementId = getNodePreviewElementId(blockConfig, path);
 
         const headerActions: NodeAction[] = [
           {
@@ -473,6 +496,23 @@ const usePipelineNodes = (): {
           pipelineInputKey: inputKey,
           active: nodeIsActive,
           nestedActive: parentIsActive,
+          nodePreviewElement: nodePreviewElementId
+            ? {
+                focus() {
+                  setActiveNodeId(blockConfig.instanceId);
+                  dispatch(
+                    editorActions.setNodePreviewActiveElement(
+                      nodePreviewElementId
+                    )
+                  );
+                  window.dispatchEvent(
+                    new Event(
+                      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${nodePreviewElementId}`
+                    )
+                  );
+                },
+              }
+            : null,
         };
 
         const {
