@@ -165,7 +165,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       elementName={elementName}
       isHovered={isHovered}
       isActive={isActive}
-      ref={elementRef}
+      elementRef={elementRef}
     >
       {props?.children}
       {isContainer &&

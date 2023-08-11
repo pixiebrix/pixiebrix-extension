@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef } from "react";
+import React from "react";
 import {
   type DocumentComponent,
   type DocumentElement,
@@ -31,42 +31,35 @@ type ContainerProps = PreviewComponentProps & {
   documentComponent: DocumentComponent;
 };
 
-const Container: React.FunctionComponent<ContainerProps> = forwardRef(
-  (
-    {
-      element,
-      documentComponent: { Component, props },
-      children,
-      className,
-      documentBodyName,
-      elementName,
-      isHovered,
-      isActive,
-      ...restPreviewProps
-    },
-    ref
-  ) => (
-    <Component
-      {...restPreviewProps}
-      className={cx(props.className, className, documentTreeStyles.container)}
-      ref={ref}
-    >
-      <Flaps
-        className={documentTreeStyles.flapShiftUp}
-        elementType={element.type}
-        documentBodyName={documentBodyName}
-        elementName={elementName}
-        isHovered={isHovered}
-        isActive={isActive}
-      />
-      {!element.children?.length && (
-        <span className="text-muted">{elementTypeLabels[element.type]}</span>
-      )}
-      {children}
-    </Component>
-  )
+const Container: React.FunctionComponent<ContainerProps> = ({
+  element,
+  documentComponent: { Component, props },
+  children,
+  className,
+  documentBodyName,
+  elementName,
+  isHovered,
+  isActive,
+  elementRef,
+  ...restPreviewProps
+}) => (
+  <Component
+    {...restPreviewProps}
+    className={cx(props.className, className, documentTreeStyles.container)}
+    ref={elementRef}
+  >
+    <Flaps
+      className={documentTreeStyles.flapShiftUp}
+      elementType={element.type}
+      documentBodyName={documentBodyName}
+      elementName={elementName}
+      isHovered={isHovered}
+      isActive={isActive}
+    />
+    {!element.children?.length && (
+      <span className="text-muted">{elementTypeLabels[element.type]}</span>
+    )}
+    {children}
+  </Component>
 );
-
-Container.displayName = "Container";
-
 export default Container;

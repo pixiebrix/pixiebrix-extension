@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef } from "react";
+import React from "react";
 import {
   type DocumentElement,
   type PreviewComponentProps,
@@ -30,52 +30,43 @@ type ListProps = PreviewComponentProps & {
   element: DocumentElement;
 };
 
-const List: React.FunctionComponent<ListProps> = forwardRef(
-  (
-    {
-      element,
-      children,
-      className,
-      documentBodyName,
-      elementName,
-      isHovered,
-      isActive,
-      ...restPreviewProps
-    },
-    ref
-  ) => {
-    const { config = {}, type } = element;
-    const { array, elementKey } = config;
-    const arrayValue = isExpression(array) ? array.__value__ : String(array);
+const List: React.FunctionComponent<ListProps> = ({
+  element,
+  children,
+  className,
+  documentBodyName,
+  elementName,
+  isHovered,
+  isActive,
+  elementRef,
+  ...restPreviewProps
+}) => {
+  const { config = {}, type } = element;
+  const { array, elementKey } = config;
+  const arrayValue = isExpression(array) ? array.__value__ : String(array);
 
-    return (
-      <div
-        className={cx(
-          className,
-          documentTreeStyles.container,
-          documentTreeStyles.listContainer
-        )}
-        ref={ref}
-        {...restPreviewProps}
-      >
-        <Flaps
-          className={documentTreeStyles.flapShiftUp}
-          elementType={type}
-          documentBodyName={documentBodyName}
-          elementName={elementName}
-          isHovered={isHovered}
-          isActive={isActive}
-        />
-        <div className="text-muted">List: {arrayValue}</div>
-        <div className="text-muted">
-          Element key: @{elementKey || "element"}
-        </div>
-        {children}
-      </div>
-    );
-  }
-);
-
-List.displayName = "List";
-
+  return (
+    <div
+      className={cx(
+        className,
+        documentTreeStyles.container,
+        documentTreeStyles.listContainer
+      )}
+      ref={elementRef}
+      {...restPreviewProps}
+    >
+      <Flaps
+        className={documentTreeStyles.flapShiftUp}
+        elementType={type}
+        documentBodyName={documentBodyName}
+        elementName={elementName}
+        isHovered={isHovered}
+        isActive={isActive}
+      />
+      <div className="text-muted">List: {arrayValue}</div>
+      <div className="text-muted">Element key: @{elementKey || "element"}</div>
+      {children}
+    </div>
+  );
+};
 export default List;

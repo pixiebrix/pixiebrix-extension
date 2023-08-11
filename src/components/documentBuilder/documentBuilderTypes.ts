@@ -135,7 +135,7 @@ export type BuildDocumentBranch = (
 
 export type PreviewComponentProps = {
   className?: string;
-  ref: Ref<HTMLDivElement>;
+  elementRef: Ref<HTMLDivElement>;
   documentBodyName: string;
   elementName: string;
   isHovered: boolean;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef } from "react";
+import React from "react";
 import {
   type DocumentElement,
   type PreviewComponentProps,
@@ -30,43 +30,37 @@ type PipelineProps = PreviewComponentProps & {
   element: DocumentElement;
 };
 
-const Pipeline: React.FunctionComponent<PipelineProps> = forwardRef(
-  (
-    {
-      element,
-      children,
-      className,
-      documentBodyName,
-      elementName,
-      isHovered,
-      isActive,
-      ...restPreviewProps
-    },
-    ref
-  ) => (
-    <div
-      className={cx(documentTreeStyles.shiftRightWrapper, className)}
-      ref={ref}
-      {...restPreviewProps}
-    >
-      <Flaps
-        className={documentTreeStyles.flapShiftRight}
-        elementType={element.type}
-        documentBodyName={documentBodyName}
-        elementName={elementName}
-        isHovered={isHovered}
-        isActive={isActive}
-      />
-      <h3>{elementTypeLabels.pipeline}</h3>
-      {(element.config?.pipeline as PipelineExpression)?.__value__.map(
-        ({ id }) => (
-          <p key={id}>{id}</p>
-        )
-      )}
-    </div>
-  )
+const Pipeline: React.FunctionComponent<PipelineProps> = ({
+  element,
+  children,
+  className,
+  documentBodyName,
+  elementName,
+  isHovered,
+  isActive,
+  elementRef,
+  ...restPreviewProps
+}) => (
+  <div
+    className={cx(documentTreeStyles.shiftRightWrapper, className)}
+    ref={elementRef}
+    {...restPreviewProps}
+  >
+    <Flaps
+      className={documentTreeStyles.flapShiftRight}
+      elementType={element.type}
+      documentBodyName={documentBodyName}
+      elementName={elementName}
+      isHovered={isHovered}
+      isActive={isActive}
+    />
+    <h3>{elementTypeLabels.pipeline}</h3>
+    {(element.config?.pipeline as PipelineExpression)?.__value__.map(
+      ({ id }) => (
+        <p key={id}>{id}</p>
+      )
+    )}
+  </div>
 );
-
-Pipeline.displayName = "Pipeline";
 
 export default Pipeline;
