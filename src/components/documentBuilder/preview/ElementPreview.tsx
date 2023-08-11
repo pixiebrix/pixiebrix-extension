@@ -53,28 +53,22 @@ export type ElementPreviewProps = {
   menuBoundary?: Element;
 };
 
-const ElementPreview: React.FC<ElementPreviewProps> = ({
-  documentBodyName,
-  elementName,
-  previewElement,
-  activeElement,
-  setActiveElement,
-  hoveredElement,
-  setHoveredElement,
-  menuBoundary,
-}) => {
+const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
   const elementRef = React.useRef(null);
-  const isActive = activeElement === elementName;
-  const isHovered = hoveredElement === elementName && !isActive;
 
   useEffect(() => {
     if (!elementRef.current) {
-      console.log("*** returning from scrollIntoView");
+      // This should never happen, because useEffect is called after the first render, by
+      // which time the ref should be set.
+      reportError(
+        new Error(
+          "Document Preview element ref is null, preventing scroll-to behavior."
+        )
+      );
       return;
     }
 
     const scrollIntoView = () => {
-      console.log("*** scrollIntoView", elementRef.current);
       elementRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -99,6 +93,23 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       );
     };
   }, []);
+
+  return elementRef;
+};
+
+const ElementPreview: React.FC<ElementPreviewProps> = ({
+  documentBodyName,
+  elementName,
+  previewElement,
+  activeElement,
+  setActiveElement,
+  hoveredElement,
+  setHoveredElement,
+  menuBoundary,
+}) => {
+  const isActive = activeElement === elementName;
+  const isHovered = hoveredElement === elementName && !isActive;
+  const elementRef = useScrollIntoViewEffect(elementName, isActive);
 
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
