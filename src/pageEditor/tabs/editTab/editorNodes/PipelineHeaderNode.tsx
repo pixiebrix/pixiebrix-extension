@@ -36,6 +36,7 @@ export type PipelineHeaderNodeProps = {
   nodePreviewElement: {
     name: string;
     focus: () => void;
+    active: boolean;
   } | null;
   pipelineInputKey?: string;
   active?: boolean;
@@ -53,22 +54,30 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
 }) => {
   const nodeRef = useRef(null);
 
-  const scrollIntoView = () => {
-    nodeRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-  };
-
   useEffect(() => {
     if (!nodePreviewElement) {
       return;
     }
 
+    const scrollIntoView = () => {
+      console.log("*** scrollIntoView", nodeRef.current);
+      nodeRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    };
+
     window.addEventListener(
       `${SCROLL_HEADER_NODE_INTO_VIEW_EVENT}-${nodePreviewElement.name}`,
       scrollIntoView
     );
+
+    console.log("*** nodePreviewElement", nodePreviewElement);
+
+    if (nodePreviewElement?.active) {
+      console.log("*** this got hit", nodeRef.current);
+      scrollIntoView();
+    }
 
     return () => {
       window.removeEventListener(

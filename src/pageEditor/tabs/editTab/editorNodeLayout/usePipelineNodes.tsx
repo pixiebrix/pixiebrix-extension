@@ -199,6 +199,10 @@ const usePipelineNodes = (): {
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
   );
+  const activeNodePreviewElementId = useSelector(
+    selectNodePreviewActiveElement
+  );
+
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
   const { allBlocks } = useAllBricks();
@@ -512,6 +516,7 @@ const usePipelineNodes = (): {
                     )
                   );
                 },
+                active: nodePreviewElementId === activeNodePreviewElementId,
               }
             : null,
         };
