@@ -15,16 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import {
-  Button,
-  ButtonGroup,
-  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-  Form,
-  Dropdown,
-  DropdownButton,
-} from "react-bootstrap";
+import { Button, ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAlignCenter,
@@ -33,21 +26,18 @@ import {
   faAlignRight,
   faBold,
   faBorderStyle,
-  faCaretDown,
-  faCaretRight,
   faCheck,
   faFill,
   faFont,
   faItalic,
 } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
-import { compact, partition, uniq } from "lodash";
 import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import styles from "./CssClassWidget.module.scss";
-import { UnstyledButton } from "@/components/UnstyledButton";
-import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
-import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
+import { type Expression } from "@/types/runtimeTypes";
+import { calculateNextValue } from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
+
 /**
  * An independent class name
  */
@@ -247,258 +237,6 @@ const FlagItem: React.VFC<
   );
 };
 
-/**
- * Return utility classes from the value
- */
-export function parseValue(value: Value): {
-  classes: string[];
-  isVar: boolean;
-  isTemplate: boolean;
-  includesTemplate: boolean;
-} {
-  if (value == null) {
-    return {
-      classes: [],
-      isVar: false,
-      isTemplate: false,
-      includesTemplate: false,
-    };
-  }
-
-  if (isVarExpression(value)) {
-    return {
-      classes: [],
-      isVar: true,
-      isTemplate: false,
-      includesTemplate: false,
-    };
-  }
-
-  if (isTemplateExpression(value)) {
-    if (value.__value__.includes("{{") || value.__value__.includes("{%")) {
-      return {
-        classes: value.__value__.split(" "),
-        isVar: false,
-        isTemplate: true,
-        includesTemplate: true,
-      };
-    }
-
-    return {
-      classes: value.__value__.split(" "),
-      isVar: false,
-      isTemplate: true,
-      includesTemplate: false,
-    };
-  }
-
-  if (typeof value === "string") {
-    return {
-      classes: value.split(" "),
-      isVar: false,
-      isTemplate: false,
-      includesTemplate: false,
-    };
-  }
-
-  throw new Error("Unexpected value");
-}
-
-type Spacing = {
-  side: string | null;
-  size: number;
-};
-
-function createSpacingRegex(prefix: string): RegExp {
-  return new RegExp(`${prefix}(?<side>[tblrxy])?-(?<size>\\d)`);
-}
-
-export function extractSpacing(prefix: string, classes: string[]): Spacing[] {
-  const re = createSpacingRegex(prefix);
-
-  return compact(classes.map((x) => re.exec(x))).map((x) => ({
-    side: x.groups.side ?? null,
-    size: Number(x.groups.size),
-  })) as Spacing[];
-}
-
-const spacingSides = [
-  { label: "Top", side: "t" },
-  { label: "Right", side: "r" },
-  { label: "Bottom", side: "b" },
-  { label: "Left", side: "l" },
-];
-
-const SpacingControl: React.VFC<{
-  prefix: string;
-  label: string;
-  className?: string;
-  classes: string[];
-  disabled: boolean;
-  onUpdate: (update: Spacing) => void;
-}> = ({ prefix, label, className, classes, disabled, onUpdate }) => {
-  const [expand, setExpand] = useState(false);
-
-  const spacing = extractSpacing(prefix, classes);
-
-  return (
-    <div className={className}>
-      <div className={styles.spacingControlContainer}>
-        <UnstyledButton
-          onClick={() => {
-            setExpand(!expand);
-          }}
-        >
-          {label}&nbsp;
-          <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
-        </UnstyledButton>
-        <div className="ml-1">
-          <Form.Control
-            type="number"
-            min="0"
-            max="5"
-            value={spacing.find((x) => x.side == null)?.size}
-            disabled={disabled}
-            onChange={(event) => {
-              onUpdate({
-                side: null,
-                size: Number(event.target.value),
-              });
-            }}
-          />
-        </div>
-      </div>
-      {expand && (
-        <div className="pl-2">
-          {spacingSides.map((direction) => (
-            <div
-              key={direction.side}
-              className={styles.spacingControlContainer}
-            >
-              <div>
-                {label} {direction.label}
-              </div>
-              <div className="ml-1">
-                <Form.Control
-                  type="number"
-                  min="0"
-                  max="5"
-                  value={spacing.find((x) => x.side === direction.side)?.size}
-                  disabled={disabled}
-                  onChange={(event) => {
-                    onUpdate({
-                      side: direction.side,
-                      size: Number(event.target.value),
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-export function calculateNextSpacing(
-  previousValue: Value,
-  prefix: string,
-  spacingUpdate: Spacing
-): Value {
-  const { isVar, isTemplate, classes, includesTemplate } =
-    parseValue(previousValue);
-
-  if (isVar || includesTemplate) {
-    throw new Error("Not supported");
-  }
-
-  const regex = createSpacingRegex(prefix);
-
-  const [spacingClasses, otherClasses] = partition(classes, (x) =>
-    regex.test(x)
-  );
-  const spacingRules = extractSpacing(prefix, spacingClasses);
-
-  // Don't try to be smart for now. Just update the rule
-  const existingRule = spacingRules.find((x) => x.side === spacingUpdate.side);
-  if (existingRule) {
-    existingRule.size = spacingUpdate.size;
-  } else {
-    spacingRules.push(spacingUpdate);
-  }
-
-  const nextClasses = [
-    ...otherClasses,
-    ...spacingRules.map((x) => `${prefix}${x.side ?? ""}-${x.size}`),
-  ];
-
-  const nextValue = compact(uniq(nextClasses)).join(" ");
-
-  if (isTemplate) {
-    return {
-      __type__: (previousValue as Expression).__type__,
-      __value__: nextValue,
-    };
-  }
-
-  return nextValue;
-}
-
-export function calculateNextValue(
-  previousValue: Value,
-  className: string,
-  on: boolean,
-  group?: ClassFlag[]
-): Value {
-  const { isVar, isTemplate, classes, includesTemplate } =
-    parseValue(previousValue);
-
-  if (isVar || includesTemplate) {
-    throw new Error("Not supported");
-  }
-
-  let nextClasses;
-
-  if (on && group) {
-    const rule = group.find((x) => x.className === className);
-
-    if (rule == null) {
-      throw new Error(`Class ${className} not found in group`);
-    }
-
-    const isExclusive = rule.exclusive ?? true;
-    const implies = rule.implies ?? [];
-
-    const inactiveClasses = group
-      .map((x) => x.className)
-      .filter((x) => x !== className);
-
-    nextClasses = [
-      ...classes.filter(
-        (x) =>
-          (!isExclusive || !inactiveClasses.includes(x)) && !implies.includes(x)
-      ),
-      className,
-    ];
-  } else if (on) {
-    nextClasses = [...classes, className];
-  } else {
-    nextClasses = classes.filter((x) => x !== className);
-  }
-
-  const nextValue = compact(uniq(nextClasses)).join(" ");
-
-  if (isTemplate) {
-    return {
-      __type__: (previousValue as Expression).__type__ as TemplateEngine,
-      __value__: nextValue,
-    };
-  }
-
-  return nextValue;
-}
-
 export interface CssClassWidgetControls {
   textAlign: boolean;
   bold: boolean;
@@ -677,35 +415,6 @@ const CssClassWidget: React.VFC<
           </ButtonGroup>
         )}
       </div>
-
-      {(controlOptions.margin || controlOptions.padding) && (
-        <div className="d-flex my-2">
-          {controlOptions.margin && (
-            <SpacingControl
-              prefix="m"
-              label="Margin"
-              className="mr-2"
-              classes={classes}
-              disabled={disableControls}
-              onUpdate={async (update) => {
-                await setValue(calculateNextSpacing(value, "m", update));
-              }}
-            />
-          )}
-          {controlOptions.padding && (
-            <SpacingControl
-              prefix="p"
-              label="Padding"
-              className="mx-2"
-              classes={classes}
-              disabled={disableControls}
-              onUpdate={async (update) => {
-                await setValue(calculateNextSpacing(value, "p", update));
-              }}
-            />
-          )}
-        </div>
-      )}
 
       <div>
         <div className="text-muted">
