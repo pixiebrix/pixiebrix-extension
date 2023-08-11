@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import NodeActionsView, {
   type NodeAction,
 } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
@@ -26,11 +26,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import { ListGroup } from "react-bootstrap";
 
+export const SCROLL_HEADER_NODE_INTO_VIEW_EVENT =
+  "scroll-header-node-into-view";
+
 export type PipelineHeaderNodeProps = {
   headerLabel: string;
   nestingLevel: number;
   nodeActions: NodeAction[];
   nodePreviewElement: {
+    name: string;
     focus: () => void;
   } | null;
   pipelineInputKey?: string;
@@ -46,48 +50,78 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   active,
   nestedActive,
   nodePreviewElement,
-}) => (
-  <>
-    <ListGroup.Item
-      className={cx(styles.root, {
-        [styles.clickable]: Boolean(nodePreviewElement),
-      })}
-      onClick={nodePreviewElement?.focus}
-    >
-      <PipelineOffsetView
-        nestingLevel={nestingLevel}
-        nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
-        isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
-      />
-      <div
-        className={cx(styles.header, {
-          [styles.active]: active,
-          [styles.nestedActive]: nestedActive,
+}) => {
+  const nodeRef = useRef(null);
+
+  const scrollIntoView = () => {
+    nodeRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
+  useEffect(() => {
+    if (!nodePreviewElement) {
+      return;
+    }
+
+    window.addEventListener(
+      `${SCROLL_HEADER_NODE_INTO_VIEW_EVENT}-${nodePreviewElement.name}`,
+      scrollIntoView
+    );
+
+    return () => {
+      window.removeEventListener(
+        `${SCROLL_HEADER_NODE_INTO_VIEW_EVENT}-${nodePreviewElement.name}`,
+        scrollIntoView
+      );
+    };
+  }, []);
+
+  return (
+    <>
+      <ListGroup.Item
+        className={cx(styles.root, {
+          [styles.clickable]: Boolean(nodePreviewElement),
         })}
+        onClick={nodePreviewElement?.focus}
+        ref={nodeRef}
       >
-        <div className={styles.headerPipeLineTop} />
-        <div className={styles.headerPipeLineBottom} />
-        <div className={styles.headerContent}>
-          <div className={styles.labelAndInputKey}>
-            <div className={styles.subPipelineLabel}>{headerLabel}</div>
-            {pipelineInputKey && (
-              <div className={styles.subPipelineInputKey}>
-                @{pipelineInputKey}
-              </div>
+        <PipelineOffsetView
+          nestingLevel={nestingLevel}
+          nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
+          isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
+        />
+        <div
+          className={cx(styles.header, {
+            [styles.active]: active,
+            [styles.nestedActive]: nestedActive,
+          })}
+        >
+          <div className={styles.headerPipeLineTop} />
+          <div className={styles.headerPipeLineBottom} />
+          <div className={styles.headerContent}>
+            <div className={styles.labelAndInputKey}>
+              <div className={styles.subPipelineLabel}>{headerLabel}</div>
+              {pipelineInputKey && (
+                <div className={styles.subPipelineInputKey}>
+                  @{pipelineInputKey}
+                </div>
+              )}
+            </div>
+            {nodePreviewElement && (
+              <FontAwesomeIcon
+                icon={faSignInAlt}
+                size="sm"
+                className={styles.documentPreviewIcon}
+              />
             )}
           </div>
-          {nodePreviewElement && (
-            <FontAwesomeIcon
-              icon={faSignInAlt}
-              size="sm"
-              className={styles.documentPreviewIcon}
-            />
-          )}
         </div>
-      </div>
-    </ListGroup.Item>
-    <NodeActionsView nodeActions={nodeActions} />
-  </>
-);
+      </ListGroup.Item>
+      <NodeActionsView nodeActions={nodeActions} />
+    </>
+  );
+};
 
 export default PipelineHeaderNode;

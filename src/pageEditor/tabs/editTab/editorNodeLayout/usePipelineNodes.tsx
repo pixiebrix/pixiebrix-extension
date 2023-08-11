@@ -61,6 +61,7 @@ import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors"
 import {
   selectActiveElement,
   selectActiveNodeId,
+  selectNodePreviewActiveElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/blockFilterHelpers";
@@ -198,7 +199,6 @@ const usePipelineNodes = (): {
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
   );
-
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
   const { allBlocks } = useAllBricks();
@@ -498,6 +498,7 @@ const usePipelineNodes = (): {
           nestedActive: parentIsActive,
           nodePreviewElement: nodePreviewElementId
             ? {
+                name: nodePreviewElementId,
                 focus() {
                   setActiveNodeId(blockConfig.instanceId);
                   dispatch(

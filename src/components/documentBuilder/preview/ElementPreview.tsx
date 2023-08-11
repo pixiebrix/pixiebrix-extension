@@ -26,6 +26,7 @@ import {
 import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
+import { SCROLL_HEADER_NODE_INTO_VIEW_EVENT } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 
 export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
   "scroll-to-document-preview-element";
@@ -118,6 +119,10 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     if (!isActive) {
       setActiveElement(elementName);
     }
+
+    window.dispatchEvent(
+      new Event(`${SCROLL_HEADER_NODE_INTO_VIEW_EVENT}-${elementName}`)
+    );
   };
 
   const onMouseOver: MouseEventHandler<HTMLDivElement> = (event) => {
