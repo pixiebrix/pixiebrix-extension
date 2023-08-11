@@ -53,6 +53,8 @@ class ConvertDocument extends TransformerABC {
     return true;
   }
 
+  defaultOutputKey = "document";
+
   inputSchema: Schema = propertiesToSchema(
     {
       input: {
@@ -75,6 +77,16 @@ class ConvertDocument extends TransformerABC {
     },
     ["input", "sourceFormat", "targetFormat"]
   );
+
+  override outputSchema: Schema = {
+    properties: {
+      output: {
+        title: "Output",
+        description: "The converted document",
+      },
+    },
+    required: ["output"],
+  };
 
   async transform({
     input,

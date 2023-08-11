@@ -17,6 +17,7 @@
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 class DocumentReader extends ReaderABC {
   defaultOutputKey = "context";
@@ -34,6 +35,7 @@ class DocumentReader extends ReaderABC {
       url: document.location.href,
       title: document.title,
       timestamp: new Date().toISOString(),
+      isFrame: isLoadedInIframe(),
     };
   }
 
@@ -63,8 +65,12 @@ class DocumentReader extends ReaderABC {
         format: "date-time",
         description: "The current time in ISO format",
       },
+      isFrame: {
+        type: "boolean",
+        description: "Whether the document is in an inline frame",
+      },
     },
-    required: ["url", "title", "timestamp"],
+    required: ["url", "title", "timestamp", "isFrame"],
   };
 
   async isAvailable() {

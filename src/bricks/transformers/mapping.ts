@@ -31,7 +31,7 @@ export class MappingTransformer extends TransformerABC {
   constructor() {
     super(
       "@pixiebrix/mapping",
-      "Mapping",
+      "Map/Lookup Value",
       "Apply a mapping/lookup table",
       "faCode"
     );
@@ -41,15 +41,18 @@ export class MappingTransformer extends TransformerABC {
     type: "object",
     properties: {
       key: {
+        title: "Key",
         type: "string",
-        description: "The value to look up",
+        description: "The key of the value to look up",
       },
       missing: {
+        title: "Missing",
         type: "string",
         default: "null",
         enum: ["null", "ignore", "error"],
       },
       mapping: {
+        title: "Mapping",
         type: "object",
         description: "The lookup table",
         additionalProperties: { type: ["string", "boolean", "number"] },
