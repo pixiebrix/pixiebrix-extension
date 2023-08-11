@@ -26,6 +26,7 @@ import {
 import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
+import { SCROLL_TO_HEADER_NODE_EVENT } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 
 export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
   "scroll-to-document-preview-element";
@@ -81,6 +82,9 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
     );
 
     if (isActive) {
+      window.dispatchEvent(
+        new Event(`${SCROLL_TO_HEADER_NODE_EVENT}-${elementName}`)
+      );
       scrollIntoView();
     }
 
@@ -118,6 +122,10 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     if (!isActive) {
       setActiveElement(elementName);
     }
+
+    window.dispatchEvent(
+      new Event(`${SCROLL_TO_HEADER_NODE_EVENT}-${elementName}`)
+    );
   };
 
   const onMouseOver: MouseEventHandler<HTMLDivElement> = (event) => {

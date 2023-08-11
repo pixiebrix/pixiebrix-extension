@@ -46,8 +46,8 @@ import {
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import {
-  actions as editorActions,
   actions,
+  actions as editorActions,
 } from "@/pageEditor/slices/editorSlice";
 import BrickIcon from "@/components/BrickIcon";
 import {
@@ -61,6 +61,7 @@ import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors"
 import {
   selectActiveElement,
   selectActiveNodeId,
+  selectNodePreviewActiveElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/blockFilterHelpers";
@@ -197,6 +198,9 @@ const usePipelineNodes = (): {
   const maybePipelineMap = useSelector(selectPipelineMap);
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
+  );
+  const activeNodePreviewElementId = useSelector(
+    selectNodePreviewActiveElement
   );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
@@ -498,6 +502,7 @@ const usePipelineNodes = (): {
           nestedActive: parentIsActive,
           nodePreviewElement: nodePreviewElementId
             ? {
+                name: nodePreviewElementId,
                 focus() {
                   setActiveNodeId(blockConfig.instanceId);
                   dispatch(
@@ -511,6 +516,7 @@ const usePipelineNodes = (): {
                     )
                   );
                 },
+                active: nodePreviewElementId === activeNodePreviewElementId,
               }
             : null,
         };
