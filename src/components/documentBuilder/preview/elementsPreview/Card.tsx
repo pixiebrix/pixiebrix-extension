@@ -40,6 +40,7 @@ const Card: React.FunctionComponent<CardProps> = ({
   isActive,
   documentBodyName,
   elementName,
+  elementRef,
   ...restPreviewProps
 }) => {
   const { bodyClassName, ...restCardProps } = props;
@@ -47,6 +48,7 @@ const Card: React.FunctionComponent<CardProps> = ({
     <div
       className={cx(documentTreeStyles.shiftRightWrapper, className)}
       {...restPreviewProps}
+      ref={elementRef}
     >
       <Flaps
         className={documentTreeStyles.flapShiftRight}

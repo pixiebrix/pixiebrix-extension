@@ -38,6 +38,7 @@ const List: React.FunctionComponent<ListProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => {
   const { config = {}, type } = element;
@@ -51,6 +52,7 @@ const List: React.FunctionComponent<ListProps> = ({
         documentTreeStyles.container,
         documentTreeStyles.listContainer
       )}
+      ref={elementRef}
       {...restPreviewProps}
     >
       <Flaps

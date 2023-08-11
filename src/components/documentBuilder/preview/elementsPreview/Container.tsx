@@ -40,11 +40,13 @@ const Container: React.FunctionComponent<ContainerProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => (
   <Component
     {...restPreviewProps}
     className={cx(props.className, className, documentTreeStyles.container)}
+    ref={elementRef}
   >
     <Flaps
       className={documentTreeStyles.flapShiftUp}
@@ -60,5 +62,4 @@ const Container: React.FunctionComponent<ContainerProps> = ({
     {children}
   </Component>
 );
-
 export default Container;

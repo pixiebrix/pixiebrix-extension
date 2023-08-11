@@ -17,6 +17,7 @@
 
 @use "sass:math";
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+@import "@/themes/colors.scss";
 
 $headerOffsetX: math.div($pipeLineOffset, 2);
 $headerOffsetY: 0.5rem;
@@ -25,6 +26,7 @@ $headerPipeLineHeight: 4px;
 .root {
   display: flex;
   border-bottom: 1px solid lightgrey;
+  padding: 0;
 }
 
 .header {
@@ -42,18 +44,32 @@ $headerPipeLineHeight: 4px;
   }
 }
 
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.documentPreviewIcon {
+  margin-top: 2px;
+  margin-right: 4px;
+  color: $bs-dark-grey;
+}
+
 .subPipelineLabel {
-  display: inline-block;
-  width: auto;
   margin-bottom: $headerOffsetY;
   padding: 0 0.25rem;
-  background: white;
-  border-radius: 3px;
   font-size: 0.8em;
 }
 
+.labelAndInputKey {
+  display: flex;
+}
+
 .subPipelineInputKey {
-  display: inline-block;
   margin-left: 0.25rem;
   font-size: 0.8em !important;
   font-family: monospace;

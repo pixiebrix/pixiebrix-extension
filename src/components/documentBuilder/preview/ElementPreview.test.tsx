@@ -39,6 +39,8 @@ import {
 } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
 const renderElementPreview = (
   element: DocumentElement,
   elementPreviewProps?: Partial<ElementPreviewProps>
@@ -119,6 +121,7 @@ test("adds a CSS class to an active element", async () => {
   });
 
   expect(container.querySelector("div")).toHaveClass("active");
+  expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
 });
 
 test("calls setHoveredElement callback on hover", async () => {

@@ -22,11 +22,17 @@ import NodeActionsView, {
 import styles from "./PipelineHeaderNode.module.scss";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { ListGroup } from "react-bootstrap";
 
 export type PipelineHeaderNodeProps = {
   headerLabel: string;
   nestingLevel: number;
   nodeActions: NodeAction[];
+  nodePreviewElement: {
+    focus: () => void;
+  } | null;
   pipelineInputKey?: string;
   active?: boolean;
   nestedActive?: boolean;
@@ -39,9 +45,15 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   pipelineInputKey,
   active,
   nestedActive,
+  nodePreviewElement,
 }) => (
   <>
-    <div className={styles.root}>
+    <ListGroup.Item
+      className={cx(styles.root, {
+        [styles.clickable]: Boolean(nodePreviewElement),
+      })}
+      onClick={nodePreviewElement?.focus}
+    >
       <PipelineOffsetView
         nestingLevel={nestingLevel}
         nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
@@ -55,12 +67,25 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
       >
         <div className={styles.headerPipeLineTop} />
         <div className={styles.headerPipeLineBottom} />
-        <div className={styles.subPipelineLabel}>{headerLabel}</div>
-        {pipelineInputKey && (
-          <div className={styles.subPipelineInputKey}>@{pipelineInputKey}</div>
-        )}
+        <div className={styles.headerContent}>
+          <div className={styles.labelAndInputKey}>
+            <div className={styles.subPipelineLabel}>{headerLabel}</div>
+            {pipelineInputKey && (
+              <div className={styles.subPipelineInputKey}>
+                @{pipelineInputKey}
+              </div>
+            )}
+          </div>
+          {nodePreviewElement && (
+            <FontAwesomeIcon
+              icon={faSignInAlt}
+              size="sm"
+              className={styles.documentPreviewIcon}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </ListGroup.Item>
     <NodeActionsView nodeActions={nodeActions} />
   </>
 );

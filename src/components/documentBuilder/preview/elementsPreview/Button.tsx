@@ -42,6 +42,7 @@ const Button: React.FunctionComponent<ButtonProps> = ({
   isHovered,
   isActive,
   buttonProps,
+  elementRef,
   ...restPreviewProps
 }) => {
   // NOTE: not passing through "disabled" prop because that prevents the user from clicking the button in the preview
@@ -59,6 +60,7 @@ const Button: React.FunctionComponent<ButtonProps> = ({
       <div
         className={cx(className, documentTreeStyles.inlineWrapper)}
         {...restPreviewProps}
+        ref={elementRef}
       >
         <Flaps
           className={documentTreeStyles.flapShiftRight}
