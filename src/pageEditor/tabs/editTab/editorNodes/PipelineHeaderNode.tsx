@@ -79,6 +79,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
           {nodePreviewElement && (
             <FontAwesomeIcon
               icon={faSignInAlt}
+              size="sm"
               className={styles.documentPreviewIcon}
             />
           )}
