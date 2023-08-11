@@ -50,6 +50,10 @@ export const isCssClassField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "bootstrap-class";
 
+export const isCssSpacingField = (fieldDefinition: Schema) =>
+  fieldDefinition.type === "string" &&
+  fieldDefinition.format === "bootstrap-class-spacing";
+
 export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";

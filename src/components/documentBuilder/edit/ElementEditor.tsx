@@ -28,6 +28,9 @@ import useElementOptions from "@/components/documentBuilder/edit/useElementOptio
 import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { getProperty } from "@/utils/objectUtils";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import { joinName } from "@/utils/formUtils";
+import CssSpacingField from "@/components/fields/schemaFields/CssSpacingField";
 
 type ElementEditorProps = {
   documentBodyName: string;
@@ -66,6 +69,17 @@ const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
       <Row>
         <Col>
           <MoveElement documentBodyName={documentBodyName} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ConnectedCollapsibleFieldSection title="Advanced: Layout">
+            <CssSpacingField
+              name={joinName(elementName, "config", "className")}
+              schema={{ type: "string" }}
+              label="Spacing"
+            />
+          </ConnectedCollapsibleFieldSection>
         </Col>
       </Row>
     </>
