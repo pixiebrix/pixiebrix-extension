@@ -67,11 +67,13 @@
   &::after {
     right: -30px;
     border-bottom-left-radius: 10px;
+    pointer-events: none;
   }
   &::before {
     // 2px left extra to account for the border that hides the left divider
     left: -32px;
     border-bottom-right-radius: 10px;
+    pointer-events: none;
   }
 
   &:hover {
@@ -91,6 +93,7 @@
     // then add a border to maintain the position
     margin-left: -2px;
     border-left: 2px solid $S0;
+    z-index: 2;
     // Disable cursor:pointer because there's no action
     // This also makes it easier to see when you're hovering the close button
     cursor: default;
@@ -122,6 +125,7 @@
   &:nth-child(-n + 7) {
     .tabDivider {
       display: block;
+      z-index: 1;
     }
   }
 
@@ -132,6 +136,7 @@
   &.active {
     .tabDivider {
       display: none;
+      z-index: 1;
     }
   }
 }

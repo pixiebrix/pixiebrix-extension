@@ -28,7 +28,7 @@ import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import injectScriptTag from "@/utils/injectScriptTag";
-import { getThisFrame } from "webext-messenger";
+import { type FrameTarget, getThisFrame } from "webext-messenger";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -115,6 +115,11 @@ async function runExtensionPoint(
 ): Promise<void> {
   // Could potentially call _activeExtensionPoints.delete here, but assume the extension point is still available
   // until we know for sure that it's not
+
+  if (!(await extensionPoint.isAvailable())) {
+    // `extensionPoint.install` should short-circuit return false if it's not available. But be defensive.
+    return;
+  }
 
   let installed = false;
 
@@ -403,6 +408,8 @@ function cleanUpDeactivatedExtensionPoints(
 /**
  * Add extensions to their respective extension points.
  *
+ * Includes starter bricks that are not available on the page.
+ *
  * NOTE: Excludes dynamic extensions that are already on the page via the Page Editor.
  */
 async function loadPersistedExtensions(): Promise<StarterBrick[]> {
@@ -448,10 +455,9 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
               extensionPointId
             );
 
-            if (!(await extensionPoint.isAvailable())) {
-              // For efficiency, just skip synchronization/adding because it won't be available
-              return;
-            }
+            // It's tempting to call extensionPoint.isAvailable here and skip if it's not available.
+            // However, that would cause the extension point to be unavailable for the entire session
+            // even if the SPA redirects to a page that matches.
 
             extensionPoint.synchronizeModComponents(extensions);
 
@@ -566,11 +572,16 @@ export async function handleNavigate({
 }: { force?: boolean } = {}): Promise<void> {
   const runReason = decideRunReason({ force });
 
-  const thisTarget = await getThisFrame();
-  if (thisTarget.frameId == null) {
-    console.debug(
-      "Ignoring handleNavigate because thisTarget.frameId is not set yet"
-    );
+  let thisTarget: FrameTarget;
+  try {
+    // Note: We used to check for invalid (undefined) frameId after calling
+    // this, but now getThisFrame will throw an error itself internally if
+    // the frameId is not a valid number. An example situation where this
+    // happens is when the dynamic gsheets code loads a frame within the
+    // extension background page.
+    thisTarget = await getThisFrame();
+  } catch (error: unknown) {
+    console.debug("Ignoring handleNavigate because getThisFrame failed", error);
     return;
   }
 

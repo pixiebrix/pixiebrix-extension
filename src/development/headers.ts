@@ -16,8 +16,6 @@
  */
 
 import fs from "node:fs";
-// eslint-disable-next-line import/no-unassigned-import -- Until Node adds the global
-import "./cryptoNodePolyfill.js";
 import brickRegistry from "@/bricks/registry";
 
 // Import for side-effects (these modules register the blocks)
