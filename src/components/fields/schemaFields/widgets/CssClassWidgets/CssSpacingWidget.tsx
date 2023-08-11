@@ -16,10 +16,10 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { parseValue } from "@/components/fields/schemaFields/widgets/CssClassWidget";
+import { parseValue } from "@/components/fields/schemaFields/widgets/CssClassWidgets/CssClassWidget";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
-import styles from "@/components/fields/schemaFields/widgets/CssClassWidget.module.scss";
+import styles from "./CssSpacingWidget.module.scss";
 import { UnstyledButton } from "@/components/UnstyledButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";

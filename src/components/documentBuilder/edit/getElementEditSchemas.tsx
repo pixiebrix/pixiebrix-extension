@@ -19,7 +19,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 import React from "react";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
-import { type CssClassWidgetControls } from "@/components/fields/schemaFields/widgets/CssClassWidget";
+import { type CssClassWidgetControls } from "@/components/fields/schemaFields/widgets/CssClassWidgets/CssClassWidget";
 import { joinName } from "@/utils/formUtils";
 
 function getClassNameEdit(

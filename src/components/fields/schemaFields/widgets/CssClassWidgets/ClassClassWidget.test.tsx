@@ -20,7 +20,7 @@ import CssClassWidget, {
   calculateNextValue,
   extractSpacing,
   optionsGroups,
-} from "@/components/fields/schemaFields/widgets/CssClassWidget";
+} from "@/components/fields/schemaFields/widgets/CssClassWidgets/CssClassWidget";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import React from "react";
