@@ -27,6 +27,9 @@ import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 
+export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
+  "scroll-to-document-preview-element";
+
 export type ElementPreviewProps = {
   /**
    * Formik name of the root element
@@ -65,13 +68,37 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
   const isHovered = hoveredElement === elementName && !isActive;
 
   useEffect(() => {
-    if (isActive && elementRef.current) {
+    if (!elementRef.current) {
+      console.log("*** returning from scrollIntoView");
+      return;
+    }
+
+    const scrollIntoView = () => {
+      console.log("*** scrollIntoView", elementRef.current);
       elementRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
+    };
+
+    window.addEventListener(
+      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${elementName}`,
+      scrollIntoView
+    );
+
+    if (isActive) {
+      scrollIntoView();
     }
-  }, [isActive, elementRef]);
+
+    return () => {
+      // Cleanup the event listener to avoid multiple listeners being added for the same event,
+      // which would cause scrollIntoView to be called multiple times with out-of-date refs when the event is fired.
+      window.removeEventListener(
+        `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${elementName}`,
+        scrollIntoView
+      );
+    };
+  }, []);
 
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();

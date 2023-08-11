@@ -75,6 +75,7 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
+import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/components/documentBuilder/preview/ElementPreview";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -502,6 +503,11 @@ const usePipelineNodes = (): {
                   dispatch(
                     editorActions.setNodePreviewActiveElement(
                       nodePreviewElementId
+                    )
+                  );
+                  window.dispatchEvent(
+                    new Event(
+                      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${nodePreviewElementId}`
                     )
                   );
                 },
