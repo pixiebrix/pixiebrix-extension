@@ -147,12 +147,21 @@ export function calculateNextSpacing(
   } else {
     spacingRules.push(spacingUpdate);
   }
+  // // Select onClear sets the size as null
+  // if(spacingUpdate.size == null) {
+  //   // Remove the rule
+  //   spacingRules.filter((rule) => rule.side !== spacingUpdate.side);
+  // } else {
+  //
+  // }
 
   const nextClasses = [
     ...otherClasses,
     ...spacingRules
-      // We filter rules so that we have both generic and side-specific rules together
-      .filter((rule) => (spacingUpdate.side ? rule.side : rule.side == null))
+      // We filter rules so that we don't have both generic and side-specific rules
+      .filter((rule) =>
+        spacingUpdate.side == null ? rule.side == null : rule.side != null
+      )
       .map((x) => `${prefix}${x.side ?? ""}-${x.size}`),
   ];
 

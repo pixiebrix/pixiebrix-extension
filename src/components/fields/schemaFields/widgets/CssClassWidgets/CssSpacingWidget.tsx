@@ -30,9 +30,9 @@ import {
   type Value,
 } from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
 import { useField } from "formik";
-import SelectWidget, {
-  type TOption,
-} from "@/components/form/widgets/SelectWidget";
+
+import Select from "react-select";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 
 export interface CssSpacingWidgetControls {
   margin: boolean;
@@ -51,7 +51,7 @@ const spacingSides = [
   { label: "Left", side: "l" },
 ];
 
-const paddingOptions: TOption[] = [
+const paddingOptions: Option[] = [
   { label: "0", value: "0" },
   { label: "1", value: "1" },
   { label: "2", value: "2" },
@@ -60,7 +60,7 @@ const paddingOptions: TOption[] = [
   { label: "5", value: "5" },
 ];
 
-const marginOptions: TOption[] = [
+const marginOptions: Option[] = [
   { label: "-5", value: "-5" },
   { label: "-4", value: "-4" },
   { label: "-3", value: "-3" },
@@ -74,6 +74,13 @@ const marginOptions: TOption[] = [
   { label: "5", value: "5" },
 ];
 
+function getValue(options: Option[], spacing: Spacing[], side: string | null) {
+  const numberValue = spacing.find((x) => x.side === side)?.size;
+  return (
+    options.find((option) => option.value === numberValue?.toString()) ?? null
+  );
+}
+
 const SpacingControl: React.VFC<{
   prefix: string;
   label: string;
@@ -81,11 +88,21 @@ const SpacingControl: React.VFC<{
   classes: string[];
   disabled: boolean;
   onUpdate: (update: Spacing) => void;
-  options: TOption[];
-}> = ({ prefix, label, className, classes, disabled, onUpdate, options }) => {
+  options: Option[];
+  placeholder: string;
+}> = ({
+  prefix,
+  label,
+  className,
+  classes,
+  disabled,
+  onUpdate,
+  options,
+  placeholder,
+}) => {
   const [expand, setExpand] = useState(false);
 
-  const spacing = extractSpacing(prefix, classes);
+  const spacing = useMemo(() => extractSpacing(prefix, classes), [classes]);
 
   return (
     <div className={className}>
@@ -99,14 +116,17 @@ const SpacingControl: React.VFC<{
           <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
         </UnstyledButton>
         <div className="ml-1">
-          <SelectWidget
+          <Select
             options={options}
-            value={spacing.find((x) => x.side == null)?.size.toString()}
+            value={getValue(options, spacing, null)}
             className={styles.spacingControlSelect}
+            isClearable
+            isDisabled={disabled}
+            placeholder={placeholder}
             onChange={(event) => {
               onUpdate({
                 side: null,
-                size: Number(event.target.value),
+                size: event ? Number(event.value) : null,
               });
             }}
           />
@@ -123,16 +143,17 @@ const SpacingControl: React.VFC<{
                 {label} {direction.label}
               </div>
               <div className="ml-1">
-                <SelectWidget
+                <Select
                   options={options}
-                  value={spacing
-                    .find((x) => x.side === direction.side)
-                    ?.size.toString()}
+                  value={getValue(options, spacing, direction.side)}
                   className={styles.spacingControlSelect}
-                  onChange={(event) => {
+                  isClearable
+                  isDisabled={disabled}
+                  placeholder={placeholder}
+                  onChange={(option) => {
                     onUpdate({
                       side: direction.side,
-                      size: Number(event.target.value),
+                      size: option ? Number(option.value) : null,
                     });
                   }}
                 />
@@ -173,19 +194,22 @@ const CssSpacingWidget: React.VFC<
               prefix="m"
               label="Margin"
               className="mr-2"
+              placeholder="Select -5 to 5"
               classes={classes}
               disabled={disableControls}
               options={marginOptions}
-              onUpdate={async (update) => {
-                await setValue(calculateNextSpacing(value, "m", update));
+              onUpdate={async (option) => {
+                await setValue(calculateNextSpacing(value, "m", option));
               }}
             />
           )}
+
           {controlOptions.padding && (
             <SpacingControl
               prefix="p"
               label="Padding"
               className="mx-2"
+              placeholder="Select 0 to 5"
               classes={classes}
               disabled={disableControls}
               options={paddingOptions}

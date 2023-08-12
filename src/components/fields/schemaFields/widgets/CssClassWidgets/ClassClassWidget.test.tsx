@@ -16,9 +16,6 @@
  */
 
 import CssClassWidget, {
-  calculateNextSpacing,
-  calculateNextValue,
-  extractSpacing,
   optionsGroups,
 } from "@/components/fields/schemaFields/widgets/CssClassWidgets/CssClassWidget";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -29,6 +26,11 @@ import { noop } from "lodash";
 import { render } from "@/pageEditor/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
+import {
+  calculateNextSpacing,
+  calculateNextValue,
+  extractSpacing,
+} from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
 
 const renderWidget = (value: string | Expression) =>
   render(
