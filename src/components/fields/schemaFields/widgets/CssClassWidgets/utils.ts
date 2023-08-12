@@ -140,20 +140,24 @@ export function calculateNextSpacing(
   );
   const spacingRules = extractSpacing(prefix, spacingClasses);
 
-  // Don't try to be smart for now. Just update the rule
-  const existingRule = spacingRules.find((x) => x.side === spacingUpdate.side);
-  if (existingRule) {
-    existingRule.size = spacingUpdate.size;
+  // Select onClear sets the size as null
+  if (spacingUpdate.size == null) {
+    // Remove spacingRules with same side as spacingUpdate
+    spacingRules.splice(
+      spacingRules.findIndex((x) => x.side === spacingUpdate.side),
+      1
+    );
   } else {
-    spacingRules.push(spacingUpdate);
+    // Don't try to be smart for now. Just update the rule
+    const existingRule = spacingRules.find(
+      (x) => x.side === spacingUpdate.side
+    );
+    if (existingRule) {
+      existingRule.size = spacingUpdate.size;
+    } else {
+      spacingRules.push(spacingUpdate);
+    }
   }
-  // // Select onClear sets the size as null
-  // if(spacingUpdate.size == null) {
-  //   // Remove the rule
-  //   spacingRules.filter((rule) => rule.side !== spacingUpdate.side);
-  // } else {
-  //
-  // }
 
   const nextClasses = [
     ...otherClasses,
