@@ -109,7 +109,7 @@ export function parseValue(value: Value): {
 }
 
 function createSpacingRegex(prefix: string): RegExp {
-  return new RegExp(`${prefix}(?<side>[tblrxy])?-(?<size>\\d)`);
+  return new RegExp(`${prefix}(?<side>[tblrxy])?-?(?<size>-?\\d)`);
 }
 
 export function extractSpacing(prefix: string, classes: string[]): Spacing[] {
@@ -150,7 +150,10 @@ export function calculateNextSpacing(
 
   const nextClasses = [
     ...otherClasses,
-    ...spacingRules.map((x) => `${prefix}${x.side ?? ""}-${x.size}`),
+    ...spacingRules
+      // We filter rules so that we have both generic and side-specific rules together
+      .filter((rule) => (spacingUpdate.side ? rule.side : rule.side == null))
+      .map((x) => `${prefix}${x.side ?? ""}-${x.size}`),
   ];
 
   const nextValue = compact(uniq(nextClasses)).join(" ");

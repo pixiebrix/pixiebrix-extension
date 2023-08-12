@@ -36,7 +36,10 @@ import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/Templ
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import styles from "./CssClassWidget.module.scss";
 import { type Expression } from "@/types/runtimeTypes";
-import { calculateNextValue } from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
+import {
+  calculateNextValue,
+  parseValue,
+} from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
 
 /**
  * An independent class name
