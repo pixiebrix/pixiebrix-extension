@@ -30,7 +30,7 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^10.1.0",
     "@atlaskit/tree": "^8.8.5",
-    "@cfworker/json-schema": "^1.8.1",
+    "@cfworker/json-schema": "^1.12.7",
     "@datadog/browser-rum": "^4.46.0",
     "@emotion/react": "^11.11.1",
     "@floating-ui/dom": "^1.5.1",
