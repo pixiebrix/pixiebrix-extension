@@ -18,6 +18,7 @@
 import { compact, partition, uniq } from "lodash";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
+import reportError from "@/telemetry/reportError";
 
 export type Spacing = {
   side: string | null;
@@ -105,7 +106,7 @@ export function parseValue(value: Value): {
     };
   }
 
-  throw new Error("Unexpected value");
+  reportError(new Error("Unexpected value type parsing the CSS class"));
 }
 
 function createSpacingRegex(prefix: string): RegExp {

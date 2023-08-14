@@ -16,11 +16,8 @@
  */
 
 import CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Formik } from "formik";
 import React from "react";
 import { type Expression } from "@/types/runtimeTypes";
-import { noop } from "lodash";
 import { render } from "@/pageEditor/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";

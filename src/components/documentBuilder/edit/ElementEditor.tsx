@@ -31,7 +31,6 @@ import { getProperty } from "@/utils/objectUtils";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
 import CssSpacingField from "@/components/fields/schemaFields/CssSpacingField";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
 type ElementEditorProps = {
   documentBodyName: string;
@@ -44,7 +43,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
   const ElementOptions = useElementOptions(documentElement, elementName);
 
   return (
-    <ErrorBoundary>
+    <>
       <Row className={styles.currentFieldRow}>
         <Col xl="3" className={styles.currentField}>
           <h6>
@@ -83,7 +82,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
           </ConnectedCollapsibleFieldSection>
         </Col>
       </Row>
-    </ErrorBoundary>
+    </>
   );
 };
 
