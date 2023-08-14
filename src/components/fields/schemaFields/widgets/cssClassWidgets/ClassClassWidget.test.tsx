@@ -27,15 +27,14 @@ import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/C
 
 const renderWidget = (value: string | Expression) =>
   render(
-    <Formik initialValues={{ cssClass: value }} onSubmit={noop}>
-      <CssClassWidget
-        inputModeOptions={getCssClassInputFieldOptions()}
-        schema={{
-          type: "string",
-        }}
-        name="cssClass"
-      />
-    </Formik>
+    <CssClassWidget
+      inputModeOptions={getCssClassInputFieldOptions()}
+      schema={{
+        type: "string",
+      }}
+      name="cssClass"
+    />,
+    { initialValues: { cssClass: value } }
   );
 
 beforeAll(() => {

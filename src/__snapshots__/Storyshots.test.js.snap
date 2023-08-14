@@ -10467,7 +10467,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
             className="spacingControlContainer"
           >
             <button
-              className="root"
+              className="root expandButton"
               onClick={[Function]}
             >
               Margin
@@ -10491,7 +10491,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
               </svg>
             </button>
             <div
-              className="ml-1"
+              className="ml-5"
             >
               <div
                 className="spacingControlSelect css-b62m3t-container"
@@ -10499,7 +10499,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
               >
                 <span
                   className="css-1f43avz-a11yText-A11yText"
-                  id="react-select-4-live-region"
+                  id="react-select-6-live-region"
                 />
                 <span
                   aria-atomic="false"
@@ -10517,7 +10517,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                   >
                     <div
                       className=" css-1jqq78o-placeholder"
-                      id="react-select-4-placeholder"
+                      id="react-select-6-placeholder"
                     >
                       Select -5 to 5
                     </div>
@@ -10527,7 +10527,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                     >
                       <input
                         aria-autocomplete="list"
-                        aria-describedby="react-select-4-placeholder"
+                        aria-describedby="react-select-6-placeholder"
                         aria-expanded={false}
                         aria-haspopup={true}
                         autoCapitalize="none"
@@ -10535,7 +10535,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                         autoCorrect="off"
                         className=""
                         disabled={false}
-                        id="react-select-4-input"
+                        id="react-select-6-input"
                         onBlur={[Function]}
                         onChange={[Function]}
                         onFocus={[Function]}
@@ -10601,7 +10601,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
             className="spacingControlContainer"
           >
             <button
-              className="root"
+              className="root expandButton"
               onClick={[Function]}
             >
               Padding
@@ -10625,7 +10625,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
               </svg>
             </button>
             <div
-              className="ml-1"
+              className="ml-5"
             >
               <div
                 className="spacingControlSelect css-b62m3t-container"
@@ -10633,7 +10633,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
               >
                 <span
                   className="css-1f43avz-a11yText-A11yText"
-                  id="react-select-5-live-region"
+                  id="react-select-7-live-region"
                 />
                 <span
                   aria-atomic="false"
@@ -10651,7 +10651,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                   >
                     <div
                       className=" css-1jqq78o-placeholder"
-                      id="react-select-5-placeholder"
+                      id="react-select-7-placeholder"
                     >
                       Select 0 to 5
                     </div>
@@ -10661,7 +10661,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                     >
                       <input
                         aria-autocomplete="list"
-                        aria-describedby="react-select-5-placeholder"
+                        aria-describedby="react-select-7-placeholder"
                         aria-expanded={false}
                         aria-haspopup={true}
                         autoCapitalize="none"
@@ -10669,7 +10669,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                         autoCorrect="off"
                         className=""
                         disabled={false}
-                        id="react-select-5-input"
+                        id="react-select-7-input"
                         onBlur={[Function]}
                         onChange={[Function]}
                         onFocus={[Function]}
@@ -10748,7 +10748,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
     >
       <span
         className="css-1f43avz-a11yText-A11yText"
-        id="react-select-6-live-region"
+        id="react-select-4-live-region"
       />
       <span
         aria-atomic="false"
@@ -10766,7 +10766,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
         >
           <div
             className=" css-1jqq78o-placeholder"
-            id="react-select-6-placeholder"
+            id="react-select-4-placeholder"
           >
             Select...
           </div>
@@ -10776,7 +10776,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
           >
             <input
               aria-autocomplete="list"
-              aria-describedby="react-select-6-placeholder"
+              aria-describedby="react-select-4-placeholder"
               aria-expanded={false}
               aria-haspopup={true}
               autoCapitalize="none"
@@ -10784,7 +10784,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
               autoCorrect="off"
               className=""
               disabled={false}
-              id="react-select-6-input"
+              id="react-select-4-input"
               onBlur={[Function]}
               onChange={[Function]}
               onFocus={[Function]}
@@ -10890,7 +10890,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
     >
       <span
         className="css-1f43avz-a11yText-A11yText"
-        id="react-select-7-live-region"
+        id="react-select-5-live-region"
       />
       <span
         aria-atomic="false"
@@ -10908,7 +10908,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
         >
           <div
             className=" css-1jqq78o-placeholder"
-            id="react-select-7-placeholder"
+            id="react-select-5-placeholder"
           >
             Select...
           </div>
@@ -10918,7 +10918,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
           >
             <input
               aria-autocomplete="list"
-              aria-describedby="react-select-7-placeholder"
+              aria-describedby="react-select-5-placeholder"
               aria-expanded={false}
               aria-haspopup={true}
               autoCapitalize="none"
@@ -10926,7 +10926,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
               autoCorrect="off"
               className=""
               disabled={false}
-              id="react-select-7-input"
+              id="react-select-5-input"
               onBlur={[Function]}
               onChange={[Function]}
               onFocus={[Function]}
