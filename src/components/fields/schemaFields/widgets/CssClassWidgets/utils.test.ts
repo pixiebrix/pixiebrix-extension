@@ -78,9 +78,21 @@ describe("calculateNextSpacing", () => {
     ).toBe("text-italic p-1");
   });
 
-  it("should add new entry for size", () => {
+  it("should remove general padding when direction padding is added", () => {
     expect(calculateNextSpacing("p-0", "p", { side: "b", size: 2 })).toBe(
-      "p-0 pb-2"
+      "pb-2"
+    );
+  });
+
+  it("should keep direction padding when another direction padding is added", () => {
+    expect(calculateNextSpacing("pt-0", "p", { side: "b", size: 2 })).toBe(
+      "pt-0 pb-2"
+    );
+  });
+
+  it("should remove direction padding general padding is added", () => {
+    expect(calculateNextSpacing("pt-0", "p", { side: null, size: 2 })).toBe(
+      "p-2"
     );
   });
 });
