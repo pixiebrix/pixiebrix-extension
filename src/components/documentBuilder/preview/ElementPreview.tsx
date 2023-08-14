@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type MouseEventHandler, useMemo } from "react";
+import React, { type MouseEventHandler, useEffect, useMemo } from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
@@ -26,6 +26,9 @@ import {
 import AddElementAction from "./AddElementAction";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
+
+export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
+  "scroll-to-document-preview-element";
 
 export type ElementPreviewProps = {
   /**
@@ -50,6 +53,50 @@ export type ElementPreviewProps = {
   menuBoundary?: Element;
 };
 
+const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
+  const elementRef = React.useRef(null);
+
+  useEffect(() => {
+    if (!elementRef.current) {
+      // This should never happen, because useEffect is called after the first render, by
+      // which time the ref should be set.
+      reportError(
+        new Error(
+          "Document Preview element ref is null, preventing scroll-to behavior."
+        )
+      );
+      return;
+    }
+
+    const scrollIntoView = () => {
+      elementRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    };
+
+    window.addEventListener(
+      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${elementName}`,
+      scrollIntoView
+    );
+
+    if (isActive) {
+      scrollIntoView();
+    }
+
+    return () => {
+      // Cleanup the event listener to avoid multiple listeners being added for the same event,
+      // which would cause scrollIntoView to be called multiple times with out-of-date refs when the event is fired.
+      window.removeEventListener(
+        `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${elementName}`,
+        scrollIntoView
+      );
+    };
+  }, []);
+
+  return elementRef;
+};
+
 const ElementPreview: React.FC<ElementPreviewProps> = ({
   documentBodyName,
   elementName,
@@ -62,6 +109,8 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
 }) => {
   const isActive = activeElement === elementName;
   const isHovered = hoveredElement === elementName && !isActive;
+  const elementRef = useScrollIntoViewEffect(elementName, isActive);
+
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
     event.preventDefault();
@@ -116,6 +165,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       elementName={elementName}
       isHovered={isHovered}
       isActive={isActive}
+      elementRef={elementRef}
     >
       {props?.children}
       {isContainer &&

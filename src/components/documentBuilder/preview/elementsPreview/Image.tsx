@@ -42,6 +42,7 @@ const Image: React.FunctionComponent<ImageProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => {
   // If it's not a valid URL, show a placeholder
@@ -53,6 +54,7 @@ const Image: React.FunctionComponent<ImageProps> = ({
     <div
       className={cx(documentTreeStyles.imageWrapper, className)}
       {...restPreviewProps}
+      ref={elementRef}
     >
       <Flaps
         className={documentTreeStyles.flapShiftRight}

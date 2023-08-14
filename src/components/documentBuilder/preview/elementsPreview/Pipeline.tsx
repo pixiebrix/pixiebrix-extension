@@ -38,10 +38,12 @@ const Pipeline: React.FunctionComponent<PipelineProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => (
   <div
     className={cx(documentTreeStyles.shiftRightWrapper, className)}
+    ref={elementRef}
     {...restPreviewProps}
   >
     <Flaps
