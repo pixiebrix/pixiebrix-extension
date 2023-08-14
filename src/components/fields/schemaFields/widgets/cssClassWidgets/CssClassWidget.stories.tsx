@@ -25,7 +25,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
-import { parseValue } from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
+import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
 
 export default {
   title: "Widgets/CssClassWidget",

@@ -28,7 +28,7 @@ import {
   parseValue,
   type Spacing,
   type Value,
-} from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
 import { useField } from "formik";
 
 import Select from "react-select";
@@ -111,11 +111,12 @@ const SpacingControl: React.VFC<{
           onClick={() => {
             setExpand(!expand);
           }}
+          className={styles.expandButton}
         >
           {label}&nbsp;
           <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
         </UnstyledButton>
-        <div className="ml-1">
+        <div className="ml-5">
           <Select
             options={options}
             value={getValue(options, spacing, null)}
@@ -133,15 +134,13 @@ const SpacingControl: React.VFC<{
         </div>
       </div>
       {expand && (
-        <div className="pl-2">
+        <div className="pl-5">
           {spacingSides.map((direction) => (
             <div
               key={direction.side}
               className={styles.spacingControlContainer}
             >
-              <div>
-                {label} {direction.label}
-              </div>
+              <div>{direction.label}</div>
               <div className="ml-1">
                 <Select
                   options={options}

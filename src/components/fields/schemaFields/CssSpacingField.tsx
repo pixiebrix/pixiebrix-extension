@@ -16,7 +16,7 @@
  */
 
 import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
-import CssSpacingWidget from "@/components/fields/schemaFields/widgets/CssClassWidgets/CssSpacingWidget";
+import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
 
 const CssSpacingField = defaultFieldFactory(CssSpacingWidget);
 export default CssSpacingField;

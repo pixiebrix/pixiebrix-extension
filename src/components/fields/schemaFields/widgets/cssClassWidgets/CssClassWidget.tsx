@@ -39,7 +39,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import {
   calculateNextValue,
   parseValue,
-} from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
 
 /**
  * An independent class name

@@ -16,8 +16,8 @@
  */
 
 import { type ComponentMeta, type Story } from "@storybook/react";
-import CssSpacingWidget from "@/components/fields/schemaFields/widgets/CssClassWidgets/CssSpacingWidget";
-import type CssClassWidget from "@/components/fields/schemaFields/widgets/CssClassWidgets/CssClassWidget";
+import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
+import type CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 import { type Expression } from "@/types/runtimeTypes";
 import { Provider } from "react-redux";
 import { settingsStore } from "@/testUtils/storyUtils";
@@ -26,7 +26,7 @@ import { Formik, useField } from "formik";
 import { action } from "@storybook/addon-actions";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 import React from "react";
-import { parseValue } from "@/components/fields/schemaFields/widgets/CssClassWidgets/utils";
+import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
 
 export default {
   title: "Widgets/CssSpacingWidget",
