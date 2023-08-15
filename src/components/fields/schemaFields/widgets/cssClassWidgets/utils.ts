@@ -73,7 +73,9 @@ export function parseValue(value: Value): {
 
   reportError(
     new Error(
-      `Unexpected value parsing the CSS class. Type of value: ${typeof value}`
+      `Unexpected value parsing the CSS class. Type of value: ${typeof value}. Value: ${JSON.stringify(
+        value
+      )}`
     )
   );
 }
