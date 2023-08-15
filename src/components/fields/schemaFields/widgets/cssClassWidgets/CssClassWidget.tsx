@@ -201,6 +201,7 @@ const FlagButton: React.VFC<
       variant="light"
       size="sm"
       active={active}
+      data-testid={`${className}-button`}
       onClick={() => {
         toggleClass(className, !active, group);
       }}

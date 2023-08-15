@@ -57,9 +57,7 @@ describe("CssClassWidget", () => {
   });
 
   it("clears the direction inputs when the main input is set", async () => {
-    const { getByTestId, queryByTestId, getFormState } =
-      renderWidget("test mr-1 mb-1");
-    const marginInput = getByTestId("m-input-container");
+    const { getByTestId, getFormState } = renderWidget("test mr-1 mb-1");
 
     const selectContainerElement =
       getByTestId("m-input-container").querySelector("div");
