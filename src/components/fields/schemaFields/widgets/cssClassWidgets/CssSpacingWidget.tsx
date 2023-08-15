@@ -33,6 +33,7 @@ import { useField } from "formik";
 
 import Select from "react-select";
 import { type Option } from "@/components/form/widgets/SelectWidget";
+import cx from "classnames";
 
 export interface CssSpacingWidgetControls {
   margin: boolean;
@@ -190,38 +191,34 @@ const CssSpacingWidget: React.VFC<
 
   return (
     (controlOptions.margin || controlOptions.padding) && (
-      <div>
-        <div className="d-flex my-2">
-          {controlOptions.margin && (
-            <SpacingControl
-              prefix="m"
-              label="Margin"
-              className="mr-2"
-              placeholder="Select -5 to 5"
-              classes={classes}
-              disabled={disableControls}
-              options={marginOptions}
-              onUpdate={async (option) => {
-                await setValue(calculateNextSpacing(value, "m", option));
-              }}
-            />
-          )}
+      <div className={cx("d-flex", styles.spacingControlWrapper)}>
+        {controlOptions.margin && (
+          <SpacingControl
+            prefix="m"
+            label="Margin"
+            placeholder="Select -5 to 5"
+            classes={classes}
+            disabled={disableControls}
+            options={marginOptions}
+            onUpdate={async (option) => {
+              await setValue(calculateNextSpacing(value, "m", option));
+            }}
+          />
+        )}
 
-          {controlOptions.padding && (
-            <SpacingControl
-              prefix="p"
-              label="Padding"
-              className="mx-2"
-              placeholder="Select 0 to 5"
-              classes={classes}
-              disabled={disableControls}
-              options={paddingOptions}
-              onUpdate={async (update) => {
-                await setValue(calculateNextSpacing(value, "p", update));
-              }}
-            />
-          )}
-        </div>
+        {controlOptions.padding && (
+          <SpacingControl
+            prefix="p"
+            label="Padding"
+            placeholder="Select 0 to 5"
+            classes={classes}
+            disabled={disableControls}
+            options={paddingOptions}
+            onUpdate={async (update) => {
+              await setValue(calculateNextSpacing(value, "p", update));
+            }}
+          />
+        )}
       </div>
     )
   );

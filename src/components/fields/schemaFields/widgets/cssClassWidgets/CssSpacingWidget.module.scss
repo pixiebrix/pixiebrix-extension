@@ -15,6 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.spacingControlWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2rem;
+  row-gap: 1rem;
+}
+
 .spacingControlContainer {
   display: flex;
   align-items: center;
@@ -27,5 +34,8 @@
 }
 
 .expandButton {
-  width: 5rem;
+  display: flex !important;
+  width: 4.5rem !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
 }
