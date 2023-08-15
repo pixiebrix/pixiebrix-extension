@@ -20,7 +20,10 @@ import {
   type BrickNodeContentProps,
   type BrickNodeProps,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
+import {
+  type PipelineHeaderNodeProps,
+  SCROLL_TO_HEADER_NODE_EVENT,
+} from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
@@ -205,7 +208,7 @@ const usePipelineNodes = (): {
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { allBlocks } = useAllBricks();
+  const { allBlocks, isLoading } = useAllBricks();
 
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;
@@ -325,6 +328,13 @@ const usePipelineNodes = (): {
     const hasSubPipelines = !isEmpty(subPipelines);
     const collapsed = collapsedState[blockConfig.instanceId];
     const expanded = hasSubPipelines && !collapsed;
+
+    const expandParentNode = () => {
+      setCollapsedState((previousState) => ({
+        ...previousState,
+        [blockConfig.instanceId]: false,
+      }));
+    };
 
     const onClick = () => {
       if (nodeIsActive) {
@@ -493,6 +503,15 @@ const usePipelineNodes = (): {
           });
         }
 
+        window.removeEventListener(
+          `${SCROLL_TO_HEADER_NODE_EVENT}-${nodePreviewElementId}`,
+          expandParentNode
+        );
+        window.addEventListener(
+          `${SCROLL_TO_HEADER_NODE_EVENT}-${nodePreviewElementId}`,
+          expandParentNode
+        );
+
         const headerNodeProps: PipelineHeaderNodeProps = {
           headerLabel,
           nestingLevel,
@@ -519,6 +538,7 @@ const usePipelineNodes = (): {
                 active: nodePreviewElementId === activeNodePreviewElementId,
               }
             : null,
+          isPipelineLoading: isLoading,
         };
 
         const {

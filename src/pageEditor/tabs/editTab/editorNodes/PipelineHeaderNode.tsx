@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import NodeActionsView, {
   type NodeAction,
 } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
@@ -25,8 +25,6 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import { ListGroup } from "react-bootstrap";
-import { useAsyncEffect } from "use-async-effect";
-import { sleep } from "@/utils/timeUtils";
 
 export const SCROLL_TO_HEADER_NODE_EVENT = "scroll-header-node-into-view";
 
@@ -42,6 +40,7 @@ export type PipelineHeaderNodeProps = {
   pipelineInputKey?: string;
   active?: boolean;
   nestedActive?: boolean;
+  isPipelineLoading: boolean;
 };
 
 const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
@@ -52,11 +51,11 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   active,
   nestedActive,
   nodePreviewElement,
+  isPipelineLoading,
 }) => {
   const nodeRef = useRef(null);
 
   const scrollIntoView = () => {
-    console.log("*** scrollIntoView", nodeRef.current);
     nodeRef.current.scrollIntoView({
       behavior: "smooth",
       block: "center",
@@ -64,7 +63,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   };
 
   useEffect(() => {
-    if (!nodePreviewElement) {
+    if (!nodePreviewElement || isPipelineLoading) {
       return;
     }
 
@@ -83,7 +82,8 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
         scrollIntoView
       );
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run when loading completes to prevent multiple event listeners from being added
+  }, [isPipelineLoading]);
 
   return (
     <>
