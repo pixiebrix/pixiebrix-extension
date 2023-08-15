@@ -105,7 +105,10 @@ const SpacingControl: React.VFC<{
 }) => {
   const [expand, setExpand] = useState(false);
 
-  const spacing = useMemo(() => extractSpacing(prefix, classes), [classes]);
+  const spacing = useMemo(
+    () => extractSpacing(prefix, classes),
+    [prefix, classes]
+  );
 
   return (
     <div className={className}>
