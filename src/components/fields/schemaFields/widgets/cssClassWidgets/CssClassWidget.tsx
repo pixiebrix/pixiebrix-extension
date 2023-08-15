@@ -40,31 +40,7 @@ import {
   calculateNextValue,
   parseValue,
 } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
-
-/**
- * An independent class name
- */
-type ClassFlag = {
-  /**
-   * The Bootstrap 4 class name
-   */
-  className: string;
-
-  /**
-   * Title node to render for the element (in a button/dropdown)
-   */
-  title: React.ReactNode;
-
-  /**
-   * True if the flag is exclusive for it's group (default=true)
-   */
-  exclusive?: boolean;
-
-  /**
-   * Other flags in the same group that the flag implies
-   */
-  implies?: string[];
-};
+import { type ClassFlag } from "@/components/fields/schemaFields/widgets/cssClassWidgets/types";
 
 export const optionsGroups = {
   textAlign: [

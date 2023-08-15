@@ -26,9 +26,11 @@ import {
   calculateNextSpacing,
   extractSpacing,
   parseValue,
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
+import {
   type Spacing,
   type Value,
-} from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/types";
 import { useField } from "formik";
 
 import Select from "react-select";

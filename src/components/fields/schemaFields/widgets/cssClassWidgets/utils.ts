@@ -19,38 +19,11 @@ import { compact, partition, uniq } from "lodash";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 import reportError from "@/telemetry/reportError";
-
-export type Spacing = {
-  side: string | null;
-  size: number;
-};
-
-export type Value = string | Expression;
-
-/**
- * An independent class name
- */
-type ClassFlag = {
-  /**
-   * The Bootstrap 4 class name
-   */
-  className: string;
-
-  /**
-   * Title node to render for the element (in a button/dropdown)
-   */
-  title: React.ReactNode;
-
-  /**
-   * True if the flag is exclusive for it's group (default=true)
-   */
-  exclusive?: boolean;
-
-  /**
-   * Other flags in the same group that the flag implies
-   */
-  implies?: string[];
-};
+import {
+  type ClassFlag,
+  type Value,
+  type Spacing,
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/types";
 
 /**
  * Return utility classes from the value
