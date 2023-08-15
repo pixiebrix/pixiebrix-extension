@@ -112,11 +112,12 @@ const SpacingControl: React.VFC<{
             setExpand(!expand);
           }}
           className={styles.expandButton}
+          data-testid={`${prefix}-expand-button`}
         >
           {label}&nbsp;
           <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
         </UnstyledButton>
-        <div className="ml-5">
+        <div className="ml-5" data-testid={`${prefix}-input-container`}>
           <Select
             options={options}
             value={getValue(options, spacing, null)}
@@ -141,7 +142,10 @@ const SpacingControl: React.VFC<{
               className={styles.spacingControlContainer}
             >
               <div>{direction.label}</div>
-              <div className="ml-1">
+              <div
+                className="ml-1"
+                data-testid={`${prefix}-${direction.side}-input-container`}
+              >
                 <Select
                   options={options}
                   value={getValue(options, spacing, direction.side)}
