@@ -71,7 +71,11 @@ export function parseValue(value: Value): {
     };
   }
 
-  reportError(new Error("Unexpected value type parsing the CSS class"));
+  reportError(
+    new Error(
+      `Unexpected value parsing the CSS class: ${value} type of value: ${typeof value}`
+    )
+  );
 }
 
 function createSpacingRegex(prefix: string): RegExp {

@@ -203,7 +203,11 @@ const CssSpacingWidget: React.VFC<
             disabled={disableControls}
             options={marginOptions}
             onUpdate={async (option) => {
-              await setValue(calculateNextSpacing(value, "m", option));
+              try {
+                await setValue(calculateNextSpacing(value, "m", option));
+              } catch (error) {
+                reportError(error, "CssSpacingWidget");
+              }
             }}
           />
         )}
@@ -217,7 +221,11 @@ const CssSpacingWidget: React.VFC<
             disabled={disableControls}
             options={paddingOptions}
             onUpdate={async (update) => {
-              await setValue(calculateNextSpacing(value, "p", update));
+              try {
+                await setValue(calculateNextSpacing(value, "p", option));
+              } catch (error) {
+                reportError(error, "CssSpacingWidget");
+              }
             }}
           />
         )}
