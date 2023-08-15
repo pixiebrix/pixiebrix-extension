@@ -17,10 +17,12 @@
 
 import React from "react";
 import { type Expression } from "@/types/runtimeTypes";
-import { render, fireEvent } from "@/pageEditor/testHelpers";
+import { render, fireEvent, screen } from "@/pageEditor/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
 import selectEvent from "react-select-event";
+import { queryByLabelText } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 const renderWidget = (value: string | Expression) =>
   render(
@@ -43,40 +45,36 @@ describe("CssClassWidget", () => {
     expect(renderWidget).toMatchSnapshot();
   });
 
-  it("expand button works", () => {
-    const { getByTestId, queryByTestId } = renderWidget("");
-    const marginInput = getByTestId("m-input-container");
-    const paddingInput = getByTestId("p-input-container");
+  it("expand button works", async () => {
+    renderWidget("");
 
-    expect(marginInput).toBeInTheDocument();
-    expect(paddingInput).toBeInTheDocument();
-    expect(queryByTestId("m-t-input-container")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("combobox", { name: "Top" })
+    ).not.toBeInTheDocument();
 
-    fireEvent.click(getByTestId("m-expand-button"));
-    expect(getByTestId("m-t-input-container")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Margin" }));
+    expect(screen.getByRole("combobox", { name: "Top" })).toBeInTheDocument();
   });
 
   it("clears the direction inputs when the main input is set", async () => {
-    const { getByTestId, getFormState } = renderWidget("test mr-1 mb-1");
-
-    const selectContainerElement =
-      getByTestId("m-input-container").querySelector("div");
-
-    await selectEvent.select(selectContainerElement, "1");
+    const { getFormState } = renderWidget("test mr-1 mb-1");
+    await selectEvent.select(
+      screen.getByRole("combobox", { name: "Margin" }),
+      "1"
+    );
 
     expect(getFormState()).toStrictEqual({ cssClass: "test m-1" });
   });
 
   it("clears the main input when the direction input is set", async () => {
-    const { getByTestId, getFormState } = renderWidget("test m-1");
+    const { getFormState } = renderWidget("test m-1");
 
-    fireEvent.click(getByTestId("m-expand-button"));
+    await userEvent.click(screen.getByRole("button", { name: "Margin" }));
 
-    const selectContainerElement = getByTestId(
-      "m-t-input-container"
-    ).querySelector("div");
-
-    await selectEvent.select(selectContainerElement, "3");
+    await selectEvent.select(
+      screen.getByRole("combobox", { name: "Top" }),
+      "3"
+    );
 
     expect(getFormState()).toStrictEqual({ cssClass: "test mt-3" });
   });

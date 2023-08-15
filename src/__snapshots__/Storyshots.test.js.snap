@@ -9112,8 +9112,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
           role="group"
         >
           <button
+            aria-label="text-left"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-left-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9137,8 +9137,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-center"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-center-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9162,8 +9162,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-right"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-right-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9187,8 +9187,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-justify"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-justify-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9217,8 +9217,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
           role="group"
         >
           <button
+            aria-label="font-weight-bold"
             className="flagButton btn btn-light btn-sm"
-            data-testid="font-weight-bold-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9242,8 +9242,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="font-italic"
             className="flagButton btn btn-light btn-sm"
-            data-testid="font-italic-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9457,8 +9457,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
           role="group"
         >
           <button
+            aria-label="text-left"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-left-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9482,8 +9482,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-center"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-center-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9507,8 +9507,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-right"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-right-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9532,8 +9532,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-justify"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-justify-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9562,8 +9562,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
           role="group"
         >
           <button
+            aria-label="font-weight-bold"
             className="flagButton btn btn-light btn-sm"
-            data-testid="font-weight-bold-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9587,8 +9587,8 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
             </svg>
           </button>
           <button
+            aria-label="font-italic"
             className="flagButton btn btn-light btn-sm"
-            data-testid="font-italic-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9802,8 +9802,8 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
           role="group"
         >
           <button
+            aria-label="text-left"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-left-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9827,8 +9827,8 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-center"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-center-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9852,8 +9852,8 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-right"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-right-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9877,8 +9877,8 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-justify"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-justify-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9907,8 +9907,8 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
           role="group"
         >
           <button
+            aria-label="font-weight-bold"
             className="flagButton btn btn-light btn-sm"
-            data-testid="font-weight-bold-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -9932,8 +9932,8 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </svg>
           </button>
           <button
+            aria-label="font-italic"
             className="flagButton btn btn-light btn-sm"
-            data-testid="font-italic-button"
             disabled={false}
             onClick={[Function]}
             type="button"
@@ -10145,8 +10145,8 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
           role="group"
         >
           <button
+            aria-label="text-left"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-left-button"
             disabled={true}
             onClick={[Function]}
             type="button"
@@ -10170,8 +10170,8 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-center"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-center-button"
             disabled={true}
             onClick={[Function]}
             type="button"
@@ -10195,8 +10195,8 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-right"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-right-button"
             disabled={true}
             onClick={[Function]}
             type="button"
@@ -10220,8 +10220,8 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-justify"
             className="flagButton btn btn-light btn-sm"
-            data-testid="text-justify-button"
             disabled={true}
             onClick={[Function]}
             type="button"
@@ -10250,8 +10250,8 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
           role="group"
         >
           <button
+            aria-label="font-weight-bold"
             className="flagButton btn btn-light btn-sm"
-            data-testid="font-weight-bold-button"
             disabled={true}
             onClick={[Function]}
             type="button"
@@ -10275,8 +10275,8 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="font-italic"
             className="flagButton btn btn-light btn-sm"
-            data-testid="font-italic-button"
             disabled={true}
             onClick={[Function]}
             type="button"
@@ -10489,32 +10489,34 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
         >
           <button
             className="root expandButton"
-            data-testid="m-expand-button"
             onClick={[Function]}
           >
-            Margin
-             
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-caret-right fa-w-6 "
-              data-icon="caret-right"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              style={{}}
-              viewBox="0 0 192 512"
-              xmlns="http://www.w3.org/2000/svg"
+            <label
+              htmlFor="m-input"
             >
-              <path
-                d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                fill="currentColor"
+              Margin
+               
+              <svg
+                aria-hidden="true"
+                className="svg-inline--fa fa-caret-right fa-w-6 "
+                data-icon="caret-right"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
                 style={{}}
-              />
-            </svg>
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                  fill="currentColor"
+                  style={{}}
+                />
+              </svg>
+            </label>
           </button>
           <div
             className="ml-5"
-            data-testid="m-input-container"
           >
             <div
               className="spacingControlSelect css-b62m3t-container"
@@ -10558,7 +10560,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                       autoCorrect="off"
                       className=""
                       disabled={false}
-                      id="react-select-6-input"
+                      id="m-input"
                       onBlur={[Function]}
                       onChange={[Function]}
                       onFocus={[Function]}
@@ -10623,32 +10625,34 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
         >
           <button
             className="root expandButton"
-            data-testid="p-expand-button"
             onClick={[Function]}
           >
-            Padding
-             
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-caret-right fa-w-6 "
-              data-icon="caret-right"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              style={{}}
-              viewBox="0 0 192 512"
-              xmlns="http://www.w3.org/2000/svg"
+            <label
+              htmlFor="p-input"
             >
-              <path
-                d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                fill="currentColor"
+              Padding
+               
+              <svg
+                aria-hidden="true"
+                className="svg-inline--fa fa-caret-right fa-w-6 "
+                data-icon="caret-right"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
                 style={{}}
-              />
-            </svg>
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                  fill="currentColor"
+                  style={{}}
+                />
+              </svg>
+            </label>
           </button>
           <div
             className="ml-5"
-            data-testid="p-input-container"
           >
             <div
               className="spacingControlSelect css-b62m3t-container"
@@ -10692,7 +10696,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                       autoCorrect="off"
                       className=""
                       disabled={false}
-                      id="react-select-7-input"
+                      id="p-input"
                       onBlur={[Function]}
                       onChange={[Function]}
                       onFocus={[Function]}

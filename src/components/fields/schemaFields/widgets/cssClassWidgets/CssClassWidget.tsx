@@ -177,7 +177,7 @@ const FlagButton: React.VFC<
       variant="light"
       size="sm"
       active={active}
-      data-testid={`${className}-button`}
+      aria-label={className}
       onClick={() => {
         toggleClass(className, !active, group);
       }}

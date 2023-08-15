@@ -111,17 +111,19 @@ const SpacingControl: React.VFC<{
     <div className={className}>
       <div className={styles.spacingControlContainer}>
         <UnstyledButton
+          className={styles.expandButton}
           onClick={() => {
             setExpand(!expand);
           }}
-          className={styles.expandButton}
-          data-testid={`${prefix}-expand-button`}
         >
-          {label}&nbsp;
-          <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
+          <label htmlFor={`${prefix}-input`}>
+            {label}&nbsp;
+            <FontAwesomeIcon icon={expand ? faCaretDown : faCaretRight} />
+          </label>
         </UnstyledButton>
-        <div className="ml-5" data-testid={`${prefix}-input-container`}>
+        <div className="ml-5">
           <Select
+            inputId={`${prefix}-input`}
             options={options}
             value={getValue(options, spacing, null)}
             className={styles.spacingControlSelect}
@@ -144,26 +146,24 @@ const SpacingControl: React.VFC<{
               key={direction.side}
               className={styles.spacingControlContainer}
             >
-              <div>{direction.label}</div>
-              <div
-                className="ml-1"
-                data-testid={`${prefix}-${direction.side}-input-container`}
-              >
-                <Select
-                  options={options}
-                  value={getValue(options, spacing, direction.side)}
-                  className={styles.spacingControlSelect}
-                  isClearable
-                  isDisabled={disabled}
-                  placeholder={placeholder}
-                  onChange={(option) => {
-                    onUpdate({
-                      side: direction.side,
-                      size: option ? Number(option.value) : null,
-                    });
-                  }}
-                />
-              </div>
+              <label htmlFor={`${prefix}-${direction.side}-input`}>
+                {direction.label}
+              </label>
+              <Select
+                options={options}
+                inputId={`${prefix}-${direction.side}-input`}
+                value={getValue(options, spacing, direction.side)}
+                className={styles.spacingControlSelect}
+                isClearable
+                isDisabled={disabled}
+                placeholder={placeholder}
+                onChange={(option) => {
+                  onUpdate({
+                    side: direction.side,
+                    size: option ? Number(option.value) : null,
+                  });
+                }}
+              />
             </div>
           ))}
         </div>
