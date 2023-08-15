@@ -53,20 +53,12 @@ export function parseValue(value: Value): {
   }
 
   if (isTemplateExpression(value)) {
-    if (value.__value__.includes("{{") || value.__value__.includes("{%")) {
-      return {
-        classes: value.__value__.split(" "),
-        isVar: false,
-        isTemplate: true,
-        includesTemplate: true,
-      };
-    }
-
     return {
       classes: value.__value__.split(" "),
       isVar: false,
       isTemplate: true,
-      includesTemplate: false,
+      includesTemplate:
+        value.__value__.includes("{{") || value.__value__.includes("{%"),
     };
   }
 

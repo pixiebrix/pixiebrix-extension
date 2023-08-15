@@ -21,7 +21,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { render } from "@/pageEditor/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
-import { fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 const renderWidget = (value: string | Expression) =>
   render(
@@ -45,41 +45,41 @@ describe("CssClassWidget", () => {
     expect(result.asFragment()).toMatchSnapshot();
   });
 
-  it("toggles flags in the same category without affecting extra classes", () => {
+  it("toggles flags in the same category without affecting extra classes", async () => {
     const { getByTestId, getFormState } = renderWidget("extra-class");
 
     // Overwrites text-alignment
-    fireEvent.click(getByTestId("text-left-button"));
+    await userEvent.click(getByTestId("text-left-button"));
     expect(getFormState()).toStrictEqual({ cssClass: "extra-class text-left" });
-    fireEvent.click(getByTestId("text-center-button"));
+    await userEvent.click(getByTestId("text-center-button"));
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-center",
     });
-    fireEvent.click(getByTestId("text-right-button"));
+    await userEvent.click(getByTestId("text-right-button"));
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-right",
     });
-    fireEvent.click(getByTestId("text-justify-button"));
+    await userEvent.click(getByTestId("text-justify-button"));
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-justify",
     });
 
     // Overwrites font-weight
-    fireEvent.click(getByTestId("font-weight-bold-button"));
+    await userEvent.click(getByTestId("font-weight-bold-button"));
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-justify font-weight-bold",
     });
-    fireEvent.click(getByTestId("font-weight-bold-button"));
+    await userEvent.click(getByTestId("font-weight-bold-button"));
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-justify",
     });
 
     // Overwrites font-style
-    fireEvent.click(getByTestId("font-italic-button"));
+    await userEvent.click(getByTestId("font-italic-button"));
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-justify font-italic",
     });
-    fireEvent.click(getByTestId("font-italic-button"));
+    await userEvent.click(getByTestId("font-italic-button"));
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-justify",
     });
