@@ -17,16 +17,17 @@
 
 import React from "react";
 import { type Expression } from "@/types/runtimeTypes";
-import { render, fireEvent, screen } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
 import selectEvent from "react-select-event";
-import { queryByLabelText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 
 const renderWidget = (value: string | Expression) =>
   render(
     <CssSpacingWidget
+      inputModeOptions={getCssClassInputFieldOptions()}
       schema={{
         type: "string",
       }}
