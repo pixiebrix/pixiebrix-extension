@@ -128,7 +128,7 @@ export interface EditorState {
   isBetaUI: boolean;
 
   /**
-   * The current UI state of each element, indexed by element Id
+   * The current UI state of each mod component, indexed by starter brick id
    */
   elementUIStates: Record<UUID, ElementUIState>;
 
@@ -159,7 +159,7 @@ export interface EditorState {
   visibleModalKey?: ModalKey;
 
   /**
-   * The pipeline location where a new block will be added.
+   * The pipeline location where a new brick will be added.
    *
    * Note: This will only have a value when visibleModalKey === "addBlock"
    *

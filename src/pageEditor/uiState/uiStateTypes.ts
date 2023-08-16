@@ -98,8 +98,8 @@ export type NodeUIState = {
 
 export type ElementUIState = {
   /**
-   * Flat map of all pipeline blocks including sub pipelines.
-   * Key is the block instanceId.
+   * Flat map of all pipeline bricks including sub pipelines.
+   * Key is the brick instanceId.
    */
   pipelineMap: PipelineMap;
 
@@ -109,9 +109,13 @@ export type ElementUIState = {
    *  @see FOUNDATION_NODE_ID
    */
   activeNodeId: UUID;
+  /**
+   * A map of which nodes are collapsed in the editor, indexed by instanceId.
+   */
+  collapsedNodes: Record<UUID, boolean>;
 
   /**
-   * UI state of foundation and blocks in the extension pipeline
+   * UI state of foundation and bricks in the extension pipeline
    */
   nodeUIStates: Record<UUID, NodeUIState>;
 };

@@ -64,6 +64,7 @@ import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors"
 import {
   selectActiveElement,
   selectActiveNodeId,
+  selectCollapsedNodes,
   selectNodePreviewActiveElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
@@ -199,6 +200,10 @@ const usePipelineNodes = (): {
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
+  const collapsedNodes = useSelector(selectCollapsedNodes);
+
+  console.log("*** collapsed nodes :)", collapsedNodes);
+
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
   );
@@ -218,10 +223,6 @@ const usePipelineNodes = (): {
     ADAPTERS.get(extensionPointType);
   const rootPipeline = activeElement.extension.blockPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
-
-  const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
-    {}
-  );
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
   const { nodes, extensionHasTraces } = mapPipelineToNodes({
@@ -326,23 +327,27 @@ const usePipelineNodes = (): {
 
     const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
-    const collapsed = collapsedState[blockConfig.instanceId];
+    const collapsed = collapsedNodes[blockConfig.instanceId];
     const expanded = hasSubPipelines && !collapsed;
 
     const expandParentNode = () => {
-      setCollapsedState((previousState) => ({
-        ...previousState,
-        [blockConfig.instanceId]: false,
-      }));
+      dispatch(
+        actions.setCollapsedNode({
+          nodeId: blockConfig.instanceId,
+          collapsed: true,
+        })
+      );
     };
 
     const onClick = () => {
       if (nodeIsActive) {
         if (hasSubPipelines) {
-          setCollapsedState((previousState) => ({
-            ...previousState,
-            [blockConfig.instanceId]: !collapsed,
-          }));
+          dispatch(
+            actions.setCollapsedNode({
+              nodeId: blockConfig.instanceId,
+              collapsed: !collapsed,
+            })
+          );
         }
       } else {
         setActiveNodeId(blockConfig.instanceId);
