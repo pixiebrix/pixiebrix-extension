@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sidebarSlice, { fixActiveTabOnRemove } from "@/sidebar/sidebarSlice";
+import sidebarSlice, {
+  findNextActiveKey,
+  fixActiveTabOnRemove,
+} from "@/sidebar/sidebarSlice";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
   cancelForm,
@@ -27,6 +30,7 @@ import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories
 import type { SidebarState } from "@/types/sidebarTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { RegistryId } from "@/types/registryTypes";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories
@@ -229,6 +233,72 @@ describe("sidebarSlice.addForm", () => {
     expect(cancelFormMock).toHaveBeenCalledExactlyOnceWith({
       frameId: 0,
       tabId: 1,
+    });
+  });
+});
+
+describe("closed tabs", () => {
+  it("close tab", () => {
+    const panel = sidebarEntryFactory("panel", {});
+
+    const tabId = `${panel.type}-${panel.extensionId}`;
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+    } as SidebarState;
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.closeTab(tabId)
+    );
+
+    expect(newState).toStrictEqual({ ...state, closedTabs: { [tabId]: true } });
+  });
+
+  it("open tab", () => {
+    const panel = sidebarEntryFactory("panel", {});
+
+    const tabId = `${panel.type}-${panel.extensionId}`;
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      closedTabs: { [tabId]: true },
+    } as SidebarState;
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.openTab(tabId)
+    );
+
+    expect(newState).toStrictEqual({
+      ...state,
+      closedTabs: { [tabId]: false },
+    });
+  });
+
+  it("activate reopens opens tab", () => {
+    const panel = sidebarEntryFactory("panel", { heading: "Test Panel" });
+
+    const tabId = `${panel.type}-${panel.extensionId}`;
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      closedTabs: { [tabId]: true },
+      panels: [panel],
+    } as SidebarState;
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.activatePanel({
+        panelHeading: "Test Panel",
+        force: true,
+      })
+    );
+
+    expect(newState).toStrictEqual({
+      ...state,
+      activeKey: tabId,
+      closedTabs: { [tabId]: false },
     });
   });
 });

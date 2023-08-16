@@ -39,6 +39,8 @@ import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import { castDraft } from "immer";
+import { localStorage } from "redux-persist-webextension-storage";
+import { type StorageInterface } from "@/store/StorageInterface";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -324,7 +326,6 @@ const sidebarSlice = createSlice({
     // significantly after the initial request.
     activatePanel(state, { payload }: PayloadAction<ActivatePanelOptions>) {
       state.pendingActivePanel = null;
-
       const hasActive = state.forms.length > 0 || state.panels.length > 0;
 
       if (hasActive && !payload.force) {
@@ -335,6 +336,7 @@ const sidebarSlice = createSlice({
 
       if (next) {
         state.activeKey = next;
+        state.closedTabs[next] = false;
       } else {
         state.pendingActivePanel = payload;
       }
@@ -386,5 +388,14 @@ const sidebarSlice = createSlice({
     },
   },
 });
+
+export const persistSidebarConfig = {
+  key: "sidebar",
+  /** We use localStorage instead of redux-persist-webextension-storage because we want to persist the sidebar state
+   * @see StorageInterface */
+  storage: localStorage as StorageInterface,
+  version: 1,
+  whitelist: ["closedTabs"],
+};
 
 export default sidebarSlice;
