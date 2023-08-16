@@ -182,7 +182,7 @@ const CssSpacingWidget: React.VFC<
 
   const controlOptions: CssSpacingWidgetControls = {
     ...defaultOptions,
-    ...uiSchema,
+    ...uiSchema?.options,
   };
 
   const [{ value }, , { setValue }] = useField<Value>(name);

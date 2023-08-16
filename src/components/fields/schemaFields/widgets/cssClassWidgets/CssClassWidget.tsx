@@ -224,8 +224,6 @@ export interface CssClassWidgetControls {
   textVariant: boolean;
   backgroundColor: boolean;
   borders: boolean;
-  margin: boolean;
-  padding: boolean;
 }
 
 const defaultOptions: CssClassWidgetControls = {
@@ -235,8 +233,6 @@ const defaultOptions: CssClassWidgetControls = {
   textVariant: true,
   backgroundColor: true,
   borders: true,
-  margin: true,
-  padding: true,
 };
 
 /**
@@ -251,7 +247,7 @@ const CssClassWidget: React.VFC<
 
   const controlOptions: CssClassWidgetControls = {
     ...defaultOptions,
-    ...uiSchema,
+    ...uiSchema?.options,
   };
 
   const [{ value }, , { setValue }] = useField<Value>(name);
