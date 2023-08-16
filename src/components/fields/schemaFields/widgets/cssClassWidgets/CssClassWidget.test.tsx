@@ -45,25 +45,30 @@ describe("CssClassWidget", () => {
     expect(result.asFragment()).toMatchSnapshot();
   });
 
-  it("toggles flags in the same category without affecting extra classes", async () => {
-    const { getFormState } = renderWidget("extra-class");
+  it("text align buttons", async () => {
+    const { getFormState } = renderWidget("extra-class font-weight-bold");
 
     // Overwrites text-alignment
     await userEvent.click(screen.getByRole("button", { name: "text-left" }));
-    expect(getFormState()).toStrictEqual({ cssClass: "extra-class text-left" });
+    expect(getFormState()).toStrictEqual({
+      cssClass: "extra-class font-weight-bold text-left",
+    });
     await userEvent.click(screen.getByRole("button", { name: "text-center" }));
     expect(getFormState()).toStrictEqual({
-      cssClass: "extra-class text-center",
+      cssClass: "extra-class font-weight-bold text-center",
     });
     await userEvent.click(screen.getByRole("button", { name: "text-right" }));
     expect(getFormState()).toStrictEqual({
-      cssClass: "extra-class text-right",
+      cssClass: "extra-class font-weight-bold text-right",
     });
     await userEvent.click(screen.getByRole("button", { name: "text-justify" }));
     expect(getFormState()).toStrictEqual({
-      cssClass: "extra-class text-justify",
+      cssClass: "extra-class font-weight-bold text-justify",
     });
+  });
 
+  it("font weight button", async () => {
+    const { getFormState } = renderWidget("extra-class text-justify");
     // Overwrites font-weight
     await userEvent.click(
       screen.getByRole("button", { name: "font-weight-bold" })
@@ -77,7 +82,10 @@ describe("CssClassWidget", () => {
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-justify",
     });
+  });
 
+  it("font style button", async () => {
+    const { getFormState } = renderWidget("extra-class text-justify");
     // Overwrites font-style
     await userEvent.click(screen.getByRole("button", { name: "font-italic" }));
     expect(getFormState()).toStrictEqual({
