@@ -247,7 +247,7 @@ const CssClassWidget: React.VFC<
 
   const controlOptions: CssClassWidgetControls = {
     ...defaultOptions,
-    ...uiSchema?.options,
+    ...uiSchema?.["ui:options"],
   };
 
   const [{ value }, , { setValue }] = useField<Value>(name);

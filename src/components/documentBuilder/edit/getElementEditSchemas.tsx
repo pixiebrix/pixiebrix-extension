@@ -253,7 +253,7 @@ function getElementEditSchemas(
         getClassNameEdit(elementName, {
           label: "Label Style",
           uiSchema: {
-            options: {
+            "ui:options": {
               textVariant: false,
               backgroundColor: false,
               borders: false,
