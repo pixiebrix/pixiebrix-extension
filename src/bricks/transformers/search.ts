@@ -241,6 +241,7 @@ export class Search extends TransformerABC {
     query: string | string[];
     stemWords: boolean;
   }>): Promise<unknown> {
+    // TODO: check the stemWords prop
     const matches = searchStemmed(castArray(query), text);
 
     return { matches };

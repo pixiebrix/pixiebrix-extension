@@ -29,6 +29,7 @@ describe("DocumentReader", () => {
       timestamp: expect.toBeDateString(),
       url: expect.toBeString(),
       title: "Original",
+      isFrame: false,
     });
 
     document.title = "New Title";
@@ -37,6 +38,7 @@ describe("DocumentReader", () => {
       timestamp: expect.toBeDateString(),
       url: expect.toBeString(),
       title: "New Title",
+      isFrame: false,
     });
   });
 });

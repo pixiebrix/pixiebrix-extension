@@ -23,7 +23,8 @@ import HighlightText from "@/bricks/effects/highlightText";
 import { type BrickOptions } from "@/types/runtimeTypes";
 
 function getDocument(html: string): Document {
-  return new JSDOM(html).window.document;
+  return new JSDOM(`<!DOCTYPE html><body>${html}</body></html>`).window
+    .document;
 }
 
 const logger = new ConsoleLogger({
@@ -31,6 +32,17 @@ const logger = new ConsoleLogger({
 });
 
 describe("ReplaceTextEffect", () => {
+  test("can iterate body", () => {
+    // Smoke test to ensure the body can be iterated. Had been getting error during testing with markjs: Failed to
+    // execute 'createNodeIterator' on 'Document': parameter 1 is not of type 'Node'.
+    const document = getDocument("<div>foobar</div>");
+    const nodeIterator = document.createNodeIterator(
+      document.body,
+      NodeFilter.SHOW_ELEMENT
+    );
+    nodeIterator.nextNode();
+  });
+
   test.each([[undefined], ["yellow"]])(
     "replace text beginning of div with color: %s",
     async (color) => {
