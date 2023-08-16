@@ -46,7 +46,10 @@ import { PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/P
 import React from "react";
 import { Brick } from "@/types/brickTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveNodeId,
+  selectCollapsedNodes,
+} from "@/pageEditor/slices/editorSelectors";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
@@ -174,6 +177,7 @@ function useMapBlockToNodes({
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveElementTraces);
+  const collapsedNodes = useSelector(selectCollapsedNodes);
 
   const nodes: EditorNodeProps[] = [];
   const nodeIsActive = brickConfig.instanceId === activeNodeId;
@@ -209,24 +213,18 @@ function useMapBlockToNodes({
   const subPipelines = getSubPipelinesForBlock(brick, brickConfig);
   const hasSubPipelines = !isEmpty(subPipelines);
   // TODO: put collapsed state into redux
-  const collapsed = collapsedState[brickConfig.instanceId];
+  const collapsed = collapsedNodes[brickConfig.instanceId];
   const expanded = hasSubPipelines && !collapsed;
-
-  const expandParentNode = () => {
-    console.log("*** expandParentNode");
-    setCollapsedState((previousState) => ({
-      ...previousState,
-      [brickConfig.instanceId]: false,
-    }));
-  };
 
   const onClick = () => {
     if (nodeIsActive) {
       if (hasSubPipelines) {
-        setCollapsedState((previousState) => ({
-          ...previousState,
-          [brickConfig.instanceId]: !collapsed,
-        }));
+        dispatch(
+          actions.setCollapsedNode({
+            nodeId: brickConfig.instanceId,
+            collapsed: !collapsed,
+          })
+        );
       }
     } else {
       setActiveNodeId(brickConfig.instanceId);

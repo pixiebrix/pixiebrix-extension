@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   type BrickNodeContentProps,
   type BrickNodeProps,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
-import {
-  type PipelineHeaderNodeProps,
-  SCROLL_TO_HEADER_NODE_EVENT,
-} from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
+import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
@@ -202,7 +199,11 @@ const usePipelineNodes = (): {
   const maybePipelineMap = useSelector(selectPipelineMap);
   const collapsedNodes = useSelector(selectCollapsedNodes);
 
-  console.log("*** collapsed nodes :)", collapsedNodes);
+  const expandActiveNode = useCallback(() => {
+    dispatch(
+      actions.setCollapsedNode({ nodeId: activeNodeId, collapsed: false })
+    );
+  }, [dispatch, activeNodeId]);
 
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
@@ -329,15 +330,6 @@ const usePipelineNodes = (): {
     const hasSubPipelines = !isEmpty(subPipelines);
     const collapsed = collapsedNodes[blockConfig.instanceId];
     const expanded = hasSubPipelines && !collapsed;
-
-    const expandParentNode = () => {
-      dispatch(
-        actions.setCollapsedNode({
-          nodeId: blockConfig.instanceId,
-          collapsed: true,
-        })
-      );
-    };
 
     const onClick = () => {
       if (nodeIsActive) {
@@ -507,15 +499,6 @@ const usePipelineNodes = (): {
             },
           });
         }
-
-        window.removeEventListener(
-          `${SCROLL_TO_HEADER_NODE_EVENT}-${nodePreviewElementId}`,
-          expandParentNode
-        );
-        window.addEventListener(
-          `${SCROLL_TO_HEADER_NODE_EVENT}-${nodePreviewElementId}`,
-          expandParentNode
-        );
 
         const headerNodeProps: PipelineHeaderNodeProps = {
           headerLabel,

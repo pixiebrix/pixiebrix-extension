@@ -25,6 +25,8 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import { ListGroup } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 export const SCROLL_TO_HEADER_NODE_EVENT = "scroll-header-node-into-view";
 
