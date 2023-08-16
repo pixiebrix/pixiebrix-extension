@@ -241,7 +241,7 @@ describe("closed tabs", () => {
   it("close tab", () => {
     const panel = sidebarEntryFactory("panel", {});
 
-    const tabId = `${panel.type}-${panel.extensionId}`;
+    const tabId = eventKeyForEntry(panel);
 
     const state = {
       ...sidebarSlice.getInitialState(),
@@ -258,7 +258,7 @@ describe("closed tabs", () => {
   it("open tab", () => {
     const panel = sidebarEntryFactory("panel", {});
 
-    const tabId = `${panel.type}-${panel.extensionId}`;
+    const tabId = eventKeyForEntry(panel);
 
     const state = {
       ...sidebarSlice.getInitialState(),
@@ -279,7 +279,7 @@ describe("closed tabs", () => {
   it("activate reopens opens tab", () => {
     const panel = sidebarEntryFactory("panel", { heading: "Test Panel" });
 
-    const tabId = `${panel.type}-${panel.extensionId}`;
+    const tabId = eventKeyForEntry(panel);
 
     const state = {
       ...sidebarSlice.getInitialState(),
