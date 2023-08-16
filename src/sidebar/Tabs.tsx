@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, type MouseEvent } from "react";
+import React, { useEffect, type MouseEvent, useRef } from "react";
 import {
   type PanelEntry,
   type SidebarEntry,
@@ -59,9 +59,7 @@ import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultiple
 import useFlags from "@/hooks/useFlags";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
-import { getTopLevelFrame } from "webext-messenger";
-import { hideSidebar } from "@/contentScript/messenger/api";
-import useAsyncEffect from "use-async-effect";
+import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -107,12 +105,11 @@ const Tabs: React.FC = () => {
   const modActivationPanel = useSelector(selectSidebarModActivationPanel);
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
-  const visiblePanelCount = useSelector(selectVisiblePanelCount);
   const closedTabs = useSelector(selectClosedTabs);
   const hasModLauncherEnabled = flagOn("sidebar-home-tab");
 
   const onSelect = (eventKey: string) => {
-    reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
+    reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
       source: "tabClick",
@@ -126,10 +123,10 @@ const Tabs: React.FC = () => {
       // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
       !closedTabs[modLauncherEventKey];
 
-    reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
+    reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(modLauncherEventKey)),
       initialLoad: false,
-      source: "modLauncer open button",
+      source: "modLauncher open button",
     });
 
     if (!isModLauncherOpen) {
@@ -145,7 +142,7 @@ const Tabs: React.FC = () => {
   ) => {
     // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
     event.stopPropagation();
-
+    reportEvent(Events.SIDEBAR_TAB_CLOSE, { panel });
     if (isTemporaryPanelEntry(panel)) {
       dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
     } else {
@@ -155,7 +152,7 @@ const Tabs: React.FC = () => {
 
   useEffect(
     () => {
-      reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
+      reportEvent(Events.VIEW_SIDEBAR_PANEL, {
         ...selectEventData(getExtensionFromEventKey(activeKey)),
         initialLoad: true,
       });
@@ -164,15 +161,7 @@ const Tabs: React.FC = () => {
     []
   );
 
-  useAsyncEffect(
-    async (isMounted) => {
-      if (isMounted && visiblePanelCount === 0) {
-        const topLevelFrame = await getTopLevelFrame();
-        void hideSidebar(topLevelFrame);
-      }
-    },
-    [visiblePanelCount]
-  );
+  useHideEmptySidebar();
 
   const isPanelActive = (key: SidebarEntry) =>
     eventKeyForEntry(key) === activeKey;

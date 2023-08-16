@@ -41,6 +41,8 @@ import { type WritableDraft } from "immer/dist/types/types-external";
 import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
+import { getVisiblePanelCount } from "@/sidebar/utils";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -207,12 +209,23 @@ const sidebarSlice = createSlice({
         modActivationPanel: ModActivationPanelEntry | null;
       }>
     ) {
+      const visiblePanelCount = getVisiblePanelCount({
+        ...state,
+        ...action.payload,
+      });
+      if (visiblePanelCount === 0) {
+        state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
+      }
+
       state.staticPanels = castDraft(action.payload.staticPanels);
       state.forms = castDraft(action.payload.forms);
       state.panels = castDraft(action.payload.panels);
       state.temporaryPanels = castDraft(action.payload.temporaryPanels);
       state.modActivationPanel = castDraft(action.payload.modActivationPanel);
-      state.activeKey = defaultEventKey(state);
+      state.activeKey =
+        visiblePanelCount === 0
+          ? eventKeyForEntry(MOD_LAUNCHER)
+          : defaultEventKey(state, state.closedTabs);
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
@@ -330,6 +343,14 @@ const sidebarSlice = createSlice({
 
       if (hasActive && !payload.force) {
         return;
+      }
+
+      const visiblePanelCount = getVisiblePanelCount(state);
+      if (
+        visiblePanelCount === 1 &&
+        !state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)]
+      ) {
+        state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
       }
 
       const next = findNextActiveKey(state, payload);
