@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import {
   type BrickNodeContentProps,
   type BrickNodeProps,
@@ -198,12 +198,6 @@ const usePipelineNodes = (): {
   const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
   const collapsedNodes = useSelector(selectCollapsedNodes);
-
-  const expandActiveNode = useCallback(() => {
-    dispatch(
-      actions.setCollapsedNode({ nodeId: activeNodeId, collapsed: false })
-    );
-  }, [dispatch, activeNodeId]);
 
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
