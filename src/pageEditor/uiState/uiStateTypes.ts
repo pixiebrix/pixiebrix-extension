@@ -94,12 +94,17 @@ export type NodeUIState = {
    * Which fields are expanded or collapsed
    */
   expandedFieldSections: Record<string, boolean>;
+
+  /**
+   * True if the node itself is collapsed in the pipeline, hiding its sub-pipeline
+   */
+  collapsed: boolean;
 };
 
 export type ElementUIState = {
   /**
-   * Flat map of all pipeline blocks including sub pipelines.
-   * Key is the block instanceId.
+   * Flat map of all pipeline bricks including sub pipelines.
+   * Key is the brick instanceId.
    */
   pipelineMap: PipelineMap;
 
@@ -111,7 +116,7 @@ export type ElementUIState = {
   activeNodeId: UUID;
 
   /**
-   * UI state of foundation and blocks in the extension pipeline
+   * UI state of bricks in the mod component pipeline, including the starter brick
    */
   nodeUIStates: Record<UUID, NodeUIState>;
 };
