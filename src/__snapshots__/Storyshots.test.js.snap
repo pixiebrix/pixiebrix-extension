@@ -5884,7 +5884,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             >
               <span
                 className="css-1f43avz-a11yText-A11yText"
-                id="react-select-8-live-region"
+                id="react-select-10-live-region"
               />
               <span
                 aria-atomic="false"
@@ -6674,7 +6674,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       >
         <span
           className="css-1f43avz-a11yText-A11yText"
-          id="react-select-6-live-region"
+          id="react-select-8-live-region"
         />
         <span
           aria-atomic="false"
@@ -6692,7 +6692,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           >
             <div
               className=" css-1jqq78o-placeholder"
-              id="react-select-6-placeholder"
+              id="react-select-8-placeholder"
             >
               Select...
             </div>
@@ -6702,7 +6702,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
             >
               <input
                 aria-autocomplete="list"
-                aria-describedby="react-select-6-placeholder"
+                aria-describedby="react-select-8-placeholder"
                 aria-expanded={false}
                 aria-haspopup={true}
                 autoCapitalize="none"
@@ -6802,7 +6802,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       >
         <span
           className="css-1f43avz-a11yText-A11yText"
-          id="react-select-7-live-region"
+          id="react-select-9-live-region"
         />
         <span
           aria-atomic="false"
@@ -6820,7 +6820,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           >
             <div
               className=" css-1jqq78o-placeholder"
-              id="react-select-7-placeholder"
+              id="react-select-9-placeholder"
             >
               Select...
             </div>
@@ -6830,7 +6830,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
             >
               <input
                 aria-autocomplete="list"
-                aria-describedby="react-select-7-placeholder"
+                aria-describedby="react-select-9-placeholder"
                 aria-expanded={false}
                 aria-haspopup={true}
                 autoCapitalize="none"
@@ -9112,6 +9112,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
           role="group"
         >
           <button
+            aria-label="text-left"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9136,6 +9137,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-center"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9160,6 +9162,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-right"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9184,6 +9187,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-justify"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9213,6 +9217,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
           role="group"
         >
           <button
+            aria-label="font-weight-bold"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9237,6 +9242,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="font-italic"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9368,98 +9374,6 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
                 />
               </svg>
             </button>
-          </div>
-        </div>
-      </div>
-      <div
-        className="d-flex my-2"
-      >
-        <div
-          className="mr-2"
-        >
-          <div
-            className="spacingControlContainer"
-          >
-            <button
-              className="root"
-              onClick={[Function]}
-            >
-              Margin
-               
-              <svg
-                aria-hidden="true"
-                className="svg-inline--fa fa-caret-right fa-w-6 "
-                data-icon="caret-right"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                style={{}}
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                  fill="currentColor"
-                  style={{}}
-                />
-              </svg>
-            </button>
-            <div
-              className="ml-1"
-            >
-              <input
-                className="form-control"
-                disabled={false}
-                max="5"
-                min="0"
-                onChange={[Function]}
-                type="number"
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          className="mx-2"
-        >
-          <div
-            className="spacingControlContainer"
-          >
-            <button
-              className="root"
-              onClick={[Function]}
-            >
-              Padding
-               
-              <svg
-                aria-hidden="true"
-                className="svg-inline--fa fa-caret-right fa-w-6 "
-                data-icon="caret-right"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                style={{}}
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                  fill="currentColor"
-                  style={{}}
-                />
-              </svg>
-            </button>
-            <div
-              className="ml-1"
-            >
-              <input
-                className="form-control"
-                disabled={false}
-                max="5"
-                min="0"
-                onChange={[Function]}
-                type="number"
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -9543,6 +9457,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
           role="group"
         >
           <button
+            aria-label="text-left"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9567,6 +9482,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-center"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9591,6 +9507,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-right"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9615,6 +9532,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-justify"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9644,6 +9562,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
           role="group"
         >
           <button
+            aria-label="font-weight-bold"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9668,6 +9587,7 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
             </svg>
           </button>
           <button
+            aria-label="font-italic"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9799,98 +9719,6 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
                 />
               </svg>
             </button>
-          </div>
-        </div>
-      </div>
-      <div
-        className="d-flex my-2"
-      >
-        <div
-          className="mr-2"
-        >
-          <div
-            className="spacingControlContainer"
-          >
-            <button
-              className="root"
-              onClick={[Function]}
-            >
-              Margin
-               
-              <svg
-                aria-hidden="true"
-                className="svg-inline--fa fa-caret-right fa-w-6 "
-                data-icon="caret-right"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                style={{}}
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                  fill="currentColor"
-                  style={{}}
-                />
-              </svg>
-            </button>
-            <div
-              className="ml-1"
-            >
-              <input
-                className="form-control"
-                disabled={false}
-                max="5"
-                min="0"
-                onChange={[Function]}
-                type="number"
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          className="mx-2"
-        >
-          <div
-            className="spacingControlContainer"
-          >
-            <button
-              className="root"
-              onClick={[Function]}
-            >
-              Padding
-               
-              <svg
-                aria-hidden="true"
-                className="svg-inline--fa fa-caret-right fa-w-6 "
-                data-icon="caret-right"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                style={{}}
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                  fill="currentColor"
-                  style={{}}
-                />
-              </svg>
-            </button>
-            <div
-              className="ml-1"
-            >
-              <input
-                className="form-control"
-                disabled={false}
-                max="5"
-                min="0"
-                onChange={[Function]}
-                type="number"
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -9974,6 +9802,7 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
           role="group"
         >
           <button
+            aria-label="text-left"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -9998,6 +9827,7 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-center"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -10022,6 +9852,7 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-right"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -10046,6 +9877,7 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-justify"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -10075,6 +9907,7 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
           role="group"
         >
           <button
+            aria-label="font-weight-bold"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -10099,6 +9932,7 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
             </svg>
           </button>
           <button
+            aria-label="font-italic"
             className="flagButton btn btn-light btn-sm"
             disabled={false}
             onClick={[Function]}
@@ -10230,98 +10064,6 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
                 />
               </svg>
             </button>
-          </div>
-        </div>
-      </div>
-      <div
-        className="d-flex my-2"
-      >
-        <div
-          className="mr-2"
-        >
-          <div
-            className="spacingControlContainer"
-          >
-            <button
-              className="root"
-              onClick={[Function]}
-            >
-              Margin
-               
-              <svg
-                aria-hidden="true"
-                className="svg-inline--fa fa-caret-right fa-w-6 "
-                data-icon="caret-right"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                style={{}}
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                  fill="currentColor"
-                  style={{}}
-                />
-              </svg>
-            </button>
-            <div
-              className="ml-1"
-            >
-              <input
-                className="form-control"
-                disabled={false}
-                max="5"
-                min="0"
-                onChange={[Function]}
-                type="number"
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          className="mx-2"
-        >
-          <div
-            className="spacingControlContainer"
-          >
-            <button
-              className="root"
-              onClick={[Function]}
-            >
-              Padding
-               
-              <svg
-                aria-hidden="true"
-                className="svg-inline--fa fa-caret-right fa-w-6 "
-                data-icon="caret-right"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                style={{}}
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                  fill="currentColor"
-                  style={{}}
-                />
-              </svg>
-            </button>
-            <div
-              className="ml-1"
-            >
-              <input
-                className="form-control"
-                disabled={false}
-                max="5"
-                min="0"
-                onChange={[Function]}
-                type="number"
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -10403,6 +10145,7 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
           role="group"
         >
           <button
+            aria-label="text-left"
             className="flagButton btn btn-light btn-sm"
             disabled={true}
             onClick={[Function]}
@@ -10427,6 +10170,7 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-center"
             className="flagButton btn btn-light btn-sm"
             disabled={true}
             onClick={[Function]}
@@ -10451,6 +10195,7 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-right"
             className="flagButton btn btn-light btn-sm"
             disabled={true}
             onClick={[Function]}
@@ -10475,6 +10220,7 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="text-justify"
             className="flagButton btn btn-light btn-sm"
             disabled={true}
             onClick={[Function]}
@@ -10504,6 +10250,7 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
           role="group"
         >
           <button
+            aria-label="font-weight-bold"
             className="flagButton btn btn-light btn-sm"
             disabled={true}
             onClick={[Function]}
@@ -10528,6 +10275,7 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
             </svg>
           </button>
           <button
+            aria-label="font-italic"
             className="flagButton btn btn-light btn-sm"
             disabled={true}
             onClick={[Function]}
@@ -10662,98 +10410,6 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
           </div>
         </div>
       </div>
-      <div
-        className="d-flex my-2"
-      >
-        <div
-          className="mr-2"
-        >
-          <div
-            className="spacingControlContainer"
-          >
-            <button
-              className="root"
-              onClick={[Function]}
-            >
-              Margin
-               
-              <svg
-                aria-hidden="true"
-                className="svg-inline--fa fa-caret-right fa-w-6 "
-                data-icon="caret-right"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                style={{}}
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                  fill="currentColor"
-                  style={{}}
-                />
-              </svg>
-            </button>
-            <div
-              className="ml-1"
-            >
-              <input
-                className="form-control"
-                disabled={true}
-                max="5"
-                min="0"
-                onChange={[Function]}
-                type="number"
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          className="mx-2"
-        >
-          <div
-            className="spacingControlContainer"
-          >
-            <button
-              className="root"
-              onClick={[Function]}
-            >
-              Padding
-               
-              <svg
-                aria-hidden="true"
-                className="svg-inline--fa fa-caret-right fa-w-6 "
-                data-icon="caret-right"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                style={{}}
-                viewBox="0 0 192 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                  fill="currentColor"
-                  style={{}}
-                />
-              </svg>
-            </button>
-            <div
-              className="ml-1"
-            >
-              <input
-                className="form-control"
-                disabled={true}
-                max="5"
-                min="0"
-                onChange={[Function]}
-                type="number"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
       <div>
         <div
           className="text-muted"
@@ -10805,6 +10461,297 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
                 />
               </span>
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>,
+]
+`;
+
+exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
+[
+  <div
+    className="mb-4"
+  >
+    <div>
+      Classes preview: 
+      
+    </div>
+  </div>,
+  <div>
+    <div
+      className="d-flex spacingControlWrapper"
+    >
+      <div>
+        <div
+          className="spacingControlContainer"
+        >
+          <button
+            className="root expandButton"
+            onClick={[Function]}
+          >
+            <label
+              htmlFor="m-input"
+            >
+              Margin
+               
+              <svg
+                aria-hidden="true"
+                className="svg-inline--fa fa-caret-right fa-w-6 "
+                data-icon="caret-right"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                style={{}}
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                  fill="currentColor"
+                  style={{}}
+                />
+              </svg>
+            </label>
+          </button>
+          <div
+            className="ml-5"
+          >
+            <div
+              className="spacingControlSelect css-b62m3t-container"
+              onKeyDown={[Function]}
+            >
+              <span
+                className="css-1f43avz-a11yText-A11yText"
+                id="react-select-6-live-region"
+              />
+              <span
+                aria-atomic="false"
+                aria-live="polite"
+                aria-relevant="additions text"
+                className="css-1f43avz-a11yText-A11yText"
+              />
+              <div
+                className=" css-13cymwt-control"
+                onMouseDown={[Function]}
+                onTouchEnd={[Function]}
+              >
+                <div
+                  className=" css-1fdsijx-ValueContainer"
+                >
+                  <div
+                    className=" css-1jqq78o-placeholder"
+                    id="react-select-6-placeholder"
+                  >
+                    Select -5 to 5
+                  </div>
+                  <div
+                    className=" css-qbdosj-Input"
+                    data-value=""
+                  >
+                    <input
+                      aria-autocomplete="list"
+                      aria-describedby="react-select-6-placeholder"
+                      aria-expanded={false}
+                      aria-haspopup={true}
+                      autoCapitalize="none"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      className=""
+                      disabled={false}
+                      id="m-input"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      role="combobox"
+                      spellCheck="false"
+                      style={
+                        {
+                          "background": 0,
+                          "border": 0,
+                          "color": "inherit",
+                          "font": "inherit",
+                          "gridArea": "1 / 2",
+                          "label": "input",
+                          "margin": 0,
+                          "minWidth": "2px",
+                          "opacity": 1,
+                          "outline": 0,
+                          "padding": 0,
+                          "width": "100%",
+                        }
+                      }
+                      tabIndex={0}
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  className=" css-1hb7zxy-IndicatorsContainer"
+                >
+                  <span
+                    className=" css-1u9des2-indicatorSeparator"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className=" css-1xc3v61-indicatorContainer"
+                    onMouseDown={[Function]}
+                    onTouchEnd={[Function]}
+                  >
+                    <svg
+                      aria-hidden="true"
+                      className="css-tj5bde-Svg"
+                      focusable="false"
+                      height={20}
+                      viewBox="0 0 20 20"
+                      width={20}
+                    >
+                      <path
+                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div
+          className="spacingControlContainer"
+        >
+          <button
+            className="root expandButton"
+            onClick={[Function]}
+          >
+            <label
+              htmlFor="p-input"
+            >
+              Padding
+               
+              <svg
+                aria-hidden="true"
+                className="svg-inline--fa fa-caret-right fa-w-6 "
+                data-icon="caret-right"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                style={{}}
+                viewBox="0 0 192 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                  fill="currentColor"
+                  style={{}}
+                />
+              </svg>
+            </label>
+          </button>
+          <div
+            className="ml-5"
+          >
+            <div
+              className="spacingControlSelect css-b62m3t-container"
+              onKeyDown={[Function]}
+            >
+              <span
+                className="css-1f43avz-a11yText-A11yText"
+                id="react-select-7-live-region"
+              />
+              <span
+                aria-atomic="false"
+                aria-live="polite"
+                aria-relevant="additions text"
+                className="css-1f43avz-a11yText-A11yText"
+              />
+              <div
+                className=" css-13cymwt-control"
+                onMouseDown={[Function]}
+                onTouchEnd={[Function]}
+              >
+                <div
+                  className=" css-1fdsijx-ValueContainer"
+                >
+                  <div
+                    className=" css-1jqq78o-placeholder"
+                    id="react-select-7-placeholder"
+                  >
+                    Select 0 to 5
+                  </div>
+                  <div
+                    className=" css-qbdosj-Input"
+                    data-value=""
+                  >
+                    <input
+                      aria-autocomplete="list"
+                      aria-describedby="react-select-7-placeholder"
+                      aria-expanded={false}
+                      aria-haspopup={true}
+                      autoCapitalize="none"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      className=""
+                      disabled={false}
+                      id="p-input"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      role="combobox"
+                      spellCheck="false"
+                      style={
+                        {
+                          "background": 0,
+                          "border": 0,
+                          "color": "inherit",
+                          "font": "inherit",
+                          "gridArea": "1 / 2",
+                          "label": "input",
+                          "margin": 0,
+                          "minWidth": "2px",
+                          "opacity": 1,
+                          "outline": 0,
+                          "padding": 0,
+                          "width": "100%",
+                        }
+                      }
+                      tabIndex={0}
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  className=" css-1hb7zxy-IndicatorsContainer"
+                >
+                  <span
+                    className=" css-1u9des2-indicatorSeparator"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className=" css-1xc3v61-indicatorContainer"
+                    onMouseDown={[Function]}
+                    onTouchEnd={[Function]}
+                  >
+                    <svg
+                      aria-hidden="true"
+                      className="css-tj5bde-Svg"
+                      focusable="false"
+                      height={20}
+                      viewBox="0 0 20 20"
+                      width={20}
+                    >
+                      <path
+                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

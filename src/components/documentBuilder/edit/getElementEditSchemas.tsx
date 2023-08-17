@@ -19,15 +19,15 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { type DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 import React from "react";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
-import { type CssClassWidgetControls } from "@/components/fields/schemaFields/widgets/CssClassWidget";
 import { joinName } from "@/utils/formUtils";
+import { type UiSchema } from "@/types/schemaTypes";
 
 function getClassNameEdit(
   elementName: string,
   {
     label = "Layout/Style",
     uiSchema,
-  }: { label?: string; uiSchema?: Partial<CssClassWidgetControls> } = {}
+  }: { label?: string; uiSchema?: UiSchema } = {}
 ): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
@@ -253,9 +253,11 @@ function getElementEditSchemas(
         getClassNameEdit(elementName, {
           label: "Label Style",
           uiSchema: {
-            textVariant: false,
-            backgroundColor: false,
-            borders: false,
+            "ui:options": {
+              textVariant: false,
+              backgroundColor: false,
+              borders: false,
+            },
           },
         }),
       ];
