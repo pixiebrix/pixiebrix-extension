@@ -41,7 +41,7 @@ export const ActiveSidebarModsListItem: React.FunctionComponent<{
 
   const onClick = () => {
     const eventKey = eventKeyForEntry(panel);
-    reportEvent(Events.VIEW_SIDE_BAR_PANEL, {
+    reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getModComponentFromEventKey(eventKey)),
       initialLoad: false,
       source: "modLauncher",

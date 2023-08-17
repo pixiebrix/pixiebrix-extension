@@ -46,8 +46,8 @@ import {
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import {
-  actions as editorActions,
   actions,
+  actions as editorActions,
 } from "@/pageEditor/slices/editorSlice";
 import BrickIcon from "@/components/BrickIcon";
 import {
@@ -61,6 +61,8 @@ import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors"
 import {
   selectActiveElement,
   selectActiveNodeId,
+  selectCollapsedNodes,
+  selectNodePreviewActiveElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/blockFilterHelpers";
@@ -195,13 +197,18 @@ const usePipelineNodes = (): {
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
+  const collapsedNodes = useSelector(selectCollapsedNodes);
+
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
+  );
+  const activeNodePreviewElementId = useSelector(
+    selectNodePreviewActiveElement
   );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { allBlocks } = useAllBricks();
+  const { allBlocks, isLoading } = useAllBricks();
 
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;
@@ -211,10 +218,6 @@ const usePipelineNodes = (): {
     ADAPTERS.get(extensionPointType);
   const rootPipeline = activeElement.extension.blockPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
-
-  const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
-    {}
-  );
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
   const { nodes, extensionHasTraces } = mapPipelineToNodes({
@@ -319,16 +322,15 @@ const usePipelineNodes = (): {
 
     const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
-    const collapsed = collapsedState[blockConfig.instanceId];
+    const collapsed = collapsedNodes.includes(blockConfig.instanceId);
     const expanded = hasSubPipelines && !collapsed;
 
     const onClick = () => {
       if (nodeIsActive) {
         if (hasSubPipelines) {
-          setCollapsedState((previousState) => ({
-            ...previousState,
-            [blockConfig.instanceId]: !collapsed,
-          }));
+          dispatch(
+            actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId)
+          );
         }
       } else {
         setActiveNodeId(blockConfig.instanceId);
@@ -498,6 +500,7 @@ const usePipelineNodes = (): {
           nestedActive: parentIsActive,
           nodePreviewElement: nodePreviewElementId
             ? {
+                name: nodePreviewElementId,
                 focus() {
                   setActiveNodeId(blockConfig.instanceId);
                   dispatch(
@@ -511,8 +514,10 @@ const usePipelineNodes = (): {
                     )
                   );
                 },
+                active: nodePreviewElementId === activeNodePreviewElementId,
               }
             : null,
+          isPipelineLoading: isLoading,
         };
 
         const {

@@ -39,6 +39,10 @@ import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type WritableDraft } from "immer/dist/types/types-external";
 import { castDraft } from "immer";
+import { localStorage } from "redux-persist-webextension-storage";
+import { type StorageInterface } from "@/store/StorageInterface";
+import { getVisiblePanelCount } from "@/sidebar/utils";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -205,12 +209,28 @@ const sidebarSlice = createSlice({
         modActivationPanel: ModActivationPanelEntry | null;
       }>
     ) {
+      /** We need a visible count > 1 to prevent useHideEmptySidebar from closing it on first load. If there are no visible panels,
+       * we'll show mod launcher. activatePanel then hides the modLauncher if there is another visible panel.
+       * @see useHideEmptySidebar
+       * @see activatePanel
+       */
+      const visiblePanelCount = getVisiblePanelCount({
+        ...state,
+        ...action.payload,
+      });
+      if (visiblePanelCount === 0) {
+        state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
+      }
+
       state.staticPanels = castDraft(action.payload.staticPanels);
       state.forms = castDraft(action.payload.forms);
       state.panels = castDraft(action.payload.panels);
       state.temporaryPanels = castDraft(action.payload.temporaryPanels);
       state.modActivationPanel = castDraft(action.payload.modActivationPanel);
-      state.activeKey = defaultEventKey(state);
+      state.activeKey =
+        visiblePanelCount === 0
+          ? eventKeyForEntry(MOD_LAUNCHER)
+          : defaultEventKey(state, state.closedTabs);
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
@@ -324,17 +344,29 @@ const sidebarSlice = createSlice({
     // significantly after the initial request.
     activatePanel(state, { payload }: PayloadAction<ActivatePanelOptions>) {
       state.pendingActivePanel = null;
-
       const hasActive = state.forms.length > 0 || state.panels.length > 0;
 
       if (hasActive && !payload.force) {
         return;
       }
 
+      // We don't want to show an empty sidebar. setInitialPanels will set the active tab to the mod launcher if there
+      // are no visible panels. This next logic will hide the mod launcher if it's the only visible panel, which will
+      // be replaced by the newly activated panel.
+      const visiblePanelCount = getVisiblePanelCount(state);
+      if (
+        visiblePanelCount === 1 &&
+        !state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)]
+      ) {
+        state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
+      }
+
       const next = findNextActiveKey(state, payload);
 
       if (next) {
         state.activeKey = next;
+        // Make sure the tab isn't closed
+        state.closedTabs[next] = false;
       } else {
         state.pendingActivePanel = payload;
       }
@@ -386,5 +418,14 @@ const sidebarSlice = createSlice({
     },
   },
 });
+
+export const persistSidebarConfig = {
+  key: "sidebar",
+  /** We use localStorage instead of redux-persist-webextension-storage because we want to persist the sidebar state
+   * @see StorageInterface */
+  storage: localStorage as StorageInterface,
+  version: 1,
+  whitelist: ["closedTabs"],
+};
 
 export default sidebarSlice;
