@@ -209,8 +209,11 @@ const sidebarSlice = createSlice({
         modActivationPanel: ModActivationPanelEntry | null;
       }>
     ) {
-      // We need a visible count to prevent showing an empty sidebar. If there are no visible panels,
-      // we need to show the mod launcher. If there are visible panels, we need to hide the mod launcher.
+      /** We need a visible count > 1 to prevent useHideEmptySidebar from closing it on first load. If there are no visible panels,
+       * we'll show mod launcher. activatePanel then hides the modLauncher if there is another visible panel.
+       * @see useHideEmptySidebar
+       * @see activatePanel
+       */
       const visiblePanelCount = getVisiblePanelCount({
         ...state,
         ...action.payload,
