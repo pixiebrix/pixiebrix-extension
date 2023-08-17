@@ -128,7 +128,7 @@ export interface EditorState {
   isBetaUI: boolean;
 
   /**
-   * The current UI state of each mod component, indexed by starter brick id
+   * The current UI state of each element, indexed by the element id
    */
   elementUIStates: Record<UUID, ElementUIState>;
 
