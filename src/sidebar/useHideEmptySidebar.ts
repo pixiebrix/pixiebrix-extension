@@ -21,6 +21,9 @@ import { hideSidebar } from "@/contentScript/messenger/api";
 import { useSelector } from "react-redux";
 import { selectVisiblePanelCount } from "@/sidebar/sidebarSelectors";
 
+/**
+ * Hide the sidebar if there are no visible panels. We use this to close the sidebar if the user closes all panels.
+ */
 export const useHideEmptySidebar = () => {
   const visiblePanelCount = useSelector(selectVisiblePanelCount);
 
