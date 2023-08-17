@@ -67,5 +67,5 @@ export type BrickNodeProps = BrickNodeContentProps &
     nodeActions: NodeAction[];
     showBiggerActions?: boolean;
     trailingMessage?: string;
-    activeSubPipelineHeader: boolean;
+    activeSubPipelineHeader?: boolean;
   };

@@ -88,8 +88,10 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   return (
     <>
       <ListGroup.Item
+        active={nodePreviewElement?.active}
         className={cx(styles.root, {
           [styles.clickable]: Boolean(nodePreviewElement),
+          [styles.nestedActive]: nestedActive,
         })}
         onClick={nodePreviewElement?.focus}
         ref={nodeRef}
@@ -99,12 +101,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
           nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
           isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
         />
-        <div
-          className={cx(styles.header, {
-            [styles.active]: active,
-            [styles.nestedActive]: nestedActive,
-          })}
-        >
+        <div className={styles.header}>
           <div className={styles.headerPipeLineTop} />
           <div className={styles.headerPipeLineBottom} />
           <div className={styles.headerContent}>

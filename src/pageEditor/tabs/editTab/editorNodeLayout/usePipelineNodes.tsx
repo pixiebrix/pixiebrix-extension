@@ -327,6 +327,14 @@ const usePipelineNodes = (): {
 
     const onClick = () => {
       if (nodeIsActive) {
+        if (
+          blockConfig.id === DocumentRenderer.BLOCK_ID &&
+          activeNodePreviewElementId
+        ) {
+          dispatch(actions.setNodePreviewActiveElement(null));
+          return;
+        }
+
         if (hasSubPipelines) {
           dispatch(
             actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId)

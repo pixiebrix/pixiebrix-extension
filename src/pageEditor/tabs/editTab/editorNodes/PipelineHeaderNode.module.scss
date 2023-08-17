@@ -24,15 +24,18 @@ $headerOffsetY: 0.5rem;
 $headerPipeLineHeight: 4px;
 
 .root {
-  display: flex;
-  border-bottom: 1px solid lightgrey;
+  background: $defaultHeaderColor;
   padding: 0;
+  display: flex;
+
+  &.nestedActive {
+    background-color: $activeHeaderColor;
+  }
 }
 
 .header {
   flex-grow: 1;
   position: relative; // Allow children to position relative to this element
-  background: $defaultHeaderColor;
   padding: $headerOffsetY 0 0 $headerOffsetX;
 
   &.active {
