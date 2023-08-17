@@ -442,6 +442,11 @@ const usePipelineNodes = (): {
       nodeActions: expanded ? [] : brickNodeActions,
       showBiggerActions,
       trailingMessage,
+      activeSubPipelineHeader: subPipelines.some(
+        ({ path }) =>
+          activeNodePreviewElementId ===
+          getNodePreviewElementId(blockConfig, path)
+      ),
     };
 
     nodes.push({
