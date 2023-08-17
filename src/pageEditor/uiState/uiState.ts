@@ -41,6 +41,7 @@ export function makeInitialNodeUIState(nodeId: UUID): NodeUIState {
       activeTabKey: null,
     },
     expandedFieldSections: {},
+    collapsed: false,
   };
 
   for (const tab of Object.values(DataPanelTabKey)) {
@@ -58,6 +59,5 @@ export function makeInitialElementUIState(): ElementUIState {
     nodeUIStates: {
       [FOUNDATION_NODE_ID]: makeInitialNodeUIState(FOUNDATION_NODE_ID),
     },
-    collapsedNodes: {},
   };
 }
