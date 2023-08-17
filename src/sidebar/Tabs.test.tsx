@@ -252,6 +252,12 @@ describe("Tabs", () => {
   describe("Form Panels", () => {
     const formPanel = sidebarEntryFactory("form");
 
+    test("renders with forms", async () => {
+      await setupPanelsAndRender({ forms: [formPanel] });
+
+      expect(screen.getByText("Form Panel Test")).toBeInTheDocument();
+    });
+
     test("closing the form tab calls cancelForm", async () => {
       await setupPanelsAndRender({
         forms: [formPanel],
