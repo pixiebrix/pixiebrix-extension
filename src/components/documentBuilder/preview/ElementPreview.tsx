@@ -128,12 +128,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       setActiveElement(elementName);
     }
 
-    dispatch(
-      actions.setCollapsedNode({
-        nodeId: activeNodeId,
-        collapsed: false,
-      })
-    );
+    dispatch(actions.expandNode(activeNodeId));
 
     window.dispatchEvent(
       new Event(`${SCROLL_TO_HEADER_NODE_EVENT}-${elementName}`)

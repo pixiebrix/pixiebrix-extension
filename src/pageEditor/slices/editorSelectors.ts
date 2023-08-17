@@ -269,7 +269,10 @@ export const selectActiveNodeInfo = createSelector(
 
 export const selectCollapsedNodes = createSelector(
   selectActiveElementUIState,
-  (uiState: ElementUIState) => uiState.collapsedNodes ?? {}
+  (elementUIState: ElementUIState) =>
+    Object.entries(elementUIState.nodeUIStates)
+      .map(([nodeId, { collapsed }]) => (collapsed ? nodeId : null))
+      .filter((nodeId) => nodeId != null)
 );
 
 const activeElementNodeInfoSelector = createSelector(

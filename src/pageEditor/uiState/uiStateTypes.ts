@@ -94,6 +94,11 @@ export type NodeUIState = {
    * Which fields are expanded or collapsed
    */
   expandedFieldSections: Record<string, boolean>;
+
+  /**
+   * True if the node itself is collapsed in the pipeline, hiding its sub-pipeline
+   */
+  collapsed: boolean;
 };
 
 export type ElementUIState = {
@@ -109,10 +114,6 @@ export type ElementUIState = {
    *  @see FOUNDATION_NODE_ID
    */
   activeNodeId: UUID;
-  /**
-   * A map of which nodes are collapsed in the editor, indexed by instanceId.
-   */
-  collapsedNodes: Record<UUID, boolean>;
 
   /**
    * UI state of foundation and bricks in the extension pipeline

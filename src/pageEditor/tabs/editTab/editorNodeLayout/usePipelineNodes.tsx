@@ -322,18 +322,13 @@ const usePipelineNodes = (): {
 
     const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
-    const collapsed = collapsedNodes[blockConfig.instanceId];
+    const collapsed = collapsedNodes.includes(blockConfig.instanceId);
     const expanded = hasSubPipelines && !collapsed;
 
     const onClick = () => {
       if (nodeIsActive) {
         if (hasSubPipelines) {
-          dispatch(
-            actions.setCollapsedNode({
-              nodeId: blockConfig.instanceId,
-              collapsed: !collapsed,
-            })
-          );
+          dispatch(actions.toggleCollapseNode(blockConfig.instanceId));
         }
       } else {
         setActiveNodeId(blockConfig.instanceId);
