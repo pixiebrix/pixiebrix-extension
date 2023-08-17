@@ -223,6 +223,10 @@ export type FormPanelEntry = BasePanelEntry & {
   form: FormDefinition;
 };
 
+export function isFormPanelEntry(panel: unknown): panel is FormPanelEntry {
+  return (panel as FormPanelEntry)?.type === "form";
+}
+
 /**
  * Panel entry for activating one or more mods.
  *
