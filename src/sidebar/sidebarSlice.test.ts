@@ -31,6 +31,7 @@ import type { SidebarState } from "@/types/sidebarTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { RegistryId } from "@/types/registryTypes";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories
@@ -276,7 +277,7 @@ describe("closed tabs", () => {
     });
   });
 
-  it("activate reopens opens tab", () => {
+  it("activatePanel reopens tab", () => {
     const panel = sidebarEntryFactory("panel", { heading: "Test Panel" });
 
     const tabId = eventKeyForEntry(panel);
@@ -299,6 +300,61 @@ describe("closed tabs", () => {
       ...state,
       activeKey: tabId,
       closedTabs: { [tabId]: false },
+    });
+  });
+
+  it("setInitialPanels opens mod launcher if there are no visible panels", () => {
+    const panel = sidebarEntryFactory("panel", { heading: "Test Panel" });
+    const panelKey = eventKeyForEntry(panel);
+    const modLauncherKey = eventKeyForEntry(MOD_LAUNCHER);
+
+    const initialState = {
+      ...sidebarSlice.getInitialState(),
+      closedTabs: { [panelKey]: true, [modLauncherKey]: true },
+    };
+
+    const stateWithInitialPanels = sidebarSlice.reducer(
+      initialState,
+      sidebarSlice.actions.setInitialPanels({
+        panels: [panel],
+        staticPanels: [MOD_LAUNCHER],
+        forms: [],
+        temporaryPanels: [],
+        modActivationPanel: null,
+      })
+    );
+
+    expect(stateWithInitialPanels.closedTabs).toStrictEqual({
+      [panelKey]: true,
+      [modLauncherKey]: false,
+    });
+  });
+
+  it("activatePanel closes mod launcher tab if it's the only other active panel", () => {
+    const panel = sidebarEntryFactory("panel", { heading: "Test Panel" });
+    const panelKey = eventKeyForEntry(panel);
+    const modLauncherKey = eventKeyForEntry(MOD_LAUNCHER);
+
+    // The mod launcher is visible by default
+    const initialState = {
+      ...sidebarSlice.getInitialState(),
+      closedTabs: { [panelKey]: true, [modLauncherKey]: false },
+      panels: [panel],
+      staticPanels: [MOD_LAUNCHER],
+    };
+
+    const stateWithActivePanel = sidebarSlice.reducer(
+      initialState,
+      sidebarSlice.actions.activatePanel({
+        panelHeading: "Test Panel",
+        force: true,
+      })
+    );
+
+    // After activatePanel, if there is only one other tab open, the mod launcher should be closed
+    expect(stateWithActivePanel.closedTabs).toStrictEqual({
+      [panelKey]: false,
+      [modLauncherKey]: true,
     });
   });
 });
