@@ -250,9 +250,7 @@ describe("Tabs", () => {
   });
 
   describe("Form Panels", () => {
-    const formPanel = sidebarEntryFactory("form", {
-      form: formDefinitionFactory({ schema: { title: "Form Panel Test" } }),
-    });
+    const formPanel = sidebarEntryFactory("form");
 
     test("closing the form tab calls cancelForm", async () => {
       await setupPanelsAndRender({
