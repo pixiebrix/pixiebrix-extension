@@ -58,5 +58,6 @@ export function makeInitialElementUIState(): ElementUIState {
     nodeUIStates: {
       [FOUNDATION_NODE_ID]: makeInitialNodeUIState(FOUNDATION_NODE_ID),
     },
+    collapsedNodes: {},
   };
 }
