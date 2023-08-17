@@ -47,7 +47,6 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   nodeActions,
   showBiggerActions,
   trailingMessage,
-  activeSubPipelineHeader,
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -59,7 +58,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
         ref={nodeRef}
         as="div"
         onClick={onClick}
-        active={activeSubPipelineHeader ? false : active}
+        active={active}
         className={cx(styles.root, "list-group-item-action", {
           [styles.expanded]: hasSubPipelines && !collapsed,
           [styles.parentIsActive]: parentIsActive,
@@ -77,15 +76,12 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
           onHoverChange(false);
         }}
       >
-        <PipelineOffsetView
-          nestingLevel={nestingLevel}
-          active={activeSubPipelineHeader ? false : active}
-        />
+        <PipelineOffsetView nestingLevel={nestingLevel} active={active} />
         {hasSubPipelines && (
           <div className={styles.handleContainer}>
             <div
               className={cx({
-                [styles.active]: activeSubPipelineHeader ? false : active,
+                [styles.active]: active,
                 [styles.closedHandle]: collapsed,
                 [styles.openHandle]: !collapsed,
                 [styles.noOutputKey]: !outputKey,

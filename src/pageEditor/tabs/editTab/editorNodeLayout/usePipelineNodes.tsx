@@ -327,10 +327,7 @@ const usePipelineNodes = (): {
 
     const onClick = () => {
       if (nodeIsActive) {
-        if (
-          blockConfig.id === DocumentRenderer.BLOCK_ID &&
-          activeNodePreviewElementId
-        ) {
+        if (activeNodePreviewElementId) {
           dispatch(actions.setNodePreviewActiveElement(null));
           return;
         }
@@ -434,6 +431,12 @@ const usePipelineNodes = (): {
       };
     }
 
+    const activeSubPipelineHeader = subPipelines.some(
+      ({ path }) =>
+        activeNodePreviewElementId ===
+        getNodePreviewElementId(blockConfig, path)
+    );
+
     const restBrickNodeProps: Except<
       BrickNodeProps,
       keyof BrickNodeContentProps
@@ -441,7 +444,7 @@ const usePipelineNodes = (): {
       onClickMoveUp,
       onClickMoveDown,
       onClick,
-      active: nodeIsActive,
+      active: activeSubPipelineHeader ? false : nodeIsActive,
       onHoverChange,
       parentIsActive,
       nestingLevel,
@@ -450,11 +453,7 @@ const usePipelineNodes = (): {
       nodeActions: expanded ? [] : brickNodeActions,
       showBiggerActions,
       trailingMessage,
-      activeSubPipelineHeader: subPipelines.some(
-        ({ path }) =>
-          activeNodePreviewElementId ===
-          getNodePreviewElementId(blockConfig, path)
-      ),
+      activeSubPipelineHeader,
     };
 
     nodes.push({
@@ -509,7 +508,9 @@ const usePipelineNodes = (): {
           nestingLevel,
           nodeActions: headerActions,
           pipelineInputKey: inputKey,
-          active: nodeIsActive,
+          active: restBrickNodeProps.activeSubPipelineHeader
+            ? nodePreviewElementId === activeNodePreviewElementId
+            : nodeIsActive,
           nestedActive: parentIsActive,
           nodePreviewElement: nodePreviewElementId
             ? {
@@ -541,7 +542,9 @@ const usePipelineNodes = (): {
           flavor,
           pipelinePath: fullSubPath,
           nestingLevel: nestingLevel + 1,
-          parentIsActive: nodeIsActive || parentIsActive,
+          parentIsActive: restBrickNodeProps.activeSubPipelineHeader
+            ? headerNodeProps.nodePreviewElement?.active
+            : nodeIsActive || parentIsActive,
         });
 
         nodes.push(
@@ -562,7 +565,7 @@ const usePipelineNodes = (): {
         showBiggerActions,
         trailingMessage,
         nestingLevel,
-        active: nodeIsActive,
+        active: activeSubPipelineHeader ? false : nodeIsActive,
         nestedActive: parentIsActive,
         hovered,
         onHoverChange,

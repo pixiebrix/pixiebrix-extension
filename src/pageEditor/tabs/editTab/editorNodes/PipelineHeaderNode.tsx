@@ -91,6 +91,9 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
         active={nodePreviewElement?.active}
         className={cx(styles.root, {
           [styles.clickable]: Boolean(nodePreviewElement),
+          [styles.parentNodeActive]: nodePreviewElement?.active
+            ? false
+            : active,
           [styles.nestedActive]: nestedActive,
         })}
         onClick={nodePreviewElement?.focus}

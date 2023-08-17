@@ -28,8 +28,12 @@ $headerPipeLineHeight: 4px;
   padding: 0;
   display: flex;
 
+  &.parentNodeActive {
+    background: $activeHeaderColor;
+  }
+
   &.nestedActive {
-    background-color: $activeHeaderColor;
+    background-color: $nestedActiveColor;
   }
 }
 
@@ -38,13 +42,13 @@ $headerPipeLineHeight: 4px;
   position: relative; // Allow children to position relative to this element
   padding: $headerOffsetY 0 0 $headerOffsetX;
 
-  &.active {
-    background-color: $activeHeaderColor;
-  }
-
-  &.nestedActive {
-    background-color: $nestedActiveColor;
-  }
+  //&.active {
+  //  background-color: $activeHeaderColor;
+  //}
+  //
+  //&.nestedActive {
+  //  background-color: $nestedActiveColor;
+  //}
 }
 
 .headerContent {
