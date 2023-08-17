@@ -20,10 +20,7 @@ import Tabs from "@/sidebar/Tabs";
 import { render } from "@/sidebar/testHelpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import {
-  formDefinitionFactory,
-  sidebarEntryFactory,
-} from "@/testUtils/factories/sidebarEntryFactories";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { screen, within } from "@testing-library/react";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import useFlags from "@/hooks/useFlags";
