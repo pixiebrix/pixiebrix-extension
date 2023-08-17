@@ -72,7 +72,7 @@ export async function showSidebar(
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
 
-  reportEvent(Events.SIDE_BAR_SHOW);
+  reportEvent(Events.SIDEBAR_SHOW);
   const isAlreadyShowing = isSidebarFrameVisible();
 
   if (!isAlreadyShowing) {
@@ -170,7 +170,7 @@ export function hideSidebar(): void {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
 
-  reportEvent(Events.SIDE_PANEL_HIDE);
+  reportEvent(Events.SIDEBAR_HIDE);
   removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
 }
