@@ -30,6 +30,7 @@ import { SCROLL_TO_HEADER_NODE_EVENT } from "@/pageEditor/tabs/editTab/editorNod
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveNodeId } from "@/pageEditor/slices/editorSelectors";
+import { sleep } from "@/utils/timeUtils";
 
 export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
   "scroll-to-document-preview-element";
@@ -85,9 +86,10 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
     );
 
     if (isActive) {
-      window.dispatchEvent(
-        new Event(`${SCROLL_TO_HEADER_NODE_EVENT}-${elementName}`)
-      );
+      // Note: there is a Chrome bug where scrollIntoView cannot be called on elements simultaneously. This causes an
+      // issue where the pipeline header node interrupts this scrollIntoView call in some cases (e.g. switching from one
+      // mod component to another). See discussion and workaround here:
+      // https://stackoverflow.com/questions/49318497/google-chrome-simultaneously-smooth-scrollintoview-with-more-elements-doesn
       scrollIntoView();
     }
 
@@ -128,7 +130,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       setActiveElement(elementName);
     }
 
-    dispatch(actions.expandNode(activeNodeId));
+    dispatch(actions.expandBrickPipelineNode(activeNodeId));
 
     window.dispatchEvent(
       new Event(`${SCROLL_TO_HEADER_NODE_EVENT}-${elementName}`)

@@ -328,7 +328,9 @@ const usePipelineNodes = (): {
     const onClick = () => {
       if (nodeIsActive) {
         if (hasSubPipelines) {
-          dispatch(actions.toggleCollapseNode(blockConfig.instanceId));
+          dispatch(
+            actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId)
+          );
         }
       } else {
         setActiveNodeId(blockConfig.instanceId);
