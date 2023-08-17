@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, type MouseEvent, useRef } from "react";
+import React, { useEffect, type MouseEvent } from "react";
 import {
   type PanelEntry,
   type SidebarEntry,
@@ -50,7 +50,6 @@ import {
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
   selectClosedTabs,
-  selectVisiblePanelCount,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
@@ -142,7 +141,7 @@ const Tabs: React.FC = () => {
   ) => {
     // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
     event.stopPropagation();
-    reportEvent(Events.SIDEBAR_TAB_CLOSE, { panel });
+    reportEvent(Events.SIDEBAR_TAB_CLOSE, { panel: JSON.stringify(panel) });
     if (isTemporaryPanelEntry(panel)) {
       dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
     } else {

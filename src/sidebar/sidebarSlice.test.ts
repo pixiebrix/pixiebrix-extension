@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sidebarSlice, {
-  findNextActiveKey,
-  fixActiveTabOnRemove,
-} from "@/sidebar/sidebarSlice";
+import sidebarSlice, { fixActiveTabOnRemove } from "@/sidebar/sidebarSlice";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
   cancelForm,
@@ -30,7 +27,6 @@ import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories
 import type { SidebarState } from "@/types/sidebarTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { RegistryId } from "@/types/registryTypes";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 
 jest.mock("@/sidebar/messenger/api", () => ({
