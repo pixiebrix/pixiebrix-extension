@@ -116,7 +116,7 @@ export type ElementUIState = {
   activeNodeId: UUID;
 
   /**
-   * UI state of foundation and bricks in the extension pipeline
+   * UI state of bricks in the mod component pipeline, including the starter brick
    */
   nodeUIStates: Record<UUID, NodeUIState>;
 };
