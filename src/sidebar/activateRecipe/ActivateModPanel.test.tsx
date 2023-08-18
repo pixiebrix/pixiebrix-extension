@@ -39,7 +39,6 @@ import {
   modDefinitionToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
 import * as messengerApi from "@/contentScript/messenger/api";
-import userEvent from "@testing-library/user-event";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
@@ -292,24 +291,6 @@ describe("ActivateRecipePanel", () => {
     await waitForEffect();
 
     expect(rendered.getByTestId("loader")).not.toBeNull();
-  });
-
-  it("activating a mod closes the sidebar when there are no other mod panels to show", async () => {
-    setupMocksAndRender();
-    await waitForEffect();
-
-    await userEvent.click(screen.getByRole("button", { name: /ok/i }));
-
-    expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it("activating a mod leaves the sidebar open when there are other mod panels to show", async () => {
-    setupMocksAndRender();
-    await waitForEffect();
-
-    await userEvent.click(screen.getByRole("button", { name: /ok/i }));
-
-    expect(hideSidebarSpy).toHaveBeenCalledTimes(0);
   });
 });
 

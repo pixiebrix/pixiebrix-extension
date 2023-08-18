@@ -26,20 +26,20 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import useFlags from "@/hooks/useFlags";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
-import { cancelForm } from "@/contentScript/messenger/api";
+import * as messengerApi from "@/contentScript/messenger/api";
+import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 
 jest.mock("@/hooks/useFlags", () =>
   jest.fn().mockReturnValue({ flagOn: jest.fn() })
 );
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  ...jest.requireActual("@/contentScript/messenger/api"),
-  cancelForm: jest.fn(),
-}));
+const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
+const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
-const cancelFormMock = cancelForm as jest.MockedFunction<typeof cancelForm>;
-
-async function setupPanelsAndRender(sidebarEntries: Partial<SidebarEntries>) {
+async function setupPanelsAndRender(
+  sidebarEntries: Partial<SidebarEntries>,
+  showModLauncher = true
+) {
   (useFlags as jest.Mock).mockReturnValue({
     flagOn: jest.fn().mockReturnValue(sidebarEntries.staticPanels?.length > 0),
   });
@@ -56,6 +56,10 @@ async function setupPanelsAndRender(sidebarEntries: Partial<SidebarEntries>) {
           ...sidebarEntries,
         })
       );
+
+      if (!showModLauncher) {
+        dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(MOD_LAUNCHER)));
+      }
     },
   });
 
@@ -261,7 +265,7 @@ describe("Tabs", () => {
         staticPanels: [MOD_LAUNCHER],
       });
 
-      expect(cancelFormMock).not.toHaveBeenCalled();
+      expect(cancelFormSpy).not.toHaveBeenCalled();
 
       within(screen.getByRole("tab", { name: /form panel test/i }))
         .getByRole("button", { name: "Close" })
@@ -269,7 +273,7 @@ describe("Tabs", () => {
 
       await waitForEffect();
 
-      expect(cancelFormMock).toHaveBeenCalledWith(
+      expect(cancelFormSpy).toHaveBeenCalledWith(
         {
           frameId: 0,
           tabId: 1,
@@ -299,6 +303,29 @@ describe("Tabs", () => {
       expect(screen.queryByRole("tab", { name: /mods/i })).toHaveClass(
         "active"
       );
+    });
+
+    test("closing the activation panel hides sidebar if it's alone", async () => {
+      hideSidebarSpy.mockReset();
+      await setupPanelsAndRender(
+        {
+          staticPanels: [MOD_LAUNCHER],
+          modActivationPanel: activatePanel,
+        },
+        false
+      );
+
+      within(screen.getByRole("tab", { name: /activate mods test 1/i }))
+        .getByRole("button", { name: "Close" })
+        .click();
+
+      expect(
+        screen.queryByRole("tab", { name: /activate mods test 1/i })
+      ).not.toBeInTheDocument();
+
+      await waitForEffect();
+
+      expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
