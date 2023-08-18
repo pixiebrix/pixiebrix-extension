@@ -62,6 +62,8 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import { getTopLevelFrame } from "webext-messenger";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
+import { selectTelemetryOrganizationId } from "@/auth/authSelectors";
+import { useGetTheme } from "@/hooks/useTheme";
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -99,6 +101,13 @@ const TabWithDivider = ({
 
 const Tabs: React.FC = () => {
   const { flagOn } = useFlags();
+
+  const telemetryOrganizationId = useSelector(selectTelemetryOrganizationId);
+  const theme = useGetTheme();
+
+  // Disable mod launcher for enterprise and partner users
+  const isEnterprise = Boolean(telemetryOrganizationId) || theme !== "default";
+
   const dispatch = useDispatch();
   const activeKey = useSelector(selectSidebarActiveTabKey);
   const panels = useSelector(selectSidebarPanels);
@@ -108,7 +117,7 @@ const Tabs: React.FC = () => {
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
   const closedTabs = useSelector(selectClosedTabs);
-  const hasModLauncherEnabled = flagOn("sidebar-home-tab");
+  const hasModLauncherEnabled = !isEnterprise && flagOn("sidebar-home-tab");
 
   const onSelect = (eventKey: string) => {
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
@@ -249,9 +258,11 @@ const Tabs: React.FC = () => {
               eventKey={eventKeyForEntry(staticPanel)}
             >
               <span className={styles.tabTitle}>{staticPanel.heading}</span>
-              <CloseButton
-                onClick={async (event) => onClosePanel(event, staticPanel)}
-              />
+              {hasModLauncherEnabled && (
+                <CloseButton
+                  onClick={async (event) => onClosePanel(event, staticPanel)}
+                />
+              )}
             </TabWithDivider>
           ))}
 
