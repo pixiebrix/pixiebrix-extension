@@ -35,7 +35,6 @@ export default async function refreshPKCEToken(
 
   const integrationId = integrationConfig.serviceId;
 
-  // TODO: Ask what we prefer in the PR.
   // Instead of hardcoding the list, we could check the integration definition for a "code_challenge_method" field.
   // If it exists, that means it's a PKCE integration. See isOAuth2PKCE in the pixiebrix-app repo.
   if (!OAUTH_PKCE_INTEGRATION_IDS.includes(integrationId)) {
@@ -69,8 +68,8 @@ export default async function refreshPKCEToken(
 
     const { data } = await axios.post(tokenUrl, params);
 
-    // Add the cached refresh token to the response if it's missing because:
-    // - The Google refresh token response doesn't include a refresh token. Let's add the cached one, so it doesn't get removed.
+    // Add the cached refresh token to the response if it's missing, so it doesn't get removed.
+    // - The Google refresh token response doesn't include a refresh token.
     // - The Azure refresh token response includes a new refresh token that we should replace the cached one with.
     //   See https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow#refresh-the-access-token
     data.refresh_token ??= cachedAuthData.refresh_token;
