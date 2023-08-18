@@ -39,7 +39,6 @@ import {
   modDefinitionToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
 import * as messengerApi from "@/contentScript/messenger/api";
-import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import userEvent from "@testing-library/user-event";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
@@ -57,7 +56,6 @@ const useRequiredModDefinitionsMock = jest.mocked(useRequiredModDefinitions);
 const checkModDefinitionPermissionsMock = jest.mocked(
   checkModDefinitionPermissions
 );
-const selectSidebarHasModPanelsMock = jest.mocked(selectSidebarHasModPanels);
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
 jest.mock("@/utils/modDefinitionUtils", () => {
@@ -134,7 +132,6 @@ function setupMocksAndRender(
 
 beforeEach(() => {
   appApiMock.reset();
-  selectSidebarHasModPanelsMock.mockReset();
   hideSidebarSpy.mockReset();
 
   includesQuickBarMock.mockResolvedValue(false);
@@ -298,8 +295,6 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("activating a mod closes the sidebar when there are no other mod panels to show", async () => {
-    selectSidebarHasModPanelsMock.mockImplementation(() => false);
-
     setupMocksAndRender();
     await waitForEffect();
 
@@ -309,8 +304,6 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("activating a mod leaves the sidebar open when there are other mod panels to show", async () => {
-    selectSidebarHasModPanelsMock.mockImplementation(() => true);
-
     setupMocksAndRender();
     await waitForEffect();
 
