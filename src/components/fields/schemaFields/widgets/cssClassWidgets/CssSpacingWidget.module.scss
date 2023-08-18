@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,11 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./deep-compare-strict";
-export * from "./dereference";
-export * from "./format";
-export * from "./pointer";
-export * from "./types";
-export * from "./ucs2-length";
-export * from "./validate";
-export * from "./validator";
+.spacingControlWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2rem;
+  row-gap: 1rem;
+}
+
+.spacingControlContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.spacingControlSelect {
+  margin-left: 0.5rem;
+  width: 10rem;
+}
+
+.expandButton {
+  display: flex !important;
+  width: 4.5rem !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+}

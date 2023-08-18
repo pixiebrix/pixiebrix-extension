@@ -41,9 +41,12 @@ function wrapText({
 
   const options = {
     acrossElements: isAcrossElements,
+    exclude: ["mark"],
     each(element: HTMLElement) {
       // `mark.js` just adds the `mark` class, need to also add the `background-color` style
       element.style.backgroundColor = color;
+      // Don't mark with library-specific data attributes
+      element.attributes.removeNamedItem("data-markjs");
     },
   };
 

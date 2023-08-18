@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createStemMap, Search } from "@/bricks/transformers/search";
+import { createStemMap, SearchText } from "@/bricks/transformers/searchText";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { type BrickOptions } from "@/types/runtimeTypes";
 
-const brick = new Search();
+const brick = new SearchText();
 
 describe("createStemMap", () => {
   it("creates a stem map", () => {

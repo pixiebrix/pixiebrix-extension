@@ -15,13 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.spacingControlContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.25rem;
-}
+import { type Expression } from "@/types/runtimeTypes";
+import type React from "react";
 
-.flagButton:global(.btn.active):not(:focus) {
-  z-index: unset;
-}
+export type Spacing = {
+  side: string | null;
+  size: number;
+};
+
+export type Value = string | Expression;
+
+/**
+ * An independent class name
+ */
+export type ClassFlag = {
+  /**
+   * The Bootstrap 4 class name
+   */
+  className: string;
+
+  /**
+   * Title node to render for the element (in a button/dropdown)
+   */
+  title: React.ReactNode;
+
+  /**
+   * True if the flag is exclusive for it's group (default=true)
+   */
+  exclusive?: boolean;
+
+  /**
+   * Other flags in the same group that the flag implies
+   */
+  implies?: string[];
+};

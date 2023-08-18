@@ -870,6 +870,18 @@ export const editorSlice = createSlice({
       const { id, isExpanded } = payload;
       uiState.expandedFieldSections[id] = isExpanded;
     },
+    expandBrickPipelineNode(state, action: PayloadAction<UUID>) {
+      const nodeId = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      const nodeUIState = elementUIState.nodeUIStates[nodeId];
+      nodeUIState.collapsed = false;
+    },
+    toggleCollapseBrickPipelineNode(state, action: PayloadAction<UUID>) {
+      const nodeId = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      const nodeUIState = elementUIState.nodeUIStates[nodeId];
+      nodeUIState.collapsed = !nodeUIState.collapsed;
+    },
     setDataSectionExpanded(
       state,
       { payload }: PayloadAction<{ isExpanded: boolean }>

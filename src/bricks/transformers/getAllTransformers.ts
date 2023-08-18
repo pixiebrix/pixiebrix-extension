@@ -55,7 +55,7 @@ import { Readable } from "@/bricks/transformers/readable";
 import { Split } from "@/bricks/transformers/split";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import ConvertDocument from "@/bricks/transformers/convertDocument";
-import { Search } from "@/bricks/transformers/search";
+import { SearchText } from "@/bricks/transformers/searchText";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -77,7 +77,7 @@ function getAllTransformers(): Brick[] {
     new TemplateTransformer(),
     new UrlParams(),
     new Split(),
-    new Search(),
+    new SearchText(),
     new JQueryReader(),
     new Readable(),
     new ComponentReader(),

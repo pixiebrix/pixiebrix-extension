@@ -40,7 +40,9 @@ const staticPanelEntryFactory = define<StaticPanelEntry>({
   key: (n: number) => `static-panel-${n}`,
 });
 const formDefinitionFactory = define<FormDefinition>({
-  schema: () => ({}),
+  schema: () => ({
+    title: "Form Panel Test",
+  }),
   uiSchema: () => ({}),
   cancelable: true,
   submitCaption: "Submit",

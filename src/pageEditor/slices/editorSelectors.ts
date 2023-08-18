@@ -267,6 +267,14 @@ export const selectActiveNodeInfo = createSelector(
     uiState.pipelineMap[activeNodeId]
 );
 
+export const selectCollapsedNodes = createSelector(
+  selectActiveElementUIState,
+  (elementUIState: ElementUIState) =>
+    Object.entries(elementUIState.nodeUIStates)
+      .map(([nodeId, { collapsed }]) => (collapsed ? nodeId : null))
+      .filter((nodeId) => nodeId != null)
+);
+
 const activeElementNodeInfoSelector = createSelector(
   selectActiveElementUIState,
   (state: EditorRootState, instanceId: UUID) => instanceId,

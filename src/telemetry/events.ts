@@ -99,8 +99,9 @@ export const Events = {
   SELECT_GOOGLE_SPREADSHEET_START: "SelectGoogleSpreadsheetStart",
   SELECT_GOOGLE_SPREADSHEET_VIEW_WARNING: "SelectGoogleSpreadsheetViewWarning",
 
-  SIDE_PANEL_HIDE: "SidePanelHide",
-  SIDE_BAR_SHOW: "SidePanelShow",
+  SIDEBAR_HIDE: "SidePanelHide",
+  SIDEBAR_SHOW: "SidePanelShow",
+  SIDEBAR_TAB_CLOSE: "SidebarTabClose",
 
   SNOOZE_UPDATES: "SnoozeUpdates",
   SETTINGS_EXPERIMENTAL_CONFIGURE: "SettingsExperimentalConfigure",
@@ -120,7 +121,7 @@ export const Events = {
   UNSUPPORTED_BROWSER_GATE_VIEW: "UnsupportedBrowserGateView",
 
   VIEW_ERROR: "ViewError",
-  VIEW_SIDE_BAR_PANEL: "ViewSidePanelPanel",
+  VIEW_SIDEBAR_PANEL: "ViewSidePanelPanel",
 
   ZAPIER_KEY_COPY: "ZapierKeyCopy",
 } as const;

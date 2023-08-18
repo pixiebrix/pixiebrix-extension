@@ -21,7 +21,7 @@ import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import sidebarSlice from "@/sidebar/sidebarSlice";
+import sidebarSlice, { persistSidebarConfig } from "@/sidebar/sidebarSlice";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import settingsSlice from "@/store/settingsSlice";
 import { appApi } from "@/services/api";
@@ -48,7 +48,7 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    sidebar: sidebarSlice.reducer,
+    sidebar: persistReducer(persistSidebarConfig, sidebarSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     // `services` slice is used to determine login state for partner installs
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),

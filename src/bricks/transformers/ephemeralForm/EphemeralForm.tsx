@@ -34,6 +34,7 @@ import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
+import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 
 const fields = {
   DescriptionField,
@@ -77,7 +78,9 @@ const EphemeralForm: React.FC = () => {
 
   // The opener for a sidebar panel will be the sidebar frame, not the host panel frame. The sidebar only opens in the
   // top-level frame, so hard-code the top-level frameId
-  const target = isModal ? opener : { tabId: opener.tabId, frameId: 0 };
+  const target = isModal
+    ? opener
+    : { tabId: opener.tabId, frameId: TOP_LEVEL_FRAME_ID };
   const FormContainer = isModal ? ModalLayout : PanelLayout;
 
   const [definition, isLoading, error] = useAsyncState(
@@ -140,7 +143,7 @@ const EphemeralForm: React.FC = () => {
             <button className="btn btn-primary" type="submit">
               {definition.submitCaption}
             </button>
-            {definition.cancelable && (
+            {definition.cancelable && isModal && (
               <button
                 className="btn btn-link"
                 type="button"

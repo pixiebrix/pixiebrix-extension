@@ -15,27 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Get UCS-2 length of a string
- * https://mathiasbynens.be/notes/javascript-encoding
- * https://github.com/bestiejs/punycode.js - punycode.ucs2.decode
- */
-export function ucs2length(s: string) {
-  let result = 0;
-  let length = s.length;
-  let index = 0;
-  let charCode: number;
-  while (index < length) {
-    result++;
-    charCode = s.charCodeAt(index++);
-    if (charCode >= 0xd800 && charCode <= 0xdbff && index < length) {
-      // high surrogate, and there is a next character
-      charCode = s.charCodeAt(index);
-      if ((charCode & 0xfc00) == 0xdc00) {
-        // low surrogate
-        index++;
-      }
-    }
-  }
-  return result;
-}
+import { type SidebarState } from "@/types/sidebarTypes";
+import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+
+export const getVisiblePanelCount = ({
+  panels,
+  forms,
+  temporaryPanels,
+  staticPanels,
+  modActivationPanel,
+  closedTabs,
+}: SidebarState) => {
+  // Temporary Panels are removed from the sidebar state when they are closed, so we don't need to filter them out
+  const closablePanels = [...panels, ...staticPanels];
+  const openPanels = closablePanels.filter(
+    (panel) => !closedTabs[eventKeyForEntry(panel)]
+  );
+
+  return (
+    openPanels.length +
+    forms.length +
+    temporaryPanels.length +
+    (modActivationPanel ? 1 : 0)
+  );
+};

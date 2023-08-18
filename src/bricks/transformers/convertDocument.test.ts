@@ -48,7 +48,7 @@ describe("convert document", () => {
     );
 
     expect(result).toEqual({
-      output: '<h1 id="hello">hello</h1>\n',
+      output: "<h1>hello</h1>\n",
     });
   });
 });

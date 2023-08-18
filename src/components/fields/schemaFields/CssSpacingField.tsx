@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function encodePointer(p: string): string {
-  return encodeURI(escapePointer(p));
-}
+import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
 
-export function escapePointer(p: string): string {
-  return p.replace(/~/g, "~0").replace(/\//g, "~1");
-}
+const CssSpacingField = defaultFieldFactory(CssSpacingWidget);
+export default CssSpacingField;

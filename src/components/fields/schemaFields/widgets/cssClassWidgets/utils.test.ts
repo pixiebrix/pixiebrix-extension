@@ -15,44 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import CssClassWidget, {
+import {
   calculateNextSpacing,
   calculateNextValue,
   extractSpacing,
-  optionsGroups,
-} from "@/components/fields/schemaFields/widgets/CssClassWidget";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Formik } from "formik";
-import React from "react";
-import { type Expression } from "@/types/runtimeTypes";
-import { noop } from "lodash";
-import { render } from "@/pageEditor/testHelpers";
-import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
-
-const renderWidget = (value: string | Expression) =>
-  render(
-    <Formik initialValues={{ cssClass: value }} onSubmit={noop}>
-      <CssClassWidget
-        inputModeOptions={getCssClassInputFieldOptions()}
-        schema={{
-          type: "string",
-        }}
-        name="cssClass"
-      />
-    </Formik>
-  );
-
-beforeAll(() => {
-  registerDefaultWidgets();
-});
-
-describe("CssClassWidget", () => {
-  it("should render blank literal", () => {
-    const result = renderWidget("");
-    expect(result.asFragment()).toMatchSnapshot();
-  });
-});
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
+import { optionsGroups } from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 
 describe("calculateNextValue", () => {
   it("should toggle independent flag", () => {
@@ -99,8 +67,14 @@ it("should toggle border group", () => {
 
 describe("calculateNextSpacing", () => {
   it("should update size in place", () => {
-    expect(calculateNextSpacing("p-0", "p", { side: null, size: 1 })).toBe(
+    expect(calculateNextSpacing("p-n5", "p", { side: null, size: 1 })).toBe(
       "p-1"
+    );
+  });
+
+  it("should update negative size in place", () => {
+    expect(calculateNextSpacing("p-4", "p", { side: null, size: -1 })).toBe(
+      "p-n1"
     );
   });
 
@@ -110,18 +84,38 @@ describe("calculateNextSpacing", () => {
     ).toBe("text-italic p-1");
   });
 
-  it("should add new entry for size", () => {
+  it("should remove general padding when direction padding is added", () => {
     expect(calculateNextSpacing("p-0", "p", { side: "b", size: 2 })).toBe(
-      "p-0 pb-2"
+      "pb-2"
+    );
+  });
+
+  it("should keep direction padding when another direction padding is added", () => {
+    expect(calculateNextSpacing("pt-0", "p", { side: "b", size: 2 })).toBe(
+      "pt-0 pb-2"
+    );
+  });
+
+  it("should remove direction padding general padding is added", () => {
+    expect(calculateNextSpacing("pt-0", "p", { side: null, size: 2 })).toBe(
+      "p-2"
+    );
+  });
+
+  it("should handle negative values correctly", () => {
+    expect(calculateNextSpacing("pt-0", "p", { side: null, size: -2 })).toBe(
+      "p-n2"
     );
   });
 });
 
 describe("extractSpacing", () => {
   it("should extract spacing", () => {
-    expect(extractSpacing("p", ["p-1", "z-1", "pq-1", "px-2"])).toStrictEqual([
+    expect(
+      extractSpacing("p", ["p-1", "z-1", "pq-1", "px-2", "pt-n4"])
+    ).toStrictEqual([
       { side: null, size: 1 },
-      { side: "x", size: 2 },
+      { side: "t", size: -4 },
     ]);
   });
 });
