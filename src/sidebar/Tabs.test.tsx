@@ -26,10 +26,18 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 import useFlags from "@/hooks/useFlags";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
+import { cancelForm } from "@/contentScript/messenger/api";
 
 jest.mock("@/hooks/useFlags", () =>
   jest.fn().mockReturnValue({ flagOn: jest.fn() })
 );
+
+jest.mock("@/contentScript/messenger/api", () => ({
+  ...jest.requireActual("@/contentScript/messenger/api"),
+  cancelForm: jest.fn(),
+}));
+
+const cancelFormMock = cancelForm as jest.MockedFunction<typeof cancelForm>;
 
 async function setupPanelsAndRender(sidebarEntries: Partial<SidebarEntries>) {
   (useFlags as jest.Mock).mockReturnValue({
@@ -235,6 +243,39 @@ describe("Tabs", () => {
       expect(
         screen.queryByRole("heading", { name: /temporary panel test 1/i })
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Form Panels", () => {
+    const formPanel = sidebarEntryFactory("form");
+
+    test("renders with forms", async () => {
+      await setupPanelsAndRender({ forms: [formPanel] });
+
+      expect(screen.getByText("Form Panel Test")).toBeInTheDocument();
+    });
+
+    test("closing the form tab calls cancelForm", async () => {
+      await setupPanelsAndRender({
+        forms: [formPanel],
+        staticPanels: [MOD_LAUNCHER],
+      });
+
+      expect(cancelFormMock).not.toHaveBeenCalled();
+
+      within(screen.getByRole("tab", { name: /form panel test/i }))
+        .getByRole("button", { name: "Close" })
+        .click();
+
+      await waitForEffect();
+
+      expect(cancelFormMock).toHaveBeenCalledWith(
+        {
+          frameId: 0,
+          tabId: 1,
+        },
+        formPanel.nonce
+      );
     });
   });
 });

@@ -20,6 +20,7 @@ import {
   type PanelEntry,
   type SidebarEntry,
   isTemporaryPanelEntry,
+  isFormPanelEntry,
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
@@ -58,6 +59,8 @@ import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultiple
 import useFlags from "@/hooks/useFlags";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
+import { getTopLevelFrame } from "webext-messenger";
+import { cancelForm } from "@/contentScript/messenger/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 
 const permanentSidebarPanelAction = () => {
@@ -144,6 +147,9 @@ const Tabs: React.FC = () => {
     reportEvent(Events.SIDEBAR_TAB_CLOSE, { panel: JSON.stringify(panel) });
     if (isTemporaryPanelEntry(panel)) {
       dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
+    } else if (isFormPanelEntry(panel)) {
+      const frame = await getTopLevelFrame();
+      cancelForm(frame, panel.nonce);
     } else {
       dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(panel)));
     }
@@ -204,6 +210,9 @@ const Tabs: React.FC = () => {
               <span className={styles.tabTitle}>
                 {form.form.schema.title ?? "Form"}
               </span>
+              <CloseButton
+                onClick={async (event) => onClosePanel(event, form)}
+              />
             </TabWithDivider>
           ))}
 
