@@ -46,6 +46,8 @@ import {
 import { getTopLevelFrame } from "webext-messenger";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
+import { selectTelemetryOrganizationId } from "@/auth/authSelectors";
+import { useGetTheme } from "@/hooks/useTheme";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -89,11 +91,17 @@ function useConnectedListener(): SidebarListener {
 }
 
 const ConnectedSidebar: React.VFC = () => {
+  const telemetryOrganizationId = useSelector(selectTelemetryOrganizationId);
+  const theme = useGetTheme();
+
+  // Disable mod launcher for enterprise and partner users
+  const isEnterprise = Boolean(telemetryOrganizationId) || theme !== "default";
+
   const { flagOn } = useFlags();
   const dispatch = useDispatch();
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
-  const showModLauncher = flagOn("sidebar-home-tab");
+  const showModLauncher = !isEnterprise && flagOn("sidebar-home-tab");
 
   // `useAsyncEffect` will run once on component mount since listener and formsRef don't change on renders.
   // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
