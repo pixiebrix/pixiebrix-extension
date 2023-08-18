@@ -19,54 +19,65 @@ import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
 import serviceRegistry from "@/services/registry";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
-import { GOOGLE_OAUTH_PKCE_INTEGRATION_ID } from "@/services/constants";
+import { OAUTH_PKCE_INTEGRATION_IDS } from "@/services/constants";
 import { getCachedAuthData, setCachedAuthData } from "@/background/auth";
 import { locator as serviceLocator } from "@/background/locator";
 
 /**
- * Refresh a Google OAuth2 PKCE token. NOOP if a refresh token is not available.
+ * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.
  * @returns True if the token was successfully refreshed. False if the token refresh was not attempted.
- * @throws AxiosError if the token refresh failed or Error if the integration is not a Google OAuth2 PKCE integration.
+ * @throws AxiosError if the token refresh failed or Error if the integration is not an OAuth2 PKCE integration.
  */
-export default async function refreshGoogleToken(
+export default async function refreshPKCEToken(
   integrationConfig: SanitizedIntegrationConfig
 ): Promise<boolean> {
   expectContext("background");
 
-  if (integrationConfig.serviceId !== GOOGLE_OAUTH_PKCE_INTEGRATION_ID) {
+  const integrationId = integrationConfig.serviceId;
+
+  // TODO: Ask what we prefer in the PR.
+  // Instead of hardcoding the list, we could check the integration definition for a "code_challenge_method" field.
+  // If it exists, that means it's a PKCE integration. See isOAuth2PKCE in the pixiebrix-app repo.
+  if (!OAUTH_PKCE_INTEGRATION_IDS.includes(integrationId)) {
     throw new Error(
-      `Expected integration to be ${GOOGLE_OAUTH_PKCE_INTEGRATION_ID}, but got ${integrationConfig.serviceId}`
+      `Expected OAuth2 PKCE integration, but got ${integrationConfig.serviceId}`
     );
   }
 
   const cachedAuthData = await getCachedAuthData(integrationConfig.id);
 
   if (integrationConfig.id && cachedAuthData?.refresh_token) {
-    console.debug("Refreshing google token");
+    console.debug("Refreshing PKCE token");
 
-    const integration = await serviceRegistry.lookup(
-      GOOGLE_OAUTH_PKCE_INTEGRATION_ID
-    );
+    const integration = await serviceRegistry.lookup(integrationId);
     const { config } = await serviceLocator.findIntegrationConfig(
       integrationConfig.id
     );
-    const context = integration.getOAuth2Context(config);
+    const { tokenUrl, client_id, client_secret } =
+      integration.getOAuth2Context(config);
 
     // https://axios-http.com/docs/urlencoded
     const params = new URLSearchParams();
+
     params.append("grant_type", "refresh_token");
     params.append("refresh_token", cachedAuthData.refresh_token as string);
-    params.append("client_id", context.client_id);
-    params.append("client_secret", context.client_secret);
+    params.append("client_id", client_id);
 
-    const { data } = await axios.post(context.tokenUrl, params);
+    if (client_secret) {
+      params.append("client_secret", client_secret);
+    }
 
-    // The Google refresh token response doesn't include the refresh token. Let's re-add it, so it doesn't get removed.
+    const { data } = await axios.post(tokenUrl, params);
+
+    // Add the cached refresh token to the response if it's missing because:
+    // - The Google refresh token response doesn't include a refresh token. Let's add the cached one, so it doesn't get removed.
+    // - The Azure refresh token response includes a new refresh token that we should replace the cached one with.
+    //   See https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow#refresh-the-access-token
     data.refresh_token ??= cachedAuthData.refresh_token;
 
     await setCachedAuthData(integrationConfig.id, data);
 
-    console.debug("Successfully refreshed google token");
+    console.debug("Successfully refreshed PKCE token");
 
     return true;
   }
