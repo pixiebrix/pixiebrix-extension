@@ -26,7 +26,7 @@ interface SplitArgs {
   chunkOverlap?: number;
 }
 
-export class Split extends TransformerABC {
+export class SplitText extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
   }

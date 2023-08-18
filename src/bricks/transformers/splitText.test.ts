@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Split } from "@/bricks/transformers/split";
+import { SplitText } from "@/bricks/transformers/splitText";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { type BrickOptions } from "@/types/runtimeTypes";
 
-const brick = new Split();
+const brick = new SplitText();
 
 describe("Split", () => {
   it("splits text into chunks", async () => {

@@ -52,7 +52,7 @@ import { SelectElement } from "@/bricks/transformers/selectElement";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
 import { Readable } from "@/bricks/transformers/readable";
-import { Split } from "@/bricks/transformers/split";
+import { SplitText } from "@/bricks/transformers/splitText";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import ConvertDocument from "@/bricks/transformers/convertDocument";
 import { SearchText } from "@/bricks/transformers/searchText";
@@ -76,7 +76,7 @@ function getAllTransformers(): Brick[] {
     new Base64Decode(),
     new TemplateTransformer(),
     new UrlParams(),
-    new Split(),
+    new SplitText(),
     new SearchText(),
     new JQueryReader(),
     new Readable(),
