@@ -21,6 +21,7 @@ import {
   type SidebarEntry,
   isTemporaryPanelEntry,
   isFormPanelEntry,
+  isModActivationPanelEntry,
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
@@ -150,6 +151,8 @@ const Tabs: React.FC = () => {
     } else if (isFormPanelEntry(panel)) {
       const frame = await getTopLevelFrame();
       cancelForm(frame, panel.nonce);
+    } else if (isModActivationPanelEntry(panel)) {
+      dispatch(sidebarSlice.actions.hideModActivationPanel());
     } else {
       dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(panel)));
     }
@@ -239,6 +242,11 @@ const Tabs: React.FC = () => {
               <span className={styles.tabTitle}>
                 {modActivationPanel.heading}
               </span>
+              <CloseButton
+                onClick={async (event) =>
+                  onClosePanel(event, modActivationPanel)
+                }
+              />
             </TabWithDivider>
           )}
 

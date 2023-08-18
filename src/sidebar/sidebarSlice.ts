@@ -189,7 +189,7 @@ export function fixActiveTabOnRemove(
       if (matchingMod) {
         state.activeKey = eventKeyForEntry(matchingMod);
       } else {
-        state.activeKey = defaultEventKey(state);
+        state.activeKey = defaultEventKey(state, state.closedTabs);
       }
     }
   }

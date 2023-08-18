@@ -278,4 +278,27 @@ describe("Tabs", () => {
       );
     });
   });
+
+  describe("Activation Panels", () => {
+    const activatePanel = sidebarEntryFactory("activateMods");
+
+    test("close the activation panel and make mod launcher active", async () => {
+      await setupPanelsAndRender({
+        staticPanels: [MOD_LAUNCHER],
+        modActivationPanel: activatePanel,
+      });
+
+      within(screen.getByRole("tab", { name: /activate mods test 1/i }))
+        .getByRole("button", { name: "Close" })
+        .click();
+
+      expect(
+        screen.queryByRole("tab", { name: /activate mods test 1/i })
+      ).not.toBeInTheDocument();
+
+      expect(screen.queryByRole("tab", { name: /mods/i })).toHaveClass(
+        "active"
+      );
+    });
+  });
 });

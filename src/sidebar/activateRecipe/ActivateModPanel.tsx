@@ -236,6 +236,7 @@ const ActivateRecipePanelContent: React.FC<
   async function handleActivationDecision() {
     reduxDispatch(actions.hideModActivationPanel());
 
+    // Todo: do we need this?
     if (!sidebarHasModPanels) {
       const topFrame = await getTopLevelFrame();
       void hideSidebar(topFrame);
