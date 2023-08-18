@@ -50,28 +50,33 @@ describe("Search", () => {
     });
   });
 
-  it("finds all exact matches", async () => {
-    const result = await brick.run(
-      unsafeAssumeValidArg({
-        text: "the rain in spain. the rain in witchita",
-        query: "rain",
-      }),
-      {} as BrickOptions
-    );
+  it.each([true, false])(
+    "finds all exact matches; stemWords: %s",
+    async (stemWords) => {
+      const result = await brick.run(
+        unsafeAssumeValidArg({
+          text: "the rain in spain. the rain in witchita",
+          query: "rain",
+          stemWords,
+        }),
+        {} as BrickOptions
+      );
 
-    expect(result).toEqual({
-      matches: [
-        { length: 4, query: "rain", startIndex: 4, text: "rain" },
-        { length: 4, query: "rain", startIndex: 23, text: "rain" },
-      ],
-    });
-  });
+      expect(result).toEqual({
+        matches: [
+          { length: 4, query: "rain", startIndex: 4, text: "rain" },
+          { length: 4, query: "rain", startIndex: 23, text: "rain" },
+        ],
+      });
+    }
+  );
 
   it("stems the haystack", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg({
         text: "it's raining in spaining",
         query: "rain",
+        stemWords: true,
       }),
       {} as BrickOptions
     );
@@ -86,6 +91,7 @@ describe("Search", () => {
       unsafeAssumeValidArg({
         text: "the rain in spain",
         query: "raining",
+        stemWords: true,
       }),
       {} as BrickOptions
     );
@@ -109,11 +115,12 @@ describe("Search", () => {
     });
   });
 
-  it("matches multiple words", async () => {
+  it("matches multiple stemmed words", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg({
         text: "it's raining in spaining",
         query: "rain in spain",
+        stemWords: true,
       }),
       {} as BrickOptions
     );

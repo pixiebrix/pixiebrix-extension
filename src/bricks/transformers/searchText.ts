@@ -22,6 +22,9 @@ import { propertiesToSchema } from "@/validators/generic";
 import { castArray } from "lodash";
 import { stemmer } from "stemmer";
 
+/**
+ * A text search match.
+ */
 interface Match {
   /**
    * The query that matched.
@@ -130,6 +133,23 @@ function searchStemmed(needles: string[], haystack: string): Match[] {
   return matches;
 }
 
+function search(needles: string[], haystack: string): Match[] {
+  const matches: Match[] = [];
+
+  for (const needle of needles) {
+    for (const startIndex of indexOfAll(needle, haystack)) {
+      matches.push({
+        query: needle,
+        text: haystack.slice(startIndex, startIndex + needle.length),
+        startIndex,
+        length: needle.length,
+      });
+    }
+  }
+
+  return matches;
+}
+
 export class SearchText extends TransformerABC {
   constructor() {
     super(
@@ -224,8 +244,13 @@ export class SearchText extends TransformerABC {
     query: string | string[];
     stemWords: boolean;
   }>): Promise<unknown> {
-    // TODO: check the stemWords prop
-    const matches = searchStemmed(castArray(query), text);
+    let matches;
+
+    if (stemWords) {
+      matches = searchStemmed(castArray(query), text);
+    } else {
+      matches = search(castArray(query), text);
+    }
 
     return { matches };
   }
