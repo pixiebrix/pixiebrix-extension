@@ -274,7 +274,8 @@ const usePipelineNodes = (): {
     lastIndex,
     isRootPipeline,
     showAppend,
-    parentIsActive,
+    parentActive,
+    ancestorActive,
     nestingLevel,
     extensionHasTraces: extensionHasTracesInput,
   }: {
@@ -286,13 +287,14 @@ const usePipelineNodes = (): {
     lastIndex: number;
     isRootPipeline: boolean;
     showAppend: boolean;
-    parentIsActive: boolean;
+    parentActive: boolean;
+    ancestorActive: boolean;
     nestingLevel: number;
     extensionHasTraces?: boolean;
   }): MapOutput {
     const nodes: EditorNodeProps[] = [];
     const block = allBlocks.get(blockConfig.id)?.block;
-    const nodeIsActive = blockConfig.instanceId === activeNodeId;
+    const isNodeActive = blockConfig.instanceId === activeNodeId;
 
     const traceRecords = filterTracesByCall(
       traces.filter(
@@ -326,7 +328,7 @@ const usePipelineNodes = (): {
     const expanded = hasSubPipelines && !collapsed;
 
     const onClick = () => {
-      if (nodeIsActive) {
+      if (isNodeActive) {
         if (activeNodePreviewElementId) {
           dispatch(actions.setNodePreviewActiveElement(null));
           return;
@@ -338,6 +340,10 @@ const usePipelineNodes = (): {
           );
         }
       } else {
+        if (activeNodePreviewElementId) {
+          dispatch(actions.setNodePreviewActiveElement(null));
+        }
+
         setActiveNodeId(blockConfig.instanceId);
       }
     };
@@ -431,11 +437,14 @@ const usePipelineNodes = (): {
       };
     }
 
-    const activeSubPipelineHeader = subPipelines.some(
-      ({ path }) =>
-        activeNodePreviewElementId ===
-        getNodePreviewElementId(blockConfig, path)
-    );
+    const activeSubPipelineHeader =
+      activeNodePreviewElementId === null
+        ? false
+        : subPipelines.some(
+            ({ path }) =>
+              activeNodePreviewElementId ===
+              getNodePreviewElementId(blockConfig, path)
+          );
 
     const restBrickNodeProps: Except<
       BrickNodeProps,
@@ -444,17 +453,26 @@ const usePipelineNodes = (): {
       onClickMoveUp,
       onClickMoveDown,
       onClick,
-      active: activeSubPipelineHeader ? false : nodeIsActive,
+      active: activeSubPipelineHeader ? false : isNodeActive,
       onHoverChange,
-      parentIsActive,
+      parentActive,
       nestingLevel,
       hasSubPipelines,
       collapsed,
       nodeActions: expanded ? [] : brickNodeActions,
       showBiggerActions,
       trailingMessage,
+      // TODO: rename me subPipelineHeaderActive
       activeSubPipelineHeader,
     };
+
+    if (isNodeActive) {
+      console.log(
+        "*** brick",
+        contentProps.brickLabel,
+        activeSubPipelineHeader
+      );
+    }
 
     nodes.push({
       type: "brick",
@@ -474,6 +492,9 @@ const usePipelineNodes = (): {
         const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
         const nodePreviewElementId = getNodePreviewElementId(blockConfig, path);
+        const isHeaderNodeActive = activeNodePreviewElementId
+          ? nodePreviewElementId === activeNodePreviewElementId
+          : false;
 
         const headerActions: NodeAction[] = [
           {
@@ -508,10 +529,9 @@ const usePipelineNodes = (): {
           nestingLevel,
           nodeActions: headerActions,
           pipelineInputKey: inputKey,
-          active: restBrickNodeProps.activeSubPipelineHeader
-            ? nodePreviewElementId === activeNodePreviewElementId
-            : nodeIsActive,
-          nestedActive: parentIsActive,
+          active: isHeaderNodeActive,
+          parentActive: activeSubPipelineHeader ? false : isNodeActive,
+          ancestorActive: activeSubPipelineHeader ? false : parentActive,
           nodePreviewElement: nodePreviewElementId
             ? {
                 name: nodePreviewElementId,
@@ -542,9 +562,12 @@ const usePipelineNodes = (): {
           flavor,
           pipelinePath: fullSubPath,
           nestingLevel: nestingLevel + 1,
-          parentIsActive: restBrickNodeProps.activeSubPipelineHeader
-            ? headerNodeProps.nodePreviewElement?.active
-            : nodeIsActive || parentIsActive,
+          parentActive: activeSubPipelineHeader
+            ? isHeaderNodeActive
+            : isNodeActive || parentActive,
+          ancestorActive: activeSubPipelineHeader
+            ? isHeaderNodeActive
+            : parentActive || ancestorActive,
         });
 
         nodes.push(
@@ -565,8 +588,8 @@ const usePipelineNodes = (): {
         showBiggerActions,
         trailingMessage,
         nestingLevel,
-        active: activeSubPipelineHeader ? false : nodeIsActive,
-        nestedActive: parentIsActive,
+        active: activeSubPipelineHeader ? false : isNodeActive,
+        nestedActive: parentActive,
         hovered,
         onHoverChange,
         onClick,
@@ -589,13 +612,15 @@ const usePipelineNodes = (): {
     flavor,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
     nestingLevel = 0,
-    parentIsActive = false,
+    parentActive = false,
+    ancestorActive = false,
   }: {
     pipeline: BrickPipeline;
     flavor: PipelineFlavor;
     pipelinePath?: string;
     nestingLevel?: number;
-    parentIsActive?: boolean;
+    parentActive?: boolean;
+    ancestorActive?: boolean;
   }): MapOutput {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
@@ -630,7 +655,8 @@ const usePipelineNodes = (): {
           lastIndex,
           isRootPipeline,
           showAppend,
-          parentIsActive,
+          parentActive,
+          ancestorActive,
           nestingLevel,
           extensionHasTraces,
         });

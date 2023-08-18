@@ -39,7 +39,8 @@ export type PipelineHeaderNodeProps = {
   } | null;
   pipelineInputKey?: string;
   active?: boolean;
-  nestedActive?: boolean;
+  parentActive?: boolean;
+  ancestorActive?: boolean;
   isPipelineLoading: boolean;
 };
 
@@ -49,7 +50,8 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   nodeActions,
   pipelineInputKey,
   active,
-  nestedActive,
+  parentActive,
+  ancestorActive,
   nodePreviewElement,
   isPipelineLoading,
 }) => {
@@ -88,21 +90,18 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   return (
     <>
       <ListGroup.Item
-        active={nodePreviewElement?.active}
+        active={active}
         className={cx(styles.root, {
           [styles.clickable]: Boolean(nodePreviewElement),
-          [styles.parentNodeActive]: nodePreviewElement?.active
-            ? false
-            : active,
-          [styles.nestedActive]: nestedActive,
+          [styles.parentNodeActive]: parentActive,
+          [styles.ancestorActive]: ancestorActive,
         })}
         onClick={nodePreviewElement?.focus}
         ref={nodeRef}
       >
         <PipelineOffsetView
           nestingLevel={nestingLevel}
-          nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
-          isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
+          nestedActive={parentActive || ancestorActive} // Color for this offset-view is chosen using the header flag
         />
         <div className={styles.header}>
           <div className={styles.headerPipeLineTop} />

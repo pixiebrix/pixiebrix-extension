@@ -32,8 +32,8 @@ $headerPipeLineHeight: 4px;
     background: $activeHeaderColor;
   }
 
-  &.nestedActive {
-    background-color: $nestedActiveColor;
+  &.ancestorActive {
+    background: $nestedActiveColor;
   }
 }
 
@@ -63,7 +63,6 @@ $headerPipeLineHeight: 4px;
 .documentPreviewIcon {
   margin-top: 2px;
   margin-right: 4px;
-  color: $bs-dark-grey;
 }
 
 .subPipelineLabel {

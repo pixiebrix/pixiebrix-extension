@@ -31,11 +31,11 @@
     background-color: $nestedActiveColor;
   }
 
-  &.isHeader {
-    background-color: $defaultHeaderColor;
-
-    &.nestedActive {
-      background-color: $activeHeaderColor;
-    }
-  }
+  //&.isHeader {
+  //  background-color: $defaultHeaderColor;
+  //
+  //  &.nestedActive {
+  //    background-color: $activeHeaderColor;
+  //  }
+  //}
 }
