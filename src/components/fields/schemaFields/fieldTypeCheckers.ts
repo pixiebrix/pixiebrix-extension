@@ -58,6 +58,10 @@ export const isButtonVariantField = (uiSchema?: UiSchema) =>
   typeof uiSchema === "object" &&
   get(uiSchema, ["ui:widget"]) === "SchemaButtonVariantWidget";
 
+export const isCustomEventField = (uiSchema?: UiSchema) =>
+  typeof uiSchema === "object" &&
+  get(uiSchema, ["ui:widget"]) === "SchemaCustomEventWidget";
+
 /**
  * Returns true if the schema uses oneOf and "const" keyword to label enum options.
  * Read more at: https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-247861695
