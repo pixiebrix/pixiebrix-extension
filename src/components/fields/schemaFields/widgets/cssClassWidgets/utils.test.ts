@@ -67,8 +67,14 @@ it("should toggle border group", () => {
 
 describe("calculateNextSpacing", () => {
   it("should update size in place", () => {
-    expect(calculateNextSpacing("p-0", "p", { side: null, size: 1 })).toBe(
+    expect(calculateNextSpacing("p-n5", "p", { side: null, size: 1 })).toBe(
       "p-1"
+    );
+  });
+
+  it("should update negative size in place", () => {
+    expect(calculateNextSpacing("p-4", "p", { side: null, size: -1 })).toBe(
+      "p-n1"
     );
   });
 
@@ -95,13 +101,21 @@ describe("calculateNextSpacing", () => {
       "p-2"
     );
   });
+
+  it("should handle negative values correctly", () => {
+    expect(calculateNextSpacing("pt-0", "p", { side: null, size: -2 })).toBe(
+      "p-n2"
+    );
+  });
 });
 
 describe("extractSpacing", () => {
   it("should extract spacing", () => {
-    expect(extractSpacing("p", ["p-1", "z-1", "pq-1", "px-2"])).toStrictEqual([
+    expect(
+      extractSpacing("p", ["p-1", "z-1", "pq-1", "px-2", "pt-n4"])
+    ).toStrictEqual([
       { side: null, size: 1 },
-      { side: "x", size: 2 },
+      { side: "t", size: -4 },
     ]);
   });
 });

@@ -81,16 +81,22 @@ export function parseValue(value: Value): {
 }
 
 function createSpacingRegex(prefix: string): RegExp {
-  return new RegExp(`${prefix}(?<side>[tblrxy])?-?(?<size>-?\\d)`);
+  return new RegExp(`^${prefix}(?<side>[trbl]?)-(?<negative>n?)(?<size>\\d+)$`);
 }
 
 export function extractSpacing(prefix: string, classes: string[]): Spacing[] {
   const re = createSpacingRegex(prefix);
 
-  return compact(classes.map((x) => re.exec(x))).map((x) => ({
-    side: x.groups.side ?? null,
-    size: Number(x.groups.size),
-  })) as Spacing[];
+  return classes
+    .map((element) => re.exec(element))
+    .filter(Boolean)
+    .map((match) => ({
+      side: match.groups.side || null,
+      size:
+        match.groups.negative === "n"
+          ? -Number(match.groups.size)
+          : Number(match.groups.size),
+    })) as Spacing[];
 }
 
 export function calculateNextSpacing(
@@ -111,7 +117,6 @@ export function calculateNextSpacing(
     regex.test(x)
   );
   const spacingRules = extractSpacing(prefix, spacingClasses);
-
   // Select onClear sets the size as null
   if (spacingUpdate.size == null) {
     // Remove spacingRules with same side as spacingUpdate
@@ -138,7 +143,10 @@ export function calculateNextSpacing(
       .filter((rule) =>
         spacingUpdate.side == null ? rule.side == null : rule.side != null
       )
-      .map((x) => `${prefix}${x.side ?? ""}-${x.size}`),
+      .map(
+        (x) =>
+          `${prefix}${x.side ?? ""}-${x.size < 0 ? "n" : ""}${Math.abs(x.size)}`
+      ),
   ];
 
   const nextValue = compact(uniq(nextClasses)).join(" ");
