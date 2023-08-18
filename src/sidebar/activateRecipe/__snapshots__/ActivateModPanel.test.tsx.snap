@@ -715,12 +715,6 @@ exports[`ActivateRecipePanel renders with options, permissions info 1`] = `
         class="footer"
       >
         <button
-          class="btn btn-outline-danger"
-          type="button"
-        >
-          Cancel
-        </button>
-        <button
           class="btn btn-primary"
           type="submit"
         >
@@ -902,12 +896,6 @@ exports[`ActivateRecipePanel renders with service configuration if no built-in s
       <div
         class="footer"
       >
-        <button
-          class="btn btn-outline-danger"
-          type="button"
-        >
-          Cancel
-        </button>
         <button
           class="btn btn-primary"
           type="submit"
