@@ -158,6 +158,18 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
       )}
       <div className={styles.footer}>
         <Button
+          type="button"
+          variant="outline-danger"
+          onClick={() => {
+            reportEvent(Events.MOD_ACTIVATION_CANCEL, {
+              recipeId: recipe?.metadata?.id,
+            });
+            onClickCancel();
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
           type="submit"
           onClick={() => {
             reportEvent(Events.MOD_ACTIVATION_SUBMIT, {
