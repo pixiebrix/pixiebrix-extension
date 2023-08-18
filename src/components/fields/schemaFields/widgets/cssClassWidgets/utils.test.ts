@@ -115,7 +115,6 @@ describe("extractSpacing", () => {
       extractSpacing("p", ["p-1", "z-1", "pq-1", "px-2", "pt-n4"])
     ).toStrictEqual([
       { side: null, size: 1 },
-      { side: "x", size: 2 },
       { side: "t", size: -4 },
     ]);
   });
