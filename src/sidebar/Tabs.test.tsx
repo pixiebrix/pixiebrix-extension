@@ -269,7 +269,13 @@ describe("Tabs", () => {
 
       await waitForEffect();
 
-      expect(cancelFormMock).toHaveBeenCalled();
+      expect(cancelFormMock).toHaveBeenCalledWith(
+        {
+          frameId: 0,
+          tabId: 1,
+        },
+        formPanel.nonce
+      );
     });
   });
 });
