@@ -81,9 +81,7 @@ export function parseValue(value: Value): {
 }
 
 function createSpacingRegex(prefix: string): RegExp {
-  return new RegExp(
-    `^${prefix}(?<side>[trblxy]?)-(?<negative>n?)(?<size>\\d+)$`
-  );
+  return new RegExp(`^${prefix}(?<side>[trbl]?)-(?<negative>n?)(?<size>\\d+)$`);
 }
 
 export function extractSpacing(prefix: string, classes: string[]): Spacing[] {
