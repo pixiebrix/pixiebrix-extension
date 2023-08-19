@@ -99,13 +99,18 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
         onClick={nodePreviewElement?.focus}
         ref={nodeRef}
       >
-        <PipelineOffsetView
-          nestingLevel={nestingLevel}
-          nestedActive={parentActive || ancestorActive} // Color for this offset-view is chosen using the header flag
-        />
+        <PipelineOffsetView nestingLevel={nestingLevel} active={active} />
         <div className={styles.header}>
-          <div className={styles.headerPipeLineTop} />
-          <div className={styles.headerPipeLineBottom} />
+          <div
+            className={cx(styles.headerPipeLineTop, {
+              [styles.active]: active,
+            })}
+          />
+          <div
+            className={cx(styles.headerPipeLineBottom, {
+              [styles.active]: active,
+            })}
+          />
           <div className={styles.headerContent}>
             <div className={styles.labelAndInputKey}>
               <div className={styles.subPipelineLabel}>{headerLabel}</div>

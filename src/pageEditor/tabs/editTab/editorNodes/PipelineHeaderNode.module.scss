@@ -41,14 +41,6 @@ $headerPipeLineHeight: 4px;
   flex-grow: 1;
   position: relative; // Allow children to position relative to this element
   padding: $headerOffsetY 0 0 $headerOffsetX;
-
-  //&.active {
-  //  background-color: $activeHeaderColor;
-  //}
-  //
-  //&.nestedActive {
-  //  background-color: $nestedActiveColor;
-  //}
 }
 
 .headerContent {
@@ -88,6 +80,10 @@ $headerPipeLineHeight: 4px;
   width: $pipeLineOffset;
   height: $headerPipeLineHeight;
   border-right: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
+  }
 }
 
 .headerPipeLineBottom {
@@ -97,4 +93,8 @@ $headerPipeLineHeight: 4px;
   width: $pipeLineOffset;
   height: $headerPipeLineHeight;
   border-right: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
+  }
 }
