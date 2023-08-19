@@ -466,14 +466,6 @@ const usePipelineNodes = (): {
       activeSubPipelineHeader,
     };
 
-    if (isNodeActive) {
-      console.log(
-        "*** brick",
-        contentProps.brickLabel,
-        activeSubPipelineHeader
-      );
-    }
-
     nodes.push({
       type: "brick",
       key: blockConfig.instanceId,
@@ -495,6 +487,8 @@ const usePipelineNodes = (): {
         const isHeaderNodeActive = activeNodePreviewElementId
           ? nodePreviewElementId === activeNodePreviewElementId
           : false;
+
+        const activeSiblingHeader = activeSubPipelineHeader;
 
         const headerActions: NodeAction[] = [
           {
@@ -530,8 +524,8 @@ const usePipelineNodes = (): {
           nodeActions: headerActions,
           pipelineInputKey: inputKey,
           active: isHeaderNodeActive,
-          parentActive: activeSubPipelineHeader ? false : isNodeActive,
-          ancestorActive: activeSubPipelineHeader ? false : parentActive,
+          parentActive: activeSiblingHeader ? false : isNodeActive,
+          ancestorActive: activeSiblingHeader ? false : parentActive,
           nodePreviewElement: nodePreviewElementId
             ? {
                 name: nodePreviewElementId,
@@ -562,10 +556,10 @@ const usePipelineNodes = (): {
           flavor,
           pipelinePath: fullSubPath,
           nestingLevel: nestingLevel + 1,
-          parentActive: activeSubPipelineHeader
+          parentActive: activeSiblingHeader
             ? isHeaderNodeActive
             : isNodeActive || parentActive,
-          ancestorActive: activeSubPipelineHeader
+          ancestorActive: activeSiblingHeader
             ? isHeaderNodeActive
             : parentActive || ancestorActive,
         });
