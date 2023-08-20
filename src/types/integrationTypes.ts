@@ -239,6 +239,8 @@ export interface Integration<
 
   isOAuth2: boolean;
 
+  isOAuth2PKCE: boolean;
+
   isAuthorizationGrant: boolean;
 
   isToken: boolean;
@@ -279,6 +281,8 @@ export abstract class IntegrationABC<
   abstract hasAuth: boolean;
 
   abstract get isOAuth2(): boolean;
+
+  abstract get isOAuth2PKCE(): boolean;
 
   abstract get isAuthorizationGrant(): boolean;
 

@@ -63,7 +63,7 @@ import {
   type SecretsConfig,
 } from "@/types/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
-import refreshPKCEToken from "@/background/refreshPKCEToken";
+import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
 import { isObject } from "@/utils/objectUtils";
@@ -286,6 +286,9 @@ async function performConfiguredRequest(
     if (axiosError && isAuthenticationError(axiosError)) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
+        // TODO: Do we want to run this for all PKCE integrations or just Google + Azure for now because
+        //  Google + Azure are the only ones we've tested? I believe the only other PKCE service we currently
+        //  have is uipath/cloud-oauth.
         if (OAUTH_PKCE_INTEGRATION_IDS.includes(service.id)) {
           try {
             const isTokenRefreshed = await refreshPKCEToken(serviceConfig);

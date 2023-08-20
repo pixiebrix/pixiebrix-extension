@@ -19,7 +19,6 @@ import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
 import serviceRegistry from "@/services/registry";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
-import { OAUTH_PKCE_INTEGRATION_IDS } from "@/services/constants";
 import { getCachedAuthData, setCachedAuthData } from "@/background/auth";
 import { locator as serviceLocator } from "@/background/locator";
 
@@ -33,13 +32,13 @@ export default async function refreshPKCEToken(
 ): Promise<boolean> {
   expectContext("background");
 
-  const integrationId = integrationConfig.serviceId;
+  const integration = await serviceRegistry.lookup(integrationConfig.serviceId);
 
   // Instead of hardcoding the list, we could check the integration definition for a "code_challenge_method" field.
   // If it exists, that means it's a PKCE integration. See isOAuth2PKCE in the pixiebrix-app repo.
-  if (!OAUTH_PKCE_INTEGRATION_IDS.includes(integrationId)) {
+  if (!integration.isOAuth2PKCE) {
     throw new Error(
-      `Expected OAuth2 PKCE integration, but got ${integrationConfig.serviceId}`
+      `Expected OAuth2 PKCE integration, but got ${integration.id}`
     );
   }
 
@@ -48,7 +47,6 @@ export default async function refreshPKCEToken(
   if (integrationConfig.id && cachedAuthData?.refresh_token) {
     console.debug("Refreshing PKCE token");
 
-    const integration = await serviceRegistry.lookup(integrationId);
     const { config } = await serviceLocator.findIntegrationConfig(
       integrationConfig.id
     );
@@ -62,6 +60,7 @@ export default async function refreshPKCEToken(
     params.append("refresh_token", cachedAuthData.refresh_token as string);
     params.append("client_id", client_id);
 
+    // Google PKCE requires a client secret, see https://developers.google.com/identity/protocols/oauth2/native-app
     if (client_secret) {
       params.append("client_secret", client_secret);
     }

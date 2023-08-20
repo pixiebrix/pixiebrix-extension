@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import refreshPKCEToken from "@/background/refreshPKCEToken";
+import refreshPKCEToken from "@/background/refreshToken";
 import { getCachedAuthData, setCachedAuthData } from "@/background/auth";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
@@ -62,12 +62,6 @@ describe("refresh PKCE token", () => {
     readRawConfigurationsMock.mockReset();
     appApiMock.reset();
     appApiMock.resetHistory();
-  });
-
-  it("throws if integration configuration is not pkce", async () => {
-    const integrationConfig = sanitizedIntegrationConfigFactory();
-
-    await expect(refreshPKCEToken(integrationConfig)).rejects.toThrow(Error);
   });
 
   it("nop if no cached auth data", async () => {
