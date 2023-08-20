@@ -170,7 +170,7 @@
     "@fortawesome/fontawesome-common-types": "^0.2.36",
     "@shopify/jest-dom-mocks": "^5.0.0",
     "@sindresorhus/tsconfig": "^4.0.0",
-    "@sinonjs/fake-timers": "^11.0.0",
+    "@sinonjs/fake-timers": "^11.1.0",
     "@storybook/addon-actions": "^6.5.15",
     "@storybook/addon-essentials": "^6.5.15",
     "@storybook/addon-links": "^6.5.15",
