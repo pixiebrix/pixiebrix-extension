@@ -57,6 +57,12 @@ const FORM_FIELD_TYPE_OPTIONS: SelectStringOption[] = [
     value: stringifyUiType({ propertyType: "boolean" }),
   },
   {
+    label: "Checkboxes (Multi-select)",
+    value: stringifyUiType({
+      propertyType: "array",
+    }),
+  },
+  {
     label: "Image crop",
     value: stringifyUiType({
       propertyType: "string",
