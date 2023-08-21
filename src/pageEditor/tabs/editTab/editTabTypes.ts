@@ -59,7 +59,7 @@ export type BrickNodeProps = BrickNodeContentProps &
   MoveBrickControlProps & {
     onClick?: () => void;
     active?: boolean;
-    parentActive?: boolean;
+    isParentActive?: boolean;
     onHoverChange: (hovered: boolean) => void;
     nestingLevel: number;
     hasSubPipelines?: boolean;

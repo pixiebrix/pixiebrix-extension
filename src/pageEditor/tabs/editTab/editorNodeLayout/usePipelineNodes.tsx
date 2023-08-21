@@ -274,8 +274,8 @@ const usePipelineNodes = (): {
     lastIndex,
     isRootPipeline,
     showAppend,
-    parentActive,
-    ancestorActive,
+    isParentActive,
+    isAncestorActive,
     nestingLevel,
     extensionHasTraces: extensionHasTracesInput,
   }: {
@@ -287,8 +287,8 @@ const usePipelineNodes = (): {
     lastIndex: number;
     isRootPipeline: boolean;
     showAppend: boolean;
-    parentActive: boolean;
-    ancestorActive: boolean;
+    isParentActive: boolean;
+    isAncestorActive: boolean;
     nestingLevel: number;
     extensionHasTraces?: boolean;
   }): MapOutput {
@@ -455,7 +455,7 @@ const usePipelineNodes = (): {
       onClick,
       active: !subPipelineHeaderActive && isNodeActive,
       onHoverChange,
-      parentActive,
+      isParentActive,
       nestingLevel,
       hasSubPipelines,
       collapsed,
@@ -522,8 +522,8 @@ const usePipelineNodes = (): {
           nodeActions: headerActions,
           pipelineInputKey: inputKey,
           active: isHeaderNodeActive,
-          parentActive: !activeSiblingHeader && isNodeActive,
-          ancestorActive: !activeSiblingHeader && parentActive,
+          isParentActive: !activeSiblingHeader && isNodeActive,
+          isAncestorActive: !activeSiblingHeader && isParentActive,
           nodePreviewElement: nodePreviewElementId
             ? {
                 name: nodePreviewElementId,
@@ -554,12 +554,12 @@ const usePipelineNodes = (): {
           flavor,
           pipelinePath: fullSubPath,
           nestingLevel: nestingLevel + 1,
-          parentActive: activeSiblingHeader
+          isParentActive: activeSiblingHeader
             ? isHeaderNodeActive
-            : isNodeActive || parentActive,
-          ancestorActive: activeSiblingHeader
+            : isNodeActive || isParentActive,
+          isAncestorActive: activeSiblingHeader
             ? isHeaderNodeActive
-            : parentActive || ancestorActive,
+            : isParentActive || isAncestorActive,
         });
 
         nodes.push(
@@ -581,7 +581,7 @@ const usePipelineNodes = (): {
         trailingMessage,
         nestingLevel,
         active: !subPipelineHeaderActive && isNodeActive,
-        nestedActive: parentActive,
+        nestedActive: isParentActive,
         hovered,
         onHoverChange,
         onClick,
@@ -604,15 +604,15 @@ const usePipelineNodes = (): {
     flavor,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
     nestingLevel = 0,
-    parentActive = false,
-    ancestorActive = false,
+    isParentActive = false,
+    isAncestorActive = false,
   }: {
     pipeline: BrickPipeline;
     flavor: PipelineFlavor;
     pipelinePath?: string;
     nestingLevel?: number;
-    parentActive?: boolean;
-    ancestorActive?: boolean;
+    isParentActive?: boolean;
+    isAncestorActive?: boolean;
   }): MapOutput {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
@@ -647,8 +647,8 @@ const usePipelineNodes = (): {
           lastIndex,
           isRootPipeline,
           showAppend,
-          parentActive,
-          ancestorActive,
+          isParentActive,
+          isAncestorActive,
           nestingLevel,
           extensionHasTraces,
         });

@@ -39,8 +39,8 @@ export type PipelineHeaderNodeProps = {
   } | null;
   pipelineInputKey?: string;
   active?: boolean;
-  parentActive?: boolean;
-  ancestorActive?: boolean;
+  isParentActive?: boolean;
+  isAncestorActive?: boolean;
   isPipelineLoading: boolean;
 };
 
@@ -50,8 +50,8 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   nodeActions,
   pipelineInputKey,
   active,
-  parentActive,
-  ancestorActive,
+  isParentActive,
+  isAncestorActive,
   nodePreviewElement,
   isPipelineLoading,
 }) => {
@@ -93,8 +93,8 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
         active={active}
         className={cx(styles.root, {
           [styles.clickable]: Boolean(nodePreviewElement),
-          [styles.parentNodeActive]: parentActive,
-          [styles.ancestorActive]: ancestorActive,
+          [styles.parentNodeActive]: isParentActive,
+          [styles.ancestorActive]: isAncestorActive,
         })}
         onClick={nodePreviewElement?.focus}
         ref={nodeRef}
