@@ -90,16 +90,14 @@ describe("generatePersonalBrickId", () => {
 describe("replaceRecipeExtension round trip", () => {
   test("single extension with versioned extensionPoint", async () => {
     const starterBrick = starterBrickConfigFactory();
-    const recipe = modDefinitionWithVersionedStarterBrickFactory({
+    const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })();
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition,
         screen: "pageEditor",
         isReinstall: false,
       })
@@ -112,16 +110,16 @@ describe("replaceRecipeExtension round trip", () => {
     );
     element.label = "New Label";
 
-    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
     const newRecipe = replaceRecipeExtension(
-      recipe,
-      { ...recipe.metadata, id: newId },
+      modDefinition,
+      { ...modDefinition.metadata, id: newId },
       state.extensions,
       element
     );
 
     expect(newRecipe).toStrictEqual(
-      produce(recipe, (draft) => {
+      produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
       })
@@ -131,21 +129,19 @@ describe("replaceRecipeExtension round trip", () => {
   test("does not modify other starter brick", async () => {
     const starterBrick = starterBrickConfigFactory();
 
-    const recipe = modDefinitionWithVersionedStarterBrickFactory({
+    const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })();
 
-    recipe.extensionPoints.push({
-      ...recipe.extensionPoints[0],
+    modDefinition.extensionPoints.push({
+      ...modDefinition.extensionPoints[0],
       label: "Other Extension",
     });
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition,
         screen: "pageEditor",
         isReinstall: false,
       })
@@ -158,16 +154,16 @@ describe("replaceRecipeExtension round trip", () => {
     );
     element.label = "New Label";
 
-    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
     const newRecipe = replaceRecipeExtension(
-      recipe,
-      { ...recipe.metadata, id: newId },
+      modDefinition,
+      { ...modDefinition.metadata, id: newId },
       state.extensions,
       element
     );
 
     expect(newRecipe).toStrictEqual(
-      produce(recipe, (draft) => {
+      produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
       })
@@ -175,14 +171,12 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("single starter brick with innerDefinition", async () => {
-    const recipe = innerStarterBrickModDefinitionFactory()();
+    const modDefinition = innerStarterBrickModDefinitionFactory()();
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition,
         screen: "pageEditor",
         isReinstall: false,
       })
@@ -190,9 +184,9 @@ describe("replaceRecipeExtension round trip", () => {
 
     // Mimic what would come back via internal.ts:resolveRecipe
     (lookupExtensionPoint as jest.Mock).mockResolvedValue({
-      ...recipe.definitions.extensionPoint,
+      ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: makeInternalId(recipe.definitions.extensionPoint),
+        id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
@@ -204,17 +198,17 @@ describe("replaceRecipeExtension round trip", () => {
 
     element.label = "New Label";
 
-    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 
     const newRecipe = replaceRecipeExtension(
-      recipe,
-      { ...recipe.metadata, id: newId },
+      modDefinition,
+      { ...modDefinition.metadata, id: newId },
       state.extensions,
       element
     );
 
     expect(newRecipe).toStrictEqual(
-      produce(recipe, (draft) => {
+      produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
       })
@@ -222,19 +216,17 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("generate fresh identifier definition changed", async () => {
-    const recipe = innerStarterBrickModDefinitionFactory()();
+    const modDefinition = innerStarterBrickModDefinitionFactory()();
 
-    recipe.extensionPoints.push({
-      ...recipe.extensionPoints[0],
+    modDefinition.extensionPoints.push({
+      ...modDefinition.extensionPoints[0],
       label: "Other Extension",
     });
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition,
         screen: "pageEditor",
         isReinstall: false,
       })
@@ -242,9 +234,9 @@ describe("replaceRecipeExtension round trip", () => {
 
     // Mimic what would come back via internal.ts:resolveRecipe
     (lookupExtensionPoint as jest.Mock).mockResolvedValue({
-      ...recipe.definitions.extensionPoint,
+      ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: makeInternalId(recipe.definitions.extensionPoint),
+        id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
@@ -258,21 +250,21 @@ describe("replaceRecipeExtension round trip", () => {
     const newTemplate = '<input value="Click Me!"/>';
     element.extensionPoint.definition.template = newTemplate;
 
-    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 
     const newRecipe = replaceRecipeExtension(
-      recipe,
-      { ...recipe.metadata, id: newId },
+      modDefinition,
+      { ...modDefinition.metadata, id: newId },
       state.extensions,
       element
     );
 
     expect(newRecipe).toStrictEqual(
-      produce(recipe, (draft) => {
+      produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
 
         draft.definitions.extensionPoint2 = cloneDeep(
-          recipe.definitions.extensionPoint
+          modDefinition.definitions.extensionPoint
         );
         (
           draft.definitions.extensionPoint2.definition as MenuDefinition
@@ -284,19 +276,17 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("reuse identifier definition for multiple if extensionPoint not modified", async () => {
-    const recipe = innerStarterBrickModDefinitionFactory()();
+    const modDefinition = innerStarterBrickModDefinitionFactory()();
 
-    recipe.extensionPoints.push({
-      ...recipe.extensionPoints[0],
+    modDefinition.extensionPoints.push({
+      ...modDefinition.extensionPoints[0],
       label: "Other Extension",
     });
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition,
         screen: "pageEditor",
         isReinstall: false,
       })
@@ -304,9 +294,9 @@ describe("replaceRecipeExtension round trip", () => {
 
     // Mimic what would come back via internal.ts:resolveRecipe
     (lookupExtensionPoint as jest.Mock).mockResolvedValue({
-      ...recipe.definitions.extensionPoint,
+      ...modDefinition.definitions.extensionPoint,
       metadata: {
-        id: makeInternalId(recipe.definitions.extensionPoint),
+        id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
@@ -318,17 +308,17 @@ describe("replaceRecipeExtension round trip", () => {
 
     element.label = "New Label";
 
-    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 
     const newRecipe = replaceRecipeExtension(
-      recipe,
-      { ...recipe.metadata, id: newId },
+      modDefinition,
+      { ...modDefinition.metadata, id: newId },
       state.extensions,
       element
     );
 
     expect(newRecipe).toStrictEqual(
-      produce(recipe, (draft) => {
+      produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
       })
@@ -341,7 +331,7 @@ describe("replaceRecipeExtension round trip", () => {
     });
 
     const extensionPointId = starterBrick.metadata.id;
-    const recipe = innerStarterBrickModDefinitionFactory({
+    const modDefinition = innerStarterBrickModDefinitionFactory({
       extensionPointRef: extensionPointId as any,
     })({
       apiVersion: "v2",
@@ -352,10 +342,8 @@ describe("replaceRecipeExtension round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition,
         screen: "pageEditor",
         isReinstall: false,
       })
@@ -369,16 +357,16 @@ describe("replaceRecipeExtension round trip", () => {
     });
     element.label = "New Label";
 
-    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
     const newRecipe = replaceRecipeExtension(
-      recipe,
-      { ...recipe.metadata, id: newId },
+      modDefinition,
+      { ...modDefinition.metadata, id: newId },
       state.extensions,
       element
     );
 
     expect(newRecipe).toStrictEqual(
-      produce(recipe, (draft) => {
+      produce(modDefinition, (draft) => {
         draft.apiVersion = "v3";
         draft.metadata.id = newId;
         draft.definitions[starterBrick.metadata.id].apiVersion = "v3";
@@ -389,7 +377,7 @@ describe("replaceRecipeExtension round trip", () => {
 
   test("throws when API version mismatch and cannot update recipe", async () => {
     const starterBrick = starterBrickConfigFactory();
-    const recipe = modDefinitionWithVersionedStarterBrickFactory({
+    const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
     })({
       apiVersion: "v2",
@@ -403,10 +391,8 @@ describe("replaceRecipeExtension round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition,
         screen: "pageEditor",
         isReinstall: false,
       })
@@ -420,11 +406,11 @@ describe("replaceRecipeExtension round trip", () => {
     });
     element.label = "New Label";
 
-    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
     expect(() =>
       replaceRecipeExtension(
-        recipe,
-        { ...recipe.metadata, id: newId },
+        modDefinition,
+        { ...modDefinition.metadata, id: newId },
         state.extensions,
         element
       )
@@ -437,16 +423,14 @@ describe("blueprint options", () => {
     recipeOptions: ModOptionsDefinition,
     elementOptions: ModOptionsDefinition
   ) {
-    const recipe = defaultModDefinitionFactory({
+    const modDefinition = defaultModDefinitionFactory({
       options: recipeOptions,
     });
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        services: {},
-        extensionPoints: recipe.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition,
         screen: "pageEditor",
         isReinstall: false,
       })
@@ -459,8 +443,8 @@ describe("blueprint options", () => {
     element.optionsDefinition = elementOptions;
 
     return replaceRecipeExtension(
-      recipe,
-      recipe.metadata,
+      modDefinition,
+      modDefinition.metadata,
       state.extensions,
       element
     );
@@ -775,16 +759,14 @@ describe("buildRecipe", () => {
       const extensionCount = cleanExtensionCount + dirtyExtensionCount;
 
       // Create a recipe
-      const recipe =
+      const modDefinition =
         versionedModDefinitionWithResolvedModComponents(extensionCount)();
 
       // Install the recipe
       const state = extensionsSlice.reducer(
         { extensions: [] },
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          services: {},
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
           screen: "pageEditor",
           isReinstall: false,
         })
@@ -794,7 +776,7 @@ describe("buildRecipe", () => {
       const elements: ModComponentFormState[] = [];
 
       if (dirtyExtensionCount > 0) {
-        const extensionPoints = selectExtensionPoints(recipe);
+        const extensionPoints = selectExtensionPoints(modDefinition);
 
         for (let i = 0; i < dirtyExtensionCount; i++) {
           const extensionPoint = extensionPoints[i];
@@ -822,14 +804,14 @@ describe("buildRecipe", () => {
 
       // Call the function under test
       const newRecipe = buildRecipe({
-        sourceRecipe: recipe,
+        sourceRecipe: modDefinition,
         // Only pass in the unchanged clean extensions
         cleanRecipeExtensions: state.extensions.slice(dirtyExtensionCount),
         dirtyRecipeElements: elements,
       });
 
       // Update the source recipe with the expected label changes
-      const updated = produce(recipe, (draft) => {
+      const updated = produce(modDefinition, (draft) => {
         for (const [index, extensionPoint] of draft.extensionPoints
           .slice(0, dirtyExtensionCount)
           .entries()) {

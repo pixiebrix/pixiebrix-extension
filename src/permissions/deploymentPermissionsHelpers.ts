@@ -20,7 +20,7 @@
 import { type Deployment } from "@/types/contract";
 import { flatten } from "lodash";
 import {
-  findLocalDeploymentServiceConfigurations,
+  findLocalDeploymentIntegrationConfigs,
   type Locate,
 } from "@/utils/deploymentUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
@@ -41,7 +41,7 @@ export async function checkDeploymentPermissions(
   locate: Locate
 ): Promise<PermissionsStatus> {
   const blueprint = deployment.package.config;
-  const localAuths = await findLocalDeploymentServiceConfigurations(
+  const localAuths = await findLocalDeploymentIntegrationConfigs(
     deployment,
     locate
   );

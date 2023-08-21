@@ -23,18 +23,18 @@ import { Alert } from "react-bootstrap";
 import UrlPermissionsList from "@/extensionConsole/pages/activateRecipe/UrlPermissionsList";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type WizardValues } from "@/activation/wizardTypes";
-import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { useFormikContext } from "formik";
-import useRecipePermissions from "./useRecipePermissions";
+import useModPermissions from "./useModPermissions";
 import useAsyncState from "@/hooks/useAsyncState";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
-function selectedAuths(values: WizardValues): IntegrationConfigPair[] {
-  return values.services.filter((x) => x.config);
+function selectedAuths(values: WizardValues): IntegrationDependency[] {
+  return values.integrationDependencies.filter((x) => x.config);
 }
 
-export function useSelectedAuths(): IntegrationConfigPair[] {
+export function useSelectedAuths(): IntegrationDependency[] {
   const { values } = useFormikContext<WizardValues>();
   return useMemo(() => selectedAuths(values), [values]);
 }
@@ -65,7 +65,7 @@ const PermissionsBody: React.FunctionComponent<{
 }> = ({ blueprint }) => {
   const selectedAuths = useSelectedAuths();
 
-  const permissionsState = useRecipePermissions(blueprint, selectedAuths);
+  const permissionsState = useModPermissions(blueprint, selectedAuths);
 
   const { isConfigured: isShortcutConfigured } = useQuickbarShortcut();
 

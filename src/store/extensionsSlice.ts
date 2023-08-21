@@ -17,8 +17,8 @@
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
-  type StandaloneModDefinition,
   type Deployment,
+  type StandaloneModDefinition,
 } from "@/types/contract";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -29,41 +29,119 @@ import { cloneDeep, partition } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
-  type ModComponentOptionsState,
   type LegacyModComponentObjectState,
+  type ModComponentOptionsState,
   type OptionsState,
 } from "@/store/extensionsTypes";
 import { type Except } from "type-fest";
 import { assertModComponentNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import {
-  type ModComponentBase,
   type ActivatedModComponent,
-  selectSourceRecipeMetadata,
+  type ModComponentBase,
 } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
-  type ModDefinition,
   type ModComponentDefinition,
+  type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type RegistryId } from "@/types/registryTypes";
-import { type OutputKey, type OptionsArgs } from "@/types/runtimeTypes";
+import { type InnerDefinitions, type RegistryId } from "@/types/registryTypes";
+import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import {
+  getIntegrationIds,
+  pickModDefinitionMetadata,
+} from "@/utils/modDefinitionUtils";
 
 const initialExtensionsState: ModComponentOptionsState = {
   extensions: [],
 };
 
-function selectDeploymentContext(
-  deployment: Deployment
-): ModComponentBase["_deployment"] | undefined {
-  if (deployment) {
-    return {
-      id: deployment.id,
-      timestamp: deployment.updated_at,
-      active: deployment.active,
-    };
+type ActivateModComponentParam = {
+  modComponentDefinition: ModComponentDefinition;
+  apiVersion: ApiVersion;
+  _deployment: ModComponentBase["_deployment"];
+  _recipe: ModComponentBase["_recipe"];
+  definitions: InnerDefinitions;
+  optionsArgs: OptionsArgs;
+  integrationDependencies: IntegrationDependency[];
+};
+
+function activateModComponent<Config extends UnknownObject = UnknownObject>({
+  modComponentDefinition,
+  apiVersion,
+  _deployment,
+  _recipe,
+  definitions,
+  optionsArgs,
+  integrationDependencies,
+}: ActivateModComponentParam): ActivatedModComponent<Config> {
+  const nowTimestamp = new Date().toISOString();
+
+  const activatedModComponent = {
+    id: uuidv4(),
+    apiVersion,
+    _deployment,
+    _recipe,
+    definitions,
+    optionsArgs,
+    label: modComponentDefinition.label,
+    extensionPointId: modComponentDefinition.id,
+    config: modComponentDefinition.config as Config,
+    active: true,
+    createTimestamp: nowTimestamp,
+    updateTimestamp: nowTimestamp,
+  } as ActivatedModComponent<Config>;
+
+  // Set optional fields only if the source mod component has a value. Normalizing the values
+  // here makes testing harder because we then have to account for the normalized value in assertions.
+
+  if (modComponentDefinition.services) {
+    const modIntegrationIds = getIntegrationIds({
+      extensionPoints: [modComponentDefinition],
+    });
+    activatedModComponent.services = integrationDependencies.filter(({ id }) =>
+      modIntegrationIds.includes(id)
+    );
   }
+
+  if (modComponentDefinition.permissions) {
+    activatedModComponent.permissions = modComponentDefinition.permissions;
+  }
+
+  if (modComponentDefinition.templateEngine) {
+    activatedModComponent.templateEngine =
+      modComponentDefinition.templateEngine;
+  }
+
+  return activatedModComponent;
 }
+
+type InstallModPayload = {
+  modDefinition: ModDefinition;
+  /**
+   * Mod integration dependencies with configs filled in
+   */
+  configuredDependencies?: IntegrationDependency[];
+  optionsArgs?: OptionsArgs;
+  deployment?: Deployment;
+  /**
+   * The screen or source of the installation. Used for telemetry.
+   * @since 1.7.33
+   */
+  screen:
+    | "marketplace"
+    | "extensionConsole"
+    | "pageEditor"
+    | "background"
+    | "starterMod";
+  /**
+   * True if this is reinstalling an already active mod. Used for telemetry.
+   * @since 1.7.33
+   */
+  isReinstall: boolean;
+};
 
 const extensionsSlice = createSlice({
   name: "extensions",
@@ -111,129 +189,72 @@ const extensionsSlice = createSlice({
       extension._recipe = recipeMetadata;
     },
 
-    installRecipe(
+    installMod(
       state,
       {
-        payload,
-      }: PayloadAction<{
-        recipe: ModDefinition;
-        services?: Record<RegistryId, UUID>;
-        extensionPoints: ModComponentDefinition[];
-        optionsArgs?: OptionsArgs;
-        deployment?: Deployment;
-        /**
-         * The screen or source of the installation. Used for telemetry.
-         * @since 1.7.33
-         */
-        screen:
-          | "marketplace"
-          | "extensionConsole"
-          | "pageEditor"
-          | "background"
-          | "starterMod";
-        /**
-         * True if this is reinstalling an already active mod. Used for telemetry.
-         * @since 1.7.33
-         */
-        isReinstall: boolean;
-      }>
+        payload: {
+          modDefinition,
+          configuredDependencies,
+          optionsArgs,
+          deployment,
+          screen,
+          isReinstall,
+        },
+      }: PayloadAction<InstallModPayload>
     ) {
       requireLatestState(state);
 
-      const {
-        recipe,
-        services: auths,
-        optionsArgs,
-        extensionPoints,
-        deployment,
-        screen,
-        isReinstall,
-      } = payload;
-
-      for (const {
-        // Required
-        id: extensionPointId,
-        label,
-        config,
-        // Optional
-        services: integrationOutputKeyMap,
-        permissions,
-        templateEngine,
-      } of extensionPoints) {
-        const extensionId = uuidv4();
-
-        const timestamp = new Date().toISOString();
-
-        if (extensionPointId == null) {
-          throw new Error("extensionPointId is required");
+      for (const modComponentDefinition of modDefinition.extensionPoints) {
+        // May be null from bad Workshop edit?
+        if (modComponentDefinition.id == null) {
+          throw new Error("modComponentDefinition.id is required");
         }
 
-        if (recipe.updated_at == null) {
-          // Since 1.4.8 we're tracking the updated_at timestamp of recipes
+        if (modDefinition.updated_at == null) {
+          // Since 1.4.8 we're tracking the updated_at timestamp of mods
           throw new Error("updated_at is required");
         }
 
-        if (recipe.sharing == null) {
-          // Since 1.4.6 we're tracking the sharing information of recipes
+        if (modDefinition.sharing == null) {
+          // Since 1.4.6 we're tracking the sharing information of mods
           throw new Error("sharing is required");
         }
 
-        const extension: Except<
-          ActivatedModComponent,
-          "_unresolvedModComponentBrand"
-        > = {
-          id: extensionId,
+        const activatedModComponent = activateModComponent({
+          modComponentDefinition,
           // Default to `v1` for backward compatability
-          apiVersion: recipe.apiVersion ?? "v1",
-          _deployment: selectDeploymentContext(deployment),
-          _recipe: selectSourceRecipeMetadata(recipe),
-          // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
+          apiVersion: modDefinition.apiVersion ?? "v1",
+          _deployment: deployment && {
+            id: deployment.id,
+            timestamp: deployment.updated_at,
+            active: deployment.active,
+          },
+          _recipe: pickModDefinitionMetadata(modDefinition),
+          // Definitions are pushed down into the mod components. That's OK because `resolveDefinitions` determines
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
-          definitions: recipe.definitions ?? {},
+          definitions: modDefinition.definitions ?? {},
           optionsArgs,
-          label,
-          extensionPointId,
-          config,
-          active: true,
-          createTimestamp: timestamp,
-          updateTimestamp: timestamp,
-        };
+          integrationDependencies: configuredDependencies ?? [],
+        });
 
-        // Set optional fields only if the source extension has a value. Normalizing the values
-        // here makes testing harder because we then have to account for the normalized value in assertions.
-        if (integrationOutputKeyMap) {
-          extension.services = Object.entries(integrationOutputKeyMap).map(
-            ([outputKey, id]: [OutputKey, RegistryId]) => ({
-              outputKey,
-              config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
-              id,
-            })
-          );
-        }
+        assertModComponentNotResolved(activatedModComponent);
 
-        if (permissions) {
-          extension.permissions = permissions;
-        }
-
-        if (templateEngine) {
-          extension.templateEngine = templateEngine;
-        }
-
-        assertModComponentNotResolved(extension);
-
-        reportEvent(Events.STARTER_BRICK_ACTIVATE, selectEventData(extension));
+        reportEvent(
+          Events.STARTER_BRICK_ACTIVATE,
+          selectEventData(activatedModComponent)
+        );
 
         // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
         // or activate the deployment again
-        state.extensions.push(extension);
+        state.extensions.push(activatedModComponent);
 
         // Ensure context menus are available on all existing tabs
-        void contextMenus.preload([extension]);
+        void contextMenus.preload([activatedModComponent]);
       }
 
       reportEvent(Events.MOD_ACTIVATE, {
-        blueprintId: recipe.metadata.id,
-        blueprintVersion: recipe.metadata.version,
+        blueprintId: modDefinition.metadata.id,
+        blueprintVersion: modDefinition.metadata.version,
         deploymentId: deployment?.id,
         screen,
         reinstall: isReinstall,

@@ -45,10 +45,14 @@ import {
   type RenderedArgs,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  UnresolvedModComponent,
+} from "@/types/modComponentTypes";
 import { excludeUndefined } from "@/utils/objectUtils";
 import { boolean } from "@/utils/typeUtils";
 import { $safeFind } from "@/utils/domUtils";
+import { UnknownObject } from "@/types/objectTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -242,12 +246,12 @@ export async function selectBlockRootElement(
   return $root.get(0);
 }
 
-export function assertModComponentNotResolved<T extends ModComponentBase>(
-  extension: ModComponentBase
-): asserts extension is T & {
-  _unresolvedModComponentBrand: never;
-} {
-  if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
+export function assertModComponentNotResolved<
+  Config extends UnknownObject = UnknownObject
+>(
+  modComponent: ModComponentBase<Config>
+): asserts modComponent is UnresolvedModComponent<Config> {
+  if (isInnerDefinitionRegistryId(modComponent.extensionPointId)) {
     throw new Error("Expected UnresolvedModComponent");
   }
 }

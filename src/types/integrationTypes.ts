@@ -32,25 +32,18 @@ export interface IntegrationDependency {
   /**
    * The output key for the dependency (without the leading "@")
    */
-  outputKey: OutputKey;
+  outputKey?: OutputKey;
 
   /**
    * The UUID of the integration configuration.
    */
   config?: UUID;
+
+  /**
+   * Is this integration optional for the mod to function?
+   */
+  isOptional?: boolean;
 }
-
-export type IntegrationConfigPair = {
-  /**
-   * The registry id of the integration.
-   */
-  id: RegistryId;
-
-  /**
-   * UUID of the integration configuration.
-   */
-  config: UUID;
-};
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 

@@ -43,9 +43,8 @@ describe("RecipeOptionsDefinitions", () => {
     render(<RecipeOptionsDefinition />, {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.installRecipe({
-            recipe: modDefinition,
-            extensionPoints: modDefinition.extensionPoints,
+          extensionsSlice.actions.installMod({
+            modDefinition,
             screen: "pageEditor",
             isReinstall: false,
           })

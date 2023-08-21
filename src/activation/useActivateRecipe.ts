@@ -95,14 +95,14 @@ function useActivateRecipe(
         });
       }
 
-      const serviceAuths = formValues.services.filter(({ config }) =>
-        Boolean(config)
+      const configuredDependencies = formValues.integrationDependencies.filter(
+        ({ config }) => config != null
       );
 
       try {
         const recipePermissions = await checkModDefinitionPermissions(
           recipe,
-          serviceAuths
+          configuredDependencies
         );
 
         if (checkPermissions) {
@@ -129,7 +129,7 @@ function useActivateRecipe(
           }
         }
 
-        const { optionsArgs, services } = formValues;
+        const { optionsArgs, integrationDependencies } = formValues;
 
         // Create databases for any recipe options database fields where the
         // schema format is "preview", and the field value is a string to use
@@ -169,12 +169,9 @@ function useActivateRecipe(
         await uninstallRecipe(recipe.metadata.id, recipeExtensions, dispatch);
 
         dispatch(
-          extensionsSlice.actions.installRecipe({
-            recipe,
-            extensionPoints: recipe.extensionPoints,
-            services: Object.fromEntries(
-              services.map(({ id, config }) => [id, config])
-            ),
+          extensionsSlice.actions.installMod({
+            modDefinition: recipe,
+            configuredDependencies: integrationDependencies,
             optionsArgs,
             screen: source,
             isReinstall: recipeExtensions.length > 0,

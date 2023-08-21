@@ -20,48 +20,48 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import {
+  inferModIntegrations,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 
-type Reinstall = (recipe: ModDefinition) => Promise<void>;
+type Reinstall = (modDefinition: ModDefinition) => Promise<void>;
 
 function useReinstall(): Reinstall {
   const dispatch = useDispatch();
-  const extensions = useSelector(selectExtensions);
+  const allComponents = useSelector(selectExtensions);
 
   return useCallback(
-    async (recipe: ModDefinition) => {
-      const recipeId = recipe.metadata.id;
-      const recipeExtensions = extensions.filter(
-        (x) => x._recipe?.id === recipeId
+    async (modDefinition: ModDefinition) => {
+      const modId = modDefinition.metadata.id;
+      const modComponents = allComponents.filter(
+        (x) => x._recipe?.id === modId
       );
 
-      if (recipeExtensions.length === 0) {
-        throw new Error(`No bricks to re-activate for ${recipeId}`);
+      if (modComponents.length === 0) {
+        throw new Error(`No bricks to re-activate for ${modId}`);
       }
 
-      const currentOptions = inferRecipeOptions(recipeExtensions);
+      const currentOptions = inferRecipeOptions(modComponents);
 
-      const currentAuths = inferRecipeAuths(recipeExtensions, {
-        optional: false,
-      });
+      const configuredDependencies = inferModIntegrations(modComponents);
 
-      await uninstallRecipe(recipeId, recipeExtensions, dispatch);
+      await uninstallRecipe(modId, modComponents, dispatch);
 
       dispatch(
-        extensionActions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
-          services: currentAuths,
+        extensionActions.installMod({
+          modDefinition,
+          configuredDependencies,
           optionsArgs: currentOptions,
           screen: "extensionConsole",
           isReinstall: true,
         })
       );
     },
-    [dispatch, extensions]
+    [allComponents, dispatch]
   );
 }
 
-export { inferRecipeAuths, inferRecipeOptions };
+export { inferModIntegrations, inferRecipeOptions };
 export default useReinstall;

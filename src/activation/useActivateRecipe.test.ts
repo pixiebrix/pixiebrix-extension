@@ -55,11 +55,11 @@ jest.mock("@/services/api", () => {
 
 function setupInputs(): {
   formValues: WizardValues;
-  recipe: ModDefinition;
+  modDefinition: ModDefinition;
 } {
   const formValues: WizardValues = {
     extensions: { 0: true },
-    services: [],
+    integrationDependencies: [],
     optionsArgs: {},
   };
 
@@ -95,7 +95,7 @@ function setupInputs(): {
 
   return {
     formValues,
-    recipe: modDefinition,
+    modDefinition,
   };
 }
 
@@ -117,7 +117,7 @@ describe("useActivateRecipe", () => {
   });
 
   it("returns error if permissions are not granted", async () => {
-    const { formValues, recipe } = setupInputs();
+    const { formValues, modDefinition } = setupInputs();
     setRecipeHasPermissions(false);
     setUserAcceptedPermissions(false);
 
@@ -130,7 +130,7 @@ describe("useActivateRecipe", () => {
       },
     });
 
-    const { success, error } = await activateRecipe(formValues, recipe);
+    const { success, error } = await activateRecipe(formValues, modDefinition);
 
     expect(success).toBe(false);
     expect(error).toBe("You must accept browser permissions to activate.");
@@ -143,7 +143,7 @@ describe("useActivateRecipe", () => {
   });
 
   it("ignores permissions if flag set", async () => {
-    const { formValues, recipe } = setupInputs();
+    const { formValues, modDefinition } = setupInputs();
     setRecipeHasPermissions(false);
     setUserAcceptedPermissions(false);
 
@@ -158,14 +158,14 @@ describe("useActivateRecipe", () => {
       }
     );
 
-    const { success, error } = await activateRecipe(formValues, recipe);
+    const { success, error } = await activateRecipe(formValues, modDefinition);
 
     expect(success).toBe(true);
     expect(error).toBeUndefined();
   });
 
   it("calls uninstallRecipe, installs to extensionsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
-    const { formValues, recipe } = setupInputs();
+    const { formValues, modDefinition } = setupInputs();
     setRecipeHasPermissions(false);
     setUserAcceptedPermissions(true);
 
@@ -182,7 +182,7 @@ describe("useActivateRecipe", () => {
     let success: boolean;
     let error: unknown;
     await act(async () => {
-      const result = await activateRecipe(formValues, recipe);
+      const result = await activateRecipe(formValues, modDefinition);
       success = result.success;
       error = result.error;
     });
@@ -193,16 +193,15 @@ describe("useActivateRecipe", () => {
     const { dispatch } = getReduxStore();
 
     expect(uninstallRecipeMock).toHaveBeenCalledWith(
-      recipe.metadata.id,
+      modDefinition.metadata.id,
       expect.toBeArray(),
       dispatch
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        extensionPoints: recipe.extensionPoints,
-        services: {},
+      extensionsSlice.actions.installMod({
+        modDefinition,
+        configuredDependencies: [],
         optionsArgs: {},
         screen: "extensionConsole",
         isReinstall: false,
@@ -213,7 +212,8 @@ describe("useActivateRecipe", () => {
   });
 
   it("handles auto-created personal databases successfully", async () => {
-    const { formValues: inputFormValues, recipe: inputRecipe } = setupInputs();
+    const { formValues: inputFormValues, modDefinition: inputModDefinition } =
+      setupInputs();
     const databaseName = "Auto-created Personal Test Database";
     const formValues = {
       ...inputFormValues,
@@ -221,20 +221,20 @@ describe("useActivateRecipe", () => {
         myDatabase: databaseName,
       },
     };
-    const recipe = {
-      ...inputRecipe,
+    const modDefinition: ModDefinition = {
+      ...inputModDefinition,
       options: {
         schema: {
-          ...inputRecipe.options?.schema,
+          ...inputModDefinition.options?.schema,
           properties: {
-            ...inputRecipe.options?.schema?.properties,
+            ...inputModDefinition.options?.schema?.properties,
             myDatabase: {
               $ref: databaseSchema.$id,
               format: "preview",
             },
           },
         },
-        uiSchema: inputRecipe.options?.uiSchema,
+        uiSchema: inputModDefinition.options?.uiSchema,
       },
     };
     setRecipeHasPermissions(true);
@@ -257,7 +257,7 @@ describe("useActivateRecipe", () => {
     let success: boolean;
     let error: unknown;
     await act(async () => {
-      const result = await activateRecipe(formValues, recipe);
+      const result = await activateRecipe(formValues, modDefinition);
       success = result.success;
       error = result.error;
     });
@@ -269,10 +269,9 @@ describe("useActivateRecipe", () => {
     const { dispatch } = getReduxStore();
 
     expect(dispatch).toHaveBeenCalledWith(
-      extensionsSlice.actions.installRecipe({
-        recipe,
-        extensionPoints: recipe.extensionPoints,
-        services: {},
+      extensionsSlice.actions.installMod({
+        modDefinition,
+        configuredDependencies: [],
         optionsArgs: {
           myDatabase: createdDatabase.id,
         },
@@ -301,7 +300,7 @@ describe("useActivateRecipe", () => {
   test.each(testCases)(
     "$title",
     async ({ createDatabaseMockImplementation }) => {
-      const { formValues: inputFormValues, recipe: inputRecipe } =
+      const { formValues: inputFormValues, modDefinition: inputModDefinition } =
         setupInputs();
       const databaseName = "Auto-created Personal Test Database";
       const formValues = set(
@@ -309,10 +308,14 @@ describe("useActivateRecipe", () => {
         "optionsArgs.myDatabase",
         databaseName
       );
-      const recipe = set(inputRecipe, "options.schema.properties.myDatabase", {
-        $ref: databaseSchema.$id,
-        format: "preview",
-      });
+      const modDefinition = set(
+        inputModDefinition,
+        "options.schema.properties.myDatabase",
+        {
+          $ref: databaseSchema.$id,
+          format: "preview",
+        }
+      );
       setRecipeHasPermissions(true);
       const errorMessage = "Error creating database";
       createDatabaseMock.mockImplementation(createDatabaseMockImplementation);
@@ -329,7 +332,7 @@ describe("useActivateRecipe", () => {
       let success: boolean;
       let error: unknown;
       await act(async () => {
-        const result = await activateRecipe(formValues, recipe);
+        const result = await activateRecipe(formValues, modDefinition);
         success = result.success;
         error = result.error;
       });

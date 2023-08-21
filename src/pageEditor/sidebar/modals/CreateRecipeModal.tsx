@@ -58,7 +58,10 @@ import { produce } from "immer";
 import { object, string } from "yup";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import {
+  inferModIntegrations,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
@@ -224,9 +227,9 @@ function useSaveCallbacks({
       }
 
       dispatch(
-        optionsActions.installRecipe({
-          recipe: savedRecipe,
-          services: inferRecipeAuths([
+        optionsActions.installMod({
+          modDefinition: savedRecipe,
+          configuredDependencies: inferModIntegrations([
             ...dirtyRecipeElements,
             ...cleanRecipeExtensions,
           ]),
@@ -234,7 +237,6 @@ function useSaveCallbacks({
             ...dirtyRecipeElements,
             ...cleanRecipeExtensions,
           ]),
-          extensionPoints: savedRecipe.extensionPoints,
           screen: "pageEditor",
           isReinstall: false,
         })

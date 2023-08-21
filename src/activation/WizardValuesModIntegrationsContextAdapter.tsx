@@ -18,38 +18,14 @@
 import React from "react";
 import { useFormikContext } from "formik";
 import { type WizardValues } from "@/activation/wizardTypes";
-import { type RegistryId } from "@/types/registryTypes";
-import { type UUID } from "@/types/stringTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
-import { type OutputKey } from "@/types/runtimeTypes";
-import { type ModComponentDefinition } from "@/types/modDefinitionTypes";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
-type Props = {
-  modComponentDefinitions: ModComponentDefinition[];
+const WizardValuesModIntegrationsContextAdapter: React.FC<{
   children: React.ReactNode;
-};
-
-const WizardValuesModIntegrationsContextAdapter: React.FC<Props> = ({
-  modComponentDefinitions,
-  children,
-}) => {
-  const { values: wizardValues } = useFormikContext<WizardValues>();
-  const integrationConfigAuths: Record<RegistryId, UUID> = Object.fromEntries(
-    wizardValues.services.map(({ id, config }) => [id, config])
-  );
-  const integrationDependencies: IntegrationDependency[] =
-    modComponentDefinitions.flatMap((component) => {
-      const integrationOutputKeyMap = component.services ?? {};
-      return Object.entries(integrationOutputKeyMap).map(
-        ([outputKey, id]: [OutputKey, RegistryId]) => ({
-          id,
-          outputKey,
-          // eslint-disable-next-line security/detect-object-injection -- RegistryId
-          config: integrationConfigAuths[id],
-        })
-      );
-    });
+}> = ({ children }) => {
+  const {
+    values: { integrationDependencies },
+  } = useFormikContext<WizardValues>();
 
   return (
     <ModIntegrationsContext.Provider value={{ integrationDependencies }}>

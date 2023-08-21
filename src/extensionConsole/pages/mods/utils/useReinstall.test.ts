@@ -74,7 +74,7 @@ test("uninstalls recipe mod components", async () => {
 });
 
 test("dispatches install recipe action", async () => {
-  jest.spyOn(extensionActions, "installRecipe");
+  jest.spyOn(extensionActions, "installMod");
 
   const modDefinition = defaultModDefinitionFactory();
   const standaloneModDefinition = standaloneModDefinitionFactory({
@@ -98,5 +98,5 @@ test("dispatches install recipe action", async () => {
 
   await act(async () => reinstall(modDefinition));
 
-  expect(extensionActions.installRecipe).toHaveBeenCalled();
+  expect(extensionActions.installMod).toHaveBeenCalled();
 });

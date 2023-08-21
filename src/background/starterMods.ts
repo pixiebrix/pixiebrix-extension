@@ -23,22 +23,22 @@ import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
-import { debounce, uniq } from "lodash";
+import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
-import { getRequiredIntegrationIds } from "@/utils/modDefinitionUtils";
 import { type RegistryId } from "@/types/registryTypes";
-import { type UUID } from "@/types/stringTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { type IntegrationDependency } from "@/types/integrationTypes";
+import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 
 const { reducer, actions } = extensionsSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";
-const BLUEPRINT_INSTALLATION_DEBOUNCE_MS = 10_000;
-const BLUEPRINT_INSTALLATION_MAX_MS = 60_000;
+const MOD_INSTALLATION_DEBOUNCE_MS = 10_000;
+const MOD_INSTALLATION_MAX_MS = 60_000;
 
-export async function getBuiltInServiceAuths(): Promise<
+export async function getBuiltInIntegrationConfigs(): Promise<
   RemoteIntegrationConfig[]
 > {
   const client = await maybeGetLinkedApiClient();
@@ -47,100 +47,93 @@ export async function getBuiltInServiceAuths(): Promise<
   }
 
   try {
-    const { data: serviceAuths } = await client.get<RemoteIntegrationConfig[]>(
-      "/api/services/shared/?meta=1"
-    );
+    const { data: integrationConfigs } = await client.get<
+      RemoteIntegrationConfig[]
+    >("/api/services/shared/?meta=1");
 
-    return serviceAuths.filter((auth) => getSharingType(auth) === "built-in");
+    return integrationConfigs.filter(
+      (auth) => getSharingType(auth) === "built-in"
+    );
   } catch (error) {
     reportError(error);
     return [];
   }
 }
 
-export function getAllRequiredServiceIds(
-  blueprints: ModDefinition[]
-): RegistryId[] {
-  const requiredServiceIds = blueprints.flatMap((blueprint) =>
-    getRequiredIntegrationIds(blueprint)
-  );
-  return uniq(requiredServiceIds);
-}
+export async function getBuiltInIntegrationDependencies(
+  integrationIds: RegistryId[]
+): Promise<IntegrationDependency[]> {
+  const builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
 
-export async function getBuiltInAuthsByRequiredServiceIds(
-  serviceIds: RegistryId[]
-): Promise<Record<RegistryId, UUID>> {
-  const builtInServiceAuths = await getBuiltInServiceAuths();
+  return integrationIds.map((integrationId) => {
+    const builtInConfig = builtInIntegrationConfigs.find(
+      (config) => config.service.config.metadata.id === integrationId
+    );
 
-  return Object.fromEntries(
-    serviceIds.map((serviceId) => {
-      const builtInAuth = builtInServiceAuths.find(
-        (auth) => auth.service.config.metadata.id === serviceId
+    if (!builtInConfig) {
+      throw new Error(
+        `No built-in config found for integration ${integrationId}. Check that starter mods have built-in configuration options for all required services.`
       );
+    }
 
-      if (!builtInAuth) {
-        throw new Error(
-          `No built-in auth found for service ${serviceId}. Check that starter mods have built-in configuration options for all required services.`
-        );
-      }
-
-      return [serviceId, builtInAuth.id];
-    })
-  );
+    return {
+      id: integrationId,
+      config: builtInConfig.id,
+    };
+  });
 }
 
-function installBlueprint(
+function installModInOptionsState(
   state: ModComponentOptionsState,
   blueprint: ModDefinition,
-  services: Record<RegistryId, UUID>
+  configuredDependencies: IntegrationDependency[]
 ): ModComponentOptionsState {
   return reducer(
     state,
-    actions.installRecipe({
-      recipe: blueprint,
-      extensionPoints: blueprint.extensionPoints,
-      services,
+    actions.installMod({
+      modDefinition: blueprint,
+      configuredDependencies,
       screen: "starterMod",
       isReinstall: false,
     })
   );
 }
 
-async function installBlueprints(
-  blueprints: ModDefinition[]
-): Promise<boolean> {
+async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
   let installed = false;
-  if (blueprints.length === 0) {
+  if (modDefinitions.length === 0) {
     return installed;
   }
 
-  const requiredServiceIds = getAllRequiredServiceIds(blueprints);
-  const builtInServiceAuths = await getBuiltInAuthsByRequiredServiceIds(
-    requiredServiceIds
+  const integrationIds = getIntegrationIds({
+    extensionPoints: modDefinitions.flatMap((mod) => mod.extensionPoints),
+  });
+  const builtInDependencies = await getBuiltInIntegrationDependencies(
+    integrationIds
   );
+  let optionsState = await loadOptions();
 
-  let extensionsState = await loadOptions();
-  for (const blueprint of blueprints) {
-    const blueprintAlreadyInstalled = extensionsState.extensions.some(
-      (extension) => extension._recipe?.id === blueprint.metadata.id
+  for (const modDefinition of modDefinitions) {
+    const modAlreadyInstalled = optionsState.extensions.some(
+      (extension) => extension._recipe?.id === modDefinition.metadata.id
     );
 
-    if (!blueprintAlreadyInstalled) {
-      extensionsState = installBlueprint(
-        extensionsState,
-        blueprint,
-        builtInServiceAuths
+    if (!modAlreadyInstalled) {
+      optionsState = installModInOptionsState(
+        optionsState,
+        modDefinition,
+        builtInDependencies
       );
       installed = true;
     }
   }
 
-  await saveOptions(extensionsState);
+  await saveOptions(optionsState);
   await forEachTab(queueReactivateTab);
   return installed;
 }
 
-async function getStarterBlueprints(): Promise<ModDefinition[]> {
+async function getStarterMods(): Promise<ModDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -150,11 +143,11 @@ async function getStarterBlueprints(): Promise<ModDefinition[]> {
   }
 
   try {
-    const { data: starterBlueprints } = await client.get<ModDefinition[]>(
+    const { data: starterMods } = await client.get<ModDefinition[]>(
       "/api/onboarding/starter-blueprints/",
       { params: { ignore_user_state: true } }
     );
-    return starterBlueprints;
+    return starterMods;
   } catch (error) {
     reportError(error);
     return [];
@@ -162,17 +155,17 @@ async function getStarterBlueprints(): Promise<ModDefinition[]> {
 }
 
 /**
- * Installs starter blueprints and refreshes local registries from remote.
- * @returns true if any of the starter blueprints were installed
+ * Installs starter mods and refreshes local registries from remote.
+ * @returns true if any of the starter mods were installed
  */
-const _installStarterBlueprints = async (): Promise<boolean> => {
-  const starterBlueprints = await getStarterBlueprints();
+const _installStarterMods = async (): Promise<boolean> => {
+  const starterMods = await getStarterMods();
 
   try {
     // Installing Starter Blueprints and pulling the updates from remote registries to make sure
     // that all the bricks used in starter blueprints are available
     const [installed] = await Promise.all([
-      installBlueprints(starterBlueprints),
+      installMods(starterMods),
       refreshRegistries(),
     ]);
 
@@ -183,22 +176,22 @@ const _installStarterBlueprints = async (): Promise<boolean> => {
   }
 };
 
-export const debouncedInstallStarterBlueprints = debounce(
-  memoizeUntilSettled(_installStarterBlueprints),
-  BLUEPRINT_INSTALLATION_DEBOUNCE_MS,
+export const debouncedInstallStarterMods = debounce(
+  memoizeUntilSettled(_installStarterMods),
+  MOD_INSTALLATION_DEBOUNCE_MS,
   {
     leading: true,
     trailing: false,
-    maxWait: BLUEPRINT_INSTALLATION_MAX_MS,
+    maxWait: MOD_INSTALLATION_MAX_MS,
   }
 );
 
-function initStarterBlueprints(): void {
+function initStarterMods(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab?.url?.startsWith(PLAYGROUND_URL)) {
-      void debouncedInstallStarterBlueprints();
+      void debouncedInstallStarterMods();
     }
   });
 }
 
-export default initStarterBlueprints;
+export default initStarterMods;

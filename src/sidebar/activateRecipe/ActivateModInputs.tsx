@@ -106,9 +106,7 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
         showOwnTitle
       />
       {optionsWizardStep && (
-        <WizardValuesModIntegrationsContextAdapter
-          modComponentDefinitions={recipe.extensionPoints}
-        >
+        <WizardValuesModIntegrationsContextAdapter>
           <div>
             <h4>{optionsWizardStep.label}</h4>
           </div>

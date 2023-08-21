@@ -16,31 +16,28 @@
  */
 
 import {
-  debouncedInstallStarterBlueprints,
-  getAllRequiredServiceIds,
-  getBuiltInAuthsByRequiredServiceIds,
-  getBuiltInServiceAuths,
-} from "@/background/starterBlueprints";
+  debouncedInstallStarterMods,
+  getBuiltInIntegrationConfigs,
+  getBuiltInIntegrationDependencies,
+} from "@/background/starterMods";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
 import { refreshRegistries } from "./refreshRegistries";
 import {
-  type ModComponentBase,
   type ActivatedModComponent,
+  type ModComponentBase,
 } from "@/types/modComponentTypes";
 import { uuidv4 } from "@/types/helpers";
-import { type RegistryId } from "@/types/registryTypes";
-import { type OutputKey } from "@/types/runtimeTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
-  modComponentDefinitionFactory,
-  getModDefinitionWithBuiltInServiceAuths,
   defaultModDefinitionFactory,
+  getModDefinitionWithBuiltInIntegrationConfigs,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
+import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -82,14 +79,14 @@ describe("installStarterBlueprints", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [defaultModDefinitionFactory()]);
 
-    await debouncedInstallStarterBlueprints();
+    await debouncedInstallStarterMods();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
     expect((refreshRegistries as jest.Mock).mock.calls).toHaveLength(1);
   });
 
-  test("getBuiltInServiceAuths", async () => {
+  test("getBuiltInIntegrationConfigs", async () => {
     axiosMock.onGet("/api/services/shared/?meta=1").reply(200, [
       remoteIntegrationConfigurationFactory(),
       remoteIntegrationConfigurationFactory({
@@ -98,68 +95,47 @@ describe("installStarterBlueprints", () => {
       remoteIntegrationConfigurationFactory({ user: uuidv4() }),
     ]);
 
-    let builtInServiceAuths = await getBuiltInServiceAuths();
-    expect(builtInServiceAuths.length).toBe(1);
+    let builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
+    expect(builtInIntegrationConfigs).toBeArrayOfSize(1);
 
     axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
 
-    builtInServiceAuths = await getBuiltInServiceAuths();
-    expect(builtInServiceAuths.length).toBe(0);
+    builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
+    expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
 
     axiosMock.onGet("/api/services/shared/?meta=1").reply(500);
 
-    builtInServiceAuths = await getBuiltInServiceAuths();
-    expect(builtInServiceAuths.length).toBe(0);
+    builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
+    expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
   });
 
-  test("getAllRequiredServiceIds", () => {
-    const extensionServices = {
-      service1: "@pixiebrix/service1",
-      service2: "@pixiebrix/service2",
-    } as Record<OutputKey, RegistryId>;
+  test("getBuiltInIntegrationDependencies", async () => {
+    const { modDefinition, builtInIntegrationConfigs } =
+      getModDefinitionWithBuiltInIntegrationConfigs();
 
-    const starterBrickDefinition = modComponentDefinitionFactory({
-      services: extensionServices,
+    const nonPixieBrixIntegrationIds = getIntegrationIds(modDefinition, {
+      // The PixieBrix service gets automatically configured, so no need to include it
+      excludePixieBrix: true,
     });
-
-    const modDefinition = defaultModDefinitionFactory({
-      extensionPoints: [starterBrickDefinition],
-    });
-
-    // It works on an array of one mod definition
-    let serviceIds = getAllRequiredServiceIds([modDefinition]);
-    expect(serviceIds).toEqual(Object.values(extensionServices));
-
-    // It produces a unique list of service IDs
-    serviceIds = getAllRequiredServiceIds([modDefinition, modDefinition]);
-    expect(serviceIds).toEqual(Object.values(extensionServices));
-
-    // It works on an empty array
-    serviceIds = getAllRequiredServiceIds([]);
-    expect(serviceIds).toEqual([]);
-
-    // It works on an array of mod definitions with no services
-    serviceIds = getAllRequiredServiceIds([defaultModDefinitionFactory()]);
-    expect(serviceIds).toEqual([]);
-  });
-
-  test("getBuiltInAuthsByRequiredServiceIds", async () => {
-    const { modDefinition, builtInServiceAuths } =
-      getModDefinitionWithBuiltInServiceAuths();
-
-    const serviceIds = getAllRequiredServiceIds([modDefinition]);
 
     axiosMock
       .onGet("/api/services/shared/?meta=1")
-      .reply(200, builtInServiceAuths);
+      .reply(200, builtInIntegrationConfigs);
 
-    const builtInAuthsByRequiredServiceIds =
-      await getBuiltInAuthsByRequiredServiceIds(serviceIds);
+    const builtInDependencies = await getBuiltInIntegrationDependencies(
+      nonPixieBrixIntegrationIds
+    );
 
-    expect(builtInAuthsByRequiredServiceIds).toEqual({
-      "@pixiebrix/service1": builtInServiceAuths[0].id,
-      "@pixiebrix/service2": builtInServiceAuths[1].id,
-    });
+    expect(builtInDependencies).toEqual([
+      {
+        id: "@pixiebrix/service1",
+        config: builtInIntegrationConfigs[0].id,
+      },
+      {
+        id: "@pixiebrix/service2",
+        config: builtInIntegrationConfigs[1].id,
+      },
+    ]);
   });
 
   test("starter blueprints request fails", async () => {
@@ -167,7 +143,7 @@ describe("installStarterBlueprints", () => {
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
 
-    await debouncedInstallStarterBlueprints();
+    await debouncedInstallStarterMods();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(0);
@@ -180,7 +156,7 @@ describe("installStarterBlueprints", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [defaultModDefinitionFactory()]);
 
-    await debouncedInstallStarterBlueprints();
+    await debouncedInstallStarterMods();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
@@ -189,37 +165,37 @@ describe("installStarterBlueprints", () => {
   test("install starter blueprint with built-in auths", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const { modDefinition, builtInServiceAuths } =
-      getModDefinitionWithBuiltInServiceAuths();
+    const { modDefinition, builtInIntegrationConfigs } =
+      getModDefinitionWithBuiltInIntegrationConfigs();
 
     axiosMock
       .onGet("/api/services/shared/?meta=1")
-      .reply(200, builtInServiceAuths);
+      .reply(200, builtInIntegrationConfigs);
 
     axiosMock
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedInstallStarterBlueprints();
-    const { extensions } = await loadOptions();
+    await debouncedInstallStarterMods();
+    const { extensions: modComponents } = await loadOptions();
 
-    expect(extensions.length).toBe(1);
-    const installedExtension = extensions[0];
+    expect(modComponents).toBeArrayOfSize(1);
+    const installedComponent = modComponents[0];
 
-    expect(installedExtension.extensionPointId).toBe(
+    expect(installedComponent.extensionPointId).toBe(
       modDefinition.extensionPoints[0].id
     );
-    expect(installedExtension.services.length).toBe(2);
+    expect(installedComponent.services).toBeArrayOfSize(2);
 
-    const service1 = installedExtension.services.find(
-      (service) => service.id === "@pixiebrix/service1"
+    const dependency1 = installedComponent.services.find(
+      ({ id }) => id === "@pixiebrix/service1"
     );
-    const service2 = installedExtension.services.find(
-      (service) => service.id === "@pixiebrix/service2"
+    const dependency2 = installedComponent.services.find(
+      ({ id }) => id === "@pixiebrix/service2"
     );
 
-    expect(service1.config).toBe(builtInServiceAuths[0].id);
-    expect(service2.config).toBe(builtInServiceAuths[1].id);
+    expect(dependency1.config).toBe(builtInIntegrationConfigs[0].id);
+    expect(dependency2.config).toBe(builtInIntegrationConfigs[1].id);
   });
 
   test("starter blueprint already installed", async () => {
@@ -241,7 +217,7 @@ describe("installStarterBlueprints", () => {
       },
     ]);
 
-    await debouncedInstallStarterBlueprints();
+    await debouncedInstallStarterMods();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
@@ -261,7 +237,7 @@ describe("installStarterBlueprints", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [defaultModDefinitionFactory()]);
 
-    await debouncedInstallStarterBlueprints();
+    await debouncedInstallStarterMods();
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(2);

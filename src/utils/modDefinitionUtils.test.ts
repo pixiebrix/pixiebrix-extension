@@ -15,13 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getContainedStarterBrickTypes } from "./modDefinitionUtils";
+import {
+  getContainedStarterBrickTypes,
+  getIntegrationIds,
+} from "./modDefinitionUtils";
 import {
   modComponentDefinitionFactory,
   defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { generatePackageId } from "@/utils/registryUtils";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
 extensionPointRegistry.lookup = jest.fn();
 
@@ -108,5 +114,109 @@ describe("getContainedExtensionPointTypes", () => {
     );
 
     expect(result).toStrictEqual([]);
+  });
+});
+
+describe("getIntegrationIds", () => {
+  it("works with record services formats", () => {
+    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
+    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
+    const modComponentDefinition1 = modComponentDefinitionFactory();
+    const modComponentDefinition2 = modComponentDefinitionFactory({
+      services: {
+        [validateOutputKey("service1")]: serviceId1,
+        [validateOutputKey("service2")]: serviceId2,
+      },
+    });
+    const modComponentDefinition3 = modComponentDefinitionFactory({
+      services: {
+        [validateOutputKey("service1")]: serviceId1,
+      },
+    });
+    expect(
+      getIntegrationIds({
+        extensionPoints: [
+          modComponentDefinition1,
+          modComponentDefinition2,
+          modComponentDefinition3,
+        ],
+      })
+    ).toEqual([serviceId1, serviceId2]);
+  });
+
+  it("works with schema services formats", () => {
+    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
+    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
+    const modComponentDefinition1 = modComponentDefinitionFactory({
+      services: {
+        properties: {
+          service1: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+          },
+          service2: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+          },
+        },
+        required: ["service1", "service2"],
+      },
+    });
+    const modComponentDefinition2 = modComponentDefinitionFactory({
+      services: {
+        properties: {
+          service1: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+          },
+        },
+        required: ["service1"],
+      },
+    });
+    expect(
+      getIntegrationIds({
+        extensionPoints: [modComponentDefinition1, modComponentDefinition2],
+      })
+    ).toEqual([serviceId1, serviceId2]);
+  });
+
+  it("works with both formats together", () => {
+    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
+    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
+    const modComponentDefinition1 = modComponentDefinitionFactory({
+      services: {
+        properties: {
+          service1: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+          },
+          service2: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+          },
+        },
+        required: ["service1", "service2"],
+      },
+    });
+    const modComponentDefinition2 = modComponentDefinitionFactory({
+      services: {
+        properties: {
+          service1: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+          },
+        },
+        required: ["service1"],
+      },
+    });
+    const modComponentDefinition3 = modComponentDefinitionFactory({
+      services: {
+        [validateOutputKey("service1")]: serviceId1,
+        [validateOutputKey("service2")]: serviceId2,
+      },
+    });
+    expect(
+      getIntegrationIds({
+        extensionPoints: [
+          modComponentDefinition1,
+          modComponentDefinition2,
+          modComponentDefinition3,
+        ],
+      })
+    ).toEqual([serviceId1, serviceId2]);
   });
 });

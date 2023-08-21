@@ -18,7 +18,7 @@
 import { type Primitive } from "type-fest";
 import type React from "react";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type IntegrationConfigPair } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
 export type WizardStep = {
   key: string;
@@ -35,11 +35,10 @@ export type WizardValues = {
    */
   extensions: Record<string, boolean>;
 
-  // Use array instead of Record<RegistryId, UUID> because `RegistryId`s can contain periods which throw off Formik
   /**
-   * Mapping from service id to auth id.
+   * Integration dependencies for the mod
    */
-  services: IntegrationConfigPair[];
+  integrationDependencies: IntegrationDependency[];
 
   // XXX: optionsArgs can contain periods, which will throw off formik
   optionsArgs: Record<string, Primitive>;

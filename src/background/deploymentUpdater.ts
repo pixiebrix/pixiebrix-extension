@@ -38,9 +38,9 @@ import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import {
-  findLocalDeploymentServiceConfigurations,
+  findLocalDeploymentIntegrationConfigs,
   makeUpdatedFilter,
-  mergeDeploymentServiceConfigurations,
+  mergeDeploymentIntegrationDependencies,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
 import { selectUpdatePromptState } from "@/store/settingsSelectors";
@@ -237,11 +237,10 @@ async function installDeployment(
   // Install the deployment's blueprint with the service definition
   options = optionsReducer(
     options,
-    optionsActions.installRecipe({
-      recipe: deployment.package.config,
-      extensionPoints: deployment.package.config.extensionPoints,
+    optionsActions.installMod({
+      modDefinition: deployment.package.config,
       deployment,
-      services: await mergeDeploymentServiceConfigurations(
+      configuredDependencies: await mergeDeploymentIntegrationDependencies(
         deployment,
         locateAllForService
       ),
@@ -313,7 +312,7 @@ async function canAutomaticallyInstall({
     return false;
   }
 
-  const personalServices = await findLocalDeploymentServiceConfigurations(
+  const personalServices = await findLocalDeploymentIntegrationConfigs(
     deployment,
     locateAllForService
   );

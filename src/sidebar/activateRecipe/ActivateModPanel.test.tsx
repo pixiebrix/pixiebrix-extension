@@ -30,7 +30,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
-  getModDefinitionWithBuiltInServiceAuths,
+  getModDefinitionWithBuiltInIntegrationConfigs,
   defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
@@ -63,7 +63,7 @@ jest.mock("@/utils/modDefinitionUtils", () => {
   return {
     __esModule: true,
     ...actualUtils,
-    includesQuickBarStarterBrick: jest.fn().mockResolvedValue(true),
+    includesQuickBarStarterBrick: jest.fn(),
   };
 });
 
@@ -256,7 +256,7 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("renders with service configuration if no built-in service configs available", async () => {
-    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
 
     const rendered = setupMocksAndRender(modDefinition);
 
@@ -269,10 +269,12 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("activates recipe with built-in services automatically and renders well-done page", async () => {
-    const { modDefinition, builtInServiceAuths } =
-      getModDefinitionWithBuiltInServiceAuths();
+    const { modDefinition, builtInIntegrationConfigs } =
+      getModDefinitionWithBuiltInIntegrationConfigs();
 
-    appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
+    appApiMock
+      .onGet("/api/services/shared/")
+      .reply(200, builtInIntegrationConfigs);
 
     const rendered = setupMocksAndRender(modDefinition);
 
@@ -282,7 +284,7 @@ describe("ActivateRecipePanel", () => {
   });
 
   it("doesn't flicker while built-in auths are loading", async () => {
-    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
 
     onDeferredGet("/api/services/shared/");
 
@@ -296,10 +298,12 @@ describe("ActivateRecipePanel", () => {
 
 describe("ActivateMultipleModsPanel", () => {
   it("automatically activates single mod", async () => {
-    const { modDefinition, builtInServiceAuths } =
-      getModDefinitionWithBuiltInServiceAuths();
+    const { modDefinition, builtInIntegrationConfigs } =
+      getModDefinitionWithBuiltInIntegrationConfigs();
 
-    appApiMock.onGet("/api/services/shared/").reply(200, builtInServiceAuths);
+    appApiMock
+      .onGet("/api/services/shared/")
+      .reply(200, builtInIntegrationConfigs);
 
     const rendered = setupMocksAndRender(modDefinition, {
       componentOverride: (
@@ -313,7 +317,7 @@ describe("ActivateMultipleModsPanel", () => {
   });
 
   it("shows error if any mod requires configuration", async () => {
-    const { modDefinition } = getModDefinitionWithBuiltInServiceAuths();
+    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
 
     setupMocksAndRender(modDefinition, {
       componentOverride: (

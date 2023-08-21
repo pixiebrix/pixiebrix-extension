@@ -31,13 +31,13 @@ import { ensureModDefinitionPermissionsFromUserGesture } from "@/modDefinitions/
 
 const BOT_GAMES_BLUEPRINT_ID =
   "@pixies/bot-games/oldportal-enhancements" as RegistryId;
-const { installRecipe } = extensionsSlice.actions;
+const { installMod } = extensionsSlice.actions;
 const BOT_GAMES_CHALLENGE_URL =
   "https://developer.automationanywhere.com/challenges/event/swivelchairworkflow-challenge.html";
 
 export const useInstallBotGamesBlueprint = () => {
   const dispatch = useDispatch();
-  const { data: botGamesRecipe } = useOptionalModDefinition(
+  const { data: botGamesModDefinition } = useOptionalModDefinition(
     BOT_GAMES_BLUEPRINT_ID
   );
   const installedExtensions = useSelector(selectExtensions);
@@ -52,7 +52,7 @@ export const useInstallBotGamesBlueprint = () => {
     // There shouldn't be any services to configure considering we're hard-coding this Bot Games blueprint
     try {
       accepted = await ensureModDefinitionPermissionsFromUserGesture(
-        botGamesRecipe,
+        botGamesModDefinition,
         []
       );
     } catch (error) {
@@ -71,9 +71,8 @@ export const useInstallBotGamesBlueprint = () => {
     }
 
     dispatch(
-      installRecipe({
-        recipe: botGamesRecipe,
-        extensionPoints: botGamesRecipe.extensionPoints,
+      installMod({
+        modDefinition: botGamesModDefinition,
         screen: "extensionConsole",
         isReinstall: false,
       })

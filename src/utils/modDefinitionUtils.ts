@@ -20,7 +20,7 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { compact, uniq } from "lodash";
+import { compact, pick, uniq } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import type {
   StarterBrickDefinition,
@@ -30,21 +30,53 @@ import starterBrickRegistry from "@/starterBricks/registry";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
 import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProviderExtension";
+import { type Schema } from "@/types/schemaTypes";
+import { extractServiceIds } from "@/services/serviceUtils";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+
+function isSchemaServicesFormat(
+  services: ModComponentDefinition["services"]
+): services is Schema {
+  return (
+    Object.hasOwn(services, "properties") &&
+    // @ts-expect-error -- type checking with hasOwn
+    typeof services.properties === "object" &&
+    Object.hasOwn(services, "required") &&
+    // @ts-expect-error -- type checking with hasOwn
+    Array.isArray(services.required)
+  );
+}
 
 /**
- * Return an array of unique integration ids that are required to be configured
- * in order to install this mod, excluding the PixieBrix integration.
- * @param modDefinition the mod from which to extract integration ids
+ * Return an array of unique integration ids used by a mod definition or another collection of mod components
+ * @param modComponentDefinitions mod component definitions from which to extract integration ids
+ * @param excludePixieBrix whether to exclude the PixieBrix integration
+ * @param requiredOnly whether to only include required integrations
  */
-export const getRequiredIntegrationIds = (
-  modDefinition: ModDefinition
-): RegistryId[] =>
-  uniq(
-    (modDefinition.extensionPoints ?? [])
-      .flatMap((extensionPoint) => Object.values(extensionPoint.services ?? {}))
-      // The PixieBrix service gets automatically configured, so no need to include it
-      .filter((serviceId) => serviceId !== PIXIEBRIX_INTEGRATION_ID)
+export function getIntegrationIds(
+  {
+    extensionPoints: modComponentDefinitions = [],
+  }: Pick<ModDefinition, "extensionPoints">,
+  { excludePixieBrix = false, requiredOnly = false } = {}
+): RegistryId[] {
+  const integrationIds = uniq(
+    modComponentDefinitions.flatMap(({ services }) =>
+      isSchemaServicesFormat(services)
+        ? Object.entries(services.properties)
+            .filter(
+              ([key]) => !requiredOnly || services.required?.includes(key)
+            )
+            .flatMap(([, schema]) => extractServiceIds(schema as Schema))
+        : Object.values(services ?? {})
+    )
   );
+
+  if (excludePixieBrix) {
+    return integrationIds.filter((id) => id !== PIXIEBRIX_INTEGRATION_ID);
+  }
+
+  return integrationIds;
+}
 
 const getStarterBrickType = async (
   modComponentDefinition: ModComponentDefinition,
@@ -107,4 +139,21 @@ export async function includesQuickBarStarterBrick(
   }
 
   return false;
+}
+
+/**
+ * Select information about the ModDefinition used to install an ModComponentBase
+ * @see ModComponentBase._recipe
+ */
+export function pickModDefinitionMetadata(
+  modDefinition: ModDefinition
+): ModComponentBase["_recipe"] {
+  if (modDefinition.metadata?.id == null) {
+    throw new TypeError("ModDefinition metadata id is required");
+  }
+
+  return {
+    ...pick(modDefinition.metadata, ["id", "version", "name", "description"]),
+    ...pick(modDefinition, ["sharing", "updated_at"]),
+  };
 }

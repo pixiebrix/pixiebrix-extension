@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import {
+  inferModIntegrations,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -34,7 +37,7 @@ describe("inferRecipeOptions", () => {
 
 describe("inferRecipeAuths", () => {
   it("handles undefined services", () => {
-    expect(inferRecipeAuths([{ services: undefined }])).toStrictEqual({});
+    expect(inferModIntegrations([{ services: undefined }])).toStrictEqual({});
   });
 
   it("handles same service", () => {
@@ -47,7 +50,10 @@ describe("inferRecipeAuths", () => {
     };
 
     expect(
-      inferRecipeAuths([{ services: [dependency] }, { services: [dependency] }])
+      inferModIntegrations([
+        { services: [dependency] },
+        { services: [dependency] },
+      ])
     ).toStrictEqual({
       [service]: config,
     });
@@ -63,7 +69,7 @@ describe("inferRecipeAuths", () => {
     };
 
     expect(() =>
-      inferRecipeAuths([
+      inferModIntegrations([
         { services: [dependency] },
         { services: [{ ...dependency, config: uuidv4() }] },
       ])
@@ -77,7 +83,7 @@ describe("inferRecipeAuths", () => {
       outputKey: validateOutputKey("foo"),
     };
 
-    expect(() => inferRecipeAuths([{ services: [dependency] }])).toThrow(
+    expect(() => inferModIntegrations([{ services: [dependency] }])).toThrow(
       /is not configured/
     );
   });
