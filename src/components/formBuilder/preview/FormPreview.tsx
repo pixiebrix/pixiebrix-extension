@@ -182,6 +182,9 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     googleSheet: RjsfSelectWidget,
   };
 
+  console.log("*** activeField", activeField);
+  console.log("*** rjsfSchema", rjsfSchema);
+  console.log("*** previewSchema", previewSchema);
   return (
     <JsonSchemaForm
       tagName="div"

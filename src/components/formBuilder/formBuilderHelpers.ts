@@ -46,12 +46,14 @@ export type UiTypeExtra = "selectWithLabels" | undefined;
 
 export type UiType = {
   propertyType: SchemaPropertyType;
+  items?: SchemaDefinition;
   uiWidget: string | undefined;
   propertyFormat: string | undefined;
   /** Holds extra config. For instance, indicates whether a dropdown with labels should be used */
   extra: UiTypeExtra;
 };
 
+// TODO: maybe add items type for arrays here
 export const parseUiType = (value: string): UiType => {
   const [propertyType, uiWidget, propertyFormat, extra] = value.split(":");
   return {
@@ -62,6 +64,7 @@ export const parseUiType = (value: string): UiType => {
   };
 };
 
+// TODO: maybe add items type for arrays here
 export const stringifyUiType = ({
   propertyType,
   uiWidget,
@@ -234,6 +237,12 @@ export const produceSchemaOnUiTypeChange = (
 
       default: {
         draftPropertySchema.type = propertyType;
+
+        // TODO: move me to the field type definition?
+        if (propertyType === "array") {
+          draftPropertySchema.items = { type: "string" };
+        }
+
         delete draftPropertySchema.$ref;
       }
     }
