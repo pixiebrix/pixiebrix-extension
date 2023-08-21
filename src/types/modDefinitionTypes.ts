@@ -62,7 +62,7 @@ export type ModComponentDefinition = {
    * Services to make available to the ModComponent. During activation, the user will be prompted to select a credential
    * for each service entry.
    */
-  services?: Record<OutputKey, RegistryId>;
+  services?: Record<OutputKey, RegistryId> | Schema;
 
   /**
    * The default template engine for the ModComponent.
