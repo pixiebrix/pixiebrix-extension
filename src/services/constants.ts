@@ -33,15 +33,3 @@ export const CONTROL_ROOM_TOKEN_INTEGRATION_ID: RegistryId = validateRegistryId(
 export const CONTROL_ROOM_OAUTH_INTEGRATION_ID: RegistryId = validateRegistryId(
   "automation-anywhere/oauth2"
 );
-
-const GOOGLE_OAUTH_PKCE_INTEGRATION_ID: RegistryId =
-  validateRegistryId("google/oauth2-pkce");
-
-const MICROSOFT_OAUTH_PKCE_INTEGRATION_ID: RegistryId = validateRegistryId(
-  "microsoft/oauth2-pkce"
-);
-
-export const OAUTH_PKCE_INTEGRATION_IDS = [
-  GOOGLE_OAUTH_PKCE_INTEGRATION_ID,
-  MICROSOFT_OAUTH_PKCE_INTEGRATION_ID,
-];

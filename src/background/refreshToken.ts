@@ -25,7 +25,8 @@ import { locator as serviceLocator } from "@/background/locator";
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.
  * @returns True if the token was successfully refreshed. False if the token refresh was not attempted.
- * @throws AxiosError if the token refresh failed or Error if the integration is not an OAuth2 PKCE integration.
+ * @throws Error if the integration is not an OAuth2 PKCE integration.
+ * @throws AxiosError if the token refresh failed
  */
 export default async function refreshPKCEToken(
   integrationConfig: SanitizedIntegrationConfig

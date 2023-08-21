@@ -219,7 +219,7 @@ export type OAuth2Context = {
 };
 
 /**
- * A integration that can be dependency injected and used to authenticate external requests.
+ * An integration that can be dependency injected and used to authenticate external requests.
  *
  * The input/output schema is the same since it's directly user configured.
  */

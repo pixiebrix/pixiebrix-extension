@@ -34,10 +34,7 @@ import {
 } from "@/background/auth";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
-import {
-  OAUTH_PKCE_INTEGRATION_IDS,
-  PIXIEBRIX_INTEGRATION_ID,
-} from "@/services/constants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   selectRemoteResponseErrorMessage,
@@ -286,10 +283,7 @@ async function performConfiguredRequest(
     if (axiosError && isAuthenticationError(axiosError)) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
-        // TODO: Do we want to run this for all PKCE integrations or just Google + Azure for now because
-        //  Google + Azure are the only ones we've tested? I believe the only other PKCE service we currently
-        //  have is uipath/cloud-oauth.
-        if (OAUTH_PKCE_INTEGRATION_IDS.includes(service.id)) {
+        if (service.isOAuth2PKCE) {
           try {
             const isTokenRefreshed = await refreshPKCEToken(serviceConfig);
 
