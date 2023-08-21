@@ -57,7 +57,7 @@ describe("refresh PKCE token", () => {
     appApiMock.resetHistory();
   });
 
-  it("throws if integration configuration is not google pkce", async () => {
+  it("throws if integration configuration is not pkce", async () => {
     const integrationConfig = sanitizedIntegrationConfigFactory();
 
     await expect(
