@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import { defaultFieldFactory } from "./defaultFieldFactory";
 import CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";

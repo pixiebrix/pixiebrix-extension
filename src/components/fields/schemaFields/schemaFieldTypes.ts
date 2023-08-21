@@ -17,11 +17,19 @@
 
 import { type Schema } from "@/types/schemaTypes";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 
 export type CustomFieldToggleMode = {
   match: (fieldSchema: Schema) => boolean;
   option: InputModeOption;
 };
+
+export type CustomWidgetRegistry = {
+  ButtonVariantSchemaField: SchemaFieldComponent;
+  CustomEventField: SchemaFieldComponent;
+};
+
 export type CustomFieldDefinitions = {
   customToggleModes: CustomFieldToggleMode[];
+  customWidgets: CustomWidgetRegistry;
 };

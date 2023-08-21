@@ -29,7 +29,7 @@ import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import { defaultFieldFactory } from "@/components/fields/schemaFields/defaultFieldFactory";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";

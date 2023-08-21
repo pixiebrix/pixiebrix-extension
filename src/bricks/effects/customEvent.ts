@@ -50,7 +50,7 @@ class CustomEventEffect extends EffectABC {
 
   uiSchema: UiSchema = {
     eventName: {
-      "ui:widget": "SchemaCustomEventWidget",
+      "ui:widget": "CustomEventField",
     },
   };
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useContext } from "react";
 import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
@@ -23,17 +23,17 @@ import CssClassField from "./CssClassField";
 import HeadingStyleField from "./HeadingStyleField";
 import {
   isAppServiceField,
-  isButtonVariantField,
   isCssClassField,
-  isCustomEventField,
   isHeadingStyleField,
+  isUiWidget,
 } from "./fieldTypeCheckers";
 import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
-import ButtonVariantSchemaField from "@/components/fields/schemaFields/ButtonVariantSchemaField";
-import CustomEventField from "@/components/fields/schemaFields/CustomEventField";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
+import { get } from "lodash";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema, uiSchema } = props;
+  const { customWidgets } = useContext(SchemaFieldContext);
 
   if (isAppServiceField(schema)) {
     return <AppServiceField {...props} />;
@@ -47,12 +47,10 @@ const SchemaField: SchemaFieldComponent = (props) => {
     return <HeadingStyleField {...props} />;
   }
 
-  if (isButtonVariantField(uiSchema)) {
-    return <ButtonVariantSchemaField {...props} />;
-  }
-
-  if (isCustomEventField(uiSchema)) {
-    return <CustomEventField {...props} />;
+  if (isUiWidget(uiSchema)) {
+    const widgetName = get(uiSchema, "ui:widget", "") as string;
+    const Component = get(customWidgets, widgetName, null);
+    return Component ? <Component {...props} /> : null;
   }
 
   if (props.name.endsWith(".isRootAware")) {

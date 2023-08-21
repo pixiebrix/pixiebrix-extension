@@ -54,13 +54,8 @@ export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
 
-export const isButtonVariantField = (uiSchema?: UiSchema) =>
-  typeof uiSchema === "object" &&
-  get(uiSchema, ["ui:widget"]) === "SchemaButtonVariantWidget";
-
-export const isCustomEventField = (uiSchema?: UiSchema) =>
-  typeof uiSchema === "object" &&
-  get(uiSchema, ["ui:widget"]) === "SchemaCustomEventWidget";
+export const isUiWidget = (uiSchema?: UiSchema) =>
+  typeof get(uiSchema, ["ui:widget"]) === "string";
 
 /**
  * Returns true if the schema uses oneOf and "const" keyword to label enum options.
