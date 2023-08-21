@@ -216,10 +216,10 @@ export class TourEffect extends EffectABC {
         });
 
       // The types are incorrect. start() returns a promise, not the instance
-      tour.start();
+      await tour.start();
 
-      const handleAbort = () => {
-        tour.exit(true);
+      const handleAbort = async () => {
+        await tour.exit(true);
       };
 
       abortController.signal.addEventListener("abort", handleAbort);
