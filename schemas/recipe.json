@@ -46,10 +46,17 @@
             "description": "The id of the extension point, or an inner definition key"
           },
           "services": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "https://app.pixiebrix.com/schemas/ref#/service"
-            }
+            "oneOf": [
+              {
+                "$schema": "http://json-schema.org/draft-07/schema#"
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "https://app.pixiebrix.com/schemas/ref#/service"
+                }
+              }
+            ]
           }
         },
         "label": {

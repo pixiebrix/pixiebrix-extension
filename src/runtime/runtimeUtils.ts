@@ -47,12 +47,12 @@ import {
 } from "@/types/runtimeTypes";
 import {
   type ModComponentBase,
-  UnresolvedModComponent,
+  type UnresolvedModComponent,
 } from "@/types/modComponentTypes";
 import { excludeUndefined } from "@/utils/objectUtils";
 import { boolean } from "@/utils/typeUtils";
 import { $safeFind } from "@/utils/domUtils";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick

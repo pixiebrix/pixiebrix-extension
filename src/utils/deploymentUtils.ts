@@ -23,7 +23,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
-  IntegrationDependency,
+  type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "@/types/integrationTypes";
 import { getIntegrationIds } from "@/utils/modDefinitionUtils";
