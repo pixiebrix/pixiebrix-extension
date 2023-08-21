@@ -48,8 +48,10 @@ const SchemaField: SchemaFieldComponent = (props) => {
   }
 
   if (isUiWidget(uiSchema)) {
-    const Component = get(customWidgets, uiSchema["ui:widget"] as string, null);
-    return Component ? <Component {...props} /> : null;
+    const Component = get(customWidgets, uiSchema["ui:widget"] as string);
+
+    // If the uiWidget is registered, render it. Otherwise, render the default field.
+    if (Component) return <Component {...props} />;
   }
 
   if (props.name.endsWith(".isRootAware")) {
