@@ -20,7 +20,7 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { compact, pick, uniq } from "lodash";
+import { compact, isEmpty, pick, uniq } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import type {
   StarterBrickDefinition,
@@ -60,15 +60,19 @@ export function getIntegrationIds(
   { excludePixieBrix = false, requiredOnly = false } = {}
 ): RegistryId[] {
   const integrationIds = uniq(
-    modComponentDefinitions.flatMap(({ services }) =>
-      isSchemaServicesFormat(services)
+    modComponentDefinitions.flatMap(({ services }) => {
+      if (isEmpty(services)) {
+        return [];
+      }
+
+      return isSchemaServicesFormat(services)
         ? Object.entries(services.properties)
             .filter(
               ([key]) => !requiredOnly || services.required?.includes(key)
             )
             .flatMap(([, schema]) => extractServiceIds(schema as Schema))
-        : Object.values(services ?? {})
-    )
+        : Object.values(services ?? {});
+    })
   );
 
   if (excludePixieBrix) {
@@ -78,10 +82,10 @@ export function getIntegrationIds(
   return integrationIds;
 }
 
-const getStarterBrickType = async (
+async function getStarterBrickType(
   modComponentDefinition: ModComponentDefinition,
   modDefinition: ModDefinition
-): Promise<StarterBrickType | null> => {
+): Promise<StarterBrickType | null> {
   // Look up the extension point in recipe inner definitions first
   if (modDefinition.definitions?.[modComponentDefinition.id]) {
     const definition: StarterBrickDefinition = modDefinition.definitions[
@@ -100,11 +104,11 @@ const getStarterBrickType = async (
   );
 
   return (extensionPointFromRegistry?.kind as StarterBrickType) ?? null;
-};
+}
 
-export const getContainedStarterBrickTypes = async (
+export async function getContainedStarterBrickTypes(
   modDefinition: ModDefinition
-): Promise<StarterBrickType[]> => {
+): Promise<StarterBrickType[]> {
   const extensionPointTypes = await Promise.all(
     modDefinition.extensionPoints.map(async (extensionPoint) =>
       getStarterBrickType(extensionPoint, modDefinition)
@@ -112,7 +116,7 @@ export const getContainedStarterBrickTypes = async (
   );
 
   return uniq(compact(extensionPointTypes));
-};
+}
 
 /**
  * Returns true if the recipe includes a static or dynamic Quick Bar entries.

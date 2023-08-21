@@ -129,7 +129,7 @@ describe("ServicesBody", () => {
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        services: [{ id: serviceId1, config: null }],
+        integrationDependencies: [{ id: serviceId1, config: null }],
       },
     });
     await waitForEffect();
@@ -148,7 +148,7 @@ describe("ServicesBody", () => {
       <ServicesBody blueprint={defaultModDefinitionFactory()} showOwnTitle />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: null }],
+          integrationDependencies: [{ id: serviceId1, config: null }],
         },
       }
     );
@@ -169,7 +169,7 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: null }],
+          integrationDependencies: [{ id: serviceId1, config: null }],
         },
       }
     );
@@ -187,7 +187,9 @@ describe("ServicesBody", () => {
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        services: [{ id: serviceId1, config: sharedOption1a.value }],
+        integrationDependencies: [
+          { id: serviceId1, config: sharedOption1a.value },
+        ],
       },
     });
     await waitForEffect();
@@ -204,7 +206,9 @@ describe("ServicesBody", () => {
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        services: [{ id: serviceId1, config: sharedOption1a.value }],
+        integrationDependencies: [
+          { id: serviceId1, config: sharedOption1a.value },
+        ],
       },
     });
     await waitForEffect();
@@ -233,7 +237,7 @@ describe("ServicesBody", () => {
     getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        services: [
+        integrationDependencies: [
           { id: serviceId1, config: sharedOption1a.value },
           { id: serviceId2, config: sharedOption2a.value },
         ],
@@ -259,7 +263,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: builtInOption1a.value }],
+          integrationDependencies: [
+            { id: serviceId1, config: builtInOption1a.value },
+          ],
         },
       }
     );
@@ -287,7 +293,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: builtInOption1a.value }],
+          integrationDependencies: [
+            { id: serviceId1, config: builtInOption1a.value },
+          ],
         },
       }
     );
@@ -315,7 +323,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: builtInOption1a.value }],
+          integrationDependencies: [
+            { id: serviceId1, config: builtInOption1a.value },
+          ],
         },
       }
     );
@@ -338,7 +348,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: sharedOption1a.value }],
+          integrationDependencies: [
+            { id: serviceId1, config: sharedOption1a.value },
+          ],
         },
       }
     );
@@ -372,7 +384,7 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [
+          integrationDependencies: [
             { id: serviceId1, config: builtInOption1a.value },
             { id: serviceId2, config: sharedOption2a.value },
           ],
@@ -405,7 +417,7 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [
+          integrationDependencies: [
             { id: serviceId1, config: builtInOption1a.value },
             { id: serviceId2, config: sharedOption2a.value },
           ],

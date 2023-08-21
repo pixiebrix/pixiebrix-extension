@@ -35,9 +35,9 @@ describe("inferRecipeOptions", () => {
   });
 });
 
-describe("inferRecipeAuths", () => {
+describe("inferModIntegrations", () => {
   it("handles undefined services", () => {
-    expect(inferModIntegrations([{ services: undefined }])).toStrictEqual({});
+    expect(inferModIntegrations([{ services: undefined }])).toStrictEqual([]);
   });
 
   it("handles same service", () => {
@@ -54,9 +54,7 @@ describe("inferRecipeAuths", () => {
         { services: [dependency] },
         { services: [dependency] },
       ])
-    ).toStrictEqual({
-      [service]: config,
-    });
+    ).toStrictEqual([dependency]);
   });
 
   it("throw on mismatch", () => {
