@@ -32,10 +32,7 @@ import useActivateRecipe, {
   type ActivateResult,
 } from "@/activation/useActivateRecipe";
 import { SuccessPanel } from "@/sidebar/activateRecipe/ActivateModPanel";
-import { getTopLevelFrame } from "webext-messenger";
-import { hideSidebar } from "@/contentScript/messenger/api";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 
 type ModResultPair = {
   mod: RequiredModDefinition;
@@ -46,15 +43,9 @@ const MultipleSuccessPanel: React.FC<{ results: ModResultPair[] }> = ({
   results,
 }) => {
   const reduxDispatch = useDispatch();
-  const sidebarHasModPanels = useSelector(selectSidebarHasModPanels);
 
   async function handleActivationDecision() {
     reduxDispatch(sidebarSlice.actions.hideModActivationPanel());
-
-    if (!sidebarHasModPanels) {
-      const topFrame = await getTopLevelFrame();
-      void hideSidebar(topFrame);
-    }
   }
 
   return (

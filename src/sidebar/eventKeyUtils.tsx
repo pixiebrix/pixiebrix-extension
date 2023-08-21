@@ -65,7 +65,7 @@ export function defaultEventKey(
     staticPanels = [],
     modActivationPanel = null,
   }: SidebarEntries,
-  closedTabs: SidebarState["closedTabs"] = {}
+  closedTabs: SidebarState["closedTabs"]
 ): string | null {
   if (forms.length > 0) {
     return eventKeyForEntry(forms.at(-1));

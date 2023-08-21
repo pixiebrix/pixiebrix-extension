@@ -27,12 +27,9 @@ import Loader from "@/components/Loader";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
 import styles from "./ActivateModPanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import {
-  hideSidebar,
-  reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript,
-} from "@/contentScript/messenger/api";
+import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
 import { isEmpty } from "lodash";
@@ -51,7 +48,6 @@ import RequireMods, {
 import { persistor } from "@/sidebar/store";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
-import { selectSidebarHasModPanels } from "@/sidebar/sidebarSelectors";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
@@ -226,7 +222,6 @@ const ActivateRecipePanelContent: React.FC<
 }) => {
   const reduxDispatch = useDispatch();
   const marketplaceActivateRecipe = useActivateRecipe("marketplace");
-  const sidebarHasModPanels = useSelector(selectSidebarHasModPanels);
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
@@ -235,11 +230,6 @@ const ActivateRecipePanelContent: React.FC<
 
   async function handleActivationDecision() {
     reduxDispatch(actions.hideModActivationPanel());
-
-    if (!sidebarHasModPanels) {
-      const topFrame = await getTopLevelFrame();
-      void hideSidebar(topFrame);
-    }
   }
 
   const formValuesRef = useRef<WizardValues>(initialValues);

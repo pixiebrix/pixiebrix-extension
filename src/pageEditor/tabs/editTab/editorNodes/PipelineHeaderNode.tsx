@@ -39,7 +39,8 @@ export type PipelineHeaderNodeProps = {
   } | null;
   pipelineInputKey?: string;
   active?: boolean;
-  nestedActive?: boolean;
+  isParentActive?: boolean;
+  isAncestorActive?: boolean;
   isPipelineLoading: boolean;
 };
 
@@ -49,7 +50,8 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   nodeActions,
   pipelineInputKey,
   active,
-  nestedActive,
+  isParentActive,
+  isAncestorActive,
   nodePreviewElement,
   isPipelineLoading,
 }) => {
@@ -88,25 +90,27 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   return (
     <>
       <ListGroup.Item
+        active={active}
         className={cx(styles.root, {
           [styles.clickable]: Boolean(nodePreviewElement),
+          [styles.parentNodeActive]: isParentActive,
+          [styles.ancestorActive]: isAncestorActive,
         })}
         onClick={nodePreviewElement?.focus}
         ref={nodeRef}
       >
-        <PipelineOffsetView
-          nestingLevel={nestingLevel}
-          nestedActive={active || nestedActive} // Color for this offset-view is chosen using the header flag
-          isHeader={!nestedActive} // Don't color deeply-nested pipeline headers as active headers
-        />
-        <div
-          className={cx(styles.header, {
-            [styles.active]: active,
-            [styles.nestedActive]: nestedActive,
-          })}
-        >
-          <div className={styles.headerPipeLineTop} />
-          <div className={styles.headerPipeLineBottom} />
+        <PipelineOffsetView nestingLevel={nestingLevel} active={active} />
+        <div className={styles.header}>
+          <div
+            className={cx(styles.headerPipeLineTop, {
+              [styles.active]: active,
+            })}
+          />
+          <div
+            className={cx(styles.headerPipeLineBottom, {
+              [styles.active]: active,
+            })}
+          />
           <div className={styles.headerContent}>
             <div className={styles.labelAndInputKey}>
               <div className={styles.subPipelineLabel}>{headerLabel}</div>
