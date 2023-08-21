@@ -437,7 +437,7 @@ const usePipelineNodes = (): {
       };
     }
 
-    const activeSubPipelineHeader =
+    const subPipelineHeaderActive =
       activeNodePreviewElementId === null
         ? false
         : subPipelines.some(
@@ -453,7 +453,7 @@ const usePipelineNodes = (): {
       onClickMoveUp,
       onClickMoveDown,
       onClick,
-      active: activeSubPipelineHeader ? false : isNodeActive,
+      active: subPipelineHeaderActive ? false : isNodeActive,
       onHoverChange,
       parentActive,
       nestingLevel,
@@ -462,8 +462,7 @@ const usePipelineNodes = (): {
       nodeActions: expanded ? [] : brickNodeActions,
       showBiggerActions,
       trailingMessage,
-      // TODO: rename me subPipelineHeaderActive
-      activeSubPipelineHeader,
+      subPipelineHeaderActive,
     };
 
     nodes.push({
@@ -488,7 +487,7 @@ const usePipelineNodes = (): {
           ? nodePreviewElementId === activeNodePreviewElementId
           : false;
 
-        const activeSiblingHeader = activeSubPipelineHeader;
+        const activeSiblingHeader = subPipelineHeaderActive;
 
         const headerActions: NodeAction[] = [
           {
@@ -582,7 +581,7 @@ const usePipelineNodes = (): {
         showBiggerActions,
         trailingMessage,
         nestingLevel,
-        active: activeSubPipelineHeader ? false : isNodeActive,
+        active: subPipelineHeaderActive ? false : isNodeActive,
         nestedActive: parentActive,
         hovered,
         onHoverChange,
