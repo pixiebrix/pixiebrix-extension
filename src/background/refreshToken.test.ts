@@ -20,16 +20,23 @@ import { getCachedAuthData, setCachedAuthData } from "@/background/auth";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { type IntegrationConfig } from "@/types/integrationTypes";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import { readRawConfigurations } from "@/services/registry";
 import { fromJS } from "@/services/factory";
 import { locator } from "@/background/locator";
+import aaDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
-import greenhouse from "@contrib/integrations/greenhouse.yaml";
+import greenhouseDefintion from "@contrib/integrations/greenhouse.yaml";
+import microsoftDefinition from "@contrib/integrations/microsoft-oauth2-pkce.yaml";
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
+const aaIntegration = fromJS(aaDefinition as any);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
 const googleIntegration = fromJS(googleDefinition as any);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
-const greenhouseIntegration = fromJS(greenhouse as any);
+const greenhouseIntegration = fromJS(greenhouseDefintion as any);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
+const microsoftIntegration = fromJS(microsoftDefinition as any);
 
 jest.mock("@/background/auth", () => ({
   getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
@@ -48,7 +55,45 @@ const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
 
-describe("refresh PKCE token", () => {
+describe("refresh token argument validation", () => {
+  it("throws if integration id's don't match", async () => {
+    const integrationConfig = sanitizedIntegrationConfigFactory();
+
+    await expect(
+      refreshPKCEToken(googleIntegration, integrationConfig)
+    ).rejects.toThrow("Integration id and config service id do not match");
+  });
+
+  it("throws if integration is AA OAuth2", async () => {
+    const integrationConfig = sanitizedIntegrationConfigFactory({
+      serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+    });
+
+    await expect(
+      refreshPKCEToken(aaIntegration, integrationConfig)
+    ).rejects.toThrow(
+      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`
+    );
+  });
+
+  it("throws if integration configuration is not pkce", async () => {
+    const integrationConfig = sanitizedIntegrationConfigFactory({
+      serviceId: greenhouseIntegration.id,
+    });
+
+    await expect(
+      refreshPKCEToken(greenhouseIntegration, integrationConfig)
+    ).rejects.toThrow(
+      `Expected OAuth2 PKCE integration, but got ${greenhouseIntegration.id}`
+    );
+  });
+});
+
+describe.each(
+  // Create an array of arrays, where the first element is included in the test name,
+  // because using the integration object in the test name was breaking the test.
+  [googleIntegration, microsoftIntegration].map((x) => [x.id, x])
+)("refresh PKCE token for %s", (_, integration) => {
   beforeEach(() => {
     getCachedAuthDataMock.mockReset();
     setCachedAuthDataMock.mockReset();
@@ -57,23 +102,13 @@ describe("refresh PKCE token", () => {
     appApiMock.resetHistory();
   });
 
-  it("throws if integration configuration is not pkce", async () => {
-    const integrationConfig = sanitizedIntegrationConfigFactory();
-
-    await expect(
-      refreshPKCEToken(greenhouseIntegration, integrationConfig)
-    ).rejects.toThrow(
-      `Expected OAuth2 PKCE integration, but got ${greenhouseIntegration.id}`
-    );
-  });
-
   it("nop if no cached auth data", async () => {
     const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: googleIntegration.id,
+      serviceId: integration.id,
     });
 
     const isTokenRefreshed = await refreshPKCEToken(
-      googleIntegration,
+      integration,
       integrationConfig
     );
 
@@ -83,7 +118,7 @@ describe("refresh PKCE token", () => {
 
   it("nop if no refresh token", async () => {
     const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: googleIntegration.id,
+      serviceId: integration.id,
     });
 
     getCachedAuthDataMock.mockResolvedValue({
@@ -92,7 +127,7 @@ describe("refresh PKCE token", () => {
     });
 
     const isTokenRefreshed = await refreshPKCEToken(
-      googleIntegration,
+      integration,
       integrationConfig
     );
 
@@ -102,7 +137,7 @@ describe("refresh PKCE token", () => {
 
   it("refreshes token with refresh token in response", async () => {
     const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: googleIntegration.id,
+      serviceId: integration.id,
     });
 
     getCachedAuthDataMock.mockResolvedValue({
@@ -126,7 +161,7 @@ describe("refresh PKCE token", () => {
     });
 
     const isTokenRefreshed = await refreshPKCEToken(
-      googleIntegration,
+      integration,
       integrationConfig
     );
 
@@ -140,7 +175,7 @@ describe("refresh PKCE token", () => {
 
   it("refreshes token without refresh token in response", async () => {
     const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: googleIntegration.id,
+      serviceId: integration.id,
     });
 
     getCachedAuthDataMock.mockResolvedValue({
@@ -163,7 +198,7 @@ describe("refresh PKCE token", () => {
     });
 
     const isTokenRefreshed = await refreshPKCEToken(
-      googleIntegration,
+      integration,
       integrationConfig
     );
 
@@ -177,7 +212,7 @@ describe("refresh PKCE token", () => {
 
   it("throws on authorization error", async () => {
     const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: googleIntegration.id,
+      serviceId: integration.id,
     });
 
     getCachedAuthDataMock.mockResolvedValue({
@@ -198,7 +233,7 @@ describe("refresh PKCE token", () => {
     appApiMock.onPost().reply(401);
 
     await expect(
-      refreshPKCEToken(googleIntegration, integrationConfig)
+      refreshPKCEToken(integration, integrationConfig)
     ).rejects.toThrow("Request failed with status code 401");
   });
 });

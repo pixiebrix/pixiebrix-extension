@@ -34,7 +34,10 @@ import {
 } from "@/background/auth";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/services/constants";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   selectRemoteResponseErrorMessage,
@@ -283,7 +286,10 @@ async function performConfiguredRequest(
     if (axiosError && isAuthenticationError(axiosError)) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
-        if (service.isOAuth2PKCE) {
+        if (
+          service.isOAuth2PKCE &&
+          service.id !== CONTROL_ROOM_OAUTH_INTEGRATION_ID
+        ) {
           try {
             const isTokenRefreshed = await refreshPKCEToken(
               service,

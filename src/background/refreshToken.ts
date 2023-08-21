@@ -23,6 +23,7 @@ import {
 } from "@/types/integrationTypes";
 import { getCachedAuthData, setCachedAuthData } from "@/background/auth";
 import { locator as serviceLocator } from "@/background/locator";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.
@@ -36,9 +37,15 @@ export default async function refreshPKCEToken(
 ): Promise<boolean> {
   expectContext("background");
 
-  // Instead of hardcoding the list, we could check the integration definition for a "code_challenge_method" field.
-  // If it exists, that means it's a PKCE integration. See isOAuth2PKCE in the pixiebrix-app repo.
-  if (!integration.isOAuth2PKCE) {
+  if (integration.id !== integrationConfig.serviceId) {
+    throw new Error(
+      `Integration id and config service id do not match: ${integration.id} !== ${integrationConfig.serviceId}`
+    );
+  } else if (integration.id === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
+    throw new Error(
+      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`
+    );
+  } else if (!integration.isOAuth2PKCE) {
     throw new Error(
       `Expected OAuth2 PKCE integration, but got ${integration.id}`
     );
