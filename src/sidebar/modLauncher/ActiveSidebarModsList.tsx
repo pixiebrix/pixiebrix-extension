@@ -35,6 +35,7 @@ import {
   isResolvedModComponent,
   isUnavailableMod,
 } from "@/utils/modUtils";
+import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 
 const columns: Array<Column<PanelEntry>> = [
   {
@@ -43,7 +44,29 @@ const columns: Array<Column<PanelEntry>> = [
   },
 ];
 
-const NoActiveSidebarPanelsView: React.FunctionComponent = () => (
+const EnterpriseNoActiveSidebarPanelsView: React.FunctionComponent = () => (
+  <div className={styles.emptyViewRoot}>
+    <div>
+      <h4>We didn&apos;t find any mods to run</h4>
+      <img
+        src={workshopIllustration}
+        className={styles.illustration}
+        alt="Workshop"
+      />
+      <p>
+        Some mods don&apos;t run on every page.
+        <br />
+        And other mods don&apos;t run in the Sidebar.
+        <br />
+        <br />
+        Please contact your team administrator if a mod you were expecting is
+        not available.
+      </p>
+    </div>
+  </div>
+);
+
+const PublicNoActiveSidebarPanelsView: React.FunctionComponent = () => (
   <div className={styles.emptyViewRoot}>
     <div>
       <p>We didn&apos;t find any mods to run</p>
@@ -72,6 +95,15 @@ const NoActiveSidebarPanelsView: React.FunctionComponent = () => (
     </p>
   </div>
 );
+
+const NoActiveSidebarPanelsView: React.FunctionComponent = () => {
+  const isEnterpriseUser = useIsEnterpriseUser();
+  return isEnterpriseUser ? (
+    <EnterpriseNoActiveSidebarPanelsView />
+  ) : (
+    <PublicNoActiveSidebarPanelsView />
+  );
+};
 
 function getModViewItemForPanel(
   modViewItems: ModViewItem[],
@@ -135,5 +167,3 @@ export const ActiveSidebarModsList: React.FunctionComponent<{
 
   return isLoading ? <Loader /> : renderBody;
 };
-
-export default ActiveSidebarModsList;
