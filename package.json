@@ -90,7 +90,7 @@
     "json-stringify-safe": "^5.0.1",
     "json5": "^2.2.3",
     "jsonpath-plus": "^7.0.0",
-    "kbar": "^0.1.0-beta.41",
+    "kbar": "^0.1.0-beta.43",
     "lodash-es": "^4.17.21",
     "marked": "^7.0.2",
     "memoize-one": "^6.0.0",
