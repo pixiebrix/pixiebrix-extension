@@ -41,7 +41,7 @@ import {
 import * as messengerApi from "@/contentScript/messenger/api";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
-import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
+import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useRequiredModDefinitions: jest.fn(),
@@ -57,8 +57,10 @@ const checkModDefinitionPermissionsMock = jest.mocked(
 );
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
-jest.mock("@/utils/modDefinitionUtils", () => {
-  const actualUtils = jest.requireActual("@/utils/modDefinitionUtils");
+jest.mock("@/starterBricks/starterBrickModUtils", () => {
+  const actualUtils = jest.requireActual(
+    "@/starterBricks/starterBrickModUtils"
+  );
 
   return {
     __esModule: true,

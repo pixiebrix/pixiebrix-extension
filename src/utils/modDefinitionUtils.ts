@@ -20,16 +20,8 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { compact, isEmpty, pick, uniq } from "lodash";
+import { isEmpty, pick, uniq } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
-import type {
-  StarterBrickDefinition,
-  StarterBrickType,
-} from "@/starterBricks/types";
-import starterBrickRegistry from "@/starterBricks/registry";
-import { resolveRecipeInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
-import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProviderExtension";
 import { type Schema } from "@/types/schemaTypes";
 import { extractServiceIds } from "@/services/serviceUtils";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -80,69 +72,6 @@ export function getIntegrationIds(
   }
 
   return integrationIds;
-}
-
-async function getStarterBrickType(
-  modComponentDefinition: ModComponentDefinition,
-  modDefinition: ModDefinition
-): Promise<StarterBrickType | null> {
-  // Look up the extension point in recipe inner definitions first
-  if (modDefinition.definitions?.[modComponentDefinition.id]) {
-    const definition: StarterBrickDefinition = modDefinition.definitions[
-      modComponentDefinition.id
-    ].definition as StarterBrickDefinition;
-    const extensionPointType = definition?.type;
-
-    if (extensionPointType) {
-      return extensionPointType;
-    }
-  }
-
-  // If no inner definitions, look up the extension point in the registry
-  const extensionPointFromRegistry = await starterBrickRegistry.lookup(
-    modComponentDefinition.id as RegistryId
-  );
-
-  return (extensionPointFromRegistry?.kind as StarterBrickType) ?? null;
-}
-
-export async function getContainedStarterBrickTypes(
-  modDefinition: ModDefinition
-): Promise<StarterBrickType[]> {
-  const extensionPointTypes = await Promise.all(
-    modDefinition.extensionPoints.map(async (extensionPoint) =>
-      getStarterBrickType(extensionPoint, modDefinition)
-    )
-  );
-
-  return uniq(compact(extensionPointTypes));
-}
-
-/**
- * Returns true if the recipe includes a static or dynamic Quick Bar entries.
- * @param modDefinition the mod definition
- */
-export async function includesQuickBarStarterBrick(
-  modDefinition?: ModDefinition
-): Promise<boolean> {
-  const resolvedExtensionDefinitions = await resolveRecipeInnerDefinitions(
-    modDefinition
-  );
-
-  for (const { id } of resolvedExtensionDefinitions) {
-    // eslint-disable-next-line no-await-in-loop -- can break when we find one
-    const starterBrick = await starterBrickRegistry.lookup(id);
-    if (
-      QuickBarStarterBrickABC.isQuickBarExtensionPoint(starterBrick) ||
-      QuickBarProviderStarterBrickABC.isQuickBarProviderExtensionPoint(
-        starterBrick
-      )
-    ) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 /**

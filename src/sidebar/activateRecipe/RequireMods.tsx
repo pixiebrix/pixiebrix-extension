@@ -28,10 +28,8 @@ import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import {
-  getIntegrationIds,
-  includesQuickBarStarterBrick,
-} from "@/utils/modDefinitionUtils";
+import { getIntegrationIds } from "@/utils/modDefinitionUtils";
+import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 
 export type RequiredModDefinition = {
   /**

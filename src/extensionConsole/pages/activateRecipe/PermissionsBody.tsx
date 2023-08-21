@@ -27,8 +27,8 @@ import { useFormikContext } from "formik";
 import useModPermissions from "./useModPermissions";
 import useAsyncState from "@/hooks/useAsyncState";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
-import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
 import { type IntegrationDependency } from "@/types/integrationTypes";
+import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 
 function selectedAuths(values: WizardValues): IntegrationDependency[] {
   return values.integrationDependencies.filter((x) => x.config);

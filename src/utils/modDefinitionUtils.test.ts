@@ -15,14 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getContainedStarterBrickTypes,
-  getIntegrationIds,
-} from "./modDefinitionUtils";
-import {
-  modComponentDefinitionFactory,
-  defaultModDefinitionFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { getIntegrationIds } from "./modDefinitionUtils";
+import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { generatePackageId } from "@/utils/registryUtils";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -52,68 +46,6 @@ describe("generateRecipeId", () => {
 
   test("return empty on invalid", () => {
     expect(generatePackageId("", "This   Is a Test")).toBe("");
-  });
-});
-
-describe("getContainedExtensionPointTypes", () => {
-  test("gets types with inner definitions", async () => {
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory()
-    );
-    expect(result).toStrictEqual(["menuItem"]);
-  });
-
-  test("returns only unique types", async () => {
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory({
-        extensionPoints: [
-          modComponentDefinitionFactory(),
-          modComponentDefinitionFactory(),
-        ],
-      })
-    );
-    expect(result).toStrictEqual(["menuItem"]);
-  });
-
-  test("gets types without inner definitions", async () => {
-    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => ({
-      kind: "menuItem",
-    }));
-
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory({
-        extensionPoints: [modComponentDefinitionFactory()],
-        definitions: undefined,
-      })
-    );
-
-    expect(result).toStrictEqual(["menuItem"]);
-  });
-
-  test("returns non-null values", async () => {
-    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
-
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory({
-        extensionPoints: [modComponentDefinitionFactory()],
-        definitions: undefined,
-      })
-    );
-
-    expect(result).toStrictEqual([]);
-  });
-
-  test("inner definition not found", async () => {
-    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
-
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory({
-        extensionPoints: [modComponentDefinitionFactory()],
-        definitions: {},
-      })
-    );
-
-    expect(result).toStrictEqual([]);
   });
 });
 
