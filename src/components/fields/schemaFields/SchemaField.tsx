@@ -48,8 +48,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
   }
 
   if (isUiWidget(uiSchema)) {
-    const widgetName = get(uiSchema, "ui:widget", "") as string;
-    const Component = get(customWidgets, widgetName, null);
+    const Component = get(customWidgets, uiSchema["ui:widget"] as string, null);
     return Component ? <Component {...props} /> : null;
   }
 
