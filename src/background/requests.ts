@@ -286,6 +286,8 @@ async function performConfiguredRequest(
     if (axiosError && isAuthenticationError(axiosError)) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
+        // Don't refresh the Automation Anywhere OAuth2 token here because it has its own unique refresh call
+        // that is called on a schedule (see initPartnerTokenRefresh).
         if (
           service.isOAuth2PKCE &&
           service.id !== CONTROL_ROOM_OAUTH_INTEGRATION_ID
