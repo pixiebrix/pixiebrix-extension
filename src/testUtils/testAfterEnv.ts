@@ -19,7 +19,6 @@ import "@testing-library/jest-dom";
 // eslint-disable-next-line import/no-unassigned-import -- mocking the indexedDB
 import "fake-indexeddb/auto";
 import $ from "jquery";
-import crypto from "node:crypto";
 // Mock `window.location` with Jest spies and extend expect
 // https://github.com/evelynhathaway/jest-location-mock
 import "jest-location-mock";
@@ -30,10 +29,13 @@ import * as detectPageMock from "./detectPageMock";
 import * as loggingMock from "./loggingMock";
 import * as reportErrorMock from "./reportErrorMock";
 
+// @ts-expect-error For testing only
 global.$ = $;
+// @ts-expect-error For testing only
 global.jQuery = $;
 
 // Disable onMessage handler, or else it will respond to `sendMessage` calls locally
+// @ts-expect-error For testing only
 global.browser.runtime.onMessage.addListener = jest.fn();
 
 browser.runtime.getManifest = jest.fn().mockReturnValue({

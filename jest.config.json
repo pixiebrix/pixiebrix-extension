@@ -27,7 +27,7 @@
     "fake-indexeddb/auto"
   ],
   "setupFilesAfterEnv": [
-    "<rootDir>/src/testUtils/testAfterEnv.js",
+    "<rootDir>/src/testUtils/testAfterEnv.ts",
     "jest-extended/all"
   ],
   "coverageReporters": ["json"],
