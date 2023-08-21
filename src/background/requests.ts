@@ -285,7 +285,10 @@ async function performConfiguredRequest(
       if (service.isOAuth2 || service.isToken) {
         if (service.isOAuth2PKCE) {
           try {
-            const isTokenRefreshed = await refreshPKCEToken(serviceConfig);
+            const isTokenRefreshed = await refreshPKCEToken(
+              service,
+              serviceConfig
+            );
 
             if (isTokenRefreshed) {
               return serializableAxiosRequest(

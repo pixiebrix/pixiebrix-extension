@@ -17,8 +17,10 @@
 
 import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
-import serviceRegistry from "@/services/registry";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import {
+  type Integration,
+  type SanitizedIntegrationConfig,
+} from "@/types/integrationTypes";
 import { getCachedAuthData, setCachedAuthData } from "@/background/auth";
 import { locator as serviceLocator } from "@/background/locator";
 
@@ -29,11 +31,10 @@ import { locator as serviceLocator } from "@/background/locator";
  * @throws AxiosError if the token refresh failed
  */
 export default async function refreshPKCEToken(
+  integration: Integration,
   integrationConfig: SanitizedIntegrationConfig
 ): Promise<boolean> {
   expectContext("background");
-
-  const integration = await serviceRegistry.lookup(integrationConfig.serviceId);
 
   // Instead of hardcoding the list, we could check the integration definition for a "code_challenge_method" field.
   // If it exists, that means it's a PKCE integration. See isOAuth2PKCE in the pixiebrix-app repo.
