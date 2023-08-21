@@ -21,6 +21,13 @@ import {
   modComponentDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
+import { type StarterBrick } from "@/types/starterBrickTypes";
+
+extensionPointRegistry.lookup = jest.fn();
+
+const extensionPointRegistryLookupMock = jest.mocked(
+  extensionPointRegistry.lookup
+);
 
 describe("getContainedStarterBrickTypes", () => {
   test("gets types with inner definitions", async () => {
@@ -43,9 +50,9 @@ describe("getContainedStarterBrickTypes", () => {
   });
 
   test("gets types without inner definitions", async () => {
-    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => ({
+    extensionPointRegistryLookupMock.mockResolvedValue({
       kind: "menuItem",
-    }));
+    } as StarterBrick);
 
     const result = await getContainedStarterBrickTypes(
       defaultModDefinitionFactory({
@@ -58,7 +65,7 @@ describe("getContainedStarterBrickTypes", () => {
   });
 
   test("returns non-null values", async () => {
-    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
+    extensionPointRegistryLookupMock.mockResolvedValue(null);
 
     const result = await getContainedStarterBrickTypes(
       defaultModDefinitionFactory({
@@ -71,7 +78,7 @@ describe("getContainedStarterBrickTypes", () => {
   });
 
   test("inner definition not found", async () => {
-    (extensionPointRegistry.lookup as jest.Mock).mockImplementation(() => null);
+    extensionPointRegistryLookupMock.mockResolvedValue(null);
 
     const result = await getContainedStarterBrickTypes(
       defaultModDefinitionFactory({
