@@ -328,23 +328,23 @@ const usePipelineNodes = (): {
     const expanded = hasSubPipelines && !collapsed;
 
     const onClick = () => {
-      if (isNodeActive) {
-        if (activeNodePreviewElementId) {
-          dispatch(actions.setNodePreviewActiveElement(null));
+      if (activeNodePreviewElementId) {
+        dispatch(actions.setNodePreviewActiveElement(null));
+
+        if (isNodeActive) {
           return;
         }
+      }
 
-        if (hasSubPipelines) {
-          dispatch(
-            actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId)
-          );
-        }
-      } else {
-        if (activeNodePreviewElementId) {
-          dispatch(actions.setNodePreviewActiveElement(null));
-        }
-
+      if (!isNodeActive) {
         setActiveNodeId(blockConfig.instanceId);
+        return;
+      }
+
+      if (hasSubPipelines) {
+        dispatch(
+          actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId)
+        );
       }
     };
 
@@ -453,7 +453,7 @@ const usePipelineNodes = (): {
       onClickMoveUp,
       onClickMoveDown,
       onClick,
-      active: subPipelineHeaderActive ? false : isNodeActive,
+      active: !subPipelineHeaderActive && isNodeActive,
       onHoverChange,
       parentActive,
       nestingLevel,
@@ -483,10 +483,9 @@ const usePipelineNodes = (): {
         const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
         const nodePreviewElementId = getNodePreviewElementId(blockConfig, path);
-        const isHeaderNodeActive = activeNodePreviewElementId
-          ? nodePreviewElementId === activeNodePreviewElementId
-          : false;
-
+        const isHeaderNodeActive =
+          activeNodePreviewElementId &&
+          nodePreviewElementId === activeNodePreviewElementId;
         const activeSiblingHeader = subPipelineHeaderActive;
 
         const headerActions: NodeAction[] = [
@@ -523,8 +522,8 @@ const usePipelineNodes = (): {
           nodeActions: headerActions,
           pipelineInputKey: inputKey,
           active: isHeaderNodeActive,
-          parentActive: activeSiblingHeader ? false : isNodeActive,
-          ancestorActive: activeSiblingHeader ? false : parentActive,
+          parentActive: !activeSiblingHeader && isNodeActive,
+          ancestorActive: !activeSiblingHeader && parentActive,
           nodePreviewElement: nodePreviewElementId
             ? {
                 name: nodePreviewElementId,
@@ -581,7 +580,7 @@ const usePipelineNodes = (): {
         showBiggerActions,
         trailingMessage,
         nestingLevel,
-        active: subPipelineHeaderActive ? false : isNodeActive,
+        active: !subPipelineHeaderActive && isNodeActive,
         nestedActive: parentActive,
         hovered,
         onHoverChange,
