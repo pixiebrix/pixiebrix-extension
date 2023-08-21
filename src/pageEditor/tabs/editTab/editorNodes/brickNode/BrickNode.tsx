@@ -33,7 +33,7 @@ import {
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
   active,
-  parentIsActive,
+  isParentActive,
   onHoverChange,
   icon,
   runStatus,
@@ -61,7 +61,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
         active={active}
         className={cx(styles.root, "list-group-item-action", {
           [styles.expanded]: hasSubPipelines && !collapsed,
-          [styles.parentIsActive]: parentIsActive,
+          [styles.parentIsActive]: isParentActive,
         })}
         title={
           runStatus === RunStatus.SKIPPED
