@@ -123,6 +123,7 @@ export function getDefaultAuthOptionsForMod(
   authOptions: AuthOption[]
 ): Record<RegistryId, AuthOption | null> {
   const requiredIntegrationIds = getIntegrationIds(modDefinition, {
+    // The PixieBrix service gets automatically configured, so no need to include it
     excludePixieBrix: true,
   });
 

@@ -114,7 +114,6 @@ describe("installStarterBlueprints", () => {
       getModDefinitionWithBuiltInIntegrationConfigs();
 
     const nonPixieBrixIntegrationIds = getIntegrationIds(modDefinition, {
-      // The PixieBrix service gets automatically configured, so no need to include it
       excludePixieBrix: true,
     });
 
