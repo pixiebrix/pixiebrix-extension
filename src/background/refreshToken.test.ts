@@ -22,7 +22,6 @@ import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integra
 import { type IntegrationConfig } from "@/types/integrationTypes";
 import { readRawConfigurations } from "@/services/registry";
 import { fromJS } from "@/services/factory";
-import { registry } from "@/background/messenger/api";
 import { locator } from "@/background/locator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import greenhouse from "@contrib/integrations/greenhouse.yaml";
@@ -40,21 +39,10 @@ jest.mock("@/background/auth", () => ({
 jest.mock("@/services/registry", () => {
   const actual = jest.requireActual("@/services/registry");
   return {
-    // Include __esModule so default export works
-    __esModule: true,
     ...actual,
-    readRawConfigurations: jest.fn().mockResolvedValue([]),
+    readRawConfigurations: jest.fn(),
   };
 });
-
-// Module mocked via __mocks__/@/background/messenger/api
-jest.mocked(registry.find).mockImplementation(
-  async () =>
-    ({
-      id: googleIntegration.id,
-      config: googleDefinition,
-    } as any)
-);
 
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
