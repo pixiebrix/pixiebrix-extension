@@ -33,20 +33,13 @@ import {
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
 import { $safeFind } from "@/utils/domUtils";
+import { type TooltipPosition } from "intro.js/src/core/steps";
 
 type Step = {
   title: string;
   intro: string;
   element: string;
-  position:
-    | "right"
-    | "left"
-    | "bottom"
-    | "top"
-    | "bottom-left-aligned"
-    | "bottom-middle-aligned"
-    | "bottom-right-aligned"
-    | "auto";
+  position: TooltipPosition;
 };
 
 export class TourEffect extends EffectABC {
@@ -204,9 +197,7 @@ export class TourEffect extends EffectABC {
         .onafterchange(function () {
           // XXX: :sad: can't mark individual steps via markTourStep because intro.js doesn't provide a way to hook into
           // the individual step. There's a PR that pending: https://github.com/usablica/intro.js/pull/1266/files
-          // @ts-expect-error -- need to look inside the callback instance
           const currentStep = this._currentStep;
-          // @ts-expect-error -- need to look inside the callback instance
           const title = this._introItems[currentStep]?.title;
           const label = isEmpty(title) ? `Step ${currentStep}` : title;
           markTourStep(nonce, { step: label, context: logger.context });
