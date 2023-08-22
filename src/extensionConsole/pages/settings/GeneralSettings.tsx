@@ -24,20 +24,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { useGetTheme } from "@/hooks/useTheme";
-import { selectTelemetryOrganizationId } from "@/auth/authSelectors";
+import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 
 const GeneralSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { isFloatingActionButtonEnabled } = useSelector(selectSettings);
 
-  const theme = useGetTheme();
-
-  const telemetryOrganizationId = useSelector(selectTelemetryOrganizationId);
-
   // Disable FAB for enterprise and partner users
-  const disableFloatingActionButton =
-    Boolean(telemetryOrganizationId) || theme !== "default";
+  const disableFloatingActionButton = useIsEnterpriseUser();
 
   const checked = isFloatingActionButtonEnabled && !disableFloatingActionButton;
 
