@@ -20,7 +20,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type SidebarState, type SidebarEntries } from "@/types/sidebarTypes";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 
 describe("defaultEventKey", () => {
   it("returns null no content", () => {

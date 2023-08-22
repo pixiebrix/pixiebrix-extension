@@ -42,7 +42,7 @@ import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 
 const emptySidebarState: SidebarState = {
   panels: [],

@@ -38,7 +38,7 @@ import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import {
   ensureExtensionPointsInstalled,
   getReservedSidebarEntries,

@@ -22,7 +22,7 @@ import { type SidebarEntries } from "@/types/sidebarTypes";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { screen, within } from "@testing-library/react";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import useFlags from "@/hooks/useFlags";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";

@@ -59,7 +59,7 @@ import ErrorBoundary from "@/sidebar/ErrorBoundary";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import useFlags from "@/hooks/useFlags";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { getTopLevelFrame } from "webext-messenger";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";

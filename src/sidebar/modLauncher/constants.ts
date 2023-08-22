@@ -14,26 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from "react";
-import { Container } from "react-bootstrap";
-import useMods from "@/mods/useMods";
-import { ErrorDisplay } from "@/layout/ErrorDisplay";
-import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsList";
 
-const ModLauncher: React.FunctionComponent = () => {
-  const { mods, error } = useMods();
+import { type StaticPanelEntry } from "@/types/sidebarTypes";
 
-  return (
-    <div className="full-height h-100">
-      <Container className="scrollable-area">
-        {error ? (
-          <ErrorDisplay error={error} />
-        ) : (
-          <ActiveSidebarModsList mods={mods} />
-        )}
-      </Container>
-    </div>
-  );
+export const MOD_LAUNCHER: StaticPanelEntry = {
+  type: "staticPanel",
+  heading: "Mods",
+  key: "modLauncher",
 };
-
-export default ModLauncher;
