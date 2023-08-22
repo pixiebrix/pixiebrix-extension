@@ -89,151 +89,150 @@ describe("refresh token argument validation", () => {
   });
 });
 
-describe.each(
-  // Create an array of arrays, where the first element is included in the test name,
-  // because using the integration object in the test name was breaking the test.
-  [googleIntegration, microsoftIntegration].map((x) => [x.id, x])
-)("refresh PKCE token for %s", (_, integration) => {
-  beforeEach(() => {
-    getCachedAuthDataMock.mockReset();
-    setCachedAuthDataMock.mockReset();
-    readRawConfigurationsMock.mockReset();
-    appApiMock.reset();
-    appApiMock.resetHistory();
-  });
-
-  it("nop if no cached auth data", async () => {
-    const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: integration.id,
+describe.each([googleIntegration, microsoftIntegration])(
+  "refresh PKCE token for $id",
+  (integration) => {
+    beforeEach(() => {
+      getCachedAuthDataMock.mockReset();
+      setCachedAuthDataMock.mockReset();
+      readRawConfigurationsMock.mockReset();
+      appApiMock.reset();
+      appApiMock.resetHistory();
     });
 
-    const isTokenRefreshed = await refreshPKCEToken(
-      integration,
-      integrationConfig
-    );
+    it("nop if no cached auth data", async () => {
+      const integrationConfig = sanitizedIntegrationConfigFactory({
+        serviceId: integration.id,
+      });
 
-    expect(isTokenRefreshed).toBe(false);
-    expect(getCachedAuthDataMock).toHaveBeenCalledOnce();
-  });
+      const isTokenRefreshed = await refreshPKCEToken(
+        integration,
+        integrationConfig
+      );
 
-  it("nop if no refresh token", async () => {
-    const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: integration.id,
+      expect(isTokenRefreshed).toBe(false);
+      expect(getCachedAuthDataMock).toHaveBeenCalledOnce();
     });
 
-    getCachedAuthDataMock.mockResolvedValue({
-      access_token: "notatoken",
-      _oauthBrand: undefined,
+    it("nop if no refresh token", async () => {
+      const integrationConfig = sanitizedIntegrationConfigFactory({
+        serviceId: integration.id,
+      });
+
+      getCachedAuthDataMock.mockResolvedValue({
+        access_token: "notatoken",
+        _oauthBrand: undefined,
+      });
+
+      const isTokenRefreshed = await refreshPKCEToken(
+        integration,
+        integrationConfig
+      );
+
+      expect(isTokenRefreshed).toBe(false);
+      expect(appApiMock.history.post).toHaveLength(0);
     });
 
-    const isTokenRefreshed = await refreshPKCEToken(
-      integration,
-      integrationConfig
-    );
+    it("refreshes token with refresh token in response", async () => {
+      const integrationConfig = sanitizedIntegrationConfigFactory({
+        serviceId: integration.id,
+      });
 
-    expect(isTokenRefreshed).toBe(false);
-    expect(appApiMock.history.post).toHaveLength(0);
-  });
+      getCachedAuthDataMock.mockResolvedValue({
+        access_token: "notatoken",
+        refresh_token: "notarefreshtoken",
+        _oauthBrand: undefined,
+      });
 
-  it("refreshes token with refresh token in response", async () => {
-    const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: integration.id,
+      readRawConfigurationsMock.mockResolvedValue([
+        {
+          id: integrationConfig.id,
+          config: {},
+        } as IntegrationConfig,
+      ]);
+      await locator.refreshLocal();
+
+      appApiMock.onGet("/api/services/shared/").reply(200, []);
+      appApiMock.onPost().reply(200, {
+        access_token: "notatoken2",
+        refresh_token: "notarefreshtoken2",
+      });
+
+      const isTokenRefreshed = await refreshPKCEToken(
+        integration,
+        integrationConfig
+      );
+
+      expect(isTokenRefreshed).toBe(true);
+      expect(appApiMock.history.post).toHaveLength(1);
+      expect(setCachedAuthDataMock).toHaveBeenCalledWith(integrationConfig.id, {
+        access_token: "notatoken2",
+        refresh_token: "notarefreshtoken2",
+      });
     });
 
-    getCachedAuthDataMock.mockResolvedValue({
-      access_token: "notatoken",
-      refresh_token: "notarefreshtoken",
-      _oauthBrand: undefined,
+    it("refreshes token without refresh token in response", async () => {
+      const integrationConfig = sanitizedIntegrationConfigFactory({
+        serviceId: integration.id,
+      });
+
+      getCachedAuthDataMock.mockResolvedValue({
+        access_token: "notatoken",
+        refresh_token: "notarefreshtoken",
+        _oauthBrand: undefined,
+      });
+
+      readRawConfigurationsMock.mockResolvedValue([
+        {
+          id: integrationConfig.id,
+          config: {},
+        } as IntegrationConfig,
+      ]);
+      await locator.refreshLocal();
+
+      appApiMock.onGet("/api/services/shared/").reply(200, []);
+      appApiMock.onPost().reply(200, {
+        access_token: "notatoken2",
+      });
+
+      const isTokenRefreshed = await refreshPKCEToken(
+        integration,
+        integrationConfig
+      );
+
+      expect(isTokenRefreshed).toBe(true);
+      expect(appApiMock.history.post).toHaveLength(1);
+      expect(setCachedAuthDataMock).toHaveBeenCalledWith(integrationConfig.id, {
+        access_token: "notatoken2",
+        refresh_token: "notarefreshtoken",
+      });
     });
 
-    readRawConfigurationsMock.mockResolvedValue([
-      {
-        id: integrationConfig.id,
-        config: {},
-      } as IntegrationConfig,
-    ]);
-    await locator.refreshLocal();
+    it("throws on authorization error", async () => {
+      const integrationConfig = sanitizedIntegrationConfigFactory({
+        serviceId: integration.id,
+      });
 
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
-    appApiMock.onPost().reply(200, {
-      access_token: "notatoken2",
-      refresh_token: "notarefreshtoken2",
+      getCachedAuthDataMock.mockResolvedValue({
+        access_token: "notatoken",
+        refresh_token: "notarefreshtoken",
+        _oauthBrand: undefined,
+      });
+
+      readRawConfigurationsMock.mockResolvedValue([
+        {
+          id: integrationConfig.id,
+          config: {},
+        } as IntegrationConfig,
+      ]);
+      await locator.refreshLocal();
+
+      appApiMock.onGet("/api/services/shared/").reply(200, []);
+      appApiMock.onPost().reply(401);
+
+      await expect(
+        refreshPKCEToken(integration, integrationConfig)
+      ).rejects.toThrow("Request failed with status code 401");
     });
-
-    const isTokenRefreshed = await refreshPKCEToken(
-      integration,
-      integrationConfig
-    );
-
-    expect(isTokenRefreshed).toBe(true);
-    expect(appApiMock.history.post).toHaveLength(1);
-    expect(setCachedAuthDataMock).toHaveBeenCalledWith(integrationConfig.id, {
-      access_token: "notatoken2",
-      refresh_token: "notarefreshtoken2",
-    });
-  });
-
-  it("refreshes token without refresh token in response", async () => {
-    const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: integration.id,
-    });
-
-    getCachedAuthDataMock.mockResolvedValue({
-      access_token: "notatoken",
-      refresh_token: "notarefreshtoken",
-      _oauthBrand: undefined,
-    });
-
-    readRawConfigurationsMock.mockResolvedValue([
-      {
-        id: integrationConfig.id,
-        config: {},
-      } as IntegrationConfig,
-    ]);
-    await locator.refreshLocal();
-
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
-    appApiMock.onPost().reply(200, {
-      access_token: "notatoken2",
-    });
-
-    const isTokenRefreshed = await refreshPKCEToken(
-      integration,
-      integrationConfig
-    );
-
-    expect(isTokenRefreshed).toBe(true);
-    expect(appApiMock.history.post).toHaveLength(1);
-    expect(setCachedAuthDataMock).toHaveBeenCalledWith(integrationConfig.id, {
-      access_token: "notatoken2",
-      refresh_token: "notarefreshtoken",
-    });
-  });
-
-  it("throws on authorization error", async () => {
-    const integrationConfig = sanitizedIntegrationConfigFactory({
-      serviceId: integration.id,
-    });
-
-    getCachedAuthDataMock.mockResolvedValue({
-      access_token: "notatoken",
-      refresh_token: "notarefreshtoken",
-      _oauthBrand: undefined,
-    });
-
-    readRawConfigurationsMock.mockResolvedValue([
-      {
-        id: integrationConfig.id,
-        config: {},
-      } as IntegrationConfig,
-    ]);
-    await locator.refreshLocal();
-
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
-    appApiMock.onPost().reply(401);
-
-    await expect(
-      refreshPKCEToken(integration, integrationConfig)
-    ).rejects.toThrow("Request failed with status code 401");
-  });
-});
+  }
+);
