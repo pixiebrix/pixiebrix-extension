@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema } from "@/types/schemaTypes";
-import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import { selectExtensionKnownEventNames } from "@/pageEditor/slices/editorSelectors";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import type React from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 
-export type CustomFieldToggleMode = {
-  match: (fieldSchema: Schema) => boolean;
-  option: InputModeOption;
-};
+export const SchemaCustomEventWidget: React.FC<SchemaFieldProps> = ({
+  schema,
+  ...props
+}) => {
+  const knownEventNames = useSelector(selectExtensionKnownEventNames);
 
-export type CustomWidgetRegistry = {
-  SchemaButtonVariantWidget: React.VFC<SchemaFieldProps>;
-  SchemaCustomEventWidget: React.VFC<SchemaFieldProps>;
-};
-
-export type CustomFieldDefinitions = {
-  customToggleModes: CustomFieldToggleMode[];
-  customWidgets: CustomWidgetRegistry;
+  return (
+    <SchemaSelectWidget
+      schema={{ ...schema, examples: knownEventNames }}
+      {...props}
+    />
+  );
 };

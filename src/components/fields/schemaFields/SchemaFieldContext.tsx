@@ -15,45 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { createContext } from "react";
+import { createContext } from "react";
 import {
-  type SchemaFieldComponent,
-  type SchemaFieldProps,
-} from "@/components/fields/schemaFields/propTypes";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { type CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
+  type CustomWidgetRegistry,
+  type CustomFieldDefinitions,
+} from "@/components/fields/schemaFields/schemaFieldTypes";
+import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
+import { SchemaCustomEventWidget } from "@/components/fields/schemaFields/widgets/SchemaCustomEventWidget";
 
-export function defaultFieldFactory(
-  Widget: React.FC<SchemaFieldProps>
-): SchemaFieldComponent {
-  if (Widget == null) {
-    // This would indicate a problem with the imports b/c all the call sites are passing in an imported component?
-    // Circular import
-    throw new Error("Widget is required");
-  }
-
-  const Field: React.FunctionComponent<SchemaFieldProps> = (props) => {
-    const { schema, description } = props;
-    return (
-      <ConnectedFieldTemplate
-        {...props}
-        label={makeLabelForSchemaField(props)}
-        description={description ?? schema.description}
-        as={Widget}
-      />
-    );
-  };
-
-  Field.displayName = `SchemaField(${Widget.displayName})`;
-  return Field;
-}
+export const customWidgets: CustomWidgetRegistry = {
+  SchemaButtonVariantWidget,
+  SchemaCustomEventWidget,
+} as const;
 
 /**
  * Context defining custom fields and widgets for schema-based fields.
  */
 const SchemaFieldContext = createContext<CustomFieldDefinitions>({
   customToggleModes: [],
+  customWidgets,
 });
 
 export default SchemaFieldContext;
