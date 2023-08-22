@@ -24,24 +24,23 @@ $headerOffsetY: 0.5rem;
 $headerPipeLineHeight: 4px;
 
 .root {
-  display: flex;
-  border-bottom: 1px solid lightgrey;
+  background: $defaultHeaderColor;
   padding: 0;
+  display: flex;
+
+  &.parentNodeActive {
+    background: $activeHeaderColor;
+  }
+
+  &.ancestorActive {
+    background: $nestedActiveColor;
+  }
 }
 
 .header {
   flex-grow: 1;
   position: relative; // Allow children to position relative to this element
-  background: $defaultHeaderColor;
   padding: $headerOffsetY 0 0 $headerOffsetX;
-
-  &.active {
-    background-color: $activeHeaderColor;
-  }
-
-  &.nestedActive {
-    background-color: $nestedActiveColor;
-  }
 }
 
 .headerContent {
@@ -56,7 +55,6 @@ $headerPipeLineHeight: 4px;
 .documentPreviewIcon {
   margin-top: 2px;
   margin-right: 4px;
-  color: $bs-dark-grey;
 }
 
 .subPipelineLabel {
@@ -82,6 +80,10 @@ $headerPipeLineHeight: 4px;
   width: $pipeLineOffset;
   height: $headerPipeLineHeight;
   border-right: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
+  }
 }
 
 .headerPipeLineBottom {
@@ -91,4 +93,8 @@ $headerPipeLineHeight: 4px;
   width: $pipeLineOffset;
   height: $headerPipeLineHeight;
   border-right: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
+  }
 }

@@ -15,31 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { times } from "lodash";
-import cx from "classnames";
-import styles from "./PipelineOffsetView.module.scss";
+import { SplitText } from "@/bricks/transformers/splitText";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { type BrickOptions } from "@/types/runtimeTypes";
 
-type PipelineOffsetViewProps = {
-  nestingLevel: number;
-  active?: boolean;
-};
+const brick = new SplitText();
 
-const PipelineOffsetView: React.VFC<PipelineOffsetViewProps> = ({
-  nestingLevel,
-  active,
-}) => (
-  <>
-    {nestingLevel > 0 &&
-      times(nestingLevel, (n) => (
-        <div
-          key={n}
-          className={cx(styles.pipeLine, {
-            [styles.active]: active,
-          })}
-        />
-      ))}
-  </>
-);
+describe("Split", () => {
+  it("splits text into chunks", async () => {
+    const result = await brick.run(
+      unsafeAssumeValidArg({
+        text: "this is a test!",
+        chunkSize: 8,
+        chunkOverlap: 2,
+      }),
+      {} as BrickOptions
+    );
 
-export default PipelineOffsetView;
+    expect(result).toStrictEqual({
+      documents: [{ text: "this is " }, { text: "s a test" }, { text: "st!" }],
+    });
+  });
+});

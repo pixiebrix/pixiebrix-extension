@@ -19,54 +19,52 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { getTextNodes } from "@/bricks/effects/replaceText";
-import { escape } from "lodash";
-import sanitize from "@/utils/sanitize";
 import { $safeFind } from "@/utils/domUtils";
-
-const highlightId = validateRegistryId("@pixiebrix/html/highlight-text");
+import escapeStringRegexp from "escape-string-regexp";
+import Mark from "mark.js";
 
 /**
- * Recursively wrap text in an element and its children.
+ * Recursively wrap text in an element and its children. Operates on text nodes. Does not work on text with inline HTML tags.
  */
 function wrapText({
   nodes,
   pattern,
   color,
+  isAcrossElements,
 }: {
-  nodes: Node[];
+  nodes: HTMLElement[];
   pattern: string | RegExp;
   color: string;
+  isAcrossElements: boolean;
 }) {
-  for (const textNode of getTextNodes(nodes)) {
-    if (textNode.parentElement?.tagName === "MARK") {
-      // Don't highlight text that's already highlighted
-      continue;
-    }
+  const instance = new Mark(nodes);
 
-    const fragment = textNode.ownerDocument.createDocumentFragment();
-    const div = textNode.ownerDocument.createElement("div");
+  const options = {
+    acrossElements: isAcrossElements,
+    exclude: ["mark"],
+    each(element: HTMLElement) {
+      // `mark.js` just adds the `mark` class, need to also add the `background-color` style
+      element.style.backgroundColor = color;
+      // Don't mark with library-specific data attributes
+      element.attributes.removeNamedItem("data-markjs");
+    },
+  };
 
-    const innerHTML = textNode.textContent.replaceAll(
-      pattern,
-      `<mark style="background-color: ${escape(color)};">$&</mark>`
-    );
-
-    if (innerHTML === textNode.textContent) {
-      // No replacements made, avoid DOM manipulation for performance
-      continue;
-    }
-
-    div.innerHTML = sanitize(innerHTML);
-    fragment.append(...div.childNodes);
-    textNode.replaceWith(fragment);
+  if (typeof pattern === "string") {
+    instance.mark(pattern, options);
+  } else {
+    instance.markRegExp(pattern, options);
   }
 }
 
 class HighlightText extends EffectABC {
+  static readonly BRICK_ID = validateRegistryId(
+    "@pixiebrix/html/highlight-text"
+  );
+
   constructor() {
     super(
-      highlightId,
+      HighlightText.BRICK_ID,
       "Highlight Text",
       "Highlight text within an HTML document or subtree"
     );
@@ -76,10 +74,12 @@ class HighlightText extends EffectABC {
     type: "object",
     properties: {
       pattern: {
+        title: "Pattern",
         type: "string",
         description: "A string or regular expression to match",
       },
       color: {
+        title: "Color",
         type: "string",
         description:
           "The highlight color value or hex code: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value",
@@ -87,11 +87,25 @@ class HighlightText extends EffectABC {
         examples: ["yellow", "red", "green"],
       },
       isRegex: {
+        title: "Regular Expression",
         type: "boolean",
         description: "Whether the pattern is a regular expression",
         default: false,
       },
+      isCaseInsensitive: {
+        title: "Case Insensitive",
+        type: "boolean",
+        description: "Whether the search is case-insensitive",
+        default: false,
+      },
+      isAcrossElements: {
+        title: "Match Across Elements",
+        type: "boolean",
+        description: "Whether to match across HTML elements/styles",
+        default: false,
+      },
       selector: {
+        title: "Selector",
         type: "string",
         format: "selector",
         description:
@@ -110,10 +124,14 @@ class HighlightText extends EffectABC {
       pattern,
       color = "yellow",
       selector,
+      isCaseInsensitive = false,
+      isAcrossElements = false,
       isRegex = false,
     }: BrickArgs<{
       pattern: string;
       color?: string;
+      isCaseInsensitive?: boolean;
+      isAcrossElements?: boolean;
       isRegex?: boolean;
       selector?: string;
     }>,
@@ -125,13 +143,23 @@ class HighlightText extends EffectABC {
       root = body;
     }
 
-    const $elements = selector ? $safeFind(selector, root) : $(root);
+    // Must be a HTMLElement at this point because of the body check above
+    const $elements = (
+      selector ? $safeFind(selector, root) : $(root)
+    ) as JQuery;
 
-    const convertedPattern = isRegex ? new RegExp(pattern, "g") : pattern;
+    const flags = isCaseInsensitive ? "gi" : "g";
+
+    // eslint-disable-next-line security/detect-non-literal-regexp -- mod argument
+    const convertedPattern = new RegExp(
+      isRegex ? pattern : escapeStringRegexp(pattern),
+      flags
+    );
 
     wrapText({
       nodes: $elements.get(),
       pattern: convertedPattern,
+      isAcrossElements,
       color,
     });
   }

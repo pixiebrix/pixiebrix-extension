@@ -52,6 +52,10 @@ import { SelectElement } from "@/bricks/transformers/selectElement";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
 import { Readable } from "@/bricks/transformers/readable";
+import { SplitText } from "@/bricks/transformers/splitText";
+import MapValues from "@/bricks/transformers/controlFlow/MapValues";
+import ConvertDocument from "@/bricks/transformers/convertDocument";
+import { SearchText } from "@/bricks/transformers/searchText";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -72,12 +76,15 @@ function getAllTransformers(): Brick[] {
     new Base64Decode(),
     new TemplateTransformer(),
     new UrlParams(),
+    new SplitText(),
+    new SearchText(),
     new JQueryReader(),
     new Readable(),
     new ComponentReader(),
     new TableReader(),
     new TablesReader(),
     new ParseCsv(),
+    new ConvertDocument(),
     new ParseDataUrl(),
     new ParseDate(),
     new ScreenshotTab(),
@@ -93,6 +100,7 @@ function getAllTransformers(): Brick[] {
     new ForEachElement(),
     new Retry(),
     new Run(),
+    new MapValues(),
 
     // Render Pipelines
     new DisplayTemporaryInfo(),
