@@ -118,8 +118,6 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         // We're only interested in select with labels, otherwise we don't need to do anything.
         // Loop through the uiSchema props, because UI Widget must be set for the Select, then take a look at the oneOf property.
         for (const [key, value] of Object.entries(draftUiSchema)) {
-          console.log("*** key value", { key, value });
-
           // We're only looking for sub-property UiSchemas
           if (KEYS_OF_UI_SCHEMA.includes(key)) {
             continue;
@@ -145,31 +143,6 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             propertySchema.oneOf = [{ const: "" }];
           }
         }
-
-        for (const [key, value] of Object.entries(draftUiSchema)) {
-          if (
-            value[UI_WIDGET] === "checkboxes" &&
-            !value["ui:options"]?.enumOptions
-          ) {
-            const propertySchema = draftSchema.properties[key];
-            draftUiSchema[key]["ui:options"] = {
-              enumOptions: (propertySchema.items?.enum ?? []).map((option) => ({
-                label: option,
-                value: option,
-              })),
-            };
-          }
-        }
-
-        // TODO: instead of hard-coding me, loop through the properties like above and make sure we
-        //  generate enumOptions from the previewSchema items.enum property
-        // draftUiSchema["example"]["ui:options"] = {
-        //   enumOptions: [
-        //     { label: "cat", value: "cat" },
-        //     { label: "dog", value: "dog" },
-        //     { label: "fish", value: "fish" },
-        //   ],
-        // };
       }),
     [rjsfSchema, activeField]
   );
@@ -208,14 +181,6 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     SelectWidget: RjsfSelectWidget,
     googleSheet: RjsfSelectWidget,
   };
-
-  console.log("*** jsonschemaform props", {
-    data,
-    fields,
-    widgets,
-    previewSchema,
-    previewUiSchema,
-  });
 
   return (
     <JsonSchemaForm

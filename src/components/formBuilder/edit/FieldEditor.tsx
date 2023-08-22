@@ -260,8 +260,6 @@ const FieldEditor: React.FC<{
               : undefined,
         };
 
-  console.log("*** propertySchema.items", propertySchema.items);
-
   return (
     <div className={styles.root}>
       <FieldTemplate
@@ -305,6 +303,22 @@ const FieldEditor: React.FC<{
           <SchemaField
             label="Options"
             name={getFullFieldName("enum")}
+            schema={{
+              type: "array",
+              items: {
+                type: "string",
+              },
+            }}
+            isRequired
+          />
+        </>
+      )}
+
+      {propertySchema.type === "array" && (
+        <>
+          <SchemaField
+            label="Options"
+            name={getFullFieldName("items.enum")}
             schema={{
               type: "array",
               items: {
