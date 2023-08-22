@@ -17,7 +17,8 @@
 
 import { type Schema } from "@/types/schemaTypes";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
-import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import type React from "react";
 
 export type CustomFieldToggleMode = {
   match: (fieldSchema: Schema) => boolean;
@@ -25,8 +26,8 @@ export type CustomFieldToggleMode = {
 };
 
 export type CustomWidgetRegistry = {
-  ButtonVariantSchemaField: SchemaFieldComponent;
-  CustomEventField: SchemaFieldComponent;
+  SchemaButtonVariantWidget: React.VFC<SchemaFieldProps>;
+  SchemaCustomEventWidget: React.VFC<SchemaFieldProps>;
 };
 
 export type CustomFieldDefinitions = {

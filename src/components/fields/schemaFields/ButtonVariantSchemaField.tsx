@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defaultFieldFactory } from "./defaultFieldFactory";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
 import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
 
 const ButtonVariantSchemaField = defaultFieldFactory(SchemaButtonVariantWidget);

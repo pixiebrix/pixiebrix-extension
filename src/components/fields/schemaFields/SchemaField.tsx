@@ -16,7 +16,10 @@
  */
 
 import React, { useContext } from "react";
-import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
+import {
+  type SchemaFieldProps,
+  type SchemaFieldComponent,
+} from "@/components/fields/schemaFields/propTypes";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import CssClassField from "./CssClassField";
@@ -25,11 +28,12 @@ import {
   isAppServiceField,
   isCssClassField,
   isHeadingStyleField,
-  isUiWidget,
+  hasCustomWidget,
 } from "./fieldTypeCheckers";
 import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { get } from "lodash";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema, uiSchema } = props;
@@ -47,11 +51,16 @@ const SchemaField: SchemaFieldComponent = (props) => {
     return <HeadingStyleField {...props} />;
   }
 
-  if (isUiWidget(uiSchema)) {
-    const Component = get(customWidgets, uiSchema["ui:widget"] as string);
+  if (hasCustomWidget(uiSchema)) {
+    const widget = get(customWidgets, uiSchema["ui:widget"] as string);
 
     // If the uiWidget is registered, render it. Otherwise, render the default field.
-    if (Component) return <Component {...props} />;
+    if (widget) {
+      const Component = defaultFieldFactory(
+        widget as React.VFC<SchemaFieldProps>
+      );
+      return <Component {...props} />;
+    }
   }
 
   if (props.name.endsWith(".isRootAware")) {

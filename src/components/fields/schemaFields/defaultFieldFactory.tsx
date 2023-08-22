@@ -23,7 +23,7 @@ import {
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
-export function defaultFieldFactory(
+export default function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>
 ): SchemaFieldComponent {
   if (Widget == null) {

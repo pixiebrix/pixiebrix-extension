@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defaultFieldFactory } from "./defaultFieldFactory";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
 import { SchemaCustomEventWidget } from "@/components/fields/schemaFields/widgets/SchemaCustomEventWidget";
 
 const CustomEventField = defaultFieldFactory(SchemaCustomEventWidget);

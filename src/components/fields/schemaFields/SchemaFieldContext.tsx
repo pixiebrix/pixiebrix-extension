@@ -20,12 +20,12 @@ import {
   type CustomWidgetRegistry,
   type CustomFieldDefinitions,
 } from "@/components/fields/schemaFields/schemaFieldTypes";
-import ButtonVariantSchemaField from "@/components/fields/schemaFields/ButtonVariantSchemaField";
-import CustomEventField from "@/components/fields/schemaFields/CustomEventField";
+import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
+import { SchemaCustomEventWidget } from "@/components/fields/schemaFields/widgets/SchemaCustomEventWidget";
 
 export const customWidgets: CustomWidgetRegistry = {
-  ButtonVariantSchemaField,
-  CustomEventField,
+  SchemaButtonVariantWidget,
+  SchemaCustomEventWidget,
 } as const;
 
 /**

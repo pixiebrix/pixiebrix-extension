@@ -194,7 +194,7 @@ function getElementEditSchemas(
           ],
         },
         uiSchema: {
-          "ui:widget": "ButtonVariantSchemaField",
+          "ui:widget": "SchemaButtonVariantWidget",
         },
         label: "Button Style",
         description: "The style/variant of the button",

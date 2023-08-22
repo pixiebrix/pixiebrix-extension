@@ -54,7 +54,7 @@ export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
 
-export const isUiWidget = (uiSchema?: UiSchema) =>
+export const hasCustomWidget = (uiSchema?: UiSchema) =>
   typeof get(uiSchema, ["ui:widget"]) === "string";
 
 /**
