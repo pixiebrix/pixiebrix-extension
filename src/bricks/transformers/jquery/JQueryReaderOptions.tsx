@@ -251,10 +251,14 @@ const SelectorCard: React.FC<{
               // Use onBlur instead of onChange for committing the change to prevent the field from being de-duped
               // if the there's an intermediate state that has the same name as another field.
               onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-                onChange({
-                  name: event.target.value,
-                  selector: selectorDefinition,
-                });
+                if (event.target.value) {
+                  onChange({
+                    name: event.target.value,
+                    selector: selectorDefinition,
+                  });
+                } else {
+                  setName(initialName);
+                }
               }}
             />
           </div>

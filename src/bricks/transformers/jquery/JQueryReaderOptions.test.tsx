@@ -202,19 +202,50 @@ describe("JQueryReaderOptions", () => {
       },
     };
 
-    const { container } = renderOptions(state);
+    renderOptions(state);
 
     await waitForEffect();
 
-    const field = container.querySelector('[value="outer"]');
-
-    await userEvent.type(field, "property");
+    await userEvent.type(
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0),
+      "property"
+    );
     // Click away to blur the field
-    await userEvent.click(screen.getAllByText("Select All")[0]);
+    await userEvent.click(document.body);
 
     await waitForEffect();
 
-    expect(field).toHaveValue("outerproperty");
+    expect(
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0)
+    ).toHaveValue("outerproperty");
+  });
+
+  it("clearing a property name reverts the value to the initial value on blur", async () => {
+    const state = baseStateFactory();
+    state.extension.blockPipeline[0].config.selectors = {
+      outer: {
+        selector: makeTemplateExpression("nunjucks", "div"),
+        find: {
+          inner: makeTemplateExpression("nunjucks", "h1"),
+        },
+      },
+    };
+
+    renderOptions(state);
+
+    await waitForEffect();
+
+    await userEvent.clear(
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0)
+    );
+    // Click away to blur the field
+    await userEvent.click(document.body);
+
+    await waitForEffect();
+
+    expect(
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0)
+    ).toHaveValue("outer");
   });
 
   it("generates example attributes for nested selectors", async () => {
