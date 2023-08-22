@@ -135,6 +135,7 @@ const EditTab: React.FC<{
             className={cx(styles.toggle, {
               [styles.active]: isDataPanelExpanded,
             })}
+            type="button"
             onClick={() => {
               dispatch(
                 actions.setDataSectionExpanded({
