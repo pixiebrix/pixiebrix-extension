@@ -99,6 +99,19 @@ class LocalDefinedService<
   }
 
   /**
+   * Returns true if the integration defines an OAuth2 PKCE flow
+   * @since 1.7.37
+   */
+  get isOAuth2PKCE(): boolean {
+    return (
+      this.isOAuth2 &&
+      "code_challenge_method" in
+        (this._definition.authentication as OAuth2AuthenticationDefinition)
+          .oauth2
+    );
+  }
+
+  /**
    * Return true if service uses basic authentication
    * @since 1.7.16
    */

@@ -219,7 +219,7 @@ export type OAuth2Context = {
 };
 
 /**
- * A integration that can be dependency injected and used to authenticate external requests.
+ * An integration that can be dependency injected and used to authenticate external requests.
  *
  * The input/output schema is the same since it's directly user configured.
  */
@@ -238,6 +238,8 @@ export interface Integration<
   uiSchema?: UiSchema;
 
   isOAuth2: boolean;
+
+  isOAuth2PKCE: boolean;
 
   isAuthorizationGrant: boolean;
 
@@ -279,6 +281,8 @@ export abstract class IntegrationABC<
   abstract hasAuth: boolean;
 
   abstract get isOAuth2(): boolean;
+
+  abstract get isOAuth2PKCE(): boolean;
 
   abstract get isAuthorizationGrant(): boolean;
 

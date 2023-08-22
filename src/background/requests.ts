@@ -35,7 +35,7 @@ import {
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import {
-  GOOGLE_OAUTH_PKCE_INTEGRATION_ID,
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_ID,
 } from "@/services/constants";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
@@ -63,7 +63,7 @@ import {
   type SecretsConfig,
 } from "@/types/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
-import refreshGoogleToken from "@/background/refreshGoogleToken";
+import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
 import { isObject } from "@/utils/objectUtils";
@@ -286,9 +286,17 @@ async function performConfiguredRequest(
     if (axiosError && isAuthenticationError(axiosError)) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
-        if (service.id === GOOGLE_OAUTH_PKCE_INTEGRATION_ID) {
+        // Don't refresh the Automation Anywhere OAuth2 token here because it has its own unique refresh call
+        // that is called on a schedule (see initPartnerTokenRefresh).
+        if (
+          service.isOAuth2PKCE &&
+          service.id !== CONTROL_ROOM_OAUTH_INTEGRATION_ID
+        ) {
           try {
-            const isTokenRefreshed = await refreshGoogleToken(serviceConfig);
+            const isTokenRefreshed = await refreshPKCEToken(
+              service,
+              serviceConfig
+            );
 
             if (isTokenRefreshed) {
               return serializableAxiosRequest(
@@ -296,10 +304,7 @@ async function performConfiguredRequest(
               );
             }
           } catch (error) {
-            console.warn(
-              `Failed to refresh ${GOOGLE_OAUTH_PKCE_INTEGRATION_ID} token:`,
-              error
-            );
+            console.warn(`Failed to refresh ${service.id} token:`, error);
 
             // An authentication error can occur if the refresh token was revoked. Besides that, there should be
             // no reason for the refresh to fail. Report the error if it's not an authentication error.
