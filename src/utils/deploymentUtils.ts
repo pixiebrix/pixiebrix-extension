@@ -26,8 +26,9 @@ import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "@/types/integrationTypes";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
-import { validateRegistryId, validateUUID } from "@/types/helpers";
+import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
+import { validateUUID } from "@/types/helpers";
+import { type OutputKey } from "@/types/runtimeTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -161,71 +162,110 @@ export type Locate = (
   integrationId: RegistryId
 ) => Promise<SanitizedIntegrationConfig[]>;
 
+// XXX: this is incorrect for server-based OAuth2 integrations, because they're owned by user but still show as proxy
+// because the requests need to be proxied through our server.
+const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
+
 /**
- * Return local integration configurations that are valid to use for the deployment.
+ * Return local, configured integration dependencies that are valid to use for the deployment.
  *
  * Excludes the PixieBrix API integration and integrations that are bound in the deployment configuration.
  */
-export async function findLocalDeploymentIntegrationConfigs(
+export async function findLocalDeploymentConfiguredIntegrationDependencies(
   deployment: Deployment,
   locate: Locate
-): Promise<Record<RegistryId, SanitizedIntegrationConfig[]>> {
-  const deploymentIntegrationIds = getIntegrationIds(deployment.package.config);
+): Promise<
+  Array<{
+    id: RegistryId;
+    outputKey: OutputKey;
+    isOptional?: boolean;
+    configs: SanitizedIntegrationConfig[];
+  }>
+> {
+  const deploymentIntegrations = getUnconfiguredComponentIntegrations(
+    deployment.package.config
+  );
   // Integrations in the deployment that are bound to a team credential
   const teamBoundIntegrationIds = new Set(
     deployment.bindings.map((x) => x.auth.service_id)
   );
-  const unboundIntegrationIds = deploymentIntegrationIds.filter(
-    (integrationId) =>
-      !teamBoundIntegrationIds.has(integrationId) &&
-      integrationId !== PIXIEBRIX_INTEGRATION_ID
+  const unboundIntegrations = deploymentIntegrations.filter(
+    (integrationDependency) =>
+      !teamBoundIntegrationIds.has(integrationDependency.id) &&
+      integrationDependency.id !== PIXIEBRIX_INTEGRATION_ID
   );
 
-  // XXX: this is incorrect for server-based OAuth2 integrations, because they're owned by user but still show as proxy
-  // because the requests need to be proxied through our server.
-  const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
-
-  return Object.fromEntries(
-    await Promise.all(
-      unboundIntegrationIds.map(async (integrationId: RegistryId) => {
-        const all = await locate(integrationId);
-        return [integrationId, all.filter((x) => isPersonal(x))];
-      })
-    )
+  return Promise.all(
+    unboundIntegrations.flatMap(async (unconfiguredDependency) => {
+      const allConfigs = await locate(unconfiguredDependency.id);
+      const personalConfigs = allConfigs.filter((x) => isPersonal(x));
+      return {
+        ...unconfiguredDependency,
+        configs: personalConfigs,
+      };
+    })
   );
 }
 
+/**
+ * Merge deployment service bindings and personal configurations to get all integration dependencies for a deployment.
+ */
 export async function mergeDeploymentIntegrationDependencies(
   deployment: Deployment,
   locate: Locate
 ): Promise<IntegrationDependency[]> {
-  // Merge deployment service bindings and personal configurations
-  const personalConfigs = await findLocalDeploymentIntegrationConfigs(
-    deployment,
-    locate
-  );
-  const integrationDependencies: IntegrationDependency[] = [
-    ...Object.entries(personalConfigs).map(
-      ([id, configs]: [
-        id: RegistryId,
-        configs: SanitizedIntegrationConfig[]
-      ]) => {
-        if (configs.length > 1) {
-          throw new Error(
-            `Multiple local configurations found for integration: ${id}`
-          );
-        }
+  // Note/to-do: There is some logic overlap here with findLocalDeploymentConfiguredIntegrationDependencies() above,
+  // but it's tricky to extract right now
 
-        return {
-          id,
-          config: configs[0]?.id,
-        };
-      }
-    ),
-    ...deployment.bindings.map(({ auth }) => ({
-      id: validateRegistryId(auth.service_id),
-      config: validateUUID(auth.id),
-    })),
+  const deploymentIntegrations = getUnconfiguredComponentIntegrations(
+    deployment.package.config
+  );
+  const teamBoundIntegrationIds = new Set(
+    deployment.bindings.map((x) => x.auth.service_id)
+  );
+
+  const personalIntegrationDependencies: IntegrationDependency[] =
+    await Promise.all(
+      deploymentIntegrations
+        .filter(
+          (integrationDependency) =>
+            !teamBoundIntegrationIds.has(integrationDependency.id) &&
+            integrationDependency.id !== PIXIEBRIX_INTEGRATION_ID
+        )
+        .map(async (unconfiguredDependency) => {
+          const sanitizedConfigs = await locate(unconfiguredDependency.id);
+          const personalConfigs = sanitizedConfigs.filter((x) => isPersonal(x));
+          if (personalConfigs.length > 1) {
+            throw new Error(
+              `Multiple local configurations found for integration: ${unconfiguredDependency.id}`
+            );
+          }
+
+          return {
+            ...unconfiguredDependency,
+            config: personalConfigs[0]?.id,
+          };
+        })
+    );
+
+  const deploymentBindingConfigs = Object.fromEntries(
+    deployment.bindings.map(({ auth, key }) => [auth.service_id, auth.id])
+  );
+  const teamIntegrationDependencies: IntegrationDependency[] =
+    deploymentIntegrations
+      .filter((integrationDependency) =>
+        teamBoundIntegrationIds.has(integrationDependency.id)
+      )
+      .map((unconfiguredDependency) => ({
+        ...unconfiguredDependency,
+        config: validateUUID(
+          deploymentBindingConfigs[unconfiguredDependency.id]
+        ),
+      }));
+
+  const integrationDependencies: IntegrationDependency[] = [
+    ...personalIntegrationDependencies,
+    ...teamIntegrationDependencies,
   ];
 
   for (const { id, config } of integrationDependencies) {

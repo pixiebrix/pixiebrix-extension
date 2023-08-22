@@ -38,7 +38,7 @@ import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import {
-  findLocalDeploymentIntegrationConfigs,
+  findLocalDeploymentConfiguredIntegrationDependencies,
   makeUpdatedFilter,
   mergeDeploymentIntegrationDependencies,
   selectInstalledDeployments,
@@ -312,11 +312,12 @@ async function canAutomaticallyInstall({
     return false;
   }
 
-  const personalServices = await findLocalDeploymentIntegrationConfigs(
-    deployment,
-    locateAllForService
-  );
-  return Object.values(personalServices).every((x) => x.length === 1);
+  const personalConfigs =
+    await findLocalDeploymentConfiguredIntegrationDependencies(
+      deployment,
+      locateAllForService
+    );
+  return personalConfigs.every(({ configs }) => configs.length === 1);
 }
 
 /**

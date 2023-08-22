@@ -25,6 +25,9 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type Schema } from "@/types/schemaTypes";
 import { extractServiceIds } from "@/services/serviceUtils";
 import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type UnconfiguredIntegrationDependency } from "@/types/integrationTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 function isSchemaServicesFormat(
   services: ModComponentDefinition["services"]
@@ -39,9 +42,57 @@ function isSchemaServicesFormat(
   );
 }
 
+function getIntegrationsFromSchema(
+  services: Schema
+): UnconfiguredIntegrationDependency[] {
+  return Object.entries(services.properties).flatMap(([key, schema]) => {
+    if (typeof schema === "boolean") {
+      return [];
+    }
+
+    const integrationIds = extractServiceIds(schema);
+    return integrationIds.map((id) => ({
+      id,
+      outputKey: validateOutputKey(key),
+      isOptional: services.required != null && !services.required.includes(key),
+    }));
+  });
+}
+
+function getIntegrationsFromRecord(
+  services: Record<OutputKey, RegistryId>
+): UnconfiguredIntegrationDependency[] {
+  return Object.entries(services).map(([key, id]) => ({
+    id,
+    outputKey: validateOutputKey(key),
+    isOptional: false,
+  }));
+}
+
+/**
+ * Return an array of unique integrations used by a given collection of mod components, without their config filled in
+ * @param extensionPoints the mod component definitions from which to extract integrations
+ */
+export function getUnconfiguredComponentIntegrations({
+  extensionPoints: modComponentDefinitions = [],
+}: Pick<
+  ModDefinition,
+  "extensionPoints"
+>): UnconfiguredIntegrationDependency[] {
+  return modComponentDefinitions.flatMap(({ services }) => {
+    if (isEmpty(services)) {
+      return [];
+    }
+
+    return isSchemaServicesFormat(services)
+      ? getIntegrationsFromSchema(services)
+      : getIntegrationsFromRecord(services);
+  });
+}
+
 /**
  * Return an array of unique integration ids used by a mod definition or another collection of mod components
- * @param modComponentDefinitions mod component definitions from which to extract integration ids
+ * @param extensionPoints mod component definitions from which to extract integration ids
  * @param excludePixieBrix whether to exclude the PixieBrix integration
  * @param requiredOnly whether to only include required integrations
  */

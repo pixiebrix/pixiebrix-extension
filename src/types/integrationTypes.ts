@@ -20,7 +20,7 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type BrickIcon } from "@/types/iconTypes";
-import { type JsonObject, type JsonValue } from "type-fest";
+import { Except, type JsonObject, type JsonValue } from "type-fest";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
 export interface IntegrationDependency {
@@ -32,7 +32,7 @@ export interface IntegrationDependency {
   /**
    * The output key for the dependency (without the leading "@")
    */
-  outputKey?: OutputKey;
+  outputKey: OutputKey;
 
   /**
    * The UUID of the integration configuration.
@@ -40,10 +40,16 @@ export interface IntegrationDependency {
   config?: UUID;
 
   /**
-   * Is this integration optional for the mod to function?
+   * Whether the integration is optional for the mod to function
+   * @since 1.7.37 - added to facilitate optional integrations during activation
    */
   isOptional?: boolean;
 }
+
+export type UnconfiguredIntegrationDependency = Except<
+  IntegrationDependency,
+  "config"
+>;
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 

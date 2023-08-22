@@ -18,7 +18,6 @@
 import {
   debouncedInstallStarterMods,
   getBuiltInIntegrationConfigs,
-  getBuiltInIntegrationDependencies,
 } from "@/background/starterMods";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
@@ -37,7 +36,6 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -107,34 +105,6 @@ describe("installStarterBlueprints", () => {
 
     builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
     expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
-  });
-
-  test("getBuiltInIntegrationDependencies", async () => {
-    const { modDefinition, builtInIntegrationConfigs } =
-      getModDefinitionWithBuiltInIntegrationConfigs();
-
-    const nonPixieBrixIntegrationIds = getIntegrationIds(modDefinition, {
-      excludePixieBrix: true,
-    });
-
-    axiosMock
-      .onGet("/api/services/shared/?meta=1")
-      .reply(200, builtInIntegrationConfigs);
-
-    const builtInDependencies = await getBuiltInIntegrationDependencies(
-      nonPixieBrixIntegrationIds
-    );
-
-    expect(builtInDependencies).toEqual([
-      {
-        id: "@pixiebrix/service1",
-        config: builtInIntegrationConfigs[0].id,
-      },
-      {
-        id: "@pixiebrix/service2",
-        config: builtInIntegrationConfigs[1].id,
-      },
-    ]);
   });
 
   test("starter blueprints request fails", async () => {

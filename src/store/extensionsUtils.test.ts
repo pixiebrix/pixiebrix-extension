@@ -19,7 +19,10 @@ import {
   inferModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import {
+  type IntegrationDependency,
+  type UnconfiguredIntegrationDependency,
+} from "@/types/integrationTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
@@ -76,7 +79,7 @@ describe("inferModIntegrations", () => {
 
   it("throw on missing config", () => {
     const service = validateRegistryId("foo/bar");
-    const dependency: IntegrationDependency = {
+    const dependency: UnconfiguredIntegrationDependency = {
       id: service,
       outputKey: validateOutputKey("foo"),
     };

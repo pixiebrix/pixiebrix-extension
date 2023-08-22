@@ -44,7 +44,7 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
+import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: ServicesBody },
@@ -98,28 +98,28 @@ export function wizardStateFactory({
   );
 
   const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
-  const installedIntegrationIds = inferModIntegrations(
-    installedBlueprintExtensions,
-    {
+  const installedIntegrationConfigs = Object.fromEntries(
+    inferModIntegrations(installedBlueprintExtensions, {
       optional: true,
-    }
+    }).map(({ id, config }) => [id, config])
   );
-  const integrationIds = getIntegrationIds(modDefinition);
-  const integrationDependencies = integrationIds.map(
-    (id) =>
+  const unconfiguredIntegrationDependencies =
+    getUnconfiguredComponentIntegrations(modDefinition);
+  const integrationDependencies = unconfiguredIntegrationDependencies.map(
+    (unconfiguredDependency) => ({
+      ...unconfiguredDependency,
       // Prefer the installed dependency for reinstall cases, otherwise use the default
-      installedIntegrationIds.find((installed) => installed.id === id) ?? {
-        id,
-        // eslint-disable-next-line security/detect-object-injection -- RegistryId
-        config: defaultAuthOptions[id]?.value,
-      }
+      config:
+        installedIntegrationConfigs[unconfiguredDependency.id] ??
+        defaultAuthOptions[unconfiguredDependency.id]?.value,
+    })
   );
 
   const wizardSteps = STEPS.filter((step) => {
     switch (step.key) {
       case "services": {
-        return integrationIds.some(
-          (integrationId) => integrationId !== PIXIEBRIX_INTEGRATION_ID
+        return integrationDependencies.some(
+          ({ id }) => id !== PIXIEBRIX_INTEGRATION_ID
         );
       }
 

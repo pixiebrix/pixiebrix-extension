@@ -27,10 +27,9 @@ import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
-import { type RegistryId } from "@/types/registryTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type IntegrationDependency } from "@/types/integrationTypes";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
+import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -60,29 +59,6 @@ export async function getBuiltInIntegrationConfigs(): Promise<
   }
 }
 
-export async function getBuiltInIntegrationDependencies(
-  integrationIds: RegistryId[]
-): Promise<IntegrationDependency[]> {
-  const builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
-
-  return integrationIds.map((integrationId) => {
-    const builtInConfig = builtInIntegrationConfigs.find(
-      (config) => config.service.config.metadata.id === integrationId
-    );
-
-    if (!builtInConfig) {
-      throw new Error(
-        `No built-in config found for integration ${integrationId}. Check that starter mods have built-in configuration options for all required services.`
-      );
-    }
-
-    return {
-      id: integrationId,
-      config: builtInConfig.id,
-    };
-  });
-}
-
 function installModInOptionsState(
   state: ModComponentOptionsState,
   blueprint: ModDefinition,
@@ -105,11 +81,29 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
     return installed;
   }
 
-  const integrationIds = getIntegrationIds({
-    extensionPoints: modDefinitions.flatMap((mod) => mod.extensionPoints),
-  });
-  const builtInDependencies = await getBuiltInIntegrationDependencies(
-    integrationIds
+  const unconfiguredIntegrationDependencies =
+    getUnconfiguredComponentIntegrations({
+      extensionPoints: modDefinitions.flatMap((mod) => mod.extensionPoints),
+    });
+  const builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
+  const builtInDependencies = unconfiguredIntegrationDependencies.map(
+    (unconfiguredDependency) => {
+      const builtInConfig = builtInIntegrationConfigs.find(
+        (config) =>
+          config.service.config.metadata.id === unconfiguredDependency.id
+      );
+
+      if (!builtInConfig) {
+        throw new Error(
+          `No built-in config found for integration ${unconfiguredDependency.id}. Check that starter mods have built-in configuration options for all required integrations.`
+        );
+      }
+
+      return {
+        ...unconfiguredDependency,
+        config: builtInConfig.id,
+      };
+    }
   );
   let optionsState = await loadOptions();
 

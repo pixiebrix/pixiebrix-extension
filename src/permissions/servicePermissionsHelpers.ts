@@ -26,7 +26,7 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
  * Return origin permissions required to use an integration with the given configuration.
  */
 export async function collectIntegrationOriginPermissions(
-  dependency: IntegrationDependency
+  dependency: Pick<IntegrationDependency, "id" | "config">
 ): Promise<Permissions.Permissions> {
   expectContext("extension");
 

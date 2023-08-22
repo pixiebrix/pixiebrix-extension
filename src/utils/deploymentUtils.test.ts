@@ -17,7 +17,7 @@
 
 import {
   checkExtensionUpdateRequired,
-  findLocalDeploymentIntegrationConfigs,
+  findLocalDeploymentConfiguredIntegrationDependencies,
   isDeploymentActive,
   makeUpdatedFilter,
   mergeDeploymentIntegrationDependencies,
@@ -237,10 +237,18 @@ describe("findPersonalServiceConfigurations", () => {
 
     const locator = async () => [] as SanitizedIntegrationConfig[];
     expect(
-      await findLocalDeploymentIntegrationConfigs(deployment, locator)
-    ).toStrictEqual({
-      [CONTROL_ROOM_OAUTH_INTEGRATION_ID]: [],
-    });
+      await findLocalDeploymentConfiguredIntegrationDependencies(
+        deployment,
+        locator
+      )
+    ).toStrictEqual([
+      {
+        id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        outputKey: "foo",
+        isOptional: false,
+        configs: [],
+      },
+    ]);
   });
 
   test("found personal service", async () => {
@@ -264,10 +272,18 @@ describe("findPersonalServiceConfigurations", () => {
 
     const locator = async () => [auth];
     expect(
-      await findLocalDeploymentIntegrationConfigs(deployment, locator)
-    ).toStrictEqual({
-      [CONTROL_ROOM_OAUTH_INTEGRATION_ID]: [auth],
-    });
+      await findLocalDeploymentConfiguredIntegrationDependencies(
+        deployment,
+        locator
+      )
+    ).toStrictEqual([
+      {
+        id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        outputKey: "foo",
+        isOptional: false,
+        configs: [auth],
+      },
+    ]);
   });
 
   test("exclude bound services", async () => {
@@ -294,8 +310,11 @@ describe("findPersonalServiceConfigurations", () => {
 
     const locator = async () => [auth];
     expect(
-      await findLocalDeploymentIntegrationConfigs(deployment, locator)
-    ).toStrictEqual({});
+      await findLocalDeploymentConfiguredIntegrationDependencies(
+        deployment,
+        locator
+      )
+    ).toBeArrayOfSize(0);
   });
 
   test("exclude pixiebrix service", async () => {
@@ -319,8 +338,11 @@ describe("findPersonalServiceConfigurations", () => {
 
     const locator = async () => [auth];
     expect(
-      await findLocalDeploymentIntegrationConfigs(deployment, locator)
-    ).toStrictEqual({});
+      await findLocalDeploymentConfiguredIntegrationDependencies(
+        deployment,
+        locator
+      )
+    ).toBeArrayOfSize(0);
   });
 });
 
@@ -354,7 +376,9 @@ describe("mergeDeploymentServiceConfigurations", () => {
     ).toStrictEqual([
       {
         id: registryId,
+        outputKey: "foo",
         config: boundId,
+        isOptional: false,
       },
     ]);
   });
@@ -384,7 +408,9 @@ describe("mergeDeploymentServiceConfigurations", () => {
     ).toStrictEqual([
       {
         id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        outputKey: "foo",
         config: auth.id,
+        isOptional: false,
       },
     ]);
   });

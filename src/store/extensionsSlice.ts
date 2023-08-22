@@ -68,7 +68,21 @@ type ActivateModComponentParam = {
   integrationDependencies: IntegrationDependency[];
 };
 
-function activateModComponent<Config extends UnknownObject = UnknownObject>({
+/**
+ * Transform a given ModComponentDefinition into an ActivatedModComponent.
+ * Note: This function has no side effects, it's just a type-transformer.
+ *       It does NOT save the activated mod component anywhere.
+ * @param modComponentDefinition the component definition to activate
+ * @param apiVersion the pixiebrix mod api version
+ * @param _deployment the deployment that the component belongs to, if there is one
+ * @param _recipe the metadata for the mod that the component belongs to
+ * @param definitions inner definitions for the component
+ * @param optionsArgs mod option inputs for the mod this component belongs to
+ * @param integrationDependencies the configured dependencies for the mod this component belongs to
+ */
+function getActivatedModComponentFromDefinition<
+  Config extends UnknownObject = UnknownObject
+>({
   modComponentDefinition,
   apiVersion,
   _deployment,
@@ -220,7 +234,7 @@ const extensionsSlice = createSlice({
           throw new Error("sharing is required");
         }
 
-        const activatedModComponent = activateModComponent({
+        const activatedModComponent = getActivatedModComponentFromDefinition({
           modComponentDefinition,
           // Default to `v1` for backward compatability
           apiVersion: modDefinition.apiVersion ?? "v1",

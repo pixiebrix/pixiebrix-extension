@@ -18,9 +18,8 @@
 // Split from deploymentUtils.ts to avoid circular dependency
 
 import { type Deployment } from "@/types/contract";
-import { flatten } from "lodash";
 import {
-  findLocalDeploymentIntegrationConfigs,
+  findLocalDeploymentConfiguredIntegrationDependencies,
   type Locate,
 } from "@/utils/deploymentUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
@@ -40,17 +39,21 @@ export async function checkDeploymentPermissions(
   deployment: Deployment,
   locate: Locate
 ): Promise<PermissionsStatus> {
-  const blueprint = deployment.package.config;
-  const localAuths = await findLocalDeploymentIntegrationConfigs(
+  const modDefinition = deployment.package.config;
+  const localAuths = await findLocalDeploymentConfiguredIntegrationDependencies(
     deployment,
     locate
   );
 
-  return checkModDefinitionPermissions(
-    blueprint,
-    flatten(Object.values(localAuths)).map((x) => ({
-      id: x.serviceId,
-      config: x.id,
-    }))
+  const integrationDependencies = localAuths.flatMap(
+    ({ id, outputKey, isOptional, configs }) =>
+      configs.map((config) => ({
+        id,
+        outputKey,
+        isOptional,
+        config: config.id,
+      }))
   );
+
+  return checkModDefinitionPermissions(modDefinition, integrationDependencies);
 }

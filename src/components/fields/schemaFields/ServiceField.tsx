@@ -51,7 +51,7 @@ export const ServiceFieldDescription: React.FC<{ schema: Schema }> = ({
 
 /**
  * A field layout for a schema-driven Service Selector that automatically maintains the services form state (and output keys)
- * @see ServiceDependency
+ * @see IntegrationDependency
  * @see ServiceWidget
  */
 const ServiceField: React.FunctionComponent<ServiceWidgetProps> = ({

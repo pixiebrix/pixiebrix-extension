@@ -53,8 +53,5 @@ export async function checkCloudExtensionPermissions(
     ],
   };
 
-  return checkModDefinitionPermissions(
-    recipeLike,
-    configured.map(({ id, config }) => ({ id, config }))
-  );
+  return checkModDefinitionPermissions(recipeLike, configured);
 }

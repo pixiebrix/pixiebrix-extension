@@ -53,6 +53,7 @@ import {
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedIntegrationConfigFactory({
@@ -115,11 +116,12 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          // Let this extension to have a service reference
+          // Let this extension have a service reference
           services: [
             {
               outputKey: validateOutputKey("pixiebrix"),
               id: validateRegistryId("@test/service"),
+              config: uuidSequence(1),
             },
           ],
           optionsArgs: {
