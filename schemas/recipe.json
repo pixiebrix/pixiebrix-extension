@@ -46,7 +46,7 @@
             "description": "The id of the extension point, or an inner definition key"
           },
           "services": {
-            "oneOf": [
+            "anyOf": [
               {
                 "$schema": "http://json-schema.org/draft-07/schema#"
               },
