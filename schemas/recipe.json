@@ -48,13 +48,15 @@
           "services": {
             "anyOf": [
               {
-                "$schema": "http://json-schema.org/draft-07/schema#"
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "description": "JSON schema defining the mod integrations; should use 'properties' and 'required' keywords, with outputKey property names and $ref values pointing to the services."
               },
               {
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "https://app.pixiebrix.com/schemas/ref#/service"
-                }
+                },
+                "description": "Record with outputKey property names and service registryId values"
               }
             ]
           }
