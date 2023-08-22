@@ -265,6 +265,15 @@ export const produceSchemaOnUiTypeChange = (
       delete draft.uiSchema[propertyName][UI_WIDGET];
     }
 
+    if (uiWidget === "checkboxes" && propertyType === "array") {
+      draftPropertySchema.items = {
+        type: "string",
+        enum: draftPropertySchema.enum ?? ["Example option"],
+      };
+      draftPropertySchema.uniqueItems = true;
+      delete draftPropertySchema.enum;
+    }
+
     if (uiWidget === "select") {
       if (extra === "selectWithLabels") {
         // If switching from Dropdown, convert the enum to options with labels
@@ -284,15 +293,6 @@ export const produceSchemaOnUiTypeChange = (
     } else {
       delete draftPropertySchema.enum;
       delete draftPropertySchema.oneOf;
-    }
-
-    if (uiWidget === "checkboxes" && propertyType === "array") {
-      draftPropertySchema.items = {
-        type: "string",
-        // TODO: if enum is defined, map it to items.enum
-        enum: [],
-      };
-      draftPropertySchema.uniqueItems = true;
     }
   });
 };

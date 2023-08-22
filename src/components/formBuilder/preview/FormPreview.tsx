@@ -143,6 +143,23 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             propertySchema.oneOf = [{ const: "" }];
           }
         }
+
+        for (const [key, value] of Object.entries(draftUiSchema)) {
+          console.log("*** HERE");
+          if (KEYS_OF_UI_SCHEMA.includes(key)) {
+            continue;
+          }
+
+          const propertySchema = draftSchema.properties[key];
+
+          if (
+            value[UI_WIDGET] === "checkboxes" &&
+            typeof propertySchema === "object" &&
+            !Array.isArray(propertySchema.items.enum)
+          ) {
+            propertySchema.items.enum = [];
+          }
+        }
       }),
     [rjsfSchema, activeField]
   );
@@ -181,6 +198,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     SelectWidget: RjsfSelectWidget,
     googleSheet: RjsfSelectWidget,
   };
+
+  console.log("*** rjsf schema", previewSchema, previewUiSchema);
 
   return (
     <JsonSchemaForm
