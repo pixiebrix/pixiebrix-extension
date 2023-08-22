@@ -181,7 +181,6 @@ describe("marketplace enhancements", () => {
     await waitForEffect();
 
     // User is not logged in, so current page should navigate away from marketplace
-    // @ts-expect-error -- some typing weirdness with jest-location-mock
     expect(window.location).not.toBeAt(MARKETPLACE_URL);
   });
 
