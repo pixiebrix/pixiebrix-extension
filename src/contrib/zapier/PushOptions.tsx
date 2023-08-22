@@ -29,7 +29,6 @@ import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
@@ -39,6 +38,7 @@ import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
 
 function useHooks(): {
   hooks: Webhook[];

@@ -15,23 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
+import React, { useContext } from "react";
+import {
+  type SchemaFieldProps,
+  type SchemaFieldComponent,
+} from "@/components/fields/schemaFields/propTypes";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import CssClassField from "./CssClassField";
 import HeadingStyleField from "./HeadingStyleField";
 import {
   isAppServiceField,
-  isButtonVariantField,
   isCssClassField,
   isHeadingStyleField,
+  hasCustomWidget,
 } from "./fieldTypeCheckers";
 import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
-import ButtonVariantSchemaField from "@/components/fields/schemaFields/ButtonVariantSchemaField";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
+import { get } from "lodash";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema, uiSchema } = props;
+  const { customWidgets } = useContext(SchemaFieldContext);
 
   if (isAppServiceField(schema)) {
     return <AppServiceField {...props} />;
@@ -45,8 +51,16 @@ const SchemaField: SchemaFieldComponent = (props) => {
     return <HeadingStyleField {...props} />;
   }
 
-  if (isButtonVariantField(uiSchema)) {
-    return <ButtonVariantSchemaField {...props} />;
+  if (hasCustomWidget(uiSchema)) {
+    const widget = get(customWidgets, uiSchema["ui:widget"] as string);
+
+    // If the uiWidget is registered, render it. Otherwise, render the default field.
+    if (widget) {
+      const Component = defaultFieldFactory(
+        widget as React.VFC<SchemaFieldProps>
+      );
+      return <Component {...props} />;
+    }
   }
 
   if (props.name.endsWith(".isRootAware")) {

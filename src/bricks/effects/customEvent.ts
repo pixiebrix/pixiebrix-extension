@@ -17,7 +17,7 @@
 
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
-import { type Schema } from "@/types/schemaTypes";
+import { type UiSchema, type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { validateRegistryId } from "@/types/helpers";
 
@@ -46,6 +46,12 @@ class CustomEventEffect extends EffectABC {
       },
     },
     required: ["eventName"],
+  };
+
+  uiSchema: UiSchema = {
+    eventName: {
+      "ui:widget": "SchemaCustomEventWidget",
+    },
   };
 
   override async isRootAware(): Promise<boolean> {
