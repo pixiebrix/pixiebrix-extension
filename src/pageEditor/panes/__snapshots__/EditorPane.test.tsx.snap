@@ -1243,6 +1243,7 @@ exports[`renders an extension with sub pipeline 1`] = `
           >
             <button
               class="toggle active"
+              type="button"
             >
               <svg
                 aria-hidden="true"
@@ -2116,6 +2117,7 @@ exports[`renders the first selected node 1`] = `
           >
             <button
               class="toggle active"
+              type="button"
             >
               <svg
                 aria-hidden="true"
