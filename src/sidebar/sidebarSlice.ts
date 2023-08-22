@@ -189,7 +189,7 @@ export function fixActiveTabOnRemove(
       if (matchingMod) {
         state.activeKey = eventKeyForEntry(matchingMod);
       } else {
-        state.activeKey = defaultEventKey(state);
+        state.activeKey = defaultEventKey(state, state.closedTabs);
       }
     }
   }
@@ -389,7 +389,7 @@ const sidebarSlice = createSlice({
 
       // If a panel is no longer available, reset the current tab to a valid tab.
       if (!eventKeyExists(state, state.activeKey)) {
-        state.activeKey = defaultEventKey(state);
+        state.activeKey = defaultEventKey(state, state.closedTabs);
       }
     },
     showModActivationPanel(

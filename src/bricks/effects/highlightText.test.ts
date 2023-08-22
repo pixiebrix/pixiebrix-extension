@@ -15,26 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JSDOM } from "jsdom";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import HighlightText from "@/bricks/effects/highlightText";
 import { type BrickOptions } from "@/types/runtimeTypes";
 
-function getDocument(html: string): Document {
-  return new JSDOM(html).window.document;
-}
-
 const logger = new ConsoleLogger({
   extensionId: uuidv4(),
 });
 
 describe("ReplaceTextEffect", () => {
+  test("can iterate body", () => {
+    // Smoke test to ensure the body can be iterated. Had been getting error during testing with markjs: Failed to
+    // execute 'createNodeIterator' on 'Document': parameter 1 is not of type 'Node'.
+    document.body.innerHTML = "<div>foobar</div>";
+    const nodeIterator = document.createNodeIterator(
+      document.body,
+      NodeFilter.SHOW_ELEMENT
+    );
+    nodeIterator.nextNode();
+  });
+
   test.each([[undefined], ["yellow"]])(
     "replace text beginning of div with color: %s",
     async (color) => {
-      const document = getDocument("<div>foobar</div>");
+      document.body.innerHTML = "<div>foobar</div>";
       const brick = new HighlightText();
       await brick.run(
         unsafeAssumeValidArg({
@@ -50,8 +56,53 @@ describe("ReplaceTextEffect", () => {
     }
   );
 
+  test("case insensitive match", async () => {
+    document.body.innerHTML = "<div>fOobAr</div>";
+    const brick = new HighlightText();
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "foo",
+        isCaseInsensitive: true,
+      }),
+      { logger, root: document } as BrickOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      '<div><mark style="background-color: yellow;">fOo</mark>bAr</div>'
+    );
+  });
+
+  test("case sensitive default", async () => {
+    document.body.innerHTML = "<div>fOobAr</div>";
+    const brick = new HighlightText();
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "foo",
+      }),
+      { logger, root: document } as BrickOptions
+    );
+
+    expect(document.body.innerHTML).toEqual("<div>fOobAr</div>");
+  });
+
+  test("escapes special chars in regex", async () => {
+    document.body.innerHTML = "<div>[fOo]bAr</div>";
+    const brick = new HighlightText();
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "[foo]",
+        isCaseInsensitive: true,
+      }),
+      { logger, root: document } as BrickOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      '<div><mark style="background-color: yellow;">[fOo]</mark>bAr</div>'
+    );
+  });
+
   test("replace text end of div", async () => {
-    const document = getDocument("<div>foobar</div>");
+    document.body.innerHTML = "<div>foobar</div>";
     const brick = new HighlightText();
     await brick.run(
       unsafeAssumeValidArg({
@@ -66,7 +117,7 @@ describe("ReplaceTextEffect", () => {
   });
 
   test("replace middle of div", async () => {
-    const document = getDocument("<div>foobar</div>");
+    document.body.innerHTML = "<div>foobar</div>";
     const brick = new HighlightText();
     await brick.run(
       unsafeAssumeValidArg({
@@ -81,7 +132,7 @@ describe("ReplaceTextEffect", () => {
   });
 
   test("don't re-highlight text", async () => {
-    const document = getDocument("<div>foobar</div>");
+    document.body.innerHTML = "<div>foobar</div>";
     const brick = new HighlightText();
 
     for (let i = 0; i < 2; i++) {
@@ -100,7 +151,7 @@ describe("ReplaceTextEffect", () => {
   });
 
   test("don't re-highlight text with selector matching multiple levels", async () => {
-    const document = getDocument("<div><div>foobar</div></div>");
+    document.body.innerHTML = "<div><div>foobar</div></div>";
     const brick = new HighlightText();
 
     await brick.run(
@@ -117,7 +168,7 @@ describe("ReplaceTextEffect", () => {
   });
 
   test("highlight regex", async () => {
-    const document = getDocument("<div>foobar</div>");
+    document.body.innerHTML = "<div>foobar</div>";
     const brick = new HighlightText();
 
     await brick.run(
@@ -134,7 +185,7 @@ describe("ReplaceTextEffect", () => {
   });
 
   test("highlight with hex code", async () => {
-    const document = getDocument("<div>foobar</div>");
+    document.body.innerHTML = "<div>foobar</div>";
     const brick = new HighlightText();
 
     await brick.run(
@@ -146,12 +197,13 @@ describe("ReplaceTextEffect", () => {
     );
 
     expect(document.body.innerHTML).toEqual(
-      '<div><mark style="background-color: #A020F0;">foo</mark>bar</div>'
+      // `markjs` highlights with rgb
+      '<div><mark style="background-color: rgb(160, 32, 240);">foo</mark>bar</div>'
     );
   });
 
   test("highlight multiple regex", async () => {
-    const document = getDocument("<div>foobarfoo</div>");
+    document.body.innerHTML = "<div>foobarfoo</div>";
     const brick = new HighlightText();
 
     await brick.run(
@@ -168,7 +220,7 @@ describe("ReplaceTextEffect", () => {
   });
 
   test("multiple elements", async () => {
-    const document = getDocument("<div><div>foo</div><div>foo</div></div>");
+    document.body.innerHTML = "<div><div>foo</div><div>foo</div></div>";
     const brick = new HighlightText();
 
     await brick.run(
@@ -185,9 +237,8 @@ describe("ReplaceTextEffect", () => {
   });
 
   test("excludes elements outside the body", async () => {
-    const document = getDocument(
-      "<title>Support page</title><h1>Superlatives Abound</h1>"
-    );
+    document.title = "Support page";
+    document.body.innerHTML = "<h1>Superlatives Abound</h1>";
     const brick = new HighlightText();
 
     await brick.run(
@@ -204,7 +255,7 @@ describe("ReplaceTextEffect", () => {
   });
 
   test("sanitize color HTML", async () => {
-    const document = getDocument("<div>foobar</div>");
+    document.body.innerHTML = "<div>foobar</div>";
     const brick = new HighlightText();
 
     await brick.run(
@@ -216,13 +267,11 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
-      '<div><mark style="background-color: &quot;<script>alert(&quot;xss&quot;)</script>;">foo</mark>bar</div>'
-    );
+    expect(document.body.innerHTML).toEqual("<div><mark>foo</mark>bar</div>");
   });
 
   test("sanitize HTML", async () => {
-    const document = getDocument("<div>foobar</div>");
+    document.body.innerHTML = "<div>foobar</div>";
     document.querySelector("div").textContent = "<script>alert('xss')</script>";
 
     const brick = new HighlightText();
@@ -237,7 +286,42 @@ describe("ReplaceTextEffect", () => {
 
     expect(document.body.innerHTML).toEqual(
       // The text content was sanitized
-      '<div><mark style="background-color: yellow;"></mark></div>'
+      "<div><mark style=\"background-color: yellow;\">&lt;script&gt;alert('xss')&lt;/script&gt;</mark></div>"
+    );
+  });
+
+  test("is root aware", async () => {
+    document.body.innerHTML = "<div><h1>foobar</h1><h2>foobaz</h2></div>";
+    const root: HTMLElement = document.querySelector("h1");
+
+    const brick = new HighlightText();
+
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "foo",
+      }),
+      { logger, root } as BrickOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      '<div><h1><mark style="background-color: yellow;">foo</mark>bar</h1><h2>foobaz</h2></div>'
+    );
+  });
+
+  test("match across elements", async () => {
+    document.body.innerHTML = "<div><span>foo</span><span>bar</span></div>";
+    const brick = new HighlightText();
+
+    await brick.run(
+      unsafeAssumeValidArg({
+        pattern: "foobar",
+        isAcrossElements: true,
+      }),
+      { logger, root: document } as BrickOptions
+    );
+
+    expect(document.body.innerHTML).toEqual(
+      '<div><span><mark style="background-color: yellow;">foo</mark></span><span><mark style="background-color: yellow;">bar</mark></span></div>'
     );
   });
 });
