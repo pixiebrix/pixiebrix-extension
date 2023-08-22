@@ -20,7 +20,7 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type BrickIcon } from "@/types/iconTypes";
-import { Except, type JsonObject, type JsonValue } from "type-fest";
+import { type Except, type JsonObject, type JsonValue } from "type-fest";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
 export interface IntegrationDependency {
