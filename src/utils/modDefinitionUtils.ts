@@ -25,9 +25,10 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type Schema } from "@/types/schemaTypes";
 import { extractServiceIds } from "@/services/serviceUtils";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type UnconfiguredIntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { type Except } from "type-fest";
 
 function isSchemaServicesFormat(
   services: ModComponentDefinition["services"]
@@ -41,6 +42,11 @@ function isSchemaServicesFormat(
     Array.isArray(services.required)
   );
 }
+
+type UnconfiguredIntegrationDependency = Except<
+  IntegrationDependency,
+  "config"
+>;
 
 function getIntegrationsFromSchema(
   services: Schema
