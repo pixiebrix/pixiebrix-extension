@@ -70,8 +70,6 @@ const FormEditor: React.FC<FormEditorProps> = ({
     joinName(name, "uiSchema", UI_ORDER)
   );
 
-  console.log("*** fieldTypes:", fieldTypes);
-
   const { schema, uiSchema } = rjsfSchema;
 
   // Select the active field when FormEditor field changes

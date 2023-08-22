@@ -60,6 +60,7 @@ const FORM_FIELD_TYPE_OPTIONS: SelectStringOption[] = [
     label: "Checkboxes (multi-select)",
     value: stringifyUiType({
       propertyType: "array",
+      uiWidget: "checkboxes",
     }),
   },
   {

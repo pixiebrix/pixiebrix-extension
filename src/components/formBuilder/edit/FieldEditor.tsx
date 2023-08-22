@@ -260,6 +260,8 @@ const FieldEditor: React.FC<{
               : undefined,
         };
 
+  console.log("*** propertySchema.items", propertySchema.items);
+
   return (
     <div className={styles.root}>
       <FieldTemplate

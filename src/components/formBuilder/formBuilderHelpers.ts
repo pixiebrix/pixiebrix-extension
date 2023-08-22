@@ -218,6 +218,8 @@ export const produceSchemaOnUiTypeChange = (
     parseUiType(nextUiType);
 
   return produce(rjsfSchema, (draft) => {
+    console.log("*** inside produce!!!");
+
     // Relying on Immer to protect against object injections
     /* eslint-disable security/detect-object-injection */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
@@ -237,12 +239,6 @@ export const produceSchemaOnUiTypeChange = (
 
       default: {
         draftPropertySchema.type = propertyType;
-
-        // TODO: move me to the field type definition?
-        if (propertyType === "array") {
-          draftPropertySchema.items = { type: "string" };
-        }
-
         delete draftPropertySchema.$ref;
       }
     }
@@ -291,7 +287,22 @@ export const produceSchemaOnUiTypeChange = (
       delete draftPropertySchema.enum;
       delete draftPropertySchema.oneOf;
     }
-    /* eslint-enable security/detect-object-injection */
+
+    if (
+      uiWidget === "checkboxes" && // TODO: move me to the field type definition?
+      propertyType === "array"
+    ) {
+      // draftPropertySchema.items = {
+      //   type: "string",
+      //   enum: Array.isArray(draftPropertySchema.enum) ?
+      //     draftPropertySchema.enum.map((item) => ({ const: item } as SchemaDefinition)) : []
+      // };
+      console.log("*** HERE");
+      draftPropertySchema.items = {
+        type: "string",
+        enum: ["cat", "dog", "bird"],
+      };
+    }
   });
 };
 

@@ -143,6 +143,16 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             propertySchema.oneOf = [{ const: "" }];
           }
         }
+
+        // TODO: instead of hard-coding me, loop through the properties like above and make sure we
+        //  generate enumOptions from the previewSchema items.enum property
+        draftUiSchema["example"]["ui:options"] = {
+          enumOptions: [
+            { label: "cat", value: "cat" },
+            { label: "dog", value: "dog" },
+            { label: "fish", value: "fish" },
+          ],
+        };
       }),
     [rjsfSchema, activeField]
   );
@@ -182,9 +192,14 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     googleSheet: RjsfSelectWidget,
   };
 
-  console.log("*** activeField", activeField);
-  console.log("*** rjsfSchema", rjsfSchema);
-  console.log("*** previewSchema", previewSchema);
+  console.log("*** jsonschemaform props", {
+    data,
+    fields,
+    widgets,
+    previewSchema,
+    previewUiSchema,
+  });
+
   return (
     <JsonSchemaForm
       tagName="div"
