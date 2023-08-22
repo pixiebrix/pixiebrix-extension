@@ -22,20 +22,9 @@
   border-right: $pipeLineBorderWidth solid black;
   flex-shrink: 0;
   flex-grow: 0;
+  background-color: transparent;
 
   &.active {
     border-color: white;
-  }
-
-  &.nestedActive {
-    background-color: $nestedActiveColor;
-  }
-
-  &.isHeader {
-    background-color: $defaultHeaderColor;
-
-    &.nestedActive {
-      background-color: $activeHeaderColor;
-    }
   }
 }

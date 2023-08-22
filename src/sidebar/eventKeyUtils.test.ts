@@ -25,13 +25,16 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/ModLauncher";
 describe("defaultEventKey", () => {
   it("returns null no content", () => {
     expect(
-      defaultEventKey({
-        forms: [],
-        panels: [],
-        temporaryPanels: [],
-        staticPanels: [],
-        modActivationPanel: null,
-      })
+      defaultEventKey(
+        {
+          forms: [],
+          panels: [],
+          temporaryPanels: [],
+          staticPanels: [],
+          modActivationPanel: null,
+        },
+        {}
+      )
     ).toBe(null);
   });
 
@@ -42,8 +45,8 @@ describe("defaultEventKey", () => {
       panels: [{ extensionId: uuidv4() }],
     } as SidebarEntries;
 
-    expect(defaultEventKey(args)).toBe(eventKeyForEntry(args.forms[1]));
-    expect(defaultEventKey(args)).not.toBe("form-undefined");
+    expect(defaultEventKey(args, {})).toBe(eventKeyForEntry(args.forms[1]));
+    expect(defaultEventKey(args, {})).not.toBe("form-undefined");
   });
 
   it("prefers latest temporary panel", () => {
@@ -53,10 +56,10 @@ describe("defaultEventKey", () => {
       panels: [{ extensionId: uuidv4() }],
     } as SidebarEntries;
 
-    expect(defaultEventKey(args)).toBe(
+    expect(defaultEventKey(args, {})).toBe(
       eventKeyForEntry(args.temporaryPanels[1])
     );
-    expect(defaultEventKey(args)).not.toBe("temporaryPanel-undefined");
+    expect(defaultEventKey(args, {})).not.toBe("temporaryPanel-undefined");
   });
 
   describe("panels", () => {
@@ -67,10 +70,10 @@ describe("defaultEventKey", () => {
         panels: [{ extensionId: uuidv4() }, { extensionId: uuidv4() }],
       } as SidebarEntries;
 
-      expect(defaultEventKey(entries)).toBe(
+      expect(defaultEventKey(entries, {})).toBe(
         eventKeyForEntry(entries.panels[0])
       );
-      expect(defaultEventKey(entries)).not.toBe("panel-undefined");
+      expect(defaultEventKey(entries, {})).not.toBe("panel-undefined");
     });
 
     it("ignores closed panels", () => {
@@ -102,8 +105,8 @@ describe("defaultEventKey", () => {
         staticPanels: [MOD_LAUNCHER],
       } as unknown as SidebarEntries;
 
-      expect(defaultEventKey(args)).toBe(eventKeyForEntry(MOD_LAUNCHER));
-      expect(defaultEventKey(args)).not.toBe("panel-undefined");
+      expect(defaultEventKey(args, {})).toBe(eventKeyForEntry(MOD_LAUNCHER));
+      expect(defaultEventKey(args, {})).not.toBe("panel-undefined");
     });
 
     it("ignores closed static panels", () => {
