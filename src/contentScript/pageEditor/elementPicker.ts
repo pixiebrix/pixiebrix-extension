@@ -80,13 +80,6 @@ interface UserSelection {
   roots?: HTMLElement[];
   /** CSS selector to limit the selection to. */
   filter?: string;
-  /**
-   * True to enable the popover selection tools.
-   */
-  enableSelectionTools?: boolean;
-  /**
-   * True to enable multi-selection by default.
-   */
   isMulti?: boolean;
 }
 
@@ -99,10 +92,6 @@ export async function userSelectElement({
    * Selector indicating elements that should be highlighted as elements to select from.
    */
   filter,
-  /**
-   * Enable the floating selection tools.
-   */
-  enableSelectionTools = false,
   /**
    * True to enable multi-selection by default.
    */
@@ -173,10 +162,7 @@ export async function userSelectElement({
       registerListenersOnWindow(window);
       addInspectingModeStyles(window);
 
-      // As of 1.7.33, selection tool shows for all users if isMulti is true
-      if (isMulti || enableSelectionTools) {
-        addMultiSelectionTool(window);
-      }
+      addMultiSelectionTool(window);
 
       highlightRoots();
       prehiglightItems();
@@ -453,7 +439,6 @@ export async function selectElement({
   root,
   isMulti: initialIsMulti = false,
   excludeRandomClasses,
-  enableSelectionTools = false,
 }: {
   traverseUp: number;
   framework?: Framework;
@@ -461,7 +446,6 @@ export async function selectElement({
   isMulti?: boolean;
   root?: string;
   excludeRandomClasses?: boolean;
-  enableSelectionTools?: boolean;
 }) {
   const rootElements = $safeFind(root).get();
 
@@ -472,7 +456,6 @@ export async function selectElement({
   const { elements, isMulti, shouldSelectSimilar } = await userSelectElement({
     roots: rootElements,
     isMulti: initialIsMulti,
-    enableSelectionTools,
   });
 
   console.debug("Selected elements", { elements, isMulti });

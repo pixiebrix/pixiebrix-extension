@@ -174,11 +174,6 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     boolean
   >((x) => x.settings.excludeRandomClasses);
 
-  const enableSelectionTools = useSelector<
-    { settings: SettingsState },
-    boolean
-  >((x) => x.settings.selectionTools);
-
   const suggestions: ElementSuggestion[] = useMemo(
     () =>
       getSuggestionsForElement(element, { sort: sort && !element?.isMulti }),
@@ -234,7 +229,6 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         root,
         excludeRandomClasses,
         isMulti,
-        enableSelectionTools,
       });
 
       if (isEmpty(selected)) {
