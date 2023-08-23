@@ -38,19 +38,13 @@ export interface IntegrationDependency {
    * The UUID of the integration configuration.
    */
   config?: UUID;
+
+  /**
+   * Whether the integration is optional for the mod to function
+   * @since 1.7.37 - added to facilitate optional integrations during activation
+   */
+  isOptional?: boolean;
 }
-
-export type IntegrationConfigPair = {
-  /**
-   * The registry id of the integration.
-   */
-  id: RegistryId;
-
-  /**
-   * UUID of the integration configuration.
-   */
-  config: UUID;
-};
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 

@@ -23,18 +23,18 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import { useField } from "formik";
-import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
-import { getRequiredIntegrationIds } from "@/utils/modDefinitionUtils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
 import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { joinName } from "@/utils/formUtils";
+import { type IntegrationDependency } from "@/types/integrationTypes";
+import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 
 interface OwnProps {
   blueprint: ModDefinition;
@@ -58,11 +58,14 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     useAuthOptions(),
     emptyAuthOptions
   );
-  const [field, { error }] = useField<IntegrationConfigPair[]>("services");
+  const [field, { error }] = useField<IntegrationDependency[]>(
+    "integrationDependencies"
+  );
   const { data: serviceConfigs } = useGetServicesQuery();
 
   const requiredServiceIds = useMemo(
-    () => getRequiredIntegrationIds(blueprint),
+    // The PixieBrix service gets automatically configured, so no need to include it
+    () => getIntegrationIds(blueprint, { excludePixieBrix: true }),
     [blueprint]
   );
 

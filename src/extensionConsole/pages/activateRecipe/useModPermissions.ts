@@ -18,13 +18,13 @@
 import useAsyncState from "@/hooks/useAsyncState";
 import { services as serviceLocator } from "@/background/messenger/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type IntegrationConfigPair } from "@/types/integrationTypes";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type AsyncState } from "@/types/sliceTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
 type RecipePermissionsState = AsyncState<PermissionsStatus> & {
   /**
@@ -36,12 +36,12 @@ type RecipePermissionsState = AsyncState<PermissionsStatus> & {
 /**
  * Hook providing convenience methods for ensuring permissions for a recipe prior to activation.
  * @param blueprint the blueprint definition
- * @param serviceAuths the integration configurations selected for blueprint activation
+ * @param configuredDependencies the integration configurations selected for mod activation
  * @see useCloudExtensionPermissions
  */
-function useRecipePermissions(
+function useModPermissions(
   blueprint: ModDefinition,
-  serviceAuths: IntegrationConfigPair[]
+  configuredDependencies: IntegrationDependency[]
 ): RecipePermissionsState {
   const { data: browserPermissions } = useExtensionPermissions();
 
@@ -49,9 +49,9 @@ function useRecipePermissions(
     async () => {
       // Refresh services because the user may have created a team integration since the last refresh.
       await serviceLocator.refresh();
-      return checkModDefinitionPermissions(blueprint, serviceAuths);
+      return checkModDefinitionPermissions(blueprint, configuredDependencies);
     },
-    [serviceAuths, browserPermissions],
+    [configuredDependencies, browserPermissions],
     {
       initialValue: {
         hasPermissions: true,
@@ -70,4 +70,4 @@ function useRecipePermissions(
   };
 }
 
-export default useRecipePermissions;
+export default useModPermissions;

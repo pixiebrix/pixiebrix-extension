@@ -23,7 +23,7 @@ import { type RemoteIntegrationConfig } from "@/types/contract";
 import { type IntegrationConfig } from "@/types/integrationTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { getRequiredIntegrationIds } from "@/utils/modDefinitionUtils";
+import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
@@ -118,35 +118,38 @@ export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
   );
 }
 
-export function getDefaultAuthOptionsForRecipe(
-  recipe: ModDefinition,
+export function getDefaultAuthOptionsForMod(
+  modDefinition: ModDefinition,
   authOptions: AuthOption[]
 ): Record<RegistryId, AuthOption | null> {
-  const requiredServiceIds = getRequiredIntegrationIds(recipe);
+  const requiredIntegrationIds = getIntegrationIds(modDefinition, {
+    // The PixieBrix service gets automatically configured, so no need to include it
+    excludePixieBrix: true,
+  });
 
   return Object.fromEntries(
-    requiredServiceIds.map((serviceId) => {
-      const authOptionsForService = authOptions.filter(
-        (authOption) => authOption.serviceId === serviceId
+    requiredIntegrationIds.map((integrationId) => {
+      const authOptionsForIntegration = authOptions.filter(
+        (authOption) => authOption.serviceId === integrationId
       );
 
       // Prefer arbitrary personal or shared configuration
-      const personalOrSharedOption = authOptionsForService.find((authOption) =>
-        ["private", "shared"].includes(authOption.sharingType)
+      const personalOrSharedOption = authOptionsForIntegration.find(
+        (authOption) => ["private", "shared"].includes(authOption.sharingType)
       );
       if (personalOrSharedOption) {
-        return [serviceId, personalOrSharedOption];
+        return [integrationId, personalOrSharedOption];
       }
 
       // Default to built-in option otherwise
-      const builtInOption = authOptionsForService.find(
+      const builtInOption = authOptionsForIntegration.find(
         (authOption) => authOption.sharingType === "built-in"
       );
       if (builtInOption) {
-        return [serviceId, builtInOption];
+        return [integrationId, builtInOption];
       }
 
-      return [serviceId, null];
+      return [integrationId, null];
     })
   );
 }

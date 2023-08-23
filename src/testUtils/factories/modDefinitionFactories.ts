@@ -201,7 +201,7 @@ export const innerStarterBrickModDefinitionFactory = ({
 export const defaultModDefinitionFactory =
   innerStarterBrickModDefinitionFactory();
 
-export const getModDefinitionWithBuiltInServiceAuths = () => {
+export const getModDefinitionWithBuiltInIntegrationConfigs = () => {
   const extensionServices = {
     service1: "@pixiebrix/service1",
     service2: "@pixiebrix/service2",
@@ -215,7 +215,7 @@ export const getModDefinitionWithBuiltInServiceAuths = () => {
     extensionPoints: [modComponentDefinition],
   });
 
-  const builtInServiceAuths = [
+  const builtInIntegrationConfigs = [
     remoteIntegrationConfigurationFactory({
       service: remoteIntegrationServiceFactory({
         config: {
@@ -238,5 +238,5 @@ export const getModDefinitionWithBuiltInServiceAuths = () => {
     }),
   ];
 
-  return { modDefinition, builtInServiceAuths };
+  return { modDefinition, builtInIntegrationConfigs };
 };

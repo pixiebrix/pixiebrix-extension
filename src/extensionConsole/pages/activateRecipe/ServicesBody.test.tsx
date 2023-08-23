@@ -25,11 +25,11 @@ import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/extensionConsole/testHelpers";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { getRequiredIntegrationIds } from "@/utils/modDefinitionUtils";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
+import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -38,10 +38,10 @@ jest.mock("@/hooks/auth", () => ({
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
 jest.mock("@/utils/modDefinitionUtils", () => ({
-  getRequiredIntegrationIds: jest.fn(),
+  getIntegrationIds: jest.fn(),
 }));
 
-const getRequiredIntegrationIdsMock = jest.mocked(getRequiredIntegrationIds);
+const getIntegrationIdsMock = jest.mocked(getIntegrationIds);
 
 const serviceId1 = validateRegistryId("test/service1");
 const serviceId2 = validateRegistryId("test/service2");
@@ -126,10 +126,10 @@ function expectRefreshButton(count?: number) {
 describe("ServicesBody", () => {
   it("renders with one service and no options and does not render title", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        services: [{ id: serviceId1, config: null }],
+        integrationDependencies: [{ id: serviceId1, config: null }],
       },
     });
     await waitForEffect();
@@ -143,12 +143,12 @@ describe("ServicesBody", () => {
 
   it("renders own title properly", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody blueprint={defaultModDefinitionFactory()} showOwnTitle />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: null }],
+          integrationDependencies: [{ id: serviceId1, config: null }],
         },
       }
     );
@@ -161,7 +161,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption2a, sharedOption2b])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -169,7 +169,7 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: null }],
+          integrationDependencies: [{ id: serviceId1, config: null }],
         },
       }
     );
@@ -184,10 +184,12 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption1a, sharedOption1b])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        services: [{ id: serviceId1, config: sharedOption1a.value }],
+        integrationDependencies: [
+          { id: serviceId1, config: sharedOption1a.value },
+        ],
       },
     });
     await waitForEffect();
@@ -201,10 +203,12 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption1a, sharedOption1b])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        services: [{ id: serviceId1, config: sharedOption1a.value }],
+        integrationDependencies: [
+          { id: serviceId1, config: sharedOption1a.value },
+        ],
       },
     });
     await waitForEffect();
@@ -230,10 +234,10 @@ describe("ServicesBody", () => {
         sharedOption2b,
       ])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        services: [
+        integrationDependencies: [
           { id: serviceId1, config: sharedOption1a.value },
           { id: serviceId2, config: sharedOption2a.value },
         ],
@@ -251,7 +255,7 @@ describe("ServicesBody", () => {
 
   it("hides one field and label when one built-in option", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState([builtInOption1a]));
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -259,7 +263,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: builtInOption1a.value }],
+          integrationDependencies: [
+            { id: serviceId1, config: builtInOption1a.value },
+          ],
         },
       }
     );
@@ -279,7 +285,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, builtInOption1b])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -287,7 +293,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: builtInOption1a.value }],
+          integrationDependencies: [
+            { id: serviceId1, config: builtInOption1a.value },
+          ],
         },
       }
     );
@@ -307,7 +315,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption1a])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -315,7 +323,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: builtInOption1a.value }],
+          integrationDependencies: [
+            { id: serviceId1, config: builtInOption1a.value },
+          ],
         },
       }
     );
@@ -330,7 +340,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption1a])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -338,7 +348,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [{ id: serviceId1, config: sharedOption1a.value }],
+          integrationDependencies: [
+            { id: serviceId1, config: sharedOption1a.value },
+          ],
         },
       }
     );
@@ -364,7 +376,7 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption2a, sharedOption2b])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -372,7 +384,7 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [
+          integrationDependencies: [
             { id: serviceId1, config: builtInOption1a.value },
             { id: serviceId2, config: sharedOption2a.value },
           ],
@@ -397,7 +409,7 @@ describe("ServicesBody", () => {
         sharedOption2b,
       ])
     );
-    getRequiredIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(
       <ServicesBody
         blueprint={defaultModDefinitionFactory()}
@@ -405,7 +417,7 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          services: [
+          integrationDependencies: [
             { id: serviceId1, config: builtInOption1a.value },
             { id: serviceId2, config: sharedOption2a.value },
           ],

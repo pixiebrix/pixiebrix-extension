@@ -20,6 +20,7 @@ import trelloBlueprint from "@contrib/recipes/trello-slack.yaml";
 import amazonBrick from "@contrib/bricks/amazon-search.yaml";
 import v3Blueprint from "@contrib/recipes/v3-example.txt";
 import { objToYaml } from "@/utils/objToYaml";
+import v3OptionalServices from "@contrib/recipes/v3-optional-services-example.txt";
 
 describe("validateSchema", () => {
   test("validates a v1 blueprint", async () => {
@@ -30,12 +31,13 @@ describe("validateSchema", () => {
 
   test("validates a v3 blueprint", async () => {
     await expect(validateSchema(v3Blueprint)).resolves.toEqual({});
-
-    const value = await validateSchema(v3Blueprint);
-    console.debug(value);
   });
 
   test("validates a brick", async () => {
     await expect(validateSchema(objToYaml(amazonBrick))).resolves.toEqual({});
+  });
+
+  test("validates an optional services schema", async () => {
+    await expect(validateSchema(v3OptionalServices)).resolves.toEqual({});
   });
 });

@@ -33,7 +33,10 @@ import type {
   ActivatedModComponent,
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import {
+  inferModIntegrations,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import type { ModComponentOptionsState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
 
@@ -238,12 +241,12 @@ export function deactivateMod(
  *
  * The ModComponents will have new UUIDs.
  *
- * @param mod the mod to update
+ * @param modDefinition the mod to update
  * @param reduxState the current state of the extension and editor redux stores
  * @returns new redux state with the mod updated
  */
 function updateMod(
-  mod: ModDefinition,
+  modDefinition: ModDefinition,
   reduxState: ActivatedModState
 ): ActivatedModState {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
@@ -251,14 +254,14 @@ function updateMod(
   const {
     reduxState: { options: nextOptionsState, editor: nextEditorState },
     deactivatedModComponents,
-  } = deactivateMod(mod.metadata.id, {
+  } = deactivateMod(modDefinition.metadata.id, {
     options: newOptionsState,
     editor: newEditorState,
   });
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  const services = inferRecipeAuths(
+  const configuredDependencies = inferModIntegrations(
     deactivatedModComponents.filter((modComponent) => modComponent.services)
   );
 
@@ -268,10 +271,9 @@ function updateMod(
 
   newOptionsState = extensionsSlice.reducer(
     newOptionsState,
-    extensionsSlice.actions.installRecipe({
-      recipe: mod,
-      services,
-      extensionPoints: mod.extensionPoints,
+    extensionsSlice.actions.installMod({
+      modDefinition,
+      configuredDependencies,
       optionsArgs,
       screen: "background",
       isReinstall: true,

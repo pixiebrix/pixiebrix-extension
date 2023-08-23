@@ -42,7 +42,7 @@ sessionChangesListenerMiddleware.startListening({
     extensionsSlice.actions.removeExtension,
     extensionsSlice.actions.removeExtensions,
     extensionsSlice.actions.attachExtension,
-    extensionsSlice.actions.installRecipe,
+    extensionsSlice.actions.installMod,
     extensionsSlice.actions.removeRecipeById
   ),
   effect(action, { dispatch, getState }) {

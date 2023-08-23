@@ -35,18 +35,25 @@ import {
   defaultModDefinitionFactory,
   metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
+import useActivateRecipe, {
+  type ActivateRecipeFormCallback,
+} from "@/activation/useActivateRecipe";
 
 registerDefaultWidgets();
 
-// XXX: Fix this mock, getting a warning that an unhandled error was caught from submitForm() TypeError: Cannot
-// destructure property 'success' of '(intermediate value)' as it is undefined
-const installMock = jest.fn();
 const testRecipeId = validateRegistryId("@test/recipe");
+
+const activateRecipeCallbackMock =
+  jest.fn() as jest.MockedFunction<ActivateRecipeFormCallback>;
 
 jest.mock("@/activation/useActivateRecipe.ts", () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => installMock),
+  default: jest.fn(),
 }));
+
+const activateRecipeHookMock = jest.mocked(
+  useActivateRecipe
+) as jest.MockedFunction<typeof useActivateRecipe>;
 
 jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
   __esModule: true,
@@ -76,6 +83,7 @@ function setupRecipe(recipe: ModDefinition) {
 beforeEach(() => {
   appApiMock.reset();
   jest.clearAllMocks();
+  activateRecipeHookMock.mockReturnValue(activateRecipeCallbackMock);
 });
 
 // Activate Recipe Card is always rendered when the recipe has already been found
@@ -146,7 +154,7 @@ describe("ActivateRecipeCard", () => {
     expect(screen.getByText("Database is a required field")).not.toBeNull();
   });
 
-  test("activate mod defintiion permissions", async () => {
+  test("activate mod definition permissions", async () => {
     const modDefinition = defaultModDefinitionFactory({
       metadata: metadataFactory({
         id: "test/blueprint-with-required-options" as RegistryId,
@@ -165,18 +173,18 @@ describe("ActivateRecipeCard", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
     await userEvent.click(rendered.getByText("Activate"));
     await waitForEffect();
-    expect(installMock).toHaveBeenCalledWith(
+    expect(activateRecipeCallbackMock).toHaveBeenCalledWith(
       {
         extensions: { "0": true },
         optionsArgs: {},
-        services: [],
+        integrationDependencies: [],
       },
       modDefinition
     );
   });
 
   test("user reject permissions", async () => {
-    installMock.mockResolvedValue({
+    activateRecipeCallbackMock.mockResolvedValue({
       success: false,
       error: "You must accept browser permissions to activate",
     });

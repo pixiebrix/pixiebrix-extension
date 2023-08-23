@@ -235,13 +235,14 @@ const ActivateRecipePanelContent: React.FC<
   const formValuesRef = useRef<WizardValues>(initialValues);
 
   async function checkPermissions() {
-    const selectedAuths = formValuesRef.current.services.filter(({ config }) =>
-      Boolean(config)
-    );
+    const configuredDependencies =
+      formValuesRef.current.integrationDependencies.filter(
+        ({ config }) => !isEmpty(config)
+      );
 
     const { hasPermissions } = await checkModDefinitionPermissions(
       modDefinition,
-      selectedAuths
+      configuredDependencies
     );
 
     stateDispatch(setNeedsPermissions(!hasPermissions));
