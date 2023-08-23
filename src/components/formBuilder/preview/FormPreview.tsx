@@ -126,6 +126,15 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           const propertySchema = draftSchema.properties[key];
 
           if (
+            value[UI_WIDGET] === "checkboxes" &&
+            typeof propertySchema === "object" &&
+            !Array.isArray(propertySchema.items.enum)
+          ) {
+            propertySchema.items.enum = ["Option 1", "Option 2", "Option 3"];
+            continue;
+          }
+
+          if (
             !(UI_WIDGET in value) ||
             value[UI_WIDGET] !== "select" ||
             typeof propertySchema !== "object" ||
@@ -141,23 +150,6 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
           if (!propertySchema.oneOf?.length) {
             propertySchema.oneOf = [{ const: "" }];
-          }
-        }
-
-        for (const [key, value] of Object.entries(draftUiSchema)) {
-          console.log("*** HERE");
-          if (KEYS_OF_UI_SCHEMA.includes(key)) {
-            continue;
-          }
-
-          const propertySchema = draftSchema.properties[key];
-
-          if (
-            value[UI_WIDGET] === "checkboxes" &&
-            typeof propertySchema === "object" &&
-            !Array.isArray(propertySchema.items.enum)
-          ) {
-            propertySchema.items.enum = [];
           }
         }
       }),
