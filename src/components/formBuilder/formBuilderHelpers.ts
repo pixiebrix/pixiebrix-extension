@@ -262,6 +262,16 @@ export const produceSchemaOnUiTypeChange = (
       delete draft.uiSchema[propertyName][UI_WIDGET];
     }
 
+    if (uiWidget === "checkboxes" && propertyType === "array") {
+      draftPropertySchema.items = {
+        type: "string",
+        enum: ["Example option 1", "Example option 2", "Example option 3"],
+      };
+      draftPropertySchema.uniqueItems = true;
+      delete draftPropertySchema.enum;
+      delete draftPropertySchema.oneOf;
+    }
+
     if (uiWidget === "select") {
       if (extra === "selectWithLabels") {
         // If switching from Dropdown, convert the enum to options with labels

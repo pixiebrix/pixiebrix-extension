@@ -40,6 +40,7 @@ import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type WritableDraft } from "immer/dist/internal";
 import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
+import FormPreviewArrayField from "@/components/formBuilder/preview/FormPreviewArrayField";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -114,9 +115,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           }
         }
 
-        // RJSF Form throws when Dropdown with labels selected, no options set and default is empty. Let's fix that!
-        // We're only interested in select with labels, otherwise we don't need to do anything.
-        // Loop through the uiSchema props, because UI Widget must be set for the Select, then take a look at the oneOf property.
+        // Set default values for multi-select checkboxes and dropdowns
         for (const [key, value] of Object.entries(draftUiSchema)) {
           // We're only looking for sub-property UiSchemas
           if (KEYS_OF_UI_SCHEMA.includes(key)) {
@@ -125,22 +124,37 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
           const propertySchema = draftSchema.properties[key];
 
-          if (
-            !(UI_WIDGET in value) ||
-            value[UI_WIDGET] !== "select" ||
-            typeof propertySchema !== "object" ||
-            propertySchema.oneOf === undefined
-          ) {
+          if (!(UI_WIDGET in value) || typeof propertySchema !== "object") {
             continue;
           }
 
-          if (propertySchema.default == null) {
-            // Setting the default value for preview to hide an empty option
-            propertySchema.default = "";
+          // If the options enum for the checkboxes widget is not an array (i.e. if the enum references a variable),
+          // then set a default value in order to allow the preview to render.
+          if (
+            value[UI_WIDGET] === "checkboxes" &&
+            typeof propertySchema.items === "object" &&
+            !Array.isArray(propertySchema.items)
+          ) {
+            propertySchema.items.enum = Array.isArray(propertySchema.items.enum)
+              ? propertySchema.items.enum
+              : ["Option 1", "Option 2", "Option 3"];
+            continue;
           }
 
-          if (!propertySchema.oneOf?.length) {
-            propertySchema.oneOf = [{ const: "" }];
+          // RJSF Form throws when Dropdown with labels selected, no options set and default is empty. Set a default
+          // value to avoid this.
+          if (
+            value[UI_WIDGET] === "select" &&
+            propertySchema.oneOf !== undefined
+          ) {
+            if (propertySchema.default == null) {
+              // Setting the default value for preview to hide an empty option
+              propertySchema.default = "";
+            }
+
+            if (!propertySchema.oneOf?.length) {
+              propertySchema.oneOf = [{ const: "" }];
+            }
           }
         }
       }),
@@ -164,6 +178,13 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     [setActiveField]
   );
 
+  const ArrayField = useCallback(
+    (props: FieldProps) => (
+      <FormPreviewArrayField setActiveField={setActiveField} {...props} />
+    ),
+    [setActiveField]
+  );
+
   if (!previewSchema || !previewUiSchema) {
     return null;
   }
@@ -173,6 +194,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     StringField,
     BooleanField,
     DescriptionField,
+    ArrayField,
   };
 
   const widgets = {
