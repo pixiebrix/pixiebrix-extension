@@ -59,8 +59,6 @@ const FormPreviewSchemaField: React.FC<FormPreviewFieldProps> = (props) => {
     fieldProps = props;
   }
 
-  console.log("*** FormPreviewSchemaField props:", { fieldProps });
-
   return <RjsfSchemaField {...fieldProps} />;
 };
 

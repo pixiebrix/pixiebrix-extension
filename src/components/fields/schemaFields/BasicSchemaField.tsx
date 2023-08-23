@@ -106,8 +106,6 @@ const BasicSchemaField: SchemaFieldComponent = ({
     ]
   );
 
-  console.log("*** schema", name, schema, inputModeOptions);
-
   const validate = getFieldValidator(validationSchema);
 
   const [{ value, onBlur: formikOnBlur }, { touched }, { setValue }] = useField(
