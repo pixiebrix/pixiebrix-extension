@@ -46,7 +46,6 @@ export type UiTypeExtra = "selectWithLabels" | undefined;
 
 export type UiType = {
   propertyType: SchemaPropertyType;
-  items?: SchemaDefinition;
   uiWidget: string | undefined;
   propertyFormat: string | undefined;
   /** Holds extra config. For instance, indicates whether a dropdown with labels should be used */
@@ -293,6 +292,7 @@ export const produceSchemaOnUiTypeChange = (
       delete draftPropertySchema.enum;
       delete draftPropertySchema.oneOf;
     }
+    /* eslint-enable security/detect-object-injection */
   });
 };
 
