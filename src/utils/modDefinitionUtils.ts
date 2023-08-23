@@ -28,29 +28,19 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { type Except } from "type-fest";
 
 function isSchemaServicesFormat(
   services: ModComponentDefinition["services"]
 ): services is Schema {
   return (
-    Object.hasOwn(services, "properties") &&
-    // @ts-expect-error -- type checking with hasOwn
+    "properties" in services &&
     typeof services.properties === "object" &&
-    Object.hasOwn(services, "required") &&
-    // @ts-expect-error -- type checking with hasOwn
+    "required" in services &&
     Array.isArray(services.required)
   );
 }
 
-type UnconfiguredIntegrationDependency = Except<
-  IntegrationDependency,
-  "config"
->;
-
-function getIntegrationsFromSchema(
-  services: Schema
-): UnconfiguredIntegrationDependency[] {
+function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
   return Object.entries(services.properties).flatMap(([key, schema]) => {
     if (typeof schema === "boolean") {
       return [];
@@ -67,7 +57,7 @@ function getIntegrationsFromSchema(
 
 function getIntegrationsFromRecord(
   services: Record<OutputKey, RegistryId>
-): UnconfiguredIntegrationDependency[] {
+): IntegrationDependency[] {
   return Object.entries(services).map(([key, id]) => ({
     id,
     outputKey: validateOutputKey(key),
@@ -81,10 +71,7 @@ function getIntegrationsFromRecord(
  */
 export function getUnconfiguredComponentIntegrations({
   extensionPoints: modComponentDefinitions = [],
-}: Pick<
-  ModDefinition,
-  "extensionPoints"
->): UnconfiguredIntegrationDependency[] {
+}: Pick<ModDefinition, "extensionPoints">): IntegrationDependency[] {
   return modComponentDefinitions.flatMap(({ services }) => {
     if (isEmpty(services)) {
       return [];
