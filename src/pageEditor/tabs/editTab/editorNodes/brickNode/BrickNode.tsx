@@ -60,7 +60,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
 
   useEffect(() => {
     if (active && !isSubPipelineHeaderActive && activeNodePreviewElementId) {
-      nodeRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+      nodeRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
     }
   }, [active, isSubPipelineHeaderActive, activeNodePreviewElementId]);
 
