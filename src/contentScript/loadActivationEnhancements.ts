@@ -89,9 +89,7 @@ export async function loadActivationEnhancements(): Promise<void> {
 
   for (const button of activateButtonLinks) {
     const url = new URL(button.href);
-
     const modIds = extractIdsFromUrl(url.searchParams);
-
     if (modIds.length === 0) {
       continue;
     }
@@ -105,6 +103,10 @@ export async function loadActivationEnhancements(): Promise<void> {
     // Replace the default click handler with direct mod activation
     button.addEventListener("click", async (event) => {
       event.preventDefault();
+
+      // The button href may have changed since the listener was added
+      const url = new URL(button.href);
+      const modIds = extractIdsFromUrl(url.searchParams);
 
       const isContentScriptReady = await pollUntilTruthy(
         isReadyInThisDocument,
