@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import BrickNodeContent from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import styles from "./BrickNode.module.scss";
@@ -29,6 +29,8 @@ import {
   type BrickNodeProps,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { useSelector } from "react-redux";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
@@ -47,10 +49,20 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   nodeActions,
   showBiggerActions,
   trailingMessage,
+  isSubPipelineHeaderActive,
 }) => {
+  const activeNodePreviewElementId = useSelector(
+    selectNodePreviewActiveElement
+  );
   const nodeRef = useRef<HTMLDivElement>(null);
 
   useAutoFocusConfiguration({ elementRef: nodeRef, focus: active });
+
+  useEffect(() => {
+    if (active && !isSubPipelineHeaderActive && activeNodePreviewElementId) {
+      nodeRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  }, [active, isSubPipelineHeaderActive, activeNodePreviewElementId]);
 
   return (
     <>
