@@ -53,7 +53,6 @@ export type UiType = {
   extra: UiTypeExtra;
 };
 
-// TODO: maybe add items type for arrays here
 export const parseUiType = (value: string): UiType => {
   const [propertyType, uiWidget, propertyFormat, extra] = value.split(":");
   return {
@@ -64,7 +63,6 @@ export const parseUiType = (value: string): UiType => {
   };
 };
 
-// TODO: maybe add items type for arrays here
 export const stringifyUiType = ({
   propertyType,
   uiWidget,
@@ -268,10 +266,11 @@ export const produceSchemaOnUiTypeChange = (
     if (uiWidget === "checkboxes" && propertyType === "array") {
       draftPropertySchema.items = {
         type: "string",
-        enum: draftPropertySchema.enum ?? ["Example option"],
+        enum: ["Example option 1", "Example option 2", "Example option 3"],
       };
       draftPropertySchema.uniqueItems = true;
       delete draftPropertySchema.enum;
+      delete draftPropertySchema.oneOf;
     }
 
     if (uiWidget === "select") {
