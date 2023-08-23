@@ -27,7 +27,6 @@ const RjsfSchemaField = RjsfTheme.fields.SchemaField;
  */
 const FormPreviewSchemaField: React.FC<FormPreviewFieldProps> = (props) => {
   let fieldProps: FormPreviewFieldProps;
-
   // The value of oneOf/enum is a string when we render a @var
   // or in some special cases when the dropdown should be disabled (e.g. database selector)
   // In such case use this string value as a single option
@@ -59,6 +58,8 @@ const FormPreviewSchemaField: React.FC<FormPreviewFieldProps> = (props) => {
   } else {
     fieldProps = props;
   }
+
+  console.log("*** FormPreviewSchemaField props:", { fieldProps });
 
   return <RjsfSchemaField {...fieldProps} />;
 };

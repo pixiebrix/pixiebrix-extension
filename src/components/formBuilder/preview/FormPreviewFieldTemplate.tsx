@@ -42,7 +42,11 @@ const FormPreviewFieldTemplate: React.FC<FormPreviewFieldTemplateProps> = ({
   // eslint-disable-next-line security/detect-object-injection -- is a constant
   const isActive = Boolean(uiSchema[UI_SCHEMA_ACTIVE]);
 
+  console.log("*** FormPreviewFieldTemplate", { ...rest });
+
   const onClick = () => {
+    console.log("*** You clicked me!", name);
+
     if (!isActive) {
       setActiveField(name);
     }

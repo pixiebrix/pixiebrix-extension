@@ -40,6 +40,7 @@ import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type WritableDraft } from "immer/dist/internal";
 import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
+import FormPreviewArrayField from "@/components/formBuilder/preview/FormPreviewArrayField";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -114,7 +115,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           }
         }
 
-        // Set default values for checkboxes and dropdowns
+        // Set default values for multi-select checkboxes and dropdowns
         for (const [key, value] of Object.entries(draftUiSchema)) {
           // We're only looking for sub-property UiSchemas
           if (KEYS_OF_UI_SCHEMA.includes(key)) {
@@ -177,6 +178,13 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     [setActiveField]
   );
 
+  const ArrayField = useCallback(
+    (props: FieldProps) => (
+      <FormPreviewArrayField setActiveField={setActiveField} {...props} />
+    ),
+    [setActiveField]
+  );
+
   if (!previewSchema || !previewUiSchema) {
     return null;
   }
@@ -186,6 +194,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     StringField,
     BooleanField,
     DescriptionField,
+    ArrayField,
   };
 
   const widgets = {
@@ -194,8 +203,6 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     SelectWidget: RjsfSelectWidget,
     googleSheet: RjsfSelectWidget,
   };
-
-  console.log("*** rjsf schema", previewSchema, previewUiSchema);
 
   return (
     <JsonSchemaForm
