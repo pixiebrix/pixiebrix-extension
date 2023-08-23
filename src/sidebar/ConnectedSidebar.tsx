@@ -35,7 +35,6 @@ import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
 import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
-import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
@@ -88,8 +87,9 @@ function useConnectedListener(): SidebarListener {
   );
 }
 
+const staticPanels = [MOD_LAUNCHER];
+
 const ConnectedSidebar: React.VFC = () => {
-  const { flagOn } = useFlags();
   const dispatch = useDispatch();
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
@@ -105,8 +105,6 @@ const ConnectedSidebar: React.VFC = () => {
 
     const { panels, temporaryPanels, forms, modActivationPanel } =
       await getReservedSidebarEntries(topFrame);
-
-    const staticPanels = [MOD_LAUNCHER];
 
     // Log to help debug race conditions with lifecycle
     console.debug("ConnectedSidebar:sidebarSlice.actions.setInitialPanels", {
