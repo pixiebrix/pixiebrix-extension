@@ -6,94 +6,125 @@ exports[`SidebarApp renders 1`] = `
     class="full-height"
   >
     <div
-      data-testid="DelayedRender"
+      class="full-height"
     >
-      <div>
+      <div
+        class="tabContainer nav nav-tabs nav-justified"
+        role="tablist"
+      >
         <div
-          class="root container"
+          class="tabWrapper active nav-item"
+        >
+          <a
+            aria-controls="panel-container-tabpane-static-modLauncher-panel"
+            aria-selected="true"
+            class="tabHeader nav-link active"
+            data-rb-event-key="static-modLauncher-panel"
+            href="#"
+            id="panel-container-tab-static-modLauncher-panel"
+            role="tab"
+            target="_self"
+          >
+            <span
+              class="tabTitle"
+            >
+              Mods
+            </span>
+            <button
+              class="close"
+              type="button"
+            >
+              <span
+                aria-hidden="true"
+              >
+                ×
+              </span>
+              <span
+                class="sr-only"
+              >
+                Close
+              </span>
+            </button>
+          </a>
+          <div
+            class="tabDivider"
+          />
+        </div>
+        <button
+          aria-label="open mod launcher"
+          class="addButton btn btn-link btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-plus fa-w-14 "
+            data-icon="plus"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="p-0 border-0 full-height bg-white tab-content"
+      >
+        <div
+          aria-hidden="false"
+          aria-labelledby="panel-container-tab-static-modLauncher-panel"
+          class="fade h-100 paneOverrides tab-pane active show"
+          id="panel-container-tabpane-static-modLauncher-panel"
+          role="tabpanel"
         >
           <div
-            class="sidebarRow row"
+            class="full-height h-100"
           >
             <div
-              class="col"
+              class="scrollable-area container"
             >
-              <img
-                alt=""
-                src="test-file-stub"
-                width="300"
-              />
-            </div>
-          </div>
-          <div
-            class="sidebarRow row"
-          >
-            <div
-              class="col"
-            >
-              <h4
-                class="callout"
+              <div
+                class="emptyViewRoot"
               >
-                Get started with PixieBrix
-              </h4>
-              <p>
-                Go to the PixieBrix tab via the 
-                <strong>
-                  Chrome Dev Tools
-                </strong>
-              </p>
-              <p>
-                <kbd>
-                  Ctrl + Shift + C
-                </kbd>
-                or
-                <kbd>
-                  F12
-                </kbd>
-              </p>
-            </div>
-          </div>
-          <div
-            class="sidebarRowWithDivider row"
-          >
-            <div
-              class="col"
-            >
-              <h4
-                class="tinyCallout"
-              >
-                Need more help?
-              </h4>
-              <p>
-                Visit the 
-                <a
-                  href="https://docs.pixiebrix.com/quick-start-guide"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Quick Start Guide
-                </a>
-                 or ask questions in the 
-                <a
-                  href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Slack Community
-                </a>
-                . 
-              </p>
-              <p>
-                Visit the 
-                <a
-                  href="https://www.pixiebrix.com/marketplace/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  PixieBrix Marketplace
-                </a>
-                 for ideas.
-              </p>
+                <div>
+                  <p>
+                    We didn't find any mods to run
+                  </p>
+                  <h4>
+                    Don't worry, there's a solution
+                  </h4>
+                  <img
+                    alt="Workshop"
+                    class="illustration"
+                    src="test-file-stub"
+                  />
+                  <p>
+                    Some mods don't run on every page.
+                    <br />
+                    And other mods don't run in the Sidebar.
+                    <br />
+                    <br />
+                    Check that the mod is configured correctly.
+                  </p>
+                </div>
+                <p>
+                  Looking for new mods?
+                  <br />
+                  Check out the 
+                  <a
+                    href="https://www.pixiebrix.com/marketplace/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    PixieBrix Marketplace
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
         </div>
