@@ -50,10 +50,10 @@ import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
-  IntegrationDependency,
-  ModDependencyAPIVersion,
+  type IntegrationDependency,
+  type ModDependencyAPIVersion,
 } from "@/types/integrationTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
 /**

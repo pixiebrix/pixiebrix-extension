@@ -18,7 +18,7 @@
 import { define } from "cooky-cutter";
 import {
   type IntegrationConfig,
-  IntegrationDependency,
+  type IntegrationDependency,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
