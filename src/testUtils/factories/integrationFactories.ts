@@ -18,6 +18,7 @@
 import { define } from "cooky-cutter";
 import {
   type IntegrationConfig,
+  IntegrationDependency,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
@@ -25,6 +26,7 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RemoteIntegrationConfig } from "@/types/contract";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 export const sanitizedIntegrationConfigFactory =
   define<SanitizedIntegrationConfig>({
@@ -71,3 +73,14 @@ export const remoteIntegrationConfigurationFactory =
       } as SanitizedConfig),
     service: remoteIntegrationServiceFactory,
   });
+
+export const integrationDependencyFactory = define<IntegrationDependency>({
+  id(n: number) {
+    return validateRegistryId(`@test/integration${n}`);
+  },
+  outputKey(n: number) {
+    return validateOutputKey(`testIntegration${n}`);
+  },
+  isOptional: false,
+  apiVersion: "v1",
+});

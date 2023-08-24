@@ -23,6 +23,18 @@ import { type BrickIcon } from "@/types/iconTypes";
 import { type JsonObject, type JsonValue } from "type-fest";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
+/**
+ * The integration dependency format for saving mod components.
+ *
+ * Incremented when breaking-changes are made to the 'services' field
+ *
+ * - v1: original, services is a key-value Record of OutputKey to RegistryId of the integration
+ * - v2: services is a json-schema format, with a properties field and a required field. Property
+ *       keys are OutputKeys, and values are integration $ref URLs. Required is an array of keys
+ *       for required properties.
+ */
+export type ModDependencyAPIVersion = "v1" | "v2";
+
 export interface IntegrationDependency {
   /**
    * The registry id of the integration.
@@ -44,6 +56,12 @@ export interface IntegrationDependency {
    * @since 1.7.37 - added to facilitate optional integrations during activation
    */
   isOptional?: boolean;
+
+  /**
+   * The dependency format version that should be used to save this dependency
+   * @since 1.7.37 - Optional for backwards compat, logic will assume v1 for undefined
+   */
+  apiVersion?: ModDependencyAPIVersion;
 }
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };

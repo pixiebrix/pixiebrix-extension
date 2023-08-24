@@ -51,6 +51,7 @@ function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
       id,
       outputKey: validateOutputKey(key),
       isOptional: services.required != null && !services.required.includes(key),
+      apiVersion: "v2",
     }));
   });
 }
@@ -62,12 +63,14 @@ function getIntegrationsFromRecord(
     id,
     outputKey: validateOutputKey(key),
     isOptional: false,
+    apiVersion: "v1",
   }));
 }
 
 /**
  * Return an array of unique integrations used by a given collection of mod components, without their config filled in
  * @param extensionPoints the mod component definitions from which to extract integrations
+ * @see selectExtensionPointConfig in saveHelpers.ts for the reverse logic
  */
 export function getUnconfiguredComponentIntegrations({
   extensionPoints: modComponentDefinitions = [],

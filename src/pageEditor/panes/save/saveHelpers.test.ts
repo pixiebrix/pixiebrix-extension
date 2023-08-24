@@ -17,9 +17,11 @@
 
 import {
   buildRecipe,
+  findMaxServicesDependencyApiVersion,
   generateScopeBrickId,
   isRecipeEditable,
   replaceRecipeExtension,
+  selectExtensionPointServices,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
@@ -50,17 +52,23 @@ import {
   type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type UnresolvedModComponent } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type UnresolvedModComponent,
+} from "@/types/modComponentTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
-  modComponentDefinitionFactory,
-  starterBrickConfigFactory,
-  innerStarterBrickModDefinitionFactory,
   defaultModDefinitionFactory,
+  innerStarterBrickModDefinitionFactory,
+  modComponentDefinitionFactory,
   modDefinitionWithVersionedStarterBrickFactory,
+  starterBrickConfigFactory,
   versionedModDefinitionWithResolvedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
+import { type IntegrationDependency } from "@/types/integrationTypes";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
 jest.mock("@/background/contextMenus");
 
@@ -823,4 +831,108 @@ describe("buildRecipe", () => {
       expect(newRecipe).toStrictEqual(updated);
     }
   );
+});
+
+describe("findMaxServicesDependencyApiVersion", () => {
+  it("returns v1 for v1 dependencies", () => {
+    const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
+      {
+        apiVersion: "v1",
+      },
+      {
+        apiVersion: "v1",
+      },
+    ];
+    expect(findMaxServicesDependencyApiVersion(dependencies)).toBe("v1");
+  });
+
+  it("returns v2 for v2 dependencies", () => {
+    const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
+      {
+        apiVersion: "v2",
+      },
+      {
+        apiVersion: "v2",
+      },
+      {
+        apiVersion: "v2",
+      },
+    ];
+    expect(findMaxServicesDependencyApiVersion(dependencies)).toBe("v2");
+  });
+
+  it("works with undefined version", () => {
+    const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
+      {},
+      {},
+    ];
+    expect(findMaxServicesDependencyApiVersion(dependencies)).toBe("v1");
+  });
+
+  it("works with mixed dependencies", () => {
+    const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
+      {
+        apiVersion: "v1",
+      },
+      {
+        apiVersion: "v2",
+      },
+      {
+        apiVersion: "v1",
+      },
+      {},
+    ];
+    expect(findMaxServicesDependencyApiVersion(dependencies)).toBe("v2");
+  });
+});
+
+describe("selectExtensionPointServices", () => {
+  it("works for v1 services", () => {
+    const extension: Pick<ModComponentBase, "services"> = {
+      services: [
+        integrationDependencyFactory(),
+        integrationDependencyFactory({
+          isOptional: undefined,
+          apiVersion: undefined,
+        }),
+      ],
+    };
+    expect(selectExtensionPointServices(extension)).toStrictEqual({
+      [extension.services[0].outputKey]: extension.services[0].id,
+      [extension.services[1].outputKey]: extension.services[1].id,
+    });
+  });
+
+  it("works for v2 services", () => {
+    const extension: Pick<ModComponentBase, "services"> = {
+      services: [
+        integrationDependencyFactory({
+          apiVersion: "v2",
+          isOptional: true,
+        }),
+        integrationDependencyFactory({
+          apiVersion: "v2",
+          isOptional: false,
+        }),
+        integrationDependencyFactory({
+          apiVersion: "v2",
+          isOptional: true,
+        }),
+      ],
+    };
+    expect(selectExtensionPointServices(extension)).toStrictEqual({
+      properties: {
+        [extension.services[0].outputKey]: {
+          $ref: `${SERVICE_BASE_SCHEMA}${extension.services[0].id}`,
+        },
+        [extension.services[1].outputKey]: {
+          $ref: `${SERVICE_BASE_SCHEMA}${extension.services[1].id}`,
+        },
+        [extension.services[2].outputKey]: {
+          $ref: `${SERVICE_BASE_SCHEMA}${extension.services[2].id}`,
+        },
+      },
+      required: [extension.services[1].outputKey],
+    });
+  });
 });
