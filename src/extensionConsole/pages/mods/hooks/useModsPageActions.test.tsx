@@ -64,10 +64,16 @@ const expectActions = (
 const mockHooks = ({
   restricted = false,
   hasPermissions = true,
-}: { restricted?: boolean; hasPermissions?: boolean } = {}) => {
+  canPublish = true,
+}: {
+  restricted?: boolean;
+  hasPermissions?: boolean;
+  canPublish?: boolean;
+} = {}) => {
   (useFlags as jest.Mock).mockImplementation(() => ({
     permit: () => !restricted,
     restrict: () => restricted,
+    flagOn: () => canPublish,
   }));
 
   (useModPermissions as jest.Mock).mockImplementation(() => ({
@@ -313,6 +319,20 @@ describe("useModsPageActions", () => {
     } = renderHook(() => useModsPageActions(deploymentItem));
 
     expectActions(["viewLogs"], actions);
+  });
+
+  test("cannot publish without publish-to-marketplace flag", () => {
+    mockHooks({ canPublish: false });
+    const personalModComponent = modViewItemFactory({
+      isExtension: true,
+      sharingType: "Personal",
+      status: "Active",
+    });
+
+    const {
+      result: { current: actions },
+    } = renderHook(() => useModsPageActions(personalModComponent));
+    expectActions(["viewShare", "deactivate", "viewLogs"], actions);
   });
 
   describe("public blueprint", () => {
