@@ -80,6 +80,7 @@ interface UserSelection {
   roots?: HTMLElement[];
   /** CSS selector to limit the selection to. */
   filter?: string;
+  /** True to enable multi-selection by default. */
   isMulti?: boolean;
 }
 
