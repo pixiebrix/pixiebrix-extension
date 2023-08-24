@@ -277,8 +277,7 @@ const SelectorCard: React.FC<{
           label="Selector"
           // @ts-expect-error -- known to be SelectorSelectorWidget and props are passed through
           isMulti={isMulti}
-          // @ts-expect-error -- second argument of this onchange is a boolean
-          onChange={(_, multi: boolean) => {
+          onChange={(_: string, multi: boolean) => {
             void setMulti(multi);
           }}
           root={rootSelector}
