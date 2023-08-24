@@ -103,6 +103,7 @@ export type SelectorSelectorProps = {
    * Placeholder for the text input
    */
   placeholder?: string;
+  onChange?: (value: string, isMulti: boolean) => void;
 };
 
 /**
@@ -161,6 +162,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   // By default, sort by preference in `element` selection mode. Don't sort in `container` mode because
   // the order is based on structure (because selectors for multiple elements are returned).
   sort = selectMode === "element",
+  onChange,
 }) => {
   const [{ value: valueOrExpression }, , { setValue }] = useField<
     string | Expression
@@ -247,6 +249,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
 
       console.debug("Setting selector", { selected, firstSelector });
       await setValue(firstSelector);
+      onChange?.(firstSelector, Boolean(selected.isMulti));
     } catch (error) {
       if (isSpecificError(error, CancelError)) {
         return;

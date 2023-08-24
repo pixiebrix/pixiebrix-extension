@@ -212,7 +212,9 @@ const SelectorCard: React.FC<{
   const [name, setName] = useState(initialName);
   const [expanded, setExpanded] = useState(true);
 
-  const [{ value: isMulti }] = useField<boolean>(configName("multi"));
+  const [{ value: isMulti }, , { setValue: setMulti }] = useField<boolean>(
+    configName("multi")
+  );
 
   const { data: attributeExamples } = fallbackValue(
     useAsyncState(async () => {
@@ -275,6 +277,10 @@ const SelectorCard: React.FC<{
           label="Selector"
           // @ts-expect-error -- known to be SelectorSelectorWidget and props are passed through
           isMulti={isMulti}
+          // @ts-expect-error -- second argument of this onchange is a boolean
+          onChange={(_, multi: boolean) => {
+            void setMulti(multi);
+          }}
           root={rootSelector}
           schema={{
             type: "string",
