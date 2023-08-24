@@ -57,7 +57,6 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
-import useFlags from "@/hooks/useFlags";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { getTopLevelFrame } from "webext-messenger";
@@ -99,7 +98,6 @@ const TabWithDivider = ({
 };
 
 const Tabs: React.FC = () => {
-  const { flagOn } = useFlags();
   const dispatch = useDispatch();
   const activeKey = useSelector(selectSidebarActiveTabKey);
   const panels = useSelector(selectSidebarPanels);
@@ -109,7 +107,6 @@ const Tabs: React.FC = () => {
   const staticPanels = useSelector(selectSidebarStaticPanels);
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
   const closedTabs = useSelector(selectClosedTabs);
-  const hasModLauncherEnabled = flagOn("sidebar-home-tab");
 
   const onSelect = (eventKey: string) => {
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
@@ -196,11 +193,9 @@ const Tabs: React.FC = () => {
               <span className={styles.tabTitle}>
                 {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
               </span>
-              {hasModLauncherEnabled && (
-                <CloseButton
-                  onClick={async (event) => onClosePanel(event, panel)}
-                />
-              )}
+              <CloseButton
+                onClick={async (event) => onClosePanel(event, panel)}
+              />
             </TabWithDivider>
           ))}
 
@@ -262,18 +257,15 @@ const Tabs: React.FC = () => {
               />
             </TabWithDivider>
           ))}
-
-          {hasModLauncherEnabled && (
-            <Button
-              size="sm"
-              variant="link"
-              className={styles.addButton}
-              aria-label="open mod launcher"
-              onClick={onOpenModLauncher}
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </Button>
-          )}
+          <Button
+            size="sm"
+            variant="link"
+            className={styles.addButton}
+            aria-label="open mod launcher"
+            onClick={onOpenModLauncher}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </Button>
         </Nav>
         <Tab.Content className="p-0 border-0 full-height bg-white">
           {panels.map((panel: PanelEntry) => (
