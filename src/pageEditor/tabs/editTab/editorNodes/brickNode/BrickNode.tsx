@@ -32,6 +32,24 @@ import {
 import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 
+const useScrollIntoViewEffect = (
+  active: boolean,
+  isSubPipelineHeaderActive: boolean
+) => {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const activeNodePreviewElementId = useSelector(
+    selectNodePreviewActiveElement
+  );
+
+  useEffect(() => {
+    if (active && !isSubPipelineHeaderActive && activeNodePreviewElementId) {
+      nodeRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }, [activeNodePreviewElementId, isSubPipelineHeaderActive, active]);
+
+  return nodeRef;
+};
+
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
   active,
@@ -51,18 +69,8 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   trailingMessage,
   isSubPipelineHeaderActive,
 }) => {
-  const activeNodePreviewElementId = useSelector(
-    selectNodePreviewActiveElement
-  );
-  const nodeRef = useRef<HTMLDivElement>(null);
-
+  const nodeRef = useScrollIntoViewEffect(active, isSubPipelineHeaderActive);
   useAutoFocusConfiguration({ elementRef: nodeRef, focus: active });
-
-  useEffect(() => {
-    if (active && !isSubPipelineHeaderActive && activeNodePreviewElementId) {
-      nodeRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
-    }
-  }, [active, isSubPipelineHeaderActive, activeNodePreviewElementId]);
 
   return (
     <>
