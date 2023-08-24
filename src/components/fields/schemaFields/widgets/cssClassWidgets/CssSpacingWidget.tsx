@@ -132,6 +132,7 @@ const SpacingControl: React.VFC<{
             className={styles.spacingControlSelect}
             isClearable
             isDisabled={disabled}
+            menuPlacement="auto"
             placeholder={placeholder}
             onChange={(event) => {
               onUpdate({
@@ -159,6 +160,7 @@ const SpacingControl: React.VFC<{
                 className={styles.spacingControlSelect}
                 isClearable
                 isDisabled={disabled}
+                menuPlacement="auto"
                 placeholder={placeholder}
                 onChange={(option) => {
                   onUpdate({
