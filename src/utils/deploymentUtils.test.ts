@@ -246,6 +246,7 @@ describe("findPersonalServiceConfigurations", () => {
         id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
         isOptional: false,
+        apiVersion: "v1",
         configs: [],
       },
     ]);
@@ -281,6 +282,7 @@ describe("findPersonalServiceConfigurations", () => {
         id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
         isOptional: false,
+        apiVersion: "v1",
         configs: [auth],
       },
     ]);
@@ -379,6 +381,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
         outputKey: "foo",
         config: boundId,
         isOptional: false,
+        apiVersion: "v1",
       },
     ]);
   });
@@ -411,6 +414,7 @@ describe("mergeDeploymentServiceConfigurations", () => {
         outputKey: "foo",
         config: auth.id,
         isOptional: false,
+        apiVersion: "v1",
       },
     ]);
   });
