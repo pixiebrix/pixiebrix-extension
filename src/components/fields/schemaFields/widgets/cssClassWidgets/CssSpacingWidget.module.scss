@@ -39,4 +39,8 @@
   width: 4.5rem !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
+
+  label {
+    white-space: nowrap;
+  }
 }
