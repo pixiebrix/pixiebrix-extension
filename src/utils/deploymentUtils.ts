@@ -28,7 +28,7 @@ import {
 } from "@/types/integrationTypes";
 import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
 import { validateUUID } from "@/types/helpers";
-import { type OutputKey } from "@/types/runtimeTypes";
+import { type Except } from "type-fest";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -175,12 +175,11 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
   deployment: Deployment,
   locate: Locate
 ): Promise<
-  Array<{
-    id: RegistryId;
-    outputKey: OutputKey;
-    isOptional?: boolean;
-    configs: SanitizedIntegrationConfig[];
-  }>
+  Array<
+    Except<IntegrationDependency, "config"> & {
+      configs: SanitizedIntegrationConfig[];
+    }
+  >
 > {
   const deploymentIntegrations = getUnconfiguredComponentIntegrations(
     deployment.package.config

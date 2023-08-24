@@ -17,9 +17,9 @@
 
 import {
   type InnerDefinitionRef,
+  type InnerDefinitions,
   type Metadata,
   type RegistryId,
-  type InnerDefinitions,
 } from "@/types/registryTypes";
 import {
   isInnerDefinitionRegistryId,
@@ -37,8 +37,8 @@ import {
 import { type Except } from "type-fest";
 import {
   type ModComponentDefinition,
-  type ModOptionsDefinition,
   type ModDefinition,
+  type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import {
@@ -49,6 +49,12 @@ import { type SafeString } from "@/types/stringTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { freshIdentifier } from "@/utils/variableUtils";
+import {
+  type IntegrationDependency,
+  type ModDependencyAPIVersion,
+} from "@/types/integrationTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -120,6 +126,57 @@ function findRecipeIndex(
       (x) => x.label === extension.label
     );
   }
+}
+
+/**
+ * Return the highest API Version used by any of the integrations in the mod. Only exported for testing.
+ * @param integrationDependencies mod integration dependencies
+ * @since 1.7.37
+ * @note This function is just for safety, there's currently no way for a mod to end up with "mixed" integration api versions.
+ */
+export function findMaxServicesDependencyApiVersion(
+  integrationDependencies: Array<Pick<IntegrationDependency, "apiVersion">>
+): ModDependencyAPIVersion {
+  let maxApiVersion: ModDependencyAPIVersion = "v1";
+  for (const integrationDependency of integrationDependencies) {
+    if (integrationDependency.apiVersion > maxApiVersion) {
+      maxApiVersion = integrationDependency.apiVersion;
+    }
+  }
+
+  return maxApiVersion;
+}
+
+export function selectExtensionPointServices(
+  extension: Pick<ModComponentBase, "services">
+): ModComponentDefinition["services"] {
+  const apiVersion = findMaxServicesDependencyApiVersion(extension.services);
+  if (apiVersion === "v1") {
+    return Object.fromEntries(
+      extension.services.map((x) => [x.outputKey, x.id])
+    );
+  }
+
+  if (apiVersion === "v2") {
+    const properties: Record<string, Schema> = {};
+    const required: string[] = [];
+    for (const { outputKey, id, isOptional } of extension.services) {
+      properties[outputKey] = {
+        $ref: `${SERVICE_BASE_SCHEMA}${id}`,
+      };
+      if (!isOptional) {
+        required.push(outputKey);
+      }
+    }
+
+    return {
+      properties,
+      required,
+    } as Schema;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
+  throw new Error(`Unknown ModDependencyApiVersion: ${apiVersion}`);
 }
 
 /**
@@ -200,9 +257,8 @@ export function replaceRecipeExtension(
     // extension has a value. Normalizing here makes testing harder because we
     // then have to account for the normalized value in assertions.
     if (rawExtension.services) {
-      commonExtensionConfig.services = Object.fromEntries(
-        rawExtension.services.map((x) => [x.outputKey, x.id])
-      );
+      commonExtensionConfig.services =
+        selectExtensionPointServices(rawExtension);
     }
 
     if (hasInnerExtensionPoint) {
@@ -279,9 +335,7 @@ function selectExtensionPointConfig(
 
   // To make round-trip testing easier, don't add a `services` property if it didn't already exist
   if (extension.services != null) {
-    extensionPoint.services = Object.fromEntries(
-      extension.services.map((x) => [x.outputKey, x.id])
-    );
+    extensionPoint.services = selectExtensionPointServices(extension);
   }
 
   return extensionPoint;

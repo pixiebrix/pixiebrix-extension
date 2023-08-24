@@ -28,7 +28,7 @@ import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
+import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 
 export type RequiredModDefinition = {
@@ -102,15 +102,14 @@ export function requiresUserConfiguration(
       return requiredOptions.includes(name);
     });
 
-  const modIntegrationIds = getIntegrationIds(modDefinition);
-
-  const needsServiceInputs = modIntegrationIds.some((serviceId) => {
-    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
+  const modIntegrationIds = getUnconfiguredComponentIntegrations(modDefinition);
+  const needsServiceInputs = modIntegrationIds.some(({ id, isOptional }) => {
+    if (id === PIXIEBRIX_INTEGRATION_ID || isOptional) {
       return false;
     }
 
     // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
-    const defaultOption = defaultAuthOptionsByIntegrationId[serviceId];
+    const defaultOption = defaultAuthOptionsByIntegrationId[id];
 
     // Needs user configuration if there are any non-built-in options available
     return defaultOption?.sharingType !== "built-in";
