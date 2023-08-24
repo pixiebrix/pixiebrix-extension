@@ -104,10 +104,6 @@ export async function loadActivationEnhancements(): Promise<void> {
     button.addEventListener("click", async (event) => {
       event.preventDefault();
 
-      // The button href may have changed since the listener was added
-      const url = new URL(button.href);
-      const modIds = extractIdsFromUrl(url.searchParams);
-
       const isContentScriptReady = await pollUntilTruthy(
         isReadyInThisDocument,
         {
@@ -119,7 +115,11 @@ export async function loadActivationEnhancements(): Promise<void> {
       if (isContentScriptReady) {
         window.dispatchEvent(
           new CustomEvent("ActivateMods", {
-            detail: { modIds, activateUrl: button.href },
+            // The button href may have changed since the listener was added, extract ids again
+            detail: {
+              modIds: extractIdsFromUrl(new URL(button.href).searchParams),
+              activateUrl: button.href,
+            },
           })
         );
       } else {
