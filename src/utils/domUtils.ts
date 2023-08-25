@@ -131,3 +131,12 @@ export async function waitForBody(): Promise<void> {
     await sleep(20);
   }
 }
+
+export function isVisible(element: HTMLElement): boolean {
+  // https://github.com/jquery/jquery/blob/c66d4700dcf98efccb04061d575e242d28741223/src/css/hiddenVisibleSelectors.js#L9C1-L9C1
+  return Boolean(
+    element.offsetWidth ||
+      element.offsetHeight ||
+      element.getClientRects().length > 0
+  );
+}
