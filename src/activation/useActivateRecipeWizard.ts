@@ -175,7 +175,7 @@ export function wizardStateFactory({
     ),
     integrationDependencies: Yup.array().of(
       Yup.object().test(
-        "servicesRequired",
+        "integrationsRequired",
         "Please select a configuration",
         (value) => value.id === PIXIEBRIX_INTEGRATION_ID || value.config != null
       )
