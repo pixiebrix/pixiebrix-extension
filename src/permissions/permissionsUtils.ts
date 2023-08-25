@@ -183,7 +183,7 @@ async function requestPermissionsFromUserGesture(
  *
  */
 export function isScriptableUrl(url?: string): boolean {
-  return _isScriptableUrl(url);
+  return url && _isScriptableUrl(url);
 }
 
 /**
