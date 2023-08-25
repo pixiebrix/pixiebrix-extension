@@ -73,6 +73,7 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
           options={selectOptions}
           isDisabled={disabled || readonly}
           isMulti={multiple}
+          menuPlacement="auto"
           value={selectOptions.find((option) => option.value === value)}
           onChange={_onChange}
           onBlur={_onBlur}
