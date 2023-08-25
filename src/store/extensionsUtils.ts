@@ -63,17 +63,17 @@ export function inferModIntegrations(
       dependencies.filter(({ config }) => config != null),
       ({ config }) => config
     );
-    if (isEmpty(configuredDependencies)) {
-      continue;
-    }
 
     if (
       id !== PIXIEBRIX_INTEGRATION_ID &&
-      configuredDependencies.length === 0 &&
-      !optional
+      configuredDependencies.length === 0
     ) {
-      // PIXIEBRIX_SERVICE_ID gets the implicit configuration
-      throw new Error(`Integration ${id} is not configured`);
+      if (optional) {
+        continue;
+      } else {
+        // PIXIEBRIX_SERVICE_ID gets the implicit configuration
+        throw new Error(`Integration ${id} is not configured`);
+      }
     }
 
     // If optional is passed in, we know that the user is being given an
