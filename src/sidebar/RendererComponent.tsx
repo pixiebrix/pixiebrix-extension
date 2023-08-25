@@ -20,7 +20,7 @@ const RendererComponent: React.FunctionComponent<{
       // This is safe because if body is a string it's a SafeHTML value
       return (
         <div
-          style={{ height: "100%" }}
+          style={{ height: "100%", overflow: "hidden" }}
           dangerouslySetInnerHTML={{ __html: body }}
         />
       );
