@@ -35,7 +35,6 @@ import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./ErrorBoundary";
 import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
-import useFlags from "@/hooks/useFlags";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
@@ -88,12 +87,12 @@ function useConnectedListener(): SidebarListener {
   );
 }
 
+const staticPanels = [MOD_LAUNCHER];
+
 const ConnectedSidebar: React.VFC = () => {
-  const { flagOn } = useFlags();
   const dispatch = useDispatch();
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);
-  const showModLauncher = flagOn("sidebar-home-tab");
 
   // `useAsyncEffect` will run once on component mount since listener and formsRef don't change on renders.
   // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
@@ -106,8 +105,6 @@ const ConnectedSidebar: React.VFC = () => {
 
     const { panels, temporaryPanels, forms, modActivationPanel } =
       await getReservedSidebarEntries(topFrame);
-
-    const staticPanels = showModLauncher ? [MOD_LAUNCHER] : [];
 
     // Log to help debug race conditions with lifecycle
     console.debug("ConnectedSidebar:sidebarSlice.actions.setInitialPanels", {

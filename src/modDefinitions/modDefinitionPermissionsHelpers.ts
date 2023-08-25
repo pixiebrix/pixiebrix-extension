@@ -19,7 +19,7 @@ import {
   type ModDefinition,
   type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type IntegrationConfigPair } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import {
   ensurePermissionsFromUserGesture,
@@ -30,16 +30,16 @@ import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { collectServiceOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { collectIntegrationOriginPermissions } from "@/permissions/servicePermissionsHelpers";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 async function collectModComponentDefinitionPermissions(
   modComponentDefinitions: ResolvedModComponentDefinition[],
-  serviceAuths: IntegrationConfigPair[]
+  configuredDependencies: IntegrationDependency[]
 ): Promise<Permissions.Permissions> {
-  const servicePromises = serviceAuths.map(async (serviceAuth) =>
-    collectServiceOriginPermissions(serviceAuth)
+  const integrationsPromises = configuredDependencies.map(async (dependency) =>
+    collectIntegrationOriginPermissions(dependency)
   );
 
   const modComponentPromises = modComponentDefinitions.map(
@@ -74,7 +74,7 @@ async function collectModComponentDefinitionPermissions(
   );
 
   const permissionsList = await Promise.all([
-    ...servicePromises,
+    ...integrationsPromises,
     ...modComponentPromises,
   ]);
 
@@ -84,19 +84,19 @@ async function collectModComponentDefinitionPermissions(
 /**
  * Returns true if the mod definition has the necessary permissions to run. Does not request the permissions.
  * @param modDefinition the mod definition
- * @param selectedAuths selected integration configurations
+ * @param configuredDependencies mod integration dependencies with defined configs
  * @see ensureModDefinitionPermissionsFromUserGesture
  */
 export async function checkModDefinitionPermissions(
   modDefinition: Pick<ModDefinition, "definitions" | "extensionPoints">,
-  selectedAuths: IntegrationConfigPair[]
+  configuredDependencies: IntegrationDependency[]
 ): Promise<PermissionsStatus> {
   const extensionDefinitions = await resolveRecipeInnerDefinitions(
     modDefinition
   );
   const permissions = await collectModComponentDefinitionPermissions(
     extensionDefinitions,
-    selectedAuths
+    configuredDependencies
   );
 
   if (isEmpty(permissions)) {
@@ -117,15 +117,15 @@ export async function checkModDefinitionPermissions(
  * Ensures that the mod definition has the necessary permissions to run. If not, prompts the user to grant them. NOTE: Must
  * be called from a user gesture.
  * @param modDefinition the mod definition
- * @param selectedAuths selected integration configurations
+ * @param configuredDependencies mod integration dependencies with defined configs
  * @see checkModDefinitionPermissions
  */
 export async function ensureModDefinitionPermissionsFromUserGesture(
   modDefinition: ModDefinition,
-  selectedAuths: IntegrationConfigPair[]
+  configuredDependencies: IntegrationDependency[]
 ): Promise<boolean> {
   // Single method to make mocking in tests easier
   return ensurePermissionsFromUserGesture(
-    await checkModDefinitionPermissions(modDefinition, selectedAuths)
+    await checkModDefinitionPermissions(modDefinition, configuredDependencies)
   );
 }

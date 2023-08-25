@@ -31,7 +31,7 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
-  spreadsheet: Spreadsheet;
+  spreadsheet: Spreadsheet | null;
   spreadsheetFieldSchema: Schema;
 };
 

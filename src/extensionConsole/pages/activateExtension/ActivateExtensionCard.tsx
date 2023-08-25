@@ -43,7 +43,7 @@ const { actions } = extensionsSlice;
 const ActivateButton: React.FunctionComponent = () => {
   const { submitForm, values, isSubmitting } = useFormikContext<FormState>();
 
-  const anyUnconfigured = values.services.some(
+  const anyUnconfigured = values.integrationDependencies.some(
     ({ id, config }) => id !== PIXIEBRIX_INTEGRATION_ID && config == null
   );
 
@@ -78,7 +78,7 @@ const ActivateExtensionCard: React.FunctionComponent<{
   const initialValues: FormState = useMemo(() => {
     const uuids = new Set<UUID>(authOptions.map((x) => x.value));
     return {
-      services: extension.services.map((service) => ({
+      integrationDependencies: extension.services.map((service) => ({
         ...service,
         config: uuids.has(service.config) ? service.config : null,
       })),

@@ -48,9 +48,9 @@ import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { selectSourceRecipeMetadata } from "@/types/modComponentTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
+import { pickModDefinitionMetadata } from "@/utils/modDefinitionUtils";
 
 type ConvertModFormState = {
   blueprintId: RegistryId;
@@ -146,12 +146,12 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
 
   const { refetch: refetchRecipes } = useAllModDefinitions();
 
-  const convertToRecipe = async (
+  const convertToMod = async (
     formValues: ConvertModFormState,
     helpers: FormikHelpers<ConvertModFormState>
   ) => {
     try {
-      const unsavedRecipe = makeBlueprint(extension, {
+      const unsavedModDefinition = makeBlueprint(extension, {
         id: formValues.blueprintId,
         name: formValues.name,
         description: formValues.description,
@@ -159,14 +159,14 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
       });
 
       const response = await createRecipe({
-        recipe: unsavedRecipe,
+        recipe: unsavedModDefinition,
         organizations: [],
         public: false,
         shareDependencies: true,
       }).unwrap();
 
-      const recipe: ModDefinition = {
-        ...unsavedRecipe,
+      const modDefinition: ModDefinition = {
+        ...unsavedModDefinition,
         sharing: pick(response, ["public", "organizations"]),
         ...pick(response, ["updated_at"]),
       };
@@ -177,7 +177,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
         dispatch(
           extensionsSlice.actions.attachExtension({
             extensionId: extension.id,
-            recipeMetadata: selectSourceRecipeMetadata(recipe),
+            recipeMetadata: pickModDefinitionMetadata(modDefinition),
           })
         );
       } else {
@@ -193,13 +193,13 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
       if (showPublishContext == null) {
         dispatch(
           modModalsSlice.actions.setShareContext({
-            blueprintId: recipe.metadata.id,
+            blueprintId: modDefinition.metadata.id,
           })
         );
       } else {
         dispatch(
           modModalsSlice.actions.setPublishContext({
-            blueprintId: recipe.metadata.id,
+            blueprintId: modDefinition.metadata.id,
           })
         );
       }
@@ -226,7 +226,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
       <Form
         validationSchema={validationSchema}
         initialValues={initialValues}
-        onSubmit={convertToRecipe}
+        onSubmit={convertToMod}
         renderStatus={({ status }) => (
           <div className="text-danger p-3">{status}</div>
         )}

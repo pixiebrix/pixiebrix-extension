@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,32 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.spacingControlWrapper {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 2rem;
-  row-gap: 1rem;
-}
+import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
+import React from "react";
+import FormPreviewFieldTemplate, {
+  type FormPreviewFieldProps,
+} from "./FormPreviewFieldTemplate";
+import styles from "./FormPreviewBooleanField.module.scss";
 
-.spacingControlContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.25rem;
-}
+const RjsfArrayField = RjsfTheme.fields.ArrayField;
 
-.spacingControlSelect {
-  margin-left: 0.5rem;
-  width: 10rem;
-}
+const FormPreviewArrayField: React.FC<FormPreviewFieldProps> = (props) => (
+  <FormPreviewFieldTemplate
+    as={RjsfArrayField}
+    className={styles.root}
+    {...props}
+  />
+);
 
-.expandButton {
-  display: flex !important;
-  width: 4.5rem !important;
-  flex-wrap: nowrap !important;
-  align-items: center !important;
-
-  label {
-    white-space: nowrap;
-  }
-}
+export default FormPreviewArrayField;

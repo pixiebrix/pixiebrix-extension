@@ -20,15 +20,16 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
-import { getDefaultAuthOptionsForRecipe, useAuthOptions } from "@/hooks/auth";
-import { isEmpty, uniq } from "lodash";
+import { getDefaultAuthOptionsForMod, useAuthOptions } from "@/hooks/auth";
+import { isEmpty } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { includesQuickBarStarterBrick } from "@/utils/modDefinitionUtils";
+import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
+import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 
 export type RequiredModDefinition = {
   /**
@@ -63,25 +64,25 @@ type Props = {
  *
  * NOTE: does not perform a permissions check.
  *
- * @param recipe the recipe definition
+ * @param modDefinition the mod definition
  * @param authOptions the integration configurations available to the user
  * @see checkModDefinitionPermissions
  */
 export function requiresUserConfiguration(
-  recipe: ModDefinition,
+  modDefinition: ModDefinition,
   authOptions: AuthOption[]
 ): boolean {
-  const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
-    recipe,
+  const defaultAuthOptionsByIntegrationId = getDefaultAuthOptionsForMod(
+    modDefinition,
     authOptions
   );
 
-  const { properties: recipeOptions, required: requiredOptions = [] } =
-    recipe.options?.schema ?? {};
+  const { properties: modOptions, required: requiredOptions = [] } =
+    modDefinition.options?.schema ?? {};
 
   const needsOptionsInputs =
-    !isEmpty(recipeOptions) &&
-    Object.entries(recipeOptions).some(([name, optionSchema]) => {
+    !isEmpty(modOptions) &&
+    Object.entries(modOptions).some(([name, optionSchema]) => {
       // This should not occur in practice, but it's here for type narrowing
       if (typeof optionSchema === "boolean") {
         return false;
@@ -101,19 +102,14 @@ export function requiresUserConfiguration(
       return requiredOptions.includes(name);
     });
 
-  const recipeServiceIds = uniq(
-    recipe.extensionPoints.flatMap(({ services }) =>
-      services ? Object.values(services) : []
-    )
-  );
-
-  const needsServiceInputs = recipeServiceIds.some((serviceId) => {
-    if (serviceId === PIXIEBRIX_INTEGRATION_ID) {
+  const modIntegrationIds = getUnconfiguredComponentIntegrations(modDefinition);
+  const needsServiceInputs = modIntegrationIds.some(({ id, isOptional }) => {
+    if (id === PIXIEBRIX_INTEGRATION_ID || isOptional) {
       return false;
     }
 
     // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
-    const defaultOption = defaultAuthOptions[serviceId];
+    const defaultOption = defaultAuthOptionsByIntegrationId[id];
 
     // Needs user configuration if there are any non-built-in options available
     return defaultOption?.sharingType !== "built-in";
@@ -138,7 +134,7 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
     async (modDefinitions: ModDefinition[], authOptions: AuthOption[]) =>
       Promise.all(
         modDefinitions.map(async (modDefinition) => {
-          const defaultAuthOptions = getDefaultAuthOptionsForRecipe(
+          const defaultAuthOptions = getDefaultAuthOptionsForMod(
             modDefinition,
             authOptions
           );

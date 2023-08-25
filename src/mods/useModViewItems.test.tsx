@@ -20,7 +20,6 @@ import useModViewItems from "@/mods/useModViewItems";
 import {
   type ActivatedModComponent,
   type ResolvedModComponent,
-  selectSourceRecipeMetadata,
 } from "@/types/modComponentTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import MockAdapter from "axios-mock-adapter";
@@ -33,6 +32,7 @@ import {
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { pickModDefinitionMetadata } from "@/utils/modDefinitionUtils";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -65,7 +65,7 @@ describe("useModViewItems", () => {
   it("creates entry for recipe", async () => {
     const recipe = defaultModDefinitionFactory();
     const activatedModComponent = activatedModComponentFactory({
-      _recipe: selectSourceRecipeMetadata(recipe),
+      _recipe: pickModDefinitionMetadata(recipe),
     });
 
     const wrapper = renderHook(() => useModViewItems([recipe]), {
@@ -87,7 +87,7 @@ describe("useModViewItems", () => {
   it("creates for unavailable recipe", async () => {
     const recipe = defaultModDefinitionFactory();
     const activatedModComponent = activatedModComponentFactory({
-      _recipe: selectSourceRecipeMetadata(recipe),
+      _recipe: pickModDefinitionMetadata(recipe),
     });
 
     const unavailableRecipe: UnavailableMod = selectUnavailableRecipe(

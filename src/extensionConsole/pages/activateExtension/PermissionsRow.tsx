@@ -26,10 +26,12 @@ import { type FormState } from "@/extensionConsole/pages/activateExtension/activ
 const PermissionsRow: React.FunctionComponent<{
   extension: StandaloneModDefinition;
 }> = ({ extension }) => {
-  const { values } = useFormikContext<FormState>();
+  const {
+    values: { integrationDependencies },
+  } = useFormikContext<FormState>();
   const permissionsState = useCloudExtensionPermissions(
     extension,
-    values.services
+    integrationDependencies
   );
 
   return (

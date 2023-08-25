@@ -36,7 +36,7 @@ import useFlags from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
   makeUpdatedFilter,
-  mergeDeploymentServiceConfigurations,
+  mergeDeploymentIntegrationDependencies,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settingsSlice";
@@ -100,11 +100,10 @@ async function activateDeployment(
 
   // Install the blueprint with the service definition
   dispatch(
-    actions.installRecipe({
-      recipe: deployment.package.config,
-      extensionPoints: deployment.package.config.extensionPoints,
+    actions.installMod({
+      modDefinition: deployment.package.config,
       deployment,
-      services: await mergeDeploymentServiceConfigurations(
+      configuredDependencies: await mergeDeploymentIntegrationDependencies(
         deployment,
         services.locateAllForId
       ),

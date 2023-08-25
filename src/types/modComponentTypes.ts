@@ -32,8 +32,6 @@ import {
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
-import { pick } from "lodash";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 /**
  * ModMetadata that includes sharing information.
@@ -249,28 +247,3 @@ export type ModComponentRef = {
    */
   blueprintId: RegistryId | null;
 };
-
-/**
- * Select information about the ModDefinition used to install an ModComponentBase
- *
- * TODO: move to modComponentHelpers file once we have it
- *
- * @see ModComponentBase._recipe
- */
-export function selectSourceRecipeMetadata(
-  recipeDefinition: ModDefinition
-): ModComponentBase["_recipe"] {
-  if (recipeDefinition.metadata?.id == null) {
-    throw new TypeError("Expected a ModDefinition");
-  }
-
-  return {
-    ...pick(recipeDefinition.metadata, [
-      "id",
-      "version",
-      "name",
-      "description",
-    ]),
-    ...pick(recipeDefinition, ["sharing", "updated_at"]),
-  };
-}

@@ -62,6 +62,7 @@ const HeaderField: React.FunctionComponent<{
   useAsyncEffect(
     async (isMounted) => {
       if (!spreadsheetId) {
+        setFieldSchema(headerFieldSchemaForHeaders([]));
         return;
       }
 

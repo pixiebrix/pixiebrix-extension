@@ -129,7 +129,7 @@ exports[`PanelBody renders cancellation 1`] = `
 exports[`PanelBody renders html brick 1`] = `
 <DocumentFragment>
   <div
-    class="full-height overflow-hidden"
+    class="full-height"
     data-block-id="@pixiebrix/html"
   />
 </DocumentFragment>

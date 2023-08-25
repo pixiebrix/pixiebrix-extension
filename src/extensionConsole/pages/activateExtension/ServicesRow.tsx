@@ -35,7 +35,9 @@ const ServicesRow: React.FunctionComponent<{
   authOptions: AuthOption[];
   refreshAuthOptions: () => void;
 }> = ({ authOptions, refreshAuthOptions }) => {
-  const [field, { error }] = useField<IntegrationDependency[]>("services");
+  const [field, { error }] = useField<IntegrationDependency[]>(
+    "integrationDependencies"
+  );
 
   const { data: serviceConfigs } = useGetServicesQuery();
 

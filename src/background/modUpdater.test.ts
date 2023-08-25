@@ -352,9 +352,8 @@ describe("updateModsIfUpdatesAvailable", () => {
 
     const optionsState = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installRecipe({
-        recipe: publicMod,
-        extensionPoints: publicMod.extensionPoints,
+      extensionsSlice.actions.installMod({
+        modDefinition: publicMod,
         screen: "marketplace",
         isReinstall: false,
       })

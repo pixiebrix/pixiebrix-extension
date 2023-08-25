@@ -57,6 +57,11 @@ const RowValuesField: React.FunctionComponent<{
 
   useAsyncEffect(
     async (isMounted) => {
+      if (spreadsheetId == null) {
+        setFieldSchema(ANONYMOUS_OBJECT_SCHEMA);
+        return;
+      }
+
       const headers = await sheets.getHeaders({
         googleAccount,
         spreadsheetId,

@@ -23,15 +23,10 @@ import sidebarSlice from "@/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import { screen, within } from "@testing-library/react";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
-import useFlags from "@/hooks/useFlags";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import * as messengerApi from "@/contentScript/messenger/api";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
-
-jest.mock("@/hooks/useFlags", () =>
-  jest.fn().mockReturnValue({ flagOn: jest.fn() })
-);
 
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
@@ -40,10 +35,6 @@ async function setupPanelsAndRender(
   sidebarEntries: Partial<SidebarEntries>,
   showModLauncher = true
 ) {
-  (useFlags as jest.Mock).mockReturnValue({
-    flagOn: jest.fn().mockReturnValue(sidebarEntries.staticPanels?.length > 0),
-  });
-
   const renderResult = render(<Tabs />, {
     setupRedux(dispatch) {
       dispatch(
@@ -83,7 +74,7 @@ describe("Tabs", () => {
   });
 
   describe("Mod Launcher", () => {
-    test("renders with mod launcher when flag is enabled", async () => {
+    test("renders with mod launcher", async () => {
       const { asFragment } = await setupPanelsAndRender({
         staticPanels: [MOD_LAUNCHER],
       });
@@ -164,17 +155,6 @@ describe("Tabs", () => {
 
       expect(
         screen.queryByRole("tab", { name: /panel test 1/i })
-      ).not.toBeInTheDocument();
-    });
-
-    test("cannot close panel when mod launcher is unavailable", async () => {
-      await setupPanelsAndRender({ panels: [panel] });
-
-      expect(
-        within(screen.getByRole("tab", { name: /panel test 1/i })).queryByRole(
-          "button",
-          { name: "Close" }
-        )
       ).not.toBeInTheDocument();
     });
 
@@ -305,7 +285,7 @@ describe("Tabs", () => {
       );
     });
 
-    test("closing the activation panel hides sidebar if it's alone", async () => {
+    test("closing the activation panel hides sidebar if it's the only open panel", async () => {
       hideSidebarSpy.mockReset();
       await setupPanelsAndRender(
         {

@@ -18,5 +18,5 @@
 import { type IntegrationDependency } from "@/types/integrationTypes";
 
 export type FormState = {
-  services: IntegrationDependency[];
+  integrationDependencies: IntegrationDependency[];
 };

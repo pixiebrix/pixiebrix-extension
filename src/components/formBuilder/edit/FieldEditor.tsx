@@ -314,6 +314,22 @@ const FieldEditor: React.FC<{
         </>
       )}
 
+      {propertySchema.type === "array" && (
+        <>
+          <SchemaField
+            label="Options"
+            name={getFullFieldName("items.enum")}
+            schema={{
+              type: "array",
+              items: {
+                type: "string",
+              },
+            }}
+            isRequired
+          />
+        </>
+      )}
+
       {propertySchema.oneOf && (
         <SchemaField
           label="Options"

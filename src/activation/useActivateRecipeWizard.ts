@@ -19,7 +19,7 @@ import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import type React from "react";
-import { isEmpty, mapValues, uniq } from "lodash";
+import { isEmpty, mapValues } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import OptionsBody from "@/extensionConsole/pages/activateRecipe/OptionsBody";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
@@ -31,7 +31,10 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
-import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
+import {
+  inferModIntegrations,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type Primitive } from "type-fest";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
@@ -41,6 +44,7 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
+import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: ServicesBody },
@@ -94,19 +98,28 @@ export function wizardStateFactory({
   );
 
   const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
-  const installedServices = inferRecipeAuths(installedBlueprintExtensions, {
-    optional: true,
-  });
-
-  const serviceIds = uniq(
-    extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
+  const installedIntegrationConfigs = Object.fromEntries(
+    inferModIntegrations(installedBlueprintExtensions, {
+      optional: true,
+    }).map(({ id, config }) => [id, config])
+  );
+  const unconfiguredIntegrationDependencies =
+    getUnconfiguredComponentIntegrations(modDefinition);
+  const integrationDependencies = unconfiguredIntegrationDependencies.map(
+    (unconfiguredDependency) => ({
+      ...unconfiguredDependency,
+      // Prefer the installed dependency for reinstall cases, otherwise use the default
+      config:
+        installedIntegrationConfigs[unconfiguredDependency.id] ??
+        defaultAuthOptions[unconfiguredDependency.id]?.value,
+    })
   );
 
   const wizardSteps = STEPS.filter((step) => {
     switch (step.key) {
       case "services": {
-        return serviceIds.some(
-          (serviceId) => serviceId !== PIXIEBRIX_INTEGRATION_ID
+        return integrationDependencies.some(
+          ({ id }) => id !== PIXIEBRIX_INTEGRATION_ID
         );
       }
 
@@ -125,12 +138,7 @@ export function wizardStateFactory({
       // By default, all extensions in the recipe should be toggled on
       extensionPoints.map((_, index) => [index, true])
     ),
-    services: serviceIds.map((id) => ({
-      id,
-      // Prefer the installed config for reinstall cases, otherwise use the default
-      // eslint-disable-next-line security/detect-object-injection -- is a registry id
-      config: installedServices[id] ?? defaultAuthOptions[id]?.value,
-    })),
+    integrationDependencies,
     optionsArgs: mapValues(
       modDefinition.options?.schema?.properties ?? {},
       (optionSchema: Schema, name: string) => {
@@ -165,9 +173,9 @@ export function wizardStateFactory({
         extensionPoints.map((_, index) => [index, Yup.boolean().required()])
       )
     ),
-    services: Yup.array().of(
+    integrationDependencies: Yup.array().of(
       Yup.object().test(
-        "servicesRequired",
+        "integrationConfigsRequired",
         "Please select a configuration",
         (value) => value.id === PIXIEBRIX_INTEGRATION_ID || value.config != null
       )

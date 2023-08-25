@@ -28,6 +28,7 @@ import {
   partnerUserFactory,
   userFactory,
 } from "@/testUtils/factories/authFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
 
 jest.mock("@/auth/useLinkState", () => ({
   __esModule: true,
@@ -47,6 +48,9 @@ const useLinkStateMock = jest.mocked(useLinkState);
 
 describe("SidebarApp", () => {
   beforeEach(() => {
+    appApiMock.onGet("/api/marketplace/listings/").reply(200, []);
+    appApiMock.onGet("/api/extensions/").reply(200, []);
+
     useLinkStateMock.mockReturnValue({
       hasToken: true,
       tokenLoading: false,

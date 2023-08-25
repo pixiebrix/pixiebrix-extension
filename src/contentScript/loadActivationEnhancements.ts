@@ -89,9 +89,7 @@ export async function loadActivationEnhancements(): Promise<void> {
 
   for (const button of activateButtonLinks) {
     const url = new URL(button.href);
-
     const modIds = extractIdsFromUrl(url.searchParams);
-
     if (modIds.length === 0) {
       continue;
     }
@@ -117,7 +115,11 @@ export async function loadActivationEnhancements(): Promise<void> {
       if (isContentScriptReady) {
         window.dispatchEvent(
           new CustomEvent("ActivateMods", {
-            detail: { modIds, activateUrl: button.href },
+            // The button href may have changed since the listener was added, extract ids again
+            detail: {
+              modIds: extractIdsFromUrl(new URL(button.href).searchParams),
+              activateUrl: button.href,
+            },
           })
         );
       } else {

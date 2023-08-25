@@ -180,8 +180,10 @@ jest.mock("@/permissions/servicePermissionsHelpers", () => {
   );
   return {
     ...originalModule,
-    collectServiceOriginPermissions: jest.fn().mockImplementation(async () => ({
-      origins: [],
-    })),
+    collectIntegrationOriginPermissions: jest
+      .fn()
+      .mockImplementation(async () => ({
+        origins: [],
+      })),
   };
 });

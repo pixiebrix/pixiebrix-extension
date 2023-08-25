@@ -20,91 +20,120 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { compact, uniq } from "lodash";
+import { isEmpty, pick, uniq } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
-import type {
-  StarterBrickDefinition,
-  StarterBrickType,
-} from "@/starterBricks/types";
-import starterBrickRegistry from "@/starterBricks/registry";
-import { resolveRecipeInnerDefinitions } from "@/registry/internal";
-import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
-import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProviderExtension";
+import { type Schema } from "@/types/schemaTypes";
+import { extractServiceIds } from "@/services/serviceUtils";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+
+function isSchemaServicesFormat(
+  services: ModComponentDefinition["services"]
+): services is Schema {
+  return (
+    "properties" in services &&
+    typeof services.properties === "object" &&
+    "required" in services &&
+    Array.isArray(services.required)
+  );
+}
+
+function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
+  return Object.entries(services.properties).flatMap(([key, schema]) => {
+    if (typeof schema === "boolean") {
+      return [];
+    }
+
+    const integrationIds = extractServiceIds(schema);
+    return integrationIds.map((id) => ({
+      id,
+      outputKey: validateOutputKey(key),
+      isOptional: services.required != null && !services.required.includes(key),
+      apiVersion: "v2",
+    }));
+  });
+}
+
+function getIntegrationsFromRecord(
+  services: Record<OutputKey, RegistryId>
+): IntegrationDependency[] {
+  return Object.entries(services).map(([key, id]) => ({
+    id,
+    outputKey: validateOutputKey(key),
+    isOptional: false,
+    apiVersion: "v1",
+  }));
+}
 
 /**
- * Return an array of unique integration ids that are required to be configured
- * in order to install this mod, excluding the PixieBrix integration.
- * @param modDefinition the mod from which to extract integration ids
+ * Return an array of unique integrations used by a given collection of mod components, without their config filled in
+ * @param extensionPoints the mod component definitions from which to extract integrations
+ * @see selectExtensionPointConfig in saveHelpers.ts for the reverse logic
  */
-export const getRequiredIntegrationIds = (
-  modDefinition: ModDefinition
-): RegistryId[] =>
-  uniq(
-    (modDefinition.extensionPoints ?? [])
-      .flatMap((extensionPoint) => Object.values(extensionPoint.services ?? {}))
-      // The PixieBrix service gets automatically configured, so no need to include it
-      .filter((serviceId) => serviceId !== PIXIEBRIX_INTEGRATION_ID)
-  );
-
-const getStarterBrickType = async (
-  modComponentDefinition: ModComponentDefinition,
-  modDefinition: ModDefinition
-): Promise<StarterBrickType | null> => {
-  // Look up the extension point in recipe inner definitions first
-  if (modDefinition.definitions?.[modComponentDefinition.id]) {
-    const definition: StarterBrickDefinition = modDefinition.definitions[
-      modComponentDefinition.id
-    ].definition as StarterBrickDefinition;
-    const extensionPointType = definition?.type;
-
-    if (extensionPointType) {
-      return extensionPointType;
+export function getUnconfiguredComponentIntegrations({
+  extensionPoints: modComponentDefinitions = [],
+}: Pick<ModDefinition, "extensionPoints">): IntegrationDependency[] {
+  return modComponentDefinitions.flatMap(({ services }) => {
+    if (isEmpty(services)) {
+      return [];
     }
-  }
 
-  // If no inner definitions, look up the extension point in the registry
-  const extensionPointFromRegistry = await starterBrickRegistry.lookup(
-    modComponentDefinition.id as RegistryId
-  );
-
-  return (extensionPointFromRegistry?.kind as StarterBrickType) ?? null;
-};
-
-export const getContainedStarterBrickTypes = async (
-  modDefinition: ModDefinition
-): Promise<StarterBrickType[]> => {
-  const extensionPointTypes = await Promise.all(
-    modDefinition.extensionPoints.map(async (extensionPoint) =>
-      getStarterBrickType(extensionPoint, modDefinition)
-    )
-  );
-
-  return uniq(compact(extensionPointTypes));
-};
+    return isSchemaServicesFormat(services)
+      ? getIntegrationsFromSchema(services)
+      : getIntegrationsFromRecord(services);
+  });
+}
 
 /**
- * Returns true if the recipe includes a static or dynamic Quick Bar entries.
- * @param modDefinition the mod definition
+ * Return an array of unique integration ids used by a mod definition or another collection of mod components
+ * @param extensionPoints mod component definitions from which to extract integration ids
+ * @param excludePixieBrix whether to exclude the PixieBrix integration
+ * @param requiredOnly whether to only include required integrations
  */
-export async function includesQuickBarStarterBrick(
-  modDefinition?: ModDefinition
-): Promise<boolean> {
-  const resolvedExtensionDefinitions = await resolveRecipeInnerDefinitions(
-    modDefinition
+export function getIntegrationIds(
+  {
+    extensionPoints: modComponentDefinitions = [],
+  }: Pick<ModDefinition, "extensionPoints">,
+  { excludePixieBrix = false, requiredOnly = false } = {}
+): RegistryId[] {
+  const integrationIds = uniq(
+    modComponentDefinitions.flatMap(({ services }) => {
+      if (isEmpty(services)) {
+        return [];
+      }
+
+      return isSchemaServicesFormat(services)
+        ? Object.entries(services.properties)
+            .filter(
+              ([key]) => !requiredOnly || services.required?.includes(key)
+            )
+            .flatMap(([, schema]) => extractServiceIds(schema as Schema))
+        : Object.values(services ?? {});
+    })
   );
 
-  for (const { id } of resolvedExtensionDefinitions) {
-    // eslint-disable-next-line no-await-in-loop -- can break when we find one
-    const starterBrick = await starterBrickRegistry.lookup(id);
-    if (
-      QuickBarStarterBrickABC.isQuickBarExtensionPoint(starterBrick) ||
-      QuickBarProviderStarterBrickABC.isQuickBarProviderExtensionPoint(
-        starterBrick
-      )
-    ) {
-      return true;
-    }
+  if (excludePixieBrix) {
+    return integrationIds.filter((id) => id !== PIXIEBRIX_INTEGRATION_ID);
   }
 
-  return false;
+  return integrationIds;
+}
+
+/**
+ * Select information about the ModDefinition used to install an ModComponentBase
+ * @see ModComponentBase._recipe
+ */
+export function pickModDefinitionMetadata(
+  modDefinition: ModDefinition
+): ModComponentBase["_recipe"] {
+  if (modDefinition.metadata?.id == null) {
+    throw new TypeError("ModDefinition metadata id is required");
+  }
+
+  return {
+    ...pick(modDefinition.metadata, ["id", "version", "name", "description"]),
+    ...pick(modDefinition, ["sharing", "updated_at"]),
+  };
 }

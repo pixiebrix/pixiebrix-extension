@@ -26,4 +26,20 @@ describe("ElementReader", () => {
     const { ref } = await reader.read(div);
     expect(validateUUID(ref)).not.toBeNull();
   });
+
+  test("isVisible: false for element not in document", async () => {
+    const div = document.createElement("div");
+    const { isVisible } = await reader.read(div);
+    expect(isVisible).toBe(false);
+  });
+
+  // eslint-disable-next-line jest/no-disabled-tests -- https://github.com/jsdom/jsdom/issues/135
+  test.skip("isVisible: true for element in document", async () => {
+    const div = document.createElement("div");
+    div.innerHTML = "<p>Some text</p>";
+    document.body.append(div);
+
+    const { isVisible } = await reader.read(div);
+    expect(isVisible).toBe(true);
+  });
 });

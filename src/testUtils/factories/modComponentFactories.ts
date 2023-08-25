@@ -48,25 +48,29 @@ const modComponentConfigFactory = define<ModComponentBase["config"]>({
       id: validateRegistryId(`test/component-${n}`),
       name: "Test config",
     }),
-  inputSchema: {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties: {},
-    required: [] as string[],
+  inputSchema() {
+    return {
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {},
+      required: [] as string[],
+    };
   },
 
   // This is the pipeline prop for the menu item starter brick
-  action: [
-    {
-      id: "@pixiebrix/browser/open-tab",
-      config: {
-        url: "http://www.amazon.com/s",
-        params: {
-          url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
+  action() {
+    return [
+      {
+        id: "@pixiebrix/browser/open-tab",
+        config: {
+          url: "http://www.amazon.com/s",
+          params: {
+            url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
+          },
         },
       },
-    },
-  ],
+    ];
+  },
 });
 
 export const modComponentFactory = define<ModComponentBase>({

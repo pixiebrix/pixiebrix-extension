@@ -44,12 +44,12 @@ jest.mock("@/contrib/google/initGoogle", () => ({
   subscribe: jest.fn(),
 }));
 
-function mockRecipe(recipe: ModDefinition) {
+function mockModDefinition(modDefinition: ModDefinition) {
   (useAllModDefinitions as jest.Mock).mockReturnValue(
-    valueToAsyncCacheState([recipe])
+    valueToAsyncCacheState([modDefinition])
   );
   (useOptionalModDefinition as jest.Mock).mockReturnValue(
-    valueToAsyncCacheState(recipe)
+    valueToAsyncCacheState(modDefinition)
   );
 }
 
@@ -59,13 +59,12 @@ beforeEach(() => {
 
 describe("ActivationOptions", () => {
   test("renders empty options", async () => {
-    const recipe = defaultModDefinitionFactory();
-    mockRecipe(recipe);
+    const modDefinition = defaultModDefinitionFactory();
+    mockModDefinition(modDefinition);
     const rendered = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
           screen: "pageEditor",
           isReinstall: false,
         });
@@ -76,7 +75,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options", async () => {
-    const recipe = defaultModDefinitionFactory({
+    const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -119,12 +118,11 @@ describe("ActivationOptions", () => {
         },
       },
     });
-    mockRecipe(recipe);
+    mockModDefinition(modDefinition);
     const rendered = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
           screen: "pageEditor",
           isReinstall: false,
         });
@@ -135,7 +133,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options with additional props", async () => {
-    const recipe = defaultModDefinitionFactory({
+    const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -145,12 +143,11 @@ describe("ActivationOptions", () => {
         },
       },
     });
-    mockRecipe(recipe);
+    mockModDefinition(modDefinition);
     const rendered = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
           screen: "pageEditor",
           isReinstall: false,
         });
@@ -161,7 +158,7 @@ describe("ActivationOptions", () => {
   });
 
   test("renders blueprint options with uiSchema sort order", async () => {
-    const recipe = defaultModDefinitionFactory({
+    const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -185,12 +182,11 @@ describe("ActivationOptions", () => {
         },
       },
     });
-    mockRecipe(recipe);
+    mockModDefinition(modDefinition);
     render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
           screen: "pageEditor",
           isReinstall: false,
         });
@@ -208,7 +204,7 @@ describe("ActivationOptions", () => {
   });
 
   it("renders google sheets field type option if gapi is loaded", async () => {
-    const recipe = defaultModDefinitionFactory({
+    const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -221,12 +217,11 @@ describe("ActivationOptions", () => {
         },
       },
     });
-    mockRecipe(recipe);
+    mockModDefinition(modDefinition);
     render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
           screen: "pageEditor",
           isReinstall: false,
         });

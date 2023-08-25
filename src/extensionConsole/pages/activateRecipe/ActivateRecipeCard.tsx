@@ -81,9 +81,7 @@ const ActivateRecipeCard: React.FC = () => {
   const { wizardSteps, initialValues, validationSchema } = wizardState;
 
   const renderBody: RenderBody = ({ isSubmitting }) => (
-    <WizardValuesModIntegrationsContextAdapter
-      modComponentDefinitions={recipe.extensionPoints}
-    >
+    <WizardValuesModIntegrationsContextAdapter>
       <BlockFormSubmissionViaEnterIfFirstChild />
       <Card>
         <Card.Header className={styles.wizardHeader}>
