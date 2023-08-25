@@ -20,6 +20,7 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { isVisible } from "@/utils/domUtils";
 
 /**
  * Read attributes, text, etc. from an HTML element.
@@ -47,6 +48,7 @@ export class ElementReader extends ReaderABC {
 
     return {
       ref: getReferenceForElement(element),
+      isVisible: isVisible(element),
       tagName: element.tagName,
       attrs: Object.fromEntries(
         Object.values(element.attributes).map((x) => [x.name, x.value])
@@ -83,8 +85,12 @@ export class ElementReader extends ReaderABC {
         type: "object",
         additionalProperties: true,
       },
+      isVisible: {
+        type: "boolean",
+        description: "True if the element is visible",
+      },
     },
-    required: ["tagName", "attrs", "data", "text", "ref"],
+    required: ["tagName", "attrs", "data", "text", "ref", "isVisible"],
     additionalProperties: false,
   };
 
