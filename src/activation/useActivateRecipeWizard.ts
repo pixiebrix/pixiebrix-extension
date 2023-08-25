@@ -32,7 +32,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import {
-  inferModIntegrations,
+  inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
@@ -99,7 +99,7 @@ export function wizardStateFactory({
 
   const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
   const installedIntegrationConfigs = Object.fromEntries(
-    inferModIntegrations(installedBlueprintExtensions, {
+    inferConfiguredModIntegrations(installedBlueprintExtensions, {
       optional: true,
     }).map(({ id, config }) => [id, config])
   );

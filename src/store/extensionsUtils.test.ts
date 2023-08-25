@@ -16,7 +16,7 @@
  */
 
 import {
-  inferModIntegrations,
+  inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
 import { type IntegrationDependency } from "@/types/integrationTypes";
@@ -38,7 +38,9 @@ describe("inferRecipeOptions", () => {
 
 describe("inferModIntegrations", () => {
   it("handles undefined services", () => {
-    expect(inferModIntegrations([{ services: undefined }])).toStrictEqual([]);
+    expect(
+      inferConfiguredModIntegrations([{ services: undefined }])
+    ).toStrictEqual([]);
   });
 
   it("handles same service", () => {
@@ -51,7 +53,7 @@ describe("inferModIntegrations", () => {
     };
 
     expect(
-      inferModIntegrations([
+      inferConfiguredModIntegrations([
         { services: [dependency] },
         { services: [dependency] },
       ])
@@ -68,7 +70,7 @@ describe("inferModIntegrations", () => {
     };
 
     expect(() =>
-      inferModIntegrations([
+      inferConfiguredModIntegrations([
         { services: [dependency] },
         { services: [{ ...dependency, config: uuidv4() }] },
       ])
@@ -82,16 +84,16 @@ describe("inferModIntegrations", () => {
       outputKey: validateOutputKey("foo"),
     };
 
-    expect(() => inferModIntegrations([{ services: [dependency] }])).toThrow(
-      /is not configured/
-    );
+    expect(() =>
+      inferConfiguredModIntegrations([{ services: [dependency] }])
+    ).toThrow(/is not configured/);
   });
 
   it("handles unconfigured (optional) integrations", () => {
     const unconfigured = integrationDependencyFactory();
     delete unconfigured.config;
     expect(
-      inferModIntegrations([{ services: [unconfigured] }], {
+      inferConfiguredModIntegrations([{ services: [unconfigured] }], {
         optional: true,
       })
     ).toBeEmpty();

@@ -34,7 +34,7 @@ import type {
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
 import {
-  inferModIntegrations,
+  inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
 import type { ModComponentOptionsState } from "@/store/extensionsTypes";
@@ -261,7 +261,7 @@ function updateMod(
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  const configuredDependencies = inferModIntegrations(
+  const configuredDependencies = inferConfiguredModIntegrations(
     deactivatedModComponents.filter((modComponent) => modComponent.services)
   );
 

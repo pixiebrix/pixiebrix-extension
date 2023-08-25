@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { flatten, groupBy, isEmpty, uniqBy } from "lodash";
+import { flatten, groupBy, uniqBy } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -35,13 +35,15 @@ export function inferRecipeOptions(
 }
 
 /**
- * Infer integration dependencies from existing mod-component-like instances for reinstalling a mod
+ * Infer configured integration dependencies from existing mod-component-like
+ * instances for reinstalling a mod. Filters out the PixieBrix integration, as
+ * well as any optional integrations that don't have a config set.
  * @param modComponents mod components from which to extract integration dependencies
  * @param optional don't check integration dependencies for valid configs
- * @returns IntegrationDependency[] the integration dependencies for the mod components
+ * @returns IntegrationDependency[] the configured integration dependencies for the mod components
  * @see installMod
  */
-export function inferModIntegrations(
+export function inferConfiguredModIntegrations(
   modComponents: Array<Pick<ModComponentBase, "services">>,
   { optional = false }: { optional?: boolean } = {}
 ): IntegrationDependency[] {
