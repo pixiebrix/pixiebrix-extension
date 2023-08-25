@@ -173,7 +173,7 @@ export function wizardStateFactory({
         extensionPoints.map((_, index) => [index, Yup.boolean().required()])
       )
     ),
-    services: Yup.array().of(
+    integrationDependencies: Yup.array().of(
       Yup.object().test(
         "servicesRequired",
         "Please select a configuration",
