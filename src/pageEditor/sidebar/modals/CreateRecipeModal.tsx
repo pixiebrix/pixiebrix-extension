@@ -59,7 +59,7 @@ import { object, string } from "yup";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
-  inferModIntegrations,
+  inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
@@ -229,7 +229,7 @@ function useSaveCallbacks({
       dispatch(
         optionsActions.installMod({
           modDefinition: savedRecipe,
-          configuredDependencies: inferModIntegrations([
+          configuredDependencies: inferConfiguredModIntegrations([
             ...dirtyRecipeElements,
             ...cleanRecipeExtensions,
           ]),

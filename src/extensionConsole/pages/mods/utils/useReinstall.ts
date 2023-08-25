@@ -21,7 +21,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import {
-  inferModIntegrations,
+  inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
 import { uninstallRecipe } from "@/store/uninstallUtils";
@@ -45,7 +45,8 @@ function useReinstall(): Reinstall {
 
       const currentOptions = inferRecipeOptions(modComponents);
 
-      const configuredDependencies = inferModIntegrations(modComponents);
+      const configuredDependencies =
+        inferConfiguredModIntegrations(modComponents);
 
       await uninstallRecipe(modId, modComponents, dispatch);
 
@@ -63,5 +64,5 @@ function useReinstall(): Reinstall {
   );
 }
 
-export { inferModIntegrations, inferRecipeOptions };
+export { inferConfiguredModIntegrations, inferRecipeOptions };
 export default useReinstall;

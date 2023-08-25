@@ -35,13 +35,15 @@ export function inferRecipeOptions(
 }
 
 /**
- * Infer integration dependencies from existing mod-component-like instances for reinstalling a mod
+ * Infer configured integration dependencies from existing mod-component-like
+ * instances for reinstalling a mod. Filters out the PixieBrix integration, as
+ * well as any optional integrations that don't have a config set.
  * @param modComponents mod components from which to extract integration dependencies
  * @param optional don't check integration dependencies for valid configs
- * @returns IntegrationDependency[] the integration dependencies for the mod components
+ * @returns IntegrationDependency[] the configured integration dependencies for the mod components
  * @see installMod
  */
-export function inferModIntegrations(
+export function inferConfiguredModIntegrations(
   modComponents: Array<Pick<ModComponentBase, "services">>,
   { optional = false }: { optional?: boolean } = {}
 ): IntegrationDependency[] {
@@ -63,13 +65,17 @@ export function inferModIntegrations(
       dependencies.filter(({ config }) => config != null),
       ({ config }) => config
     );
+
     if (
       id !== PIXIEBRIX_INTEGRATION_ID &&
-      configuredDependencies.length === 0 &&
-      !optional
+      configuredDependencies.length === 0
     ) {
-      // PIXIEBRIX_SERVICE_ID gets the implicit configuration
-      throw new Error(`Integration ${id} is not configured`);
+      if (optional) {
+        continue;
+      } else {
+        // PIXIEBRIX_SERVICE_ID gets the implicit configuration
+        throw new Error(`Integration ${id} is not configured`);
+      }
     }
 
     // If optional is passed in, we know that the user is being given an
