@@ -20,6 +20,7 @@ import {
   SHEET_SERVICE_SCHEMA,
   BASE_SHEET_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
+import { inputProperties as httpInputProperties } from "@/bricks/transformers/remoteMethod";
 
 describe("extractServiceIds", () => {
   it("errors by default if not found", () => {
@@ -44,5 +45,11 @@ describe("extractServiceIds", () => {
     };
 
     expect(extractServiceIds(schema)).toEqual(["google/sheet"]);
+  });
+
+  it("returns empty for HTTP brick", () => {
+    // Returns empty because the $ref is https://app.pixiebrix.com/schemas/service#/definitions/configuredService
+    // which is not a specific service schema.
+    expect(extractServiceIds(httpInputProperties.service)).toEqual([]);
   });
 });

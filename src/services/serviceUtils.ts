@@ -41,7 +41,11 @@ const SERVICE_ID_REGEX =
   /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/(?<id>\S+)$/;
 
 /**
- * Return the registry ids of services supported by a JSON Schema field definition
+ * Return the registry ids of services supported by a JSON Schema field definition.
+ *
+ * Returns empty for $ref that is not a service schema, e.g.:
+ * - https://app.pixiebrix.com/schemas/service#/definitions/configuredService
+ *
  * @param schema The schema to extract services from
  * @param options Extra execution options
  * @param options.suppressError Suppress the "not found" error if no matches are found. Useful when aggregating results of this function or calling it recursively.
