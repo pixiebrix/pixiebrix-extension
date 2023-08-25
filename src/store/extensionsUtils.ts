@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { flatten, groupBy, uniqBy } from "lodash";
+import { flatten, groupBy, isEmpty, uniqBy } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -63,6 +63,10 @@ export function inferModIntegrations(
       dependencies.filter(({ config }) => config != null),
       ({ config }) => config
     );
+    if (isEmpty(configuredDependencies)) {
+      continue;
+    }
+
     if (
       id !== PIXIEBRIX_INTEGRATION_ID &&
       configuredDependencies.length === 0 &&

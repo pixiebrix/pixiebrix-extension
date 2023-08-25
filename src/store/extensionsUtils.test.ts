@@ -22,6 +22,7 @@ import {
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
 describe("inferRecipeOptions", () => {
   it("returns first option", () => {
@@ -84,5 +85,15 @@ describe("inferModIntegrations", () => {
     expect(() => inferModIntegrations([{ services: [dependency] }])).toThrow(
       /is not configured/
     );
+  });
+
+  it("handles unconfigured (optional) integrations", () => {
+    const unconfigured = integrationDependencyFactory();
+    delete unconfigured.config;
+    expect(
+      inferModIntegrations([{ services: [unconfigured] }], {
+        optional: true,
+      })
+    ).toBeEmpty();
   });
 });
