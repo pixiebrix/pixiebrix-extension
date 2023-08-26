@@ -43,12 +43,6 @@ jest.mock("@/hooks/auth", () => ({
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
-jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
-  ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
-  // Mock so we don't have to have full Page Editor state in tests
-  produceExcludeUnusedDependencies: jest.fn().mockImplementation((x: any) => x),
-}));
-
 beforeAll(() => {
   registerDefaultWidgets();
 });
@@ -79,10 +73,20 @@ const renderServiceWidget = (
   props?: Partial<SchemaFieldProps>
 ) =>
   render(
-    <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+    <Formik
+      initialValues={{
+        ...initialValues,
+        extension: { blockPipeline: [{ config: { service: null } }] },
+      }}
+      onSubmit={jest.fn()}
+    >
       {({ values }) => (
         <>
-          <ServiceWidget name="service" schema={schema} {...props} />
+          <ServiceWidget
+            name="extension.blockPipeline.0.config.service"
+            schema={schema}
+            {...props}
+          />
           <div data-testid="values">{JSON.stringify(values)}</div>
         </>
       )}
@@ -208,20 +212,28 @@ describe("ServiceWidget", () => {
     await waitForEffect();
 
     await act(async () => {
-      await selectEvent.select(
-        wrapper.container.querySelector("[name='service']"),
-        "Test 1"
+      const select: HTMLElement = wrapper.container.querySelector(
+        "[name='extension.blockPipeline.0.config.service']"
       );
-      await selectEvent.select(
-        wrapper.container.querySelector("[name='service']"),
-        "Test 2"
-      );
+
+      await selectEvent.select(select, "Test 1");
+
+      await selectEvent.select(select, "Test 2");
     });
 
     const state = JSON.parse(wrapper.queryByTestId("values").textContent);
 
     expect(state).toEqual({
-      service: makeVariableExpression("@jest2"),
+      extension: {
+        blockPipeline: [
+          {
+            config: {
+              service: makeVariableExpression("@jest2"),
+            },
+          },
+        ],
+      },
+      // The original service should automatically be cleaned up
       services: [
         expect.objectContaining({
           id: otherServiceId,
