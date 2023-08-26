@@ -180,15 +180,15 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   const [{ value, ...field }, , helpers] =
     useField<Expression<ServiceVarRef>>(props);
 
-  const { permittedServiceIds, options } = useMemo(() => {
-    // Service Ids permitted by the schema, or empty to allow any
-    const permittedServiceIds = extractServiceIds(schema);
+  const { validDefaultServiceIds, options } = useMemo(() => {
+    // Registry ids specified by the schema, or returns empty if any allowed
+    const schemaServiceIds = extractServiceIds(schema);
 
     return {
-      permittedServiceIds,
-      options: isEmpty(permittedServiceIds)
+      validDefaultServiceIds: schemaServiceIds,
+      options: isEmpty(schemaServiceIds)
         ? authOptions
-        : authOptions.filter((x) => permittedServiceIds.includes(x.serviceId)),
+        : authOptions.filter((x) => schemaServiceIds.includes(x.serviceId)),
     };
   }, [authOptions, schema]);
 
@@ -218,7 +218,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
 
         // Match a permitted service id that's already configured by another brick
         const match = root.services.find((service) =>
-          permittedServiceIds.includes(service.id)
+          validDefaultServiceIds.includes(service.id)
         );
 
         if (match?.outputKey) {
@@ -259,7 +259,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
       }
     },
     // Only run on mount
-    [permittedServiceIds, options]
+    [validDefaultServiceIds, options]
   );
 
   // The SelectWidget re-looks up the option based on the value
