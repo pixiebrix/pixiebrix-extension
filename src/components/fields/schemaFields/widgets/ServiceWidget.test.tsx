@@ -33,6 +33,9 @@ import {
   loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
+import selectEvent from "react-select-event";
+import { act } from "@testing-library/react";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -77,7 +80,12 @@ const renderServiceWidget = (
 ) =>
   render(
     <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-      <ServiceWidget name="service" schema={schema} {...props} />
+      {({ values }) => (
+        <>
+          <ServiceWidget name="service" schema={schema} {...props} />
+          <div data-testid="values">{JSON.stringify(values)}</div>
+        </>
+      )}
     </Formik>
   );
 
@@ -164,5 +172,61 @@ describe("ServiceWidget", () => {
     await waitForEffect();
 
     expect(wrapper.queryByText("Test 1")).toBeVisible();
+  });
+
+  it("allow any for HTTP Request brick", async () => {
+    const serviceId = validateRegistryId("jest/api");
+    const otherServiceId = validateRegistryId("jest/other");
+
+    useAuthOptionsMock.mockReturnValue(
+      valueToAsyncState([
+        {
+          serviceId,
+          label: "Test 1",
+          value: uuidv4(),
+          local: true,
+          sharingType: "built-in",
+        },
+        {
+          serviceId: otherServiceId,
+          label: "Test 2",
+          value: uuidv4(),
+          local: true,
+          sharingType: "built-in",
+        },
+      ])
+    );
+
+    const schema = {
+      $ref: "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
+    };
+
+    const wrapper = renderServiceWidget(schema, {
+      services: [],
+    });
+
+    await waitForEffect();
+
+    await act(async () => {
+      await selectEvent.select(
+        wrapper.container.querySelector("[name='service']"),
+        "Test 1"
+      );
+      await selectEvent.select(
+        wrapper.container.querySelector("[name='service']"),
+        "Test 2"
+      );
+    });
+
+    const state = JSON.parse(wrapper.queryByTestId("values").textContent);
+
+    expect(state).toEqual({
+      service: makeVariableExpression("@jest2"),
+      services: [
+        expect.objectContaining({
+          id: otherServiceId,
+        }),
+      ],
+    });
   });
 });
