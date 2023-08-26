@@ -33,18 +33,15 @@ import {
   loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
+import selectEvent from "react-select-event";
+import { act } from "@testing-library/react";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
 }));
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
-
-jest.mock("@/components/fields/schemaFields/serviceFieldUtils", () => ({
-  ...jest.requireActual("@/components/fields/schemaFields/serviceFieldUtils"),
-  // Mock so we don't have to have full Page Editor state in tests
-  produceExcludeUnusedDependencies: jest.fn().mockImplementation((x: any) => x),
-}));
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -76,8 +73,23 @@ const renderServiceWidget = (
   props?: Partial<SchemaFieldProps>
 ) =>
   render(
-    <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-      <ServiceWidget name="service" schema={schema} {...props} />
+    <Formik
+      initialValues={{
+        ...initialValues,
+        extension: { blockPipeline: [{ config: { service: null } }] },
+      }}
+      onSubmit={jest.fn()}
+    >
+      {({ values }) => (
+        <>
+          <ServiceWidget
+            name="extension.blockPipeline.0.config.service"
+            schema={schema}
+            {...props}
+          />
+          <div data-testid="values">{JSON.stringify(values)}</div>
+        </>
+      )}
     </Formik>
   );
 
@@ -164,5 +176,69 @@ describe("ServiceWidget", () => {
     await waitForEffect();
 
     expect(wrapper.queryByText("Test 1")).toBeVisible();
+  });
+
+  it("allow any for HTTP Request brick", async () => {
+    const serviceId = validateRegistryId("jest/api");
+    const otherServiceId = validateRegistryId("jest/other");
+
+    useAuthOptionsMock.mockReturnValue(
+      valueToAsyncState([
+        {
+          serviceId,
+          label: "Test 1",
+          value: uuidv4(),
+          local: true,
+          sharingType: "built-in",
+        },
+        {
+          serviceId: otherServiceId,
+          label: "Test 2",
+          value: uuidv4(),
+          local: true,
+          sharingType: "built-in",
+        },
+      ])
+    );
+
+    const schema = {
+      $ref: "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
+    };
+
+    const wrapper = renderServiceWidget(schema, {
+      services: [],
+    });
+
+    await waitForEffect();
+
+    await act(async () => {
+      const select: HTMLElement = wrapper.container.querySelector(
+        "[name='extension.blockPipeline.0.config.service']"
+      );
+
+      await selectEvent.select(select, "Test 1");
+
+      await selectEvent.select(select, "Test 2");
+    });
+
+    const state = JSON.parse(wrapper.queryByTestId("values").textContent);
+
+    expect(state).toEqual({
+      extension: {
+        blockPipeline: [
+          {
+            config: {
+              service: makeVariableExpression("@jest2"),
+            },
+          },
+        ],
+      },
+      // The original service should automatically be cleaned up
+      services: [
+        expect.objectContaining({
+          id: otherServiceId,
+        }),
+      ],
+    });
   });
 });

@@ -99,12 +99,10 @@ function lookupAuthId(
  * - We're only supporting one service of each type at this time. If you change one of the auths for a service, it will
  * change the other auths for that service too
  */
-// eslint-disable-next-line max-params -- internal method where all the arguments have different types
 function setServiceSelectionForField(
   state: ServiceSlice,
   fieldName: string,
   serviceId: UUID,
-  serviceIds: RegistryId[],
   options: AuthOption[]
 ): ServiceSlice {
   const option = options.find((x) => x.value === serviceId);
@@ -112,9 +110,10 @@ function setServiceSelectionForField(
   let outputKey: OutputKey;
 
   let nextState = produce(state, (draft) => {
-    // Some bricks support alternative service ids, so need to check all of them
-    const match = draft.services.find((dependency) =>
-      serviceIds.includes(dependency.id)
+    // Unlike when defaulting, we don't need to check against the registry ids from the schema because this method
+    // will only be called with an allowed option.
+    const match = draft.services.find(
+      (dependency) => dependency.id === option.serviceId
     );
 
     if (match) {
@@ -181,13 +180,15 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
   const [{ value, ...field }, , helpers] =
     useField<Expression<ServiceVarRef>>(props);
 
-  const { serviceIds, options } = useMemo(() => {
-    const serviceIds = extractServiceIds(schema);
+  const { validDefaultServiceIds, options } = useMemo(() => {
+    // Registry ids specified by the schema, or returns empty if any allowed
+    const schemaServiceIds = extractServiceIds(schema);
+
     return {
-      serviceIds,
-      options: isEmpty(serviceIds)
+      validDefaultServiceIds: schemaServiceIds,
+      options: isEmpty(schemaServiceIds)
         ? authOptions
-        : authOptions.filter((x) => serviceIds.includes(x.serviceId)),
+        : authOptions.filter((x) => schemaServiceIds.includes(x.serviceId)),
     };
   }, [authOptions, schema]);
 
@@ -197,19 +198,13 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
       const newState =
         value == null
           ? clearIntegrationSelection(root, field.name)
-          : setServiceSelectionForField(
-              root,
-              field.name,
-              value,
-              serviceIds,
-              options
-            );
+          : setServiceSelectionForField(root, field.name, value, options);
       await setRootValues(newState);
       // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
       helpers.setError(undefined);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- formik helpers change on every render
-    [root, setRootValues, serviceIds, field.name]
+    [root, setRootValues, field.name]
   );
 
   useAsyncEffect(
@@ -221,9 +216,11 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
           );
         }
 
+        // Match a permitted service id that's already configured by another brick
         const match = root.services.find((service) =>
-          serviceIds.includes(service.id)
+          validDefaultServiceIds.includes(service.id)
         );
+
         if (match?.outputKey) {
           // If the service is already being used, default to the currently configured auth
           console.debug(
@@ -262,7 +259,7 @@ const ServiceWidget: React.FC<ServiceWidgetProps> = ({
       }
     },
     // Only run on mount
-    [serviceIds, options]
+    [validDefaultServiceIds, options]
   );
 
   // The SelectWidget re-looks up the option based on the value
