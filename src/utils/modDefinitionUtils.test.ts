@@ -15,37 +15,169 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getIntegrationIds } from "./modDefinitionUtils";
+import {
+  getIntegrationIds,
+  getUnconfiguredComponentIntegrations,
+} from "./modDefinitionUtils";
 import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
-import { generatePackageId } from "@/utils/registryUtils";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
 extensionPointRegistry.lookup = jest.fn();
 
-describe("generateRecipeId", () => {
-  test("no special chars", () => {
-    expect(generatePackageId("@test", "This Is a Test")).toEqual(
-      "@test/this-is-a-test"
+describe("getUnconfiguredComponentIntegrations", () => {
+  it("returns empty if no integrations", () => {
+    expect(
+      getUnconfiguredComponentIntegrations({ extensionPoints: [] })
+    ).toStrictEqual([]);
+  });
+
+  it("returns an array of integrationDependencies regardless of format", () => {
+    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
+    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
+    const serviceId3 = validateRegistryId("@pixiebrix/test-service3");
+    const modComponentDefinition1 = modComponentDefinitionFactory({
+      services: {
+        properties: {
+          service1: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+          },
+          service2: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+          },
+        },
+        required: ["service1", "service2"],
+      },
+    });
+
+    const modComponentDefinition2 = modComponentDefinitionFactory({
+      services: {
+        [validateOutputKey("service3")]: serviceId3,
+      },
+    });
+
+    expect(
+      getUnconfiguredComponentIntegrations({
+        extensionPoints: [modComponentDefinition1, modComponentDefinition2],
+      })
+    ).toEqual([
+      {
+        id: serviceId1,
+        outputKey: validateOutputKey("service1"),
+        isOptional: false,
+        apiVersion: "v2",
+      },
+      {
+        id: serviceId2,
+        outputKey: validateOutputKey("service2"),
+        isOptional: false,
+        apiVersion: "v2",
+      },
+      {
+        id: serviceId3,
+        outputKey: validateOutputKey("service3"),
+        isOptional: false,
+        apiVersion: "v1",
+      },
+    ]);
+  });
+
+  it("dedupes integrations", () => {
+    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
+    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
+    const modComponentDefinition1 = modComponentDefinitionFactory({
+      services: {
+        properties: {
+          service1: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+          },
+          service2: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+          },
+        },
+        required: ["service1", "service2"],
+      },
+    });
+
+    const modComponentDefinition2 = modComponentDefinitionFactory({
+      services: {
+        properties: {
+          service1: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+          },
+        },
+        required: ["service1"],
+      },
+    });
+
+    expect(
+      getUnconfiguredComponentIntegrations({
+        extensionPoints: [modComponentDefinition1, modComponentDefinition2],
+      })
+    ).toEqual(
+      expect.arrayContaining([
+        {
+          id: serviceId1,
+          outputKey: validateOutputKey("service1"),
+          isOptional: false,
+          apiVersion: "v2",
+        },
+        {
+          id: serviceId2,
+          outputKey: validateOutputKey("service2"),
+          isOptional: false,
+          apiVersion: "v2",
+        },
+      ])
     );
   });
 
-  test("handle colon", () => {
-    expect(generatePackageId("@test", "This: Is a Test")).toEqual(
-      "@test/this-is-a-test"
-    );
-  });
+  it("deduping works with both formats together, preferring required integrations", () => {
+    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
+    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
 
-  test("collapse spaces", () => {
-    expect(generatePackageId("@test", "This   Is a Test")).toEqual(
-      "@test/this-is-a-test"
-    );
-  });
+    const modComponentDefinition1 = modComponentDefinitionFactory({
+      services: {
+        properties: {
+          service1: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+          },
+          service2: {
+            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+          },
+        },
+        required: [],
+      },
+    });
 
-  test("return empty on invalid", () => {
-    expect(generatePackageId("", "This   Is a Test")).toBe("");
+    const modComponentDefinition2 = modComponentDefinitionFactory({
+      services: {
+        [validateOutputKey("service1")]: serviceId1,
+      },
+    });
+
+    expect(
+      getUnconfiguredComponentIntegrations({
+        extensionPoints: [modComponentDefinition1, modComponentDefinition2],
+      })
+    ).toEqual(
+      expect.arrayContaining([
+        {
+          id: serviceId1,
+          outputKey: validateOutputKey("service1"),
+          isOptional: false,
+          apiVersion: "v1",
+        },
+        {
+          id: serviceId2,
+          outputKey: validateOutputKey("service2"),
+          isOptional: true,
+          apiVersion: "v2",
+        },
+      ])
+    );
   });
 });
 
