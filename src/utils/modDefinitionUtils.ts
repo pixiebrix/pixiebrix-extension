@@ -20,7 +20,7 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { isEmpty, pick, uniq } from "lodash";
+import { isEmpty, pick, uniq, uniqBy } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type Schema } from "@/types/schemaTypes";
 import { extractServiceIds } from "@/services/serviceUtils";
@@ -75,15 +75,18 @@ function getIntegrationsFromRecord(
 export function getUnconfiguredComponentIntegrations({
   extensionPoints: modComponentDefinitions = [],
 }: Pick<ModDefinition, "extensionPoints">): IntegrationDependency[] {
-  return modComponentDefinitions.flatMap(({ services }) => {
-    if (isEmpty(services)) {
-      return [];
-    }
+  return uniqBy(
+    modComponentDefinitions.flatMap(({ services }) => {
+      if (isEmpty(services)) {
+        return [];
+      }
 
-    return isSchemaServicesFormat(services)
-      ? getIntegrationsFromSchema(services)
-      : getIntegrationsFromRecord(services);
-  });
+      return isSchemaServicesFormat(services)
+        ? getIntegrationsFromSchema(services)
+        : getIntegrationsFromRecord(services);
+    }),
+    "id"
+  );
 }
 
 /**
