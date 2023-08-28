@@ -59,8 +59,25 @@ async function setupPanelsAndRender(
   return renderResult;
 }
 
+// Mock getReservedSidebarEntries so that we can use mockImplementation in tests
+jest.mock("@/contentScript/messenger/api", () => ({
+  ...jest.requireActual("@/contentScript/messenger/api"),
+  getReservedSidebarEntries: jest.fn(),
+}));
+
 describe("Tabs", () => {
   const panel = sidebarEntryFactory("panel");
+
+  beforeEach(() => {
+    (messengerApi.getReservedSidebarEntries as jest.Mock).mockImplementation(
+      () => ({
+        panels: [],
+        temporaryPanels: [],
+        forms: [],
+        modActivationPanel: null,
+      })
+    );
+  });
 
   test("renders", () => {
     const { asFragment } = render(<Tabs />);
