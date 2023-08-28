@@ -223,8 +223,6 @@ describe("Tabs", () => {
       ).toBeInTheDocument();
     });
 
-    // We are essentially testing to ensure that Sidebar preview re-renders don't
-    // cause the Sidebar to close
     test("sidebar doesn't close if visible reserved panel available", async () => {
       hideSidebarSpy.mockReset();
       await setupPanelsAndRender({
