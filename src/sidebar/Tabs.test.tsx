@@ -31,10 +31,26 @@ import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
-async function setupPanelsAndRender(
-  sidebarEntries: Partial<SidebarEntries>,
-  showModLauncher = true
-) {
+async function setupPanelsAndRender(options: {
+  sidebarEntries?: Partial<SidebarEntries>;
+  showModLauncher?: boolean;
+  reservedSidebarEntries?: Partial<SidebarEntries>;
+}) {
+  const {
+    sidebarEntries = {},
+    showModLauncher = true,
+    reservedSidebarEntries = {},
+  } = options;
+  (messengerApi.getReservedSidebarEntries as jest.Mock).mockImplementation(
+    () => ({
+      panels: [],
+      temporaryPanels: [],
+      forms: [],
+      modActivationPanel: null,
+      ...reservedSidebarEntries,
+    })
+  );
+
   const renderResult = render(<Tabs />, {
     setupRedux(dispatch) {
       dispatch(
@@ -59,7 +75,6 @@ async function setupPanelsAndRender(
   return renderResult;
 }
 
-// Mock getReservedSidebarEntries so that we can use mockImplementation in tests
 jest.mock("@/contentScript/messenger/api", () => ({
   ...jest.requireActual("@/contentScript/messenger/api"),
   getReservedSidebarEntries: jest.fn(),
@@ -68,24 +83,13 @@ jest.mock("@/contentScript/messenger/api", () => ({
 describe("Tabs", () => {
   const panel = sidebarEntryFactory("panel");
 
-  beforeEach(() => {
-    (messengerApi.getReservedSidebarEntries as jest.Mock).mockImplementation(
-      () => ({
-        panels: [],
-        temporaryPanels: [],
-        forms: [],
-        modActivationPanel: null,
-      })
-    );
-  });
-
   test("renders", () => {
     const { asFragment } = render(<Tabs />);
     expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders with panels", async () => {
-    await setupPanelsAndRender({ panels: [panel] });
+    await setupPanelsAndRender({ sidebarEntries: { panels: [panel] } });
 
     expect(screen.getByText("Panel Test 1")).toBeInTheDocument();
   });
@@ -93,14 +97,18 @@ describe("Tabs", () => {
   describe("Mod Launcher", () => {
     test("renders with mod launcher", async () => {
       const { asFragment } = await setupPanelsAndRender({
-        staticPanels: [MOD_LAUNCHER],
+        sidebarEntries: {
+          staticPanels: [MOD_LAUNCHER],
+        },
       });
 
       expect(asFragment()).toMatchSnapshot();
     });
 
     test("displays no active sidebar panels view when no panels are active", async () => {
-      await setupPanelsAndRender({ staticPanels: [MOD_LAUNCHER] });
+      await setupPanelsAndRender({
+        sidebarEntries: { staticPanels: [MOD_LAUNCHER] },
+      });
 
       expect(
         screen.getByText("We didn't find any mods to run")
@@ -112,8 +120,10 @@ describe("Tabs", () => {
 
     test("can close the mod launcher", async () => {
       await setupPanelsAndRender({
-        panels: [panel],
-        staticPanels: [MOD_LAUNCHER],
+        sidebarEntries: {
+          panels: [panel],
+          staticPanels: [MOD_LAUNCHER],
+        },
       });
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
@@ -129,8 +139,10 @@ describe("Tabs", () => {
 
     test("can open the mod launcher", async () => {
       await setupPanelsAndRender({
-        panels: [panel],
-        staticPanels: [MOD_LAUNCHER],
+        sidebarEntries: {
+          panels: [panel],
+          staticPanels: [MOD_LAUNCHER],
+        },
       });
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
@@ -147,7 +159,9 @@ describe("Tabs", () => {
     });
 
     test("clicking open the mod launcher multiple times does not open multiple mod launchers", async () => {
-      await setupPanelsAndRender({ staticPanels: [MOD_LAUNCHER] });
+      await setupPanelsAndRender({
+        sidebarEntries: { staticPanels: [MOD_LAUNCHER] },
+      });
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
@@ -160,10 +174,21 @@ describe("Tabs", () => {
   });
 
   describe("Persistent Panels", () => {
+    (messengerApi.getReservedSidebarEntries as jest.Mock).mockImplementation(
+      () => ({
+        panels: [],
+        temporaryPanels: [],
+        forms: [],
+        modActivationPanel: null,
+      })
+    );
+
     test("can close a panel when mod launcher is available", async () => {
       await setupPanelsAndRender({
-        panels: [panel],
-        staticPanels: [MOD_LAUNCHER],
+        sidebarEntries: {
+          panels: [panel],
+          staticPanels: [MOD_LAUNCHER],
+        },
       });
 
       within(screen.getByRole("tab", { name: /panel test 1/i }))
@@ -177,8 +202,10 @@ describe("Tabs", () => {
 
     test("can open a closed panel when mod launcher is available", async () => {
       await setupPanelsAndRender({
-        panels: [panel],
-        staticPanels: [MOD_LAUNCHER],
+        sidebarEntries: {
+          panels: [panel],
+          staticPanels: [MOD_LAUNCHER],
+        },
       });
 
       within(screen.getByRole("tab", { name: /panel test 1/i }))
@@ -195,6 +222,33 @@ describe("Tabs", () => {
         screen.getByRole("tab", { name: /panel test 1/i })
       ).toBeInTheDocument();
     });
+
+    // We are essentially testing to ensure that Sidebar preview re-renders don't
+    // cause the Sidebar to close
+    test("sidebar doesn't close if visible reserved panel available", async () => {
+      hideSidebarSpy.mockReset();
+      await setupPanelsAndRender({
+        sidebarEntries: {
+          panels: [],
+        },
+        reservedSidebarEntries: { panels: [panel] },
+      });
+
+      await waitForEffect();
+      expect(hideSidebarSpy).toHaveBeenCalledTimes(0);
+    });
+
+    test("sidebar closes if no visible reserved panel available", async () => {
+      hideSidebarSpy.mockReset();
+      await setupPanelsAndRender({
+        sidebarEntries: {
+          panels: [],
+        },
+      });
+
+      await waitForEffect();
+      expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("Temporary Panels", () => {
@@ -202,8 +256,10 @@ describe("Tabs", () => {
 
     test("can close a temporary panel when mod launcher is available", async () => {
       await setupPanelsAndRender({
-        temporaryPanels: [temporaryPanel],
-        staticPanels: [MOD_LAUNCHER],
+        sidebarEntries: {
+          temporaryPanels: [temporaryPanel],
+          staticPanels: [MOD_LAUNCHER],
+        },
       });
 
       within(screen.getByRole("tab", { name: /temporary panel test 1/i }))
@@ -216,7 +272,9 @@ describe("Tabs", () => {
     });
 
     test("can close a tempoarary panel when mod launcher is unavailable", async () => {
-      await setupPanelsAndRender({ temporaryPanels: [temporaryPanel] });
+      await setupPanelsAndRender({
+        sidebarEntries: { temporaryPanels: [temporaryPanel] },
+      });
 
       within(screen.getByRole("tab", { name: /temporary panel test 1/i }))
         .getByRole("button", { name: "Close" })
@@ -229,8 +287,10 @@ describe("Tabs", () => {
 
     test("cannot re-open a closed temporary panel with the mod launcher", async () => {
       await setupPanelsAndRender({
-        temporaryPanels: [temporaryPanel],
-        staticPanels: [MOD_LAUNCHER],
+        sidebarEntries: {
+          temporaryPanels: [temporaryPanel],
+          staticPanels: [MOD_LAUNCHER],
+        },
       });
 
       within(screen.getByRole("tab", { name: /temporary panel test 1/i }))
@@ -245,21 +305,48 @@ describe("Tabs", () => {
         screen.queryByRole("heading", { name: /temporary panel test 1/i })
       ).not.toBeInTheDocument();
     });
+
+    test("sidebar doesn't close if visible reserved panel available", async () => {
+      hideSidebarSpy.mockReset();
+      await setupPanelsAndRender({
+        sidebarEntries: {
+          temporaryPanels: [],
+        },
+        reservedSidebarEntries: { temporaryPanels: [temporaryPanel] },
+      });
+
+      await waitForEffect();
+      expect(hideSidebarSpy).toHaveBeenCalledTimes(0);
+    });
+
+    test("sidebar closes if no visible reserved panel available", async () => {
+      hideSidebarSpy.mockReset();
+      await setupPanelsAndRender({
+        sidebarEntries: {
+          temporaryPanels: [],
+        },
+      });
+
+      await waitForEffect();
+      expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("Form Panels", () => {
     const formPanel = sidebarEntryFactory("form");
 
     test("renders with forms", async () => {
-      await setupPanelsAndRender({ forms: [formPanel] });
+      await setupPanelsAndRender({ sidebarEntries: { forms: [formPanel] } });
 
       expect(screen.getByText("Form Panel Test")).toBeInTheDocument();
     });
 
     test("closing the form tab calls cancelForm", async () => {
       await setupPanelsAndRender({
-        forms: [formPanel],
-        staticPanels: [MOD_LAUNCHER],
+        sidebarEntries: {
+          forms: [formPanel],
+          staticPanels: [MOD_LAUNCHER],
+        },
       });
 
       expect(cancelFormSpy).not.toHaveBeenCalled();
@@ -285,8 +372,10 @@ describe("Tabs", () => {
 
     test("close the activation panel and make mod launcher active", async () => {
       await setupPanelsAndRender({
-        staticPanels: [MOD_LAUNCHER],
-        modActivationPanel: activatePanel,
+        sidebarEntries: {
+          staticPanels: [MOD_LAUNCHER],
+          modActivationPanel: activatePanel,
+        },
       });
 
       within(screen.getByRole("tab", { name: /activate mods test 1/i }))
@@ -304,13 +393,13 @@ describe("Tabs", () => {
 
     test("closing the activation panel hides sidebar if it's the only open panel", async () => {
       hideSidebarSpy.mockReset();
-      await setupPanelsAndRender(
-        {
+      await setupPanelsAndRender({
+        sidebarEntries: {
           staticPanels: [MOD_LAUNCHER],
           modActivationPanel: activatePanel,
         },
-        false
-      );
+        showModLauncher: false,
+      });
 
       within(screen.getByRole("tab", { name: /activate mods test 1/i }))
         .getByRole("button", { name: "Close" })
