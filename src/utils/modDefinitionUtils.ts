@@ -20,7 +20,7 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { isEmpty, pick, uniq } from "lodash";
+import { isEmpty, pick, uniq, groupBy } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type Schema } from "@/types/schemaTypes";
 import { extractServiceIds } from "@/services/serviceUtils";
@@ -75,15 +75,30 @@ function getIntegrationsFromRecord(
 export function getUnconfiguredComponentIntegrations({
   extensionPoints: modComponentDefinitions = [],
 }: Pick<ModDefinition, "extensionPoints">): IntegrationDependency[] {
-  return modComponentDefinitions.flatMap(({ services }) => {
-    if (isEmpty(services)) {
-      return [];
-    }
+  const integrationDependencies = modComponentDefinitions.flatMap(
+    ({ services }) => {
+      if (isEmpty(services)) {
+        return [];
+      }
 
-    return isSchemaServicesFormat(services)
-      ? getIntegrationsFromSchema(services)
-      : getIntegrationsFromRecord(services);
-  });
+      return isSchemaServicesFormat(services)
+        ? getIntegrationsFromSchema(services)
+        : getIntegrationsFromRecord(services);
+    }
+  );
+
+  const dedupedIntegrationDependencies = [];
+  for (const group of Object.values(groupBy(integrationDependencies, "id"))) {
+    if (group.some(({ isOptional }) => !isOptional)) {
+      dedupedIntegrationDependencies.push(
+        group.find(({ isOptional }) => !isOptional)
+      );
+    } else {
+      dedupedIntegrationDependencies.push(group[0]);
+    }
+  }
+
+  return dedupedIntegrationDependencies;
 }
 
 /**
