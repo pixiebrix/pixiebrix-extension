@@ -30,10 +30,7 @@ import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
 import { thisTab } from "@/pageEditor/utils";
-import {
-  removeInstalledExtension,
-  updateDynamicElement,
-} from "@/contentScript/messenger/api";
+import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { selectActiveElement } from "./slices/editorSelectors";
 import { formStateToDynamicElement } from "./starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
@@ -61,13 +58,6 @@ const PanelContent: React.FC = () => {
     // Start polling logs
     dispatch(logActions.pollLogs());
   }, [dispatch]);
-
-  useEffect(() => {
-    // Remove the installed extension
-    if (activeElement != null) {
-      removeInstalledExtension(thisTab, activeElement.uuid);
-    }
-  }, [activeElement]);
 
   const authPersistenceContext: ReduxPersistenceContextType = {
     async flush() {
