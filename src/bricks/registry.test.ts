@@ -30,13 +30,13 @@ const findMock = backgroundRegistry.find as jest.MockedFunction<
 >;
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  jest.restoreAllMocks();
   getByKindsMock.mockResolvedValue([]);
   bricksRegistry.clear();
 });
 
 describe("blocksMap", () => {
-  afterEach(() => {
+  beforeEach(() => {
     // eslint-disable-next-line new-cap -- test-only method
     bricksRegistry.TEST_reset();
   });
@@ -99,7 +99,7 @@ describe("blocksMap", () => {
 });
 
 describe("bricksRegistry", () => {
-  afterEach(() => {
+  beforeEach(() => {
     // eslint-disable-next-line new-cap -- test-only method
     bricksRegistry.TEST_reset();
   });
