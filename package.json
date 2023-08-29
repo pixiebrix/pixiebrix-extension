@@ -48,7 +48,7 @@
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
     "@xobotyi/scrollbar-width": "^1.9.5",
     "ace-builds": "^1.24.1",
-    "autocompleter": "^9.0.1",
+    "autocompleter": "^9.1.0",
     "axios": "^0.27.2",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.10.5",
