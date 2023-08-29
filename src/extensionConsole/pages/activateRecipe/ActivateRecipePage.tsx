@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card, Col, Row } from "react-bootstrap";
@@ -28,6 +28,9 @@ import { useGetRecipeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
 import useRecipeIdParam from "@/extensionConsole/pages/useRecipeIdParam";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
+import notify from "@/utils/notify";
+import { useHistory } from "react-router";
 
 const ActivateRecipePageContent: React.FC = () => {
   const recipeId = useRecipeIdParam();
@@ -69,6 +72,7 @@ const ActivateRecipePageContent: React.FC = () => {
 
 const ActivateRecipePage: React.FunctionComponent = () => {
   const recipeId = useRecipeIdParam();
+  const history = useHistory();
   const isReinstall = useSelector(
     selectRecipeHasAnyExtensionsInstalled(recipeId)
   );
@@ -80,6 +84,30 @@ const ActivateRecipePage: React.FunctionComponent = () => {
       refetchOnMountOrArgChange: true,
     }
   );
+
+  const notFoundError = isAxiosError(error)
+    ? error?.response?.status === 404
+    : false;
+
+  useEffect(() => {
+    if (!isAxiosError(error)) {
+      return;
+    }
+
+    if (error.response?.status === 404) {
+      notify.error({
+        message: "Hmm... we couldn't find that mod",
+        error: new Error(
+          "Double-check the mod url or contact a team admin to gain access to this mod."
+        ),
+      });
+      history.push("/mods");
+    }
+  }, [error, history]);
+
+  if (notFoundError) {
+    return null;
+  }
 
   return (
     <Page
