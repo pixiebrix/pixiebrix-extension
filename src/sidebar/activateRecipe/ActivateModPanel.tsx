@@ -292,14 +292,14 @@ const ActivateRecipePanelContent: React.FC<
   }, []);
 
   // Trigger auto-activation if the recipe does not require permissions or user configuration, and there's no error.
-  // Skip auto-activation if the mod does not have options.
+  // Skip auto-activation on reactivation only if the mod has optional configurations.
   useEffect(() => {
     if (
       state.needsPermissions != null &&
       !state.needsPermissions &&
       !requiresConfiguration &&
       !state.activationError &&
-      !optionsWizardStep
+      (!optionsWizardStep || !isActive)
     ) {
       // State is checked inside activateRecipe to prevent double-activation
       void activateRecipe();
@@ -311,6 +311,7 @@ const ActivateRecipePanelContent: React.FC<
     state.needsPermissions,
     state.activationError,
     optionsWizardStep,
+    isActive,
   ]);
 
   // Show loader if panel is determining if it can auto-activate, or if it's activating.
