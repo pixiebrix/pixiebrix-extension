@@ -86,15 +86,11 @@ const ActivateRecipePage: React.FunctionComponent = () => {
   );
 
   const notFoundError = isAxiosError(error)
-    ? error?.response?.status === 404
+    ? error.response?.status === 404
     : false;
 
   useEffect(() => {
-    if (!isAxiosError(error)) {
-      return;
-    }
-
-    if (error.response?.status === 404) {
+    if (notFoundError) {
       notify.error({
         message: "Hmm... we couldn't find that mod",
         error: new Error(
@@ -103,7 +99,7 @@ const ActivateRecipePage: React.FunctionComponent = () => {
       });
       history.push("/mods");
     }
-  }, [error, history]);
+  }, [notFoundError, history]);
 
   if (notFoundError) {
     return null;
