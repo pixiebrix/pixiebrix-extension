@@ -21,12 +21,12 @@ import { useLoggingConfig } from "@/hooks/logging";
 import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import Loader from "@/components/Loader";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
 import { clearTraces } from "@/telemetry/trace";
 import { clearLogs } from "@/telemetry/logging";
+import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const LoggingSettings: React.FunctionComponent = () => {
   const [config, setConfig] = useLoggingConfig();
@@ -57,24 +57,14 @@ const LoggingSettings: React.FunctionComponent = () => {
 
         {config ? (
           <Form>
-            <Form.Group controlId="logging">
-              <div>
-                <Form.Label>
-                  Log values: <i>{config.logValues ? "Enabled" : "Disabled"}</i>
-                </Form.Label>
-              </div>
-              <BootstrapSwitchButton
-                size="sm"
-                onstyle="info"
-                offstyle="light"
-                onlabel=" "
-                offlabel=" "
-                checked={config.logValues}
-                onChange={async (value) =>
-                  setConfig({ ...config, logValues: value })
-                }
-              />
-            </Form.Group>
+            <SettingToggle
+              controlId="logging"
+              label="Log values"
+              isEnabled={config.logValues}
+              onChange={async (value) =>
+                setConfig({ ...config, logValues: value })
+              }
+            />
           </Form>
         ) : (
           <Loader />
