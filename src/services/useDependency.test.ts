@@ -63,13 +63,13 @@ describe("useDependency", () => {
   });
 
   it.each([null, []])("handles %s", async () => {
-    const wrapper = renderHook(() => useDependency(null), {
+    const { waitForEffect, result } = renderHook(() => useDependency(null), {
       initialValues: { services: [] },
     });
 
-    await wrapper.waitForEffect();
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       config: undefined,
       hasPermissions: false,
       requestPermissions: expect.toBeFunction(),
@@ -80,13 +80,16 @@ describe("useDependency", () => {
   it("handles single registry id when not configured", async () => {
     const registryId = validateRegistryId("google/sheet");
 
-    const wrapper = renderHook(() => useDependency(registryId), {
-      initialValues: { services: [] },
-    });
+    const { waitForEffect, result } = renderHook(
+      () => useDependency(registryId),
+      {
+        initialValues: { services: [] },
+      }
+    );
 
-    await wrapper.waitForEffect();
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       config: undefined,
       hasPermissions: false,
       requestPermissions: expect.toBeFunction(),
@@ -103,15 +106,18 @@ describe("useDependency", () => {
       getOrigins: () => [] as any,
     } as unknown as IntegrationABC);
 
-    const wrapper = renderHook(() => useDependency(registryId), {
-      initialValues: {
-        services: [{ id: registryId, outputKey: "sheet", config: configId }],
-      },
-    });
+    const { waitForEffect, result } = renderHook(
+      () => useDependency(registryId),
+      {
+        initialValues: {
+          services: [{ id: registryId, outputKey: "sheet", config: configId }],
+        },
+      }
+    );
 
-    await wrapper.waitForEffect();
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       config: { serviceId: registryId },
       // Has permissions because we mocked service to have no origins
       hasPermissions: true,
@@ -132,7 +138,7 @@ describe("useDependency", () => {
       getOrigins: () => [] as any,
     } as unknown as IntegrationABC);
 
-    const wrapper = renderHook(
+    const { waitForEffect, act, result } = renderHook(
       () => [useDependency(registryId), useDependency(registryId)] as const,
       {
         initialValues: {
@@ -141,16 +147,16 @@ describe("useDependency", () => {
       }
     );
 
-    await wrapper.act(async () => {
-      await wrapper.waitForEffect();
-      wrapper.result.current[0].requestPermissions();
-      await wrapper.waitForEffect();
+    await act(async () => {
+      await waitForEffect();
+      result.current[0].requestPermissions();
+      await waitForEffect();
     });
 
     expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     // Check the other one now has permissions because it was listening
-    expect(wrapper.result.current[1]).toEqual({
+    expect(result.current[1]).toEqual({
       config: { serviceId: registryId },
       hasPermissions: true,
       requestPermissions: expect.toBeFunction(),

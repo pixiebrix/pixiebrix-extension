@@ -66,14 +66,14 @@ describe("SidebarApp", () => {
       tokenError: null,
     });
 
-    const rendered = render(
+    const { asFragment } = render(
       <MemoryRouter>
         <ConnectedSidebar />
       </MemoryRouter>
     );
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders not connected partner view", async () => {
@@ -85,20 +85,20 @@ describe("SidebarApp", () => {
       tokenError: null,
     });
 
-    const rendered = render(
+    const { asFragment } = render(
       <MemoryRouter>
         <ConnectedSidebar />
       </MemoryRouter>
     );
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders", async () => {
     mockCachedUser(userFactory());
 
-    const rendered = render(
+    const { asFragment } = render(
       <MemoryRouter>
         <ConnectedSidebar />
       </MemoryRouter>,
@@ -111,6 +111,6 @@ describe("SidebarApp", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });
