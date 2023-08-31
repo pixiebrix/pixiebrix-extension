@@ -46,7 +46,7 @@ const PrivacySettings: React.FunctionComponent = () => {
             controlId="telemetry"
             label="Telemetry"
             isEnabled={!dnt}
-            onChange={async (value) => setDNT(!value)}
+            onChange={async (value: boolean) => setDNT(!value)}
           />
         </Form>
       </Card.Body>

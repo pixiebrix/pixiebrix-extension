@@ -18,39 +18,19 @@
 import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Form } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import settingsSlice from "@/store/settingsSlice";
+import { useSelector } from "react-redux";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectSettings } from "@/store/settingsSelectors";
-import { type SkunkworksSettings } from "@/store/settingsTypes";
-import reportEvent from "@/telemetry/reportEvent";
-import { Events } from "@/telemetry/events";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
   const {
     suggestElements,
     excludeRandomClasses,
     selectionTools,
     performanceTracing,
   } = useSelector(selectSettings);
-
-  const flagChangeHandlerFactory =
-    (flag: keyof SkunkworksSettings) => (value: boolean) => {
-      reportEvent(Events.SETTINGS_EXPERIMENTAL_CONFIGURE, {
-        name: flag,
-        value,
-      });
-
-      dispatch(
-        settingsSlice.actions.setFlag({
-          flag,
-          value,
-        })
-      );
-    };
 
   return (
     <Card>
@@ -65,7 +45,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             description="Toggle on to enable element suggestions/filtering in Page Editor
             selection mode"
             isEnabled={suggestElements}
-            onChange={flagChangeHandlerFactory("suggestElements")}
+            flag="suggestElements"
           />
           <SettingToggle
             controlId="excludeRandomClasses"
@@ -73,21 +53,21 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             description="Toggle on to avoid using randomly-generated classes when picking
             elements from a website"
             isEnabled={excludeRandomClasses}
-            onChange={flagChangeHandlerFactory("excludeRandomClasses")}
+            flag="excludeRandomClasses"
           />
           <SettingToggle
             controlId="selectionTools"
             label="Detect and Support Multi-Element Selection Tools:"
             description="Toggle on to support multi-element selection tools"
             isEnabled={selectionTools}
-            onChange={flagChangeHandlerFactory("selectionTools")}
+            flag="selectionTools"
           />
           <SettingToggle
             controlId="performanceTracing"
             label="Performance Tracing:"
             description="Toggle on to trace runtime performance"
             isEnabled={performanceTracing}
-            onChange={flagChangeHandlerFactory("performanceTracing")}
+            flag="performanceTracing"
           />
         </Form>
       </Card.Body>

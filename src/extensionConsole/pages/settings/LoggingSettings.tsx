@@ -61,7 +61,7 @@ const LoggingSettings: React.FunctionComponent = () => {
               controlId="logging"
               label="Log values"
               isEnabled={config.logValues}
-              onChange={async (value) =>
+              onChange={async (value: boolean) =>
                 setConfig({ ...config, logValues: value })
               }
             />

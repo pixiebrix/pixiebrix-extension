@@ -19,38 +19,83 @@ import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
+import { type SettingOptions } from "@/store/settingsTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import settingsSlice from "@/store/settingsSlice";
+import { useDispatch } from "react-redux";
 
-const SettingToggle: React.FunctionComponent<{
+interface CommonProps {
   controlId: string;
   label: string;
   description?: string;
   isEnabled: boolean;
-  onChange: (value: boolean) => void;
   disabled?: boolean;
-}> = ({ controlId, label, description, isEnabled, onChange, disabled }) => (
-  <Form.Group controlId={controlId}>
-    <div>
-      <Form.Label>
-        {label}: <i>{isEnabled ? "Enabled" : "Disabled"}</i>
-      </Form.Label>
-      {description && (
-        <Form.Text muted className="mb-2">
-          {description}
-        </Form.Text>
+}
+
+type ToggleOverrideProps = CommonProps & {
+  flag?: never;
+  onChange: (checked: boolean) => void;
+};
+
+type FlagProps = CommonProps & {
+  flag: keyof SettingOptions;
+  onChange?: never;
+};
+
+type SettingToggleProps = ToggleOverrideProps | FlagProps;
+
+const SettingToggle: React.FunctionComponent<SettingToggleProps> = ({
+  flag,
+  controlId,
+  label,
+  description,
+  isEnabled,
+  onChange,
+  disabled,
+}) => {
+  const dispatch = useDispatch();
+
+  const flagChangeHandlerFactory =
+    (flag: keyof SettingOptions) => (value: boolean) => {
+      reportEvent(Events.SETTINGS_EXPERIMENTAL_CONFIGURE, {
+        name: flag,
+        value,
+      });
+
+      dispatch(
+        settingsSlice.actions.setFlag({
+          flag,
+          value,
+        })
+      );
+    };
+
+  return (
+    <Form.Group controlId={controlId}>
+      <div>
+        <Form.Label>
+          {label}: <i>{isEnabled ? "Enabled" : "Disabled"}</i>
+        </Form.Label>
+        {description && (
+          <Form.Text muted className="mb-2">
+            {description}
+          </Form.Text>
+        )}
+      </div>
+      {!disabled && (
+        <BootstrapSwitchButton
+          size="sm"
+          onstyle="info"
+          offstyle="light"
+          onlabel=" "
+          offlabel=" "
+          checked={isEnabled}
+          onChange={onChange ?? flagChangeHandlerFactory(flag)}
+        />
       )}
-    </div>
-    {!disabled && (
-      <BootstrapSwitchButton
-        size="sm"
-        onstyle="info"
-        offstyle="light"
-        onlabel=" "
-        offlabel=" "
-        checked={isEnabled}
-        onChange={onChange}
-      />
-    )}
-  </Form.Group>
-);
+    </Form.Group>
+  );
+};
 
 export default SettingToggle;

@@ -18,17 +18,12 @@
 import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Form } from "react-bootstrap";
-import settingsSlice from "@/store/settingsSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
-import reportEvent from "@/telemetry/reportEvent";
-import { Events } from "@/telemetry/events";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
-import { type SettingOptions } from "@/store/settingsTypes";
 
 const GeneralSettings: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
   const { isFloatingActionButtonEnabled, varAutosuggest } =
     useSelector(selectSettings);
 
@@ -36,21 +31,6 @@ const GeneralSettings: React.FunctionComponent = () => {
   const disableFloatingActionButton = useIsEnterpriseUser();
 
   const checked = isFloatingActionButtonEnabled && !disableFloatingActionButton;
-
-  const flagChangeHandlerFactory =
-    (flag: keyof SettingOptions) => (value: boolean) => {
-      reportEvent(Events.SETTINGS_EXPERIMENTAL_CONFIGURE, {
-        name: flag,
-        value,
-      });
-
-      dispatch(
-        settingsSlice.actions.setFlag({
-          flag,
-          value,
-        })
-      );
-    };
 
   return (
     <Card>
@@ -67,7 +47,7 @@ const GeneralSettings: React.FunctionComponent = () => {
             }
             isEnabled={checked}
             disabled={disableFloatingActionButton}
-            onChange={flagChangeHandlerFactory("isFloatingActionButtonEnabled")}
+            flag="isFloatingActionButtonEnabled"
           />
 
           <SettingToggle
@@ -75,7 +55,7 @@ const GeneralSettings: React.FunctionComponent = () => {
             label="Autosuggest Variables in Page Editor"
             description="Toggle on to enable variable autosuggest for variable and text template entry modes"
             isEnabled={varAutosuggest}
-            onChange={flagChangeHandlerFactory("varAutosuggest")}
+            flag="varAutosuggest"
           />
         </Form>
       </Card.Body>
