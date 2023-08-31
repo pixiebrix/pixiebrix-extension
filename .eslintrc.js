@@ -119,10 +119,11 @@ module.exports = {
       },
     },
     {
-      // All non-test files
-      files: ["**/!(*.test)*.ts?(x)"],
+      // Settings for rules that should only apply to React Component tests
+      files: ["**/!(*.test)*.ts?(x)", "**/*.ts"],
       rules: {
         "testing-library/render-result-naming-convention": "off",
+        "testing-library/no-await-sync-queries": "off",
       },
     },
   ],

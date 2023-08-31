@@ -36,12 +36,10 @@ describe("TriggerConfiguration", () => {
 
     expect(screen.getByLabelText("Custom Event")).toBeInTheDocument();
 
-    await act(async () => {
-      await userEvent.click(screen.getByLabelText("Custom Event"));
-    });
+    await userEvent.click(screen.getByLabelText("Custom Event"));
 
     expect(screen.queryByText("No options")).not.toBeInTheDocument();
-    expect(screen.queryByText("otherevent")).toBeInTheDocument();
+    expect(screen.getByText("otherevent")).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
   });

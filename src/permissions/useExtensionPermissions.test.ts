@@ -53,9 +53,9 @@ describe("useExtensionPermissions", () => {
 
   test("reads manifest", async () => {
     mockOrigins();
-    const { result } = renderHook(useExtensionPermissions);
+    const { result, waitForNextUpdate } = renderHook(useExtensionPermissions);
     expect(result.current).toEqual(loadingAsyncStateFactory());
-    await act(async () => {});
+    await waitForNextUpdate();
     expect(result.current).toEqual(
       valueToAsyncState([
         {
@@ -70,8 +70,8 @@ describe("useExtensionPermissions", () => {
 
   test("includes additional permissions", async () => {
     mockOrigins("https://added.example.com/*", "https://more.example.com/*");
-    const { result } = renderHook(useExtensionPermissions);
-    await act(async () => {});
+    const { result, waitForNextUpdate } = renderHook(useExtensionPermissions);
+    await waitForNextUpdate();
     expect(result.current).toEqual(
       valueToAsyncState([
         {
@@ -98,8 +98,8 @@ describe("useExtensionPermissions", () => {
 
   test("detects overlapping permissions", async () => {
     mockOrigins("https://added.example.com/*", "https://*.example.com/*");
-    const { result } = renderHook(useExtensionPermissions);
-    await act(async () => {});
+    const { result, waitForNextUpdate } = renderHook(useExtensionPermissions);
+    await waitForNextUpdate();
     expect(result.current).toEqual(
       valueToAsyncState([
         {
