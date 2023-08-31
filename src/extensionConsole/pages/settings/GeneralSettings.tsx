@@ -25,15 +25,32 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
+import { type SettingOptions } from "@/store/settingsTypes";
 
 const GeneralSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { isFloatingActionButtonEnabled } = useSelector(selectSettings);
+  const { isFloatingActionButtonEnabled, varAutosuggest } =
+    useSelector(selectSettings);
 
   // Disable FAB for enterprise and partner users
   const disableFloatingActionButton = useIsEnterpriseUser();
 
   const checked = isFloatingActionButtonEnabled && !disableFloatingActionButton;
+
+  const flagChangeHandlerFactory =
+    (flag: keyof SettingOptions) => (value: boolean) => {
+      reportEvent(Events.SETTINGS_EXPERIMENTAL_CONFIGURE, {
+        name: flag,
+        value,
+      });
+
+      dispatch(
+        settingsSlice.actions.setFlag({
+          flag,
+          value,
+        })
+      );
+    };
 
   return (
     <Card>
@@ -41,7 +58,7 @@ const GeneralSettings: React.FunctionComponent = () => {
       <Card.Body>
         <Form>
           <SettingToggle
-            controlId="floating-action-button"
+            controlId="isFloatingActionButtonEnabled"
             label="Floating action button"
             description={
               disableFloatingActionButton
@@ -50,14 +67,15 @@ const GeneralSettings: React.FunctionComponent = () => {
             }
             isEnabled={checked}
             disabled={disableFloatingActionButton}
-            onChange={(enable) => {
-              reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING, {
-                enabled: enable,
-              });
-              dispatch(
-                settingsSlice.actions.setFloatingActionButtonEnabled(enable)
-              );
-            }}
+            onChange={flagChangeHandlerFactory("isFloatingActionButtonEnabled")}
+          />
+
+          <SettingToggle
+            controlId="varAutosuggest"
+            label="Autosuggest Variables in Page Editor"
+            description="Toggle on to enable variable autosuggest for variable and text template entry modes"
+            isEnabled={varAutosuggest}
+            onChange={flagChangeHandlerFactory("varAutosuggest")}
           />
         </Form>
       </Card.Body>

@@ -44,17 +44,24 @@ export type SkunkworksSettings = {
   selectionTools?: boolean;
 
   /**
-   * Experimental setting to support autosuggest for variables in the Page Editor
-   */
-  varAutosuggest?: boolean;
-
-  /**
    * Experimental setting to track runtime performance
    */
   performanceTracing?: boolean;
 };
 
-export type SettingsState = SkunkworksSettings & {
+export type SettingOptions = SkunkworksSettings & {
+  /**
+   * Setting to support autosuggest for variables in the Page Editor
+   */
+  varAutosuggest?: boolean;
+
+  /**
+   * Button to enable the floating action button on the page
+   */
+  isFloatingActionButtonEnabled?: boolean;
+};
+
+export type SettingsState = SettingOptions & {
   /**
    * Whether the extension is synced to the app for provisioning.
    *
@@ -81,11 +88,6 @@ export type SettingsState = SkunkworksSettings & {
    * Whether the non-Chrome browser warning has been dismissed.
    */
   browserWarningDismissed: boolean;
-
-  /**
-   * Button to enable the floating action button on the page
-   */
-  isFloatingActionButtonEnabled: boolean;
 
   /**
    * Partner id for the user, if any.

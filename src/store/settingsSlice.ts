@@ -18,8 +18,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   AUTH_METHODS,
+  type SettingOptions,
   type SettingsState,
-  type SkunkworksSettings,
 } from "@/store/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { isEmpty, once } from "lodash";
@@ -57,7 +57,7 @@ const settingsSlice = createSlice({
     setFlag(
       state,
       action: PayloadAction<{
-        flag: keyof SkunkworksSettings;
+        flag: keyof SettingOptions;
         value: boolean;
       }>
     ) {
@@ -71,9 +71,6 @@ const settingsSlice = createSlice({
     },
     dismissBrowserWarning(state) {
       state.browserWarningDismissed = true;
-    },
-    setFloatingActionButtonEnabled(state, { payload }: { payload: boolean }) {
-      state.isFloatingActionButtonEnabled = payload;
     },
     setPartnerId(
       state,

@@ -34,7 +34,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
     suggestElements,
     excludeRandomClasses,
     selectionTools,
-    varAutosuggest,
     performanceTracing,
   } = useSelector(selectSettings);
 
@@ -82,13 +81,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             description="Toggle on to support multi-element selection tools"
             isEnabled={selectionTools}
             onChange={flagChangeHandlerFactory("selectionTools")}
-          />
-          <SettingToggle
-            controlId="varAutosuggest"
-            label="Autosuggest Variables in Page Editor:"
-            description="Toggle on to enable variable autosuggest for variable and text template entry modes"
-            isEnabled={varAutosuggest}
-            onChange={flagChangeHandlerFactory("varAutosuggest")}
           />
           <SettingToggle
             controlId="performanceTracing"

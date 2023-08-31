@@ -25,6 +25,8 @@ import {
   setReduxStorage,
 } from "@/utils/storageUtils";
 import { initialSettingsState } from "@/store/settingsSlice";
+import settingsMigrations from "@/store/settingsMigrations";
+import { createMigrate } from "redux-persist";
 
 const SETTINGS_STORAGE_KEY = "persist:settings" as ReduxStorageKey;
 
@@ -63,5 +65,7 @@ export async function saveSettingsState(state: SettingsState): Promise<void> {
 
 export const persistSettingsConfig = {
   key: "settings",
+  version: 1,
+  migrate: createMigrate(settingsMigrations),
   storage: localStorage,
 };
