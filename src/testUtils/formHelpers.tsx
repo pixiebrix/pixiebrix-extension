@@ -18,7 +18,7 @@
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik, type FormikValues } from "formik";
 import React, { type PropsWithChildren } from "react";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
@@ -62,9 +62,9 @@ export const selectSchemaFieldInputMode = async (
   fieldName: string,
   fieldInputMode: FieldInputMode
 ) => {
-  const fieldToggleButton = screen
-    .getByTestId(`toggle-${fieldName}`)
-    .querySelector("button");
+  const fieldToggleButton = within(
+    screen.getByTestId(`toggle-${fieldName}`)
+  ).getByRole("button");
   await userEvent.click(fieldToggleButton);
   await waitForEffect();
 

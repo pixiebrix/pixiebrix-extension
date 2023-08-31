@@ -111,5 +111,19 @@ module.exports = {
         "@typescript-eslint/no-unsafe-argument": "off",
       },
     },
+    {
+      files: ["src/testUtils/**/*"],
+      rules: {
+        "jest/no-export": "off",
+        "testing-library/render-result-naming-convention": "off",
+      },
+    },
+    {
+      // All non-test files
+      files: ["**/!(*.test)*.ts?(x)"],
+      rules: {
+        "testing-library/render-result-naming-convention": "off",
+      },
+    },
   ],
 };
