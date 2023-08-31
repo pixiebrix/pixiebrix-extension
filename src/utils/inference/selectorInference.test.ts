@@ -94,7 +94,7 @@ describe("getAttributeSelector", () => {
     );
   });
   test("exclude non-unique selectors", () => {
-    expect(getAttributeSelector("class", "bold italic")).toBe(undefined);
+    expect(getAttributeSelector("class", "bold italic")).toBeUndefined();
   });
 });
 

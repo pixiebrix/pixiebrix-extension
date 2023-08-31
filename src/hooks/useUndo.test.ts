@@ -51,7 +51,7 @@ describe("useUndo", () => {
       jest.runAllTimers();
     });
 
-    expect(value).toStrictEqual("abc");
+    expect(value).toBe("abc");
 
     act(() => {
       setValue("abc ");
@@ -62,12 +62,12 @@ describe("useUndo", () => {
       jest.runAllTimers();
     });
 
-    expect(value).toStrictEqual("abc def");
+    expect(value).toBe("abc def");
 
     act(() => {
       undoRef.current();
     });
-    expect(value).toStrictEqual("abc");
+    expect(value).toBe("abc");
   });
 
   test("undo deleted text", () => {
@@ -85,7 +85,7 @@ describe("useUndo", () => {
       rerender();
       jest.runAllTimers();
     });
-    expect(value).toStrictEqual("abc def");
+    expect(value).toBe("abc def");
 
     act(() => {
       // Delete the input value like a user would
@@ -96,7 +96,7 @@ describe("useUndo", () => {
       rerender();
       jest.runAllTimers();
     });
-    expect(value).toStrictEqual("abc");
+    expect(value).toBe("abc");
 
     act(() => {
       setValue("ab");
@@ -105,17 +105,17 @@ describe("useUndo", () => {
       rerender();
       jest.runAllTimers();
     });
-    expect(value).toStrictEqual("");
+    expect(value).toBe("");
 
     act(() => {
       undoRef.current();
     });
-    expect(value).toStrictEqual("abc");
+    expect(value).toBe("abc");
 
     act(() => {
       undoRef.current();
     });
-    expect(value).toStrictEqual("abc def");
+    expect(value).toBe("abc def");
   });
 
   test("handles newlines", () => {
@@ -136,7 +136,7 @@ describe("useUndo", () => {
       rerender();
       jest.runAllTimers();
     });
-    expect(value).toStrictEqual("abc def");
+    expect(value).toBe("abc def");
 
     act(() => {
       setValue(`abc def
@@ -146,17 +146,17 @@ bbb`);
       rerender();
       jest.runAllTimers();
     });
-    expect(value).toStrictEqual("abc def\n\naaa\nbbb");
+    expect(value).toBe("abc def\n\naaa\nbbb");
 
     act(() => {
       undoRef.current();
     });
-    expect(value).toStrictEqual("abc def");
+    expect(value).toBe("abc def");
 
     act(() => {
       undoRef.current();
     });
-    expect(value).toStrictEqual("");
+    expect(value).toBe("");
   });
 
   test("typing between undos", () => {
@@ -174,23 +174,23 @@ bbb`);
       rerender();
       jest.runAllTimers();
     });
-    expect(value).toStrictEqual("abc");
+    expect(value).toBe("abc");
 
     act(() => {
       undoRef.current();
     });
-    expect(value).toStrictEqual("");
+    expect(value).toBe("");
 
     act(() => {
       setValue("def");
       rerender();
       jest.runAllTimers();
     });
-    expect(value).toStrictEqual("def");
+    expect(value).toBe("def");
 
     act(() => {
       undoRef.current();
     });
-    expect(value).toStrictEqual("");
+    expect(value).toBe("");
   });
 });

@@ -91,6 +91,6 @@ describe("tourController", () => {
 
     tourPromise.resolve();
 
-    await expect(subTourPromise).resolves.toBe(undefined);
+    await expect(subTourPromise).resolves.toBeUndefined();
   });
 });

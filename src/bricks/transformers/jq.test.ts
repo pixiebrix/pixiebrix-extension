@@ -38,7 +38,7 @@ describe("smoke tests", () => {
       }
     );
 
-    await expect(promise).resolves.toStrictEqual(42);
+    await expect(promise).resolves.toBe(42);
   });
 });
 
@@ -55,7 +55,7 @@ describe("ctxt", () => {
       }
     );
 
-    await expect(promise).resolves.toStrictEqual(42);
+    await expect(promise).resolves.toBe(42);
   });
 });
 

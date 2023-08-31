@@ -117,7 +117,7 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
       { url: "/v1/candidates/", method: "get" }
     );
 
-    expect(config.baseURL).toEqual("https://harvest.greenhouse.io");
+    expect(config.baseURL).toBe("https://harvest.greenhouse.io");
 
     expect(config.headers).toStrictEqual({
       Authorization: `Basic ${btoa("topsecret:")}`,

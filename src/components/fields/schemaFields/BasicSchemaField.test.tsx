@@ -131,7 +131,7 @@ describe("option mode switching", () => {
     await waitForEffect();
 
     expectToggleMode(container, "Text");
-    expect(inputElement.value).toStrictEqual("{{@data.foo}} ");
+    expect(inputElement.value).toBe("{{@data.foo}} ");
   });
 });
 

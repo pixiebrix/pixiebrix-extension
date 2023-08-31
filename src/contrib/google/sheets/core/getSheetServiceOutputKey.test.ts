@@ -20,12 +20,10 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 describe("getSheetServiceOutputKey", () => {
   test("abc", () => {
-    expect(getSheetServiceOutputKey(makeVariableExpression("abc"))).toEqual(
-      "abc"
-    );
+    expect(getSheetServiceOutputKey(makeVariableExpression("abc"))).toBe("abc");
   });
   test("@abc", () => {
-    expect(getSheetServiceOutputKey(makeVariableExpression("@abc"))).toEqual(
+    expect(getSheetServiceOutputKey(makeVariableExpression("@abc"))).toBe(
       "abc"
     );
   });
@@ -37,7 +35,7 @@ describe("getSheetServiceOutputKey", () => {
   test("@abc.spreadsheetId", () => {
     expect(
       getSheetServiceOutputKey(makeVariableExpression("@abc.spreadsheetId"))
-    ).toEqual("abc");
+    ).toBe("abc");
   });
   test("@abc.spreadsheetId.def", () => {
     expect(

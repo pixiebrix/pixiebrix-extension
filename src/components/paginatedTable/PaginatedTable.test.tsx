@@ -62,8 +62,6 @@ describe("initialRecord", () => {
 
     await waitForEffect();
 
-    expect(component.container.querySelector("td").textContent).toStrictEqual(
-      "2"
-    );
+    expect(component.container.querySelector("td").textContent).toBe("2");
   });
 });

@@ -119,7 +119,7 @@ describe("IfElse", () => {
       simpleInput({}),
       testOptions("v3")
     );
-    expect(result).toStrictEqual(null);
+    expect(result).toBeNull();
   });
 
   test("root aware", async () => {

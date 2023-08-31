@@ -57,25 +57,25 @@ describe("detects the variable and returns its name", () => {
   test.each([8, 23])("repeated variables at position %s", (position) => {
     const template = "abc {{ @foo }} xyz {{@foo}}.";
     const actual = getLikelyVariableAtPosition(template, position).name;
-    expect(actual).toEqual("@foo");
+    expect(actual).toBe("@foo");
   });
 
   test("indexed access", () => {
     const template = "abc {{ @foo[0].bar }}.";
     const actual = getLikelyVariableAtPosition(template, 8).name;
-    expect(actual).toEqual("@foo[0].bar");
+    expect(actual).toBe("@foo[0].bar");
   });
 
   test("access with []", () => {
     const template = "abc {{ @foo['bar baz'] }}.";
     const actual = getLikelyVariableAtPosition(template, 8).name;
-    expect(actual).toEqual("@foo['bar baz']");
+    expect(actual).toBe("@foo['bar baz']");
   });
 
   test("standalone @", () => {
     const template = "abc @";
     const actual = getLikelyVariableAtPosition(template, 4).name;
-    expect(actual).toEqual("@");
+    expect(actual).toBe("@");
   });
 
   test("clamp position on full match", () => {
@@ -84,7 +84,7 @@ describe("detects the variable and returns its name", () => {
       clampPosition: true,
       includeBoundary: true,
     }).name;
-    expect(actual).toEqual("@a");
+    expect(actual).toBe("@a");
   });
 
   test("clamp position on partial match", () => {
@@ -93,7 +93,7 @@ describe("detects the variable and returns its name", () => {
       clampPosition: true,
       includeBoundary: true,
     }).name;
-    expect(actual).toEqual("@a");
+    expect(actual).toBe("@a");
   });
 
   test("match end boundary", () => {
@@ -102,7 +102,7 @@ describe("detects the variable and returns its name", () => {
       includeBoundary: true,
       clampPosition: true,
     }).name;
-    expect(actual).toEqual("@abc");
+    expect(actual).toBe("@abc");
   });
 
   test("match end boundary on partial match", () => {
@@ -111,7 +111,7 @@ describe("detects the variable and returns its name", () => {
       includeBoundary: true,
       clampPosition: true,
     }).name;
-    expect(actual).toEqual("@abc");
+    expect(actual).toBe("@abc");
   });
 
   test("match start boundary", () => {
@@ -120,7 +120,7 @@ describe("detects the variable and returns its name", () => {
       includeBoundary: true,
       clampPosition: true,
     }).name;
-    expect(actual).toEqual("@");
+    expect(actual).toBe("@");
   });
 });
 
@@ -141,8 +141,8 @@ describe("returns the start and end index of the variable", () => {
   test("standalone @", () => {
     const template = "abc @";
     const actual = getLikelyVariableAtPosition(template, 4);
-    expect(actual.startIndex).toEqual(4);
-    expect(actual.endIndex).toEqual(5);
+    expect(actual.startIndex).toBe(4);
+    expect(actual.endIndex).toBe(5);
   });
 });
 
@@ -175,12 +175,12 @@ describe("replaceLikelyVariable", () => {
 
   test("inserts {{ }}", () => {
     const actual = replaceLikelyVariable("abc @foo xyz", 5, "@bar");
-    expect(actual).toEqual("abc {{ @bar }} xyz");
+    expect(actual).toBe("abc {{ @bar }} xyz");
   });
 
   test("inserts {{ only", () => {
     const actual = replaceLikelyVariable("abc @foo}} xyz", 4, "@bar");
-    expect(actual).toEqual("abc {{ @bar}} xyz");
+    expect(actual).toBe("abc {{ @bar}} xyz");
   });
 
   test("does't insert braces in {% %}", () => {
@@ -189,7 +189,7 @@ describe("replaceLikelyVariable", () => {
       abc
     {% endfor %}`;
     const actual = replaceLikelyVariable(template, 20, "@baz");
-    expect(actual).toEqual(`
+    expect(actual).toBe(`
     {% for qux in @baz %}
       abc
     {% endfor %}`);
@@ -201,7 +201,7 @@ describe("replaceLikelyVariable", () => {
       abc @bar }}
     {% endfor %}`;
     const actual = replaceLikelyVariable(template, 39, "@baz");
-    expect(actual).toEqual(`
+    expect(actual).toBe(`
     {% for qux in @foo %}
       abc {{ @baz }}
     {% endfor %}`);
@@ -209,7 +209,7 @@ describe("replaceLikelyVariable", () => {
 
   test("inserts }} only", () => {
     const actual = replaceLikelyVariable("abc {{@foo xyz", 8, "@bar");
-    expect(actual).toEqual("abc {{@bar }} xyz");
+    expect(actual).toBe("abc {{@bar }} xyz");
   });
 
   test("inserts }} only in for body", () => {
@@ -218,7 +218,7 @@ describe("replaceLikelyVariable", () => {
       abc {{ @bar
     {% endfor %}`;
     const actual = replaceLikelyVariable(template, 41, "@baz");
-    expect(actual).toEqual(`
+    expect(actual).toBe(`
     {% for qux in @foo %}
       abc {{ @baz }}
     {% endfor %}`);

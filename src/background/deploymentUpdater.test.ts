@@ -215,7 +215,7 @@ describe("updateDeployments", () => {
 
     const { extensions } = await loadOptions();
 
-    expect(extensions.length).toBe(1);
+    expect(extensions).toHaveLength(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
   });
 
@@ -378,7 +378,7 @@ describe("updateDeployments", () => {
 
     const { extensions } = await loadOptions();
 
-    expect(extensions.length).toBe(0);
+    expect(extensions).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
@@ -396,8 +396,8 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect((uninstallAllDeployments as jest.Mock).mock.calls.length).toBe(0);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect((uninstallAllDeployments as jest.Mock).mock.calls).toHaveLength(0);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
   });
 
@@ -413,9 +413,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(0);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(0);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
   });
 
   test("open options page if refresh registries fails", async () => {
@@ -432,9 +432,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(1);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
   test("open options page on update if restricted-version flag is set", async () => {
@@ -449,9 +449,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(1);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
   });
 
   test("open options page on update if enforce_update_millis is set even if snoozed", async () => {
@@ -472,9 +472,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(1);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
   });
 
   test("do not open options page if enforce_update_millis is set but no updates available", async () => {
@@ -495,9 +495,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(0);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(0);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
   });
 
   test("skip update if snoozed", async () => {
@@ -516,9 +516,9 @@ describe("updateDeployments", () => {
     await updateDeployments();
 
     // Unmatched deployments are always uninstalled if snoozed
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(0);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
-    expect(openOptionsPageMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(0);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(0);
   });
 
   test("can uninstall all deployments", async () => {
@@ -590,7 +590,7 @@ describe("updateDeployments", () => {
 
     const { extensions } = await loadOptions();
 
-    expect(extensions.length).toBe(2);
+    expect(extensions).toHaveLength(2);
 
     const installedIds = extensions.map((x) => x.id);
     expect(installedIds).toContain(personalModComponent.id);

@@ -409,7 +409,7 @@ describe("SchemaField", () => {
           ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
         ].map((x) => x.dataset.testid);
         if (testIds.includes("omit")) {
-          expect(testIds.at(-1)).toEqual("omit");
+          expect(testIds.at(-1)).toBe("omit");
         }
       });
     }

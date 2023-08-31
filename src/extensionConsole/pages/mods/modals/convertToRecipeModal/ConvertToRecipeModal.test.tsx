@@ -171,7 +171,7 @@ describe("it renders", () => {
 
       expect(modalState[contextToBeEmpty]).toBeNull();
       expect(modalState[sharingContext].extensionId).toBeUndefined();
-      expect(modalState[sharingContext].blueprintId).not.toBeUndefined();
+      expect(modalState[sharingContext].blueprintId).toBeDefined();
     }
   );
 
@@ -216,6 +216,6 @@ describe("it renders", () => {
     );
 
     expect(showShareContext.extensionId).toBeUndefined();
-    expect(showShareContext.blueprintId).not.toBeUndefined();
+    expect(showShareContext.blueprintId).toBeDefined();
   });
 });

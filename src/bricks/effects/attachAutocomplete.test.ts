@@ -54,9 +54,9 @@ describe("AttachAutocomplete", () => {
       logger,
     } as unknown as BrickOptions);
 
-    expect(
-      document.querySelector("[name='name']").getAttribute("role")
-    ).toEqual("combobox");
+    expect(document.querySelector("[name='name']").getAttribute("role")).toBe(
+      "combobox"
+    );
   });
 
   test("it is root aware", async () => {
@@ -80,8 +80,8 @@ describe("AttachAutocomplete", () => {
       } as unknown as BrickOptions
     );
 
-    expect(
-      document.querySelector("[name='name']").getAttribute("role")
-    ).toEqual("combobox");
+    expect(document.querySelector("[name='name']").getAttribute("role")).toBe(
+      "combobox"
+    );
   });
 });

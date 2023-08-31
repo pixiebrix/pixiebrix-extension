@@ -35,7 +35,7 @@ describe("useAsyncExternalStore", () => {
     });
 
     // Should only create 1 listener on the external data source
-    expect(listenerCount).toEqual(1);
+    expect(listenerCount).toBe(1);
     expect(wrapper.result.current).toEqual(
       expect.objectContaining({
         isLoading: true,
@@ -54,6 +54,6 @@ describe("useAsyncExternalStore", () => {
     wrapper.unmount();
 
     // We're not unsubscribing -- see implementation for explanation
-    expect(listenerCount).toEqual(1);
+    expect(listenerCount).toBe(1);
   });
 });

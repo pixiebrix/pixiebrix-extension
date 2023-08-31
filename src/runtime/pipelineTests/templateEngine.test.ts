@@ -200,7 +200,7 @@ describe("Error handling", () => {
       expect(selectSpecificError(error, BusinessError)).toBeInstanceOf(
         BusinessError
       );
-      expect(error.message).toEqual(
+      expect(error.message).toBe(
         `Invalid template: (unknown path) [Line 1, Column 14]
   expected variable end. Template: "{{@input }"`
       );
