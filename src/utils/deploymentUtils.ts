@@ -277,6 +277,7 @@ export async function mergeDeploymentIntegrationDependencies(
     }
   }
 
+  // Placeholder configuration does not have an explicit configuration.
   if (pixiebrixIntegration) {
     integrationDependencies.push(pixiebrixIntegration);
   }
