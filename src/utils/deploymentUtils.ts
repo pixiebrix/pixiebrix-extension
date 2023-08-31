@@ -223,6 +223,10 @@ export async function mergeDeploymentIntegrationDependencies(
     deployment.bindings.map((x) => x.auth.service_id)
   );
 
+  const pixiebrixIntegration = deploymentIntegrations.find(
+    (integration) => integration.id === PIXIEBRIX_INTEGRATION_ID
+  );
+
   const personalIntegrationDependencies: IntegrationDependency[] =
     await Promise.all(
       deploymentIntegrations
@@ -271,6 +275,10 @@ export async function mergeDeploymentIntegrationDependencies(
     if (config == null) {
       throw new Error(`No configuration found for integration: ${id}`);
     }
+  }
+
+  if (pixiebrixIntegration) {
+    integrationDependencies.push(pixiebrixIntegration);
   }
 
   return integrationDependencies;
