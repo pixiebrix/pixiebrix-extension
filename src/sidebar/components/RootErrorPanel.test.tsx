@@ -23,19 +23,23 @@ import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 
 describe("RootErrorPanel", () => {
   it("should render business error", () => {
-    const result = render(<RootErrorPanel error={new BusinessError()} />);
-    expect(result).toMatchSnapshot();
+    const { asFragment } = render(
+      <RootErrorPanel error={new BusinessError()} />
+    );
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("should render application error", () => {
-    const result = render(
+    const { asFragment } = render(
       <RootErrorPanel error={new Error("Unknown error")} />
     );
-    expect(result).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("should render no renderer error", () => {
-    const result = render(<RootErrorPanel error={new NoRendererError()} />);
-    expect(result).toMatchSnapshot();
+    const { asFragment } = render(
+      <RootErrorPanel error={new NoRendererError()} />
+    );
+    expect(asFragment()).toMatchSnapshot();
   });
 });
