@@ -17,6 +17,7 @@
 
 import { act, renderHook } from "@testing-library/react-hooks";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 describe("useAsyncExternalStore", () => {
   it("should subscribe once", async () => {
@@ -42,7 +43,7 @@ describe("useAsyncExternalStore", () => {
       })
     );
 
-    await act(async () => {});
+    await waitForEffect();
 
     expect(wrapper.result.current).toEqual(
       expect.objectContaining({

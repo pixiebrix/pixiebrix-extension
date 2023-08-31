@@ -24,7 +24,9 @@ describe("useUndo", () => {
   });
 
   afterAll(() => {
-    jest.runAllTimers();
+    act(() => {
+      jest.runAllTimers();
+    });
     jest.useRealTimers();
   });
 
@@ -40,33 +42,31 @@ describe("useUndo", () => {
       useUndo(value, setValue)
     );
 
+    // Simulate a user typing into an input
+    setValue("a");
+    setValue("ab");
+    setValue("abc");
+    // Update the hook
+    rerender();
+    // Run timers to activate the debounce effect
     act(() => {
-      // Simulate a user typing into an input
-      setValue("a");
-      setValue("ab");
-      setValue("abc");
-      // Update the hook
-      rerender();
-      // Run timers to activate the debounce effect
       jest.runAllTimers();
     });
 
     expect(value).toBe("abc");
 
+    setValue("abc ");
+    setValue("abc d");
+    setValue("abc de");
+    setValue("abc def");
+    rerender();
     act(() => {
-      setValue("abc ");
-      setValue("abc d");
-      setValue("abc de");
-      setValue("abc def");
-      rerender();
       jest.runAllTimers();
     });
 
     expect(value).toBe("abc def");
 
-    act(() => {
-      undoRef.current();
-    });
+    undoRef.current();
     expect(value).toBe("abc");
   });
 
@@ -80,41 +80,37 @@ describe("useUndo", () => {
       useUndo(value, setValue)
     );
 
+    setValue("abc def");
+    rerender();
     act(() => {
-      setValue("abc def");
-      rerender();
       jest.runAllTimers();
     });
     expect(value).toBe("abc def");
 
+    // Delete the input value like a user would
+    setValue("abc de");
+    setValue("abc d");
+    setValue("abc ");
+    setValue("abc");
+    rerender();
     act(() => {
-      // Delete the input value like a user would
-      setValue("abc de");
-      setValue("abc d");
-      setValue("abc ");
-      setValue("abc");
-      rerender();
       jest.runAllTimers();
     });
     expect(value).toBe("abc");
 
+    setValue("ab");
+    setValue("a");
+    setValue("");
+    rerender();
     act(() => {
-      setValue("ab");
-      setValue("a");
-      setValue("");
-      rerender();
       jest.runAllTimers();
     });
     expect(value).toBe("");
 
-    act(() => {
-      undoRef.current();
-    });
+    undoRef.current();
     expect(value).toBe("abc");
 
-    act(() => {
-      undoRef.current();
-    });
+    undoRef.current();
     expect(value).toBe("abc def");
   });
 
@@ -131,31 +127,27 @@ describe("useUndo", () => {
       }
     );
 
+    setValue("abc def");
+    rerender();
     act(() => {
-      setValue("abc def");
-      rerender();
       jest.runAllTimers();
     });
     expect(value).toBe("abc def");
 
-    act(() => {
-      setValue(`abc def
+    setValue(`abc def
 
 aaa
 bbb`);
-      rerender();
+    rerender();
+    act(() => {
       jest.runAllTimers();
     });
     expect(value).toBe("abc def\n\naaa\nbbb");
 
-    act(() => {
-      undoRef.current();
-    });
+    undoRef.current();
     expect(value).toBe("abc def");
 
-    act(() => {
-      undoRef.current();
-    });
+    undoRef.current();
     expect(value).toBe("");
   });
 
@@ -169,28 +161,24 @@ bbb`);
       useUndo(value, setValue)
     );
 
+    setValue("abc");
+    rerender();
     act(() => {
-      setValue("abc");
-      rerender();
       jest.runAllTimers();
     });
     expect(value).toBe("abc");
 
-    act(() => {
-      undoRef.current();
-    });
+    undoRef.current();
     expect(value).toBe("");
 
+    setValue("def");
+    rerender();
     act(() => {
-      setValue("def");
-      rerender();
       jest.runAllTimers();
     });
     expect(value).toBe("def");
 
-    act(() => {
-      undoRef.current();
-    });
+    undoRef.current();
     expect(value).toBe("");
   });
 });
