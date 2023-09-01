@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { render } from "@/extensionConsole/testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
@@ -84,10 +84,10 @@ beforeAll(() => {
 
 describe("BotOptions", () => {
   it("should require selected integration", async () => {
-    const result = renderOptions();
+    const { asFragment } = renderOptions();
 
-    expect(result.queryByText("Workspace")).toBeNull();
-    expect(result.container).toMatchSnapshot();
+    expect(screen.queryByText("Workspace")).not.toBeInTheDocument();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("should render default enterprise fields for private workspace", async () => {
@@ -108,14 +108,16 @@ describe("BotOptions", () => {
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
-    expect(result.queryByText("Workspace")).not.toBeNull();
-    expect(result.queryByText("Bot")).not.toBeNull();
-    expect(result.queryByText("Run as Users")).toBeNull();
-    expect(result.queryByText("Device Pools")).toBeNull();
-    expect(result.queryByText("Await Result")).not.toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(screen.getByText("Workspace")).toBeInTheDocument();
+    expect(screen.getByText("Bot")).toBeInTheDocument();
+    expect(screen.queryByText("Run as Users")).not.toBeInTheDocument();
+    expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)")
+    ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
     // expect(result.container).toMatchSnapshot();
@@ -140,15 +142,17 @@ describe("BotOptions", () => {
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
     // Community only supports private workspace, so we don't show the field
-    expect(result.queryByText("Workspace")).toBeNull();
-    expect(result.queryByText("Bot")).not.toBeNull();
-    expect(result.queryByText("Run as Users")).toBeNull();
-    expect(result.queryByText("Device Pools")).toBeNull();
-    expect(result.queryByText("Await Result")).toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(screen.queryByText("Workspace")).not.toBeInTheDocument();
+    expect(screen.getByText("Bot")).toBeInTheDocument();
+    expect(screen.queryByText("Run as Users")).not.toBeInTheDocument();
+    expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
+    expect(screen.queryByText("Await Result")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)")
+    ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
     // expect(result.container).toMatchSnapshot();
@@ -173,15 +177,17 @@ describe("BotOptions", () => {
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
-    expect(result.queryByText("Workspace")).not.toBeNull();
-    expect(result.queryByText("Bot")).not.toBeNull();
-    expect(result.queryByText("Attended")).not.toBeNull();
-    expect(result.queryByText("Run as Users")).not.toBeNull();
-    expect(result.queryByText("Device Pools")).not.toBeNull();
-    expect(result.queryByText("Await Result")).not.toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(screen.getByText("Workspace")).toBeInTheDocument();
+    expect(screen.getByText("Bot")).toBeInTheDocument();
+    expect(screen.getByText("Attended")).toBeInTheDocument();
+    expect(screen.getByText("Run as Users")).toBeInTheDocument();
+    expect(screen.getByText("Device Pools")).toBeInTheDocument();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)")
+    ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
     // expect(result.container).toMatchSnapshot();
@@ -207,15 +213,17 @@ describe("BotOptions", () => {
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
-    expect(result.queryByText("Workspace")).not.toBeNull();
-    expect(result.queryByText("Bot")).not.toBeNull();
-    expect(result.queryByText("Attended")).not.toBeNull();
-    expect(result.queryByText("Run as Users")).toBeNull();
-    expect(result.queryByText("Device Pools")).toBeNull();
-    expect(result.queryByText("Await Result")).not.toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(screen.getByText("Workspace")).toBeInTheDocument();
+    expect(screen.getByText("Bot")).toBeInTheDocument();
+    expect(screen.getByText("Attended")).toBeInTheDocument();
+    expect(screen.queryByText("Run as Users")).not.toBeInTheDocument();
+    expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)")
+    ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
     // expect(result.container).toMatchSnapshot();
@@ -240,9 +248,11 @@ describe("BotOptions", () => {
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
-    expect(result.queryByText("Await Result")).not.toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).not.toBeNull();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(
+      screen.getByText("Result Timeout (Milliseconds)")
+    ).toBeInTheDocument();
   });
 });
