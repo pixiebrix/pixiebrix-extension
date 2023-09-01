@@ -15,30 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import SwitchButtonWidget from "./SwitchButtonWidget";
+import userEvent from "@testing-library/user-event";
 
 const values = [true, false];
 test.each(values)("renders value %s", (value) => {
-  const rendered = render(
+  const { asFragment } = render(
     <SwitchButtonWidget
       name="Name for Test"
       value={value}
       onChange={jest.fn()}
     />
   );
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
-test.each(values)("calls onChange", (value) => {
+test.each(values)("calls onChange", async (value) => {
   const name = "Name for Test";
   const onChangeMock = jest.fn();
   const { container } = render(
     <SwitchButtonWidget value={value} onChange={onChangeMock} name={name} />
   );
 
-  fireEvent.click(container.querySelector(".switch"));
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+  await userEvent.click(container.querySelector(".switch"));
 
   expect(onChangeMock).toHaveBeenCalledWith({
     target: {

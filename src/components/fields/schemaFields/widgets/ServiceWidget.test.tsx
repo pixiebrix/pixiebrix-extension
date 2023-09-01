@@ -34,7 +34,7 @@ import {
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 import selectEvent from "react-select-event";
-import { act } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 jest.mock("@/hooks/auth", () => ({
@@ -106,13 +106,13 @@ describe("ServiceWidget", () => {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
     };
 
-    const wrapper = renderServiceWidget(schema, {
+    renderServiceWidget(schema, {
       services: [],
     });
 
     await waitForEffect();
 
-    expect(wrapper.queryByText("Select...")).toBeVisible();
+    expect(screen.getByText("Select...")).toBeVisible();
   });
 
   it("should not default if there are multiple auth options", async () => {
@@ -141,13 +141,13 @@ describe("ServiceWidget", () => {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
     };
 
-    const wrapper = renderServiceWidget(schema, {
+    renderServiceWidget(schema, {
       services: [],
     });
 
     await waitForEffect();
 
-    expect(wrapper.queryByText("Select...")).toBeVisible();
+    expect(screen.getByText("Select...")).toBeVisible();
   });
 
   it("should default to only configuration", async () => {
@@ -169,13 +169,13 @@ describe("ServiceWidget", () => {
       $ref: `https://app.pixiebrix.com/schemas/services/${serviceId}`,
     };
 
-    const wrapper = renderServiceWidget(schema, {
+    renderServiceWidget(schema, {
       services: [],
     });
 
     await waitForEffect();
 
-    expect(wrapper.queryByText("Test 1")).toBeVisible();
+    expect(screen.getByText("Test 1")).toBeVisible();
   });
 
   it("allow any for HTTP Request brick", async () => {
@@ -205,23 +205,19 @@ describe("ServiceWidget", () => {
       $ref: "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
     };
 
-    const wrapper = renderServiceWidget(schema, {
+    renderServiceWidget(schema, {
       services: [],
     });
 
     await waitForEffect();
 
     await act(async () => {
-      const select: HTMLElement = wrapper.container.querySelector(
-        "[name='extension.blockPipeline.0.config.service']"
-      );
+      await selectEvent.select(screen.getByRole("combobox"), "Test 1");
 
-      await selectEvent.select(select, "Test 1");
-
-      await selectEvent.select(select, "Test 2");
+      await selectEvent.select(screen.getByRole("combobox"), "Test 2");
     });
 
-    const state = JSON.parse(wrapper.queryByTestId("values").textContent);
+    const state = JSON.parse(screen.queryByTestId("values").textContent);
 
     expect(state).toEqual({
       extension: {
