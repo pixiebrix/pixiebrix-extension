@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import * as contentScriptApi from "@/contentScript/messenger/api";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -113,12 +113,12 @@ describe("UiPath LocalProcess Options", () => {
       missingComponents: false,
     });
 
-    const rendered = renderOptions();
+    const { asFragment } = renderOptions();
 
     await waitForEffect();
 
-    expect(rendered.queryByText("UiPath Assistant not found")).toBeNull();
-    expect(rendered.container).toMatchSnapshot();
+    expect(screen.queryByText("UiPath Assistant not found")).toBeNull();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("Can render consent code and service selector", async () => {
@@ -130,14 +130,14 @@ describe("UiPath LocalProcess Options", () => {
       missingComponents: false,
     });
 
-    const rendered = renderOptions();
+    renderOptions();
 
     await waitForEffect();
 
     expect(
-      rendered.queryByText("UiPath Assistant consent code: abc123")
-    ).not.toBeNull();
-    expect(rendered.queryByLabelText("Integration")).not.toBeNull();
+      screen.getByText("UiPath Assistant consent code: abc123")
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Integration")).toBeInTheDocument();
   });
 
   test("Can render arguments", async () => {
@@ -175,14 +175,16 @@ describe("UiPath LocalProcess Options", () => {
     formState.services[0].config = config;
     formState.extension.blockPipeline[0].config.service = "@uipath";
 
-    const rendered = renderOptions();
+    renderOptions();
 
     await waitForEffect();
 
-    expect(rendered.queryByText("UiPath Assistant consent code")).toBeNull();
-    expect(rendered.queryByLabelText("Integration")).not.toBeNull();
-    expect(rendered.queryByLabelText("Process")).not.toBeNull();
-    expect(rendered.queryByText("Input Arguments")).not.toBeNull();
-    expect(rendered.queryByText("Add Property")).not.toBeNull();
+    expect(
+      screen.queryByText("UiPath Assistant consent code")
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Integration")).toBeInTheDocument();
+    expect(screen.getByLabelText("Process")).toBeInTheDocument();
+    expect(screen.getByText("Input Arguments")).toBeInTheDocument();
+    expect(screen.getByText("Add Property")).toBeInTheDocument();
   });
 });

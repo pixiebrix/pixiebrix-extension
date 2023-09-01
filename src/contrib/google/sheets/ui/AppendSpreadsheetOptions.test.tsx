@@ -362,7 +362,7 @@ async function expectTabSelectWorksProperly() {
 }
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
-  const rendered = render(
+  const utils = render(
     <AppendSpreadsheetOptions name="" configKey="config" />,
     {
       initialValues,
@@ -372,7 +372,7 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
 
   await waitForEffect();
 
-  return rendered;
+  return utils;
 };
 
 describe("AppendSpreadsheetOptions", () => {
@@ -381,7 +381,7 @@ describe("AppendSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -389,7 +389,7 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given feature flag off and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
@@ -404,7 +404,7 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -412,11 +412,11 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given empty googleAccount and string spreadsheetId and selected tabName and entered rowValues, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: "Tab2",
@@ -427,11 +427,11 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId value and selected tabName and column values, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -444,13 +444,14 @@ describe("AppendSpreadsheetOptions", () => {
       services: [googlePKCEIntegrationDependency],
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   /**
    * Basic Render Tests
    */
 
+  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when rendered, loads spreadsheet/tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -463,6 +464,7 @@ describe("AppendSpreadsheetOptions", () => {
     expectLegacyTestSpreadsheetLoaded();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/rowValues and null tabName and legacy integration-based spreadsheetId, when rendered, loads tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -478,6 +480,7 @@ describe("AppendSpreadsheetOptions", () => {
     expectTab1Selected();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/rowValues and null tabName and mod input spreadsheetId, when rendered, loads tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -510,6 +513,7 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount and null tabName, when spreadsheet selected, loads spreadsheet/tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -532,6 +536,7 @@ describe("AppendSpreadsheetOptions", () => {
     expectGoogleAccountTestSpreadsheetLoaded();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount and string spreadsheetId and empty tabName/rowValues, when rendered, loads tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -546,6 +551,7 @@ describe("AppendSpreadsheetOptions", () => {
     expectGoogleAccountTestSpreadsheetLoaded();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount/rowValues and null tabName and mod input spreadsheetId, when rendered, loads tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -586,6 +592,7 @@ describe("AppendSpreadsheetOptions", () => {
    * Tab Name Select Works Properly
    */
 
+  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -598,6 +605,7 @@ describe("AppendSpreadsheetOptions", () => {
     await expectTabSelectWorksProperly();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/tabName/rowValues and legacy integration-based spreadsheetId, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -611,6 +619,7 @@ describe("AppendSpreadsheetOptions", () => {
     await expectTabSelectWorksProperly();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/tabName/rowValues and mod input spreadsheetId, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -626,6 +635,7 @@ describe("AppendSpreadsheetOptions", () => {
     await expectTabSelectWorksProperly();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount and string spreadsheetId and empty tabName/rowValues, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -640,6 +650,7 @@ describe("AppendSpreadsheetOptions", () => {
     await expectTabSelectWorksProperly();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount and mod input spreadsheetId and empty tabName/rowValues, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -865,9 +876,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -901,9 +910,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -938,9 +945,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -976,9 +981,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -995,6 +998,7 @@ describe("AppendSpreadsheetOptions", () => {
     );
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("given selected tabName and entered rowValues, when tab changed, removes invalid rowValues properties", async () => {
     await renderWithValuesAndWait({
       config: {

@@ -50,6 +50,7 @@ describe("ChildObjectField", () => {
     ).toHaveAttribute("data-test-selected", mode);
   };
 
+  // eslint-disable-next-line jest/expect-expect
   test("renders object schema", async () => {
     const { container } = renderField(
       "test",
@@ -64,6 +65,10 @@ describe("ChildObjectField", () => {
 
     // Starts as Exclude because it's not required
     expectToggleMode(container, "toggle-data.InputValue", "Exclude");
-    await expectToggleOptions(container, ["string", "var", "omit"]);
+    await expectToggleOptions("toggle-data.InputValue", [
+      "string",
+      "var",
+      "omit",
+    ]);
   });
 });

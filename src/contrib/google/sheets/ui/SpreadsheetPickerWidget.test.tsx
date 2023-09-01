@@ -138,7 +138,7 @@ const useFlagsMock = jest.mocked(useFlags);
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
   const baseSchema = await dereference(BASE_SHEET_SCHEMA);
 
-  const rendered = render(
+  const utils = render(
     <SpreadsheetPickerWidget name="spreadsheetId" schema={baseSchema} />,
     {
       initialValues,
@@ -148,7 +148,7 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
 
   await waitForEffect();
 
-  return rendered;
+  return utils;
 };
 
 beforeAll(() => {
@@ -193,13 +193,17 @@ describe("SpreadsheetPickerWidget", () => {
       },
     });
 
-    const rendered = await renderWithValuesAndWait({ spreadsheetId: null });
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = await renderWithValuesAndWait({
+      spreadsheetId: null,
+    });
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("smoke test with feature flag off", async () => {
-    const rendered = await renderWithValuesAndWait({ spreadsheetId: null });
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = await renderWithValuesAndWait({
+      spreadsheetId: null,
+    });
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("requires gapi", async () => {
@@ -244,16 +248,16 @@ describe("SpreadsheetPickerWidget", () => {
       startTimestamp: null,
     });
 
-    const rendered = await renderWithValuesAndWait({ spreadsheetId: null });
-
-    await act(async () => {
-      await userEvent.click(screen.getByText("Select"));
+    const { asFragment } = await renderWithValuesAndWait({
+      spreadsheetId: null,
     });
+
+    await userEvent.click(screen.getByText("Select"));
 
     // Verify the widget fetches the information for the selected sheet to re-verify access to the sheet via the API
     expect(getSheetPropertiesMock).toHaveBeenCalledOnce();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders valid sheet on load", async () => {

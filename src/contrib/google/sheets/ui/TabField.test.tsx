@@ -58,6 +58,7 @@ function expectTab1Selected() {
 }
 
 describe("TabField", () => {
+  // eslint-disable-next-line jest/expect-expect
   it("Renders select and variable toggle options", async () => {
     render(
       <TabField
@@ -74,13 +75,10 @@ describe("TabField", () => {
 
     await waitForEffect();
 
-    await expectToggleOptions(screen.getByTestId("toggle-tabName"), [
-      "select",
-      "string",
-      "var",
-    ]);
+    await expectToggleOptions("toggle-tabName", ["select", "string", "var"]);
   });
 
+  // eslint-disable-next-line jest/expect-expect
   it("defaults to the first tab name when value is null literal", async () => {
     render(
       <TabField
@@ -100,6 +98,7 @@ describe("TabField", () => {
     expectTab1Selected();
   });
 
+  // eslint-disable-next-line jest/expect-expect
   it("defaults to the first tab name when value is empty nunjucks expression", async () => {
     render(
       <TabField
@@ -227,7 +226,7 @@ describe("TabField", () => {
   });
 
   test("given non-empty expression tabName value, when spreadsheet changes, does not clear the value", async () => {
-    const { rerender } = render(
+    const { rerender, container } = render(
       <TabField
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
@@ -251,7 +250,7 @@ describe("TabField", () => {
     await userEvent.type(input, "InvalidTab");
 
     // Clear input focus
-    (document.activeElement as HTMLElement).blur();
+    await userEvent.click(container);
 
     // Change spreadsheet
     rerender(
@@ -286,7 +285,7 @@ describe("TabField", () => {
   });
 
   test("given empty expression tabName value, when spreadsheet changes, then updates the value", async () => {
-    const { rerender } = render(
+    const { rerender, container } = render(
       <TabField
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
@@ -308,7 +307,7 @@ describe("TabField", () => {
     await userEvent.clear(screen.getByRole("textbox"));
 
     // Clear input focus
-    (document.activeElement as HTMLElement).blur();
+    await userEvent.click(container);
 
     // Change spreadsheet
     rerender(

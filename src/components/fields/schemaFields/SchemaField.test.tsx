@@ -248,7 +248,7 @@ describe("SchemaField", () => {
     // Renders text entry HTML element
     expect(container.querySelector("textarea")).not.toBeNull();
 
-    await expectToggleOptions(container, ["string", "var", "omit"]);
+    await expectToggleOptions("toggle-testField", ["string", "var", "omit"]);
   });
 
   test("integer field options", async () => {
@@ -270,7 +270,7 @@ describe("SchemaField", () => {
 
     // Renders number entry HTML element
     expect(container.querySelector("input[type='number']")).not.toBeNull();
-    await expectToggleOptions(container, ["number", "var", "omit"]);
+    await expectToggleOptions("toggle-testField", ["number", "var", "omit"]);
   });
 
   test.each`
@@ -348,7 +348,12 @@ describe("SchemaField", () => {
 
     // Renders number entry HTML element because current value is a number
     expect(container.querySelector("input[type='number']")).not.toBeNull();
-    await expectToggleOptions(container, ["string", "number", "var", "omit"]);
+    await expectToggleOptions("toggle-testField", [
+      "string",
+      "number",
+      "var",
+      "omit",
+    ]);
   });
 
   test.each(schemaTestCases)(
@@ -429,7 +434,7 @@ describe("SchemaField", () => {
   test.each(databaseFieldTestCases)(
     "database field toggle options (required: $isRequired)",
     async ({ isRequired, expectedOptions }) => {
-      const { container } = render(
+      render(
         <Formik
           onSubmit={() => {}}
           initialValues={{ apiVersion: "v3", testField: null }}
@@ -444,7 +449,7 @@ describe("SchemaField", () => {
         </Formik>
       );
 
-      await expectToggleOptions(container, expectedOptions);
+      await expectToggleOptions("toggle-testField", expectedOptions);
     }
   );
 
@@ -465,7 +470,7 @@ describe("SchemaField", () => {
 
     // Renders no HTML element
     expect(container.querySelector(".switch")).toBeNull();
-    await expectToggleOptions(container, []);
+    await expectToggleOptions("", []);
   });
 
   test.each([undefined, false])(
@@ -488,7 +493,7 @@ describe("SchemaField", () => {
 
       // Renders switch HTML element
       expect(container.querySelector(".switch")).not.toBeNull();
-      await expectToggleOptions(container, []);
+      await expectToggleOptions("", []);
     }
   );
 
@@ -514,7 +519,7 @@ describe("SchemaField", () => {
       </Formik>
     );
 
-    await expectToggleOptions(container, ["select", "string", "var"]);
+    await expectToggleOptions("toggle-testField", ["select", "string", "var"]);
 
     screen.debug();
 
