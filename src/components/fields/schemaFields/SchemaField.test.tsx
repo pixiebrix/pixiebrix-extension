@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, screen, waitFor } from "@/pageEditor/testHelpers";
+import { render, screen, waitFor, within } from "@/pageEditor/testHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -206,7 +206,7 @@ describe("SchemaField", () => {
   test.each([["v1"], ["v2"]])(
     "show toggle widget for %s",
     (version: ApiVersion) => {
-      const { container } = render(
+      render(
         <Formik
           onSubmit={() => {}}
           initialValues={{ apiVersion: version, testField: "" }}
@@ -223,13 +223,13 @@ describe("SchemaField", () => {
       );
 
       // Renders text entry HTML element
-      expect(container.querySelector("textarea")).not.toBeNull();
-      expect(container.querySelector("button")).not.toBeNull();
+      expect(screen.getByRole("textbox")).toBeInTheDocument();
+      expect(screen.getByRole("button")).toBeInTheDocument();
     }
   );
 
   test("string field options", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={() => {}}
         initialValues={{ apiVersion: "v3", testField: "" }}
@@ -246,7 +246,7 @@ describe("SchemaField", () => {
     );
 
     // Renders text entry HTML element
-    expect(container.querySelector("textarea")).not.toBeNull();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
 
     await expectToggleOptions("toggle-testField", ["string", "var", "omit"]);
   });
@@ -269,7 +269,7 @@ describe("SchemaField", () => {
     );
 
     // Renders number entry HTML element
-    expect(container.querySelector("input[type='number']")).not.toBeNull();
+    expect(screen.getByRole("spinbutton")).toBeInTheDocument();
     await expectToggleOptions("toggle-testField", ["number", "var", "omit"]);
   });
 
@@ -303,20 +303,19 @@ describe("SchemaField", () => {
 
       await waitForEffect();
 
-      const toggle = screen
-        .getByTestId("toggle-myField")
-        .querySelector("button");
-      expect(toggle).not.toBeNull();
+      const toggle = within(screen.getByTestId("toggle-myField")).getByRole(
+        "button"
+      );
+      expect(toggle).toBeInTheDocument();
 
       await userEvent.click(toggle);
 
       const newOption = screen.getByText(String(toggleOption), {
         exact: false,
       });
-      expect(newOption).not.toBeNull();
+      expect(newOption).toBeInTheDocument();
 
-      // Await this element to avoid the "unable to click element" error
-      await waitFor(async () => userEvent.click(newOption));
+      await userEvent.click(newOption);
 
       await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
@@ -347,7 +346,7 @@ describe("SchemaField", () => {
     );
 
     // Renders number entry HTML element because current value is a number
-    expect(container.querySelector("input[type='number']")).not.toBeNull();
+    expect(screen.getByRole("spinbutton")).toBeInTheDocument();
     await expectToggleOptions("toggle-testField", [
       "string",
       "number",
@@ -374,17 +373,17 @@ describe("SchemaField", () => {
       );
       expect(widgetLoadingIndicator).toBeNull();
 
-      const toggle = screen
-        .queryByTestId(`toggle-${fieldName}`)
-        .querySelector("button");
-      expect(toggle).not.toBeNull();
+      const toggle = within(
+        screen.queryByTestId(`toggle-${fieldName}`)
+      ).getByRole("button");
+      expect(toggle).toBeInTheDocument();
 
       await userEvent.click(toggle);
 
       await waitFor(() => {
-        const testIds = [
-          ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
-        ].map((x) => x.dataset.testid);
+        const testIds = [...screen.getAllByRole("button")].map(
+          (x) => x.dataset.testid
+        );
         expect(testIds).toEqual(uniq(testIds));
       });
     }
@@ -405,7 +404,7 @@ describe("SchemaField", () => {
       const toggle = screen
         .getByTestId("toggle-aTestField")
         .querySelector("button");
-      expect(toggle).not.toBeNull();
+      expect(toggle).toBeInTheDocument();
 
       await userEvent.click(toggle);
 
@@ -492,7 +491,7 @@ describe("SchemaField", () => {
       );
 
       // Renders switch HTML element
-      expect(container.querySelector(".switch")).not.toBeNull();
+      expect(container.querySelector(".switch")).toBeInTheDocument();
       await expectToggleOptions("", []);
     }
   );
@@ -520,8 +519,6 @@ describe("SchemaField", () => {
     );
 
     await expectToggleOptions("toggle-testField", ["select", "string", "var"]);
-
-    screen.debug();
 
     expect(container.querySelector("textarea")).toBeNull();
     expect(screen.getByText("Foo")).toBeInTheDocument();
