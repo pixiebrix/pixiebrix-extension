@@ -228,7 +228,7 @@
     "@types/redux-state-sync": "^3.1.5",
     "@types/semver": "^7.5.0",
     "@types/sinonjs__fake-timers": "^8.1.2",
-    "@types/uuid": "^9.0.2",
+    "@types/uuid": "^9.0.3",
     "@types/webextension-polyfill": "^0.10.2",
     "@types/webpack": "^5.28.2",
     "@types/webpack-env": "^1.18.1",
