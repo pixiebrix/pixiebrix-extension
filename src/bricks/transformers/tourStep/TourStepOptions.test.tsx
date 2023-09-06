@@ -16,11 +16,7 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import {
-  render,
-  waitForElementToBeRemoved,
-  screen,
-} from "@/extensionConsole/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- Formik just needed as wrapper
 import { Formik } from "formik";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
