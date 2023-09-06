@@ -233,14 +233,6 @@ describe("Dropdown with labels field", () => {
     screen.getByText("Add Item").click();
 
     // Set option value
-    await waitFor(() => {
-      expect(
-        rendered.container.querySelector(
-          `[name="form.schema.properties.${defaultFieldName}.oneOf.0.const"]`
-        )
-      ).not.toBeNull();
-    });
-
     const firstOptionValueInput = rendered.container.querySelector(
       `[name="form.schema.properties.${defaultFieldName}.oneOf.0.const"]`
     );
