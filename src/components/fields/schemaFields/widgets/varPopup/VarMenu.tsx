@@ -117,6 +117,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       return;
     }
 
+    // Create a virtual element for the selected line
     const selectedLineBorderBox = getSelectedLineVirtualElement(
       inputElementRef.current as HTMLTextAreaElement
     );
