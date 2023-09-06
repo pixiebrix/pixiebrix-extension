@@ -31,6 +31,7 @@ import { getFieldValidator } from "@/components/fields/fieldUtils";
 import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 import { isExpression } from "@/utils/expressionUtils";
 import useAsyncEffect from "use-async-effect";
+import { sleep } from "@/utils/timeUtils";
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
@@ -120,6 +121,9 @@ const BasicSchemaField: SchemaFieldComponent = ({
   useAsyncEffect(async () => {
     // Initialize any undefined required fields to prevent inferring an "omit" input
     if (value === undefined && isRequired && !isEmpty(inputModeOptions)) {
+      // HACK: Something is pending that needs to complete before the formik state can be updated successfully.
+      // TODO: We should be setting the initialValues in Redux before rendering the form.
+      await sleep(1);
       await setValue(inputModeOptions[0].interpretValue(value));
     }
     // We only want to run this on mount, but also for some reason, sometimes the formik
