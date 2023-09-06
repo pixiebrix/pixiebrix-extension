@@ -170,13 +170,13 @@ export function replaceLikelyVariable(
     shouldInsertBracesLeft ? "{{ " : ""
   }${replacement}${shouldInsertBracesRight ? " }}" : ""}`;
 
-  const endOfVariableCursorPosition =
+  const endOfVariableIndex =
     startIndex +
     replacementWithBraces.length -
     (shouldInsertBracesRight ? 3 : 0);
 
   return {
     newTemplate: `${templatePartLeftOfLikelyVariable}${replacementWithBraces}${templatePartRightOfLikelyVariable}`,
-    newCursorPosition: endOfVariableCursorPosition,
+    newCursorPosition: endOfVariableIndex,
   };
 }
