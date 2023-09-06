@@ -163,23 +163,39 @@ describe("replaceLikelyVariable", () => {
   ])(
     "replaces a variable at position $position",
     ({ position, replacement, expected }) => {
-      const actual = replaceLikelyVariable(template, position, replacement);
+      const { newTemplate: actual } = replaceLikelyVariable(
+        template,
+        position,
+        replacement
+      );
       expect(actual).toEqual(expected);
     }
   );
 
   test("inserts the new var if no likely variable found in the text", () => {
-    const actual = replaceLikelyVariable(template, 0, "@qux.quux");
+    const { newTemplate: actual } = replaceLikelyVariable(
+      template,
+      0,
+      "@qux.quux"
+    );
     expect(actual).toEqual("{{ @qux.quux }}" + template);
   });
 
   test("inserts {{ }}", () => {
-    const actual = replaceLikelyVariable("abc @foo xyz", 5, "@bar");
+    const { newTemplate: actual } = replaceLikelyVariable(
+      "abc @foo xyz",
+      5,
+      "@bar"
+    );
     expect(actual).toEqual("abc {{ @bar }} xyz");
   });
 
   test("inserts {{ only", () => {
-    const actual = replaceLikelyVariable("abc @foo}} xyz", 4, "@bar");
+    const { newTemplate: actual } = replaceLikelyVariable(
+      "abc @foo}} xyz",
+      4,
+      "@bar"
+    );
     expect(actual).toEqual("abc {{ @bar}} xyz");
   });
 
@@ -188,7 +204,7 @@ describe("replaceLikelyVariable", () => {
     {% for qux in @foo %}
       abc
     {% endfor %}`;
-    const actual = replaceLikelyVariable(template, 20, "@baz");
+    const { newTemplate: actual } = replaceLikelyVariable(template, 20, "@baz");
     expect(actual).toEqual(`
     {% for qux in @baz %}
       abc
@@ -200,7 +216,7 @@ describe("replaceLikelyVariable", () => {
     {% for qux in @foo %}
       abc @bar }}
     {% endfor %}`;
-    const actual = replaceLikelyVariable(template, 39, "@baz");
+    const { newTemplate: actual } = replaceLikelyVariable(template, 39, "@baz");
     expect(actual).toEqual(`
     {% for qux in @foo %}
       abc {{ @baz }}
@@ -208,7 +224,11 @@ describe("replaceLikelyVariable", () => {
   });
 
   test("inserts }} only", () => {
-    const actual = replaceLikelyVariable("abc {{@foo xyz", 8, "@bar");
+    const { newTemplate: actual } = replaceLikelyVariable(
+      "abc {{@foo xyz",
+      8,
+      "@bar"
+    );
     expect(actual).toEqual("abc {{@bar }} xyz");
   });
 
@@ -217,7 +237,7 @@ describe("replaceLikelyVariable", () => {
     {% for qux in @foo %}
       abc {{ @bar
     {% endfor %}`;
-    const actual = replaceLikelyVariable(template, 41, "@baz");
+    const { newTemplate: actual } = replaceLikelyVariable(template, 41, "@baz");
     expect(actual).toEqual(`
     {% for qux in @foo %}
       abc {{ @baz }}
