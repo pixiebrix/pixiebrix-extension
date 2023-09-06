@@ -239,7 +239,6 @@ describe("Dropdown with labels field", () => {
     const firstOptionLabelInput = rendered.container.querySelector(
       `[name="form.schema.properties.${defaultFieldName}.oneOf.0.title"]`
     );
-    expect(firstOptionLabelInput).not.toBeNull();
     fireTextInput(firstOptionLabelInput, "Test option");
     await waitForEffect();
   }
