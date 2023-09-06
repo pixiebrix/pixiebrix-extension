@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
@@ -31,7 +38,44 @@ import { getFieldValidator } from "@/components/fields/fieldUtils";
 import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 import { isExpression } from "@/utils/expressionUtils";
 import useAsyncEffect from "use-async-effect";
-import { sleep } from "@/utils/timeUtils";
+import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+
+/*
+ *  This is a hack to fix the issue where the formik state is not updated correctly when the form is first rendered.
+ *  We use the renderRef to ensure that we only run this on the second render.
+ *  TODO: We should be setting the initialValues in Redux before rendering the form.
+ */
+function useSetInitialValueForField({
+  name,
+  isRequired,
+  inputModeOptions,
+}: {
+  name: string;
+  isRequired: boolean;
+  inputModeOptions: InputModeOption[];
+}) {
+  const renderRef = useRef(false);
+  const [{ value }, , { setValue }] = useField(name);
+
+  useEffect(() => {
+    renderRef.current = true;
+  }, []);
+
+  useAsyncEffect(async () => {
+    // Initialize any undefined required fields to prevent inferring an "omit" input
+    if (
+      value === undefined &&
+      isRequired &&
+      !isEmpty(inputModeOptions) &&
+      renderRef.current
+    ) {
+      await setValue(inputModeOptions[0].interpretValue(value));
+    }
+    // We include setValue in the dependencies becuase sometimes the formik
+    // helpers reference (setValue) changes, so we need to account for that in the dependencies
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/2269
+  }, [setValue, renderRef.current]);
+}
 
 const BasicSchemaField: SchemaFieldComponent = ({
   omitIfEmpty = false,
@@ -109,27 +153,14 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   const validate = getFieldValidator(validationSchema);
 
-  const [{ value, onBlur: formikOnBlur }, { touched }, { setValue }] = useField(
-    {
-      name,
-      validate,
-    }
-  );
+  const [{ value, onBlur: formikOnBlur }, { touched }] = useField({
+    name,
+    validate,
+  });
 
   const annotations = useFieldAnnotations(name);
 
-  useAsyncEffect(async () => {
-    // Initialize any undefined required fields to prevent inferring an "omit" input
-    if (value === undefined && isRequired && !isEmpty(inputModeOptions)) {
-      // HACK: Something is pending that needs to complete before the formik state can be updated successfully.
-      // TODO: We should be setting the initialValues in Redux before rendering the form.
-      await sleep(1);
-      await setValue(inputModeOptions[0].interpretValue(value));
-    }
-    // We only want to run this on mount, but also for some reason, sometimes the formik
-    // helpers reference (setValue) changes, so we need to account for that in the dependencies
-    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/2269
-  }, [setValue]);
+  useSetInitialValueForField({ name, isRequired, inputModeOptions });
 
   const { onOmitField } = useToggleFormField(name, normalizedSchema);
 

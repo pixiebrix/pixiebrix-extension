@@ -53,12 +53,6 @@ describe("TourStepOptions", () => {
   it("should render example config", async () => {
     const { asFragment } = renderOptions(makeBaseState());
 
-    await waitForElementToBeRemoved(
-      screen.queryByTestId(
-        "extension.blockPipeline.0.config.appearance.skippable-widget-loading"
-      )
-    );
-
     expect(asFragment()).toMatchSnapshot();
   });
 });

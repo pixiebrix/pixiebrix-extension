@@ -130,11 +130,7 @@ describe("JQueryReaderOptions", () => {
       ).dataset.testSelected
     ).toEqual("Selector");
 
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText("Select an element")).toHaveValue(
-        "h1"
-      );
-    });
+    expect(screen.getByPlaceholderText("Select an element")).toHaveValue("h1");
   });
 
   it("normalizes nested selectors", async () => {
