@@ -19,7 +19,7 @@ import { defaultBlockConfig, isOfficial } from "./util";
 import { type RegistryId } from "@/types/registryTypes";
 import IfElse from "./transformers/controlFlow/IfElse";
 import { EMPTY_PIPELINE } from "@/testUtils/testHelpers";
-import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
+import { type Schema } from "@/types/schemaTypes";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {
@@ -40,7 +40,18 @@ describe("defaultBlockConfig", () => {
   });
 
   test("handles explicit default value of false", () => {
-    const config = defaultBlockConfig(LOOKUP_SCHEMA);
-    expect(config.filterRows).toStrictEqual(false);
+    const schema = {
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {
+        myProp: {
+          title: "My Property",
+          type: "boolean",
+          default: false,
+        },
+      },
+    } as Schema;
+    const config = defaultBlockConfig(schema);
+    expect(config.myProp).toStrictEqual(false);
   });
 });
