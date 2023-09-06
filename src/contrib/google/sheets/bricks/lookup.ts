@@ -17,7 +17,6 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import { sheets } from "@/background/messenger/api";
-import { propertiesToSchema } from "@/validators/generic";
 import { zip } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/core/schemas";
@@ -33,8 +32,10 @@ export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"
 );
 
-export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
-  {
+export const LOOKUP_SCHEMA: Schema = {
+  $schema: "https://json-schema.org/draft/2019-09/schema#",
+  type: "object",
+  properties: {
     googleAccount: {
       title: "Google Account",
       oneOf: [
@@ -81,9 +82,49 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
     },
   },
   // For backwards compatibility, googleAccount is not required
-  // @since 1.7.40 - header and query are also not required
-  ["spreadsheetId", "tabName"]
-);
+  required: ["spreadsheetId", "tabName"],
+  // @since 1.7.40 - header and query are not required if filterRows is false (& present)
+  oneOf: [
+    {
+      required: ["header", "query"],
+      properties: {
+        filterRows: {
+          const: true,
+        },
+      },
+    },
+    {
+      required: ["filterRows"],
+      properties: {
+        filterRows: {
+          const: false,
+        },
+      },
+    },
+  ],
+};
+
+type BrickArgsBase = {
+  googleAccount?: SanitizedIntegrationConfig | undefined;
+  spreadsheetId: string | SanitizedIntegrationConfig;
+  tabName: string;
+};
+
+type BrickArgsSubTypeA = {
+  filterRows?: undefined | true;
+  header: string;
+  query: string | number | boolean;
+  multi: boolean;
+};
+
+type BrickArgsSubTypeB = {
+  filterRows: false;
+  header?: string | undefined;
+  query?: string | number | boolean | undefined;
+  multi?: boolean | undefined;
+};
+
+type BrickArgsType = BrickArgsBase & (BrickArgsSubTypeA | BrickArgsSubTypeB);
 
 export class GoogleSheetsLookup extends TransformerABC {
   constructor() {
@@ -107,15 +148,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       header,
       query,
       multi,
-    }: BrickArgs<{
-      googleAccount?: SanitizedIntegrationConfig | undefined;
-      spreadsheetId: string | SanitizedIntegrationConfig;
-      tabName: string;
-      filterRows?: boolean;
-      header: string;
-      query: string | number | boolean;
-      multi: boolean;
-    }>,
+    }: BrickArgs<BrickArgsType>,
     { logger }: BrickOptions
   ): Promise<UnknownObject | UnknownObject[]> {
     const spreadsheetId =
@@ -148,7 +181,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       )
     );
 
-    if (multi) {
+    if (multi || returnAllRows) {
       return matchRecords;
     }
 
