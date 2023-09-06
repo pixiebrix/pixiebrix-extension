@@ -59,6 +59,12 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
       type: "string",
       description: "The tab name of the spreadsheet to lookup the value.",
     },
+    filterRows: {
+      type: "boolean",
+      title: "Filter Rows",
+      description: "True to show the row filter controls.",
+      default: false,
+    },
     header: {
       type: "string",
       description: "The header of the column to lookup the value",
@@ -75,7 +81,8 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
     },
   },
   // For backwards compatibility, googleAccount is not required
-  ["spreadsheetId", "tabName", "header", "query"]
+  // @since 1.7.40 - header and query are also not required
+  ["spreadsheetId", "tabName"]
 );
 
 export class GoogleSheetsLookup extends TransformerABC {
@@ -96,6 +103,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       googleAccount,
       spreadsheetId: spreadsheetIdArg,
       tabName,
+      filterRows,
       header,
       query,
       multi,
@@ -103,6 +111,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       googleAccount?: SanitizedIntegrationConfig | undefined;
       spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
+      filterRows?: boolean;
       header: string;
       query: string | number | boolean;
       multi: boolean;
@@ -123,12 +132,16 @@ export class GoogleSheetsLookup extends TransformerABC {
 
     logger.debug(`Tab ${tabName} has headers`, { headers });
 
+    const returnAllRows = filterRows !== undefined && !filterRows;
+
     const columnIndex = headers.indexOf(header);
-    if (columnIndex < 0) {
+    if (columnIndex < 0 && !returnAllRows) {
       throw new BusinessError(`Header ${header} not found`);
     }
 
-    const matchData = rows.filter((x) => x.at(columnIndex) === query);
+    const matchData = returnAllRows
+      ? rows
+      : rows.filter((x) => x.at(columnIndex) === query);
     const matchRecords = matchData.map((row) =>
       Object.fromEntries(
         zip(headers, row).filter(([rowHeader]) => !isNullOrBlank(rowHeader))

@@ -19,6 +19,7 @@ import { defaultBlockConfig, isOfficial } from "./util";
 import { type RegistryId } from "@/types/registryTypes";
 import IfElse from "./transformers/controlFlow/IfElse";
 import { EMPTY_PIPELINE } from "@/testUtils/testHelpers";
+import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {
@@ -36,5 +37,10 @@ describe("defaultBlockConfig", () => {
 
     expect(actual.if).toEqual(EMPTY_PIPELINE);
     expect(actual.else).toEqual(EMPTY_PIPELINE);
+  });
+
+  test("handles explicit default value of false", () => {
+    const config = defaultBlockConfig(LOOKUP_SCHEMA);
+    expect(config.filterRows).toStrictEqual(false);
   });
 });
