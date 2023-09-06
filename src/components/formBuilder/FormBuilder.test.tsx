@@ -23,12 +23,7 @@ import {
   selectSchemaFieldInputMode,
 } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import {
-  render,
-  type RenderResult,
-  screen,
-  waitFor,
-} from "@/pageEditor/testHelpers";
+import { render, type RenderResult, screen } from "@/pageEditor/testHelpers";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
