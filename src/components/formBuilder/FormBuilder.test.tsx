@@ -23,7 +23,12 @@ import {
   selectSchemaFieldInputMode,
 } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { render, type RenderResult, screen } from "@/pageEditor/testHelpers";
+import {
+  render,
+  type RenderResult,
+  screen,
+  waitFor,
+} from "@/pageEditor/testHelpers";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
@@ -228,9 +233,18 @@ describe("Dropdown with labels field", () => {
     screen.getByText("Add Item").click();
 
     // Set option value
+    await waitFor(() => {
+      expect(
+        rendered.container.querySelector(
+          `[name="form.schema.properties.${defaultFieldName}.oneOf.0.const"]`
+        )
+      ).not.toBeNull();
+    });
+
     const firstOptionValueInput = rendered.container.querySelector(
       `[name="form.schema.properties.${defaultFieldName}.oneOf.0.const"]`
     );
+
     fireTextInput(firstOptionValueInput, "1");
     await waitForEffect();
 
@@ -238,6 +252,7 @@ describe("Dropdown with labels field", () => {
     const firstOptionLabelInput = rendered.container.querySelector(
       `[name="form.schema.properties.${defaultFieldName}.oneOf.0.title"]`
     );
+    expect(firstOptionLabelInput).not.toBeNull();
     fireTextInput(firstOptionLabelInput, "Test option");
     await waitForEffect();
   }

@@ -17,7 +17,7 @@
 
 import styles from "./ElementWizard.module.scss";
 
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { useFormikContext } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
@@ -41,7 +41,7 @@ import { selectVariablePopoverVisible } from "@/pageEditor/slices/editorSelector
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
 
-const wizardSteps: WizardStep[] = [
+const wizard: WizardStep[] = [
   { step: EDIT_STEP_NAME, Component: EditTab },
   { step: LOG_STEP_NAME, Component: LogsTab },
 ];
@@ -65,7 +65,7 @@ const WizardNavItem: React.FunctionComponent<{
 const ElementWizard: React.FunctionComponent<{
   element: ModComponentFormState;
 }> = ({ element }) => {
-  const [step, setStep] = useState(wizardSteps[0].step);
+  const [step, setStep] = useState(wizard[0].step);
 
   const isVariablePopoverVisible = useSelector(selectVariablePopoverVisible);
 
@@ -74,23 +74,22 @@ const ElementWizard: React.FunctionComponent<{
 
   const dispatch = useDispatch();
 
-  const refreshEntries = useCallback(() => {
+  const refreshEntries = () => {
     dispatch(logActions.refreshEntries());
-  }, [dispatch]);
+  };
 
-  const selectTabHandler = useCallback(
-    (step: string) => {
-      setStep(step);
-      if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
-        // If user is clicking over to the logs tab, they most likely want to see the most recent logs
-        refreshEntries();
-      }
-    },
-    [refreshEntries]
-  );
+  const selectTabHandler = (step: string) => {
+    setStep(step);
+    if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
+      // If user is clicking over to the logs tab, they most likely want to see the most recent logs
+      refreshEntries();
+    }
+  };
 
   const { values: formState, setValues: setFormState } =
     useFormikContext<ModComponentFormState>();
+
+  const wizardSteps = [...wizard];
 
   useAsyncEffect(async (isMounted) => {
     if (formState.apiVersion === "v2") {

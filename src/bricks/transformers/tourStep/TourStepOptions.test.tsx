@@ -16,7 +16,11 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { render } from "@/extensionConsole/testHelpers";
+import {
+  render,
+  waitForElementToBeRemoved,
+  screen,
+} from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- Formik just needed as wrapper
 import { Formik } from "formik";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -24,7 +28,6 @@ import React from "react";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import TourStep from "@/bricks/transformers/tourStep/tourStep";
 import TourStepOptions from "@/bricks/transformers/tourStep/TourStepOptions";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 function makeBaseState() {
@@ -48,8 +51,14 @@ beforeAll(() => {
 
 describe("TourStepOptions", () => {
   it("should render example config", async () => {
-    const output = renderOptions(makeBaseState());
-    await waitForEffect();
-    expect(output.asFragment()).toMatchSnapshot();
+    const { asFragment } = renderOptions(makeBaseState());
+
+    await waitForElementToBeRemoved(
+      screen.queryByTestId(
+        "extension.blockPipeline.0.config.appearance.skippable-widget-loading"
+      )
+    );
+
+    expect(asFragment()).toMatchSnapshot();
   });
 });

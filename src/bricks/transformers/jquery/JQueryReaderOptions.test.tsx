@@ -33,7 +33,7 @@ import {
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import userEvent from "@testing-library/user-event";
@@ -130,7 +130,11 @@ describe("JQueryReaderOptions", () => {
       ).dataset.testSelected
     ).toEqual("Selector");
 
-    expect(screen.getByPlaceholderText("Select an element")).toHaveValue("h1");
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Select an element")).toHaveValue(
+        "h1"
+      );
+    });
   });
 
   it("normalizes nested selectors", async () => {
