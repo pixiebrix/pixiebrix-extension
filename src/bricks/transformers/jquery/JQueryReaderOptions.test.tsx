@@ -33,7 +33,7 @@ import {
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import userEvent from "@testing-library/user-event";
