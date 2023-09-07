@@ -101,9 +101,7 @@ export function wizardStateFactory({
   const installedIntegrationConfigs = Object.fromEntries(
     inferConfiguredModIntegrations(installedBlueprintExtensions, {
       optional: true,
-    })
-      .filter(Boolean)
-      .map(({ id, config }) => [id, config])
+    }).map(({ id, config }) => [id, config])
   );
   const unconfiguredIntegrationDependencies =
     getUnconfiguredComponentIntegrations(modDefinition);
