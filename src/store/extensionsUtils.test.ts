@@ -23,6 +23,7 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 
 describe("inferRecipeOptions", () => {
   it("returns first option", () => {
@@ -96,6 +97,15 @@ describe("inferModIntegrations", () => {
       inferConfiguredModIntegrations([{ services: [unconfigured] }], {
         optional: true,
       })
+    ).toBeEmpty();
+  });
+
+  it("handles unconfigured integrations when the id is the default", () => {
+    const unconfigured = integrationDependencyFactory();
+    delete unconfigured.config;
+    unconfigured.id = validateRegistryId(PIXIEBRIX_INTEGRATION_ID);
+    expect(
+      inferConfiguredModIntegrations([{ services: [unconfigured] }])
     ).toBeEmpty();
   });
 });
