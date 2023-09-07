@@ -41,8 +41,14 @@ export function generatePackageId(scope: string, label: string): RegistryId {
  * @param value the full RegistryId
  */
 export function getScopeAndId(
-  value: RegistryId
+  value?: RegistryId
 ): [string | undefined, string | undefined] {
+  // We call getScopeAndId in several places with a recipe that can be undefined
+  // @see useHasEditPermissions.ts
+  if (value == null) {
+    return [undefined, undefined];
+  }
+
   // Scope needs to start with @
   if (!value.startsWith("@")) {
     return [undefined, value];
