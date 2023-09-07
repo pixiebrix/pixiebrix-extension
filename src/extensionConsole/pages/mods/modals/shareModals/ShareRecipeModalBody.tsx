@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactElement } from "react";
+import React from "react";
 import { type UUID } from "@/types/stringTypes";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowShareContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import * as Yup from "yup";
-import { sortBy } from "lodash";
 import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
@@ -36,33 +35,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faInfoCircle,
   faTimes,
-  faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import ReactSelect from "react-select";
 import styles from "./ShareModals.module.scss";
-import { selectAuth } from "@/auth/authSelectors";
-import { type Organization, UserRole } from "@/types/contract";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ActivationLink from "@/activation/ActivationLink";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import Loader from "@/components/Loader";
-import { getScopeAndId } from "@/utils/registryUtils";
+import useHasEditPermissions from "@/extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions";
+import OwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/OwnerLabel";
+import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
 
 type ShareModFormState = {
   organizations: UUID[];
 };
 
-const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
-
 const validationSchema = Yup.object().shape({
   organizations: Yup.array().of(Yup.string().required()),
 });
-
-const sortOrganizations = (organizations: Organization[]) =>
-  sortBy(organizations, (organization) => organization.name);
 
 const AddATeamMenuList = createMenuListWithAddButton(
   "https://app.pixiebrix.com/teams/create"
@@ -71,8 +64,7 @@ const AddATeamMenuList = createMenuListWithAddButton(
 const ShareRecipeModalBody: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { blueprintId } = useSelector(selectShowShareContext);
-  const { scope: userScope, organizations: userOrganizations } =
-    useSelector(selectAuth);
+  const organizationsForSelect = useSortOrganizations();
   const [updateRecipe] = useUpdateRecipeMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
@@ -81,6 +73,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
     isFetching: isFetchingRecipe,
     refetch: refetchRecipes,
   } = useOptionalModDefinition(blueprintId);
+  const hasEditPermissions = useHasEditPermissions();
 
   const closeModal = () => {
     dispatch(modModalsSlice.actions.closeModal());
@@ -141,44 +134,6 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
     }
   };
 
-  // Sorting returns new array, so it safe to mutate it
-  const organizationsForSelect = sortOrganizations(userOrganizations);
-  const [recipeScope] = getScopeAndId(recipe?.metadata.id);
-  let ownerLabel: ReactElement;
-  let hasEditPermissions = false;
-  if (recipeScope === userScope) {
-    ownerLabel = (
-      <span>
-        <FontAwesomeIcon icon={faUser} /> You
-      </span>
-    );
-    hasEditPermissions = true;
-  } else {
-    const ownerOrganizationIndex = organizationsForSelect.findIndex(
-      (x) => x.scope === recipeScope
-    );
-
-    if (ownerOrganizationIndex === -1) {
-      ownerLabel = (
-        <span>
-          <FontAwesomeIcon icon={faUsers} /> Unknown
-        </span>
-      );
-    } else {
-      // We get the owner's organization and remove it from the list of organizations (splice mutates the array)
-      const ownerOrganization = organizationsForSelect.splice(
-        ownerOrganizationIndex,
-        1
-      )[0];
-      ownerLabel = (
-        <span>
-          <FontAwesomeIcon icon={faUsers} /> {ownerOrganization.name}
-        </span>
-      );
-      hasEditPermissions = editorRoles.has(ownerOrganization?.role);
-    }
-  }
-
   return (
     <>
       {hasEditPermissions ? (
@@ -216,7 +171,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
                 />
 
                 <div className={styles.row}>
-                  {ownerLabel}
+                  <OwnerLabel />
                   <span className="text-muted">Owner</span>
                 </div>
 
@@ -268,7 +223,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
             permissions to change sharing
           </div>
           <div className={styles.row}>
-            {ownerLabel}
+            <OwnerLabel />
             <span className="text-muted">Owner</span>
           </div>
           {organizationsForSelect
