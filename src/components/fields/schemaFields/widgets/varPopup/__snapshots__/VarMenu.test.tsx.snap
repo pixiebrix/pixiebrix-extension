@@ -5,7 +5,7 @@ exports[`VarMenu shows view for match 1`] = `
   <input />
   <div
     class="menu"
-    style="max-height: -16px; transform: translate3d(0, 8px, 0);"
+    style="max-height: NaNpx; transform: translate3d(0, NaNpx, 0);"
   >
     <div
       class="body"
