@@ -22,7 +22,10 @@ import {
 import { useFormErrorSettings } from "@/components/form/FormErrorContext";
 import { useFormikContext } from "formik";
 import { useSelector } from "react-redux";
-import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectAnnotationsForPath,
+  selectVariablePopoverVisible,
+} from "@/pageEditor/slices/editorSelectors";
 import {
   type AnalysisAnnotationAction,
   AnalysisAnnotationActionType,
@@ -33,6 +36,7 @@ import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { useState } from "react";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
@@ -62,51 +66,57 @@ function makeFieldActionForAnnotationAction(
   };
 }
 
-function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
-  const {
-    shouldUseAnalysis,
-    showUntouchedErrors,
-    showFieldActions,
-    ignoreAnalysisIds = [],
-  } = useFormErrorSettings();
+function useFieldAnnotations(
+  fieldPath: string
+): [FieldAnnotation[], () => void] {
+  const [annotations, setAnnotation] = useState([]);
+
+  const { shouldUseAnalysis, showUntouchedErrors, showFieldActions } =
+    useFormErrorSettings();
+
+  const analysisAnnotations = useSelector(selectAnnotationsForPath(fieldPath));
+
   const formik = useFormikContext<ModComponentFormState>();
+  const isVariablePopoverVisible = useSelector(selectVariablePopoverVisible);
 
-  // TODO: We can probably split this into two hooks, one for analysis and one for formik,
-  //  and then it might be possible to decouple the analysis one from formik. Need to
-  //  investigate if that causes re-rendering issues in the page editor config panel.
+  function updateAnnotations() {
+    if (isVariablePopoverVisible) {
+      return;
+    }
 
-  if (shouldUseAnalysis) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
-    const analysisAnnotations = useSelector(
-      selectAnnotationsForPath(fieldPath)
-    );
-    return analysisAnnotations
-      .filter((x) => !ignoreAnalysisIds.includes(x.analysisId))
-      .map(({ message, type, actions }) => {
-        const fieldAnnotation: FieldAnnotation = {
-          message,
-          type,
-        };
-        if (showFieldActions && !isEmpty(actions)) {
-          fieldAnnotation.actions = actions.map((action) =>
-            makeFieldActionForAnnotationAction(action, formik)
-          );
+    if (shouldUseAnalysis) {
+      const filteredAnalysisAnnotations = analysisAnnotations.map(
+        ({ message, type, actions }) => {
+          const fieldAnnotation: FieldAnnotation = {
+            message,
+            type,
+          };
+          if (showFieldActions && !isEmpty(actions)) {
+            fieldAnnotation.actions = actions.map((action) =>
+              makeFieldActionForAnnotationAction(action, formik)
+            );
+          }
+
+          return fieldAnnotation;
         }
+      );
+      setAnnotation(filteredAnalysisAnnotations);
+      return;
+    }
 
-        return fieldAnnotation;
-      });
+    const { error, touched } = formik.getFieldMeta(fieldPath);
+    const showFormikError =
+      (showUntouchedErrors || touched) &&
+      typeof error === "string" &&
+      !isNullOrBlank(error);
+    const annotation: FieldAnnotation = {
+      message: error,
+      type: AnnotationType.Error,
+    };
+    setAnnotation(showFormikError ? [annotation] : []);
   }
 
-  const { error, touched } = formik.getFieldMeta(fieldPath);
-  const showFormikError =
-    (showUntouchedErrors || touched) &&
-    typeof error === "string" &&
-    !isNullOrBlank(error);
-  const annotation: FieldAnnotation = {
-    message: error,
-    type: AnnotationType.Error,
-  };
-  return showFormikError ? [annotation] : [];
+  return [annotations, updateAnnotations];
 }
 
 export default useFieldAnnotations;

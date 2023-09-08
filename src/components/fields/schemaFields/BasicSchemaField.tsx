@@ -158,7 +158,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
     validate,
   });
 
-  const annotations = useFieldAnnotations(name);
+  const [annotations, updateAnnotations] = useFieldAnnotations(name);
 
   useSetInitialValueForField({ name, isRequired, inputModeOptions });
 
@@ -180,6 +180,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
   const onBlur = (event: React.FocusEvent) => {
     formikOnBlur(event);
 
+    updateAnnotations();
     if (
       omitIfEmpty &&
       (isEmpty(value) || (isExpression(value) && isEmpty(value.__value__)))

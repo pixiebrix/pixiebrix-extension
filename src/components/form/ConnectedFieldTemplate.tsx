@@ -31,9 +31,14 @@ function FormikFieldTemplate<Values>({
   formik,
   ...fieldProps
 }: ConnectedFieldProps<Values>) {
-  const annotations = useFieldAnnotations(fieldProps.name);
+  const [annotations, updateAnnotations] = useFieldAnnotations(fieldProps.name);
   const touched = getIn(formik.touched, fieldProps.name);
   const value = getIn(formik.values, fieldProps.name);
+
+  const onBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    formik.handleBlur(event);
+    updateAnnotations();
+  };
 
   return (
     <FieldTemplate
@@ -41,7 +46,7 @@ function FormikFieldTemplate<Values>({
       annotations={annotations}
       touched={touched}
       onChange={formik.handleChange}
-      onBlur={formik.handleBlur}
+      onBlur={onBlur}
       {...fieldProps}
     />
   );

@@ -74,7 +74,7 @@ describe("useFieldAnnotations", () => {
         {children}
       </Formik>
     );
-    const annotations = renderHook(() => useFieldAnnotations("testField"), {
+    const [annotations] = renderHook(() => useFieldAnnotations("testField"), {
       wrapper,
     }).result.current;
     expect(annotations).toHaveLength(1);
@@ -140,8 +140,9 @@ describe("useFieldAnnotations", () => {
       </Provider>
     );
 
-    const annotations = renderHook(() => useFieldAnnotations(path), { wrapper })
-      .result.current;
+    const [annotations] = renderHook(() => useFieldAnnotations(path), {
+      wrapper,
+    }).result.current;
     expect(annotations).toHaveLength(1);
     expect(annotations[0].type).toEqual(AnnotationType.Error);
     expect(annotations[0].message).toEqual("test error annotation");
