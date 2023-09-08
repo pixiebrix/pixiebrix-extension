@@ -51,8 +51,7 @@ const RegistryIdWidget: React.VFC<{
       (organization) =>
         !isEmpty(organization.scope) && editorRoles.has(organization.role)
     )
-    .map((organization) => organization.scope)
-    .filter(Boolean); // Scope is optional
+    .map((organization) => organization.scope);
 
   const options = makeStringOptions(userScope, ...organizationScopes);
 

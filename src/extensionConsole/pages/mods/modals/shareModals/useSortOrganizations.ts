@@ -16,16 +16,15 @@
  */
 
 import { selectAuth } from "@/auth/authSelectors";
-import { type Organization } from "@/types/contract";
 import { sortBy } from "lodash";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
-const sortOrganizations = (organizations: Organization[]) =>
-  sortBy(organizations, (organization) => organization.name);
-
 export default function useSortOrganizations() {
   const { organizations } = useSelector(selectAuth);
 
-  return useMemo(() => sortOrganizations(organizations), [organizations]);
+  return useMemo(
+    () => sortBy(organizations, (organization) => organization.name),
+    [organizations]
+  );
 }

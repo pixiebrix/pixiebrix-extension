@@ -39,17 +39,12 @@ export default function useHasEditPermissions() {
   if (recipeScope === userScope) {
     hasEditPermissions = true;
   } else {
-    const ownerOrganizationIndex = sortedOrganizations.findIndex(
+    const ownerOrganization = sortedOrganizations.find(
       (x) => x.scope === recipeScope
     );
 
-    if (ownerOrganizationIndex !== -1) {
-      const ownerOrganization = sortedOrganizations.splice(
-        ownerOrganizationIndex,
-        1
-      )[0];
-
-      hasEditPermissions = editorRoles.has(ownerOrganization?.role);
+    if (ownerOrganization) {
+      hasEditPermissions = editorRoles.has(ownerOrganization.role);
     }
   }
 

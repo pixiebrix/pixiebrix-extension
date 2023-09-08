@@ -43,23 +43,17 @@ const OwnerLabel: React.FunctionComponent = () => {
     );
   }
 
-  const ownerOrganizationIndex = sortedOrganizations.findIndex(
+  const ownerOrganization = sortedOrganizations.find(
     (x) => x.scope === recipeScope
   );
 
-  if (ownerOrganizationIndex === -1) {
+  if (!ownerOrganization) {
     return (
       <span>
         <FontAwesomeIcon icon={faUsers} /> Unknown
       </span>
     );
   }
-
-  // We get the owner's organization and remove it from the list of organizations (splice mutates the array)
-  const ownerOrganization = sortedOrganizations.splice(
-    ownerOrganizationIndex,
-    1
-  )[0];
 
   return (
     <span>

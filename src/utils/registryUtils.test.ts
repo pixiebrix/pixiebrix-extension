@@ -66,4 +66,7 @@ describe("getScopeAndId", () => {
   test("id is undefined", () => {
     expect(getScopeAndId()).toStrictEqual([undefined, undefined]);
   });
+  test("id is null", () => {
+    expect(getScopeAndId(null)).toStrictEqual([undefined, undefined]);
+  });
 });
