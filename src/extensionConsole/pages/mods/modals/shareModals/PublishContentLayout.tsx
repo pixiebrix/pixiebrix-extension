@@ -55,7 +55,7 @@ const PublishContentLayout: React.FunctionComponent<
         <span className="text-muted">Owner</span>
       </div>
       {sortedOrganizations
-        .filter((x) => recipe.sharing.organizations.includes(x.id as UUID))
+        .filter((x) => recipe.sharing.organizations.includes(x.id))
         .map((organization) => (
           <div className={styles.row} key={organization.id}>
             <span>
