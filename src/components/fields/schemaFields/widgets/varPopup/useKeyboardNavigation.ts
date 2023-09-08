@@ -84,7 +84,7 @@ function useKeyboardNavigation({
           move(-1);
         }
 
-        if (event.key === "Tab") {
+        if (event.key === "Tab" || event.key === "Enter") {
           event.preventDefault();
           onSelect(activeKeyPath.map(String).reverse());
         }
