@@ -42,7 +42,7 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
           schema.properties,
           (x) =>
             typeof x !== "boolean" &&
-            ((x.default !== undefined && !x.anyOf && !x.oneOf) ||
+            ((x.default != null && !x.anyOf && !x.oneOf) ||
               x.$ref === pipelineSchema.$id)
         ),
         (propertySchema: Schema) => {
