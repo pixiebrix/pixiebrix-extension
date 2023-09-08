@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { type UUID } from "@/types/stringTypes";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
