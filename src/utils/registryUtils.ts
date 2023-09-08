@@ -41,7 +41,7 @@ export function generatePackageId(scope: string, label: string): RegistryId {
  * @param value the full RegistryId
  */
 export function getScopeAndId(
-  value?: RegistryId | null
+  value: RegistryId | null
 ): [string | undefined, string | undefined] {
   // We call getScopeAndId in several places with a recipe that can be undefined
   // @see useHasEditPermissions.ts
