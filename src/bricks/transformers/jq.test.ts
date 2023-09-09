@@ -241,4 +241,21 @@ describe("runtime errors", () => {
       "ensure the jq filter produces a result for the data"
     );
   });
+
+  test("error using modulo operator in filter", async () => {
+    // https://github.com/fiatjaf/jq-web/issues/19
+    const promise = new JQTransformer().transform(
+      unsafeAssumeValidArg({ filter: "1 % 1", data: [] }),
+      {
+        ctxt: {},
+        root: null,
+        logger: new ConsoleLogger(),
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    await expect(promise).rejects.toThrow(BusinessError);
+    await expect(promise).rejects.toThrow("wA is not a function");
+  });
 });

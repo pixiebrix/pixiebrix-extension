@@ -63,11 +63,10 @@ export class JQTransformer extends TransformerABC {
 
   async transform(
     { filter, data }: BrickArgs,
-    { ctxt, logger }: BrickOptions
+    { ctxt }: BrickOptions
   ): Promise<unknown> {
+    // This is the legacy behavior, back from runtime v1 when there wasn't explicit data flow.
     const input = isNullOrBlank(data) ? ctxt : data;
-
-    logger.debug("Running jq transform", { filter, data, ctxt, input });
 
     try {
       return await applyJq({ input, filter });
