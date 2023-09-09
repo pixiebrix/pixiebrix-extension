@@ -66,6 +66,15 @@ export class JQTransformer extends TransformerABC {
     try {
       return await applyJq({ input, filter });
     } catch (error) {
+      if (
+        isErrorObject(error) &&
+        error.message.includes("generic error, no stack")
+      ) {
+        // Give a more user-friendly error message for stream issues out of the user's control
+        // https://github.com/fiatjaf/jq-web/issues/31
+        throw new Error("Unable to run jq, try again");
+      }
+
       // The message length check is there because the JQ error message sometimes is cut and if it is we try to parse the stacktrace
       // See https://github.com/pixiebrix/pixiebrix-extension/issues/3216
       if (
@@ -80,12 +89,14 @@ export class JQTransformer extends TransformerABC {
         throw error;
       }
 
+      // At this point, we know it's a problem with the filter
       const message = error.stack.includes("unexpected $end")
         ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
         : jqStacktraceRegexp.exec(error.stack)?.groups?.message?.trim() ??
           "Invalid jq filter, see error log for details";
 
       throw new InputValidationError(
+        // FIXME: this error message does not make its way to ErrorItems on the server
         message,
         this.inputSchema,
         { filter, data: input },

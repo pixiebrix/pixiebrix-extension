@@ -24,6 +24,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 import { type RenderedArgs } from "@/types/runtimeTypes";
+import { range } from "lodash";
 
 describe("smoke tests", () => {
   test("passes input to filter", async () => {
@@ -39,6 +40,30 @@ describe("smoke tests", () => {
     );
 
     await expect(promise).resolves.toStrictEqual(42);
+  });
+
+  test("can run concurrently", async () => {
+    // Smoke test we don't get `generic error, no stack` errors when running concurrently on node
+    const brick = new JQTransformer();
+    const values = Promise.all(
+      range(100).map(async (number) =>
+        brick.transform(
+          unsafeAssumeValidArg({
+            filter: ".foo.data",
+            data: { foo: { data: number } },
+          }),
+          {
+            ctxt: {},
+            root: null,
+            logger: new ConsoleLogger(),
+            runPipeline: neverPromise,
+            runRendererPipeline: neverPromise,
+          }
+        )
+      )
+    );
+
+    await expect(values).resolves.toBeArray();
   });
 });
 
@@ -56,6 +81,24 @@ describe("ctxt", () => {
     );
 
     await expect(promise).resolves.toStrictEqual(42);
+  });
+});
+
+describe("json", () => {
+  test("string data is not interpreted", async () => {
+    const promise = new JQTransformer().transform(
+      unsafeAssumeValidArg({ filter: ".", data: "[]" }),
+      {
+        ctxt: {},
+        root: null,
+        logger: new ConsoleLogger(),
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    // String is returned as-is, not as a JSON array
+    await expect(promise).resolves.toStrictEqual("[]");
   });
 });
 
@@ -176,5 +219,24 @@ describe("parse compile error", () => {
 
     await expect(promise).rejects.toThrow(BusinessError);
     await expect(promise).rejects.toThrow("Cannot iterate over null (null)");
+  });
+});
+
+describe("runtime errors", () => {
+  test("Error if no result set produced", async () => {
+    // https://github.com/fiatjaf/jq-web/issues/32
+    const promise = new JQTransformer().transform(
+      unsafeAssumeValidArg({ filter: ".[] | .Title", data: [] }),
+      {
+        ctxt: {},
+        root: null,
+        logger: new ConsoleLogger(),
+        runPipeline: neverPromise,
+        runRendererPipeline: neverPromise,
+      }
+    );
+
+    await expect(promise).rejects.toThrow(BusinessError);
+    await expect(promise).rejects.toThrow("Unexpected end of JSON input");
   });
 });
