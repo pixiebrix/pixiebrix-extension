@@ -27,6 +27,12 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
+// https://github.com/fiatjaf/jq-web/issues/32
+const JSON_ERROR = "Unexpected end of JSON input";
+
+// https://github.com/fiatjaf/jq-web/issues/31
+const GENERIC_ERROR = "generic error, no stack";
+
 export class JQTransformer extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
@@ -66,13 +72,20 @@ export class JQTransformer extends TransformerABC {
     try {
       return await applyJq({ input, filter });
     } catch (error) {
-      if (
-        isErrorObject(error) &&
-        error.message.includes("generic error, no stack")
-      ) {
-        // Give a more user-friendly error message for stream issues out of the user's control
-        // https://github.com/fiatjaf/jq-web/issues/31
-        throw new Error("Unable to run jq, try again");
+      if (isErrorObject(error)) {
+        if (error.message.includes(GENERIC_ERROR)) {
+          // Give a more user-friendly error message for stream issues out of the user's control
+          // https://github.com/fiatjaf/jq-web/issues/31
+          throw new Error("Unable to run jq, try again", { cause: error });
+        }
+
+        if (error.message.includes(JSON_ERROR)) {
+          // Give a more informative error message for issue cause by the filter/data
+          throw new BusinessError(
+            "Unexpected end of JSON input, ensure the jq filter produces a result for the data",
+            { cause: error }
+          );
+        }
       }
 
       // The message length check is there because the JQ error message sometimes is cut and if it is we try to parse the stacktrace

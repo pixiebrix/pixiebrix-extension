@@ -237,6 +237,8 @@ describe("runtime errors", () => {
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
-    await expect(promise).rejects.toThrow("Unexpected end of JSON input");
+    await expect(promise).rejects.toThrow(
+      "ensure the jq filter produces a result for the data"
+    );
   });
 });
