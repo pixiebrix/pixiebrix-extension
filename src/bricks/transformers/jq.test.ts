@@ -63,7 +63,33 @@ describe("smoke tests", () => {
       )
     );
 
-    await expect(values).resolves.toBeArray();
+    // There shouldn't be any interference between the concurrent runs
+    await expect(values).resolves.toStrictEqual(range(100).map((n) => n));
+  });
+
+  test("can run a lot of times", async () => {
+    // FIXME: remove from test suite (or skip) because it's quite slow to run this test
+    const brick = new JQTransformer();
+    const values = Promise.all(
+      range(3000).map(async (number) =>
+        brick.transform(
+          unsafeAssumeValidArg({
+            filter: ".foo.data",
+            data: { foo: { data: number } },
+          }),
+          {
+            ctxt: {},
+            root: null,
+            logger: new ConsoleLogger(),
+            runPipeline: neverPromise,
+            runRendererPipeline: neverPromise,
+          }
+        )
+      )
+    );
+
+    // There shouldn't be any interference between the concurrent runs
+    await expect(values).resolves.toStrictEqual(range(3000).map((n) => n));
   });
 });
 
