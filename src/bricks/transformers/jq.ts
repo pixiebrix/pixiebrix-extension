@@ -33,6 +33,9 @@ const JSON_ERROR = "Unexpected end of JSON input";
 // https://github.com/fiatjaf/jq-web/issues/31
 const GENERIC_ERROR = "generic error, no stack";
 
+// https://github.com/fiatjaf/jq-web/issues/18
+const FS_STREAM_ERROR = "FS error";
+
 export class JQTransformer extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
@@ -84,6 +87,10 @@ export class JQTransformer extends TransformerABC {
             "Unexpected end of JSON input, ensure the jq filter produces a result for the data",
             { cause: error }
           );
+        }
+
+        if (error.message.includes(FS_STREAM_ERROR)) {
+          throw new BusinessError("Error opening stream, reload the page");
         }
       }
 
