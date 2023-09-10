@@ -43,7 +43,7 @@ const modVariableNonces = new Map<string, UUID>();
 export class WithAsyncModVariable extends TransformerABC {
   // Brick id matches the existing YAML-defined brick id. The JS brick automatically takes precedence over the
   // user-defined brick if it's available.
-  static readonly BRICK_ID = validateRegistryId("@pixies/util/use-async-state");
+  static readonly BRICK_ID = validateRegistryId("@pixies/async");
 
   constructor() {
     super(
@@ -78,13 +78,19 @@ export class WithAsyncModVariable extends TransformerABC {
     ["body", "stateKey"]
   );
 
-  // This brick is a Transformer with an output key for backward-compatability. It produces no output, but was defined
-  // as a user-defined brick previously, so it had an output key.
   defaultOutputKey = "async";
 
   override outputSchema: Schema = {
     type: "object",
-    properties: {},
+    properties: {
+      nonce: {
+        type: "string",
+        format: "uuid",
+        description:
+          "The nonce for the run. Can be used to correlate the run with the Mod Variable data.",
+      },
+    },
+    required: ["nonce"],
     additionalProperties: false,
   };
 
@@ -152,6 +158,7 @@ export class WithAsyncModVariable extends TransformerABC {
             isFetching: false,
             currentData: data,
             data,
+            nonce,
             error: null,
           },
           "put"
@@ -170,13 +177,15 @@ export class WithAsyncModVariable extends TransformerABC {
             isError: true,
             currentData: null,
             data: null,
+            nonce,
             error: serializeError(error),
           },
           "put"
         );
       });
 
-    // Match the return value of the `@pixiebrix/run` brick in async mode
-    return {};
+    return {
+      nonce,
+    };
   }
 }
