@@ -48,7 +48,7 @@ export class WithAsyncModVariable extends TransformerABC {
   constructor() {
     super(
       WithAsyncModVariable.BRICK_ID,
-      "Run Async with Mod Variable",
+      "Run with Async Mod Variable",
       "Run bricks asynchronously and store the status and result in a Mod Variable"
     );
   }
@@ -121,6 +121,7 @@ export class WithAsyncModVariable extends TransformerABC {
       });
     };
 
+    // Mark as current request
     modVariableNonces.set(stateKey, nonce);
 
     // Preserve the previous data/error, if any.
