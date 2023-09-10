@@ -20,11 +20,11 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { InputValidationError } from "@/bricks/errors";
-import { isErrorObject } from "@/errors/errorHelpers";
+import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { applyJq } from "@/sandbox/messenger/executor";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { retryWithJitter } from "@/bricks/util";
+import { retryWithJitter } from "@/utils/promiseUtils";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
@@ -36,6 +36,24 @@ const GENERIC_ERROR = "generic error, no stack";
 
 // https://github.com/fiatjaf/jq-web/issues/18
 const FS_STREAM_ERROR = "FS error";
+
+const MAX_TRANSIENT_ERROR_RETRIES = 3;
+
+/**
+ * Return true for jq errors that might be transient.
+ *
+ * We're excluding FS_STREAM_ERROR because it most likely indicated emscripten has hit the stream limit, so additional
+ * retries would not success: https://github.com/fiatjaf/jq-web/issues/18
+ *
+ * JSON_ERROR can be deterministic, but we've also seen some error telemetry indicating it might be transient.
+ */
+function isTransientError(error: unknown): boolean {
+  return (
+    isErrorObject(error) &&
+    (error.message.includes(JSON_ERROR) ||
+      error.message.includes(GENERIC_ERROR))
+  );
+}
 
 export class JQTransformer extends TransformerABC {
   override async isPure(): Promise<boolean> {
@@ -73,26 +91,23 @@ export class JQTransformer extends TransformerABC {
     const input = isNullOrBlank(data) ? ctxt : data;
 
     try {
-      return await retryWithJitter(
-        async () => applyJq({ input, filter }),
-        3,
-        (error) =>
-          isErrorObject(error) &&
-          // We are excluding the FS stream error here because it's not recoverable, so retries won't help;
-          // see definition of FS_STREAM_ERROR above for more details
-          (error.message.includes(JSON_ERROR) ||
-            error.message.includes(GENERIC_ERROR))
-      );
+      return await retryWithJitter(async () => applyJq({ input, filter }), {
+        retries: MAX_TRANSIENT_ERROR_RETRIES,
+        shouldRetry: isTransientError,
+        // Just provide enough jitter that two problematic jq calls don't happen again at the same time
+        maxDelayMillis: 25,
+      });
     } catch (error) {
       if (isErrorObject(error)) {
         if (error.message.includes(GENERIC_ERROR)) {
-          // Give a more user-friendly error message for stream issues out of the user's control
+          // Give a more user-friendly error message for emscripten stream issues out of the user's control
           // https://github.com/fiatjaf/jq-web/issues/31
           throw new Error("Unable to run jq, try again", { cause: error });
         }
 
         if (error.message.includes(JSON_ERROR)) {
-          // Give a more informative error message for issue cause by the filter/data
+          // Give a more informative error message for issue cause by the filter/data combination.
+          // For example, this error can occur for a `.[]` filter when the data is an empty array.
           throw new BusinessError(
             "Unexpected end of JSON input, ensure the jq filter produces a result for the data",
             { cause: error }
@@ -102,42 +117,42 @@ export class JQTransformer extends TransformerABC {
         if (error.message.includes(FS_STREAM_ERROR)) {
           throw new BusinessError("Error opening stream, reload the page");
         }
-      }
 
-      // The message length check is there because the JQ error message sometimes is cut and if it is we try to parse the stacktrace
-      // See https://github.com/pixiebrix/pixiebrix-extension/issues/3216
-      if (
-        !isErrorObject(error) ||
-        (error.message.length > 13 && !error.message.includes("compile error"))
-      ) {
-        // Unless there's bug in jq itself, if there's an error at this point, it's business error
-        if (isErrorObject(error)) {
-          throw new BusinessError(error.message, { cause: error });
+        // Prefer the full error message from the stack trace, if available, because jq may truncate the message
+        // in the thrown error: https://github.com/pixiebrix/pixiebrix-extension/issues/3216
+        const stackMatch = jqStacktraceRegexp.exec(error.stack);
+        if (stackMatch?.groups?.message) {
+          throw new BusinessError(stackMatch.groups.message.trim());
         }
 
-        throw error;
+        if (error.message.includes("compile error")) {
+          const message = error.stack.includes("unexpected $end")
+            ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
+            : "Invalid jq filter, see error log for details";
+
+          throw new InputValidationError(
+            // FIXME: this error message does not make its way to ErrorItems on the server
+            message,
+            this.inputSchema,
+            { filter, data: input },
+            [
+              {
+                keyword: "format",
+                keywordLocation: "#/properties/filter/format",
+                instanceLocation: "#/filter",
+                error: error.stack,
+              },
+            ]
+          );
+        }
+
+        // At this point, unless there's a bug in jq itself, it's a business error due to the filter/data combination
+        throw new BusinessError(error.message, { cause: error });
       }
 
-      // At this point, we know it's a problem with the filter
-      const message = error.stack.includes("unexpected $end")
-        ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
-        : jqStacktraceRegexp.exec(error.stack)?.groups?.message?.trim() ??
-          "Invalid jq filter, see error log for details";
-
-      throw new InputValidationError(
-        // FIXME: this error message does not make its way to ErrorItems on the server
-        message,
-        this.inputSchema,
-        { filter, data: input },
-        [
-          {
-            keyword: "format",
-            keywordLocation: "#/properties/filter/format",
-            instanceLocation: "#/filter",
-            error: error.stack,
-          },
-        ]
-      );
+      // Report non error-objects as application errors so we see them in our application error telemetry
+      const message = getErrorMessage(error);
+      throw new Error(`Error running jq: ${message}`);
     }
   }
 }
