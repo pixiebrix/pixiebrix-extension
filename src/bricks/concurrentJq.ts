@@ -17,7 +17,7 @@
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { applyJq } from "@/sandbox/messenger/api";
+import { applyJq } from "@/sandbox/messenger/executor";
 import { range } from "lodash";
 
 export class ConcurrentJqTransformer extends TransformerABC {
@@ -38,7 +38,7 @@ export class ConcurrentJqTransformer extends TransformerABC {
 
   async transform() {
     await Promise.all(
-      range(3000).map(async (number) =>
+      range(3000).map(async () =>
         applyJq({
           input: { foo: { bar: { baz: "qux" } } },
           filter: ".foo.bar.baz",
