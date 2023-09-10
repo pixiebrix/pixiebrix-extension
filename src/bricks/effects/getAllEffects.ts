@@ -52,7 +52,6 @@ import { RunSubTourEffect } from "@/bricks/effects/runSubTour";
 import { type Brick } from "@/types/brickTypes";
 import PostMessageEffect from "@/bricks/effects/postMessage";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
-import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 
 function getAllEffects(): Brick[] {
   return [
@@ -72,7 +71,6 @@ function getAllEffects(): Brick[] {
     new AlertEffect(),
     new GetPageState(),
     new SetPageState(),
-    new WithAsyncModVariable(),
     new AssignModVariable(),
     new HideEffect(),
     new ExportCsv(),
