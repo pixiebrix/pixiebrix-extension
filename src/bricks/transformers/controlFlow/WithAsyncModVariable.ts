@@ -30,6 +30,7 @@ import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isEmpty } from "lodash";
+import { PropError } from "@/errors/businessErrors";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -89,7 +90,7 @@ export class WithAsyncModVariable extends TransformerABC {
         type: "string",
         format: "uuid",
         description:
-          "The unique nonce for the run. Can be used to correlate the run with the Mod Variable data.",
+          "A unique nonce for the run. Can be used to correlate the run with the Mod Variable data.",
       },
     },
     required: ["requestId"],
@@ -110,7 +111,12 @@ export class WithAsyncModVariable extends TransformerABC {
     const { blueprintId, extensionId } = logger.context;
 
     if (isNullOrBlank(stateKey)) {
-      throw new Error("Mod Variable Name is required");
+      throw new PropError(
+        "Mod Variable Name is required",
+        this.id,
+        "stateKey",
+        stateKey
+      );
     }
 
     const isCurrentNonce = () => modVariableNonces.get(stateKey) === requestId;
@@ -217,7 +223,7 @@ export class WithAsyncModVariable extends TransformerABC {
       });
 
     return {
-      nonce: requestId,
+      requestId,
     };
   }
 }
