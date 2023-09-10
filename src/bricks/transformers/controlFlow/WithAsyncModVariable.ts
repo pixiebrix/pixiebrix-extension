@@ -16,7 +16,7 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { setPageState } from "@/contentScript/pageState";
@@ -27,6 +27,13 @@ import {
 } from "@/types/runtimeTypes";
 import { serializeError } from "serialize-error";
 import { type JsonObject } from "type-fest";
+import { type UUID } from "@/types/stringTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
+
+/**
+ * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
+ */
+const modVariableNonces = new Map<string, UUID>();
 
 /**
  * A brick that stores the result of an asynchronous operation in a Mod Variable.
@@ -34,14 +41,15 @@ import { type JsonObject } from "type-fest";
  * The state shape is defined to be similar to RTK Query and our async hooks.
  */
 export class WithAsyncModVariable extends TransformerABC {
-  // Brick id matches the YAML-defined brick id
+  // Brick id matches the existing YAML-defined brick id. The JS brick automatically takes precedence over the
+  // user-defined brick if it's available.
   static readonly BRICK_ID = validateRegistryId("@pixies/util/use-async-state");
 
   constructor() {
     super(
       WithAsyncModVariable.BRICK_ID,
-      "With Async Mod Variable",
-      "Track an asynchronous operation with a Mod Variable"
+      "Run Async with Mod Variable",
+      "Run bricks asynchronously and store the status and result in a Mod Variable"
     );
   }
 
@@ -90,9 +98,16 @@ export class WithAsyncModVariable extends TransformerABC {
     }>,
     { logger, runPipeline }: BrickOptions
   ) {
+    const nonce = uuidv4();
     const { blueprintId, extensionId } = logger.context;
 
-    const set = (data: JsonObject, strategy: "put" | "patch") => {
+    if (isNullOrBlank(stateKey)) {
+      throw new Error("Mod Variable Name is required");
+    }
+
+    const isCurrentNonce = () => modVariableNonces.get(stateKey) === nonce;
+
+    const setModVariable = (data: JsonObject, strategy: "put" | "patch") => {
       setPageState({
         // Store as Mod Variable
         namespace: "blueprint",
@@ -106,7 +121,10 @@ export class WithAsyncModVariable extends TransformerABC {
       });
     };
 
-    set(
+    modVariableNonces.set(stateKey, nonce);
+
+    // Preserve the previous data/error, if any.
+    setModVariable(
       {
         isFetching: true,
         currentData: null,
@@ -119,30 +137,38 @@ export class WithAsyncModVariable extends TransformerABC {
       counter: 0,
     });
 
-    // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
     void bodyPromise
+      // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
       .then((data: JsonObject) => {
-        set(
+        if (!isCurrentNonce()) {
+          return;
+        }
+
+        setModVariable(
           {
+            isSuccess: true,
+            isError: false,
             isFetching: false,
             currentData: data,
             data,
-            isSuccess: true,
-            isError: false,
             error: null,
           },
           "put"
         );
-        // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
       })
+      // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
       .catch((error) => {
-        set(
+        if (!isCurrentNonce()) {
+          return;
+        }
+
+        setModVariable(
           {
             isFetching: false,
+            isSuccess: false,
+            isError: true,
             currentData: null,
             data: null,
-            isSuccess: true,
-            isError: false,
             error: serializeError(error),
           },
           "put"
