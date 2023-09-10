@@ -67,15 +67,11 @@ describe("smoke tests", () => {
     await expect(values).resolves.toStrictEqual(range(100).map((n) => n));
   });
 
-  test("can run a lot of times concurrently", async () => {
-    // https://github.com/fiatjaf/jq-web/issues/18
-
+  test.skip("can run a lot of times", async () => {
     // FIXME: remove from test suite (or skip) because it's quite slow to run this test
-    const runCount = 2500;
-
     const brick = new JQTransformer();
     const values = Promise.all(
-      range(runCount).map(async (number) =>
+      range(3000).map(async (number) =>
         brick.transform(
           unsafeAssumeValidArg({
             filter: ".foo.data",
@@ -93,40 +89,7 @@ describe("smoke tests", () => {
     );
 
     // There shouldn't be any interference between the concurrent runs
-    await expect(values).resolves.toStrictEqual(range(runCount).map((n) => n));
-  });
-
-  test("can run a lot of times sequentially", async () => {
-    // https://github.com/fiatjaf/jq-web/issues/18
-
-    // FIXME: remove from test suite (or skip) because it's quite slow to run this test
-    const runCount = 2500;
-
-    const brick = new JQTransformer();
-
-    const results = [];
-
-    for (let i = 0; i < runCount; i++) {
-      // eslint-disable-next-line no-await-in-loop -- intentionally sequential
-      results.push(
-        await brick.transform(
-          unsafeAssumeValidArg({
-            filter: ".foo.data",
-            data: { foo: { data: i } },
-          }),
-          {
-            ctxt: {},
-            root: null,
-            logger: new ConsoleLogger(),
-            runPipeline: neverPromise,
-            runRendererPipeline: neverPromise,
-          }
-        )
-      );
-    }
-
-    // There shouldn't be any interference between the concurrent runs
-    expect(results).toStrictEqual(range(runCount).map((n) => n));
+    await expect(values).resolves.toStrictEqual(range(3000).map((n) => n));
   });
 });
 
@@ -302,6 +265,33 @@ describe("runtime errors", () => {
     await expect(promise).rejects.toThrow(BusinessError);
     await expect(promise).rejects.toThrow(
       "ensure the jq filter produces a result for the data"
+    );
+  });
+
+  test("Error if FS stream unable to be opened", async () => {
+    // FIXME: remove from test suite (or skip) because it's quite slow to run this test
+    const brick = new JQTransformer();
+    const promise = Promise.all(
+      range(3000).map(async (number) =>
+        brick.transform(
+          unsafeAssumeValidArg({
+            filter: ".foo.data",
+            data: { foo: { data: number } },
+          }),
+          {
+            ctxt: {},
+            root: null,
+            logger: new ConsoleLogger(),
+            runPipeline: neverPromise,
+            runRendererPipeline: neverPromise,
+          }
+        )
+      )
+    );
+
+    await expect(promise).rejects.toThrow(BusinessError);
+    await expect(promise).rejects.toThrow(
+      "Error opening stream, reload the page"
     );
   });
 

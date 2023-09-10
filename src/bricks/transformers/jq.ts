@@ -24,6 +24,7 @@ import { isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { applyJq } from "@/sandbox/messenger/executor";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { retryWithJitter } from "@/bricks/util";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
@@ -34,7 +35,7 @@ const JSON_ERROR = "Unexpected end of JSON input";
 const GENERIC_ERROR = "generic error, no stack";
 
 // https://github.com/fiatjaf/jq-web/issues/18
-const FS_ERROR = "FS error";
+const FS_STREAM_ERROR = "FS error";
 
 export class JQTransformer extends TransformerABC {
   override async isPure(): Promise<boolean> {
@@ -72,7 +73,16 @@ export class JQTransformer extends TransformerABC {
     const input = isNullOrBlank(data) ? ctxt : data;
 
     try {
-      return await applyJq({ input, filter });
+      return await retryWithJitter(
+        async () => applyJq({ input, filter }),
+        3,
+        (error) =>
+          isErrorObject(error) &&
+          // We are excluding the FS stream error here because it's not recoverable, so retries won't help;
+          // see definition of FS_STREAM_ERROR above for more details
+          (error.message.includes(JSON_ERROR) ||
+            error.message.includes(GENERIC_ERROR))
+      );
     } catch (error) {
       if (isErrorObject(error)) {
         if (error.message.includes(GENERIC_ERROR)) {
@@ -81,19 +91,16 @@ export class JQTransformer extends TransformerABC {
           throw new Error("Unable to run jq, try again", { cause: error });
         }
 
-        if (error.message.includes(FS_ERROR)) {
-          // Provide workaround instructions for: https://github.com/fiatjaf/jq-web/issues/18
-          throw new Error("Error opening stream, reload the page", {
-            cause: error,
-          });
-        }
-
         if (error.message.includes(JSON_ERROR)) {
           // Give a more informative error message for issue cause by the filter/data
           throw new BusinessError(
             "Unexpected end of JSON input, ensure the jq filter produces a result for the data",
             { cause: error }
           );
+        }
+
+        if (error.message.includes(FS_STREAM_ERROR)) {
+          throw new BusinessError("Error opening stream, reload the page");
         }
       }
 
@@ -115,8 +122,7 @@ export class JQTransformer extends TransformerABC {
       const message = error.stack.includes("unexpected $end")
         ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
         : jqStacktraceRegexp.exec(error.stack)?.groups?.message?.trim() ??
-          error.stack;
-      // "Invalid jq filter, see error log for details";
+          "Invalid jq filter, see error log for details";
 
       throw new InputValidationError(
         // FIXME: this error message does not make its way to ErrorItems on the server
