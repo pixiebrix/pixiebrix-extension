@@ -69,7 +69,7 @@
     "export-to-csv": "^0.2.2",
     "filenamify": "^6.0.0",
     "fit-textarea": "^3.0.0",
-    "formik": "^2.4.3",
+    "formik": "^2.4.4",
     "fuse.js": "^6.4.6",
     "generate-schema": "^2.6.0",
     "handlebars": "^4.7.8",
