@@ -25,6 +25,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { type Brick } from "@/types/brickTypes";
 import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 import { removeUndefined } from "@/utils/objectUtils";
+import { sleep } from "@/utils/timeUtils";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");
@@ -70,4 +71,32 @@ export async function selectAllBlocks(
 ): Promise<Brick[]> {
   const ids = BlockIdVisitor.collectBlockIds(config);
   return Promise.all([...ids].map(async (id) => blockRegistry.lookup(id)));
+}
+
+/**
+ * Retry with jitter.
+ * @param fn the function to execute
+ * @param retries the number of times to retry
+ * @param retryError the error to retry on; all other errors will be thrown
+ */
+export async function retryWithJitter<T>(
+  fn: () => Promise<T>,
+  retries: number,
+  retryError: Error
+): Promise<T> {
+  for (let failedAttempts = 0; failedAttempts <= retries; failedAttempts++) {
+    const delayMs = Math.random() * 100;
+
+    try {
+      // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule
+      return await fn();
+    } catch (error) {
+      if (error !== retryError || failedAttempts === retries) {
+        throw error;
+      }
+
+      // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule
+      await sleep(delayMs);
+    }
+  }
 }
