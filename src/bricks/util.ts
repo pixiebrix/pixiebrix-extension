@@ -77,12 +77,12 @@ export async function selectAllBlocks(
  * Retry with jitter.
  * @param fn the function to execute
  * @param retries the number of times to retry
- * @param retryError the error to retry on; all other errors will be thrown
+ * @param retryError the error to retry on; all other errors will be thrown. Omit to retry on all errors.
  */
 export async function retryWithJitter<T>(
   fn: () => Promise<T>,
   retries: number,
-  retryError: Error
+  retryError?: Error
 ): Promise<T> {
   for (let failedAttempts = 0; failedAttempts <= retries; failedAttempts++) {
     const delayMs = Math.random() * 100;
@@ -91,7 +91,7 @@ export async function retryWithJitter<T>(
       // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule
       return await fn();
     } catch (error) {
-      if (error !== retryError || failedAttempts === retries) {
+      if ((retryError && error !== retryError) || failedAttempts === retries) {
         throw error;
       }
 

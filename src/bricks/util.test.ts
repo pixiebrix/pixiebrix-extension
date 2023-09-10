@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defaultBlockConfig, isOfficial } from "./util";
+import { defaultBlockConfig, isOfficial, retryWithJitter } from "./util";
 import { type RegistryId } from "@/types/registryTypes";
 import IfElse from "./transformers/controlFlow/IfElse";
 import { EMPTY_PIPELINE } from "@/testUtils/testHelpers";
@@ -53,5 +53,13 @@ describe("defaultBlockConfig", () => {
     } as Schema;
     const config = defaultBlockConfig(schema);
     expect(config.myProp).toStrictEqual(false);
+  });
+});
+
+describe("retryWithJitter", () => {
+  test("it executes a function successfully and returns the result", async () => {
+    const fn = jest.fn(async () => 1);
+    const result = await retryWithJitter(fn, 3);
+    expect(result).toBe(1);
   });
 });

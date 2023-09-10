@@ -24,6 +24,7 @@ import { isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { applyJq } from "@/sandbox/messenger/executor";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { retryWithJitter } from "@/bricks/util";
 
 const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
 
@@ -72,7 +73,11 @@ export class JQTransformer extends TransformerABC {
     const input = isNullOrBlank(data) ? ctxt : data;
 
     try {
-      return await applyJq({ input, filter });
+      return await retryWithJitter(
+        async () => applyJq({ input, filter }),
+        3,
+        JSON_ERROR
+      );
     } catch (error) {
       if (isErrorObject(error)) {
         if (error.message.includes(GENERIC_ERROR)) {
