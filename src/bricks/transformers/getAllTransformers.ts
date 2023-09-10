@@ -56,9 +56,11 @@ import { SplitText } from "@/bricks/transformers/splitText";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import ConvertDocument from "@/bricks/transformers/convertDocument";
 import { SearchText } from "@/bricks/transformers/searchText";
+import { ConcurrentJqTransformer } from "@/bricks/concurrentJq";
 
 function getAllTransformers(): Brick[] {
   return [
+    new ConcurrentJqTransformer(),
     new JQTransformer(),
     new ParseJson(),
     new JSONPathTransformer(),
