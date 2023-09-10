@@ -85,14 +85,14 @@ export class WithAsyncModVariable extends TransformerABC {
   override outputSchema: Schema = {
     type: "object",
     properties: {
-      nonce: {
+      requestId: {
         type: "string",
         format: "uuid",
         description:
-          "The nonce for the run. Can be used to correlate the run with the Mod Variable data.",
+          "The unique nonce for the run. Can be used to correlate the run with the Mod Variable data.",
       },
     },
-    required: ["nonce"],
+    required: ["requestId"],
     additionalProperties: false,
   };
 
