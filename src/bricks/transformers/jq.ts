@@ -76,15 +76,12 @@ export class JQTransformer extends TransformerABC {
       return await retryWithJitter(
         async () => applyJq({ input, filter }),
         3,
-        (error) => {
-          return (
-            isErrorObject(error) &&
-            // We are excluding the FS stream error here because it's not recoverable, so retries won't help;
-            // see definition of FS_STREAM_ERROR above for more details
-            (error.message.includes(JSON_ERROR) ||
-              error.message.includes(GENERIC_ERROR))
-          );
-        }
+        (error) =>
+          isErrorObject(error) &&
+          // We are excluding the FS stream error here because it's not recoverable, so retries won't help;
+          // see definition of FS_STREAM_ERROR above for more details
+          (error.message.includes(JSON_ERROR) ||
+            error.message.includes(GENERIC_ERROR))
       );
     } catch (error) {
       if (isErrorObject(error)) {
