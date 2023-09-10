@@ -95,9 +95,11 @@ describe("retryWithJitter", () => {
       throw new Error("different non-specified error");
     });
 
-    await expect(retryWithJitter(fn, 3, "a specified error")).rejects.toThrow(
-      "different non-specified error"
-    );
+    await expect(
+      retryWithJitter(fn, 3, (error) =>
+        (error as Error).message.includes("a specified error")
+      )
+    ).rejects.toThrow("different non-specified error");
     expect(fn).toHaveBeenCalledTimes(2);
   });
 });

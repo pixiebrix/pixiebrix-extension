@@ -26,7 +26,6 @@ import { type Brick } from "@/types/brickTypes";
 import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 import { removeUndefined } from "@/utils/objectUtils";
 import { sleep } from "@/utils/timeUtils";
-import { isErrorObject } from "@/errors/errorHelpers";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");
@@ -78,12 +77,12 @@ export async function selectAllBlocks(
  * Retry with jitter.
  * @param fn the function to execute
  * @param retries the number of times to retry
- * @param retryError the error to retry on; all other errors will be thrown. Omit to retry on all errors.
+ * @param shouldRetry whether or not to retry on a given error; defaults to always retrying
  */
 export async function retryWithJitter<T>(
   fn: () => Promise<T>,
   retries: number,
-  retryError?: string
+  shouldRetry: (error: unknown) => boolean = () => true
 ): Promise<T> {
   for (let failedAttempts = 0; failedAttempts <= retries; failedAttempts++) {
     const delayMs = Math.random() * 100;
@@ -92,14 +91,7 @@ export async function retryWithJitter<T>(
       // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule https://eslint.org/docs/latest/rules/no-await-in-loop#when-not-to-use-it
       return await fn();
     } catch (error) {
-      if (!isErrorObject(error)) {
-        throw error;
-      }
-
-      if (
-        (retryError && !error.message.includes(retryError)) ||
-        failedAttempts === retries - 1
-      ) {
+      if (!shouldRetry(error) || failedAttempts === retries - 1) {
         throw error;
       }
 

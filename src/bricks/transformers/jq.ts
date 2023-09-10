@@ -76,7 +76,16 @@ export class JQTransformer extends TransformerABC {
       return await retryWithJitter(
         async () => applyJq({ input, filter }),
         3,
-        JSON_ERROR
+        (error) => {
+          if (!isErrorObject(error)) {
+            throw error;
+          }
+
+          return (
+            error.message.includes(JSON_ERROR) ||
+            error.message.includes(GENERIC_ERROR)
+          );
+        }
       );
     } catch (error) {
       if (isErrorObject(error)) {
