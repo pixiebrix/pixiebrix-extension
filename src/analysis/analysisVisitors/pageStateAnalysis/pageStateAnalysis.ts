@@ -18,7 +18,10 @@
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { AnalysisVisitorWithResolvedBricksABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
-import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
+import {
+  GetPageState,
+  SetPageState,
+} from "@/bricks/effects/pageState/pageState";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import {

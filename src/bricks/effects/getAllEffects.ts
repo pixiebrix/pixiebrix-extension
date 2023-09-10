@@ -25,7 +25,7 @@ import { SetVueValues } from "./vue";
 import { ElementEvent } from "./event";
 import { WaitEffect, WaitElementEffect } from "./wait";
 import { AlertEffect } from "./alert";
-import { GetPageState, SetPageState } from "./pageState";
+import { GetPageState, SetPageState } from "./pageState/pageState";
 import { HideEffect } from "./hide";
 import { ExportCsv } from "./exportCsv";
 import { HideSidebar, ShowSidebar } from "./sidebar";

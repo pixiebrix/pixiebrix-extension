@@ -48,7 +48,7 @@ import { RendererABC } from "@/types/bricks/rendererTypes";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
 import cx from "classnames";
-import { namespaceOptions } from "@/bricks/effects/pageState";
+import { namespaceOptions } from "@/bricks/effects/pageState/pageState";
 import { isObject } from "@/utils/objectUtils";
 
 const fields = {
