@@ -38,12 +38,14 @@ export class ConcurrentJqTransformer extends TransformerABC {
 
   async transform() {
     await Promise.all(
-      range(3000).map(async () =>
-        applyJq({
+      range(3000).map(async (number) => {
+        await applyJq({
           input: { foo: { bar: { baz: "qux" } } },
           filter: ".foo.bar.baz",
-        })
-      )
+        });
+
+        console.log(`applyJq ${number} ok`);
+      })
     );
   }
 }
