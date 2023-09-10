@@ -61,5 +61,43 @@ describe("retryWithJitter", () => {
     const fn = jest.fn(async () => 1);
     const result = await retryWithJitter(fn, 3);
     expect(result).toBe(1);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  test("it retries a function that fails once and returns the result", async () => {
+    const fn = jest.fn(async () => {
+      if (fn.mock.calls.length === 1) {
+        throw new Error("error");
+      }
+
+      return 1;
+    });
+    const result = await retryWithJitter(fn, 2);
+    expect(result).toBe(1);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  test("it throws an error if the function fails more than the max retries", async () => {
+    const fn = jest.fn(async () => {
+      throw new Error("error");
+    });
+
+    await expect(retryWithJitter(fn, 3)).rejects.toThrow("error");
+    expect(fn).toHaveBeenCalledTimes(3);
+  });
+
+  test("it retries on the specified error, and throws on all other errors", async () => {
+    const fn = jest.fn(async () => {
+      if (fn.mock.calls.length === 1) {
+        throw new Error("error");
+      }
+
+      throw new Error("different non-specified error");
+    });
+
+    await expect(retryWithJitter(fn, 3, "error")).rejects.toThrow(
+      "different non-specified error"
+    );
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 });

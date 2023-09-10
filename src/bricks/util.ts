@@ -26,6 +26,7 @@ import { type Brick } from "@/types/brickTypes";
 import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 import { removeUndefined } from "@/utils/objectUtils";
 import { sleep } from "@/utils/timeUtils";
+import { isErrorObject } from "@/errors/errorHelpers";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");
@@ -82,16 +83,23 @@ export async function selectAllBlocks(
 export async function retryWithJitter<T>(
   fn: () => Promise<T>,
   retries: number,
-  retryError?: Error
+  retryError?: string
 ): Promise<T> {
   for (let failedAttempts = 0; failedAttempts <= retries; failedAttempts++) {
     const delayMs = Math.random() * 100;
 
     try {
-      // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule
+      // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule https://eslint.org/docs/latest/rules/no-await-in-loop#when-not-to-use-it
       return await fn();
     } catch (error) {
-      if ((retryError && error !== retryError) || failedAttempts === retries) {
+      if (!isErrorObject(error)) {
+        throw error;
+      }
+
+      if (
+        (retryError && error.message !== retryError) ||
+        failedAttempts === retries - 1
+      ) {
         throw error;
       }
 
