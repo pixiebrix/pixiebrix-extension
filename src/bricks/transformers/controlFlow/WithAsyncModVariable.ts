@@ -19,7 +19,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { setPageState } from "@/contentScript/pageState";
+import { getPageState, setPageState } from "@/contentScript/pageState";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -29,6 +29,7 @@ import { serializeError } from "serialize-error";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { isEmpty } from "lodash";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -38,7 +39,8 @@ const modVariableNonces = new Map<string, UUID>();
 /**
  * A brick that stores the result of an asynchronous operation in a Mod Variable.
  *
- * The state shape is defined to be similar to RTK Query and our async hooks.
+ * The state shape is defined to be similar to RTK Query and our async hooks:
+ * https://redux-toolkit.js.org/rtk-query/api/created-api/hooks#usequery
  */
 export class WithAsyncModVariable extends TransformerABC {
   // Brick id matches the existing YAML-defined brick id. The JS brick automatically takes precedence over the
@@ -104,14 +106,14 @@ export class WithAsyncModVariable extends TransformerABC {
     }>,
     { logger, runPipeline }: BrickOptions
   ) {
-    const nonce = uuidv4();
+    const requestId = uuidv4();
     const { blueprintId, extensionId } = logger.context;
 
     if (isNullOrBlank(stateKey)) {
       throw new Error("Mod Variable Name is required");
     }
 
-    const isCurrentNonce = () => modVariableNonces.get(stateKey) === nonce;
+    const isCurrentNonce = () => modVariableNonces.get(stateKey) === requestId;
 
     const setModVariable = (data: JsonObject, strategy: "put" | "patch") => {
       setPageState({
@@ -128,16 +130,44 @@ export class WithAsyncModVariable extends TransformerABC {
     };
 
     // Mark as current request
-    modVariableNonces.set(stateKey, nonce);
+    modVariableNonces.set(stateKey, requestId);
 
-    // Preserve the previous data/error, if any.
-    setModVariable(
-      {
-        isFetching: true,
-        currentData: null,
-      },
-      "patch"
-    );
+    // Get/set page state calls are synchronous from the content script, so safe to call sequentially
+    const currentState = getPageState({
+      namespace: "blueprint",
+      extensionId,
+      blueprintId,
+    });
+
+    // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly
+    const currentVariable = currentState[stateKey] ?? {};
+
+    if (isEmpty(currentVariable)) {
+      // Initialize the mod variable
+      setModVariable(
+        {
+          isLoading: true,
+          isFetching: true,
+          isSuccess: false,
+          isError: false,
+          currentData: null,
+          data: null,
+          // Nonce is set when setting the data/error
+          requestId: null,
+          error: null,
+        },
+        "patch"
+      );
+    } else {
+      // Preserve the previous data/error, if any
+      setModVariable(
+        {
+          isFetching: true,
+          currentData: null,
+        },
+        "patch"
+      );
+    }
 
     const bodyPromise = runPipeline(body, {
       key: "body",
@@ -153,12 +183,13 @@ export class WithAsyncModVariable extends TransformerABC {
 
         setModVariable(
           {
+            isLoading: false,
+            isFetching: false,
             isSuccess: true,
             isError: false,
-            isFetching: false,
             currentData: data,
             data,
-            nonce,
+            requestId,
             error: null,
           },
           "put"
@@ -172,12 +203,13 @@ export class WithAsyncModVariable extends TransformerABC {
 
         setModVariable(
           {
+            isLoading: false,
             isFetching: false,
             isSuccess: false,
             isError: true,
             currentData: null,
             data: null,
-            nonce,
+            requestId,
             error: serializeError(error),
           },
           "put"
@@ -185,7 +217,7 @@ export class WithAsyncModVariable extends TransformerABC {
       });
 
     return {
-      nonce,
+      nonce: requestId,
     };
   }
 }
