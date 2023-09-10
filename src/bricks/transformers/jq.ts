@@ -77,13 +77,10 @@ export class JQTransformer extends TransformerABC {
         async () => applyJq({ input, filter }),
         3,
         (error) => {
-          if (!isErrorObject(error)) {
-            throw error;
-          }
-
           return (
-            error.message.includes(JSON_ERROR) ||
-            error.message.includes(GENERIC_ERROR)
+            isErrorObject(error) &&
+            (error.message.includes(JSON_ERROR) ||
+              error.message.includes(GENERIC_ERROR))
           );
         }
       );
