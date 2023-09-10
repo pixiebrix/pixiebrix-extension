@@ -89,13 +89,13 @@ describe("retryWithJitter", () => {
   test("it retries on the specified error, and throws on all other errors", async () => {
     const fn = jest.fn(async () => {
       if (fn.mock.calls.length === 1) {
-        throw new Error("error");
+        throw new Error("a specified error");
       }
 
       throw new Error("different non-specified error");
     });
 
-    await expect(retryWithJitter(fn, 3, "error")).rejects.toThrow(
+    await expect(retryWithJitter(fn, 3, "a specified error")).rejects.toThrow(
       "different non-specified error"
     );
     expect(fn).toHaveBeenCalledTimes(2);

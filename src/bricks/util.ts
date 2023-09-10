@@ -97,7 +97,7 @@ export async function retryWithJitter<T>(
       }
 
       if (
-        (retryError && error.message !== retryError) ||
+        (retryError && !error.message.includes(retryError)) ||
         failedAttempts === retries - 1
       ) {
         throw error;
