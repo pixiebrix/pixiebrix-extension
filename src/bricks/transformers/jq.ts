@@ -42,10 +42,12 @@ const MAX_TRANSIENT_ERROR_RETRIES = 3;
 /**
  * Return true for jq errors that might be transient.
  *
- * We're excluding FS_STREAM_ERROR because it most likely indicated emscripten has hit the stream limit, so additional
- * retries would not success: https://github.com/fiatjaf/jq-web/issues/18
+ * We're excluding FS_STREAM_ERROR because it most likely indicates emscripten has hit the stream limit, so additional
+ * retries would not succeed: https://github.com/fiatjaf/jq-web/issues/18
  *
- * JSON_ERROR can be deterministic, but we've also seen some error telemetry indicating it might be transient.
+ * JSON_ERROR can be deterministic for filters/data that produce not result set, but we've also seen some error
+ * telemetry indicating it might also be transient.
+ * See https://www.notion.so/native/pixiebrix/e76066f260494677a2416ed50b4cfba8
  */
 function isTransientError(error: unknown): boolean {
   return (
