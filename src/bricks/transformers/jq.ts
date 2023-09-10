@@ -94,7 +94,7 @@ export class JQTransformer extends TransformerABC {
       return await retryWithJitter(async () => applyJq({ input, filter }), {
         retries: MAX_TRANSIENT_ERROR_RETRIES,
         shouldRetry: isTransientError,
-        // Just provide enough jitter that two problematic jq calls don't happen again at the same time
+        // Provide just enough jitter that two problematic jq calls don't happen again at the same time
         maxDelayMillis: 25,
       });
     } catch (error) {
@@ -118,8 +118,8 @@ export class JQTransformer extends TransformerABC {
           throw new BusinessError("Error opening stream, reload the page");
         }
 
-        // Prefer the full error message from the stack trace, if available, because jq may truncate the message
-        // in the thrown error: https://github.com/pixiebrix/pixiebrix-extension/issues/3216
+        // Prefer the full error message from the stack trace, if available, because jq/emscripten may truncate the
+        // message in the thrown error: https://github.com/pixiebrix/pixiebrix-extension/issues/3216
         const stackMatch = jqStacktraceRegexp.exec(error.stack);
         if (stackMatch?.groups?.message) {
           throw new BusinessError(stackMatch.groups.message.trim());
@@ -131,7 +131,8 @@ export class JQTransformer extends TransformerABC {
             : "Invalid jq filter, see error log for details";
 
           throw new InputValidationError(
-            // FIXME: this error message does not make its way to ErrorItems on the server
+            // The message does not appear to make its way to ErrorItems on the backend
+            // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/6405
             message,
             this.inputSchema,
             { filter, data: input },
@@ -150,7 +151,7 @@ export class JQTransformer extends TransformerABC {
         throw new BusinessError(error.message, { cause: error });
       }
 
-      // Report non error-objects as application errors so we see them in our application error telemetry
+      // Report non error-objects as application errors, so we see them in our application error telemetry
       const message = getErrorMessage(error);
       throw new Error(`Error running jq: ${message}`);
     }
