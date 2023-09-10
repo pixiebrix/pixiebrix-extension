@@ -33,6 +33,9 @@ const JSON_ERROR = "Unexpected end of JSON input";
 // https://github.com/fiatjaf/jq-web/issues/31
 const GENERIC_ERROR = "generic error, no stack";
 
+// https://github.com/fiatjaf/jq-web/issues/18
+const FS_ERROR = "FS error";
+
 export class JQTransformer extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
@@ -78,6 +81,13 @@ export class JQTransformer extends TransformerABC {
           throw new Error("Unable to run jq, try again", { cause: error });
         }
 
+        if (error.message.includes(FS_ERROR)) {
+          // Provide workaround instructions for: https://github.com/fiatjaf/jq-web/issues/18
+          throw new Error("Error opening stream, reload the page", {
+            cause: error,
+          });
+        }
+
         if (error.message.includes(JSON_ERROR)) {
           // Give a more informative error message for issue cause by the filter/data
           throw new BusinessError(
@@ -105,7 +115,8 @@ export class JQTransformer extends TransformerABC {
       const message = error.stack.includes("unexpected $end")
         ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
         : jqStacktraceRegexp.exec(error.stack)?.groups?.message?.trim() ??
-          "Invalid jq filter, see error log for details";
+          error.stack;
+      // "Invalid jq filter, see error log for details";
 
       throw new InputValidationError(
         // FIXME: this error message does not make its way to ErrorItems on the server
