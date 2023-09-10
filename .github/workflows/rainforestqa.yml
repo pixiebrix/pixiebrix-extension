@@ -20,7 +20,7 @@ jobs:
       RAINFOREST_RUN_GROUP_RELEASE: 14130
       RAINFOREST_RUN_GROUP_CWS: 14131
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: ".nvmrc"
