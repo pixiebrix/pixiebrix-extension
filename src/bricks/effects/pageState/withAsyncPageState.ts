@@ -19,6 +19,15 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
+import { setPageState } from "@/contentScript/pageState";
+import {
+  BrickArgs,
+  BrickOptions,
+  PipelineExpression,
+} from "@/types/runtimeTypes";
+
+const DEFAULT_NAMESPACE = "blueprint";
+const DEFAULT_MERGE_STRATEGY = "deep";
 
 export class WithAsyncPageState extends TransformerABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/use-async-state");
@@ -55,7 +64,35 @@ export class WithAsyncPageState extends TransformerABC {
     ["body", "stateKey"]
   );
 
-  async transform() {
-    // TODO: implement me
+  async transform(
+    {
+      body,
+      stateKey,
+    }: BrickArgs<{
+      body: PipelineExpression;
+      stateKey: string;
+    }>,
+    { logger }: BrickOptions
+  ) {
+    const { blueprintId = null, extensionId } = logger.context;
+    // First, set fetching state with SetPageState
+    setPageState({
+      namespace: DEFAULT_NAMESPACE,
+      data: {
+        [stateKey]: {
+          isFetching: true,
+          currentData: null,
+        },
+      },
+      mergeStrategy: DEFAULT_MERGE_STRATEGY,
+      extensionId,
+      blueprintId,
+    });
+
+    // Then, in a try/catch, run body
+
+    // If successful, set success state with SetPageState and result of body
+
+    // If failed, set failed state with SetPageState
   }
 }
