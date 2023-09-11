@@ -63,6 +63,7 @@ jest.mock("@/types/helpers", () => ({
 
 describe("WithAsyncModVariable", () => {
   let logger: Logger;
+  let expectedRequestNonce: string;
 
   beforeEach(() => {
     blockRegistry.clear();
@@ -71,12 +72,11 @@ describe("WithAsyncModVariable", () => {
       extensionId: uuidv4(),
       blueprintId: validateRegistryId("test/123"),
     });
+    expectedRequestNonce = v4();
+    (uuidv4 as jest.Mock).mockReturnValue(expectedRequestNonce);
   });
 
   test("returns request nonce and initializes page state immediately", async () => {
-    const expectedRequestNonce = v4();
-    (uuidv4 as jest.Mock).mockReturnValue(expectedRequestNonce);
-
     const pipeline = {
       id: withAsyncModVariableBrick.id,
       config: {
