@@ -18,6 +18,7 @@
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import {
+  deferredEchoBrick,
   echoBrick,
   simpleInput,
   testOptions,
@@ -30,6 +31,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import type { Logger } from "@/types/loggerTypes";
 import { v4 } from "uuid";
 import { getPageState } from "@/contentScript/pageState";
+import pDefer from "p-defer";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -195,5 +197,59 @@ describe("WithAsyncModVariable", () => {
         }),
       })
     );
+  });
+
+  test("returns request nonce and sets page state on successful async request", async () => {
+    const deferred = pDefer();
+    const asyncBrick = deferredEchoBrick(deferred.promise);
+
+    blockRegistry.register([asyncBrick]);
+
+    const pipeline = {
+      id: withAsyncModVariableBrick.id,
+      config: {
+        body: makePipelineExpression([
+          {
+            id: asyncBrick.id,
+            config: {
+              message: "bar",
+            },
+          },
+        ]),
+        stateKey: "foo",
+      },
+    };
+
+    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
+      ...testOptions("v3"),
+      logger,
+    });
+
+    deferred.resolve();
+
+    await new Promise(process.nextTick);
+
+    const pageState = getPageState({
+      namespace: "blueprint",
+      extensionId: logger.context.extensionId,
+      blueprintId: logger.context.blueprintId,
+    });
+
+    expect(brickOutput).toStrictEqual({
+      requestId: expectedRequestNonce,
+    });
+
+    expect(pageState).toStrictEqual({
+      foo: {
+        isLoading: false,
+        isFetching: false,
+        isSuccess: true,
+        isError: false,
+        currentData: { message: "bar" },
+        data: { message: "bar" },
+        requestId: expectedRequestNonce,
+        error: null,
+      },
+    });
   });
 });

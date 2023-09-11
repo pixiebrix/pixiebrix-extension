@@ -84,7 +84,7 @@ describe("Run", () => {
 
   test("async returns immediately", async () => {
     const deferred = pDefer();
-    const asyncBlock = deferredEchoBrick(deferred);
+    const asyncBlock = deferredEchoBrick(deferred.promise);
 
     blockRegistry.register([asyncBlock]);
     const pipeline = {
