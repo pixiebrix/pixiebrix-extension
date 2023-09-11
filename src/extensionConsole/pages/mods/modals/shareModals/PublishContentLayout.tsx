@@ -50,7 +50,7 @@ const PublishContentLayout: React.FunctionComponent<
         to change sharing
       </div>
       <div className={styles.row}>
-        <OwnerLabel />
+        <OwnerLabel blueprintId={blueprintId} />
         <span className="text-muted">Owner</span>
       </div>
       {sortedOrganizations
