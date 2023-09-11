@@ -73,7 +73,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
     isFetching: isFetchingRecipe,
     refetch: refetchRecipes,
   } = useOptionalModDefinition(blueprintId);
-  const hasEditPermissions = useHasEditPermissions();
+  const hasEditPermissions = useHasEditPermissions(blueprintId);
 
   const closeModal = () => {
     dispatch(modModalsSlice.actions.closeModal());
