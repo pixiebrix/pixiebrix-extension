@@ -16,6 +16,7 @@ import { BrickABC } from "@/types/brickTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isDeferExpression } from "@/utils/expressionUtils";
+import { DeferredPromise } from "p-defer";
 
 const logger = new ConsoleLogger();
 
@@ -53,6 +54,26 @@ export class EchoBrick extends BrickABC {
   });
 
   async run({ message }: BrickArgs) {
+    return { message };
+  }
+}
+
+class DeferredEchoBrick extends BrickABC {
+  static BLOCK_ID = validateRegistryId("test/deferred");
+  readonly promise: Promise<unknown>;
+  constructor(promise: Promise<unknown>) {
+    super(DeferredEchoBrick.BLOCK_ID, "Deferred Brick");
+    this.promise = promise;
+  }
+
+  inputSchema = propertiesToSchema({
+    message: {
+      type: "string",
+    },
+  });
+
+  async run({ message }: BrickArgs) {
+    await this.promise;
     return { message };
   }
 }
@@ -238,6 +259,9 @@ class DeferBrick extends BrickABC {
 }
 
 export const echoBrick = new EchoBrick();
+
+export const deferredEchoBrick = (promise: Promise<unknown>) =>
+  new DeferredEchoBrick(promise);
 export const contextBrick = new ContextBrick();
 export const identityBrick = new IdentityBrick();
 export const throwBrick = new ThrowBrick();

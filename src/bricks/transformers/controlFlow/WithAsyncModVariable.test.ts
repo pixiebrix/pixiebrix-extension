@@ -29,8 +29,32 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import type { Logger } from "@/types/loggerTypes";
 import { v4 } from "uuid";
 import { getPageState } from "@/contentScript/pageState";
+import { BrickABC } from "@/types/brickTypes";
+import { propertiesToSchema } from "@/validators/generic";
+import { BrickArgs } from "@/types/runtimeTypes";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
+
+class DeferredEchoBlock extends BrickABC {
+  static BLOCK_ID = validateRegistryId("test/deferred");
+  readonly promise: Promise<unknown>;
+  constructor(promise: Promise<unknown>) {
+    super(DeferredEchoBlock.BLOCK_ID, "Deferred Brick");
+    this.promise = promise;
+  }
+
+  inputSchema = propertiesToSchema({
+    message: {
+      type: "string",
+    },
+  });
+
+  async run({ message }: BrickArgs) {
+    await this.promise;
+    return { message };
+  }
+}
 
 jest.mock("@/types/helpers", () => ({
   ...jest.requireActual("@/types/helpers"),
@@ -49,7 +73,7 @@ describe("WithAsyncModVariable", () => {
     });
   });
 
-  test("returns request nonce immediately", async () => {
+  test("returns request nonce and initializes page state immediately", async () => {
     const expectedRequestNonce = v4();
     (uuidv4 as jest.Mock).mockReturnValue(expectedRequestNonce);
 
@@ -92,6 +116,56 @@ describe("WithAsyncModVariable", () => {
         currentData: null,
         data: null,
         requestId: null,
+        error: null,
+      },
+    });
+  });
+
+  test("returns request nonce and sets page state on success", async () => {
+    const expectedRequestNonce = v4();
+    (uuidv4 as jest.Mock).mockReturnValue(expectedRequestNonce);
+
+    const pipeline = {
+      id: withAsyncModVariableBrick.id,
+      config: {
+        body: makePipelineExpression([
+          {
+            id: echoBrick.id,
+            config: {
+              message: "bar",
+            },
+          },
+        ]),
+        stateKey: "foo",
+      },
+    };
+
+    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
+      ...testOptions("v3"),
+      logger,
+    });
+
+    await new Promise(process.nextTick);
+
+    const pageState = getPageState({
+      namespace: "blueprint",
+      extensionId: logger.context.extensionId,
+      blueprintId: logger.context.blueprintId,
+    });
+
+    expect(brickOutput).toStrictEqual({
+      requestId: expectedRequestNonce,
+    });
+
+    expect(pageState).toStrictEqual({
+      foo: {
+        isLoading: false,
+        isFetching: false,
+        isSuccess: true,
+        isError: false,
+        currentData: { message: "bar" },
+        data: { message: "bar" },
+        requestId: expectedRequestNonce,
         error: null,
       },
     });

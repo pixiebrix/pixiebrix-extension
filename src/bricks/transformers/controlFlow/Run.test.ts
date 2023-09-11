@@ -17,6 +17,7 @@
 
 import blockRegistry from "@/bricks/registry";
 import {
+  deferredEchoBrick,
   echoBrick,
   simpleInput,
   testOptions,
@@ -25,33 +26,9 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import Run from "@/bricks/transformers/controlFlow/Run";
-import { BrickABC } from "@/types/brickTypes";
-import { validateRegistryId } from "@/types/helpers";
-import { propertiesToSchema } from "@/validators/generic";
-import { type BrickArgs } from "@/types/runtimeTypes";
 import pDefer from "p-defer";
 
 const runBlock = new Run();
-
-class DeferredEchoBlock extends BrickABC {
-  static BLOCK_ID = validateRegistryId("test/deferred");
-  readonly promise: Promise<unknown>;
-  constructor(promise: Promise<unknown>) {
-    super(DeferredEchoBlock.BLOCK_ID, "Deferred Brick");
-    this.promise = promise;
-  }
-
-  inputSchema = propertiesToSchema({
-    message: {
-      type: "string",
-    },
-  });
-
-  async run({ message }: BrickArgs) {
-    await this.promise;
-    return { message };
-  }
-}
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -107,7 +84,7 @@ describe("Run", () => {
 
   test("async returns immediately", async () => {
     const deferred = pDefer();
-    const asyncBlock = new DeferredEchoBlock(deferred.promise);
+    const asyncBlock = deferredEchoBrick(deferred);
 
     blockRegistry.register([asyncBlock]);
     const pipeline = {
