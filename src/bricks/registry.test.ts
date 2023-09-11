@@ -110,6 +110,12 @@ describe("bricksRegistry", () => {
     expect(bricksRegistry.cached).toEqual([echoBrick]);
   });
 
+  test("skips undefined block", async () => {
+    bricksRegistry.register([undefined, echoBrick]);
+    await expect(bricksRegistry.all()).resolves.toEqual([echoBrick]);
+    expect(bricksRegistry.cached).toEqual([echoBrick]);
+  });
+
   test("preserves JS block on clear", async () => {
     bricksRegistry.register([echoBrick]);
     bricksRegistry.clear();

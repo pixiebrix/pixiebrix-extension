@@ -295,7 +295,7 @@ export class MemoryRegistry<
     let changed = false;
 
     for (const item of items) {
-      if (item.id == null) {
+      if (item?.id == null) {
         console.warn("Skipping item with no id", item);
         continue;
       }
