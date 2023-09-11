@@ -33,6 +33,7 @@ import type { Logger } from "@/types/loggerTypes";
 import { v4 } from "uuid";
 import { getPageState } from "@/contentScript/pageState";
 import pDefer, { type DeferredPromise } from "p-defer";
+import { tick } from "@/starterBricks/starterBrickTestUtils";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -131,7 +132,7 @@ describe("WithAsyncModVariable", () => {
     });
 
     deferred.resolve();
-    await new Promise(process.nextTick);
+    await tick();
 
     expect(brickOutput).toStrictEqual({
       requestId: expectedRequestNonce,
@@ -159,7 +160,7 @@ describe("WithAsyncModVariable", () => {
       logger,
     });
 
-    await new Promise(process.nextTick);
+    await tick();
 
     expect(brickOutput).toStrictEqual({
       requestId: expectedRequestNonce,
@@ -194,7 +195,7 @@ describe("WithAsyncModVariable", () => {
 
     deferred.resolve();
 
-    await new Promise(process.nextTick);
+    await tick();
 
     expect(brickOutput).toStrictEqual({
       requestId: expectedRequestNonce,
@@ -249,11 +250,24 @@ describe("WithAsyncModVariable", () => {
       requestId: latestRequestNonce,
     });
 
-    staleDeferred.resolve();
-    await new Promise(process.nextTick);
-
     deferred.resolve();
-    await new Promise(process.nextTick);
+    await tick();
+
+    expectPageState({
+      foo: {
+        isLoading: false,
+        isFetching: false,
+        isSuccess: true,
+        isError: false,
+        currentData: { message: "bar" },
+        data: { message: "bar" },
+        requestId: latestRequestNonce,
+        error: null,
+      },
+    });
+
+    staleDeferred.resolve();
+    await tick();
 
     expectPageState({
       foo: {
