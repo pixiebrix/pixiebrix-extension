@@ -30,34 +30,8 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import type { Logger } from "@/types/loggerTypes";
 import { v4 } from "uuid";
 import { getPageState } from "@/contentScript/pageState";
-import { BrickABC } from "@/types/brickTypes";
-import { propertiesToSchema } from "@/validators/generic";
-import type { BrickArgs } from "@/types/runtimeTypes";
-import { BusinessError } from "@/errors/businessErrors";
-import { serializeError } from "serialize-error";
-import { JsonValue } from "type-fest";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
-
-class DeferredEchoBlock extends BrickABC {
-  static BLOCK_ID = validateRegistryId("test/deferred");
-  readonly promise: Promise<unknown>;
-  constructor(promise: Promise<unknown>) {
-    super(DeferredEchoBlock.BLOCK_ID, "Deferred Brick");
-    this.promise = promise;
-  }
-
-  inputSchema = propertiesToSchema({
-    message: {
-      type: "string",
-    },
-  });
-
-  async run({ message }: BrickArgs) {
-    await this.promise;
-    return { message };
-  }
-}
 
 jest.mock("@/types/helpers", () => ({
   ...jest.requireActual("@/types/helpers"),
