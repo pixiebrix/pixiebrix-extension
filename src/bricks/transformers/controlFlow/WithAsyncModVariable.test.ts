@@ -195,6 +195,7 @@ describe("WithAsyncModVariable", () => {
 
   test("only sets page state with latest request result; ignores stale requests", async () => {
     const modVariable = "foo";
+    const expectedMessage = "bar";
     const firstDeferred = pDefer();
     const secondDeferred = pDefer();
 
@@ -207,7 +208,11 @@ describe("WithAsyncModVariable", () => {
     const staleAsyncBrick = new DeferredEchoBrick(promiseFactory);
     brickRegistry.register([staleAsyncBrick]);
 
-    const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
+    const pipeline = makeAsyncModVariablePipeline(
+      asyncEchoBrick,
+      expectedMessage,
+      modVariable
+    );
     const stalePipeline = makeAsyncModVariablePipeline(
       staleAsyncBrick,
       "I shouldn't be in the page state!",
@@ -248,8 +253,8 @@ describe("WithAsyncModVariable", () => {
         isFetching: false,
         isSuccess: true,
         isError: false,
-        currentData: { message: "bar" },
-        data: { message: "bar" },
+        currentData: { message: expectedMessage },
+        data: { message: expectedMessage },
         // Shape asserted above
         requestId: (secondOutput as { requestId: UUID }).requestId,
         error: null,
@@ -266,8 +271,8 @@ describe("WithAsyncModVariable", () => {
         isFetching: false,
         isSuccess: true,
         isError: false,
-        currentData: { message: "bar" },
-        data: { message: "bar" },
+        currentData: { message: expectedMessage },
+        data: { message: expectedMessage },
         // Shape asserted above
         requestId: (secondOutput as { requestId: UUID }).requestId,
         error: null,
