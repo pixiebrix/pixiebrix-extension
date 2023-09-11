@@ -28,9 +28,7 @@ beforeEach(() => {
 
 describe("@pixiebrix/state/get", () => {
   test("default to blueprint state", async () => {
-    const { GetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
-    );
+    const { GetPageState } = await import("@/bricks/effects/pageState");
 
     const brick = new GetPageState();
     const logger = new ConsoleLogger({
@@ -41,9 +39,7 @@ describe("@pixiebrix/state/get", () => {
   });
 
   test("is page state aware", async () => {
-    const { GetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
-    );
+    const { GetPageState } = await import("@/bricks/effects/pageState");
     const brick = new GetPageState();
     await expect(brick.isPageStateAware()).resolves.toBe(true);
   });
@@ -51,9 +47,7 @@ describe("@pixiebrix/state/get", () => {
 
 describe("@pixiebrix/state/set", () => {
   test("shallow merge", async () => {
-    const { SetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
-    );
+    const { SetPageState } = await import("@/bricks/effects/pageState");
 
     const brick = new SetPageState();
     const logger = new ConsoleLogger({
@@ -77,9 +71,7 @@ describe("@pixiebrix/state/set", () => {
   });
 
   test("deep merge does not append array elements", async () => {
-    const { SetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
-    );
+    const { SetPageState } = await import("@/bricks/effects/pageState");
 
     const brick = new SetPageState();
     const logger = new ConsoleLogger({
@@ -126,9 +118,7 @@ describe("@pixiebrix/state/set", () => {
   });
 
   it("returns mod variables", async () => {
-    const { SetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
-    );
+    const { SetPageState } = await import("@/bricks/effects/pageState");
     const brick = new SetPageState();
 
     await expect(
@@ -151,9 +141,7 @@ describe("@pixiebrix/state/set", () => {
   });
 
   it("ignores private variables", async () => {
-    const { SetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
-    );
+    const { SetPageState } = await import("@/bricks/effects/pageState");
     const brick = new SetPageState();
 
     await expect(
@@ -173,7 +161,7 @@ describe("@pixiebrix/state/set", () => {
 describe("set and get", () => {
   test("default to blueprint state", async () => {
     const { GetPageState, SetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
+      "@/bricks/effects/pageState"
     );
 
     const setState = new SetPageState();
@@ -209,7 +197,7 @@ describe("set and get", () => {
 
   test("default to shared if not part of blueprint", async () => {
     const { GetPageState, SetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
+      "@/bricks/effects/pageState"
     );
 
     const setState = new SetPageState();
@@ -243,9 +231,7 @@ describe("set and get", () => {
   });
 
   test("is page state aware", async () => {
-    const { SetPageState } = await import(
-      "@/bricks/effects/pageState/pageState"
-    );
+    const { SetPageState } = await import("@/bricks/effects/pageState");
     const brick = new SetPageState();
     await expect(brick.isPageStateAware()).resolves.toBe(true);
   });

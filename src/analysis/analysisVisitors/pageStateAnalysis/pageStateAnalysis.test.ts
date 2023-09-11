@@ -16,10 +16,7 @@
  */
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import {
-  GetPageState,
-  SetPageState,
-} from "@/bricks/effects/pageState/pageState";
+import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import { AnnotationType } from "@/types/annotationTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
