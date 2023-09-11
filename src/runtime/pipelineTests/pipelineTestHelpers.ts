@@ -16,6 +16,7 @@ import { BrickABC } from "@/types/brickTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isDeferExpression } from "@/utils/expressionUtils";
+import isPromise from "is-promise";
 
 const logger = new ConsoleLogger();
 
@@ -59,10 +60,10 @@ export class EchoBrick extends BrickABC {
 
 export class DeferredEchoBrick extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/deferred");
-  readonly promise: Promise<unknown>;
-  constructor(promise: Promise<unknown>) {
+  readonly promiseOrFactory: Promise<unknown> | (() => Promise<unknown>);
+  constructor(promiseOrFactory: Promise<unknown> | (() => Promise<unknown>)) {
     super(DeferredEchoBrick.BLOCK_ID, "Deferred Brick");
-    this.promise = promise;
+    this.promiseOrFactory = promiseOrFactory;
   }
 
   inputSchema = propertiesToSchema({
@@ -72,7 +73,13 @@ export class DeferredEchoBrick extends BrickABC {
   });
 
   async run({ message }: BrickArgs) {
-    await this.promise;
+    if (isPromise(this.promiseOrFactory)) {
+      await this.promiseOrFactory;
+    } else {
+      await this.promiseOrFactory();
+    }
+
+    await this.promiseOrFactory;
     return { message };
   }
 }
@@ -259,8 +266,6 @@ class DeferBrick extends BrickABC {
 
 export const echoBrick = new EchoBrick();
 
-export const deferredEchoBrick = (promise: Promise<unknown>) =>
-  new DeferredEchoBrick(promise);
 export const contextBrick = new ContextBrick();
 export const identityBrick = new IdentityBrick();
 export const throwBrick = new ThrowBrick();

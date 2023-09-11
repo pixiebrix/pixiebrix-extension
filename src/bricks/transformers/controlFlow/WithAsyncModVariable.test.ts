@@ -18,32 +18,29 @@
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import {
-  type DeferredEchoBrick,
-  deferredEchoBrick,
+  DeferredEchoBrick,
   simpleInput,
   testOptions,
-  type ThrowBrick,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
-import type { Logger } from "@/types/loggerTypes";
-import { v4 } from "uuid";
-import { getPageState } from "@/contentScript/pageState";
+import { getPageState, setPageState } from "@/contentScript/pageState";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
+import { type Brick } from "@/types/brickTypes";
+import {
+  autoUUIDSequence,
+  registryIdFactory,
+} from "@/testUtils/factories/stringFactories";
+import { type UUID } from "@/types/stringTypes";
+import { UnknownObject } from "@/types/objectTypes";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
-jest.mock("@/types/helpers", () => ({
-  ...jest.requireActual("@/types/helpers"),
-  uuidv4: jest.fn(() => v4()),
-}));
-
 const makeAsyncModVariablePipeline = (
-  brick: DeferredEchoBrick | ThrowBrick,
+  brick: Brick,
   message: string,
   stateKey: string
 ) => ({
@@ -61,40 +58,48 @@ const makeAsyncModVariablePipeline = (
   },
 });
 
+const extensionId = autoUUIDSequence();
+const blueprintId = registryIdFactory();
+
+const logger = new ConsoleLogger({
+  extensionId,
+  blueprintId,
+});
+
+function expectPageState(expectedState: UnknownObject) {
+  const pageState = getPageState({
+    namespace: "blueprint",
+    extensionId,
+    blueprintId,
+  });
+
+  expect(pageState).toStrictEqual(expectedState);
+}
+
 describe("WithAsyncModVariable", () => {
-  let logger: Logger;
-  let expectedRequestNonce: string;
   let deferred: DeferredPromise<void>;
   let asyncEchoBrick: DeferredEchoBrick;
-  let expectPageState: (expectedState: any) => void;
 
   beforeEach(() => {
-    deferred = pDefer();
-    asyncEchoBrick = deferredEchoBrick(deferred.promise);
+    // Reset the page state to avoid interference between tests
+    setPageState({
+      namespace: "blueprint",
+      data: {},
+      blueprintId,
+      extensionId,
+      mergeStrategy: "replace",
+    });
 
-    blockRegistry.clear();
-    blockRegistry.register([
+    // Most tests just require a single brick instance for testing
+    deferred = pDefer();
+    asyncEchoBrick = new DeferredEchoBrick(deferred.promise);
+
+    brickRegistry.clear();
+    brickRegistry.register([
       asyncEchoBrick,
       throwBrick,
       withAsyncModVariableBrick,
     ]);
-
-    logger = new ConsoleLogger({
-      extensionId: uuidv4(),
-      blueprintId: validateRegistryId("test/123"),
-    });
-
-    expectedRequestNonce = v4();
-    (uuidv4 as jest.Mock).mockReturnValue(expectedRequestNonce);
-
-    expectPageState = (expectedState: any) => {
-      const pageState = getPageState({
-        namespace: "blueprint",
-        extensionId: logger.context.extensionId,
-        blueprintId: logger.context.blueprintId,
-      });
-      expect(pageState).toStrictEqual(expectedState);
-    };
   });
 
   test("returns request nonce and initializes page state immediately", async () => {
@@ -106,11 +111,12 @@ describe("WithAsyncModVariable", () => {
     });
 
     expect(brickOutput).toStrictEqual({
-      requestId: expectedRequestNonce,
+      requestId: expect.toBeString(),
     });
 
     expectPageState({
       foo: {
+        // Initializes loading state
         isLoading: true,
         isFetching: true,
         isSuccess: false,
@@ -135,7 +141,7 @@ describe("WithAsyncModVariable", () => {
     await tick();
 
     expect(brickOutput).toStrictEqual({
-      requestId: expectedRequestNonce,
+      requestId: expect.toBeString(),
     });
 
     expectPageState({
@@ -146,7 +152,8 @@ describe("WithAsyncModVariable", () => {
         isError: false,
         currentData: { message: "bar" },
         data: { message: "bar" },
-        requestId: expectedRequestNonce,
+        // Shape asserted above
+        requestId: (brickOutput as { requestId: UUID }).requestId,
         error: null,
       },
     });
@@ -163,7 +170,7 @@ describe("WithAsyncModVariable", () => {
     await tick();
 
     expect(brickOutput).toStrictEqual({
-      requestId: expectedRequestNonce,
+      requestId: expect.toBeString(),
     });
 
     expectPageState({
@@ -174,7 +181,8 @@ describe("WithAsyncModVariable", () => {
         isError: true,
         currentData: null,
         data: null,
-        requestId: expectedRequestNonce,
+        // Shape asserted above
+        requestId: (brickOutput as { requestId: UUID }).requestId,
         error: expect.objectContaining({
           cause: expect.objectContaining({
             name: "BusinessError",
@@ -185,90 +193,55 @@ describe("WithAsyncModVariable", () => {
     });
   });
 
-  test("returns request nonce and sets page state on successful async request", async () => {
-    const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
-
-    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
-      logger,
-    });
-
-    deferred.resolve();
-
-    await tick();
-
-    expect(brickOutput).toStrictEqual({
-      requestId: expectedRequestNonce,
-    });
-
-    expectPageState({
-      foo: {
-        isLoading: false,
-        isFetching: false,
-        isSuccess: true,
-        isError: false,
-        currentData: { message: "bar" },
-        data: { message: "bar" },
-        requestId: expectedRequestNonce,
-        error: null,
-      },
-    });
-  });
-
   test("only sets page state with latest request result; ignores stale requests", async () => {
-    const staleDeferred = pDefer();
-    const staleAsyncBrick = deferredEchoBrick(staleDeferred.promise);
+    const modVariable = "foo";
+    const firstDeferred = pDefer();
+    const secondDeferred = pDefer();
 
-    blockRegistry.register([staleAsyncBrick]);
+    const promiseFactory = jest
+      .fn()
+      .mockReturnValueOnce(firstDeferred.promise)
+      .mockReturnValueOnce(secondDeferred.promise);
+
+    // Override the default brick for the test
+    const staleAsyncBrick = new DeferredEchoBrick(promiseFactory);
+    brickRegistry.register([staleAsyncBrick]);
 
     const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", "foo");
     const stalePipeline = makeAsyncModVariablePipeline(
       staleAsyncBrick,
       "I shouldn't be in the page state!",
-      "foo"
+      modVariable
     );
 
-    const staleRequestNonce = expectedRequestNonce;
-    const staleOutput = await reducePipeline(stalePipeline, simpleInput({}), {
+    await reducePipeline(stalePipeline, simpleInput({}), {
       ...testOptions("v3"),
       logger,
     });
 
-    expect(staleOutput).toStrictEqual({
-      requestId: staleRequestNonce,
-    });
-
-    const latestRequestNonce = v4();
-    (uuidv4 as jest.Mock).mockReturnValue(latestRequestNonce);
-
-    const latestOutput = await reducePipeline(pipeline, simpleInput({}), {
+    const secondOutput = await reducePipeline(pipeline, simpleInput({}), {
       ...testOptions("v3"),
       logger,
     });
 
-    expect(latestOutput).toStrictEqual({
-      requestId: latestRequestNonce,
-    });
-
-    deferred.resolve();
-    await tick();
-
+    // Neither are resolved, should be in loading state
     expectPageState({
       foo: {
-        isLoading: false,
-        isFetching: false,
-        isSuccess: true,
+        isLoading: true,
+        isFetching: true,
+        isSuccess: false,
         isError: false,
-        currentData: { message: "bar" },
-        data: { message: "bar" },
-        requestId: latestRequestNonce,
+        currentData: null,
+        data: null,
+        requestId: null,
         error: null,
       },
     });
 
-    staleDeferred.resolve();
+    secondDeferred.resolve();
     await tick();
 
+    // State should update to be the second request
     expectPageState({
       foo: {
         isLoading: false,
@@ -277,7 +250,26 @@ describe("WithAsyncModVariable", () => {
         isError: false,
         currentData: { message: "bar" },
         data: { message: "bar" },
-        requestId: latestRequestNonce,
+        // Shape asserted above
+        requestId: (secondOutput as { requestId: UUID }).requestId,
+        error: null,
+      },
+    });
+
+    firstDeferred.resolve();
+    await tick();
+
+    // State should not update, because the result is stale
+    expectPageState({
+      foo: {
+        isLoading: false,
+        isFetching: false,
+        isSuccess: true,
+        isError: false,
+        currentData: { message: "bar" },
+        data: { message: "bar" },
+        // Shape asserted above
+        requestId: (secondOutput as { requestId: UUID }).requestId,
         error: null,
       },
     });
