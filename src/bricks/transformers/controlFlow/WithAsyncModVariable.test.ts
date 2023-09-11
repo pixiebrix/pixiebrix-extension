@@ -31,7 +31,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import type { Logger } from "@/types/loggerTypes";
 import { v4 } from "uuid";
-import { getPageState } from "@/contentScript/pageState";
+import { getPageState, setPageState } from "@/contentScript/pageState";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 
@@ -86,6 +86,15 @@ describe("WithAsyncModVariable", () => {
 
     expectedRequestNonce = v4();
     (uuidv4 as jest.Mock).mockReturnValue(expectedRequestNonce);
+
+    // Reset the page state
+    setPageState({
+      namespace: "blueprint",
+      data: {},
+      mergeStrategy: "deep",
+      extensionId: logger.context.extensionId,
+      blueprintId: logger.context.blueprintId,
+    });
 
     expectPageState = (expectedState: any) => {
       const pageState = getPageState({
