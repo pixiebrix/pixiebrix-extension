@@ -35,7 +35,7 @@ import {
   registryIdFactory,
 } from "@/testUtils/factories/stringFactories";
 import { type UUID } from "@/types/stringTypes";
-import { UnknownObject } from "@/types/objectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -241,7 +241,7 @@ describe("WithAsyncModVariable", () => {
     secondDeferred.resolve();
     await tick();
 
-    // State should update to be the second request
+    // State should update to be the second request, even though the first request is not completed
     expectPageState({
       foo: {
         isLoading: false,
@@ -259,7 +259,7 @@ describe("WithAsyncModVariable", () => {
     firstDeferred.resolve();
     await tick();
 
-    // State should not update, because the result is stale
+    // State should not update, because the result from the first call is stale
     expectPageState({
       foo: {
         isLoading: false,
