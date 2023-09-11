@@ -16,7 +16,6 @@ import { BrickABC } from "@/types/brickTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isDeferExpression } from "@/utils/expressionUtils";
-import { DeferredPromise } from "p-defer";
 
 const logger = new ConsoleLogger();
 

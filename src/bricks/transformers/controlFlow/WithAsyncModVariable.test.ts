@@ -21,6 +21,7 @@ import {
   echoBrick,
   simpleInput,
   testOptions,
+  throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import blockRegistry from "@/bricks/registry";
@@ -31,8 +32,10 @@ import { v4 } from "uuid";
 import { getPageState } from "@/contentScript/pageState";
 import { BrickABC } from "@/types/brickTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { BrickArgs } from "@/types/runtimeTypes";
-import { waitForEffect } from "@/testUtils/testHelpers";
+import type { BrickArgs } from "@/types/runtimeTypes";
+import { BusinessError } from "@/errors/businessErrors";
+import { serializeError } from "serialize-error";
+import { JsonValue } from "type-fest";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -67,7 +70,7 @@ describe("WithAsyncModVariable", () => {
 
   beforeEach(() => {
     blockRegistry.clear();
-    blockRegistry.register([echoBrick, withAsyncModVariableBrick]);
+    blockRegistry.register([echoBrick, throwBrick, withAsyncModVariableBrick]);
     logger = new ConsoleLogger({
       extensionId: uuidv4(),
       blueprintId: validateRegistryId("test/123"),
@@ -122,9 +125,6 @@ describe("WithAsyncModVariable", () => {
   });
 
   test("returns request nonce and sets page state on success", async () => {
-    const expectedRequestNonce = v4();
-    (uuidv4 as jest.Mock).mockReturnValue(expectedRequestNonce);
-
     const pipeline = {
       id: withAsyncModVariableBrick.id,
       config: {
@@ -169,5 +169,57 @@ describe("WithAsyncModVariable", () => {
         error: null,
       },
     });
+  });
+
+  test("returns request nonce and sets page state on error", async () => {
+    const pipeline = {
+      id: withAsyncModVariableBrick.id,
+      config: {
+        body: makePipelineExpression([
+          {
+            id: throwBrick.id,
+            config: {
+              message: "error",
+            },
+          },
+        ]),
+        stateKey: "foo",
+      },
+    };
+
+    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
+      ...testOptions("v3"),
+      logger,
+    });
+
+    await new Promise(process.nextTick);
+
+    const pageState = getPageState({
+      namespace: "blueprint",
+      extensionId: logger.context.extensionId,
+      blueprintId: logger.context.blueprintId,
+    });
+
+    expect(brickOutput).toStrictEqual({
+      requestId: expectedRequestNonce,
+    });
+
+    expect(pageState.foo).toEqual(
+      expect.objectContaining({
+        isLoading: false,
+        isFetching: false,
+        isSuccess: false,
+        isError: true,
+        currentData: null,
+        data: null,
+        requestId: expectedRequestNonce,
+        error: expect.objectContaining({
+          cause: expect.objectContaining({
+            name: "BusinessError",
+            message: "error",
+          }),
+        }),
+      })
+    );
   });
 });
