@@ -28,6 +28,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import type { Logger } from "@/types/loggerTypes";
 import { v4 } from "uuid";
+import { getPageState } from "@/contentScript/pageState";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -48,7 +49,7 @@ describe("WithAsyncModVariable", () => {
     });
   });
 
-  test("returns request nonce on success", async () => {
+  test("returns request nonce immediately", async () => {
     const expectedRequestNonce = v4();
     (uuidv4 as jest.Mock).mockReturnValue(expectedRequestNonce);
 
@@ -67,13 +68,32 @@ describe("WithAsyncModVariable", () => {
       },
     };
 
-    const result = await reducePipeline(pipeline, simpleInput({}), {
+    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
       ...testOptions("v3"),
       logger,
     });
 
-    expect(result).toEqual({
+    const pageState = getPageState({
+      namespace: "blueprint",
+      extensionId: logger.context.extensionId,
+      blueprintId: logger.context.blueprintId,
+    });
+
+    expect(brickOutput).toStrictEqual({
       requestId: expectedRequestNonce,
+    });
+
+    expect(pageState).toStrictEqual({
+      foo: {
+        isLoading: true,
+        isFetching: true,
+        isSuccess: false,
+        isError: false,
+        currentData: null,
+        data: null,
+        requestId: null,
+        error: null,
+      },
     });
   });
 });
