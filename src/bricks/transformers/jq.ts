@@ -93,6 +93,8 @@ export class JQTransformer extends TransformerABC {
     const input = isNullOrBlank(data) ? ctxt : data;
 
     try {
+      throw new Error("compile error");
+
       return await retryWithJitter(async () => applyJq({ input, filter }), {
         retries: MAX_TRANSIENT_ERROR_RETRIES,
         shouldRetry: isTransientError,

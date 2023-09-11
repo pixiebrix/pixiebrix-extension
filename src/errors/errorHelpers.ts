@@ -22,6 +22,7 @@ import { selectNetworkErrorMessage } from "@/errors/networkErrorHelpers";
 import { type MessageContext } from "@/types/loggerTypes";
 import { matchesAnyPattern, smartAppendPeriod } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
+import { type OutputUnit } from "@cfworker/json-schema";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
@@ -116,6 +117,16 @@ export function isCustomAggregateError(
   error: unknown
 ): error is ErrorObject & { errors: unknown[] } {
   return isObject(error) && "errors" in error && Array.isArray(error.errors);
+}
+
+function isOutputUnitError(error: unknown): error is OutputUnit {
+  return (
+    isObject(error) &&
+    typeof error.keyword === "string" &&
+    typeof error.keywordLocation === "string" &&
+    typeof error.instanceLocation === "string" &&
+    typeof error.error === "string"
+  );
 }
 
 export function selectSpecificError<
@@ -223,7 +234,19 @@ export function getErrorMessage(
   }
 
   if (isCustomAggregateError(error)) {
-    return error.errors.filter((x) => typeof x === "string").join(". ");
+    return error.errors
+      .map((e) => {
+        if (typeof e === "string") {
+          return e;
+        }
+
+        if (isOutputUnitError(e)) {
+          return e.error;
+        }
+      })
+      .join(". ");
+
+    // TODO: what to do here?
   }
 
   return String(selectError(error).message ?? defaultMessage);
