@@ -252,4 +252,80 @@ describe("WithAsyncModVariable", () => {
       },
     });
   });
+
+  test("only sets page state with latest request result; ignores stale requests", async () => {
+    const deferredA = pDefer();
+    const deferredB = pDefer();
+
+    const asyncBrickA = deferredEchoBrick(deferredA.promise);
+    const asyncBrickB = deferredEchoBrick(deferredB.promise);
+
+    blockRegistry.register([asyncBrickA, asyncBrickB]);
+
+    const pipelineA = {
+      id: withAsyncModVariableBrick.id,
+      config: {
+        body: makePipelineExpression([
+          {
+            id: asyncBrickA.id,
+            config: {
+              message: "I should not be in page state!",
+            },
+          },
+        ]),
+        stateKey: "foo",
+      },
+    };
+
+    const pipelineB = {
+      id: withAsyncModVariableBrick.id,
+      config: {
+        body: makePipelineExpression([
+          {
+            id: asyncBrickA.id,
+            config: {
+              message: "bar",
+            },
+          },
+        ]),
+        stateKey: "foo",
+      },
+    };
+
+    await Promise.all([
+      reducePipeline(pipelineA, simpleInput({}), {
+        ...testOptions("v3"),
+        logger,
+      }),
+      reducePipeline(pipelineB, simpleInput({}), {
+        ...testOptions("v3"),
+        logger,
+      }),
+    ]);
+
+    deferredA.resolve();
+    await new Promise(process.nextTick);
+
+    deferredB.resolve();
+    await new Promise(process.nextTick);
+
+    const pageState = getPageState({
+      namespace: "blueprint",
+      extensionId: logger.context.extensionId,
+      blueprintId: logger.context.blueprintId,
+    });
+
+    expect(pageState).toStrictEqual({
+      foo: {
+        isLoading: false,
+        isFetching: false,
+        isSuccess: true,
+        isError: false,
+        currentData: { message: "bar" },
+        data: { message: "bar" },
+        requestId: expectedRequestNonce,
+        error: null,
+      },
+    });
+  });
 });
