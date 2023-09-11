@@ -16,16 +16,17 @@
  */
 
 import { selectAuth } from "@/auth/authSelectors";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { UserRole } from "@/types/contract";
-import { type RegistryId } from "@/types/registryTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { useSelector } from "react-redux";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
-export default function useHasEditPermissions(blueprintId: RegistryId) {
+export default function useHasEditPermissions() {
+  const { blueprintId } = useSelector(selectShowPublishContext);
   const { scope: userScope } = useSelector(selectAuth);
 
   const { data: recipe } = useOptionalModDefinition(blueprintId);

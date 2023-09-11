@@ -39,7 +39,7 @@ const PublishContentLayout: React.FunctionComponent<
   const { data: recipe } = useOptionalModDefinition(blueprintId);
 
   const sortedOrganizations = useSortOrganizations();
-  const hasEditPermissions = useHasEditPermissions(blueprintId);
+  const hasEditPermissions = useHasEditPermissions();
 
   const body = hasEditPermissions ? (
     children
