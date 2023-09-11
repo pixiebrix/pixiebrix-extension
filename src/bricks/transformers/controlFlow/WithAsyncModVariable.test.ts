@@ -237,16 +237,16 @@ describe("WithAsyncModVariable", () => {
       requestId: staleRequestNonce,
     });
 
-    const mostRecentRequestNonce = v4();
-    (uuidv4 as jest.Mock).mockReturnValue(mostRecentRequestNonce);
+    const latestRequestNonce = v4();
+    (uuidv4 as jest.Mock).mockReturnValue(latestRequestNonce);
 
-    const brickOutput = await reducePipeline(pipeline, simpleInput({}), {
+    const latestOutput = await reducePipeline(pipeline, simpleInput({}), {
       ...testOptions("v3"),
       logger,
     });
 
-    expect(brickOutput).toStrictEqual({
-      requestId: mostRecentRequestNonce,
+    expect(latestOutput).toStrictEqual({
+      requestId: latestRequestNonce,
     });
 
     staleDeferred.resolve();
@@ -263,7 +263,7 @@ describe("WithAsyncModVariable", () => {
         isError: false,
         currentData: { message: "bar" },
         data: { message: "bar" },
-        requestId: mostRecentRequestNonce,
+        requestId: latestRequestNonce,
         error: null,
       },
     });
