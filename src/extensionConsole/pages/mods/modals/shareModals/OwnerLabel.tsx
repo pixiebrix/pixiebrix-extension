@@ -16,17 +16,18 @@
  */
 
 import { selectAuth } from "@/auth/authSelectors";
-import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
+import { type RegistryId } from "@/types/registryTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useSelector } from "react-redux";
 
-const OwnerLabel: React.FunctionComponent = () => {
-  const { blueprintId } = useSelector(selectShowPublishContext);
+const OwnerLabel: React.FunctionComponent<{ blueprintId: RegistryId }> = ({
+  blueprintId,
+}) => {
   const { scope: userScope } = useSelector(selectAuth);
 
   const { data: recipe } = useOptionalModDefinition(blueprintId);
