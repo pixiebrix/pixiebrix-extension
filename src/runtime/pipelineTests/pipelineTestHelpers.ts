@@ -57,7 +57,7 @@ export class EchoBrick extends BrickABC {
   }
 }
 
-class DeferredEchoBrick extends BrickABC {
+export class DeferredEchoBrick extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/deferred");
   readonly promise: Promise<unknown>;
   constructor(promise: Promise<unknown>) {

@@ -18,10 +18,12 @@
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import {
+  DeferredEchoBrick,
   deferredEchoBrick,
   echoBrick,
   simpleInput,
   testOptions,
+  ThrowBrick,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
@@ -39,6 +41,25 @@ jest.mock("@/types/helpers", () => ({
   ...jest.requireActual("@/types/helpers"),
   uuidv4: jest.fn(() => v4()),
 }));
+
+const makeAsyncModVariablePipeline = (
+  brick: DeferredEchoBrick | ThrowBrick,
+  message: string,
+  stateKey: string
+) => ({
+  id: withAsyncModVariableBrick.id,
+  config: {
+    body: makePipelineExpression([
+      {
+        id: brick.id,
+        config: {
+          message,
+        },
+      },
+    ]),
+    stateKey,
+  },
+});
 
 describe("WithAsyncModVariable", () => {
   let logger: Logger;
