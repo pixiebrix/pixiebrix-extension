@@ -40,6 +40,19 @@ describe("getErrorMessage", () => {
     expect(message).toEqual(errorObject.message);
   });
 
+  test("if axios error, return axios error message", () => {
+    const axiosError = {
+      name: "AxiosError",
+      message: "error message",
+      status: 400,
+      response: {
+        data: { detail: "something went wrong with request" },
+      },
+    };
+    const message = getErrorMessage(axiosError, "default message");
+    expect(message).toEqual(axiosError.response.data.detail);
+  });
+
   test("if InputValidationError, prefer error message", () => {
     const inputValidationError = {
       message: "error message",

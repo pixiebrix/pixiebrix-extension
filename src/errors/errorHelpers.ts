@@ -18,7 +18,10 @@
 import { deserializeError, type ErrorObject } from "serialize-error";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, truncate, uniq } from "lodash";
-import { selectNetworkErrorMessage } from "@/errors/networkErrorHelpers";
+import {
+  isAxiosError,
+  selectNetworkErrorMessage,
+} from "@/errors/networkErrorHelpers";
 import { type MessageContext } from "@/types/loggerTypes";
 import { matchesAnyPattern, smartAppendPeriod } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
@@ -251,6 +254,41 @@ export function getErrorMessage(
   }
 
   return String(selectError(error).message ?? defaultMessage);
+}
+
+function getErrorMessageTemp(
+  error: unknown,
+  defaultMessage = DEFAULT_ERROR_MESSAGE
+): string {
+  if (!error) {
+    return message;
+  }
+
+  let message: string;
+
+  if (typeof error === "string") {
+    message = error;
+  }
+
+  if (isAxiosError(error)) {
+    const requestErrorMessage = selectNetworkErrorMessage(error);
+    message = requestErrorMessage;
+  }
+
+  if (isErrorObject(error) && error.message) {
+    message = error.message;
+  }
+
+  if (isIOValidationError(error)) {
+    const firstError = error.errors[0];
+    message = formatIOValidationMessage(firstError) ?? defaultMessage;
+  }
+
+  if (isCustomAggregateError(error)) {
+    message =
+      error.errors.filter((x) => typeof x === "string").join(". ") ??
+      defaultMessage;
+  }
 }
 
 /**
