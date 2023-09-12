@@ -45,7 +45,7 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import baseQuery from "./baseQuery";
+import baseQuery from "@/services/baseQuery";
 
 export const appApi = createApi({
   reducerPath: "appApi",
