@@ -23,6 +23,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { matchesAnyPattern, smartAppendPeriod } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { type OutputUnit } from "@cfworker/json-schema";
+import { isIOValidationError } from "@/bricks/errors";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
@@ -194,6 +195,10 @@ function isBusinessError(error: unknown): boolean {
   return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
 }
 
+function formatIOValidationMessage(error: OutputUnit) {
+  return `${error.keywordLocation}: ${error.error}`;
+}
+
 // List all ClientRequestError subclasses as text:
 // - because not all of our errors can be deserialized with the right class:
 //   https://github.com/sindresorhus/serialize-error/issues/72
@@ -219,7 +224,6 @@ export function getErrorMessage(
   error: unknown,
   defaultMessage = DEFAULT_ERROR_MESSAGE
 ): string {
-  // Two shortcuts first
   if (!error) {
     return defaultMessage;
   }
@@ -239,21 +243,16 @@ export function getErrorMessage(
     return String(selectedError.message);
   }
 
-  // Is InputValidationError || OutputValidationError
+  if (isIOValidationError(error)) {
+    const firstError = error.errors[0];
+    return formatIOValidationMessage(firstError) ?? defaultMessage;
+  }
+
   if (isCustomAggregateError(error)) {
-    return error.errors
-      .map((e) => {
-        if (typeof e === "string") {
-          return e;
-        }
-
-        if (isOutputUnitError(e)) {
-          return e.error;
-        }
-      })
-      .join(". ");
-
-    // TODO: what to do here?
+    return (
+      error.errors.filter((x) => typeof x === "string").join(". ") ??
+      defaultMessage
+    );
   }
 
   return defaultMessage;
