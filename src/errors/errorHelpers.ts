@@ -228,10 +228,20 @@ export function getErrorMessage(
     return error;
   }
 
+  // TODO: Remove me if we'd rather have the specific Input/OutputValidationError message here;
+  //  no impact on page editor validation errors
+  if (isErrorObject(error)) {
+    return error.message;
+  }
+
   const requestErrorMessage = selectNetworkErrorMessage(error);
   if (requestErrorMessage) {
     return requestErrorMessage;
   }
+
+  // Is InputValidationError || OutputValidationError
+
+  // or has a message property
 
   if (isCustomAggregateError(error)) {
     return error.errors
