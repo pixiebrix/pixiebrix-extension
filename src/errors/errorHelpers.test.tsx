@@ -305,7 +305,7 @@ const validationError = {
   error: "Property bar does not match schema",
 } as SchemaValidationError["errors"][number];
 
-describe("formatIOValidationMessage", () => {
+describe("formatSchemaValidationMessage", () => {
   test("it returns a message in the form of 'keywordLocation: error'", () => {
     const message = formatSchemaValidationMessage(validationError);
     expect(message).toEqual(
