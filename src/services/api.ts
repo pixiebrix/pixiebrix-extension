@@ -17,9 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type Kind, type RegistryId } from "@/types/registryTypes";
-import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
-import { type AxiosRequestConfig } from "axios";
-import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import {
   type EditablePackageMetadata,
   type StandaloneModDefinition,
@@ -40,7 +38,6 @@ import {
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
-import { serializeError } from "serialize-error";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type IntegrationDefinition } from "@/types/integrationTypes";
@@ -48,77 +45,11 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-
-type QueryArgs = {
-  /**
-   * The relative PixieBrix URL. The client will apply the configured base service URL.
-   */
-  url: string;
-
-  /**
-   * The REST method
-   */
-  method: AxiosRequestConfig["method"];
-
-  /**
-   * The REST JSON data
-   */
-  data?: AxiosRequestConfig["data"];
-
-  /**
-   * True if a Token is required to make the request.
-   * @see isLinked
-   */
-  requireLinked?: boolean;
-
-  /**
-   * Optional additional metadata to pass through to the result.
-   */
-  meta?: unknown;
-
-  /**
-   * Optional URL parameters to be sent with the request
-   */
-  params?: AxiosRequestConfig["params"];
-};
-
-// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
-  url,
-  method,
-  data,
-  requireLinked = true,
-  meta,
-  params,
-}) => {
-  try {
-    const client = await (requireLinked
-      ? getLinkedApiClient()
-      : getApiClient());
-    const result = await client({ url, method, data, params });
-
-    return { data: result.data, meta };
-  } catch (error) {
-    if (isAxiosError(error)) {
-      // Was running into issues with AxiosError generation in axios-mock-adapter where the prototype was AxiosError
-      // but the Error name was Error and there was no isAxiosError present after serializeError
-      // See line here: https://github.com/axios/axios/blob/v0.27.2/lib/core/AxiosError.js#L79
-      error.name = "AxiosError";
-      return {
-        // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level). `useToJSON: false` skips that.
-        error: serializeError(error, { useToJSON: false }),
-      };
-    }
-
-    return {
-      error: serializeError(error),
-    };
-  }
-};
+import baseQuery from "./baseQuery";
 
 export const appApi = createApi({
   reducerPath: "appApi",
-  baseQuery: appBaseQuery,
+  baseQuery,
   tagTypes: [
     "Me",
     "Auth",
