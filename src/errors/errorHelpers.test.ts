@@ -20,7 +20,6 @@ import {
   getErrorMessage,
 } from "@/errors/errorHelpers";
 import type { InputValidationError } from "@/bricks/errors";
-import { AxiosError } from "axios";
 
 describe("getErrorMessage", () => {
   test("if no error, return default message", () => {

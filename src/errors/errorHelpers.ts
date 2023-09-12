@@ -240,7 +240,7 @@ export function getErrorMessage(
     return String(selectedError.message);
   }
 
-  // TODO: selectError above will actually serialize the entire errors object;
+  // TODO: selectError above will actually serialize the entire errors object in this case;
   //  might be better to just use that instead
   if (isIOValidationError(error)) {
     const firstError = error.errors[0];
