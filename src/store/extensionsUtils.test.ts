@@ -122,7 +122,7 @@ describe("inferConfiguredModIntegrations", () => {
     expect(
       inferConfiguredModIntegrations(
         [
-          { services: [pixiebrix] },
+          { services: [pixiebrix, pixiebrix] },
           { services: [pixiebrix, optional] },
           { services: [configured, pixiebrix, optional] },
           { services: [configured, optional] },
