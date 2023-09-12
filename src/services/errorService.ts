@@ -89,7 +89,12 @@ export async function selectExtraContext(
     };
   }
 
-  return { extensionVersion };
+  // TODO: dumping entire error object (includes stack, cause, context, etc.); we can alternatively select
+  //  specific properties
+  return {
+    extensionVersion,
+    ...error,
+  };
 }
 
 /**
