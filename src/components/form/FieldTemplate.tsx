@@ -200,7 +200,9 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
           [styles.show]: !isEmpty(annotations),
         })}
       >
-        {!isEmpty(annotations) &&
+        {isEmpty(annotations) ? (
+          <div className={styles.annotationPlaceholder} />
+        ) : (
           annotations.map(({ message, type, actions }) => (
             <FieldAnnotationAlert
               key={`${type}-${message.slice(0, 10)}`}
@@ -208,7 +210,8 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
               type={type}
               actions={actions}
             />
-          ))}
+          ))
+        )}
       </Col>
       {label && (
         <BootstrapForm.Label
