@@ -864,15 +864,13 @@ function throwBlockError(
     }
   }
 
-  const contextError = new ContextError(
+  throw new ContextError(
     `An error occurred running pipeline stage #${index + 1}: ${blockConfig.id}`,
     {
       cause: error,
       context: logger.context,
     }
   );
-
-  throw contextError;
 }
 
 async function getStepLogger(
