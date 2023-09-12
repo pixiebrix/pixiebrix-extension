@@ -20,6 +20,7 @@ import {
   getErrorMessage,
 } from "@/errors/errorHelpers";
 import type { InputValidationError } from "@/bricks/errors";
+import { AxiosError } from "axios";
 
 describe("getErrorMessage", () => {
   test("if no error, return default message", () => {
@@ -33,12 +34,39 @@ describe("getErrorMessage", () => {
     const message = getErrorMessage(expectedMessage, "default message");
     expect(message).toEqual(expectedMessage);
   });
+
+  test("if error object, return error message", () => {
+    const errorObject = { message: "error message" };
+    const message = getErrorMessage(errorObject, "default message");
+    expect(message).toEqual(errorObject.message);
+  });
+
+  test("if InputValidationError, prefer error message", () => {
+    const inputValidationError = {
+      message: "error message",
+      errors: [{ error: "error", keywordLocation: "#/foo" }],
+    } as InputValidationError;
+    const message = getErrorMessage(inputValidationError, "default message");
+    expect(message).toEqual(inputValidationError.message);
+  });
+
+  test("if InputValidationError with no message, return first error", () => {
+    const firstError = { error: "error", keywordLocation: "#/foo" };
+    const inputValidationError = {
+      errors: [firstError],
+    } as InputValidationError;
+    const message = getErrorMessage(inputValidationError, "default message");
+    expect(message).toEqual(
+      `${firstError.keywordLocation}: ${firstError.error}`
+    );
+  });
 });
 
 const validationError = {
   keywordLocation: "#/foo",
   error: "Property bar does not match schema",
 } as InputValidationError["errors"][0];
+
 describe("formatIOValidationMessage", () => {
   test("it returns a message in the form of 'keywordLocation: error'", () => {
     const message = formatIOValidationMessage(validationError);
