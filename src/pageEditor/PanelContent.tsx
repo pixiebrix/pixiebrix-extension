@@ -77,7 +77,7 @@ const PanelContent: React.FC = () => {
     // Issue doesn't apply to certain starter bricks, e.g. sidebar panels
     // See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
     // and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
-    if (STARTER_BRICKS_TO_CLEANUP.includes(activeElement.type)) {
+    if (STARTER_BRICKS_TO_CLEANUP.includes(activeElement?.type)) {
       removeInstalledExtension(thisTab, activeElement.uuid);
     }
   }, [activeElement]);
