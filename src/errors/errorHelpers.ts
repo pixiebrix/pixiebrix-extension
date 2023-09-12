@@ -240,7 +240,7 @@ export function getErrorMessage(
 
   if (isSchemaValidationError(error)) {
     const firstError = error.errors[0];
-    return formatSchemaValidationMessage(firstError) ?? defaultMessage;
+    return formatSchemaValidationMessage(firstError) || defaultMessage;
   }
 
   if (isCustomAggregateError(error)) {
@@ -250,7 +250,7 @@ export function getErrorMessage(
     );
   }
 
-  return String(selectError(error).message ?? defaultMessage);
+  return String(selectError(error).message || defaultMessage);
 }
 
 /**
