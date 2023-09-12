@@ -1163,6 +1163,9 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-lg-auto"
       htmlFor="traceSearch"
@@ -1453,6 +1456,9 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-lg-auto"
       htmlFor="traceSearch"
@@ -5574,6 +5580,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation col-12"
+        />
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="dynamicForm.schema.title"
@@ -5628,6 +5637,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation col-12"
+        />
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="dynamicForm.schema.description"
@@ -5768,6 +5780,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation col-12"
+          />
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName"
@@ -5802,6 +5817,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation col-12"
+          />
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.title"
@@ -5867,6 +5885,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation col-12"
+          />
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.description"
@@ -5932,6 +5953,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation col-12"
+          />
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.uiType"
@@ -6066,6 +6090,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation col-12"
+          />
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.default"
@@ -6120,6 +6147,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation col-12"
+          />
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.required"
@@ -6164,6 +6194,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation col-12"
+        />
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="layoutButtons"

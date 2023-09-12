@@ -5,6 +5,9 @@ exports[`TourStepOptions should render example config 1`] = `
   <div
     class="formGroup form-group row"
   >
+    <div
+      class="mb-2 annotation col-12"
+    />
     <label
       class="label form-label col-form-label col-xl-2 col-lg-3"
       for="extension.blockPipeline.0.config.title"
@@ -62,6 +65,9 @@ exports[`TourStepOptions should render example config 1`] = `
   <div
     class="formGroup form-group row"
   >
+    <div
+      class="mb-2 annotation col-12"
+    />
     <label
       class="label form-label col-form-label col-xl-2 col-lg-3"
       for="extension.blockPipeline.0.config.selector"
@@ -129,6 +135,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.body"
@@ -175,6 +184,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.body"
@@ -241,6 +253,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.wait"
@@ -287,6 +302,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.wait.maxWaitMillis"
@@ -343,6 +361,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.skippable"
@@ -422,6 +443,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.onBeforeShow"
@@ -468,6 +492,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.onAfterShow"
@@ -523,6 +550,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.controls.outsideClick"
@@ -579,6 +609,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.controls.closeButton"
@@ -635,6 +668,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.isLastStep"
@@ -691,6 +727,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.controls.actions"
@@ -749,6 +788,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.scroll"
@@ -795,6 +837,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.scroll.behavior"
@@ -942,6 +987,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.highlight.backgroundColor"
@@ -1007,6 +1055,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.showOverlay"
@@ -1086,6 +1137,9 @@ exports[`TourStepOptions should render example config 1`] = `
       <div
         class="formGroup form-group row"
       >
+        <div
+          class="mb-2 annotation col-12"
+        />
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="extension.blockPipeline.0.config.appearance.popover.placement"

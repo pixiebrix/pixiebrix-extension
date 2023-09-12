@@ -6,6 +6,9 @@ exports[`BotOptions should require selected integration 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation col-12"
+      />
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extension.blockPipeline.0.config.service"
