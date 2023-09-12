@@ -19,7 +19,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { InputValidationError, OutputValidationError } from "@/bricks/errors";
+import { InputValidationError } from "@/bricks/errors";
 import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { applyJq } from "@/sandbox/messenger/executor";
@@ -93,8 +93,6 @@ export class JQTransformer extends TransformerABC {
     const input = isNullOrBlank(data) ? ctxt : data;
 
     try {
-      //throw new Error("compile error");
-
       return await retryWithJitter(async () => applyJq({ input, filter }), {
         retries: MAX_TRANSIENT_ERROR_RETRIES,
         shouldRetry: isTransientError,
