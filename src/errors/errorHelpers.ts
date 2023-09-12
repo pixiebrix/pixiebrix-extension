@@ -234,14 +234,6 @@ export function getErrorMessage(
     return requestErrorMessage;
   }
 
-  // TODO: Remove me if we'd rather have a specific Input/OutputValidationError message here
-  const selectedError = selectError(error);
-  if (selectedError.message) {
-    return String(selectedError.message);
-  }
-
-  // TODO: selectError above will actually serialize the entire errors object in this case;
-  //  might be better to just use that instead
   if (isIOValidationError(error)) {
     const firstError = error.errors[0];
     return formatIOValidationMessage(firstError) ?? defaultMessage;
@@ -254,7 +246,7 @@ export function getErrorMessage(
     );
   }
 
-  return defaultMessage;
+  return String(selectError(error).message ?? defaultMessage);
 }
 
 /**

@@ -43,6 +43,7 @@ describe("getErrorMessage", () => {
   test("if InputValidationError, prefer error message", () => {
     const inputValidationError = {
       message: "error message",
+      schema: {},
       errors: [{ error: "error", keywordLocation: "#/foo" }],
     } as InputValidationError;
     const message = getErrorMessage(inputValidationError, "default message");
@@ -52,7 +53,8 @@ describe("getErrorMessage", () => {
   test("if InputValidationError with no message, return first error", () => {
     const firstError = { error: "error", keywordLocation: "#/foo" };
     const inputValidationError = {
-      errors: [firstError],
+      schema: {},
+      errors: [firstError, { error: "second error", keywordLocation: "#/bar" }],
     } as InputValidationError;
     const message = getErrorMessage(inputValidationError, "default message");
     expect(message).toEqual(
