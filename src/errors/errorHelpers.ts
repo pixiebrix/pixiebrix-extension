@@ -234,6 +234,10 @@ export function getErrorMessage(
     return requestErrorMessage;
   }
 
+  if (isErrorObject(error) && error.message) {
+    return error.message;
+  }
+
   if (isIOValidationError(error)) {
     const firstError = error.errors[0];
     return formatIOValidationMessage(firstError) ?? defaultMessage;
