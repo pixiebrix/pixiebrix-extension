@@ -120,16 +120,6 @@ export function isCustomAggregateError(
   return isObject(error) && "errors" in error && Array.isArray(error.errors);
 }
 
-function isOutputUnitError(error: unknown): error is OutputUnit {
-  return (
-    isObject(error) &&
-    typeof error.keyword === "string" &&
-    typeof error.keywordLocation === "string" &&
-    typeof error.instanceLocation === "string" &&
-    typeof error.error === "string"
-  );
-}
-
 export function selectSpecificError<
   ErrorType extends new (...args: unknown[]) => Error
 >(error: unknown, errorType: ErrorType): InstanceType<ErrorType> | null {
