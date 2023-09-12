@@ -22,8 +22,10 @@ import { selectNetworkErrorMessage } from "@/errors/networkErrorHelpers";
 import { type MessageContext } from "@/types/loggerTypes";
 import { matchesAnyPattern, smartAppendPeriod } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
-import { type OutputUnit } from "@cfworker/json-schema";
-import { isIOValidationError } from "@/bricks/errors";
+import {
+  type InputValidationError,
+  isIOValidationError,
+} from "@/bricks/errors";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
@@ -94,7 +96,7 @@ export function onUncaughtError(handler: (error: Error) => void): void {
 }
 
 export function isErrorObject(error: unknown): error is ErrorObject {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function, and it uses ?.
   return typeof (error as any)?.message === "string";
 }
 
@@ -185,8 +187,13 @@ function isBusinessError(error: unknown): boolean {
   return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
 }
 
-function formatIOValidationMessage(error: OutputUnit) {
-  return `${error.keywordLocation}: ${error.error}`;
+export function formatIOValidationMessage(
+  error: InputValidationError["errors"][0]
+) {
+  const { keywordLocation, error: validationError } = error;
+  return `${keywordLocation ? `${keywordLocation}: ` : ""}${
+    validationError ?? ""
+  }`;
 }
 
 // List all ClientRequestError subclasses as text:
