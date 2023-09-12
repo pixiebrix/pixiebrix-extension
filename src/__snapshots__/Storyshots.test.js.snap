@@ -4,6 +4,9 @@ exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
 <div
   className="formGroup form-group row"
 >
+  <div
+    className="mb-2 annotation col-12"
+  />
   <label
     className="label form-label col-form-label col-xl-2 col-lg-3"
     htmlFor="optionsArgs.textField"
@@ -3633,6 +3636,9 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
     className="formGroup form-group row"
   >
     <div
+      className="mb-2 annotation col-12"
+    />
+    <div
       className="col-xl-12 col-lg-12"
     >
       <div
@@ -3649,6 +3655,9 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
           <div
             className="formGroup form-group row"
           >
+            <div
+              className="mb-2 annotation col-12"
+            />
             <label
               className="label form-label col-form-label col-xl-2 col-lg-3"
               htmlFor="childObject.InputValue"
@@ -3928,6 +3937,9 @@ exports[`Storyshots Fields/SchemaField Array Items 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -3999,6 +4011,9 @@ exports[`Storyshots Fields/SchemaField Boolean 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testBoolean"
@@ -4084,6 +4099,9 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4257,6 +4275,9 @@ exports[`Storyshots Fields/SchemaField Integer 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4327,6 +4348,9 @@ exports[`Storyshots Fields/SchemaField Multi Schema 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4416,6 +4440,9 @@ exports[`Storyshots Fields/SchemaField Normal Text 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4487,6 +4514,9 @@ exports[`Storyshots Fields/SchemaField Not Required Text 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4558,6 +4588,9 @@ exports[`Storyshots Fields/SchemaField Number 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4628,6 +4661,9 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4677,6 +4713,9 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                     <div
                       className="formGroup mb-0 form-group row"
                     >
+                      <div
+                        className="mb-2 annotation col-12"
+                      />
                       <div
                         className="col-xl-12 col-lg-12"
                       >
@@ -4740,6 +4779,9 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                       className="formGroup mb-0 form-group row"
                     >
                       <div
+                        className="mb-2 annotation col-12"
+                      />
+                      <div
                         className="col-xl-12 col-lg-12"
                       >
                         <div
@@ -4802,6 +4844,9 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                       className="formGroup mb-0 form-group row"
                     >
                       <div
+                        className="mb-2 annotation col-12"
+                      />
+                      <div
                         className="col-xl-12 col-lg-12"
                       >
                         <div
@@ -4863,6 +4908,9 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                     <div
                       className="formGroup mb-0 form-group row"
                     >
+                      <div
+                        className="mb-2 annotation col-12"
+                      />
                       <div
                         className="col-xl-12 col-lg-12"
                       >
@@ -4958,6 +5006,9 @@ exports[`Storyshots Fields/SchemaField Password 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -5070,6 +5121,9 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -5243,6 +5297,9 @@ exports[`Storyshots Fields/SchemaField Text Area 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -5346,6 +5403,9 @@ exports[`Storyshots Fields/UrlMatchPatternField Default 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="matchPatterns"
@@ -5446,6 +5506,9 @@ exports[`Storyshots Fields/UrlPatternField Default 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="urlsPatterns"
@@ -6410,6 +6473,9 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation col-12"
+        />
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="dynamicForm.schema.title"
@@ -6463,6 +6529,9 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation col-12"
+        />
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="dynamicForm.schema.description"
@@ -6592,6 +6661,9 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="name"
@@ -6625,6 +6697,9 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="story"
@@ -6659,6 +6734,9 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="select"
@@ -6787,6 +6865,9 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="select-add-new"
@@ -6915,6 +6996,9 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="public"
@@ -6977,6 +7061,9 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="bsCustomFormControl"
@@ -7036,6 +7123,9 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
     className="formGroup form-group row"
   >
     <div
+      className="mb-2 annotation col-12"
+    />
+    <div
       className="col-xl-12 col-lg-12"
     >
       <input
@@ -7052,6 +7142,9 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="name"
@@ -7085,6 +7178,9 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="age"
@@ -7133,6 +7229,9 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
     className="formGroup form-group row"
   >
     <div
+      className="mb-2 annotation col-12"
+    />
+    <div
       className="col-xl-12 col-lg-12"
     >
       <input
@@ -7149,6 +7248,9 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="name"
@@ -7183,6 +7285,9 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation col-12"
+    />
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="age"
@@ -7878,6 +7983,9 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
                   <div
                     className="formGroup form-group row"
                   >
+                    <div
+                      className="mb-2 annotation col-12"
+                    />
                     <label
                       className="label form-label col-form-label col-xl-2 col-lg-3"
                       htmlFor="controlRoomUrl"

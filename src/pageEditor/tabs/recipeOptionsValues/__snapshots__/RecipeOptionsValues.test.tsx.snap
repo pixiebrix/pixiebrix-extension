@@ -29,6 +29,9 @@ exports[`ActivationOptions renders blueprint options 1`] = `
               <div
                 class="formGroup form-group row"
               >
+                <div
+                  class="mb-2 annotation col-12"
+                />
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myDatabase"
@@ -78,6 +81,9 @@ exports[`ActivationOptions renders blueprint options 1`] = `
               <div
                 class="formGroup form-group row"
               >
+                <div
+                  class="mb-2 annotation col-12"
+                />
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myBool"
@@ -127,6 +133,9 @@ exports[`ActivationOptions renders blueprint options 1`] = `
               <div
                 class="formGroup form-group row"
               >
+                <div
+                  class="mb-2 annotation col-12"
+                />
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myNum"
@@ -176,6 +185,9 @@ exports[`ActivationOptions renders blueprint options 1`] = `
               <div
                 class="formGroup form-group row"
               >
+                <div
+                  class="mb-2 annotation col-12"
+                />
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myArray"
@@ -225,6 +237,9 @@ exports[`ActivationOptions renders blueprint options 1`] = `
               <div
                 class="formGroup form-group row"
               >
+                <div
+                  class="mb-2 annotation col-12"
+                />
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myGoogleSheet"
@@ -274,6 +289,9 @@ exports[`ActivationOptions renders blueprint options 1`] = `
               <div
                 class="formGroup form-group row"
               >
+                <div
+                  class="mb-2 annotation col-12"
+                />
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myObject"
@@ -323,6 +341,9 @@ exports[`ActivationOptions renders blueprint options 1`] = `
               <div
                 class="formGroup form-group row"
               >
+                <div
+                  class="mb-2 annotation col-12"
+                />
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myStr"
@@ -407,6 +428,9 @@ exports[`ActivationOptions renders blueprint options with additional props 1`] =
               <div
                 class="formGroup form-group row"
               >
+                <div
+                  class="mb-2 annotation col-12"
+                />
                 <label
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="additionalProperties"

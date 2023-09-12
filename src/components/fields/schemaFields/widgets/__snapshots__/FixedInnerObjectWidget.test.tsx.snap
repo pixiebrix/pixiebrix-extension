@@ -8,6 +8,9 @@ exports[`FixedInnerObjectWidget handle oneOf object 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation col-12"
+      />
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="test.foo"
@@ -72,6 +75,9 @@ exports[`FixedInnerObjectWidget handle simple object 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation col-12"
+      />
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="test.foo"

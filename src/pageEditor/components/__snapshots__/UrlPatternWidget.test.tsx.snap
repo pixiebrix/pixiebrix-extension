@@ -38,6 +38,9 @@ exports[`UrlPatternWidget render single pattern 1`] = `
           class="formGroup mb-0 form-group row"
         >
           <div
+            class="mb-2 annotation col-12"
+          />
+          <div
             class="col-xl-12 col-lg-12"
           >
             <div
@@ -78,6 +81,9 @@ exports[`UrlPatternWidget render single pattern 1`] = `
                           <div
                             class="formGroup mb-0 form-group row"
                           >
+                            <div
+                              class="mb-2 annotation col-12"
+                            />
                             <div
                               class="col-xl-12 col-lg-12"
                             >

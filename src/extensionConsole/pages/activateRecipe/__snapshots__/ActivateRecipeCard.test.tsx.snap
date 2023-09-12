@@ -237,6 +237,9 @@ exports[`ActivateRecipeCard activate mod definition with missing required mod de
           <div
             class="formGroup form-group row"
           >
+            <div
+              class="mb-2 annotation col-12"
+            />
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="optionsArgs.database"
