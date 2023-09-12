@@ -26,7 +26,7 @@ import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type UUID } from "@/types/stringTypes";
 import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isIOValidationError } from "@/bricks/errors";
+import { isSchemaValidationError } from "@/bricks/errors";
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type ErrorObject } from "serialize-error";
@@ -64,7 +64,7 @@ class TraceAnalysis extends AnalysisVisitorABC {
   ): AnalysisAnnotation[] {
     const annotations: AnalysisAnnotation[] = [];
 
-    if (isIOValidationError(traceError)) {
+    if (isSchemaValidationError(traceError)) {
       for (const maybeInputError of traceError.errors) {
         const rootProperty = rootPropertyRegex.exec(
           maybeInputError.instanceLocation

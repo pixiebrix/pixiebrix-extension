@@ -101,9 +101,12 @@ export class OutputValidationError extends BusinessError {
   }
 }
 
-export function isIOValidationError(
+export type SchemaValidationError =
+  | InputValidationError
+  | OutputValidationError;
+export function isSchemaValidationError(
   error: unknown
-): error is InputValidationError | OutputValidationError {
+): error is SchemaValidationError {
   return typeof error === "object" && "schema" in error && "errors" in error;
 }
 

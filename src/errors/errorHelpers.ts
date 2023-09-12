@@ -23,8 +23,8 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { matchesAnyPattern, smartAppendPeriod } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import {
-  type InputValidationError,
-  isIOValidationError,
+  isSchemaValidationError,
+  type SchemaValidationError,
 } from "@/bricks/errors";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
@@ -187,8 +187,8 @@ function isBusinessError(error: unknown): boolean {
   return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
 }
 
-export function formatIOValidationMessage(
-  error: InputValidationError["errors"][0]
+export function formatSchemaValidationMessage(
+  error: SchemaValidationError["errors"][number]
 ) {
   const { keywordLocation, error: validationError } = error;
   return `${keywordLocation ? `${keywordLocation}: ` : ""}${
@@ -238,14 +238,14 @@ export function getErrorMessage(
     return error.message;
   }
 
-  if (isIOValidationError(error)) {
+  if (isSchemaValidationError(error)) {
     const firstError = error.errors[0];
-    return formatIOValidationMessage(firstError) ?? defaultMessage;
+    return formatSchemaValidationMessage(firstError) ?? defaultMessage;
   }
 
   if (isCustomAggregateError(error)) {
     return (
-      error.errors.filter((x) => typeof x === "string").join(". ") ??
+      error.errors.filter((x) => typeof x === "string").join(". ") ||
       defaultMessage
     );
   }
