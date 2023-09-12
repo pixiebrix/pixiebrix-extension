@@ -24,6 +24,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
+import { groupBy, uniqBy } from "lodash";
 
 describe("inferRecipeOptions", () => {
   it("returns first option", () => {
@@ -37,7 +38,7 @@ describe("inferRecipeOptions", () => {
   });
 });
 
-describe("inferModIntegrations", () => {
+describe("inferConfiguredModIntegrations", () => {
   it("handles undefined services", () => {
     expect(
       inferConfiguredModIntegrations([{ services: undefined }])
@@ -100,12 +101,35 @@ describe("inferModIntegrations", () => {
     ).toBeEmpty();
   });
 
-  it("handles unconfigured integrations when the id is the default", () => {
-    const unconfigured = integrationDependencyFactory();
-    delete unconfigured.config;
-    unconfigured.id = validateRegistryId(PIXIEBRIX_INTEGRATION_ID);
+  it("does NOT filter out the pixiebrix integration", () => {
+    const pixiebrix = integrationDependencyFactory({
+      id: PIXIEBRIX_INTEGRATION_ID,
+    });
     expect(
-      inferConfiguredModIntegrations([{ services: [unconfigured] }])
-    ).toBeEmpty();
+      inferConfiguredModIntegrations([{ services: [pixiebrix] }])
+    ).toStrictEqual([pixiebrix]);
+  });
+
+  it("handles multiple pixiebrix integrations and others", () => {
+    const pixiebrix = integrationDependencyFactory({
+      id: PIXIEBRIX_INTEGRATION_ID,
+    });
+    const optional = integrationDependencyFactory({
+      isOptional: true,
+    });
+    const configured = integrationDependencyFactory({
+      config: uuidv4(),
+    });
+    expect(
+      inferConfiguredModIntegrations(
+        [
+          { services: [pixiebrix] },
+          { services: [pixiebrix, optional] },
+          { services: [configured, pixiebrix, optional] },
+          { services: [configured, optional] },
+        ],
+        { optional: true }
+      )
+    ).toStrictEqual([pixiebrix, configured]);
   });
 });
