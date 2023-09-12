@@ -27,6 +27,12 @@ describe("getErrorMessage", () => {
     const message = getErrorMessage(undefined, expectedMessage);
     expect(message).toEqual(expectedMessage);
   });
+
+  test("if string error, return error", () => {
+    const expectedMessage = "error message";
+    const message = getErrorMessage(expectedMessage, "default message");
+    expect(message).toEqual(expectedMessage);
+  });
 });
 
 const validationError = {
