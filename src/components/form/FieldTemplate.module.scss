@@ -35,3 +35,14 @@
   font-size: 80%;
   color: #dc3545;
 }
+
+.annotation {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 1s ease 1s;
+  transition-delay: 1s;
+
+  &.show {
+    max-height: 100px;
+  }
+}

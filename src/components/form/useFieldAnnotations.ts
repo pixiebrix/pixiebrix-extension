@@ -63,12 +63,8 @@ function makeFieldActionForAnnotationAction(
 }
 
 function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
-  const {
-    shouldUseAnalysis,
-    showUntouchedErrors,
-    showFieldActions,
-    ignoreAnalysisIds = [],
-  } = useFormErrorSettings();
+  const { shouldUseAnalysis, showUntouchedErrors, showFieldActions } =
+    useFormErrorSettings();
   const formik = useFormikContext<ModComponentFormState>();
 
   // TODO: We can probably split this into two hooks, one for analysis and one for formik,
@@ -80,21 +76,19 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     const analysisAnnotations = useSelector(
       selectAnnotationsForPath(fieldPath)
     );
-    return analysisAnnotations
-      .filter((x) => !ignoreAnalysisIds.includes(x.analysisId))
-      .map(({ message, type, actions }) => {
-        const fieldAnnotation: FieldAnnotation = {
-          message,
-          type,
-        };
-        if (showFieldActions && !isEmpty(actions)) {
-          fieldAnnotation.actions = actions.map((action) =>
-            makeFieldActionForAnnotationAction(action, formik)
-          );
-        }
+    return analysisAnnotations.map(({ message, type, actions }) => {
+      const fieldAnnotation: FieldAnnotation = {
+        message,
+        type,
+      };
+      if (showFieldActions && !isEmpty(actions)) {
+        fieldAnnotation.actions = actions.map((action) =>
+          makeFieldActionForAnnotationAction(action, formik)
+        );
+      }
 
-        return fieldAnnotation;
-      });
+      return fieldAnnotation;
+    });
   }
 
   const { error, touched } = formik.getFieldMeta(fieldPath);
