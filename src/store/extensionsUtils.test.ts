@@ -24,7 +24,6 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
-import { groupBy, uniqBy } from "lodash";
 
 describe("inferRecipeOptions", () => {
   it("returns first option", () => {
