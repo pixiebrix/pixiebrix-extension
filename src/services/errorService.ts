@@ -89,7 +89,8 @@ export async function selectExtraContext(
     };
   }
 
-  const { name, message, stack, code, cause, ...additionalData } = error;
+  const { name, message, stack, code, cause, context, ...additionalData } =
+    error;
 
   return {
     extensionVersion,
@@ -146,7 +147,6 @@ export async function reportToErrorService(
     user_agent: window.navigator.userAgent,
     user_agent_extension_version: extensionVersion,
     is_application_error: !selectSpecificError(error, BusinessError),
-    // Already capturing extension version in user_agent_extension_version
     error_data: data,
     timestamp: new Date().toISOString(),
   };
