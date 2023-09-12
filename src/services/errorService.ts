@@ -89,10 +89,14 @@ export async function selectExtraContext(
     };
   }
 
-  const { cause, ...additionalData } = error;
+  const { name, message, stack, code, cause, ...additionalData } = error;
 
   return {
     extensionVersion,
+    name,
+    message,
+    stack,
+    code,
     ...additionalData,
   };
 }
