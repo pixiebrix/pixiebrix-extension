@@ -242,14 +242,21 @@ export function getErrorMessage(
 
   if (isSchemaValidationError(error)) {
     const firstError = error.errors[0];
-    return formatSchemaValidationMessage(firstError) || defaultMessage;
+    const formattedMessage = formatSchemaValidationMessage(firstError);
+
+    if (formattedMessage) {
+      return formattedMessage;
+    }
   }
 
   if (isCustomAggregateError(error)) {
-    return (
-      error.errors.filter((x) => typeof x === "string").join(". ") ||
-      defaultMessage
-    );
+    const aggregatedMessage = error.errors
+      .filter((x) => typeof x === "string")
+      .join(". ");
+
+    if (aggregatedMessage) {
+      return aggregatedMessage;
+    }
   }
 
   return String(selectError(error).message || defaultMessage);
