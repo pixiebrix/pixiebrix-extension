@@ -234,6 +234,8 @@ export function getErrorMessage(
     return requestErrorMessage;
   }
 
+  // In most cases, prefer the error message property over all. We don't want to override
+  // the original error message unless necessary.
   if (isErrorObject(error) && error.message) {
     return error.message;
   }
