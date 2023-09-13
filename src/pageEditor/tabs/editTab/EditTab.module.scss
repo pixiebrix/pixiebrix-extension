@@ -24,10 +24,10 @@
   :global(.annotation-transition) {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 1s ease 0s;
+    transition: max-height 500ms ease 0s;
 
     &:global(.show) {
-      transition: max-height 1s ease 1s;
+      transition: max-height 500ms ease 1s;
       max-height: 100px;
     }
   }
