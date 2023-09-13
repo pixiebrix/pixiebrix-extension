@@ -61,7 +61,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
   const {
     suggestElements,
     excludeRandomClasses,
-    selectionTools,
     varAutosuggest,
     performanceTracing,
   } = useSelector(selectSettings);
@@ -103,13 +102,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             elements from a website"
             isEnabled={excludeRandomClasses}
             onChange={flagChangeHandlerFactory("excludeRandomClasses")}
-          />
-          <ExperimentalFeature
-            id="selectionTools"
-            label="Detect and Support Multi-Element Selection Tools:"
-            description="Toggle on to support multi-element selection tools"
-            isEnabled={selectionTools}
-            onChange={flagChangeHandlerFactory("selectionTools")}
           />
           <ExperimentalFeature
             id="varAutosuggest"
