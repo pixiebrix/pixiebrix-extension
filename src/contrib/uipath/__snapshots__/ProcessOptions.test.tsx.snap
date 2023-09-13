@@ -7,7 +7,7 @@ exports[`UiPath Options Render integration selector 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -176,7 +176,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -338,7 +338,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -403,7 +403,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -531,7 +531,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -594,7 +594,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -671,7 +671,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"

@@ -30,7 +30,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 annotation col-12"
+                  class="mb-2 annotation-transition col-12"
                 >
                   <div
                     class="annotationPlaceholder"
@@ -86,7 +86,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 annotation col-12"
+                  class="mb-2 annotation-transition col-12"
                 >
                   <div
                     class="annotationPlaceholder"
@@ -142,7 +142,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 annotation col-12"
+                  class="mb-2 annotation-transition col-12"
                 >
                   <div
                     class="annotationPlaceholder"
@@ -198,7 +198,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 annotation col-12"
+                  class="mb-2 annotation-transition col-12"
                 >
                   <div
                     class="annotationPlaceholder"
@@ -254,7 +254,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 annotation col-12"
+                  class="mb-2 annotation-transition col-12"
                 >
                   <div
                     class="annotationPlaceholder"
@@ -310,7 +310,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 annotation col-12"
+                  class="mb-2 annotation-transition col-12"
                 >
                   <div
                     class="annotationPlaceholder"
@@ -366,7 +366,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 annotation col-12"
+                  class="mb-2 annotation-transition col-12"
                 >
                   <div
                     class="annotationPlaceholder"
@@ -457,7 +457,7 @@ exports[`ActivationOptions renders blueprint options with additional props 1`] =
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 annotation col-12"
+                  class="mb-2 annotation-transition col-12"
                 >
                   <div
                     class="annotationPlaceholder"

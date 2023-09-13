@@ -36,18 +36,8 @@
   color: #dc3545;
 }
 
-.annotation {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 1s ease 1s;
-  transition-delay: 1s;
-
-  &.show {
-    max-height: 100px;
-  }
-}
-
-// Placeholder for the animation
+// Placeholder for the animation. This only shows up when the animation is running so it doesn't affect fields without
+// animations.
 .annotationPlaceholder {
   padding: 10px 12px;
   display: block;

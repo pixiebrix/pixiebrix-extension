@@ -9,7 +9,7 @@ exports[`FormEditor renders empty schema 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -65,7 +65,7 @@ exports[`FormEditor renders empty schema 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -185,7 +185,7 @@ exports[`FormEditor renders simple schema 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -242,7 +242,7 @@ exports[`FormEditor renders simple schema 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -377,7 +377,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -412,7 +412,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -476,7 +476,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -539,7 +539,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -654,7 +654,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -711,7 +711,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -758,7 +758,7 @@ exports[`FormEditor renders simple schema 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -841,7 +841,7 @@ exports[`FormEditor renders unknown field format 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -898,7 +898,7 @@ exports[`FormEditor renders unknown field format 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation col-12"
+        class="mb-2 annotation-transition col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -1033,7 +1033,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1068,7 +1068,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1132,7 +1132,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1195,7 +1195,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1295,7 +1295,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation col-12"
+          class="mb-2 annotation-transition col-12"
         >
           <div
             class="annotationPlaceholder"

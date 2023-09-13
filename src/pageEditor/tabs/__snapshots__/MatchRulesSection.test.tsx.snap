@@ -37,7 +37,7 @@ exports[`MatchRulesSection render empty section 1`] = `
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 annotation col-12"
+            class="mb-2 annotation-transition col-12"
           >
             <div
               class="annotationPlaceholder"
@@ -82,7 +82,7 @@ exports[`MatchRulesSection render empty section 1`] = `
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 annotation col-12"
+            class="mb-2 annotation-transition col-12"
           >
             <div
               class="annotationPlaceholder"
@@ -167,7 +167,7 @@ exports[`MatchRulesSection render populated section 1`] = `
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 annotation col-12"
+            class="mb-2 annotation-transition col-12"
           >
             <div
               class="annotationPlaceholder"
@@ -192,7 +192,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                   class="formGroup mb-0 form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -241,7 +241,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     class="formGroup mb-0 form-group row"
                                   >
                                     <div
-                                      class="mb-2 annotation col-12"
+                                      class="mb-2 annotation-transition col-12"
                                     >
                                       <div
                                         class="annotationPlaceholder"
@@ -311,7 +311,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     class="formGroup mb-0 form-group row"
                                   >
                                     <div
-                                      class="mb-2 annotation col-12"
+                                      class="mb-2 annotation-transition col-12"
                                     >
                                       <div
                                         class="annotationPlaceholder"
@@ -381,7 +381,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     class="formGroup mb-0 form-group row"
                                   >
                                     <div
-                                      class="mb-2 annotation col-12"
+                                      class="mb-2 annotation-transition col-12"
                                     >
                                       <div
                                         class="annotationPlaceholder"
@@ -452,7 +452,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     class="formGroup mb-0 form-group row"
                                   >
                                     <div
-                                      class="mb-2 annotation col-12"
+                                      class="mb-2 annotation-transition col-12"
                                     >
                                       <div
                                         class="annotationPlaceholder"
@@ -569,7 +569,7 @@ exports[`MatchRulesSection render populated section 1`] = `
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 annotation col-12"
+            class="mb-2 annotation-transition col-12"
           >
             <div
               class="annotationPlaceholder"
@@ -594,7 +594,7 @@ exports[`MatchRulesSection render populated section 1`] = `
                   class="formGroup mb-0 form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"

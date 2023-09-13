@@ -605,7 +605,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="formGroup form-group row"
             >
               <div
-                class="mb-2 annotation col-12"
+                class="mb-2 annotation-transition col-12"
               >
                 <div
                   class="annotationPlaceholder"
@@ -632,7 +632,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="formGroup form-group row"
             >
               <div
-                class="mb-2 annotation col-12"
+                class="mb-2 annotation-transition col-12"
               >
                 <div
                   class="annotationPlaceholder"
@@ -666,7 +666,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="formGroup form-group row"
             >
               <div
-                class="mb-2 annotation col-12"
+                class="mb-2 annotation-transition col-12"
               >
                 <div
                   class="annotationPlaceholder"
@@ -759,7 +759,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="formGroup form-group row"
             >
               <div
-                class="mb-2 annotation col-12"
+                class="mb-2 annotation-transition col-12"
               >
                 <div
                   class="annotationPlaceholder"
@@ -801,7 +801,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                       class="formGroup mb-0 form-group row"
                     >
                       <div
-                        class="mb-2 annotation col-12"
+                        class="mb-2 annotation-transition col-12"
                       >
                         <div
                           class="annotationPlaceholder"
@@ -908,7 +908,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -961,7 +961,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1014,7 +1014,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1098,7 +1098,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1160,7 +1160,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1248,7 +1248,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1452,7 +1452,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                           class="formGroup form-group row"
                         >
                           <div
-                            class="mb-2 annotation col-12"
+                            class="mb-2 annotation-transition col-12"
                           >
                             <div
                               class="annotationPlaceholder"
@@ -2032,7 +2032,7 @@ exports[`renders the first selected node 1`] = `
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -2064,7 +2064,7 @@ exports[`renders the first selected node 1`] = `
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 annotation col-12"
+                    class="mb-2 annotation-transition col-12"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -2130,7 +2130,7 @@ exports[`renders the first selected node 1`] = `
               class="formGroup form-group row"
             >
               <div
-                class="mb-2 annotation col-12"
+                class="mb-2 annotation-transition col-12"
               >
                 <div
                   class="annotationPlaceholder"

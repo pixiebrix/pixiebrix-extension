@@ -196,8 +196,8 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
       <Col
         xs="12"
-        className={cx("mb-2", styles.annotation, {
-          [styles.show]: !isEmpty(annotations),
+        className={cx("mb-2", "annotation-transition", {
+          show: !isEmpty(annotations),
         })}
       >
         {isEmpty(annotations) ? (
