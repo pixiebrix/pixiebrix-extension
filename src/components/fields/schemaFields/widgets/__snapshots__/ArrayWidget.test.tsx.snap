@@ -39,7 +39,11 @@ exports[`ArrayWidget renders widget with items 1`] = `
         >
           <div
             class="mb-2 annotation col-12"
-          />
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <div
             class="col-xl-12 col-lg-12"
           >
@@ -90,7 +94,11 @@ exports[`ArrayWidget renders widget with items 1`] = `
         >
           <div
             class="mb-2 annotation col-12"
-          />
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <div
             class="col-xl-12 col-lg-12"
           >
@@ -141,7 +149,11 @@ exports[`ArrayWidget renders widget with items 1`] = `
         >
           <div
             class="mb-2 annotation col-12"
-          />
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <div
             class="col-xl-12 col-lg-12"
           >

@@ -13,7 +13,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.googleAccount"
@@ -65,7 +69,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -150,7 +158,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -274,7 +286,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.rowValues"
@@ -325,7 +341,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
                         >
                           <div
                             class="mb-2 annotation col-12"
-                          />
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <div
                             class="col-xl-12 col-lg-12"
                           >
@@ -384,7 +404,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
                         >
                           <div
                             class="mb-2 annotation col-12"
-                          />
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <div
                             class="col-xl-12 col-lg-12"
                           >
@@ -477,7 +501,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.googleAccount"
@@ -529,7 +557,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -614,7 +646,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -738,7 +774,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.rowValues"
@@ -789,7 +829,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
                         >
                           <div
                             class="mb-2 annotation col-12"
-                          />
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <div
                             class="col-xl-12 col-lg-12"
                           >
@@ -849,7 +893,11 @@ exports[`AppendSpreadsheetOptions given empty googleAccount and string spreadshe
                         >
                           <div
                             class="mb-2 annotation col-12"
-                          />
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <div
                             class="col-xl-12 col-lg-12"
                           >
@@ -943,7 +991,11 @@ exports[`AppendSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -1028,7 +1080,11 @@ exports[`AppendSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -1152,7 +1208,11 @@ exports[`AppendSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.rowValues"
@@ -1203,7 +1263,11 @@ exports[`AppendSpreadsheetOptions given feature flag off and string spreadsheetI
                         >
                           <div
                             class="mb-2 annotation col-12"
-                          />
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <div
                             class="col-xl-12 col-lg-12"
                           >
@@ -1262,7 +1326,11 @@ exports[`AppendSpreadsheetOptions given feature flag off and string spreadsheetI
                         >
                           <div
                             class="mb-2 annotation col-12"
-                          />
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <div
                             class="col-xl-12 col-lg-12"
                           >
@@ -1355,7 +1423,11 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.googleAccount"
@@ -1567,7 +1639,11 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -1703,7 +1779,11 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -1827,7 +1907,11 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.rowValues"
@@ -1878,7 +1962,11 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
                         >
                           <div
                             class="mb-2 annotation col-12"
-                          />
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <div
                             class="col-xl-12 col-lg-12"
                           >
@@ -1938,7 +2026,11 @@ exports[`AppendSpreadsheetOptions given test googleAccount and string spreadshee
                         >
                           <div
                             class="mb-2 annotation col-12"
-                          />
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <div
                             class="col-xl-12 col-lg-12"
                           >

@@ -38,7 +38,11 @@ exports[`ExtraPermissionsSection render empty section 1`] = `
         >
           <div
             class="mb-2 annotation col-12"
-          />
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <label
             class="label form-label col-form-label col-xl-2 col-lg-3"
             for="permissions.origins"
@@ -146,7 +150,11 @@ exports[`ExtraPermissionsSection render populated section 1`] = `
         >
           <div
             class="mb-2 annotation col-12"
-          />
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <label
             class="label form-label col-form-label col-xl-2 col-lg-3"
             for="permissions.origins"
@@ -198,7 +206,11 @@ exports[`ExtraPermissionsSection render populated section 1`] = `
                 >
                   <div
                     class="mb-2 annotation col-12"
-                  />
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <div
                     class="col-xl-12 col-lg-12"
                   >

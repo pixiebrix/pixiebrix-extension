@@ -13,7 +13,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.googleAccount"
@@ -65,7 +69,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -150,7 +158,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -274,7 +286,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.filterRows"
@@ -333,7 +349,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.header"
@@ -457,7 +477,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.query"
@@ -515,7 +539,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.multi"
@@ -606,7 +634,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.googleAccount"
@@ -658,7 +690,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -743,7 +779,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -867,7 +907,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.filterRows"
@@ -926,7 +970,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.header"
@@ -1050,7 +1098,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.query"
@@ -1110,7 +1162,11 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.multi"
@@ -1201,7 +1257,11 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -1286,7 +1346,11 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -1410,7 +1474,11 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.filterRows"
@@ -1469,7 +1537,11 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.header"
@@ -1593,7 +1665,11 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.query"
@@ -1651,7 +1727,11 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.multi"
@@ -1742,7 +1822,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.googleAccount"
@@ -1954,7 +2038,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -2090,7 +2178,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -2214,7 +2306,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.filterRows"
@@ -2273,7 +2369,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.header"
@@ -2397,7 +2497,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.query"
@@ -2455,7 +2559,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.multi"
@@ -2546,7 +2654,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.googleAccount"
@@ -2758,7 +2870,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.spreadsheetId"
@@ -2894,7 +3010,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.tabName"
@@ -3018,7 +3138,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.filterRows"
@@ -3077,7 +3201,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.header"
@@ -3201,7 +3329,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.query"
@@ -3261,7 +3393,11 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
       >
         <div
           class="mb-2 annotation col-12"
-        />
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
         <label
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="config.multi"

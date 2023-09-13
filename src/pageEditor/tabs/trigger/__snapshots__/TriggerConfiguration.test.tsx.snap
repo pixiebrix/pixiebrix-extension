@@ -10,7 +10,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.trigger"
@@ -120,7 +124,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.customEvent.eventName"
@@ -267,7 +275,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.rootSelector"
@@ -337,7 +349,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.attachMode"
@@ -386,7 +402,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.targetMode"
@@ -435,7 +455,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="debounce"
@@ -484,7 +508,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.isAvailable.matchPatterns"
@@ -536,7 +564,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
             >
               <div
                 class="mb-2 annotation col-12"
-              />
+              >
+                <div
+                  class="annotationPlaceholder"
+                />
+              </div>
               <div
                 class="col-xl-12 col-lg-12"
               >
@@ -611,7 +643,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.showErrors"
@@ -656,7 +692,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     >
       <div
         class="mb-2 annotation col-12"
-      />
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extensionPoint.definition.reportMode"
@@ -725,7 +765,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
         >
           <div
             class="mb-2 annotation col-12"
-          />
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <label
             class="label form-label col-form-label col-xl-2 col-lg-3"
             for="extensionPoint.definition.isAvailable.urlPatterns"
@@ -766,7 +810,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
         >
           <div
             class="mb-2 annotation col-12"
-          />
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <label
             class="label form-label col-form-label col-xl-2 col-lg-3"
             for="extensionPoint.definition.isAvailable.selectors"
@@ -833,7 +881,11 @@ exports[`TriggerConfiguration renders custom event field with known event names 
         >
           <div
             class="mb-2 annotation col-12"
-          />
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <label
             class="label form-label col-form-label col-xl-2 col-lg-3"
             for="permissions.origins"

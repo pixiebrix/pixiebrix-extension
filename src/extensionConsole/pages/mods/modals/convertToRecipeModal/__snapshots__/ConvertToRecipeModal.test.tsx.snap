@@ -50,7 +50,11 @@ exports[`it renders default state 1`] = `
           >
             <div
               class="mb-2 annotation col-12"
-            />
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="blueprintId"
@@ -163,7 +167,11 @@ exports[`it renders default state 1`] = `
           >
             <div
               class="mb-2 annotation col-12"
-            />
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="name"
@@ -193,7 +201,11 @@ exports[`it renders default state 1`] = `
           >
             <div
               class="mb-2 annotation col-12"
-            />
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="version"
@@ -223,7 +235,11 @@ exports[`it renders default state 1`] = `
           >
             <div
               class="mb-2 annotation col-12"
-            />
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="description"
@@ -375,7 +391,11 @@ exports[`it renders requires user scope 1`] = `
             >
               <div
                 class="mb-2 annotation col-12"
-              />
+              >
+                <div
+                  class="annotationPlaceholder"
+                />
+              </div>
               <label
                 class="label form-label col-form-label col-lg-auto"
                 for="scope"

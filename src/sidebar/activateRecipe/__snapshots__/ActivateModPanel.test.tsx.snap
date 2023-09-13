@@ -455,7 +455,11 @@ exports[`ActivateRecipePanel renders with options, permissions info 1`] = `
           >
             <div
               class="mb-2 annotation col-12"
-            />
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="optionsArgs.testDatabase"
@@ -580,7 +584,11 @@ exports[`ActivateRecipePanel renders with options, permissions info 1`] = `
           >
             <div
               class="mb-2 annotation col-12"
-            />
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="optionsArgs.bar"
@@ -633,7 +641,11 @@ exports[`ActivateRecipePanel renders with options, permissions info 1`] = `
           >
             <div
               class="mb-2 annotation col-12"
-            />
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
             <label
               class="label form-label col-form-label col-xl-2 col-lg-3"
               for="optionsArgs.foo"
