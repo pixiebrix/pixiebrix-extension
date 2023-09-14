@@ -604,6 +604,13 @@ exports[`renders an extension with sub pipeline 1`] = `
             <div
               class="formGroup form-group row"
             >
+              <div
+                class="mb-2 annotation-transition col-12"
+              >
+                <div
+                  class="annotationPlaceholder"
+                />
+              </div>
               <label
                 class="label form-label col-form-label col-xl-2 col-lg-3"
                 for="label"
@@ -624,6 +631,13 @@ exports[`renders an extension with sub pipeline 1`] = `
             <div
               class="formGroup form-group row"
             >
+              <div
+                class="mb-2 annotation-transition col-12"
+              >
+                <div
+                  class="annotationPlaceholder"
+                />
+              </div>
               <label
                 class="label form-label col-form-label col-xl-2 col-lg-3"
                 for="extension.heading"
@@ -651,6 +665,13 @@ exports[`renders an extension with sub pipeline 1`] = `
             <div
               class="formGroup form-group row"
             >
+              <div
+                class="mb-2 annotation-transition col-12"
+              >
+                <div
+                  class="annotationPlaceholder"
+                />
+              </div>
               <label
                 class="label form-label col-form-label col-xl-2 col-lg-3"
                 for="extensionPoint.definition.containerSelector"
@@ -737,6 +758,13 @@ exports[`renders an extension with sub pipeline 1`] = `
             <div
               class="formGroup form-group row"
             >
+              <div
+                class="mb-2 annotation-transition col-12"
+              >
+                <div
+                  class="annotationPlaceholder"
+                />
+              </div>
               <label
                 class="label form-label col-form-label col-xl-2 col-lg-3"
                 for="extensionPoint.definition.isAvailable.matchPatterns"
@@ -772,6 +800,13 @@ exports[`renders an extension with sub pipeline 1`] = `
                     <div
                       class="formGroup mb-0 form-group row"
                     >
+                      <div
+                        class="mb-2 annotation-transition col-12"
+                      >
+                        <div
+                          class="annotationPlaceholder"
+                        />
+                      </div>
                       <div
                         class="col-xl-12 col-lg-12"
                       >
@@ -872,6 +907,13 @@ exports[`renders an extension with sub pipeline 1`] = `
                 <div
                   class="formGroup form-group row"
                 >
+                  <div
+                    class="mb-2 annotation-transition col-12"
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <label
                     class="label form-label col-form-label col-xl-2 col-lg-3"
                     for="extension.collapsible"
@@ -918,6 +960,13 @@ exports[`renders an extension with sub pipeline 1`] = `
                 <div
                   class="formGroup form-group row"
                 >
+                  <div
+                    class="mb-2 annotation-transition col-12"
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <label
                     class="label form-label col-form-label col-xl-2 col-lg-3"
                     for="extension.shadowDOM"
@@ -964,6 +1013,13 @@ exports[`renders an extension with sub pipeline 1`] = `
                 <div
                   class="formGroup form-group row"
                 >
+                  <div
+                    class="mb-2 annotation-transition col-12"
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <label
                     class="label form-label col-form-label col-xl-2 col-lg-3"
                     for="extensionPoint.definition.template"
@@ -1041,6 +1097,13 @@ exports[`renders an extension with sub pipeline 1`] = `
                 <div
                   class="formGroup form-group row"
                 >
+                  <div
+                    class="mb-2 annotation-transition col-12"
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <label
                     class="label form-label col-form-label col-xl-2 col-lg-3"
                     for="extensionPoint.definition.isAvailable.urlPatterns"
@@ -1096,6 +1159,13 @@ exports[`renders an extension with sub pipeline 1`] = `
                 <div
                   class="formGroup form-group row"
                 >
+                  <div
+                    class="mb-2 annotation-transition col-12"
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <label
                     class="label form-label col-form-label col-xl-2 col-lg-3"
                     for="extensionPoint.definition.isAvailable.selectors"
@@ -1177,6 +1247,13 @@ exports[`renders an extension with sub pipeline 1`] = `
                 <div
                   class="formGroup form-group row"
                 >
+                  <div
+                    class="mb-2 annotation-transition col-12"
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <label
                     class="label form-label col-form-label col-xl-2 col-lg-3"
                     for="permissions.origins"
@@ -1374,6 +1451,13 @@ exports[`renders an extension with sub pipeline 1`] = `
                         <div
                           class="formGroup form-group row"
                         >
+                          <div
+                            class="mb-2 annotation-transition col-12"
+                          >
+                            <div
+                              class="annotationPlaceholder"
+                            />
+                          </div>
                           <label
                             class="label form-label col-form-label col-lg-auto"
                             for="traceSearch"
@@ -1947,6 +2031,13 @@ exports[`renders the first selected node 1`] = `
                 <div
                   class="formGroup form-group row"
                 >
+                  <div
+                    class="mb-2 annotation-transition col-12"
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <label
                     class="label form-label col-form-label col-lg-auto"
                     for="extension.blockPipeline.0.label"
@@ -1972,6 +2063,13 @@ exports[`renders the first selected node 1`] = `
                 <div
                   class="formGroup form-group row"
                 >
+                  <div
+                    class="mb-2 annotation-transition col-12"
+                  >
+                    <div
+                      class="annotationPlaceholder"
+                    />
+                  </div>
                   <label
                     class="label form-label col-form-label col-lg-auto"
                     for="extension.blockPipeline.0.outputKey"
@@ -2031,6 +2129,13 @@ exports[`renders the first selected node 1`] = `
             <div
               class="formGroup form-group row"
             >
+              <div
+                class="mb-2 annotation-transition col-12"
+              >
+                <div
+                  class="annotationPlaceholder"
+                />
+              </div>
               <label
                 class="label form-label col-form-label col-xl-2 col-lg-3"
                 for="extension.blockPipeline.0.config.message"

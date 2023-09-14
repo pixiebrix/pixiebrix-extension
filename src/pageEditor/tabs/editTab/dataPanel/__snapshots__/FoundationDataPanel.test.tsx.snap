@@ -111,6 +111,13 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
           <div
             class="formGroup form-group row"
           >
+            <div
+              class="mb-2 annotation-transition col-12"
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
             <label
               class="label form-label col-form-label col-lg-auto"
               for="traceSearch"
