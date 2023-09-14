@@ -35,6 +35,7 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
+import { type Except } from "type-fest";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
@@ -59,7 +60,7 @@ export interface BaseExtensionState {
   blockPipeline: BrickPipeline;
 }
 
-export interface BaseFormState<
+export interface BaseFormStateV1<
   TExtension extends BaseExtensionState = BaseExtensionState,
   TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
 > {
@@ -80,7 +81,7 @@ export interface BaseFormState<
   readonly type: StarterBrickType;
 
   /**
-   * True if the extensionPoint exists in in the registry
+   * True if the extensionPoint exists in the registry
    */
   installed?: boolean;
 
@@ -127,6 +128,23 @@ export interface BaseFormState<
    */
   optionsDefinition?: ModOptionsDefinition;
 }
+
+export type BaseFormStateV2<
+  TExtension extends BaseExtensionState = BaseExtensionState,
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
+> = Except<BaseFormStateV1<TExtension, TExtensionPoint>, "services"> & {
+  /**
+   * The integration dependencies configured for the extension
+   *
+   * @since 1.7.41 renamed from `services` to `integrationDependencies`
+   */
+  integrationDependencies: IntegrationDependency[];
+};
+
+export type BaseFormState<
+  TExtension extends BaseExtensionState = BaseExtensionState,
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
+> = BaseFormStateV2<TExtension, TExtensionPoint>;
 
 /**
  * ExtensionPoint configuration for use with the Page Editor.

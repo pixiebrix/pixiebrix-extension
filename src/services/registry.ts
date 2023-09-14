@@ -24,7 +24,7 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { readReduxStorage, type ReduxStorageKey } from "@/utils/storageUtils";
 
-const storageKey = "persist:servicesOptions" as ReduxStorageKey;
+const storageKey = "persist:integrationsSlice" as ReduxStorageKey;
 
 const registry = new BaseRegistry<RegistryId, IntegrationABC>(
   ["service"],

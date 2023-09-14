@@ -230,7 +230,9 @@ function useSaveCallbacks({
         optionsActions.installMod({
           modDefinition: savedRecipe,
           configuredDependencies: inferConfiguredModIntegrations([
-            ...dirtyRecipeElements,
+            ...dirtyRecipeElements.map(({ integrationDependencies }) => ({
+              services: integrationDependencies,
+            })),
             ...cleanRecipeExtensions,
           ]),
           optionsArgs: inferRecipeOptions([

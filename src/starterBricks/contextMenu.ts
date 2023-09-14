@@ -54,7 +54,7 @@ import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {
   ContextMenuReader,

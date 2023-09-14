@@ -19,7 +19,7 @@ import { type FormControlProps } from "react-bootstrap";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import type React from "react";
 import { type TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
-import { type ServiceWidgetProps } from "@/components/fields/schemaFields/widgets/ServiceWidget";
+import { type IntegrationDependencyWidgetProps } from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
 
 type Widgets = {
   ArrayWidget: React.VFC<SchemaFieldProps>;
@@ -46,7 +46,7 @@ type Widgets = {
   DatabaseWidget: React.VFC<{ name: string }>;
   PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   IconWidget: React.VFC<SchemaFieldProps & FormControlProps>;
-  ServiceWidget: React.FC<ServiceWidgetProps>;
+  ServiceWidget: React.FC<IntegrationDependencyWidgetProps>;
   SheetsFileWidget: React.FC<SchemaFieldProps>;
 };
 

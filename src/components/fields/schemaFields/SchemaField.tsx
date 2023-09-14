@@ -21,7 +21,7 @@ import {
   type SchemaFieldComponent,
 } from "@/components/fields/schemaFields/propTypes";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
-import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
+import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/AppApiIntegrationDependencyField";
 import CssClassField from "./CssClassField";
 import HeadingStyleField from "./HeadingStyleField";
 import {
@@ -40,7 +40,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
   const { customWidgets } = useContext(SchemaFieldContext);
 
   if (isAppServiceField(schema)) {
-    return <AppServiceField {...props} />;
+    return <AppApiIntegrationDependencyField {...props} />;
   }
 
   if (isCssClassField(schema)) {

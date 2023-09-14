@@ -17,11 +17,11 @@
 
 import {
   buildRecipe,
-  findMaxServicesDependencyApiVersion,
+  findMaxIntegrationDependencyApiVersion,
   generateScopeBrickId,
   isRecipeEditable,
   replaceRecipeExtension,
-  selectExtensionPointServices,
+  selectExtensionPointIntegrations,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
@@ -68,7 +68,7 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
-import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/services/integrationUtils";
 
 jest.mock("@/background/contextMenus");
 
@@ -630,7 +630,7 @@ describe("buildRecipe", () => {
   });
 
   test("Dirty extension with services", async () => {
-    const serviceId = validateRegistryId("@pixiebrix/api");
+    const integrationId = validateRegistryId("@pixiebrix/api");
     const outputKey = validateOutputKey("pixiebrix");
 
     // Load the adapter for this mod component
@@ -638,7 +638,7 @@ describe("buildRecipe", () => {
 
     const modComponent = modComponentFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      services: [{ id: serviceId, outputKey, config: null }],
+      services: [integrationDependencyFactory({ integrationId, outputKey })],
       extensionPointId: starterBrick.metadata.id,
     }) as UnresolvedModComponent;
 
@@ -662,7 +662,7 @@ describe("buildRecipe", () => {
     expect(newRecipe.extensionPoints).toHaveLength(1);
     expect(newRecipe.extensionPoints[0].id).toBe(modComponent.extensionPointId);
     expect(newRecipe.extensionPoints[0].services).toStrictEqual({
-      [outputKey]: serviceId,
+      [outputKey]: integrationId,
     });
   });
 
@@ -843,7 +843,7 @@ describe("findMaxServicesDependencyApiVersion", () => {
         apiVersion: "v1",
       },
     ];
-    expect(findMaxServicesDependencyApiVersion(dependencies)).toBe("v1");
+    expect(findMaxIntegrationDependencyApiVersion(dependencies)).toBe("v1");
   });
 
   it("returns v2 for v2 dependencies", () => {
@@ -858,7 +858,7 @@ describe("findMaxServicesDependencyApiVersion", () => {
         apiVersion: "v2",
       },
     ];
-    expect(findMaxServicesDependencyApiVersion(dependencies)).toBe("v2");
+    expect(findMaxIntegrationDependencyApiVersion(dependencies)).toBe("v2");
   });
 
   it("works with undefined version", () => {
@@ -866,7 +866,7 @@ describe("findMaxServicesDependencyApiVersion", () => {
       {},
       {},
     ];
-    expect(findMaxServicesDependencyApiVersion(dependencies)).toBe("v1");
+    expect(findMaxIntegrationDependencyApiVersion(dependencies)).toBe("v1");
   });
 
   it("works with mixed dependencies", () => {
@@ -882,7 +882,7 @@ describe("findMaxServicesDependencyApiVersion", () => {
       },
       {},
     ];
-    expect(findMaxServicesDependencyApiVersion(dependencies)).toBe("v2");
+    expect(findMaxIntegrationDependencyApiVersion(dependencies)).toBe("v2");
   });
 });
 
@@ -897,9 +897,9 @@ describe("selectExtensionPointServices", () => {
         }),
       ],
     };
-    expect(selectExtensionPointServices(extension)).toStrictEqual({
-      [extension.services[0].outputKey]: extension.services[0].id,
-      [extension.services[1].outputKey]: extension.services[1].id,
+    expect(selectExtensionPointIntegrations(extension)).toStrictEqual({
+      [extension.services[0].outputKey]: extension.services[0].integrationId,
+      [extension.services[1].outputKey]: extension.services[1].integrationId,
     });
   });
 
@@ -920,16 +920,16 @@ describe("selectExtensionPointServices", () => {
         }),
       ],
     };
-    expect(selectExtensionPointServices(extension)).toStrictEqual({
+    expect(selectExtensionPointIntegrations(extension)).toStrictEqual({
       properties: {
         [extension.services[0].outputKey]: {
-          $ref: `${SERVICE_BASE_SCHEMA}${extension.services[0].id}`,
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.services[0].integrationId}`,
         },
         [extension.services[1].outputKey]: {
-          $ref: `${SERVICE_BASE_SCHEMA}${extension.services[1].id}`,
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.services[1].integrationId}`,
         },
         [extension.services[2].outputKey]: {
-          $ref: `${SERVICE_BASE_SCHEMA}${extension.services[2].id}`,
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.services[2].integrationId}`,
         },
       },
       required: [extension.services[1].outputKey],

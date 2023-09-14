@@ -22,7 +22,7 @@ import extensionPointRegistry from "@/starterBricks/registry";
 import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { collectIntegrationOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { collectIntegrationOriginPermissions } from "@/permissions/integrationPermissionsHelpers";
 import { containsPermissions } from "@/background/messenger/api";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
@@ -70,9 +70,9 @@ export async function collectExtensionPermissions(
   if (includeServices) {
     servicePermissions = await Promise.all(
       (resolved.services ?? [])
-        .filter((x) => x.config)
-        .map(async (x) =>
-          collectIntegrationOriginPermissions({ id: x.id, config: x.config })
+        .filter(({ configId }) => configId)
+        .map(async (integrationDependency) =>
+          collectIntegrationOriginPermissions(integrationDependency)
         )
     );
   }

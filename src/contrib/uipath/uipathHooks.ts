@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import useDependency from "@/services/useDependency";
+import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
@@ -28,7 +28,7 @@ import {
   type Release,
 } from "@/contrib/uipath/uipathContract";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
-import { proxyService } from "@/background/messenger/api";
+import { makeConfiguredRequest } from "@/background/messenger/api";
 import cachePromise from "@/utils/cachePromise";
 
 const optionalFetchReleases = optionalFactory(fetchReleases);
@@ -38,10 +38,13 @@ type ReleaseOption = Option & { data: Release };
 async function fetchReleases(
   config: SanitizedIntegrationConfig
 ): Promise<ReleaseOption[]> {
-  const response = await proxyService<ODataResponseData<Release>>(config, {
-    url: "/odata/Releases",
-    method: "get",
-  });
+  const response = await makeConfiguredRequest<ODataResponseData<Release>>(
+    config,
+    {
+      url: "/odata/Releases",
+      method: "get",
+    }
+  );
   const releases = response.data.value;
   return releases.map((x) => ({
     value: x.Key,
@@ -53,14 +56,15 @@ async function fetchReleases(
 export function useSelectedRelease(releaseKeyFieldName: string) {
   const [{ value: releaseKey }] = useField<string>(releaseKeyFieldName);
 
-  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_IDS);
+  const { data: sanitizedConfig } =
+    useSanitizedIntegrationConfigFormikAdapter(UIPATH_SERVICE_IDS);
 
   const releasesPromise = useMemo(
     async () =>
-      cachePromise(["uipath:useSelectedRelease", config], async () =>
-        optionalFetchReleases(hasPermissions ? config : null)
+      cachePromise(["uipath:useSelectedRelease", sanitizedConfig], async () =>
+        optionalFetchReleases(sanitizedConfig)
       ),
-    [config, hasPermissions]
+    [sanitizedConfig]
   );
 
   const [selectedRelease] = useAsyncState(async () => {

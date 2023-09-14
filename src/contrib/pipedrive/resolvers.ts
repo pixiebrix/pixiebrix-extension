@@ -16,7 +16,7 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { proxyService } from "@/background/messenger/api";
+import { makeConfiguredRequest } from "@/background/messenger/api";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
@@ -72,7 +72,7 @@ export class ResolvePerson extends TransformerABC {
     if (organization) {
       const {
         data: { data },
-      } = await proxyService<SearchResult>(pipedriveService, {
+      } = await makeConfiguredRequest<SearchResult>(pipedriveService, {
         url: "https://api.pipedrive.com/v1/organizations/search",
         method: "get",
         params: {
@@ -86,7 +86,7 @@ export class ResolvePerson extends TransformerABC {
 
     const {
       data: { data },
-    } = await proxyService<SearchResult>(pipedriveService, {
+    } = await makeConfiguredRequest<SearchResult>(pipedriveService, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",
       params: {

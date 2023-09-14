@@ -19,10 +19,10 @@ import React, { useEffect } from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
-import servicesSlice from "@/store/services/servicesSlice";
+import integrationsSlice from "@/store/Integrations/integrationsSlice";
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
@@ -60,14 +60,14 @@ const Template: Story<{
       options: extensionsSlice.reducer,
       settings: settingsSlice.reducer,
       auth: authSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     preloadedState: {
       auth,
       options: extensionsSlice.getInitialState(),
       settings: settingsSlice.getInitialState(),
-      services: servicesSlice.getInitialState(),
+      integrations: integrationsSlice.getInitialState(),
     },
     middleware(getDefaultMiddleware) {
       /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */

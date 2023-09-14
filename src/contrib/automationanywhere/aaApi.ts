@@ -17,7 +17,7 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { proxyService } from "@/background/messenger/api";
+import { makeConfiguredRequest } from "@/background/messenger/api";
 import {
   type Activity,
   type Bot,
@@ -90,7 +90,7 @@ async function fetchPages<TData>(
     length: PAGINATION_LIMIT,
   };
 
-  const initialResponse = await proxyService<ListResponse<TData>>(
+  const initialResponse = await makeConfiguredRequest<ListResponse<TData>>(
     config,
     paginatedRequestConfig
   );
@@ -112,7 +112,7 @@ async function fetchPages<TData>(
       length: PAGINATION_LIMIT,
     };
     // eslint-disable-next-line no-await-in-loop -- be conservative on number of concurrent requests to CR
-    const response = await proxyService<ListResponse<TData>>(
+    const response = await makeConfiguredRequest<ListResponse<TData>>(
       config,
       paginatedRequestConfig
     );
@@ -132,7 +132,7 @@ async function fetchBotFile(
   fileId: string
 ): Promise<Bot> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await proxyService<Bot>(config, {
+  const response = await makeConfiguredRequest<Bot>(config, {
     url: `/v2/repository/files/${fileId}`,
     method: "GET",
   });
@@ -152,7 +152,7 @@ async function fetchFolder(
   folderId: string
 ): Promise<Folder> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await proxyService<Folder>(config, {
+  const response = await makeConfiguredRequest<Folder>(config, {
     url: `/v2/repository/files/${folderId}`,
     method: "GET",
   });
@@ -322,7 +322,7 @@ export const cachedFetchRunAsUsers = cachePromiseMethod(
 
 async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
   if (config && fileId) {
-    const response = await proxyService<Interface>(config, {
+    const response = await makeConfiguredRequest<Interface>(config, {
       url: `/v1/filecontent/${fileId}/interface`,
       method: "GET",
     });
@@ -344,7 +344,7 @@ export async function runCommunityBot({
 }: CommunityBotArgs): Promise<void> {
   // Don't bother returning the DeployResponse because it's just "0" for all community deployments
   // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
-  await proxyService<DeployResponse>(service, {
+  await makeConfiguredRequest<DeployResponse>(service, {
     url: "/v2/automations/deploy",
     method: "post",
     data: {
@@ -364,19 +364,22 @@ export async function runEnterpriseBot({
   poolIds = [],
 }: EnterpriseBotArgs) {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-bot-deploy-task.html
-  const { data: deployData } = await proxyService<DeployResponse>(service, {
-    url: "/v3/automations/deploy",
-    method: "post",
-    data: {
-      fileId,
-      botInput: mapBotInput(data),
-      // Use the runAsUser's default device instead of a device pool
-      overrideDefaultDevice: poolIds?.length > 0,
-      numOfRunAsUsersToUse: 1,
-      poolIds,
-      runAsUserIds: castArray(runAsUserIds),
-    },
-  });
+  const { data: deployData } = await makeConfiguredRequest<DeployResponse>(
+    service,
+    {
+      url: "/v3/automations/deploy",
+      method: "post",
+      data: {
+        fileId,
+        botInput: mapBotInput(data),
+        // Use the runAsUser's default device instead of a device pool
+        overrideDefaultDevice: poolIds?.length > 0,
+        numOfRunAsUsersToUse: 1,
+        poolIds,
+        runAsUserIds: castArray(runAsUserIds),
+      },
+    }
+  );
 
   return deployData;
 }
@@ -397,20 +400,19 @@ export async function pollEnterpriseResult({
     await sleep(POLL_MILLIS);
 
     // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
-    const { data: activityList } = await proxyService<ListResponse<Activity>>(
-      service,
-      {
-        url: "/v3/activity/list",
-        method: "post",
-        data: {
-          filter: {
-            operator: "eq",
-            field: "deploymentId",
-            value: deploymentId,
-          },
+    const { data: activityList } = await makeConfiguredRequest<
+      ListResponse<Activity>
+    >(service, {
+      url: "/v3/activity/list",
+      method: "post",
+      data: {
+        filter: {
+          operator: "eq",
+          field: "deploymentId",
+          value: deploymentId,
         },
-      }
-    );
+      },
+    });
 
     if (activityList.list.length > 1) {
       logger.error(
@@ -452,10 +454,13 @@ export async function pollEnterpriseResult({
   });
 
   if (completedActivity) {
-    const { data: execution } = await proxyService<Execution>(service, {
-      url: `/v3/activity/execution/${completedActivity.id}`,
-      method: "get",
-    });
+    const { data: execution } = await makeConfiguredRequest<Execution>(
+      service,
+      {
+        url: `/v3/activity/execution/${completedActivity.id}`,
+        method: "get",
+      }
+    );
 
     return selectBotOutput(execution);
   }

@@ -41,7 +41,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { CancelError } from "@/errors/businessErrors";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {
   type InitialValues,

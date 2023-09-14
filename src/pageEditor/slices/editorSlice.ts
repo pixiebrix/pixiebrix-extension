@@ -53,8 +53,8 @@ import {
   selectNotDeletedExtensions,
 } from "./editorSelectors";
 import {
-  type ModComponentFormState,
   isQuickBarExtensionPoint,
+  type ModComponentFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
@@ -85,10 +85,7 @@ import { serializeError } from "serialize-error";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
-import {
-  keyToFieldValue,
-  selectServiceVariables,
-} from "@/components/fields/schemaFields/serviceFieldUtils";
+import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/serviceFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
@@ -818,11 +815,7 @@ export const editorSlice = createSlice({
           : pipeline[index + 1]; // Not last item, select next
       pipeline.splice(index, 1);
 
-      const used = selectServiceVariables(element);
-
-      element.services = element.services.filter((x) =>
-        used.has(keyToFieldValue(x.outputKey).__value__)
-      );
+      removeUnusedDependencies(element);
 
       syncElementNodeUIStates(state, element);
 

@@ -18,7 +18,7 @@
 import React from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { type JsonObject } from "type-fest";
-import { dataStore, proxyService } from "@/background/messenger/api";
+import { dataStore, makeConfiguredRequest } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
@@ -366,7 +366,7 @@ async function getInitialData(
     case "database": {
       const {
         data: { data },
-      } = await proxyService<DatabaseResult>(storage.service, {
+      } = await makeConfiguredRequest<DatabaseResult>(storage.service, {
         url: `/api/databases/${storage.databaseId}/records/${encodeURIComponent(
           recordId
         )}/`,
@@ -404,7 +404,7 @@ async function setData(
     }
 
     case "database": {
-      await proxyService(storage.service, {
+      await makeConfiguredRequest(storage.service, {
         url: `/api/databases/${storage.databaseId}/records/`,
         method: "put",
         data: {

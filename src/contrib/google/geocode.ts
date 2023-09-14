@@ -16,7 +16,7 @@
  */
 
 import { isEmpty } from "lodash";
-import { proxyService } from "@/background/messenger/api";
+import { makeConfiguredRequest } from "@/background/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
@@ -71,7 +71,7 @@ async function geocodeAddress(
     return {};
   }
 
-  const { data } = await proxyService<GeocodeData>(service, {
+  const { data } = await makeConfiguredRequest<GeocodeData>(service, {
     url: "https://maps.googleapis.com/maps/api/geocode/json",
     params: { address },
   });

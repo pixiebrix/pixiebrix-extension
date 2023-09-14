@@ -90,18 +90,19 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
     (unconfiguredDependency) => {
       const builtInConfig = builtInIntegrationConfigs.find(
         (config) =>
-          config.service.config.metadata.id === unconfiguredDependency.id
+          config.service.config.metadata.id ===
+          unconfiguredDependency.integrationId
       );
 
       if (!builtInConfig) {
         throw new Error(
-          `No built-in config found for integration ${unconfiguredDependency.id}. Check that starter mods have built-in configuration options for all required integrations.`
+          `No built-in config found for integration ${unconfiguredDependency.integrationId}. Check that starter mods have built-in configuration options for all required integrations.`
         );
       }
 
       return {
         ...unconfiguredDependency,
-        config: builtInConfig.id,
+        configId: builtInConfig.id,
       };
     }
   );

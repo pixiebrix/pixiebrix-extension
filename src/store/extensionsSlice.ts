@@ -115,8 +115,8 @@ function getActivatedModComponentFromDefinition<
     const modIntegrationIds = getIntegrationIds({
       extensionPoints: [modComponentDefinition],
     });
-    activatedModComponent.services = integrationDependencies.filter(({ id }) =>
-      modIntegrationIds.includes(id)
+    activatedModComponent.services = integrationDependencies.filter(
+      ({ integrationId }) => modIntegrationIds.includes(integrationId)
     );
   }
 

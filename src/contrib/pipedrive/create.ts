@@ -16,7 +16,7 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { proxyService } from "@/background/messenger/api";
+import { makeConfiguredRequest } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
@@ -64,14 +64,17 @@ export class AddOrganization extends EffectABC {
     }>,
     { logger }: BrickOptions
   ): Promise<void> {
-    const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
-      url: "https://api.pipedrive.com/v1/organizations/search",
-      method: "get",
-      params: {
-        exact_match: true,
-        term: name,
-      },
-    });
+    const { data } = await makeConfiguredRequest<{ items: unknown[] }>(
+      pipedrive,
+      {
+        url: "https://api.pipedrive.com/v1/organizations/search",
+        method: "get",
+        params: {
+          exact_match: true,
+          term: name,
+        },
+      }
+    );
 
     if (data.items.length > 0) {
       logger.info(`Organization already exists for ${name}`);
@@ -79,7 +82,7 @@ export class AddOrganization extends EffectABC {
     }
 
     try {
-      await proxyService(pipedrive, {
+      await makeConfiguredRequest(pipedrive, {
         url: "https://api.pipedrive.com/v1/organizations",
         method: "post",
         data: { name, owner_id },
@@ -144,14 +147,17 @@ export class AddPerson extends EffectABC {
     }>,
     { logger }: BrickOptions
   ): Promise<void> {
-    const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
-      url: "https://api.pipedrive.com/v1/persons/search",
-      method: "get",
-      params: {
-        exact_match: true,
-        term: name,
-      },
-    });
+    const { data } = await makeConfiguredRequest<{ items: unknown[] }>(
+      pipedrive,
+      {
+        url: "https://api.pipedrive.com/v1/persons/search",
+        method: "get",
+        params: {
+          exact_match: true,
+          term: name,
+        },
+      }
+    );
 
     if (data.items.length > 0) {
       logger.info(`Person record already exists for ${name}`);
@@ -159,7 +165,7 @@ export class AddPerson extends EffectABC {
     }
 
     try {
-      await proxyService(pipedrive, {
+      await makeConfiguredRequest(pipedrive, {
         url: "https://api.pipedrive.com/v1/persons",
         method: "post",
         data: {

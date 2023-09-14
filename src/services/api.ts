@@ -123,8 +123,8 @@ export const appApi = createApi({
     "Me",
     "Auth",
     "Databases",
-    "Services",
-    "ServiceAuths",
+    "Integrations",
+    "IntegrationAuths",
     "Organizations",
     "Groups",
     "MarketplaceListings",
@@ -177,22 +177,22 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Databases"],
     }),
-    getServices: builder.query<IntegrationDefinition[], void>({
+    getIntegrations: builder.query<IntegrationDefinition[], void>({
       query: () => ({
         url: "/api/services/",
         method: "get",
         // Returns public service definitions if not authenticated
         requireLinked: false,
       }),
-      providesTags: ["Services"],
+      providesTags: ["Integrations"],
     }),
-    getServiceAuths: builder.query<RemoteIntegrationConfig[], void>({
+    getIntegrationAuths: builder.query<RemoteIntegrationConfig[], void>({
       query: () => ({
         url: "/api/services/shared/",
         method: "get",
         params: { meta: 1 },
       }),
-      providesTags: ["ServiceAuths"],
+      providesTags: ["IntegrationAuths"],
     }),
     getOrganizations: builder.query<Organization[], void>({
       query: () => ({ url: "/api/organizations/", method: "get" }),
@@ -474,8 +474,8 @@ export const {
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
   useAddDatabaseToGroupMutation,
-  useGetServicesQuery,
-  useGetServiceAuthsQuery,
+  useGetIntegrationsQuery,
+  useGetIntegrationAuthsQuery,
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,

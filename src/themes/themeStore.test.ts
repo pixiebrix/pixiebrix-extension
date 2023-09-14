@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { saveSettingsState } from "@/store/settingsStorage";
-import { initialSettingsState } from "@/store/settingsSlice";
+import { saveSettingsState } from "@/store/settings/settingsStorage";
+import { initialSettingsState } from "@/store/settings/settingsSlice";
 import {
   INTERNAL_reset as resetManagedStorage,
   readManagedStorage,

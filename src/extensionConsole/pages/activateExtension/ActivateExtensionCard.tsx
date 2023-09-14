@@ -44,7 +44,8 @@ const ActivateButton: React.FunctionComponent = () => {
   const { submitForm, values, isSubmitting } = useFormikContext<FormState>();
 
   const anyUnconfigured = values.integrationDependencies.some(
-    ({ id, config }) => id !== PIXIEBRIX_INTEGRATION_ID && config == null
+    ({ integrationId, configId }) =>
+      integrationId !== PIXIEBRIX_INTEGRATION_ID && configId == null
   );
 
   return (
@@ -59,11 +60,13 @@ const ActivateButton: React.FunctionComponent = () => {
 };
 
 const validationSchema = object().shape({
-  services: Yup.array().of(
+  integrations: Yup.array().of(
     Yup.object().test(
-      "servicesRequired",
+      "integrationsRequired",
       "Please select a configuration",
-      (value) => value.id === PIXIEBRIX_INTEGRATION_ID || value.config != null
+      (value) =>
+        value.integrationId === PIXIEBRIX_INTEGRATION_ID ||
+        value.configId != null
     )
   ),
 });
@@ -76,11 +79,11 @@ const ActivateExtensionCard: React.FunctionComponent<{
   const dispatch = useDispatch();
 
   const initialValues: FormState = useMemo(() => {
-    const uuids = new Set<UUID>(authOptions.map((x) => x.value));
+    const uuids = new Set<UUID>(authOptions.map(({ value }) => value));
     return {
-      integrationDependencies: extension.services.map((service) => ({
-        ...service,
-        config: uuids.has(service.config) ? service.config : null,
+      integrationDependencies: extension.services.map((dependency) => ({
+        ...dependency,
+        configId: uuids.has(dependency.configId) ? dependency.configId : null,
       })),
     };
   }, [authOptions, extension]);

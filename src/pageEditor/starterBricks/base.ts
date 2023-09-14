@@ -103,7 +103,7 @@ export function baseFromExtension<T extends StarterBrickType>(
   | "apiVersion"
   | "installed"
   | "label"
-  | "services"
+  | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
   | "recipe"
@@ -114,7 +114,7 @@ export function baseFromExtension<T extends StarterBrickType>(
     installed: true,
     label: config.label,
     // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
-    services: config.services ?? [],
+    integrationDependencies: config.services ?? [],
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
@@ -154,7 +154,7 @@ export function baseSelectExtension({
   uuid,
   label,
   optionsArgs,
-  services,
+  integrationDependencies,
   permissions,
   extensionPoint,
   recipe,
@@ -175,7 +175,7 @@ export function baseSelectExtension({
     extensionPointId: extensionPoint.metadata.id,
     _recipe: recipe,
     label,
-    services,
+    services: integrationDependencies,
     permissions,
     optionsArgs,
   };
@@ -187,7 +187,7 @@ export function makeInitialBaseState(
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    services: [],
+    integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
     extension: {

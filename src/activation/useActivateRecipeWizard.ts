@@ -101,7 +101,7 @@ export function wizardStateFactory({
   const installedIntegrationConfigs = Object.fromEntries(
     inferConfiguredModIntegrations(installedBlueprintExtensions, {
       optional: true,
-    }).map(({ id, config }) => [id, config])
+    }).map(({ integrationId, configId }) => [integrationId, configId])
   );
   const unconfiguredIntegrationDependencies =
     getUnconfiguredComponentIntegrations(modDefinition);
@@ -109,9 +109,9 @@ export function wizardStateFactory({
     (unconfiguredDependency) => ({
       ...unconfiguredDependency,
       // Prefer the installed dependency for reinstall cases, otherwise use the default
-      config:
-        installedIntegrationConfigs[unconfiguredDependency.id] ??
-        defaultAuthOptions[unconfiguredDependency.id]?.value,
+      configId:
+        installedIntegrationConfigs[unconfiguredDependency.integrationId] ??
+        defaultAuthOptions[unconfiguredDependency.integrationId]?.value,
     })
   );
 
@@ -119,7 +119,7 @@ export function wizardStateFactory({
     switch (step.key) {
       case "services": {
         return integrationDependencies.some(
-          ({ id }) => id !== PIXIEBRIX_INTEGRATION_ID
+          ({ integrationId }) => integrationId !== PIXIEBRIX_INTEGRATION_ID
         );
       }
 

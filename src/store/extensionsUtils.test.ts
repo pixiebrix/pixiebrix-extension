@@ -44,55 +44,55 @@ describe("inferModIntegrations", () => {
     ).toStrictEqual([]);
   });
 
-  it("handles same service", () => {
-    const service = validateRegistryId("foo/bar");
-    const config = uuidv4();
-    const dependency: IntegrationDependency = {
-      id: service,
+  it("handles duplicate integration", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const configId = uuidv4();
+    const integrationDependency = integrationDependencyFactory({
+      integrationId,
       outputKey: validateOutputKey("foo"),
-      config,
-    };
+      configId,
+    });
 
     expect(
       inferConfiguredModIntegrations([
-        { services: [dependency] },
-        { services: [dependency] },
+        { services: [integrationDependency] },
+        { services: [integrationDependency] },
       ])
-    ).toStrictEqual([dependency]);
+    ).toStrictEqual([integrationDependency]);
   });
 
-  it("throw on mismatch", () => {
-    const service = validateRegistryId("foo/bar");
-    const config = uuidv4();
-    const dependency: IntegrationDependency = {
-      id: service,
+  it("throw on mismatched configId", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const configId = uuidv4();
+    const integrationDependency = integrationDependencyFactory({
+      integrationId,
       outputKey: validateOutputKey("foo"),
-      config,
-    };
+      configId,
+    });
 
     expect(() =>
       inferConfiguredModIntegrations([
-        { services: [dependency] },
-        { services: [{ ...dependency, config: uuidv4() }] },
+        { services: [integrationDependency] },
+        { services: [{ ...integrationDependency, configId: uuidv4() }] },
       ])
     ).toThrow(/has multiple configurations/);
   });
 
-  it("throw on missing config", () => {
-    const service = validateRegistryId("foo/bar");
-    const dependency: IntegrationDependency = {
-      id: service,
+  it("throw on missing configId", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const unconfiguredDependency: IntegrationDependency = {
+      integrationId,
       outputKey: validateOutputKey("foo"),
     };
 
     expect(() =>
-      inferConfiguredModIntegrations([{ services: [dependency] }])
+      inferConfiguredModIntegrations([{ services: [unconfiguredDependency] }])
     ).toThrow(/is not configured/);
   });
 
   it("handles unconfigured (optional) integrations", () => {
+    // Factory does not add a configId by default
     const unconfigured = integrationDependencyFactory();
-    delete unconfigured.config;
     expect(
       inferConfiguredModIntegrations([{ services: [unconfigured] }], {
         optional: true,
@@ -100,10 +100,11 @@ describe("inferModIntegrations", () => {
     ).toBeEmpty();
   });
 
-  it("handles unconfigured integrations when the id is the default", () => {
-    const unconfigured = integrationDependencyFactory();
-    delete unconfigured.config;
-    unconfigured.id = validateRegistryId(PIXIEBRIX_INTEGRATION_ID);
+  it("handles unconfigured integrations for the PixieBrix integration", () => {
+    // Factory does not add a configId by default
+    const unconfigured = integrationDependencyFactory({
+      integrationId: PIXIEBRIX_INTEGRATION_ID,
+    });
     expect(
       inferConfiguredModIntegrations([{ services: [unconfigured] }])
     ).toBeEmpty();

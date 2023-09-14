@@ -78,7 +78,7 @@ export function makeBlueprint(
         services: Object.fromEntries(
           services
             .filter((x) => !isNullOrBlank(x.outputKey))
-            .map(({ outputKey, id }) => [outputKey, id])
+            .map(({ outputKey, integrationId }) => [outputKey, integrationId])
         ),
         templateEngine,
         permissions,

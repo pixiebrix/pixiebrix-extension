@@ -56,7 +56,7 @@ import apiVersionOptions, {
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
 import { selectAllBlocks } from "@/bricks/util";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";

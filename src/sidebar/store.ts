@@ -22,13 +22,13 @@ import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import sidebarSlice, { persistSidebarConfig } from "@/sidebar/sidebarSlice";
-import { persistSettingsConfig } from "@/store/settingsStorage";
-import settingsSlice from "@/store/settingsSlice";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import servicesSlice, {
-  persistServicesConfig,
-} from "@/store/services/servicesSlice";
+import integrationsSlice, {
+  persistIntegrationsConfig,
+} from "@/store/Integrations/integrationsSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { boolean } from "@/utils/typeUtils";
 
@@ -50,8 +50,11 @@ const store = configureStore({
     ),
     sidebar: persistReducer(persistSidebarConfig, sidebarSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    // `services` slice is used to determine login state for partner installs
-    services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    // `integrations` slice is used to determine login state for partner installs
+    integrations: persistReducer(
+      persistIntegrationsConfig,
+      integrationsSlice.reducer
+    ),
     modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },

@@ -176,7 +176,7 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
   locate: Locate
 ): Promise<
   Array<
-    Except<IntegrationDependency, "config"> & {
+    Except<IntegrationDependency, "configId"> & {
       configs: SanitizedIntegrationConfig[];
     }
   >
@@ -189,14 +189,14 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
     deployment.bindings.map((x) => x.auth.service_id)
   );
   const unboundIntegrations = deploymentIntegrations.filter(
-    (integrationDependency) =>
-      !teamBoundIntegrationIds.has(integrationDependency.id) &&
-      integrationDependency.id !== PIXIEBRIX_INTEGRATION_ID
+    ({ integrationId }) =>
+      !teamBoundIntegrationIds.has(integrationId) &&
+      integrationId !== PIXIEBRIX_INTEGRATION_ID
   );
 
   return Promise.all(
     unboundIntegrations.flatMap(async (unconfiguredDependency) => {
-      const allConfigs = await locate(unconfiguredDependency.id);
+      const allConfigs = await locate(unconfiguredDependency.integrationId);
       const personalConfigs = allConfigs.filter((x) => isPersonal(x));
       return {
         ...unconfiguredDependency,
@@ -224,29 +224,31 @@ export async function mergeDeploymentIntegrationDependencies(
   );
 
   const pixiebrixIntegration = deploymentIntegrations.find(
-    (integration) => integration.id === PIXIEBRIX_INTEGRATION_ID
+    ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID
   );
 
   const personalIntegrationDependencies: IntegrationDependency[] =
     await Promise.all(
       deploymentIntegrations
         .filter(
-          (integrationDependency) =>
-            !teamBoundIntegrationIds.has(integrationDependency.id) &&
-            integrationDependency.id !== PIXIEBRIX_INTEGRATION_ID
+          ({ integrationId }) =>
+            !teamBoundIntegrationIds.has(integrationId) &&
+            integrationId !== PIXIEBRIX_INTEGRATION_ID
         )
         .map(async (unconfiguredDependency) => {
-          const sanitizedConfigs = await locate(unconfiguredDependency.id);
+          const sanitizedConfigs = await locate(
+            unconfiguredDependency.integrationId
+          );
           const personalConfigs = sanitizedConfigs.filter((x) => isPersonal(x));
           if (personalConfigs.length > 1) {
             throw new Error(
-              `Multiple local configurations found for integration: ${unconfiguredDependency.id}`
+              `Multiple local configurations found for integration: ${unconfiguredDependency.integrationId}`
             );
           }
 
           return {
             ...unconfiguredDependency,
-            config: personalConfigs[0]?.id,
+            configId: personalConfigs[0]?.id,
           };
         })
     );
@@ -256,13 +258,11 @@ export async function mergeDeploymentIntegrationDependencies(
   );
   const teamIntegrationDependencies: IntegrationDependency[] =
     deploymentIntegrations
-      .filter((integrationDependency) =>
-        teamBoundIntegrationIds.has(integrationDependency.id)
-      )
+      .filter(({ integrationId }) => teamBoundIntegrationIds.has(integrationId))
       .map((unconfiguredDependency) => ({
         ...unconfiguredDependency,
-        config: validateUUID(
-          deploymentBindingConfigs[unconfiguredDependency.id]
+        configId: validateUUID(
+          deploymentBindingConfigs[unconfiguredDependency.integrationId]
         ),
       }));
 
@@ -271,9 +271,11 @@ export async function mergeDeploymentIntegrationDependencies(
     ...teamIntegrationDependencies,
   ];
 
-  for (const { id, config } of integrationDependencies) {
-    if (config == null) {
-      throw new Error(`No configuration found for integration: ${id}`);
+  for (const { integrationId, configId } of integrationDependencies) {
+    if (configId == null) {
+      throw new Error(
+        `No configuration found for integration: ${integrationId}`
+      );
     }
   }
 

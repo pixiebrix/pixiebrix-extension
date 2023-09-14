@@ -24,9 +24,9 @@ import {
 } from "@/types/schemaTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import {
-  SERVICE_BASE_SCHEMA,
-  SERVICE_FIELD_REFS,
-} from "@/services/serviceUtils";
+  SERVICES_BASE_SCHEMA_URL,
+  INTEGRATION_DEPENDENCY_FIELD_REFS,
+} from "@/services/integrationUtils";
 import { get, isEmpty } from "lodash";
 import keySchema from "@schemas/key.json";
 import iconSchema from "@schemas/icon.json";
@@ -37,13 +37,13 @@ import { isVarExpression } from "@/utils/expressionUtils";
 
 export const isAppServiceField = createTypePredicate(
   (schema) =>
-    schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_INTEGRATION_ID}`
+    schema.$ref === `${SERVICES_BASE_SCHEMA_URL}${PIXIEBRIX_INTEGRATION_ID}`
 );
 
 export const isServiceField = createTypePredicate(
   (x) =>
-    x.$ref?.startsWith(SERVICE_BASE_SCHEMA) ||
-    SERVICE_FIELD_REFS.includes(x.$ref)
+    x.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(x.$ref)
 );
 
 export const isCssClassField = (fieldDefinition: Schema) =>
@@ -111,14 +111,16 @@ export function isGoogleSheetIdField(schema: Schema): boolean {
  */
 export function isSimpleServiceField(schema: Schema): boolean {
   return (
-    schema.$ref?.startsWith(SERVICE_BASE_SCHEMA) ||
-    schema.$id?.startsWith(SERVICE_BASE_SCHEMA) ||
-    SERVICE_FIELD_REFS.includes(schema.$ref) ||
-    SERVICE_FIELD_REFS.includes(schema.$id)
+    schema.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    schema.$id?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$ref) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$id)
   );
 }
 
-export function isServiceValueFormat(value: unknown): value is Expression {
+export function isIntegrationDependencyValueFormat(
+  value: unknown
+): value is Expression {
   // Default service value, see ServiceWidget
   if (value == null) {
     return true;

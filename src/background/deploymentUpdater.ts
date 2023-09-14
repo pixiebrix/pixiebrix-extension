@@ -34,7 +34,10 @@ import { type ModComponentOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
-import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
+import {
+  getSettingsState,
+  saveSettingsState,
+} from "@/store/settings/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import {
@@ -43,8 +46,8 @@ import {
   mergeDeploymentIntegrationDependencies,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
-import { selectUpdatePromptState } from "@/store/settingsSelectors";
-import settingsSlice from "@/store/settingsSlice";
+import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { locator } from "@/background/locator";
 import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";

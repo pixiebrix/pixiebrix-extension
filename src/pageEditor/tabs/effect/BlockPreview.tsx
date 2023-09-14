@@ -37,7 +37,7 @@ import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useField, useFormikContext } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/starterBricks/elementConfig";

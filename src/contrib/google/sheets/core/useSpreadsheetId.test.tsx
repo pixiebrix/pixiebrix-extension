@@ -22,8 +22,12 @@ import { validateRegistryId } from "@/types/helpers";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
-import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/Integrations/IntegrationsSliceModIntegrationsContextAdapter";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -59,15 +63,15 @@ describe("useSpreadsheetId", () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: makeVariableExpression("@google"),
-        services: [
-          {
-            id: GOOGLE_SHEET_SERVICE_ID,
-            outputKey: "google",
-            config: uuidSequence(2),
-          },
+        integrationDependencies: [
+          integrationDependencyFactory({
+            integrationId: GOOGLE_SHEET_SERVICE_ID,
+            outputKey: validateOutputKey("google"),
+            configId: uuidSequence,
+          }),
         ],
       },
-      wrapper: ServicesSliceModIntegrationsContextAdapter,
+      wrapper: IntegrationsSliceModIntegrationsContextAdapter,
     });
 
     await waitForEffect();
@@ -79,15 +83,15 @@ describe("useSpreadsheetId", () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: makeVariableExpression("@sheet.spreadsheetId"),
-        services: [
-          {
-            id: GOOGLE_SHEET_SERVICE_ID,
-            outputKey: "sheet",
-            config: uuidSequence(2),
-          },
+        integrationDependencies: [
+          integrationDependencyFactory({
+            integrationId: GOOGLE_SHEET_SERVICE_ID,
+            outputKey: validateOutputKey("sheet"),
+            configId: uuidSequence,
+          }),
         ],
       },
-      wrapper: ServicesSliceModIntegrationsContextAdapter,
+      wrapper: IntegrationsSliceModIntegrationsContextAdapter,
     });
 
     await waitForEffect();

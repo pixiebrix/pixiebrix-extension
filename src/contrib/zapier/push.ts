@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { proxyService } from "@/background/messenger/api";
+import { makeConfiguredRequest } from "@/background/messenger/api";
 import { pixiebrixConfigurationFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
@@ -67,7 +67,7 @@ export class PushZap extends EffectABC {
     { pushKey, data }: BrickArgs<{ pushKey: string; data: UnknownObject }>,
     options: BrickOptions
   ): Promise<void> {
-    const { data: webhooks } = await proxyService<{
+    const { data: webhooks } = await makeConfiguredRequest<{
       new_push_fields: Webhook[];
     }>(await pixiebrixConfigurationFactory(), {
       baseURL: await getBaseURL(),
@@ -89,7 +89,7 @@ export class PushZap extends EffectABC {
       options.logger.warn("Invalid data for Zapier effect");
     }
 
-    await proxyService(null, {
+    await makeConfiguredRequest(null, {
       url: webhook.url,
       method: "post",
       data: {

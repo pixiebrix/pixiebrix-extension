@@ -36,12 +36,14 @@ import { act, screen } from "@testing-library/react";
 import { type FormikValues } from "formik";
 import { dereference } from "@/validators/generic";
 import { type UUID } from "@/types/stringTypes";
-import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type FileList } from "@/contrib/google/sheets/core/types";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/Integrations/IntegrationsSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
 import useFlags from "@/hooks/useFlags";
 
@@ -97,17 +99,17 @@ const servicesLookup = {
   }),
 };
 
-const googlePKCEIntegrationDependency: IntegrationDependency = {
-  id: GOOGLE_PKCE_SERVICE_ID,
+const googlePKCEIntegrationDependency = integrationDependencyFactory({
+  integrationId: GOOGLE_PKCE_SERVICE_ID,
   outputKey: validateOutputKey("google"),
-  config: GOOGLE_PKCE_AUTH_CONFIG,
-};
+  configId: GOOGLE_PKCE_AUTH_CONFIG,
+});
 
-const testSpreadsheetIntegrationDependency: IntegrationDependency = {
-  id: GOOGLE_SHEET_SERVICE_ID,
+const testSpreadsheetIntegrationDependency = integrationDependencyFactory({
+  integrationId: GOOGLE_SHEET_SERVICE_ID,
   outputKey: validateOutputKey("google"),
-  config: TEST_SPREADSHEET_AUTH_CONFIG,
-};
+  configId: TEST_SPREADSHEET_AUTH_CONFIG,
+});
 
 const fileListResponse: FileList = {
   kind: "drive#fileList",
@@ -142,7 +144,7 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
     <SpreadsheetPickerWidget name="spreadsheetId" schema={baseSchema} />,
     {
       initialValues,
-      wrapper: ServicesSliceModIntegrationsContextAdapter,
+      wrapper: IntegrationsSliceModIntegrationsContextAdapter,
     }
   );
 
@@ -289,14 +291,14 @@ describe("SpreadsheetPickerWidget", () => {
     );
   });
 
-  it("removes unused service on mount", async () => {
+  it("removes unused integration dependency on mount", async () => {
     getSheetPropertiesMock.mockResolvedValue({
       title: TEST_SPREADSHEET_NAME,
     });
 
     const initialValues = formStateFactory(
       {
-        services: [testSpreadsheetIntegrationDependency],
+        integrationDependencies: [testSpreadsheetIntegrationDependency],
       },
       [
         brickConfigFactory({
@@ -309,13 +311,13 @@ describe("SpreadsheetPickerWidget", () => {
 
     const { getFormState } = await renderWithValuesAndWait(initialValues);
 
-    expect(getFormState().services).toHaveLength(0);
+    expect(getFormState().integrationDependencies).toHaveLength(0);
   });
 
-  it("does not remove used service on mount", async () => {
+  it("does not remove used integration dependency on mount", async () => {
     const initialValues = formStateFactory(
       {
-        services: [testSpreadsheetIntegrationDependency],
+        integrationDependencies: [testSpreadsheetIntegrationDependency],
       },
       [
         brickConfigFactory({
@@ -330,8 +332,10 @@ describe("SpreadsheetPickerWidget", () => {
 
     const formState = getFormState();
 
-    expect(formState.services).toHaveLength(1);
-    expect(formState.services[0]).toEqual(testSpreadsheetIntegrationDependency);
+    expect(formState.integrationDependencies).toHaveLength(1);
+    expect(formState.integrationDependencies[0]).toEqual(
+      testSpreadsheetIntegrationDependency
+    );
   });
 
   it("displays rejected permissions message", async () => {
@@ -382,7 +386,7 @@ describe("SpreadsheetPickerWidget", () => {
   it("shows working spreadsheet dropdown picker when using test google account PKCE", async () => {
     const initialValues = formStateFactory(
       {
-        services: [googlePKCEIntegrationDependency],
+        integrationDependencies: [googlePKCEIntegrationDependency],
       },
       [
         brickConfigFactory({

@@ -24,7 +24,10 @@ import reportEvent from "@/telemetry/reportEvent";
 import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { isUpdateAvailable } from "@/background/installer";
-import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
+import {
+  getSettingsState,
+  saveSettingsState,
+} from "@/store/settings/settingsStorage";
 import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
 import {
   editorSlice,
@@ -53,7 +56,7 @@ import { type RegistryPackage } from "@/types/contract";
 setContext("background");
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("@/store/settingsStorage", () => ({
+jest.mock("@/store/settings/settingsStorage", () => ({
   getSettingsState: jest.fn(),
   saveSettingsState: jest.fn(),
 }));

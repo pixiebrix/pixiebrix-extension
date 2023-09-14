@@ -29,7 +29,7 @@ import {
   readManagedStorage,
 } from "@/store/enterprise/managedStorage";
 import { render } from "@/extensionConsole/testHelpers";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 import notify from "@/utils/notify";
@@ -103,8 +103,8 @@ describe("SetupPage", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            settingsSlice.actions.setAuthServiceId({
-              serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            settingsSlice.actions.setAuthIntegrationId({
+              integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
             })
           );
         },

@@ -103,17 +103,19 @@ export function requiresUserConfiguration(
     });
 
   const modIntegrationIds = getUnconfiguredComponentIntegrations(modDefinition);
-  const needsServiceInputs = modIntegrationIds.some(({ id, isOptional }) => {
-    if (id === PIXIEBRIX_INTEGRATION_ID || isOptional) {
-      return false;
+  const needsServiceInputs = modIntegrationIds.some(
+    ({ integrationId, isOptional }) => {
+      if (integrationId === PIXIEBRIX_INTEGRATION_ID || isOptional) {
+        return false;
+      }
+
+      // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
+      const defaultOption = defaultAuthOptionsByIntegrationId[integrationId];
+
+      // Needs user configuration if there are any non-built-in options available
+      return defaultOption?.sharingType !== "built-in";
     }
-
-    // eslint-disable-next-line security/detect-object-injection -- serviceId is a registry ID
-    const defaultOption = defaultAuthOptionsByIntegrationId[id];
-
-    // Needs user configuration if there are any non-built-in options available
-    return defaultOption?.sharingType !== "built-in";
-  });
+  );
 
   return needsOptionsInputs || needsServiceInputs;
 }

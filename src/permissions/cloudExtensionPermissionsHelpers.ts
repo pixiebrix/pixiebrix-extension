@@ -27,18 +27,18 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
 /**
  * Return permissions status for a StandaloneModDefinition and the user's selected dependencies
  * @param extension the StandaloneModDefinition
- * @param services the selected integration configurations
+ * @param integrationDependencies the selected integration configurations
  */
 export async function checkCloudExtensionPermissions(
   extension: StandaloneModDefinition,
-  services: IntegrationDependency[]
+  integrationDependencies: IntegrationDependency[]
 ): Promise<PermissionsStatus> {
   const resolved = await resolveExtensionInnerDefinitions({
     ...extension,
-    services,
+    services: integrationDependencies,
   });
 
-  const configured = services.filter((x) => x.config);
+  const configured = integrationDependencies.filter(({ configId }) => configId);
 
   const recipeLike = {
     definitions: {},
@@ -47,7 +47,10 @@ export async function checkCloudExtensionPermissions(
         id: resolved.extensionPointId,
         config: resolved.config,
         services: Object.fromEntries(
-          services.map((service) => [service.outputKey, service.id])
+          integrationDependencies.map(({ outputKey, integrationId }) => [
+            outputKey,
+            integrationId,
+          ])
         ),
       } as ResolvedModComponentDefinition,
     ],

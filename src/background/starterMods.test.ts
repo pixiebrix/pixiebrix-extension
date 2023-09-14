@@ -157,14 +157,14 @@ describe("installStarterBlueprints", () => {
     expect(installedComponent.services).toBeArrayOfSize(2);
 
     const dependency1 = installedComponent.services.find(
-      ({ id }) => id === "@pixiebrix/service1"
+      ({ integrationId }) => integrationId === "@pixiebrix/service1"
     );
     const dependency2 = installedComponent.services.find(
-      ({ id }) => id === "@pixiebrix/service2"
+      ({ integrationId }) => integrationId === "@pixiebrix/service2"
     );
 
-    expect(dependency1.config).toBe(builtInIntegrationConfigs[0].id);
-    expect(dependency2.config).toBe(builtInIntegrationConfigs[1].id);
+    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
+    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
   });
 
   test("starter blueprint already installed", async () => {

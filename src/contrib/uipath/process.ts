@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { proxyService } from "@/background/messenger/api";
+import { makeConfiguredRequest } from "@/background/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
@@ -137,7 +137,7 @@ export class RunProcess extends TransformerABC {
     }>,
     { logger }: BrickOptions
   ): Promise<unknown> {
-    const responsePromise = proxyService<JobsResponse>(uipath, {
+    const responsePromise = makeConfiguredRequest<JobsResponse>(uipath, {
       url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
       method: "post",
       data: {
@@ -165,10 +165,13 @@ export class RunProcess extends TransformerABC {
     }
 
     const poll = async () => {
-      const { data: resultData } = await proxyService<JobsResponse>(uipath, {
-        url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
-        method: "get",
-      });
+      const { data: resultData } = await makeConfiguredRequest<JobsResponse>(
+        uipath,
+        {
+          url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
+          method: "get",
+        }
+      );
 
       if (resultData.value.length === 0) {
         logger.error(`UiPath job not found: ${startData.value[0].Id}`);

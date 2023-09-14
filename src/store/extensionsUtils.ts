@@ -55,15 +55,15 @@ export function inferConfiguredModIntegrations(
 
   const dependenciesByIntegrationId = groupBy(
     modComponents.flatMap((x) => x.services ?? []),
-    (x) => x.id
+    (x) => x.integrationId
   );
   const result: IntegrationDependency[] = [];
   for (const [id, dependencies] of Object.entries(
     dependenciesByIntegrationId
   )) {
     const configuredDependencies = uniqBy(
-      dependencies.filter(({ config }) => config != null),
-      ({ config }) => config
+      dependencies.filter(({ configId }) => configId != null),
+      ({ configId }) => configId
     );
 
     if (configuredDependencies.length === 0) {
@@ -94,12 +94,20 @@ export function inferRecipeDependencies(
   installedRecipeExtensions: ModComponentBase[],
   dirtyRecipeElements: ModComponentFormState[]
 ): IntegrationDependency[] {
-  const withServices: Array<{ services?: IntegrationDependency[] }> = [
-    ...installedRecipeExtensions,
+  const withIntegrations: Array<{
+    integrationDependencies?: IntegrationDependency[];
+  }> = [
+    ...installedRecipeExtensions.map(({ services }) => ({
+      integrationDependencies: services,
+    })),
     ...dirtyRecipeElements,
   ];
   return uniqBy(
-    flatten(withServices.map(({ services }) => services ?? [])),
+    flatten(
+      withIntegrations.map(
+        ({ integrationDependencies }) => integrationDependencies ?? []
+      )
+    ),
     JSON.stringify
   );
 }

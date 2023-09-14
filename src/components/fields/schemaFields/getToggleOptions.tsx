@@ -22,7 +22,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
-import { ServiceFieldDescription } from "@/components/fields/schemaFields/ServiceField";
+import { IntegrationDependencyFieldDescription } from "@/components/fields/schemaFields/integrations/IntegrationDependencyField";
 import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
 import { type Schema } from "@/types/schemaTypes";
 import { type ExpressionType } from "@/types/runtimeTypes";
@@ -202,7 +202,9 @@ export function getToggleOptions({
       value: "select",
       symbol: <FontAwesomeIcon icon={faCloud} fixedWidth />,
       Widget: widgetsRegistry.ServiceWidget,
-      description: <ServiceFieldDescription schema={fieldSchema} />,
+      description: (
+        <IntegrationDependencyFieldDescription schema={fieldSchema} />
+      ),
       interpretValue: () => null, // ServiceWidget has logic that will make this null anyway
     });
     handleOptionalValue();

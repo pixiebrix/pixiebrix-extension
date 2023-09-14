@@ -39,7 +39,7 @@ import { thisTab } from "@/pageEditor/utils";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { type ElementInfo } from "@/pageScript/frameworks";
 import { useSelector } from "react-redux";
-import { type SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import { sortBySelector } from "@/utils/inference/selectorInference";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";

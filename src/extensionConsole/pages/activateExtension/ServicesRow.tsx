@@ -28,7 +28,7 @@ import AuthWidget from "@/components/auth/AuthWidget";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
-import { useGetServicesQuery } from "@/services/api";
+import { useGetIntegrationsQuery } from "@/services/api";
 import { joinName } from "@/utils/formUtils";
 
 const ServicesRow: React.FunctionComponent<{
@@ -39,7 +39,7 @@ const ServicesRow: React.FunctionComponent<{
     "integrationDependencies"
   );
 
-  const { data: serviceConfigs } = useGetServicesQuery();
+  const { data: serviceConfigs } = useGetIntegrationsQuery();
 
   const values = field.value.map((dependency, index) => ({
     dependency,
@@ -47,7 +47,8 @@ const ServicesRow: React.FunctionComponent<{
   }));
 
   const configurable = values.filter(
-    ({ dependency }) => dependency.id !== PIXIEBRIX_INTEGRATION_ID
+    ({ dependency: { integrationId } }) =>
+      integrationId !== PIXIEBRIX_INTEGRATION_ID
   );
 
   if (configurable.length === 0) {
@@ -62,28 +63,25 @@ const ServicesRow: React.FunctionComponent<{
       {typeof error === "string" && (
         <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
       )}
-      {configurable.map(({ dependency, valueIndex }) => (
-        <Col
-          xs={12}
-          sm={6}
-          xl={4}
-          key={`${dependency.outputKey}-${valueIndex}`}
-        >
-          <ServiceFieldError servicesError={error} fieldIndex={valueIndex} />
-          <Card className={styles.serviceCard}>
-            <ServiceDescriptor
-              serviceId={dependency.id}
-              serviceConfigs={serviceConfigs}
-            />
-            <AuthWidget
-              authOptions={authOptions}
-              serviceId={dependency.id}
-              name={joinName(field.name, String(valueIndex), "config")}
-              onRefresh={refreshAuthOptions}
-            />
-          </Card>
-        </Col>
-      ))}
+      {configurable.map(
+        ({ dependency: { outputKey, integrationId }, valueIndex }) => (
+          <Col xs={12} sm={6} xl={4} key={`${outputKey}-${valueIndex}`}>
+            <ServiceFieldError servicesError={error} fieldIndex={valueIndex} />
+            <Card className={styles.serviceCard}>
+              <ServiceDescriptor
+                serviceId={integrationId}
+                serviceConfigs={serviceConfigs}
+              />
+              <AuthWidget
+                authOptions={authOptions}
+                integrationId={integrationId}
+                name={joinName(field.name, String(valueIndex), "config")}
+                onRefresh={refreshAuthOptions}
+              />
+            </Card>
+          </Col>
+        )
+      )}
     </Row>
   );
 };

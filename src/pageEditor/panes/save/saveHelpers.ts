@@ -54,7 +54,7 @@ import {
   type ModDependencyAPIVersion,
 } from "@/types/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/services/integrationUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -134,7 +134,7 @@ function findRecipeIndex(
  * @since 1.7.37
  * @note This function is just for safety, there's currently no way for a mod to end up with "mixed" integration api versions.
  */
-export function findMaxServicesDependencyApiVersion(
+export function findMaxIntegrationDependencyApiVersion(
   integrationDependencies: Array<Pick<IntegrationDependency, "apiVersion">>
 ): ModDependencyAPIVersion {
   let maxApiVersion: ModDependencyAPIVersion = "v1";
@@ -147,22 +147,28 @@ export function findMaxServicesDependencyApiVersion(
   return maxApiVersion;
 }
 
-export function selectExtensionPointServices(
-  extension: Pick<ModComponentBase, "services">
-): ModComponentDefinition["services"] {
-  const apiVersion = findMaxServicesDependencyApiVersion(extension.services);
+export function selectExtensionPointIntegrations({
+  services: integrationDependencies,
+}: Pick<ModComponentBase, "services">): ModComponentDefinition["services"] {
+  const apiVersion = findMaxIntegrationDependencyApiVersion(
+    integrationDependencies
+  );
   if (apiVersion === "v1") {
     return Object.fromEntries(
-      extension.services.map((x) => [x.outputKey, x.id])
+      integrationDependencies.map((x) => [x.outputKey, x.integrationId])
     );
   }
 
   if (apiVersion === "v2") {
     const properties: Record<string, Schema> = {};
     const required: string[] = [];
-    for (const { outputKey, id, isOptional } of extension.services) {
+    for (const {
+      outputKey,
+      integrationId,
+      isOptional,
+    } of integrationDependencies) {
       properties[outputKey] = {
-        $ref: `${SERVICE_BASE_SCHEMA}${id}`,
+        $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationId}`,
       };
       if (!isOptional) {
         required.push(outputKey);
@@ -258,7 +264,7 @@ export function replaceRecipeExtension(
     // then have to account for the normalized value in assertions.
     if (rawExtension.services) {
       commonExtensionConfig.services =
-        selectExtensionPointServices(rawExtension);
+        selectExtensionPointIntegrations(rawExtension);
     }
 
     if (hasInnerExtensionPoint) {
@@ -335,7 +341,7 @@ function selectExtensionPointConfig(
 
   // To make round-trip testing easier, don't add a `services` property if it didn't already exist
   if (extension.services != null) {
-    extensionPoint.services = selectExtensionPointServices(extension);
+    extensionPoint.services = selectExtensionPointIntegrations(extension);
   }
 
   return extensionPoint;

@@ -17,7 +17,7 @@
 
 import * as Yup from "yup";
 import React, { useContext } from "react";
-import servicesSlice from "@/store/services/servicesSlice";
+import integrationsSlice from "@/store/Integrations/integrationsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
@@ -31,10 +31,14 @@ import { Button } from "react-bootstrap";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 import { useHistory } from "react-router";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
-import { selectConfiguredServices } from "@/store/services/servicesSelectors";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectIntegrationConfigs } from "@/store/Integrations/integrationsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { isEmpty } from "lodash";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
+import {
+  type IntegrationConfig,
+  type SecretsConfig,
+} from "@/types/integrationTypes";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;
@@ -54,42 +58,41 @@ const validationSchema = Yup.object().shape({
 const ControlRoomTokenForm: React.FunctionComponent<{
   initialValues: ControlRoomConfiguration;
 }> = ({ initialValues }) => {
-  const { updateServiceConfig } = servicesSlice.actions;
+  const { upsertIntegrationConfig } = integrationsSlice.actions;
   const dispatch = useDispatch();
   const history = useHistory();
-  const configuredServices = useSelector(selectConfiguredServices);
+  const integrationConfigs = useSelector(selectIntegrationConfigs);
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
-  const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
+  const { authIntegrationId: authIntegrationIdOverride } =
+    useSelector(selectSettings);
 
-  // `authServiceIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
-  const authServiceId = isEmpty(authServiceIdOverride)
+  // `authIntegrationIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
+  const authIntegrationId = isEmpty(authIntegrationIdOverride)
     ? CONTROL_ROOM_TOKEN_INTEGRATION_ID
-    : authServiceIdOverride;
+    : authIntegrationIdOverride;
 
   const handleSubmit = async (formValues: ControlRoomConfiguration) => {
-    // In theory, this ControlRoomTokenForm should only be shown if there's not already a configured service.
+    // In theory, this ControlRoomTokenForm should only be shown if there's not already a configured integration.
     // In practice, the Extension Console has gotten into a state where it's shown this form even when there's already
     // an integration configured.
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/5762
-    const configuredService = configuredServices.find(
-      (x) => x.serviceId === authServiceId
+    const integrationConfig = integrationConfigs.find(
+      (x) => x.integrationId === authIntegrationId
     );
 
-    const configurationId = configuredService?.id;
+    const newIntegrationConfig = {
+      // Use existing if available, otherwise generate a new ID
+      id: integrationConfig?.id ?? uuidv4(),
+      integrationId: authIntegrationId,
+      label: "Primary AA Control Room",
+      config: {
+        ...formValues,
+        controlRoomUrl: normalizeControlRoomUrl(formValues.controlRoomUrl),
+      } as unknown as SecretsConfig,
+    } as IntegrationConfig;
 
-    dispatch(
-      updateServiceConfig({
-        // Use existing if available, otherwise generate a new ID
-        id: configurationId ?? uuidv4(),
-        serviceId: authServiceId,
-        label: "Primary AA Control Room",
-        config: {
-          ...formValues,
-          controlRoomUrl: normalizeControlRoomUrl(formValues.controlRoomUrl),
-        },
-      })
-    );
+    dispatch(upsertIntegrationConfig(newIntegrationConfig));
 
     notify.success("Successfully connected Automation Anywhere!");
 
