@@ -102,7 +102,7 @@ describe("inferConfiguredModIntegrations", () => {
 
   it("does NOT filter out the pixiebrix integration", () => {
     const pixiebrix = integrationDependencyFactory({
-      id: PIXIEBRIX_INTEGRATION_ID,
+      integrationId: PIXIEBRIX_INTEGRATION_ID,
     });
     expect(
       inferConfiguredModIntegrations([{ services: [pixiebrix] }])
@@ -111,13 +111,13 @@ describe("inferConfiguredModIntegrations", () => {
 
   it("handles multiple pixiebrix integrations and others", () => {
     const pixiebrix = integrationDependencyFactory({
-      id: PIXIEBRIX_INTEGRATION_ID,
+      integrationId: PIXIEBRIX_INTEGRATION_ID,
     });
     const optional = integrationDependencyFactory({
       isOptional: true,
     });
     const configured = integrationDependencyFactory({
-      config: uuidv4(),
+      configId: uuidv4(),
     });
     expect(
       inferConfiguredModIntegrations(
