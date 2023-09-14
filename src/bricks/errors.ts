@@ -82,12 +82,6 @@ export class InputValidationError extends BusinessError {
   }
 }
 
-export function isInputValidationError(
-  error: unknown
-): error is InputValidationError {
-  return typeof error === "object" && "schema" in error && "errors" in error;
-}
-
 /**
  * Error indicating output elements of a block did not match the schema.
  *
@@ -105,6 +99,15 @@ export class OutputValidationError extends BusinessError {
   ) {
     super(message);
   }
+}
+
+export type SchemaValidationError =
+  | InputValidationError
+  | OutputValidationError;
+export function isSchemaValidationError(
+  error: unknown
+): error is SchemaValidationError {
+  return typeof error === "object" && "schema" in error && "errors" in error;
 }
 
 export class RemoteExecutionError extends BusinessError {

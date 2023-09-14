@@ -39,7 +39,7 @@ const PublishContentLayout: React.FunctionComponent<
   const { data: recipe } = useOptionalModDefinition(blueprintId);
 
   const sortedOrganizations = useSortOrganizations();
-  const hasEditPermissions = useHasEditPermissions();
+  const hasEditPermissions = useHasEditPermissions(blueprintId);
 
   const body = hasEditPermissions ? (
     children
@@ -50,7 +50,7 @@ const PublishContentLayout: React.FunctionComponent<
         to change sharing
       </div>
       <div className={styles.row}>
-        <OwnerLabel />
+        <OwnerLabel blueprintId={blueprintId} />
         <span className="text-muted">Owner</span>
       </div>
       {sortedOrganizations

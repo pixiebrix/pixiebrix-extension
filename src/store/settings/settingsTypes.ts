@@ -40,11 +40,6 @@ export type SkunkworksSettings = {
   excludeRandomClasses?: boolean;
 
   /**
-   * Experimental setting to support multi-element selector.
-   */
-  selectionTools?: boolean;
-
-  /**
    * Experimental setting to support autosuggest for variables in the Page Editor
    */
   varAutosuggest?: boolean;

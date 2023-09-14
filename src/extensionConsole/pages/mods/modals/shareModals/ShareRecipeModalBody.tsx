@@ -73,7 +73,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
     isFetching: isFetchingRecipe,
     refetch: refetchRecipes,
   } = useOptionalModDefinition(blueprintId);
-  const hasEditPermissions = useHasEditPermissions();
+  const hasEditPermissions = useHasEditPermissions(blueprintId);
 
   const closeModal = () => {
     dispatch(modModalsSlice.actions.closeModal());
@@ -171,7 +171,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
                 />
 
                 <div className={styles.row}>
-                  <OwnerLabel />
+                  <OwnerLabel blueprintId={blueprintId} />
                   <span className="text-muted">Owner</span>
                 </div>
 
@@ -223,7 +223,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
             permissions to change sharing
           </div>
           <div className={styles.row}>
-            <OwnerLabel />
+            <OwnerLabel blueprintId={blueprintId} />
             <span className="text-muted">Owner</span>
           </div>
           {organizationsForSelect

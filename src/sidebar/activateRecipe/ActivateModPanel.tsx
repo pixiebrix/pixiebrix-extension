@@ -228,6 +228,11 @@ const ActivateRecipePanelContent: React.FC<
     initialState
   );
 
+  const optionsWizardStep = useMemo(
+    () => wizardSteps.find(({ key }) => key === "options"),
+    [wizardSteps]
+  );
+
   async function handleActivationDecision() {
     reduxDispatch(actions.hideModActivationPanel());
   }
@@ -287,15 +292,14 @@ const ActivateRecipePanelContent: React.FC<
   }, []);
 
   // Trigger auto-activation if the recipe does not require permissions or user configuration, and there's no error.
-  // Additionally, always show the options if this is a reactivation.  (Reactivation, in practice, is used to
-  // reconfigure mod options)
+  // Skip auto-activation on reactivation only if the mod has optional configurations.
   useEffect(() => {
     if (
       state.needsPermissions != null &&
       !state.needsPermissions &&
       !requiresConfiguration &&
       !state.activationError &&
-      !isActive
+      (!optionsWizardStep || !isActive)
     ) {
       // State is checked inside activateRecipe to prevent double-activation
       void activateRecipe();
@@ -306,6 +310,7 @@ const ActivateRecipePanelContent: React.FC<
     requiresConfiguration,
     state.needsPermissions,
     state.activationError,
+    optionsWizardStep,
     isActive,
   ]);
 
@@ -334,7 +339,7 @@ const ActivateRecipePanelContent: React.FC<
     <div className={styles.root}>
       <ActivateModInputs
         recipe={modDefinition}
-        optionsWizardStep={wizardSteps.find(({ key }) => key === "options")}
+        optionsWizardStep={optionsWizardStep}
         initialValues={initialValues}
         onChange={onChange}
         validationSchema={validationSchema}
