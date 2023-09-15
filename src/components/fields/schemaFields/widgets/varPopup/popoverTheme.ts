@@ -40,6 +40,9 @@ export const popoverTheme: Theme = {
     alignItems: "center",
     flexWrap: "wrap",
   },
+  nestedNodeItemString: {
+    color: "#007124",
+  },
   // This makes the nested items to be rendered below the label
   nestedNodeChildren: {
     width: "100%",
@@ -58,5 +61,6 @@ export const popoverTheme: Theme = {
     overflow: "hidden",
     textOverflow: "ellipsis",
     textIndent: 0,
+    color: "red",
   },
 } as Theme;

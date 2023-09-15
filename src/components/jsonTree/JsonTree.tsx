@@ -142,6 +142,10 @@ export function searchData(query: string, data: unknown): unknown {
 
 const jsonTreeTheme: Theme = {
   extend: theme,
+  nestedNodeItemString: {
+    // Hard-coded to avoid the count greying out when selected
+    color: "#007124",
+  },
   value: ({ style }: Styling) => ({
     style: {
       ...style,
@@ -275,7 +279,6 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           labelRenderer={labelRenderer}
           hideRoot
           theme={jsonTreeTheme}
-          invertTheme
           shouldExpandNodeInitially={getExpanded}
           {...restProps}
         />
