@@ -148,8 +148,13 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
 
     const onKeyPress = (event: KeyboardEvent) => {
       const { key } = event;
+
       if ((key === "@" || inputMode === "var") && !isMenuShowing) {
         dispatch(popupSlice.actions.showMenuForVariable(null));
+      }
+
+      if (key === ".") {
+        updateSelection(value);
       }
     };
 

@@ -88,12 +88,14 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
         const cursorPosition = textElement.selectionStart;
 
         // Set the value
-        const newValue = replaceLikelyVariable(
+        const { newTemplate, newCursorPosition } = replaceLikelyVariable(
           value,
           cursorPosition,
           fullVariableName
         );
-        setValue(newValue);
+        setValue(newTemplate);
+
+        textElement.setSelectionRange(newCursorPosition, newCursorPosition);
 
         // Resize the textarea to fit the new value
         setTimeout(() => {

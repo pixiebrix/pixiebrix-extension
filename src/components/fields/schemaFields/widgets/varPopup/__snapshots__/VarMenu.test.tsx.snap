@@ -5,7 +5,7 @@ exports[`VarMenu shows view for match 1`] = `
   <input />
   <div
     class="menu"
-    style="max-height: -16px; transform: translate3d(0, 8px, 0);"
+    style="max-height: NaNpx; transform: translate3d(0, NaNpx, 0);"
   >
     <div
       class="body"
@@ -19,7 +19,7 @@ exports[`VarMenu shows view for match 1`] = `
           Starter Brick: Panel
         </div>
         <ul
-          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
         >
           <li
             style="padding: 0px; margin: 0px;"
@@ -51,7 +51,7 @@ exports[`VarMenu shows view for match 1`] = `
                   </button>
                 </label>
                 <span
-                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                 >
                   <span>
                     <span

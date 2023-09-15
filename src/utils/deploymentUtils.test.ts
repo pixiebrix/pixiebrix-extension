@@ -474,4 +474,37 @@ describe("mergeDeploymentServiceConfigurations", () => {
       mergeDeploymentIntegrationDependencies(deployment, locator)
     ).rejects.toThrow("Multiple local configurations found for integration:");
   });
+
+  test("preserve PixieBrix Integration placeholder if included", async () => {
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        config: defaultModDefinitionFactory({
+          extensionPoints: [
+            modComponentDefinitionFactory({
+              services: {
+                // @ts-expect-error - this is a placeholder
+                pixiebrix: PIXIEBRIX_INTEGRATION_ID,
+              },
+            }),
+          ],
+        }),
+      }),
+    });
+
+    const auth = sanitizedIntegrationConfigFactory({
+      serviceId: PIXIEBRIX_INTEGRATION_ID,
+    });
+
+    const locator = async () => [auth];
+    expect(
+      await mergeDeploymentIntegrationDependencies(deployment, locator)
+    ).toStrictEqual([
+      {
+        id: PIXIEBRIX_INTEGRATION_ID,
+        outputKey: "pixiebrix",
+        isOptional: false,
+        apiVersion: "v1",
+      },
+    ]);
+  });
 });

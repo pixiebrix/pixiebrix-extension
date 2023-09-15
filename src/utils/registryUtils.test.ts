@@ -63,4 +63,7 @@ describe("getScopeAndId", () => {
     const id = "@foo" as RegistryId;
     expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
   });
+  test("id is nullish", () => {
+    expect(getScopeAndId(null)).toStrictEqual([undefined, undefined]);
+  });
 });

@@ -23,6 +23,7 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 
 describe("inferRecipeOptions", () => {
   it("returns first option", () => {
@@ -36,7 +37,7 @@ describe("inferRecipeOptions", () => {
   });
 });
 
-describe("inferModIntegrations", () => {
+describe("inferConfiguredModIntegrations", () => {
   it("handles undefined services", () => {
     expect(
       inferConfiguredModIntegrations([{ services: undefined }])
@@ -97,5 +98,37 @@ describe("inferModIntegrations", () => {
         optional: true,
       })
     ).toBeEmpty();
+  });
+
+  it("does NOT filter out the pixiebrix integration", () => {
+    const pixiebrix = integrationDependencyFactory({
+      id: PIXIEBRIX_INTEGRATION_ID,
+    });
+    expect(
+      inferConfiguredModIntegrations([{ services: [pixiebrix] }])
+    ).toStrictEqual([pixiebrix]);
+  });
+
+  it("handles multiple pixiebrix integrations and others", () => {
+    const pixiebrix = integrationDependencyFactory({
+      id: PIXIEBRIX_INTEGRATION_ID,
+    });
+    const optional = integrationDependencyFactory({
+      isOptional: true,
+    });
+    const configured = integrationDependencyFactory({
+      config: uuidv4(),
+    });
+    expect(
+      inferConfiguredModIntegrations(
+        [
+          { services: [pixiebrix, pixiebrix] },
+          { services: [pixiebrix, optional] },
+          { services: [configured, pixiebrix, optional] },
+          { services: [configured, optional] },
+        ],
+        { optional: true }
+      )
+    ).toStrictEqual([pixiebrix, configured]);
   });
 });

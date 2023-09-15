@@ -15,24 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const jsonTreeTheme = {
-  // https://github.com/reduxjs/redux-devtools/tree/75322b15ee7ba03fddf10ac3399881e302848874/src/react/themes
-  scheme: "google",
-  author: "seth wright (http://sethawright.com)",
-  base00: "#FFFFFF",
-  base01: "#282a2e",
-  base02: "#373b41",
-  base03: "#969896",
-  base04: "#b4b7b4",
-  base05: "#c5c8c6",
-  base06: "#e0e0e0",
-  base07: "#FFFFFF",
-  base08: "#B4183F",
-  base09: "#F96A38",
-  base0A: "#FBA922",
-  base0B: "#007124",
-  base0C: "#3971ED",
-  base0D: "#3971ED",
-  base0E: "#A36AC7",
-  base0F: "#3971ED",
-};
+import { useRef } from "react";
+
+export default function useRenderCount() {
+  const count = useRef(0);
+
+  count.current += 1;
+
+  return count.current;
+}

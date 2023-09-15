@@ -17,7 +17,6 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import { sheets } from "@/background/messenger/api";
-import { propertiesToSchema } from "@/validators/generic";
 import { zip } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/core/schemas";
@@ -33,8 +32,10 @@ export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"
 );
 
-export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
-  {
+export const LOOKUP_SCHEMA: Schema = {
+  $schema: "https://json-schema.org/draft/2019-09/schema#",
+  type: "object",
+  properties: {
     googleAccount: {
       title: "Google Account",
       oneOf: [
@@ -59,6 +60,12 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
       type: "string",
       description: "The tab name of the spreadsheet to lookup the value.",
     },
+    filterRows: {
+      type: "boolean",
+      title: "Filter Rows",
+      description: "True to show the row filter controls.",
+      default: false,
+    },
     header: {
       type: "string",
       description: "The header of the column to lookup the value",
@@ -75,8 +82,49 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
     },
   },
   // For backwards compatibility, googleAccount is not required
-  ["spreadsheetId", "tabName", "header", "query"]
-);
+  required: ["spreadsheetId", "tabName"],
+  // @since 1.7.40 - header and query are not required if filterRows is false (& present)
+  oneOf: [
+    {
+      required: ["header", "query"],
+      properties: {
+        filterRows: {
+          const: true,
+        },
+      },
+    },
+    {
+      required: ["filterRows"],
+      properties: {
+        filterRows: {
+          const: false,
+        },
+      },
+    },
+  ],
+};
+
+type BrickArgsBase = {
+  googleAccount?: SanitizedIntegrationConfig | undefined;
+  spreadsheetId: string | SanitizedIntegrationConfig;
+  tabName: string;
+};
+
+type BrickArgsSubTypeA = {
+  filterRows?: undefined | true;
+  header: string;
+  query: string | number | boolean;
+  multi: boolean;
+};
+
+type BrickArgsSubTypeB = {
+  filterRows: false;
+  header?: string | undefined;
+  query?: string | number | boolean | undefined;
+  multi?: boolean | undefined;
+};
+
+type BrickArgsType = BrickArgsBase & (BrickArgsSubTypeA | BrickArgsSubTypeB);
 
 export class GoogleSheetsLookup extends TransformerABC {
   constructor() {
@@ -96,17 +144,11 @@ export class GoogleSheetsLookup extends TransformerABC {
       googleAccount,
       spreadsheetId: spreadsheetIdArg,
       tabName,
+      filterRows,
       header,
       query,
       multi,
-    }: BrickArgs<{
-      googleAccount?: SanitizedIntegrationConfig | undefined;
-      spreadsheetId: string | SanitizedIntegrationConfig;
-      tabName: string;
-      header: string;
-      query: string | number | boolean;
-      multi: boolean;
-    }>,
+    }: BrickArgs<BrickArgsType>,
     { logger }: BrickOptions
   ): Promise<UnknownObject | UnknownObject[]> {
     const spreadsheetId =
@@ -123,19 +165,23 @@ export class GoogleSheetsLookup extends TransformerABC {
 
     logger.debug(`Tab ${tabName} has headers`, { headers });
 
+    const returnAllRows = filterRows !== undefined && !filterRows;
+
     const columnIndex = headers.indexOf(header);
-    if (columnIndex < 0) {
+    if (columnIndex < 0 && !returnAllRows) {
       throw new BusinessError(`Header ${header} not found`);
     }
 
-    const matchData = rows.filter((x) => x.at(columnIndex) === query);
+    const matchData = returnAllRows
+      ? rows
+      : rows.filter((x) => x.at(columnIndex) === query);
     const matchRecords = matchData.map((row) =>
       Object.fromEntries(
         zip(headers, row).filter(([rowHeader]) => !isNullOrBlank(rowHeader))
       )
     );
 
-    if (multi) {
+    if (multi || returnAllRows) {
       return matchRecords;
     }
 

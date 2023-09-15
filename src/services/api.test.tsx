@@ -47,7 +47,7 @@ function testStore() {
   });
 }
 
-describe("appBaseQuery", () => {
+describe("baseQuery", () => {
   beforeEach(() => {
     appApiMock.reset();
   });

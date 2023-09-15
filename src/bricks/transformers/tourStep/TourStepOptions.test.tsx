@@ -24,7 +24,6 @@ import React from "react";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import TourStep from "@/bricks/transformers/tourStep/tourStep";
 import TourStepOptions from "@/bricks/transformers/tourStep/TourStepOptions";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 function makeBaseState() {
@@ -48,8 +47,8 @@ beforeAll(() => {
 
 describe("TourStepOptions", () => {
   it("should render example config", async () => {
-    const output = renderOptions(makeBaseState());
-    await waitForEffect();
-    expect(output.asFragment()).toMatchSnapshot();
+    const { asFragment } = renderOptions(makeBaseState());
+
+    expect(asFragment()).toMatchSnapshot();
   });
 });

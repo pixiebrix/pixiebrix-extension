@@ -101,7 +101,10 @@ export function replaceLikelyVariable(
   template: string,
   position: number,
   replacement: string
-): string {
+): {
+  newTemplate: string;
+  newCursorPosition: number;
+} {
   let { startIndex, endIndex } = getLikelyVariableAtPosition(
     template,
     position
@@ -112,25 +115,29 @@ export function replaceLikelyVariable(
     endIndex = position;
   }
 
-  const templatePartBefore = template.slice(0, startIndex);
-  const templatePartAfter = template.slice(endIndex);
+  const templatePartLeftOfLikelyVariable = template.slice(0, startIndex);
+  const templatePartRightOfLikelyVariable = template.slice(endIndex);
 
   // Check if we need to add braces before the inserted variable
   // For instance, in the case of "@foo }}"
   // See likelyVariableUtils.test.ts for more examples
-  let shouldInsertBracesBefore = true;
-  for (let i = templatePartBefore.length - 1; i > 0; i--) {
+  let shouldInsertBracesLeft = true;
+  for (let i = templatePartLeftOfLikelyVariable.length - 1; i > 0; i--) {
     // eslint-disable-next-line security/detect-object-injection -- is a number
-    const char = templatePartBefore[i];
+    const char = templatePartLeftOfLikelyVariable[i];
     if (
       char === "}" &&
-      (templatePartBefore[i - 1] === "}" || templatePartBefore[i - 1] === "%")
+      (templatePartLeftOfLikelyVariable[i - 1] === "}" ||
+        templatePartLeftOfLikelyVariable[i - 1] === "%")
     ) {
       break;
     }
 
-    if ((char === "{" || char === "%") && templatePartBefore[i - 1] === "{") {
-      shouldInsertBracesBefore = false;
+    if (
+      (char === "{" || char === "%") &&
+      templatePartLeftOfLikelyVariable[i - 1] === "{"
+    ) {
+      shouldInsertBracesLeft = false;
       break;
     }
   }
@@ -138,24 +145,38 @@ export function replaceLikelyVariable(
   // Check if we need to add braces after the inserted variable
   // For instance, in the case of "{{ @foo"
   // See likelyVariableUtils.test.ts for more examples
-  let shouldInsertBracesAfter = true;
-  for (let i = 0; i < templatePartAfter.length - 1; i++) {
+  let shouldInsertBracesRight = true;
+  for (let i = 0; i < templatePartRightOfLikelyVariable.length - 1; i++) {
     // eslint-disable-next-line security/detect-object-injection -- is a number
-    const char = templatePartAfter[i];
+    const char = templatePartRightOfLikelyVariable[i];
     if (
       char === "{" &&
-      (templatePartAfter[i + 1] === "{" || templatePartAfter[i + 1] === "%")
+      (templatePartRightOfLikelyVariable[i + 1] === "{" ||
+        templatePartRightOfLikelyVariable[i + 1] === "%")
     ) {
       break;
     }
 
-    if ((char === "}" || char === "%") && templatePartAfter[i + 1] === "}") {
-      shouldInsertBracesAfter = false;
+    if (
+      (char === "}" || char === "%") &&
+      templatePartRightOfLikelyVariable[i + 1] === "}"
+    ) {
+      shouldInsertBracesRight = false;
       break;
     }
   }
 
-  return `${templatePartBefore}${
-    shouldInsertBracesBefore ? "{{ " : ""
-  }${replacement}${shouldInsertBracesAfter ? " }}" : ""}${templatePartAfter}`;
+  const replacementWithBraces = `${
+    shouldInsertBracesLeft ? "{{ " : ""
+  }${replacement}${shouldInsertBracesRight ? " }}" : ""}`;
+
+  const endOfVariableIndex =
+    startIndex +
+    replacementWithBraces.length -
+    (shouldInsertBracesRight ? 3 : 0);
+
+  return {
+    newTemplate: `${templatePartLeftOfLikelyVariable}${replacementWithBraces}${templatePartRightOfLikelyVariable}`,
+    newCursorPosition: endOfVariableIndex,
+  };
 }

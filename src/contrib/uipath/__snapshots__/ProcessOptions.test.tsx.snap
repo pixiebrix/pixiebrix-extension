@@ -6,6 +6,13 @@ exports[`UiPath Options Render integration selector 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation-transition col-12"
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extension.blockPipeline.0.config.uipath"
@@ -167,6 +174,13 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation-transition col-12"
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extension.blockPipeline.0.config.uipath"
@@ -321,6 +335,13 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation-transition col-12"
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extension.blockPipeline.0.config.releaseKey"
@@ -378,6 +399,13 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation-transition col-12"
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extension.blockPipeline.0.config.strategy"
@@ -499,6 +527,13 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation-transition col-12"
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extension.blockPipeline.0.config.jobsCount"
@@ -555,6 +590,13 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation-transition col-12"
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <label
         class="label form-label col-form-label col-xl-2 col-lg-3"
         for="extension.blockPipeline.0.config.awaitResult"
@@ -625,6 +667,13 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     <div
       class="formGroup form-group row"
     >
+      <div
+        class="mb-2 annotation-transition col-12"
+      >
+        <div
+          class="annotationPlaceholder"
+        />
+      </div>
       <div
         class="col-xl-12 col-lg-12"
       >
