@@ -294,9 +294,7 @@ describe("getErrorMessage", () => {
       errors: [firstError, { error: "second error", keywordLocation: "#/bar" }],
     } as InputValidationError;
     const message = getErrorMessage(inputValidationError, "default message");
-    expect(message).toEqual(
-      `${firstError.keywordLocation}: ${firstError.error}`
-    );
+    expect(message).toBe(`${firstError.keywordLocation}: ${firstError.error}`);
   });
 });
 
@@ -308,7 +306,7 @@ const validationError = {
 describe("formatSchemaValidationMessage", () => {
   test("it returns a message in the form of 'keywordLocation: error'", () => {
     const message = formatSchemaValidationMessage(validationError);
-    expect(message).toEqual(
+    expect(message).toBe(
       `${validationError.keywordLocation}: ${validationError.error}`
     );
   });
@@ -325,7 +323,7 @@ describe("formatSchemaValidationMessage", () => {
     const message = formatSchemaValidationMessage(
       {} as SchemaValidationError["errors"][number]
     );
-    expect(message).toEqual("");
+    expect(message).toBe("");
   });
 });
 

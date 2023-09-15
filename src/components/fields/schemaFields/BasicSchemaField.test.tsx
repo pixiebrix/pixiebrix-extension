@@ -49,6 +49,7 @@ describe("option mode switching", () => {
     ).toHaveAttribute("data-test-selected", mode);
   };
 
+  // eslint-disable-next-line jest/expect-expect
   test("switches automatically from variable to text when @ removed - string field", async () => {
     const { container } = renderSchemaField(
       "test",
@@ -70,6 +71,7 @@ describe("option mode switching", () => {
     expectToggleMode(container, "Text");
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("switches automatically from variable to text when @ removed - enum field", async () => {
     const { container } = renderSchemaField(
       "test",
@@ -91,6 +93,7 @@ describe("option mode switching", () => {
     expectToggleMode(container, "Text");
   });
 
+  // eslint-disable-next-line jest/expect-expect
   test("automatically switches to var when @ is typed", async () => {
     const { container } = renderSchemaField(
       "test",
@@ -136,7 +139,7 @@ describe("option mode switching", () => {
 });
 
 test("omit if empty", async () => {
-  const rendered = renderSchemaField(
+  renderSchemaField(
     "test",
     {
       type: ["string", "number", "boolean"],
@@ -153,14 +156,14 @@ test("omit if empty", async () => {
     }
   );
 
-  const field = rendered.getByLabelText("testing omit");
-  expect(rendered.getByLabelText("testing omit")).toHaveValue("@data.foo");
+  const field = screen.getByLabelText("testing omit");
+  expect(screen.getByLabelText("testing omit")).toHaveValue("@data.foo");
 
   fireTextInput(field, "");
   await waitForEffect();
 
-  expect(rendered.getByLabelText("testing omit")).toHaveValue("");
+  expect(screen.getByLabelText("testing omit")).toHaveValue("");
 
-  const fieldToggle = rendered.getByTestId("toggle-test");
+  const fieldToggle = screen.getByTestId("toggle-test");
   expect(fieldToggle).toHaveAttribute("data-test-selected", "Exclude");
 });

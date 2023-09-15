@@ -393,7 +393,7 @@ describe("SchemaField", () => {
     "v3 field toggle always renders 'omit' last - %s",
     async (_, schema) => {
       const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
-      const { container } = render(
+      render(
         <FormikTemplate>
           <SchemaField name="aTestField" schema={schema} />
         </FormikTemplate>
@@ -401,17 +401,22 @@ describe("SchemaField", () => {
 
       await waitForEffect();
 
-      const toggle = screen
-        .getByTestId("toggle-aTestField")
-        .querySelector("button");
+      const toggle = within(screen.getByTestId("toggle-aTestField")).getByRole(
+        "button"
+      );
       expect(toggle).toBeInTheDocument();
 
       await userEvent.click(toggle);
 
       await waitFor(() => {
-        const testIds = [
-          ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
-        ].map((x) => x.dataset.testid);
+        const testIds =
+          // [
+          // ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
+          // ]
+          screen
+            .getAllByRole("button")
+            .map((x) => x.dataset.testid)
+            .filter(Boolean);
         if (testIds.includes("omit")) {
           expect(testIds.at(-1)).toBe("omit");
         }
@@ -468,14 +473,14 @@ describe("SchemaField", () => {
     );
 
     // Renders no HTML element
-    expect(container.querySelector(".switch")).toBeNull();
+    expect(screen.queryByText(/isrootaware/i)).toBeNull();
     await expectToggleOptions("", []);
   });
 
   test.each([undefined, false])(
     "render root aware field with value %s",
     async (value) => {
-      const { container } = render(
+      render(
         <Formik
           onSubmit={jest.fn()}
           initialValues={{ apiVersion: "v3", config: { isRootAware: value } }}
@@ -491,13 +496,13 @@ describe("SchemaField", () => {
       );
 
       // Renders switch HTML element
-      expect(container.querySelector(".switch")).toBeInTheDocument();
+      expect(screen.getByText(/isrootaware/i)).toBeInTheDocument();
       await expectToggleOptions("", []);
     }
   );
 
   test("labelled enum field schema defaults to selection widget", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={() => {}}
         initialValues={{ apiVersion: "v3", testField: "foo" }}
@@ -520,7 +525,7 @@ describe("SchemaField", () => {
 
     await expectToggleOptions("toggle-testField", ["select", "string", "var"]);
 
-    expect(container.querySelector("textarea")).toBeNull();
+    expect(screen.queryByRole("textbox")).toBeNull();
     expect(screen.getByText("Foo")).toBeInTheDocument();
   });
 });
