@@ -1127,7 +1127,7 @@ exports[`Storyshots Components/JsonTree Empty Tree 1`] = `
       {
         "MozUserSelect": "none",
         "WebkitUserSelect": "none",
-        "backgroundColor": "#fff",
+        "backgroundColor": "#FFFFFF",
         "border": 0,
         "listStyle": "none",
         "marginBottom": "0.5em",
@@ -1228,7 +1228,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
       {
         "MozUserSelect": "none",
         "WebkitUserSelect": "none",
-        "backgroundColor": "#fff",
+        "backgroundColor": "#FFFFFF",
         "border": 0,
         "listStyle": "none",
         "marginBottom": "0.5em",
@@ -1495,7 +1495,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
       {
         "MozUserSelect": "none",
         "WebkitUserSelect": "none",
-        "backgroundColor": "#fff",
+        "backgroundColor": "#FFFFFF",
         "border": 0,
         "listStyle": "none",
         "marginBottom": "0.5em",
@@ -8647,7 +8647,7 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
     {
       "MozUserSelect": "none",
       "WebkitUserSelect": "none",
-      "backgroundColor": "#fff",
+      "backgroundColor": "#FFFFFF",
       "border": 0,
       "listStyle": "none",
       "marginBottom": "0.5em",
