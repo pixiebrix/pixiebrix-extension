@@ -33,7 +33,7 @@ import {
   selectActiveElement,
   selectSelectionSeq,
 } from "@/pageEditor/slices/editorSelectors";
-import IntegrationsSliceModIntegrationsContextAdapter from "@/store/Integrations/IntegrationsSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor

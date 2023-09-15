@@ -18,7 +18,7 @@
 import { appApi } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
-import { selectIntegrationConfigs } from "@/store/Integrations/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import {

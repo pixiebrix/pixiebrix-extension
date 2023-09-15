@@ -43,7 +43,7 @@ import {
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type FileList } from "@/contrib/google/sheets/core/types";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import IntegrationsSliceModIntegrationsContextAdapter from "@/store/Integrations/IntegrationsSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
 import useFlags from "@/hooks/useFlags";
 

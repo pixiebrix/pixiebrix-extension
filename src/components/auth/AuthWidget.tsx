@@ -28,7 +28,7 @@ import { Button } from "react-bootstrap";
 import IntegrationEditorModal from "@/extensionConsole/pages/integrations/IntegrationEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
-import integrationsSlice from "@/store/Integrations/integrationsSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
 import notify from "@/utils/notify";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";

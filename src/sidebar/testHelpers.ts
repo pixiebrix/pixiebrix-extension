@@ -18,7 +18,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import integrationsSlice from "@/store/Integrations/integrationsSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import {

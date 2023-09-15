@@ -23,7 +23,7 @@ import { sortBy } from "lodash";
 import registry from "@/services/registry";
 import { useAsyncState } from "@/hooks/common";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
-import { selectIntegrationConfigs } from "@/store/Integrations/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
 import {
   type Integration,
   type IntegrationConfig,

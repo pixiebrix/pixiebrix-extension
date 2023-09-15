@@ -24,7 +24,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import integrationsSlice, {
   persistIntegrationsConfig,
   type ServicesRootState,
-} from "@/store/Integrations/integrationsSlice";
+} from "@/store/integrations/integrationsSlice";
 import {
   type ModModalsRootState,
   modModalsSlice,

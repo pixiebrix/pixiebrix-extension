@@ -33,7 +33,7 @@ import {
   type IntegrationConfig,
 } from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
-import { selectIntegrationConfigs } from "@/store/Integrations/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
 
 type TableData = {
   integration: Integration;

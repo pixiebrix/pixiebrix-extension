@@ -28,7 +28,7 @@ import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import integrationsSlice, {
   persistIntegrationsConfig,
-} from "@/store/Integrations/integrationsSlice";
+} from "@/store/integrations/integrationsSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { boolean } from "@/utils/typeUtils";
 

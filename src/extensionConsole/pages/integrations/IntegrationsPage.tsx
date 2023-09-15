@@ -19,7 +19,7 @@ import styles from "@/extensionConsole/pages/integrations/PrivateIntegrationsCar
 
 import React, { useCallback, useContext, useState } from "react";
 import { connect } from "react-redux";
-import integrationsSlice from "@/store/Integrations/integrationsSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
 import Page from "@/layout/Page";
 import { Card, Col, Row } from "react-bootstrap";
 import { push } from "connected-react-router";

@@ -25,7 +25,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import integrationsSlice, {
   type IntegrationsState,
-} from "@/store/Integrations/integrationsSlice";
+} from "@/store/integrations/integrationsSlice";
 import { type AuthState } from "@/auth/authTypes";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { type SettingsState } from "@/store/settings/settingsTypes";

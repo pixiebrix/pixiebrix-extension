@@ -34,6 +34,16 @@ export type ReduxStorageKey = string & {
   _reduxStorageKeyBrand: never;
 };
 
+export function validateReduxStorageKey(key: string): ReduxStorageKey {
+  if (!key.startsWith("persist:")) {
+    throw new Error(
+      `Expected storage key ${key} to start with "persist:" prefix`
+    );
+  }
+
+  return key as ReduxStorageKey;
+}
+
 /**
  * Read a value from Chrome storage.
  *

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IntegrationsState } from "@/store/Integrations/integrationsSlice";
+import { type IntegrationsState } from "@/store/integrations/integrationsSlice";
 import { type IntegrationConfig } from "@/types/integrationTypes";
 
 export const selectIntegrationConfigs = ({

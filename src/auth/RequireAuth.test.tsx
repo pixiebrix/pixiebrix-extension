@@ -25,7 +25,7 @@ import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import integrationsSlice, {
   persistIntegrationsConfig,
-} from "@/store/Integrations/integrationsSlice";
+} from "@/store/integrations/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { type Me } from "@/types/contract";
 

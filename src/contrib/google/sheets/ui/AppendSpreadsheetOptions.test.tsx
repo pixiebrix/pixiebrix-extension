@@ -50,7 +50,7 @@ import { type AuthOption } from "@/auth/authTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
-import IntegrationsSliceModIntegrationsContextAdapter from "@/store/Integrations/IntegrationsSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
 import useFlags from "@/hooks/useFlags";
 
 let idSequence = 0;

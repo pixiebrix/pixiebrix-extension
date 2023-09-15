@@ -47,7 +47,7 @@ import {
   isGoogleInitialized,
 } from "@/contrib/google/initGoogle";
 import { type FormikValues } from "formik";
-import IntegrationsSliceModIntegrationsContextAdapter from "@/store/Integrations/IntegrationsSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
 import useFlags from "@/hooks/useFlags";
 
 let idSequence = 0;

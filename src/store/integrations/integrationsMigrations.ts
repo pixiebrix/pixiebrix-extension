@@ -14,3 +14,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import { MigrationManifest, PersistedState } from "redux-persist/es/types";
+import { IntegrationsState } from "@/store/integrations/integrationsSlice";
+import {
+  readReduxStorage,
+  validateReduxStorageKey,
+} from "@/utils/storageUtils";
+
+export const migrations: MigrationManifest = {
+  1: (state: IntegrationsState & PersistedState) =>
+    migrateIntegrationsStateV1(state),
+};
+
+function migrateIntegrationsStateV1(
+  state: IntegrationsState & PersistedState
+): IntegrationsState & PersistedState {
+  if (state) {
+    return state;
+  }
+
+  const oldStorageKey = validateReduxStorageKey("persist:servicesOptions");
+  const oldState = await readReduxStorage(oldStorageKey);
+
+  if (oldState) {
+  }
+}
