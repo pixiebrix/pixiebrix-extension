@@ -34,7 +34,7 @@ exports[`RootErrorPanel should render application error 1`] = `
       </div>
       <div>
         <small>
-          Unknown error
+          Application error message
         </small>
       </div>
     </div>
@@ -75,7 +75,9 @@ exports[`RootErrorPanel should render business error 1`] = `
         Configuration error running panel
       </div>
       <div>
-        <small />
+        <small>
+          Business error message
+        </small>
       </div>
     </div>
   </div>

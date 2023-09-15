@@ -252,7 +252,7 @@ describe("SchemaField", () => {
   });
 
   test("integer field options", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={() => {}}
         initialValues={{ apiVersion: "v3", testField: 42 }}
@@ -329,7 +329,7 @@ describe("SchemaField", () => {
   );
 
   test("string/integer field options", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={() => {}}
         initialValues={{ apiVersion: "v3", testField: 42 }}
@@ -360,7 +360,7 @@ describe("SchemaField", () => {
     async (_, schema) => {
       const fieldName = "aTestField";
       const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
-      const { container } = render(
+      render(
         <FormikTemplate>
           <SchemaField name={fieldName} schema={schema} />
         </FormikTemplate>

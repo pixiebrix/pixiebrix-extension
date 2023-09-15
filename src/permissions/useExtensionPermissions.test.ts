@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook, act } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import useExtensionPermissions from "./useExtensionPermissions";
 import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
 import {

@@ -16,7 +16,7 @@
  */
 
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { act, renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import pDefer from "p-defer";
 import useAsyncState from "@/hooks/useAsyncState";
 import { waitForEffect } from "@/testUtils/testHelpers";

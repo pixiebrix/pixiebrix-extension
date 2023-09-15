@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import useMemoCompare from "@/hooks/useMemoCompare";
 import deepEquals from "fast-deep-equal";
 

@@ -85,7 +85,7 @@ describe("AsyncRemoteSelectWidget", () => {
     const onChangeMock = jest.fn();
     const optionsFactoryMock = jest.fn().mockResolvedValue([]);
 
-    const { container } = render(
+    render(
       <AsyncRemoteSelectWidget
         id={id}
         name={name}
@@ -119,7 +119,7 @@ describe("AsyncRemoteSelectWidget", () => {
     const onChangeMock = jest.fn();
     const optionsFactoryMock = jest.fn().mockRejectedValue(new Error("Oh No!"));
 
-    const { container, ...helpers } = render(
+    render(
       <AsyncRemoteSelectWidget
         id={id}
         name={name}
@@ -184,7 +184,7 @@ describe("AsyncRemoteSelectWidget", () => {
       return deferredOptions.promise;
     });
 
-    const { container } = render(
+    render(
       <AsyncRemoteSelectWidget
         id={id}
         name={name}
