@@ -1502,7 +1502,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                           </a>
                         </span>
                         <ul
-                          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+                          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
                         >
                           <li
                             style="padding: 0px; margin: 0px;"
@@ -1514,7 +1514,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                               >
                                 <label
-                                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                                 >
                                   <div>
                                     <span>
@@ -1546,7 +1546,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                                   </div>
                                 </label>
                                 <span
-                                  style="color: rgb(241, 89, 80);"
+                                  style="color: rgb(180, 24, 63);"
                                 >
                                   undefined
                                 </span>

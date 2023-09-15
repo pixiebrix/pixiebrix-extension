@@ -40,6 +40,9 @@ export const popoverTheme: Theme = {
     alignItems: "center",
     flexWrap: "wrap",
   },
+  nestedNodeItemString: {
+    color: jsonTreeTheme.base0B,
+  },
   // This makes the nested items to be rendered below the label
   nestedNodeChildren: {
     width: "100%",
