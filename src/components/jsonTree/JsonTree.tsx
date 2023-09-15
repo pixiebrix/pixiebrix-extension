@@ -143,8 +143,8 @@ export function searchData(query: string, data: unknown): unknown {
 const jsonTreeTheme: Theme = {
   extend: theme,
   nestedNodeItemString: {
-    // Hard-coded to avoid the count greying out when selected
-    color: "#007124",
+    // Hard-coded to avoid the count changing color when selected
+    color: theme.base0B,
   },
   value: ({ style }: Styling) => ({
     style: {
