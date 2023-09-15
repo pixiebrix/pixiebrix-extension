@@ -162,7 +162,7 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
             </a>
           </span>
           <ul
-            style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+            style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
           >
             <li
               style="padding: 0px; margin: 0px;"
@@ -177,13 +177,13 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
                     style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
                   >
                     <div
-                      style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                      style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                     >
                       ▶
                     </div>
                   </div>
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
                   >
                     <div>
                       <span>
@@ -215,7 +215,7 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
                     </div>
                   </label>
                   <span
-                    style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                    style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                   >
                     <span>
                       <span
@@ -237,13 +237,13 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
                     style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
                   >
                     <div
-                      style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                      style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                     >
                       ▶
                     </div>
                   </div>
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
                   >
                     <div>
                       <span>
@@ -275,7 +275,7 @@ exports[`FoundationDataPanel it renders with form state and trace data 1`] = `
                     </div>
                   </label>
                   <span
-                    style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                    style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                   >
                     <span>
                       <span
