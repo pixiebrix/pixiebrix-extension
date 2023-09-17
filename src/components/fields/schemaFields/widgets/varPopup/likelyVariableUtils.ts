@@ -117,9 +117,11 @@ export function replaceLikelyVariable(
 
   const templatePartLeftOfLikelyVariable = template.slice(0, startIndex);
   const templatePartRightOfLikelyVariable = template.slice(endIndex);
-  const blockToken = templatePartLeftOfLikelyVariable.includes("{%")
-    ? "%"
-    : "{";
+  const lastBrace = templatePartLeftOfLikelyVariable.lastIndexOf("{");
+  const lastPercent = templatePartLeftOfLikelyVariable.lastIndexOf("%");
+
+  const blockToken =
+    lastBrace > lastPercent ? "{" : lastPercent > lastBrace ? "%" : null;
 
   // Check if we need to add braces before the inserted variable
   // For instance, in the case of "@foo }}"
