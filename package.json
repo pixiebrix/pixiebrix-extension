@@ -202,7 +202,7 @@
     "@types/intro.js": "^5.1.0",
     "@types/jest": "^29.5.5",
     "@types/jquery": "^3.5.18",
-    "@types/js-beautify": "^1.14.0",
+    "@types/js-beautify": "^1.14.1",
     "@types/js-cookie": "^3.0.0",
     "@types/js-yaml": "^4.0.6",
     "@types/jsdom": "^21.1.2",
