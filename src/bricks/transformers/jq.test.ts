@@ -102,7 +102,7 @@ describe("json", () => {
     );
 
     // String is returned as-is, not as a JSON array
-    await expect(promise).resolves.toStrictEqual("[]");
+    await expect(promise).resolves.toBe("[]");
   });
 });
 

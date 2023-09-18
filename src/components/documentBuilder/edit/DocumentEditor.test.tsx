@@ -25,7 +25,7 @@ import userEvent from "@testing-library/user-event";
 import { toExpression } from "@/testUtils/testHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { render } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
@@ -83,26 +83,26 @@ describe("move element", () => {
     ];
     documentElements[0].config.text = "test text 1";
     documentElements[1].config.text = "test text 2";
-    const rendered = renderDocumentEditor(documentElements, "0");
+    renderDocumentEditor(documentElements, "0");
 
     // The first text element is active
-    expect(rendered.getByText("test text 1")).toBeInTheDocument();
+    expect(screen.getByText("test text 1")).toBeInTheDocument();
 
     await userEvent.click(
-      rendered.getByText("Move down", { selector: "button" })
+      screen.getByText("Move down", { selector: "button" })
     );
 
     // The element is still active
-    expect(rendered.getByText("test text 1")).toBeInTheDocument();
+    expect(screen.getByText("test text 1")).toBeInTheDocument();
 
     // Now can move the element up
     expect(
-      rendered.getByText("Move up", { selector: "button" })
+      screen.getByText("Move up", { selector: "button" })
     ).not.toBeDisabled();
 
     // Can't move it further down
     expect(
-      rendered.getByText("Move down", { selector: "button" })
+      screen.getByText("Move down", { selector: "button" })
     ).toBeDisabled();
   });
 
@@ -113,26 +113,22 @@ describe("move element", () => {
     ];
     documentElements[0].config.text = "test text 1";
     documentElements[1].config.text = "test text 2";
-    const rendered = renderDocumentEditor(documentElements, "1");
+    renderDocumentEditor(documentElements, "1");
 
     // The second text element is active
-    expect(rendered.getByText("test text 2")).toBeInTheDocument();
+    expect(screen.getByText("test text 2")).toBeInTheDocument();
 
-    await userEvent.click(
-      rendered.getByText("Move up", { selector: "button" })
-    );
+    await userEvent.click(screen.getByText("Move up", { selector: "button" }));
 
     // The element is still active
-    expect(rendered.getByText("test text 2")).toBeInTheDocument();
+    expect(screen.getByText("test text 2")).toBeInTheDocument();
 
     // Can't move the element up
-    expect(
-      rendered.getByText("Move up", { selector: "button" })
-    ).toBeDisabled();
+    expect(screen.getByText("Move up", { selector: "button" })).toBeDisabled();
 
     // Can move it down
     expect(
-      rendered.getByText("Move down", { selector: "button" })
+      screen.getByText("Move down", { selector: "button" })
     ).not.toBeDisabled();
   });
 });
@@ -215,10 +211,10 @@ describe("remove element", () => {
       }),
     });
 
-    const rendered = renderDocumentEditorWithFormState(formState, "0");
+    const { getFormState } = renderDocumentEditorWithFormState(formState, "0");
 
-    await userEvent.click(rendered.getByText("Remove element"));
+    await userEvent.click(screen.getByText("Remove element"));
 
-    expect(rendered.getFormState().services).toStrictEqual([]);
+    expect(getFormState().services).toStrictEqual([]);
   });
 });

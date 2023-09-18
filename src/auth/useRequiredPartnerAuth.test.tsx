@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { renderHook, act } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { Provider } from "react-redux";
 import { appApi } from "@/services/api";
@@ -34,12 +34,7 @@ import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import { type Me } from "@/types/contract";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type IntegrationConfig } from "@/types/integrationTypes";
-
-// `waitForEffect` for @testing-library/react-hooks
-const waitForEffect = async () =>
-  act(async () => {
-    // Awaiting the async state update
-  });
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/store/enterprise/useManagedStorageState", () => ({
   __esModule: true,

@@ -91,12 +91,12 @@ describe("JQueryReaderOptions", () => {
       property: makeVariableExpression("@foo"),
     };
 
-    const { container } = renderOptions(state);
+    renderOptions(state);
 
     await waitForEffect();
 
     expect(screen.queryByText("Add Property")).not.toBeInTheDocument();
-    expect(container.querySelector(".alert")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 
   it("shows workshop message variable selectors", async () => {
@@ -104,12 +104,12 @@ describe("JQueryReaderOptions", () => {
     state.extension.blockPipeline[0].config.selectors =
       makeVariableExpression("@foo");
 
-    const { container } = renderOptions(state);
+    renderOptions(state);
 
     await waitForEffect();
 
     expect(screen.queryByText("Add New Property")).not.toBeInTheDocument();
-    expect(container.querySelector(".alert")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 
   it("normalizes primitive selectors", async () => {

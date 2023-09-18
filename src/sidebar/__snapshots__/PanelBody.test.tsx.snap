@@ -130,7 +130,7 @@ exports[`PanelBody renders html brick 1`] = `
 <DocumentFragment>
   <div
     class="full-height"
-    data-block-id="@pixiebrix/html"
+    data-testid="@pixiebrix/html"
   />
 </DocumentFragment>
 `;

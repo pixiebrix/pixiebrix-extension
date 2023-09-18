@@ -26,7 +26,6 @@ import ElementPreview, {
   type ElementPreviewProps,
 } from "@/components/documentBuilder/preview/ElementPreview";
 import { fireEvent, screen } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
 import { defaultBlockConfig } from "@/bricks/util";
 import { MarkdownRenderer } from "@/bricks/renderers/markdown";
 import { type PipelineExpression } from "@/types/runtimeTypes";

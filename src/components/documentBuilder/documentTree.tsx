@@ -150,14 +150,14 @@ export function getComponentDefinition(
     case "container":
     case "row":
     case "column": {
-      const props = { ...config };
+      const props = { ...config, "data-testid": componentType };
 
       // eslint-disable-next-line security/detect-object-injection -- componentType is container, row, or column
       return { Component: gridComponents[componentType], props };
     }
 
     case "card": {
-      const props = { ...config };
+      const props = { ...config, "data-testid": componentType };
 
       return {
         Component: CardElement,

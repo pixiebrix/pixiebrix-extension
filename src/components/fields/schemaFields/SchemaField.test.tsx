@@ -458,7 +458,7 @@ describe("SchemaField", () => {
   );
 
   test("don't render truthy root aware field", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={jest.fn()}
         initialValues={{ apiVersion: "v3", config: { isRootAware: true } }}
