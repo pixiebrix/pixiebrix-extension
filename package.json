@@ -197,7 +197,7 @@
     "@types/gapi.client.sheets-v4": "^0.0.1",
     "@types/google.picker": "0.0.39",
     "@types/holderjs": "^2.9.2",
-    "@types/html-to-text": "^9.0.1",
+    "@types/html-to-text": "^9.0.2",
     "@types/iframe-resizer": "^3.5.9",
     "@types/intro.js": "^5.1.0",
     "@types/jest": "^29.5.5",
