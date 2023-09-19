@@ -16,10 +16,13 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import { type MigrationManifest, PersistedState } from "redux-persist/es/types";
+import {
+  type MigrationManifest,
+  type PersistedState,
+} from "redux-persist/es/types";
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
-import { SetOptional } from "type-fest";
+import { type SetOptional } from "type-fest";
 
 /**
  * A storage key managed manually (i.e., not using redux-persist).
