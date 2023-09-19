@@ -31,7 +31,11 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import type { Permissions } from "webextension-polyfill";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import {
+  type IntegrationDependency,
+  IntegrationDependencyV1,
+  IntegrationDependencyV2,
+} from "@/types/integrationTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
@@ -60,6 +64,9 @@ export interface BaseExtensionState {
   blockPipeline: BrickPipeline;
 }
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export interface BaseFormStateV1<
   TExtension extends BaseExtensionState = BaseExtensionState,
   TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
@@ -102,7 +109,7 @@ export interface BaseFormStateV1<
    */
   optionsArgs: OptionsArgs;
 
-  services: IntegrationDependency[];
+  services: IntegrationDependencyV1[];
 
   /**
    * The extra permissions required by the extension
@@ -129,6 +136,9 @@ export interface BaseFormStateV1<
   optionsDefinition?: ModOptionsDefinition;
 }
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export type BaseFormStateV2<
   TExtension extends BaseExtensionState = BaseExtensionState,
   TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
@@ -136,15 +146,24 @@ export type BaseFormStateV2<
   /**
    * The integration dependencies configured for the extension
    *
-   * @since 1.7.41 renamed from `services` to `integrationDependencies`
+   * @since 1.7.41 renamed from `services` to `integrationDependencies`, also
+   * changed from IntegrationDependencyV1 to IntegrationDependencyV2
    */
-  integrationDependencies: IntegrationDependency[];
+  integrationDependencies: IntegrationDependencyV2[];
 };
 
 export type BaseFormState<
   TExtension extends BaseExtensionState = BaseExtensionState,
   TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
-> = BaseFormStateV2<TExtension, TExtensionPoint>;
+> = Except<
+  BaseFormStateV2<TExtension, TExtensionPoint>,
+  "integrationDependencies"
+> & {
+  /**
+   * Using the un-versioned type
+   */
+  integrationDependencies: IntegrationDependency[];
+};
 
 /**
  * ExtensionPoint configuration for use with the Page Editor.

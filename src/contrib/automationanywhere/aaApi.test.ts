@@ -16,7 +16,7 @@
  */
 
 import { cachedSearchBots } from "@/contrib/automationanywhere/aaApi";
-import { makeConfiguredRequest } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { type RemoteResponse } from "@/types/contract";
 import pDefer, { type DeferredPromise } from "p-defer";
 import {
@@ -26,16 +26,18 @@ import {
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 
 jest.mock("@/background/messenger/api", () => ({
-  makeConfiguredRequest: jest.fn(),
+  performConfiguredRequestInBackground: jest.fn(),
 }));
 
-const makeConfiguredRequestMock = jest.mocked(makeConfiguredRequest);
+const performConfiguredRequestInBackgroundMock = jest.mocked(
+  performConfiguredRequestInBackground
+);
 
 describe("aaApi", () => {
   it("should vary bot cache on workspace type", async () => {
     const deferred: Array<DeferredPromise<RemoteResponse>> = [];
 
-    makeConfiguredRequestMock.mockImplementation(async () => {
+    performConfiguredRequestInBackgroundMock.mockImplementation(async () => {
       const deferredResponse = pDefer<RemoteResponse>();
       deferred.push(deferredResponse);
       return deferredResponse.promise;
@@ -70,7 +72,7 @@ describe("aaApi", () => {
       value: null,
     });
 
-    expect(makeConfiguredRequestMock).toHaveBeenCalledTimes(2);
+    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledTimes(2);
 
     for (const { reject } of deferred) {
       reject("Reject to isn't cached across tests");

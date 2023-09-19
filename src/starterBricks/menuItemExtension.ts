@@ -616,7 +616,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if (extension.config.if) {
       // Read the latest state at the time of the action
       const input = await ctxtPromise;
-      const serviceContext = await makeServiceContext(extension.services);
+      const serviceContext = await makeServiceContext(
+        extension.integrationDependencies
+      );
 
       console.debug("Checking menuItem precondition", {
         input,
@@ -655,7 +657,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
-      const serviceContext = await makeServiceContext(extension.services);
+      const serviceContext = await makeServiceContext(
+        extension.integrationDependencies
+      );
 
       // Integrations take precedence over the other context
       // XXX: don't support adding "@mod" variable for now. Dynamic Captions are not available in the Page Editor
@@ -710,7 +714,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
                 $buttonElement: $menuItem,
               })
             ),
-            serviceContext: await makeServiceContext(extension.services),
+            serviceContext: await makeServiceContext(
+              extension.integrationDependencies
+            ),
             optionsArgs: extension.optionsArgs,
             root: this.getPipelineRoot($menuItem),
           };

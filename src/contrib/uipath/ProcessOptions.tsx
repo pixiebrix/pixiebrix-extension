@@ -20,7 +20,7 @@ import { type BlockOptionProps } from "@/components/fields/schemaFields/genericO
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { useField } from "formik";
-import { makeConfiguredRequest } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type ODataResponseData, type Robot } from "./uipathContract";
@@ -42,13 +42,12 @@ import useAsyncEffect from "use-async-effect";
 async function fetchRobots(
   config: SanitizedIntegrationConfig
 ): Promise<Array<Option<number>>> {
-  const response = await makeConfiguredRequest<ODataResponseData<Robot>>(
-    config,
-    {
-      url: "/odata/Robots",
-      method: "get",
-    }
-  );
+  const response = await performConfiguredRequestInBackground<
+    ODataResponseData<Robot>
+  >(config, {
+    url: "/odata/Robots",
+    method: "get",
+  });
   const robots = response.data.value;
   return (robots ?? []).map((x) => ({ value: x.Id, label: String(x.Name) }));
 }

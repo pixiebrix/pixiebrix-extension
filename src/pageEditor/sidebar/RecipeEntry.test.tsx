@@ -27,7 +27,7 @@ import {
 } from "@/pageEditor/slices/editorSlice";
 import RecipeEntry, { type RecipeEntryProps } from "./RecipeEntry";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { type ModComponentOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
 import {
   defaultModDefinitionFactory,
@@ -37,7 +37,7 @@ import {
 let renderRecipeEntry: RenderFunctionWithRedux<
   {
     editor: EditorState;
-    options: ModComponentOptionsState;
+    options: ModComponentState;
   },
   RecipeEntryProps
 >;

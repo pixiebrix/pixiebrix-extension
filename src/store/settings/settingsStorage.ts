@@ -17,52 +17,36 @@
 
 import { localStorage } from "redux-persist-webextension-storage";
 import { type SettingsState } from "@/store/settings/settingsTypes";
-import { isEmpty, mapValues } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import {
   readReduxStorage,
-  type ReduxStorageKey,
   setReduxStorage,
+  validateReduxStorageKey,
 } from "@/utils/storageUtils";
 import { initialSettingsState } from "@/store/settings/settingsSlice";
-import { StorageInterface } from "@/store/StorageInterface";
+import { type StorageInterface } from "@/store/StorageInterface";
 import { createMigrate } from "redux-persist";
 import { migrations } from "@/store/settings/settingsMigrations";
-import { boolean } from "@/utils/typeUtils";
 
-const SETTINGS_STORAGE_KEY = "persist:settings" as ReduxStorageKey;
+const SETTINGS_STORAGE_KEY = validateReduxStorageKey("persist:settings");
 
 /**
- * Read settings from local storage (without going through redux-persistor).
+ * Read persisted settings state directly from local storage
  */
 export async function getSettingsState(): Promise<SettingsState> {
   expectContext("extension");
-
-  const rawSettings = await readReduxStorage(SETTINGS_STORAGE_KEY, {});
-  if (isEmpty(rawSettings)) {
-    return initialSettingsState;
-  }
-
-  const parsedSettings = mapValues(rawSettings, (setting) =>
-    JSON.parse(setting)
-  ) as SettingsState;
-  // `persist` library stores values as stringified values
-  console.debug("Loading persisted settings directly from storage", {
-    rawSettings,
-    parsedSettings,
-  });
-  return parsedSettings;
+  return readReduxStorage(
+    SETTINGS_STORAGE_KEY,
+    migrations,
+    initialSettingsState
+  );
 }
 
 /**
  * Save settings to local storage (without going through redux-persistor).
  */
 export async function saveSettingsState(state: SettingsState): Promise<void> {
-  // `persist` library expects values as stringified values
-  await setReduxStorage(
-    SETTINGS_STORAGE_KEY,
-    mapValues(state, (value) => JSON.stringify(value))
-  );
+  await setReduxStorage(SETTINGS_STORAGE_KEY, state);
 }
 
 export const persistSettingsConfig = {
@@ -71,5 +55,5 @@ export const persistSettingsConfig = {
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
   version: 2,
-  migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
+  migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
 };

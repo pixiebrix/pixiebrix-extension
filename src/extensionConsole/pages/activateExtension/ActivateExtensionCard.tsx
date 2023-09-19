@@ -81,10 +81,12 @@ const ActivateExtensionCard: React.FunctionComponent<{
   const initialValues: FormState = useMemo(() => {
     const uuids = new Set<UUID>(authOptions.map(({ value }) => value));
     return {
-      integrationDependencies: extension.services.map((dependency) => ({
-        ...dependency,
-        configId: uuids.has(dependency.configId) ? dependency.configId : null,
-      })),
+      integrationDependencies: extension.integrationDependencies.map(
+        (dependency) => ({
+          ...dependency,
+          configId: uuids.has(dependency.configId) ? dependency.configId : null,
+        })
+      ),
     };
   }, [authOptions, extension]);
 

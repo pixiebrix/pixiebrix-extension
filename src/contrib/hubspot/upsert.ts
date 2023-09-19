@@ -16,7 +16,7 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { makeConfiguredRequest } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { partial } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
@@ -100,7 +100,7 @@ export class AddUpdateContact extends EffectABC {
     company,
     ...otherValues
   }: BrickArgs): Promise<void> {
-    const proxyHubspot = partial(makeConfiguredRequest, service);
+    const proxyHubspot = partial(performConfiguredRequestInBackground, service);
 
     const properties = makeProperties({
       ...otherValues,
@@ -189,7 +189,7 @@ export class AddUpdateCompany extends EffectABC {
   async effect(config: BrickArgs): Promise<void> {
     const { hubspot, website } = config;
 
-    const proxyHubspot = partial(makeConfiguredRequest, hubspot);
+    const proxyHubspot = partial(performConfiguredRequestInBackground, hubspot);
 
     if (!website) {
       console.error("Website is required", config);

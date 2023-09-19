@@ -19,7 +19,7 @@ import serviceRegistry from "@/services/registry";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
-import { makeConfiguredRequest } from "./requests";
+import { performConfiguredRequest } from "./requests";
 import * as token from "@/auth/token";
 import * as locator from "@/services/locator";
 import { validateRegistryId } from "@/types/helpers";
@@ -120,13 +120,13 @@ const proxiedIntegrationConfig = sanitizedIntegrationConfigFactory({
 describe("unauthenticated direct requests", () => {
   it("makes an unauthenticated request", async () => {
     axiosMock.onAny().reply(200, {});
-    const { status } = await makeConfiguredRequest(null, requestConfig);
+    const { status } = await performConfiguredRequest(null, requestConfig);
     expect(status).toEqual(200);
   });
 
   it("requires absolute URL for unauthenticated requests", async () => {
     await expect(async () => {
-      await makeConfiguredRequest(null, {
+      await performConfiguredRequest(null, {
         url: "api/foo/",
       });
     }).rejects.toThrow(/expected absolute URL for request without integration/);
@@ -135,7 +135,7 @@ describe("unauthenticated direct requests", () => {
   it("handles remote internal server error", async () => {
     axiosMock.onAny().reply(500);
 
-    const request = makeConfiguredRequest(null, requestConfig);
+    const request = performConfiguredRequest(null, requestConfig);
     await expect(request).rejects.toThrow(RemoteServiceError);
     await expect(request).rejects.toHaveProperty("cause.response.status", 500);
   });
@@ -155,7 +155,7 @@ describe("authenticated direct requests", () => {
 
   it("makes an authenticated request", async () => {
     axiosMock.onAny().reply(200, {});
-    const response = await makeConfiguredRequest(
+    const response = await performConfiguredRequest(
       directIntegrationConfig,
       requestConfig
     );
@@ -168,14 +168,14 @@ describe("authenticated direct requests", () => {
       .mockResolvedValue(null);
 
     await expect(async () =>
-      makeConfiguredRequest(directIntegrationConfig, requestConfig)
+      performConfiguredRequest(directIntegrationConfig, requestConfig)
     ).rejects.toThrow("Local integration configuration not found:");
   });
 
   it("throws error on bad request", async () => {
     axiosMock.onAny().reply(403, {});
 
-    const request = makeConfiguredRequest(
+    const request = performConfiguredRequest(
       directIntegrationConfig,
       requestConfig
     );
@@ -197,7 +197,7 @@ describe("proxy service requests", () => {
       json: { foo: 42 },
       status_code: 200,
     });
-    const { status, data } = await makeConfiguredRequest(
+    const { status, data } = await performConfiguredRequest(
       proxiedIntegrationConfig,
       requestConfig
     );
@@ -222,7 +222,7 @@ describe("proxy service requests", () => {
           status_code: statusCode,
         });
 
-        const request = makeConfiguredRequest(
+        const request = performConfiguredRequest(
           proxiedIntegrationConfig,
           requestConfig
         );
@@ -242,7 +242,7 @@ describe("proxy service requests", () => {
 
   it("handle proxy error", async () => {
     axiosMock.onAny().reply(500);
-    const request = makeConfiguredRequest(
+    const request = performConfiguredRequest(
       proxiedIntegrationConfig,
       requestConfig
     );
@@ -263,7 +263,7 @@ describe("proxy service requests", () => {
 
   it("handle network error", async () => {
     axiosMock.onAny().networkError();
-    const request = makeConfiguredRequest(
+    const request = performConfiguredRequest(
       proxiedIntegrationConfig,
       requestConfig
     );
@@ -295,7 +295,7 @@ describe("Retry token request", () => {
     "Handles expired token for %d response",
     async (statusCode) => {
       axiosMock.onGet(requestConfig.url).reply(statusCode, {});
-      const response = makeConfiguredRequest(
+      const response = performConfiguredRequest(
         directTokenIntegrationConfig,
         requestConfig
       );
@@ -309,7 +309,7 @@ describe("Retry token request", () => {
     axiosMock
       .onGet(requestConfig.url)
       .reply(400, { message: "Access Token has expired" });
-    const response = makeConfiguredRequest(
+    const response = performConfiguredRequest(
       directTokenIntegrationConfig,
       requestConfig
     );

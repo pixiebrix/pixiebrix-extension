@@ -15,28 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MigrationManifest, PersistedState } from "redux-persist/es/types";
-import { IntegrationsState } from "@/store/integrations/integrationsSlice";
 import {
-  readReduxStorage,
-  validateReduxStorageKey,
-} from "@/utils/storageUtils";
+  type MigrationManifest,
+  type PersistedState,
+} from "redux-persist/es/types";
+import {
+  type IntegrationConfigV1,
+  type IntegrationConfigV2,
+} from "@/types/integrationTypes";
+
+type IntegrationsStateV1 = {
+  configured: Record<string, IntegrationConfigV1>;
+};
+
+type IntegrationsStateV2 = {
+  configured: Record<string, IntegrationConfigV2>;
+};
 
 export const migrations: MigrationManifest = {
-  1: (state: IntegrationsState & PersistedState) =>
+  2: (state: IntegrationsStateV1 & PersistedState) =>
     migrateIntegrationsStateV1(state),
 };
 
 function migrateIntegrationsStateV1(
-  state: IntegrationsState & PersistedState
-): IntegrationsState & PersistedState {
-  if (state) {
-    return state;
-  }
-
-  const oldStorageKey = validateReduxStorageKey("persist:servicesOptions");
-  const oldState = await readReduxStorage(oldStorageKey);
-
-  if (oldState) {
-  }
+  state: IntegrationsStateV1 & PersistedState
+): IntegrationsStateV2 & PersistedState {
+  return {
+    ...state,
+    configured: Object.fromEntries(
+      Object.entries(state.configured).map(([id, config]) => [
+        id,
+        {
+          ...config,
+          integrationId: config.serviceId,
+        },
+      ])
+    ),
+  };
 }

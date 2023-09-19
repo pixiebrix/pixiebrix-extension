@@ -28,11 +28,7 @@ import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, partition } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
-import {
-  type LegacyModComponentObjectState,
-  type ModComponentOptionsState,
-  type OptionsState,
-} from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 import { type Except } from "type-fest";
 import { assertModComponentNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
@@ -54,7 +50,7 @@ import {
   pickModDefinitionMetadata,
 } from "@/utils/modDefinitionUtils";
 
-const initialExtensionsState: ModComponentOptionsState = {
+export const initialState: ModComponentState = {
   extensions: [],
 };
 
@@ -115,9 +111,10 @@ function getActivatedModComponentFromDefinition<
     const modIntegrationIds = getIntegrationIds({
       extensionPoints: [modComponentDefinition],
     });
-    activatedModComponent.services = integrationDependencies.filter(
-      ({ integrationId }) => modIntegrationIds.includes(integrationId)
-    );
+    activatedModComponent.integrationDependencies =
+      integrationDependencies.filter(({ integrationId }) =>
+        modIntegrationIds.includes(integrationId)
+      );
   }
 
   if (modComponentDefinition.permissions) {
@@ -159,7 +156,7 @@ type InstallModPayload = {
 
 const extensionsSlice = createSlice({
   name: "extensions",
-  initialState: initialExtensionsState,
+  initialState,
   reducers: {
     // Helper method to directly update extensions in tests. Can't use installCloudExtension because
     // StandaloneModDefinition doesn't have the _recipe field
@@ -216,8 +213,6 @@ const extensionsSlice = createSlice({
         },
       }: PayloadAction<InstallModPayload>
     ) {
-      requireLatestState(state);
-
       for (const modComponentDefinition of modDefinition.extensionPoints) {
         // May be null from bad Workshop edit?
         if (modComponentDefinition.id == null) {
@@ -286,8 +281,6 @@ const extensionsSlice = createSlice({
         pushToCloud: boolean;
       }>
     ) {
-      requireLatestState(state);
-
       const timestamp = new Date().toISOString();
 
       const {
@@ -299,7 +292,7 @@ const extensionsSlice = createSlice({
           definitions,
           label,
           optionsArgs,
-          services,
+          integrationDependencies,
           _deployment,
           createTimestamp = timestamp,
           _recipe,
@@ -328,7 +321,7 @@ const extensionsSlice = createSlice({
         label,
         definitions,
         optionsArgs,
-        services,
+        integrationDependencies,
         config,
         createTimestamp,
         updateTimestamp: timestamp,
@@ -388,8 +381,6 @@ const extensionsSlice = createSlice({
     },
 
     removeRecipeById(state, { payload: recipeId }: PayloadAction<RegistryId>) {
-      requireLatestState(state);
-
       const [, extensions] = partition(
         state.extensions,
         (x) => x._recipe?.id === recipeId
@@ -402,8 +393,6 @@ const extensionsSlice = createSlice({
       state,
       { payload: { extensionIds } }: PayloadAction<{ extensionIds: UUID[] }>
     ) {
-      requireLatestState(state);
-
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter(
         (x) => !extensionIds.includes(x.id)
@@ -414,27 +403,14 @@ const extensionsSlice = createSlice({
       state,
       { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
     ) {
-      requireLatestState(state);
-
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
     },
   },
   extraReducers(builder) {
-    builder.addCase(revertAll, () => initialExtensionsState);
+    builder.addCase(revertAll, () => initialState);
   },
 });
-
-/**
- * Throw a `TypeError` if the Redux state has not been migrated.
- */
-function requireLatestState(
-  state: OptionsState
-): asserts state is LegacyModComponentObjectState | ModComponentOptionsState {
-  if (!Array.isArray(state.extensions)) {
-    throw new TypeError("redux state has not been migrated");
-  }
-}
 
 export const { actions } = extensionsSlice;
 

@@ -31,7 +31,7 @@ type ConfigProps = {
 };
 
 /**
- * Higher-order component that presents an integration dependency field, and then gates the child components
+ * Gate component that presents an integration dependency field, and then gates the child components
  * on the user selecting an authentication option for the integration, in the formik context.
  *
  * @param integrationsSchema The schema for the integration dependency field

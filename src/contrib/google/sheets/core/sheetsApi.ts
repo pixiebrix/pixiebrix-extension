@@ -30,7 +30,7 @@ import initGoogle, {
 } from "@/contrib/google/initGoogle";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
-import { makeConfiguredRequest } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import {
   type AppendValuesResponse,
   type BatchUpdateSpreadsheetRequest,
@@ -143,7 +143,7 @@ async function executeRequest<Response, RequestData = never>(
   }
 
   try {
-    const result = await makeConfiguredRequest<Response>(
+    const result = await performConfiguredRequestInBackground<Response>(
       googleAccount,
       requestConfig
     );

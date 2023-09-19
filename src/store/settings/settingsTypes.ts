@@ -50,6 +50,9 @@ export type SkunkworksSettings = {
   performanceTracing?: boolean;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export type SettingsStateV1 = SkunkworksSettings & {
   /**
    * Whether the extension is synced to the app for provisioning.
@@ -117,6 +120,9 @@ export type SettingsStateV1 = SkunkworksSettings & {
   theme: Theme;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export type SettingsStateV2 = Except<SettingsStateV1, "authServiceId"> & {
   /**
    * Registry id of the integration to use for authentication with the PixieBrix server.

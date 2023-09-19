@@ -116,9 +116,10 @@ export const services = {
 };
 
 // `getMethod` currently strips generics, so we must copy the function signature here
-export const makeConfiguredRequest = getMethod("CONFIGURED_REQUEST", bg) as <
-  TData
->(
+export const performConfiguredRequestInBackground = getMethod(
+  "CONFIGURED_REQUEST",
+  bg
+) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;

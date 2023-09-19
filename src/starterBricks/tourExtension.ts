@@ -152,7 +152,9 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     const initialValues: InitialValues = {
       input: ctxt,
       root: document,
-      serviceContext: await makeServiceContext(extension.services),
+      serviceContext: await makeServiceContext(
+        extension.integrationDependencies
+      ),
       optionsArgs: extension.optionsArgs,
     };
 

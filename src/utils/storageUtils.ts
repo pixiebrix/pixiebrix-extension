@@ -16,7 +16,9 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import { type JsonValue } from "type-fest";
+import { type MigrationManifest } from "redux-persist/es/types";
+import migratePersistedState from "@/store/migratePersistedState";
+import { mapValues } from "lodash";
 
 /**
  * A storage key managed manually (i.e., not using redux-persist).
@@ -44,6 +46,8 @@ export function validateReduxStorageKey(key: string): ReduxStorageKey {
   return key as ReduxStorageKey;
 }
 
+export type StorageKey = ManualStorageKey | ReduxStorageKey;
+
 /**
  * Read a value from Chrome storage.
  *
@@ -56,7 +60,7 @@ export function validateReduxStorageKey(key: string): ReduxStorageKey {
  * @see readManagedStorage
  */
 export async function readStorage<T = unknown>(
-  storageKey: ManualStorageKey,
+  storageKey: StorageKey,
   defaultValue?: T,
   area: "local" | "session" = "local"
 ): Promise<T | undefined> {
@@ -73,24 +77,6 @@ export async function readStorage<T = unknown>(
   return defaultValue;
 }
 
-export async function readReduxStorage<T extends JsonValue = JsonValue>(
-  storageKey: ReduxStorageKey,
-  defaultValue?: T
-): Promise<T | undefined> {
-  const value = await readStorage(storageKey as unknown as ManualStorageKey);
-  if (typeof value === "string") {
-    return JSON.parse(value);
-  }
-
-  if (value !== undefined) {
-    console.warn("Expected JSON-stringified value for key %s", storageKey, {
-      value,
-    });
-  }
-
-  return defaultValue;
-}
-
 export async function setStorage(
   storageKey: ManualStorageKey,
   value: unknown,
@@ -100,19 +86,82 @@ export async function setStorage(
   await browser.storage[area].set({ [storageKey]: value });
 }
 
-export async function setReduxStorage<T extends JsonValue = JsonValue>(
+/**
+ * Read the persisted redux state directly out of storage, applying any necessary migrations. This could be
+ * called before the redux store is instantiated.
+ * @param storageKey the storage key for the redux state/slice
+ * @param migrations if needed, the redux-persist migrations for the returned state/slice type
+ * @param defaultValue default value to return if the key is not defined in storage, or a non-object value is found
+ * @param inferPersistedVersion if needed, a function to infer the persisted version for the returned state/slice type
+ */
+// eslint-disable-next-line @typescript-eslint/ban-types -- Record breaks type inference at call-sites
+export async function readReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
-  value: T
+  migrations: MigrationManifest,
+  defaultValue?: T,
+  inferPersistedVersion?: (state: UnknownObject) => number
+): Promise<T | undefined> {
+  const storageValue = await readStorage(storageKey);
+
+  if (typeof storageValue !== "string") {
+    if (storageValue !== undefined) {
+      console.warn("Expected JSON-stringified value for key %s", storageKey, {
+        storageValue,
+      });
+    }
+
+    return defaultValue;
+  }
+
+  // Note: Redux-persist stores state/slice objects with JSON-stringified
+  // values for each property, one level deep, and then the entire slice
+  // object itself also stringified as the value for the storage key.
+  const serializedState = JSON.parse(storageValue);
+
+  if (typeof serializedState !== "object") {
+    console.warn("Expected 'jsonified object' for key %s", storageKey, {
+      storageValue,
+    });
+
+    return defaultValue;
+  }
+
+  const parsedState = mapValues(serializedState, (value) =>
+    JSON.parse(String(value))
+  );
+  return migratePersistedState(parsedState, migrations, inferPersistedVersion);
+}
+
+/**
+ * Set the persisted redux state directly in storage.
+ * @param storageKey the storage key for the redux state/slice
+ * @param state the redux state/slice to set in storage
+ */
+export async function setReduxStorage<T extends UnknownObject>(
+  storageKey: ReduxStorageKey,
+  state: T
 ): Promise<void> {
-  await browser.storage.local.set({ [storageKey]: JSON.stringify(value) });
+  if (typeof state !== "object") {
+    throw new TypeError(
+      `Expected object value for redux storage key ${storageKey}`
+    );
+  }
+
+  // Note: Redux-persist stores state/slice objects with JSON-stringified
+  // values for each property, one level deep, and then the entire slice
+  // object itself also stringified as the value for the storage key.
+  await browser.storage.local.set({
+    [storageKey]: JSON.stringify(jsonifyObject(state)),
+  });
 }
 
 /**
  * Return an object with the same keys as the input object, but with the values JSON-stringified.
  * @param object the object to jsonify
  */
-export function jsonifyObject<T>(object: T): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => [key, JSON.stringify(value)])
-  );
+// eslint-disable-next-line @typescript-eslint/ban-types -- Record breaks type inference at call-sites
+export function jsonifyObject<T extends object>(
+  object: T
+): Record<string, string> {
+  return mapValues(object, (value) => JSON.stringify(value));
 }

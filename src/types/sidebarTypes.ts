@@ -24,7 +24,7 @@ import {
   type RendererRunPayload,
 } from "@/types/rendererTypes";
 import { type MessageContext } from "@/types/loggerTypes";
-import { type ModComponentOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 
 /**
  * Entry types supported by the sidebar.
@@ -344,6 +344,6 @@ export type SidebarState = SidebarEntries & {
 };
 
 export interface SidebarRootState {
-  options: ModComponentOptionsState;
+  options: ModComponentState;
   sidebar: SidebarState;
 }

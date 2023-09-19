@@ -360,7 +360,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const initialValues: InitialValues = {
       input: ctxt,
       root,
-      serviceContext: await makeServiceContext(extension.services),
+      serviceContext: await makeServiceContext(
+        extension.integrationDependencies
+      ),
       optionsArgs: extension.optionsArgs,
     };
 

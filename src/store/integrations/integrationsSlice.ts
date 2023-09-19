@@ -21,6 +21,8 @@ import { type StorageInterface } from "@/store/StorageInterface";
 import { revertAll } from "@/store/commonActions";
 import { type IntegrationConfig } from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
+import { createMigrate } from "redux-persist";
+import { migrations } from "@/store/integrations/integrationsMigrations";
 
 export interface IntegrationsState {
   /**
@@ -33,7 +35,7 @@ export type ServicesRootState = {
   integrations: IntegrationsState;
 };
 
-const initialIntegrationsState: IntegrationsState = {
+export const initialState: IntegrationsState = {
   configured: {},
 };
 
@@ -41,7 +43,7 @@ const integrationsSlice = createSlice({
   /* The object access should be safe because type-checker enforced UUID */
   /* eslint-disable security/detect-object-injection */
   name: "integrations",
-  initialState: initialIntegrationsState,
+  initialState,
   reducers: {
     deleteIntegrationConfig(
       state,
@@ -61,18 +63,19 @@ const integrationsSlice = createSlice({
     },
   },
   extraReducers(builder) {
-    builder.addCase(revertAll, () => initialIntegrationsState);
+    builder.addCase(revertAll, () => initialState);
   },
   /* eslint-enable security/detect-object-injection */
 });
 
 export const persistIntegrationsConfig = {
-  // Old value: key: "servicesOptions",
-  key: "integrationsSlice",
+  // Caution: changing this storage key requires async persistence migrations, which are not currently supported
+  key: "servicesOptions",
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 1,
+  version: 2,
+  migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
 };
 
 export default integrationsSlice;

@@ -174,7 +174,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       selectExtensionContext(extension)
     );
 
-    const serviceContext = await makeServiceContext(extension.services);
+    const serviceContext = await makeServiceContext(
+      extension.integrationDependencies
+    );
     const extensionContext = { ...readerContext, ...serviceContext };
 
     const { heading: rawHeading, body } = extension.config;

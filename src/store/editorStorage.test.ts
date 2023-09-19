@@ -25,7 +25,7 @@ import {
   removeDynamicElements,
   removeDynamicElementsForRecipe,
   saveEditorState,
-} from "@/store/dynamicElementStorage";
+} from "@/store/editorStorage";
 import { validateRegistryId } from "@/types/helpers";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";

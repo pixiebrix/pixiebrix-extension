@@ -17,11 +17,14 @@
 
 import extensionsSlice from "@/store/extensionsSlice";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
-import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import {
+  getModComponentState,
+  saveModComponentState,
+} from "@/store/extensionsStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { forEachTab } from "@/background/activeTab";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
-import { type ModComponentOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
@@ -60,10 +63,10 @@ export async function getBuiltInIntegrationConfigs(): Promise<
 }
 
 function installModInOptionsState(
-  state: ModComponentOptionsState,
+  state: ModComponentState,
   blueprint: ModDefinition,
   configuredDependencies: IntegrationDependency[]
-): ModComponentOptionsState {
+): ModComponentState {
   return reducer(
     state,
     actions.installMod({
@@ -106,7 +109,7 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
       };
     }
   );
-  let optionsState = await loadOptions();
+  let optionsState = await getModComponentState();
 
   for (const modDefinition of modDefinitions) {
     const modAlreadyInstalled = optionsState.extensions.some(
@@ -123,7 +126,7 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
     }
   }
 
-  await saveOptions(optionsState);
+  await saveModComponentState(optionsState);
   await forEachTab(queueReactivateTab);
   return installed;
 }

@@ -267,7 +267,7 @@ function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
   }
 }
 
-async function performConfiguredRequest(
+async function _performConfiguredRequest(
   integrationConfig: SanitizedIntegrationConfig,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse> {
@@ -365,7 +365,7 @@ async function getIntegrationMessageContext(
  * @param integrationConfig the PixieBrix integration configuration (used to locate the full configuration)
  * @param requestConfig the unauthenticated axios request configuration
  */
-export async function makeConfiguredRequest<TData>(
+export async function performConfiguredRequest<TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
   // Note: This signature is ignored by `webext-messenger`
@@ -399,7 +399,7 @@ export async function makeConfiguredRequest<TData>(
   }
 
   try {
-    return (await performConfiguredRequest(
+    return (await _performConfiguredRequest(
       integrationConfig,
       requestConfig
     )) as RemoteResponse<TData>;

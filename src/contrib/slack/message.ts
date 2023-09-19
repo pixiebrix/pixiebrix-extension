@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeConfiguredRequest } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -72,7 +72,7 @@ export class SendSimpleSlackMessage extends EffectABC {
     botName,
     unfurlLinks,
   }: BrickArgs): Promise<void> {
-    await makeConfiguredRequest(null, {
+    await performConfiguredRequestInBackground(null, {
       url: hookUrl,
       method: "post",
       // https://stackoverflow.com/questions/45752537/slack-incoming-webhook-request-header-field-content-type-is-not-allowed-by-acce
@@ -195,7 +195,7 @@ export class SendAdvancedSlackMessage extends EffectABC {
       throw new Error("hookUrl not configured");
     }
 
-    await makeConfiguredRequest(null, {
+    await performConfiguredRequestInBackground(null, {
       url: hookUrl,
       method: "post",
       // https://stackoverflow.com/questions/45752537/slack-incoming-webhook-request-header-field-content-type-is-not-allowed-by-acce

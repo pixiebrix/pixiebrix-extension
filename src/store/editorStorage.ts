@@ -26,11 +26,12 @@ import {
 } from "@/pageEditor/slices/editorSliceHelpers";
 import {
   readReduxStorage,
-  type ReduxStorageKey,
   setReduxStorage,
+  validateReduxStorageKey,
 } from "@/utils/storageUtils";
+import { migrations } from "@/store/editorMigrations";
 
-const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
+const STORAGE_KEY = validateReduxStorageKey("persist:editor");
 
 /**
  * Read dynamic elements from local storage (without going through redux-persist)
@@ -38,15 +39,7 @@ const STORAGE_KEY = "persist:editor" as ReduxStorageKey;
  * @returns The editor state, if found in storage, otherwise undefined.
  */
 export async function getEditorState(): Promise<EditorState | undefined> {
-  const storage: Record<string, string> = await readReduxStorage(STORAGE_KEY);
-
-  if (storage == null) {
-    // Explicitly return undefined here instead of returning an empty object and "failing silently"
-    return undefined;
-  }
-
-  // Redux-persist stores the values of each top-level property in the state object as a JSON string
-  return mapValues(storage, (value) => JSON.parse(value)) as EditorState;
+  return readReduxStorage(STORAGE_KEY, migrations);
 }
 
 /**

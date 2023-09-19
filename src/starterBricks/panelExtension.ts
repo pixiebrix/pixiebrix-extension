@@ -300,7 +300,9 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       this.collapsedExtensions.set(extension.id, true);
     }
 
-    const serviceContext = await makeServiceContext(extension.services);
+    const serviceContext = await makeServiceContext(
+      extension.integrationDependencies
+    );
     const extensionContext = { ...readerOutput, ...serviceContext };
 
     const $panel = $(

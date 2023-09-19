@@ -148,8 +148,11 @@ export function findMaxIntegrationDependencyApiVersion(
 }
 
 export function selectExtensionPointIntegrations({
-  services: integrationDependencies,
-}: Pick<ModComponentBase, "services">): ModComponentDefinition["services"] {
+  integrationDependencies,
+}: Pick<
+  ModComponentBase,
+  "integrationDependencies"
+>): ModComponentDefinition["services"] {
   const apiVersion = findMaxIntegrationDependencyApiVersion(
     integrationDependencies
   );
@@ -262,7 +265,7 @@ export function replaceRecipeExtension(
     // The `services` field is optional, so only add it to the config if the raw
     // extension has a value. Normalizing here makes testing harder because we
     // then have to account for the normalized value in assertions.
-    if (rawExtension.services) {
+    if (rawExtension.integrationDependencies) {
       commonExtensionConfig.services =
         selectExtensionPointIntegrations(rawExtension);
     }
@@ -340,7 +343,7 @@ function selectExtensionPointConfig(
   };
 
   // To make round-trip testing easier, don't add a `services` property if it didn't already exist
-  if (extension.services != null) {
+  if (extension.integrationDependencies != null) {
     extensionPoint.services = selectExtensionPointIntegrations(extension);
   }
 

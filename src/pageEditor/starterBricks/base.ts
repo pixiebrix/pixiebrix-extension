@@ -114,7 +114,7 @@ export function baseFromExtension<T extends StarterBrickType>(
     installed: true,
     label: config.label,
     // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
-    integrationDependencies: config.services ?? [],
+    integrationDependencies: config.integrationDependencies ?? [],
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
@@ -165,7 +165,7 @@ export function baseSelectExtension({
   | "extensionPointId"
   | "_recipe"
   | "label"
-  | "services"
+  | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
 > {
@@ -175,7 +175,7 @@ export function baseSelectExtension({
     extensionPointId: extensionPoint.metadata.id,
     _recipe: recipe,
     label,
-    services: integrationDependencies,
+    integrationDependencies,
     permissions,
     optionsArgs,
   };

@@ -44,7 +44,7 @@ export function inferRecipeOptions(
  * @see installMod
  */
 export function inferConfiguredModIntegrations(
-  modComponents: Array<Pick<ModComponentBase, "services">>,
+  modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
   { optional = false }: { optional?: boolean } = {}
 ): IntegrationDependency[] {
   // The mod components will only have the integration dependencies that are
@@ -54,8 +54,10 @@ export function inferConfiguredModIntegrations(
   // that case anyway.
 
   const dependenciesByIntegrationId = groupBy(
-    modComponents.flatMap((x) => x.services ?? []),
-    (x) => x.integrationId
+    modComponents.flatMap(
+      ({ integrationDependencies }) => integrationDependencies ?? []
+    ),
+    ({ integrationId }) => integrationId
   );
   const result: IntegrationDependency[] = [];
   for (const [id, dependencies] of Object.entries(
@@ -104,12 +106,7 @@ export function inferRecipeDependencies(
 ): IntegrationDependency[] {
   const withIntegrations: Array<{
     integrationDependencies?: IntegrationDependency[];
-  }> = [
-    ...installedRecipeExtensions.map(({ services }) => ({
-      integrationDependencies: services,
-    })),
-    ...dirtyRecipeElements,
-  ];
+  }> = [...installedRecipeExtensions, ...dirtyRecipeElements];
   return uniqBy(
     flatten(
       withIntegrations.map(

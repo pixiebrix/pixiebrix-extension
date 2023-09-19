@@ -149,7 +149,9 @@ const BlockPreview: React.FunctionComponent<{
 
   const { values } = useFormikContext<ModComponentFormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
-  const [{ value: services }] = useField<IntegrationDependency[]>("services");
+  const [{ value: services }] = useField<IntegrationDependency[]>(
+    "integrationDependencies"
+  );
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 

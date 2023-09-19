@@ -279,7 +279,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
       const [reader, serviceContext] = await Promise.all([
         this.getBaseReader(),
-        makeServiceContext(extension.services),
+        makeServiceContext(extension.integrationDependencies),
       ]);
 
       const targetElement = guessSelectedElement() ?? document;

@@ -38,9 +38,9 @@ describe("inferRecipeOptions", () => {
 });
 
 describe("inferConfiguredModIntegrations", () => {
-  it("handles undefined services", () => {
+  it("handles undefined integrationDependencies", () => {
     expect(
-      inferConfiguredModIntegrations([{ services: undefined }])
+      inferConfiguredModIntegrations([{ integrationDependencies: undefined }])
     ).toStrictEqual([]);
   });
 
@@ -55,8 +55,8 @@ describe("inferConfiguredModIntegrations", () => {
 
     expect(
       inferConfiguredModIntegrations([
-        { services: [integrationDependency] },
-        { services: [integrationDependency] },
+        { integrationDependencies: [integrationDependency] },
+        { integrationDependencies: [integrationDependency] },
       ])
     ).toStrictEqual([integrationDependency]);
   });
@@ -72,8 +72,12 @@ describe("inferConfiguredModIntegrations", () => {
 
     expect(() =>
       inferConfiguredModIntegrations([
-        { services: [integrationDependency] },
-        { services: [{ ...integrationDependency, configId: uuidv4() }] },
+        { integrationDependencies: [integrationDependency] },
+        {
+          integrationDependencies: [
+            { ...integrationDependency, configId: uuidv4() },
+          ],
+        },
       ])
     ).toThrow(/has multiple configurations/);
   });
@@ -86,7 +90,9 @@ describe("inferConfiguredModIntegrations", () => {
     };
 
     expect(() =>
-      inferConfiguredModIntegrations([{ services: [unconfiguredDependency] }])
+      inferConfiguredModIntegrations([
+        { integrationDependencies: [unconfiguredDependency] },
+      ])
     ).toThrow(/is not configured/);
   });
 
@@ -94,9 +100,12 @@ describe("inferConfiguredModIntegrations", () => {
     // Factory does not add a configId by default
     const unconfigured = integrationDependencyFactory();
     expect(
-      inferConfiguredModIntegrations([{ services: [unconfigured] }], {
-        optional: true,
-      })
+      inferConfiguredModIntegrations(
+        [{ integrationDependencies: [unconfigured] }],
+        {
+          optional: true,
+        }
+      )
     ).toBeEmpty();
   });
 
@@ -105,7 +114,7 @@ describe("inferConfiguredModIntegrations", () => {
       integrationId: PIXIEBRIX_INTEGRATION_ID,
     });
     expect(
-      inferConfiguredModIntegrations([{ services: [pixiebrix] }])
+      inferConfiguredModIntegrations([{ integrationDependencies: [pixiebrix] }])
     ).toStrictEqual([pixiebrix]);
   });
 
@@ -122,10 +131,10 @@ describe("inferConfiguredModIntegrations", () => {
     expect(
       inferConfiguredModIntegrations(
         [
-          { services: [pixiebrix, pixiebrix] },
-          { services: [pixiebrix, optional] },
-          { services: [configured, pixiebrix, optional] },
-          { services: [configured, optional] },
+          { integrationDependencies: [pixiebrix, pixiebrix] },
+          { integrationDependencies: [pixiebrix, optional] },
+          { integrationDependencies: [configured, pixiebrix, optional] },
+          { integrationDependencies: [configured, optional] },
         ],
         { optional: true }
       )

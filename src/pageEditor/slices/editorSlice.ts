@@ -91,6 +91,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
+import { createMigrate } from "redux-persist";
+import { migrations } from "@/store/editorMigrations";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -976,6 +978,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 1,
+  version: 2,
+  migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: ["isVarPopoverVisible"],
 };

@@ -28,7 +28,7 @@ import {
   type Release,
 } from "@/contrib/uipath/uipathContract";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
-import { makeConfiguredRequest } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import cachePromise from "@/utils/cachePromise";
 
 const optionalFetchReleases = optionalFactory(fetchReleases);
@@ -38,13 +38,12 @@ type ReleaseOption = Option & { data: Release };
 async function fetchReleases(
   config: SanitizedIntegrationConfig
 ): Promise<ReleaseOption[]> {
-  const response = await makeConfiguredRequest<ODataResponseData<Release>>(
-    config,
-    {
-      url: "/odata/Releases",
-      method: "get",
-    }
-  );
+  const response = await performConfiguredRequestInBackground<
+    ODataResponseData<Release>
+  >(config, {
+    url: "/odata/Releases",
+    method: "get",
+  });
   const releases = response.data.value;
   return releases.map((x) => ({
     value: x.Key,

@@ -35,7 +35,7 @@ export async function checkCloudExtensionPermissions(
 ): Promise<PermissionsStatus> {
   const resolved = await resolveExtensionInnerDefinitions({
     ...extension,
-    services: integrationDependencies,
+    integrationDependencies,
   });
 
   const configured = integrationDependencies.filter(({ configId }) => configId);

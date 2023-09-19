@@ -26,7 +26,7 @@ import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import {
   containsPermissions,
-  makeConfiguredRequest,
+  performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -49,7 +49,7 @@ function useHooks(): {
   error: unknown;
 } {
   const [hooks, isPending, error] = useAsyncState(async () => {
-    const { data } = await makeConfiguredRequest<{
+    const { data } = await performConfiguredRequestInBackground<{
       new_push_fields: Webhook[];
     }>(await pixiebrixConfigurationFactory(), {
       baseURL: await getBaseURL(),

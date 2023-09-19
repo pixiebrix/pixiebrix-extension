@@ -20,7 +20,7 @@ import useReinstall from "./useReinstall";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import {
-  type ModComponentOptionsState,
+  type ModComponentState,
   type ModComponentsRootState,
 } from "@/store/extensionsTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
@@ -61,7 +61,7 @@ test("uninstalls recipe mod components", async () => {
 
   const expectedExtension = (
     (getReduxStore().getState() as ModComponentsRootState)
-      .options as ModComponentOptionsState
+      .options as ModComponentState
   ).extensions[0];
 
   await act(async () => reinstall(modDefinition));

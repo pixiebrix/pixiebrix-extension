@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import {
+  getModComponentState,
+  saveModComponentState,
+} from "@/store/extensionsStorage";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -28,7 +31,7 @@ import {
   getSettingsState,
   saveSettingsState,
 } from "@/store/settings/settingsStorage";
-import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
+import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import {
   editorSlice,
   initialState as initialEditorState,
@@ -115,7 +118,10 @@ beforeEach(async () => {
   jest.resetModules();
 
   // Reset local states
-  await Promise.all([saveOptions({ extensions: [] }), clearEditorReduxState()]);
+  await Promise.all([
+    saveModComponentState({ extensions: [] }),
+    clearEditorReduxState(),
+  ]);
 
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
@@ -216,7 +222,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
     expect(extensions.length).toBe(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
@@ -239,7 +245,7 @@ describe("updateDeployments", () => {
     delete modComponent._recipe;
     delete modComponent._deployment;
 
-    await saveOptions({
+    await saveModComponentState({
       extensions: [modComponent],
     });
 
@@ -263,7 +269,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(2);
     const { elements } = await getEditorState();
     // Expect unrelated dynamic element not to be removed
@@ -287,7 +293,7 @@ describe("updateDeployments", () => {
     }) as ActivatedModComponent;
     delete modComponent._deployment;
 
-    await saveOptions({
+    await saveModComponentState({
       extensions: [modComponent],
     });
 
@@ -302,7 +308,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(1);
     expect(extensions[0]._recipe.version).toBe(deployment.package.version);
   });
@@ -332,7 +338,7 @@ describe("updateDeployments", () => {
     }) as ActivatedModComponent;
     delete modComponent._deployment;
 
-    await saveOptions({
+    await saveModComponentState({
       extensions: [modComponent],
     });
 
@@ -354,7 +360,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(1);
     const { elements } = await getEditorState();
     // Expect dynamic element to be removed
@@ -379,7 +385,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
     expect(extensions.length).toBe(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
@@ -577,7 +583,7 @@ describe("updateDeployments", () => {
       editorSlice.actions.addElement(deploymentElement)
     );
 
-    await saveOptions({
+    await saveModComponentState({
       extensions: [
         personalModComponent,
         deploymentModComponent,
@@ -591,7 +597,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
     expect(extensions.length).toBe(2);
 

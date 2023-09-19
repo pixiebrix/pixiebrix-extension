@@ -56,7 +56,7 @@ export function makeBlueprint(
     templateEngine,
     permissions,
     definitions,
-    services,
+    integrationDependencies,
     optionsArgs,
     config,
   } = extension;
@@ -76,8 +76,8 @@ export function makeBlueprint(
         id: extensionPointId,
         label,
         services: Object.fromEntries(
-          services
-            .filter((x) => !isNullOrBlank(x.outputKey))
+          integrationDependencies
+            .filter(({ outputKey }) => !isNullOrBlank(outputKey))
             .map(({ outputKey, integrationId }) => [outputKey, integrationId])
         ),
         templateEngine,

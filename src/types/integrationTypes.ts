@@ -35,6 +35,9 @@ import { type Metadata, type RegistryId } from "@/types/registryTypes";
  */
 export type ModDependencyAPIVersion = "v1" | "v2";
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export interface IntegrationDependencyV1 {
   /**
    * The registry id of the integration.
@@ -64,6 +67,9 @@ export interface IntegrationDependencyV1 {
   apiVersion?: ModDependencyAPIVersion;
 }
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export type IntegrationDependencyV2 = Except<
   IntegrationDependencyV1,
   "id" | "config"
@@ -126,6 +132,9 @@ export interface AuthData {
   [key: string]: unknown;
 }
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export type IntegrationConfigV1 = {
   // Nominal typing to distinguish from SanitizedIntegrationConfig
   _rawIntegrationConfigBrand: null;
@@ -152,6 +161,9 @@ export type IntegrationConfigV1 = {
   config: SecretsConfig;
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
 export type IntegrationConfigV2 = Except<IntegrationConfigV1, "serviceId"> & {
   /**
    * Registry identifier for the integration, e.g., `@pixiebrix/api`.

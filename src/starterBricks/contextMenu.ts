@@ -340,7 +340,9 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
       try {
         const reader = await this.getBaseReader();
-        const serviceContext = await makeServiceContext(extension.services);
+        const serviceContext = await makeServiceContext(
+          extension.integrationDependencies
+        );
 
         const targetElement =
           clickedElement ?? guessSelectedElement() ?? document;

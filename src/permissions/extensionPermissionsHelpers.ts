@@ -69,7 +69,7 @@ export async function collectExtensionPermissions(
 
   if (includeServices) {
     servicePermissions = await Promise.all(
-      (resolved.services ?? [])
+      (resolved.integrationDependencies ?? [])
         .filter(({ configId }) => configId)
         .map(async (integrationDependency) =>
           collectIntegrationOriginPermissions(integrationDependency)

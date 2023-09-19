@@ -638,7 +638,9 @@ describe("buildRecipe", () => {
 
     const modComponent = modComponentFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-      services: [integrationDependencyFactory({ integrationId, outputKey })],
+      integrationDependencies: [
+        integrationDependencyFactory({ integrationId, outputKey }),
+      ],
       extensionPointId: starterBrick.metadata.id,
     }) as UnresolvedModComponent;
 
@@ -888,8 +890,8 @@ describe("findMaxServicesDependencyApiVersion", () => {
 
 describe("selectExtensionPointServices", () => {
   it("works for v1 services", () => {
-    const extension: Pick<ModComponentBase, "services"> = {
-      services: [
+    const extension: Pick<ModComponentBase, "integrationDependencies"> = {
+      integrationDependencies: [
         integrationDependencyFactory(),
         integrationDependencyFactory({
           isOptional: undefined,
@@ -898,14 +900,16 @@ describe("selectExtensionPointServices", () => {
       ],
     };
     expect(selectExtensionPointIntegrations(extension)).toStrictEqual({
-      [extension.services[0].outputKey]: extension.services[0].integrationId,
-      [extension.services[1].outputKey]: extension.services[1].integrationId,
+      [extension.integrationDependencies[0].outputKey]:
+        extension.integrationDependencies[0].integrationId,
+      [extension.integrationDependencies[1].outputKey]:
+        extension.integrationDependencies[1].integrationId,
     });
   });
 
   it("works for v2 services", () => {
-    const extension: Pick<ModComponentBase, "services"> = {
-      services: [
+    const extension: Pick<ModComponentBase, "integrationDependencies"> = {
+      integrationDependencies: [
         integrationDependencyFactory({
           apiVersion: "v2",
           isOptional: true,
@@ -922,17 +926,17 @@ describe("selectExtensionPointServices", () => {
     };
     expect(selectExtensionPointIntegrations(extension)).toStrictEqual({
       properties: {
-        [extension.services[0].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.services[0].integrationId}`,
+        [extension.integrationDependencies[0].outputKey]: {
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.integrationDependencies[0].integrationId}`,
         },
-        [extension.services[1].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.services[1].integrationId}`,
+        [extension.integrationDependencies[1].outputKey]: {
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.integrationDependencies[1].integrationId}`,
         },
-        [extension.services[2].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.services[2].integrationId}`,
+        [extension.integrationDependencies[2].outputKey]: {
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.integrationDependencies[2].integrationId}`,
         },
       },
-      required: [extension.services[1].outputKey],
+      required: [extension.integrationDependencies[1].outputKey],
     });
   });
 });
