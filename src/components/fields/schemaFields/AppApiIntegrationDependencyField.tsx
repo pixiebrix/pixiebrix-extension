@@ -23,7 +23,7 @@ import { isEqual, set } from "lodash";
 import {
   keyToFieldValue,
   type IntegrationsFormSlice,
-} from "./integrations/serviceFieldUtils";
+} from "./integrations/integrationDependencyFieldUtils";
 import {
   type Expression,
   type OutputKey,

@@ -19,7 +19,7 @@ import { getIn, useFormikContext } from "formik";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
 import { produce } from "immer";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/serviceFieldUtils";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { useCallback } from "react";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useDispatch } from "react-redux";

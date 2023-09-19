@@ -33,8 +33,8 @@ import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
   type IntegrationDependency,
-  IntegrationDependencyV1,
-  IntegrationDependencyV2,
+  type IntegrationDependencyV1,
+  type IntegrationDependencyV2,
 } from "@/types/integrationTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";

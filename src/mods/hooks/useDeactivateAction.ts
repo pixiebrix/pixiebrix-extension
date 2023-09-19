@@ -24,11 +24,11 @@ import {
   selectExtensionsFromMod,
 } from "@/utils/modUtils";
 import { useCallback } from "react";
-import { type OptionsState } from "@/store/extensionsTypes";
 import useUserAction from "@/hooks/useUserAction";
 import { uninstallExtensions, uninstallRecipe } from "@/store/uninstallUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { type ModComponentState } from "@/store/extensionsTypes";
 
 function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
   const dispatch = useDispatch();
@@ -45,7 +45,8 @@ function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
   // Without memoization, the selector reference changes on every render, which causes useModPermissions
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
-    (state: { options: OptionsState }) => selectExtensionsFromMod(state, mod),
+    (state: { options: ModComponentState }) =>
+      selectExtensionsFromMod(state, mod),
     [mod]
   );
 

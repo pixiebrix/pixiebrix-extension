@@ -19,7 +19,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { selectIntegrationDependencyVariables } from "./serviceFieldUtils";
+import { selectIntegrationDependencyVariables } from "./integrationDependencyFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";

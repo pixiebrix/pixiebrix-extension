@@ -85,7 +85,7 @@ import { serializeError } from "serialize-error";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
-import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/serviceFieldUtils";
+import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";

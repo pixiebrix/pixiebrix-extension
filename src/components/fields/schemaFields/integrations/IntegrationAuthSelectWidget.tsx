@@ -27,16 +27,16 @@ import { faSync } from "@fortawesome/free-solid-svg-icons";
 /**
  * Composite presentational widget with select control and refresh button.
  *
- * See ServiceWidget for connected logic and defaulting.
+ * See IntegrationDependencyWidget for connected logic and defaulting.
  *
  * @param refreshOptions callback to refresh available options
  * @param selectProps props to pass through to SelectWidget
  * @see ServiceWidget
  */
-const ServiceSelectWidget: React.FunctionComponent<
+const IntegrationAuthSelectWidget: React.FunctionComponent<
   SelectWidgetProps<AuthOption> & { refreshOptions: () => void }
 > = ({ refreshOptions, ...selectProps }) => (
-  <div className="d-flex" data-widget="ServiceSelectWidget">
+  <div className="d-flex">
     <div className="flex-grow-1">
       <SelectWidget {...selectProps} />
     </div>
@@ -52,4 +52,4 @@ const ServiceSelectWidget: React.FunctionComponent<
   </div>
 );
 
-export default ServiceSelectWidget;
+export default IntegrationAuthSelectWidget;

@@ -18,18 +18,20 @@
 import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import ServiceSelectWidget from "@/components/fields/schemaFields/integrations/ServiceSelectWidget";
+import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 
 export default {
   title: "Widgets/ServiceSelectWidget",
-  component: ServiceSelectWidget,
-} as ComponentMeta<typeof ServiceSelectWidget>;
+  component: IntegrationAuthSelectWidget,
+} as ComponentMeta<typeof IntegrationAuthSelectWidget>;
 
-const Template: ComponentStory<typeof ServiceSelectWidget> = ({ options }) => (
+const Template: ComponentStory<typeof IntegrationAuthSelectWidget> = ({
+  options,
+}) => (
   // FIXME: the refresh button in the story doesn't match the height of the input field b/c of the theme.
   //  In the Page Editor the height renders OK
-  <ServiceSelectWidget
+  <IntegrationAuthSelectWidget
     name="service"
     value={null}
     onChange={action("onChange")}

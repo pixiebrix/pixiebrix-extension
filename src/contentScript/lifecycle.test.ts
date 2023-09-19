@@ -33,7 +33,7 @@ import blockRegistry from "@/bricks/registry";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { getModComponentState } from "@/store/extensionsStorage";
+import { type getModComponentState } from "@/store/extensionsStorage";
 
 let starterBrickRegistry: any;
 let lifecycleModule: any;

@@ -23,7 +23,7 @@ import {
   keyToFieldValue,
   produceExcludeUnusedDependencies,
   type IntegrationsFormSlice,
-} from "@/components/fields/schemaFields/integrations/serviceFieldUtils";
+} from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
@@ -33,7 +33,7 @@ import {
   type SelectLike,
   type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import ServiceSelectWidget from "@/components/fields/schemaFields/integrations/ServiceSelectWidget";
+import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import {
   type Expression,
   type OutputKey,
@@ -282,7 +282,7 @@ const IntegrationDependencyWidget: React.FC<
   );
 
   return (
-    <ServiceSelectWidget
+    <IntegrationAuthSelectWidget
       name={field.name}
       id={field.name}
       value={selectedValue}
