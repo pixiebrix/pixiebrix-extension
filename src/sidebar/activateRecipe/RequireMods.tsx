@@ -103,7 +103,7 @@ export function requiresUserConfiguration(
     });
 
   const modIntegrationIds = getUnconfiguredComponentIntegrations(modDefinition);
-  const needsServiceInputs = modIntegrationIds.some(
+  const needsIntegrationAuths = modIntegrationIds.some(
     ({ integrationId, isOptional }) => {
       if (integrationId === PIXIEBRIX_INTEGRATION_ID || isOptional) {
         return false;
@@ -117,7 +117,7 @@ export function requiresUserConfiguration(
     }
   );
 
-  return needsOptionsInputs || needsServiceInputs;
+  return needsOptionsInputs || needsIntegrationAuths;
 }
 
 /**

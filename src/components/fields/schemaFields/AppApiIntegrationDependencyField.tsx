@@ -44,21 +44,24 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
 }> = ({ name }) => {
   const { values: root, setValues: setRootValues } =
     useFormikContext<IntegrationsFormSlice>();
-  const [{ value: serviceOutputKey }, , { setValue: setServiceOutputKey }] =
-    useField<Expression<ServiceVarRef>>(name);
+  const [
+    { value: dependencyOutputKey },
+    ,
+    { setValue: setDependencyOutputKey },
+  ] = useField<Expression<ServiceVarRef>>(name);
 
   // This currently happens when a brick is copy-pasted into a separate extension
   // that does not yet have root.integrationDependencies configured, but already has the
   // integration dependency key set up in the (copied) BrickConfig.
   const isBadValue =
-    serviceOutputKey &&
+    dependencyOutputKey &&
     !root.integrationDependencies.some(({ outputKey }) =>
-      isEqual(keyToFieldValue(outputKey), serviceOutputKey)
+      isEqual(keyToFieldValue(outputKey), dependencyOutputKey)
     );
 
   useAsyncEffect(
     async () => {
-      if (serviceOutputKey == null) {
+      if (dependencyOutputKey == null) {
         const match = root.integrationDependencies.find(
           ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID
         );
@@ -70,7 +73,7 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
             match.outputKey,
             { root, match }
           );
-          await setServiceOutputKey(keyToFieldValue(match.outputKey));
+          await setDependencyOutputKey(keyToFieldValue(match.outputKey));
         } else {
           console.debug("Adding PixieBrix API dependency");
           await setRootValues(
@@ -92,7 +95,7 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
       } else if (isBadValue) {
         // Clearing this "bad value" value will enable the preceding if-branch to
         // execute again, and that will configure root.services properly
-        await setServiceOutputKey(null);
+        await setDependencyOutputKey(null);
       }
     },
     // Run on mount, or if we detect a "bad value" (see comment above)
