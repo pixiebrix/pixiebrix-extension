@@ -11092,7 +11092,6 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
 exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
 <div
   className="d-flex"
-  data-widget="ServiceSelectWidget"
 >
   <div
     className="flex-grow-1"
@@ -11234,7 +11233,6 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
 exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
 <div
   className="d-flex"
-  data-widget="ServiceSelectWidget"
 >
   <div
     className="flex-grow-1"
