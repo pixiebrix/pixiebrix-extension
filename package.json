@@ -13,6 +13,7 @@
     "build": "concurrently npm:build:webpack npm:build:typescript -r",
     "build:webpack": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
     "build:typescript": "tsc --noEmit",
+    "build:strictNullChecks": "tsc --noEmit --project src/tsconfig.strictNullChecks.json",
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "start-storybook -p 6006 -s public",
