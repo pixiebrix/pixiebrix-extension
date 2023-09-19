@@ -271,9 +271,9 @@ describe("updateDeployments", () => {
 
     const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(2);
-    const { elements } = await getEditorState();
+    const foo = await getEditorState();
     // Expect unrelated dynamic element not to be removed
-    expect(elements).toBeArrayOfSize(1);
+    expect(foo.elements).toBeArrayOfSize(1);
   });
 
   test("uninstall existing recipe mod component with no dynamic elements", async () => {

@@ -24,7 +24,7 @@ import { type SetOptional } from "type-fest";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
 
-function getMaxVersion(migrations: MigrationManifest): number {
+export function getMaxMigrationsVersion(migrations: MigrationManifest): number {
   if (isEmpty(migrations)) {
     return 0;
   }
@@ -48,7 +48,7 @@ export default function migratePersistedState<MigratedState>(
   migrations: MigrationManifest,
   inferPersistedVersion?: (state: UnknownObject) => number
 ): MigratedState {
-  const maxVersion = getMaxVersion(migrations);
+  const maxVersion = getMaxMigrationsVersion(migrations);
 
   let storedState: PersistedState;
 

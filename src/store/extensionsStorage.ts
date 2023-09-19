@@ -29,11 +29,16 @@ import {
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
 import { initialState } from "@/store/extensionsSlice";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
 
 export async function getModComponentState(): Promise<ModComponentState> {
-  return readReduxStorage(STORAGE_KEY, migrations, initialState);
+  return readReduxStorage<ModComponentState>(
+    STORAGE_KEY,
+    migrations,
+    initialState
+  );
 }
 
 /**
@@ -57,7 +62,11 @@ export async function getActivatedModIds(): Promise<Set<RegistryId>> {
 export async function saveModComponentState(
   state: ModComponentState
 ): Promise<void> {
-  await setReduxStorage(STORAGE_KEY, state);
+  await setReduxStorage(
+    STORAGE_KEY,
+    state,
+    getMaxMigrationsVersion(migrations)
+  );
 }
 
 export const persistExtensionOptionsConfig = {

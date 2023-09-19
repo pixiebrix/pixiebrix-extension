@@ -27,6 +27,7 @@ import { initialSettingsState } from "@/store/settings/settingsSlice";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { createMigrate } from "redux-persist";
 import { migrations } from "@/store/settings/settingsMigrations";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 
 const SETTINGS_STORAGE_KEY = validateReduxStorageKey("persist:settings");
 
@@ -46,7 +47,11 @@ export async function getSettingsState(): Promise<SettingsState> {
  * Save settings to local storage (without going through redux-persistor).
  */
 export async function saveSettingsState(state: SettingsState): Promise<void> {
-  await setReduxStorage(SETTINGS_STORAGE_KEY, state);
+  await setReduxStorage(
+    SETTINGS_STORAGE_KEY,
+    state,
+    getMaxMigrationsVersion(migrations)
+  );
 }
 
 export const persistSettingsConfig = {

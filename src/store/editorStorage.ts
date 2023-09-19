@@ -19,7 +19,6 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { produce } from "immer";
-import { mapValues } from "lodash";
 import {
   removeElement,
   removeRecipeData,
@@ -30,6 +29,7 @@ import {
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
 import { migrations } from "@/store/editorMigrations";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:editor");
 
@@ -39,7 +39,7 @@ const STORAGE_KEY = validateReduxStorageKey("persist:editor");
  * @returns The editor state, if found in storage, otherwise undefined.
  */
 export async function getEditorState(): Promise<EditorState | undefined> {
-  return readReduxStorage(STORAGE_KEY, migrations);
+  return readReduxStorage<EditorState>(STORAGE_KEY, migrations);
 }
 
 /**
@@ -55,8 +55,8 @@ export async function saveEditorState(
 
   await setReduxStorage(
     STORAGE_KEY,
-    // Redux-persist stores the values of each top-level property in the state object as a JSON string
-    mapValues(state, (value) => JSON.stringify(value))
+    state,
+    getMaxMigrationsVersion(migrations)
   );
 }
 

@@ -33,10 +33,14 @@ import blockRegistry from "@/bricks/registry";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { getModComponentState } from "@/store/extensionsStorage";
 
 let starterBrickRegistry: any;
-let loadOptionsMock: jest.Mock;
 let lifecycleModule: any;
+
+let getModComponentStateMock: jest.MockedFunctionDeep<
+  typeof getModComponentState
+>;
 
 const rootReader = new RootReader();
 
@@ -82,14 +86,15 @@ describe("lifecycle", () => {
   beforeEach(() => {
     jest.isolateModules(() => {
       jest.mock("@/store/extensionsStorage", () => ({
-        loadOptions: jest
+        getModComponentState: jest
           .fn()
           .mockRejectedValue(new Error("Mock not implemented")),
       }));
 
       lifecycleModule = require("@/contentScript/lifecycle");
       starterBrickRegistry = require("@/starterBricks/registry").default;
-      loadOptionsMock = require("@/store/extensionsStorage").loadOptions;
+      getModComponentStateMock =
+        require("@/store/extensionsStorage").getModComponentState;
     });
 
     window.document.body.innerHTML = "";
@@ -105,18 +110,18 @@ describe("lifecycle", () => {
   });
 
   it("first navigation no extensions smoke test", async () => {
-    loadOptionsMock.mockResolvedValue({ extensions: [] });
+    getModComponentStateMock.mockResolvedValue({ extensions: [] });
 
     await lifecycleModule.handleNavigate();
-    expect(loadOptionsMock).toHaveBeenCalledTimes(1);
+    expect(getModComponentStateMock).toHaveBeenCalledTimes(1);
 
     // No navigation has occurred, so no extensions should be loaded
     await lifecycleModule.handleNavigate();
-    expect(loadOptionsMock).toHaveBeenCalledTimes(1);
+    expect(getModComponentStateMock).toHaveBeenCalledTimes(1);
 
     await lifecycleModule.handleNavigate();
     // Still only called once because loadPersistedExtensionsOnce is memoized
-    expect(loadOptionsMock).toHaveBeenCalledTimes(1);
+    expect(getModComponentStateMock).toHaveBeenCalledTimes(1);
   });
 
   it("installs persisted trigger on first run", async () => {
@@ -131,10 +136,10 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    loadOptionsMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
 
     // Sanity check for the test
-    expect(loadOptionsMock).toHaveBeenCalledTimes(0);
+    expect(getModComponentStateMock).toHaveBeenCalledTimes(0);
     await lifecycleModule.handleNavigate();
 
     await tick();
@@ -177,10 +182,10 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    loadOptionsMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
 
     // Sanity check for the test
-    expect(loadOptionsMock).toHaveBeenCalledTimes(0);
+    expect(getModComponentStateMock).toHaveBeenCalledTimes(0);
     await lifecycleModule.handleNavigate();
 
     await tick();
@@ -222,7 +227,7 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    loadOptionsMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
 
     await lifecycleModule.handleNavigate();
 
@@ -247,7 +252,9 @@ describe("lifecycle", () => {
       extensionPointId: updatedStarterBrick.id,
     });
 
-    loadOptionsMock.mockResolvedValue({ extensions: [updatedModComponent] });
+    getModComponentStateMock.mockResolvedValue({
+      extensions: [updatedModComponent],
+    });
     lifecycleModule.queueReactivateTab();
 
     await lifecycleModule.handleNavigate({ force: true });

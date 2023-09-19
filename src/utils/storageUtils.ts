@@ -16,9 +16,10 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import { type MigrationManifest } from "redux-persist/es/types";
+import { type MigrationManifest, PersistedState } from "redux-persist/es/types";
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
+import { SetOptional } from "type-fest";
 
 /**
  * A storage key managed manually (i.e., not using redux-persist).
@@ -94,7 +95,12 @@ export async function setStorage(
  * @param defaultValue default value to return if the key is not defined in storage, or a non-object value is found
  * @param inferPersistedVersion if needed, a function to infer the persisted version for the returned state/slice type
  */
-// eslint-disable-next-line @typescript-eslint/ban-types -- Record breaks type inference at call-sites
+// We want to accept redux state objects here without making every state type
+// extend UnknownObject, or making the call-sites awful, so plain object works
+// better than Record or UnknownObject. There are type checks in the function
+// body for safety. We'll need to re-type all state slices and fix tests in
+// order to refactor this to use UnknownObject instead of object.
+// eslint-disable-next-line @typescript-eslint/ban-types
 export async function readReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
   migrations: MigrationManifest,
@@ -129,22 +135,52 @@ export async function readReduxStorage<T extends object>(
   const parsedState = mapValues(serializedState, (value) =>
     JSON.parse(String(value))
   );
-  return migratePersistedState(parsedState, migrations, inferPersistedVersion);
+  return migratePersistedState<T>(
+    parsedState,
+    migrations,
+    inferPersistedVersion
+  );
 }
 
 /**
  * Set the persisted redux state directly in storage.
  * @param storageKey the storage key for the redux state/slice
  * @param state the redux state/slice to set in storage
+ * @param defaultPersistenceVersion the default version to save in the redux-persist object; mostly only needed for testing
  */
-export async function setReduxStorage<T extends UnknownObject>(
+// We want to accept redux state objects here without making every state type
+// extend UnknownObject, or making the call-sites awful, so plain object works
+// better than Record or UnknownObject. There are type checks in the function
+// body for safety. We'll need to re-type all state slices and fix tests in
+// order to refactor this to use UnknownObject instead of object.
+// eslint-disable-next-line @typescript-eslint/ban-types
+export async function setReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
-  state: T
+  // Optional persistence for flexibility at call-sites
+  state: T & SetOptional<PersistedState, "_persist">,
+  defaultPersistenceVersion: number
 ): Promise<void> {
   if (typeof state !== "object") {
     throw new TypeError(
       `Expected object value for redux storage key ${storageKey}`
     );
+  }
+
+  // Make a copy in case we need to modify the state passed in before storing
+  const stateToStore = {
+    ...state,
+  };
+
+  // Due to the way our legacy code worked for accessing redux-persist storage,
+  // there's a very small chance that a user could end up with a state with
+  // the _persist property removed. We also want to allow tests to pass in
+  // state objects without manually setting the _persist property. So, we
+  // add the _persist property here if it's missing.
+  if (stateToStore._persist == null) {
+    (stateToStore as T & PersistedState)._persist = {
+      version: defaultPersistenceVersion,
+      rehydrated: false,
+    };
   }
 
   // Note: Redux-persist stores state/slice objects with JSON-stringified

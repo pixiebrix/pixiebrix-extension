@@ -31,11 +31,9 @@ import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import {
-  jsonifyObject,
-  readReduxStorage,
-  setReduxStorage,
-} from "@/utils/storageUtils";
+import { readReduxStorage, setReduxStorage } from "@/utils/storageUtils";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { migrations } from "@/store/editorMigrations";
 
 jest.mock("@/utils/storageUtils", () => {
   const actual = jest.requireActual("@/utils/storageUtils");
@@ -49,6 +47,8 @@ jest.mock("@/utils/storageUtils", () => {
 
 const readReduxStorageMock = jest.mocked(readReduxStorage);
 const setReduxStorageMock = jest.mocked(setReduxStorage);
+
+const currentPersistenceVersion = getMaxMigrationsVersion(migrations);
 
 describe("dynamicElementStorage", () => {
   test("removes one active element", async () => {
@@ -77,13 +77,14 @@ describe("dynamicElementStorage", () => {
       },
       availableDynamicIds: [element.uuid],
     };
-    readReduxStorageMock.mockResolvedValue(jsonifyObject(state));
+    readReduxStorageMock.mockResolvedValue(state);
 
     await removeDynamicElements([element.uuid]);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      jsonifyObject(initialState)
+      initialState,
+      currentPersistenceVersion
     );
   });
 
@@ -138,13 +139,14 @@ describe("dynamicElementStorage", () => {
         inactiveElement.uuid,
       ],
     };
-    readReduxStorageMock.mockResolvedValue(jsonifyObject(stateWithInactive));
+    readReduxStorageMock.mockResolvedValue(stateWithInactive);
 
     await removeDynamicElements([inactiveElement.uuid]);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      jsonifyObject(baseState)
+      baseState,
+      currentPersistenceVersion
     );
   });
 
@@ -225,13 +227,14 @@ describe("dynamicElementStorage", () => {
         element2.uuid,
       ],
     };
-    readReduxStorageMock.mockResolvedValue(jsonifyObject(stateWithRecipe));
+    readReduxStorageMock.mockResolvedValue(stateWithRecipe);
 
     await removeDynamicElementsForRecipe(recipe.id);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      jsonifyObject(baseState)
+      baseState,
+      currentPersistenceVersion
     );
   });
 
@@ -312,15 +315,14 @@ describe("dynamicElementStorage", () => {
         element2.uuid,
       ],
     };
-    (readReduxStorage as jest.Mock).mockResolvedValue(
-      jsonifyObject(stateWithRecipe)
-    );
+    readReduxStorageMock.mockResolvedValue(stateWithRecipe);
 
     await removeDynamicElementsForRecipe(recipe.id);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      jsonifyObject(baseState)
+      baseState,
+      currentPersistenceVersion
     );
   });
 });
