@@ -22,10 +22,10 @@
 export function splitStartingEmoji(value: string) {
   const emojiRegex =
     /^((?:\p{Extended_Pictographic}\p{Emoji_Modifier_Base}?\p{Emoji_Modifier}?\uFE0F?))?(.*)/u;
-  const match = emojiRegex.exec(value);
+  const [, startingEmoji, rest] = emojiRegex.exec(value) ?? [];
   return {
-    startingEmoji: match[1],
-    rest: match[2],
+    startingEmoji,
+    rest,
   };
 }
 
@@ -51,7 +51,7 @@ const punctuation = [...".,;:?!"];
  */
 export function smartAppendPeriod(string: string): string {
   const trimmed = string.trimEnd();
-  const [secondLastChar, lastChar] = trimmed.slice(-2);
+  const [secondLastChar = "", lastChar = ""] = trimmed.slice(-2);
   if (punctuation.includes(lastChar) || punctuation.includes(secondLastChar)) {
     // Already punctuated
     return trimmed;

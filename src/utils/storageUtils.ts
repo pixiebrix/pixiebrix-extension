@@ -16,13 +16,11 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import {
-  type MigrationManifest,
-  type PersistedState,
-} from "redux-persist/es/types";
+
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
-import { type SetOptional } from "type-fest";
+import browser from "webextension-polyfill";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 
 /**
  * A storage key managed manually (i.e., not using redux-persist).
@@ -160,7 +158,7 @@ export async function readReduxStorage<T extends object>(
 export async function setReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
   // Optional persistence for flexibility at call-sites
-  state: T & SetOptional<PersistedState, "_persist">,
+  state: T & Partial<PersistedState>,
   defaultPersistenceVersion: number
 ): Promise<void> {
   if (typeof state !== "object") {

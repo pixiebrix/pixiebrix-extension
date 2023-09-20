@@ -147,6 +147,11 @@
     "./vendors/reactPerformanceTesting/utils/isFunctionComponent.ts",
     "./vendors/reactPerformanceTesting/utils/pushTask.ts",
     "./vendors/reactPerformanceTesting/utils/symbols.ts",
-    "./vendors/validateUuid.ts"
+    "./vendors/validateUuid.ts",
+    "./utils/stringUtils.ts",
+    "./utils/objectUtils.ts",
+    "./utils/promiseUtils.ts",
+    "./utils/storageUtils.ts",
+    "./utils/sanitize.ts"
   ]
 }
