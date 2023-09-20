@@ -81,7 +81,7 @@ export const modComponentFactory = define<ModComponentBase>({
   _recipe: undefined,
   _deployment: undefined,
   label: "Test label",
-  services(): IntegrationDependency[] {
+  integrationDependencies(): IntegrationDependency[] {
     return [];
   },
   config: modComponentConfigFactory,

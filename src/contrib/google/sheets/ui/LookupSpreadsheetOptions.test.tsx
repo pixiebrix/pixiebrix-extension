@@ -29,7 +29,10 @@ import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
 import { services, sheets } from "@/background/messenger/api";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
 import {
   type FileList,
   type Spreadsheet,
@@ -37,7 +40,6 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { type AuthOption } from "@/auth/authTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import {
@@ -45,7 +47,7 @@ import {
   isGoogleInitialized,
 } from "@/contrib/google/initGoogle";
 import { type FormikValues } from "formik";
-import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
 import useFlags from "@/hooks/useFlags";
 
 let idSequence = 0;
@@ -113,11 +115,11 @@ const testSpreadsheetAuthOption: AuthOption = {
   sharingType: "private",
 };
 
-const googlePKCEIntegrationDependency: IntegrationDependency = {
-  id: GOOGLE_PKCE_SERVICE_ID,
+const googlePKCEIntegrationDependency = integrationDependencyFactory({
+  integrationId: GOOGLE_PKCE_SERVICE_ID,
   outputKey: validateOutputKey("google"),
-  config: GOOGLE_PKCE_AUTH_CONFIG,
-};
+  configId: GOOGLE_PKCE_AUTH_CONFIG,
+});
 
 const testSpreadsheet: Spreadsheet = {
   spreadsheetId: TEST_SPREADSHEET_ID,
@@ -237,7 +239,7 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
     <LookupSpreadsheetOptions name="" configKey="config" />,
     {
       initialValues,
-      wrapper: ServicesSliceModIntegrationsContextAdapter,
+      wrapper: IntegrationsSliceModIntegrationsContextAdapter,
     }
   );
 
@@ -314,7 +316,7 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeTemplateExpression("nunjucks", ""),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     expect(rendered.asFragment()).toMatchSnapshot();
@@ -330,7 +332,7 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeTemplateExpression("nunjucks", "test query"),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     expect(rendered.asFragment()).toMatchSnapshot();
@@ -387,7 +389,7 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeTemplateExpression("nunjucks", ""),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Tab1 will be picked automatically since it's first in the list
@@ -409,7 +411,7 @@ describe("LookupSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Tab1 will be picked automatically since it's first in the list
@@ -428,7 +430,7 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeTemplateExpression("nunjucks", ""),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Select the first spreadsheet
@@ -506,7 +508,7 @@ describe("LookupSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     expect(screen.getByDisplayValue("@options.sheetId")).toBeVisible();
@@ -525,7 +527,7 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeVariableExpression("@query"),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Spreadsheet ID should not be user-visible

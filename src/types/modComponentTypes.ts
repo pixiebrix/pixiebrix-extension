@@ -31,7 +31,10 @@ import {
   type TemplateEngine,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import {
+  type IntegrationDependencyV1,
+  type IntegrationDependencyV2,
+} from "@/types/integrationTypes";
 
 /**
  * ModMetadata that includes sharing information.
@@ -82,8 +85,10 @@ type DeploymentMetadata = {
   active?: boolean;
 };
 
-// XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
-export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentBaseV1<Config extends UnknownObject = UnknownObject> = {
   /**
    * UUID of the ModComponent.
    */
@@ -143,7 +148,7 @@ export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
   /**
    * Configured services/integrations for the ModComponent.
    */
-  services?: IntegrationDependency[];
+  services?: IntegrationDependencyV1[];
 
   /**
    * Options the end-user has configured (i.e., during blueprint activation)
@@ -162,6 +167,23 @@ export type ModComponentBase<Config extends UnknownObject = UnknownObject> = {
    */
   active?: boolean;
 };
+
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentBaseV2<Config extends UnknownObject = UnknownObject> =
+  Except<ModComponentBaseV1<Config>, "services"> & {
+    /**
+     * Configured integration dependencies for the ModComponent.
+     *
+     * @since 1.7.41 renamed from `services` to `integrationDependencies`
+     */
+    integrationDependencies?: IntegrationDependencyV2[];
+  };
+
+// XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
+export type ModComponentBase<Config extends UnknownObject = UnknownObject> =
+  ModComponentBaseV2<Config>;
 
 /**
  * An ModComponentBase that is known not to have had its definitions resolved.

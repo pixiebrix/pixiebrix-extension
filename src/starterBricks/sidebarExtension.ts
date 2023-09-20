@@ -49,7 +49,7 @@ import { cloneDeep, debounce, remove, stubTrue } from "lodash";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
@@ -174,7 +174,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       selectExtensionContext(extension)
     );
 
-    const serviceContext = await makeServiceContext(extension.services);
+    const serviceContext = await makeServiceContext(
+      extension.integrationDependencies
+    );
     const extensionContext = { ...readerContext, ...serviceContext };
 
     const { heading: rawHeading, body } = extension.config;

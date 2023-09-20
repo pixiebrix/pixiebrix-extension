@@ -51,7 +51,10 @@ import {
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
@@ -116,13 +119,13 @@ describe("Collecting available vars", () => {
 
       const extension = formStateFactory(
         {
-          // Let this extension have a service reference
-          services: [
-            {
+          // Let this extension have an integration dependency
+          integrationDependencies: [
+            integrationDependencyFactory({
+              integrationId: validateRegistryId("@test/service"),
               outputKey: validateOutputKey("pixiebrix"),
-              id: validateRegistryId("@test/service"),
-              config: uuidSequence(1),
-            },
+              configId: uuidSequence,
+            }),
           ],
           optionsArgs: {
             foo: "bar",

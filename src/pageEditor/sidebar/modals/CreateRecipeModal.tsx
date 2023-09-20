@@ -226,17 +226,13 @@ function useSaveCallbacks({
         await removeRecipe({ recipeId, shouldShowConfirmation: false });
       }
 
+      const modComponents = [...dirtyRecipeElements, ...cleanRecipeExtensions];
+
       dispatch(
         optionsActions.installMod({
           modDefinition: savedRecipe,
-          configuredDependencies: inferConfiguredModIntegrations([
-            ...dirtyRecipeElements,
-            ...cleanRecipeExtensions,
-          ]),
-          optionsArgs: inferRecipeOptions([
-            ...dirtyRecipeElements,
-            ...cleanRecipeExtensions,
-          ]),
+          configuredDependencies: inferConfiguredModIntegrations(modComponents),
+          optionsArgs: inferRecipeOptions(modComponents),
           screen: "pageEditor",
           isReinstall: false,
         })

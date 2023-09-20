@@ -19,7 +19,10 @@ import {
   debouncedInstallStarterMods,
   getBuiltInIntegrationConfigs,
 } from "@/background/starterMods";
-import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import {
+  getModComponentState,
+  saveModComponentState,
+} from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/token";
@@ -62,7 +65,7 @@ beforeEach(async () => {
   jest.runAllTimers();
 
   // Reset local options state
-  await saveOptions({
+  await saveModComponentState({
     extensions: [],
   });
 
@@ -78,7 +81,7 @@ describe("installStarterBlueprints", () => {
       .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedInstallStarterMods();
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
     expect(extensions.length).toBe(1);
     expect((refreshRegistries as jest.Mock).mock.calls).toHaveLength(1);
@@ -113,7 +116,7 @@ describe("installStarterBlueprints", () => {
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
 
     await debouncedInstallStarterMods();
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
     expect(extensions.length).toBe(0);
   });
@@ -126,7 +129,7 @@ describe("installStarterBlueprints", () => {
       .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedInstallStarterMods();
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
     expect(extensions.length).toBe(1);
   });
@@ -146,7 +149,7 @@ describe("installStarterBlueprints", () => {
       .reply(200, [modDefinition]);
 
     await debouncedInstallStarterMods();
-    const { extensions: modComponents } = await loadOptions();
+    const { extensions: modComponents } = await getModComponentState();
 
     expect(modComponents).toBeArrayOfSize(1);
     const installedComponent = modComponents[0];
@@ -154,17 +157,17 @@ describe("installStarterBlueprints", () => {
     expect(installedComponent.extensionPointId).toBe(
       modDefinition.extensionPoints[0].id
     );
-    expect(installedComponent.services).toBeArrayOfSize(2);
+    expect(installedComponent.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = installedComponent.services.find(
-      ({ id }) => id === "@pixiebrix/service1"
+    const dependency1 = installedComponent.integrationDependencies.find(
+      ({ integrationId }) => integrationId === "@pixiebrix/service1"
     );
-    const dependency2 = installedComponent.services.find(
-      ({ id }) => id === "@pixiebrix/service2"
+    const dependency2 = installedComponent.integrationDependencies.find(
+      ({ integrationId }) => integrationId === "@pixiebrix/service2"
     );
 
-    expect(dependency1.config).toBe(builtInIntegrationConfigs[0].id);
-    expect(dependency2.config).toBe(builtInIntegrationConfigs[1].id);
+    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
+    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
   });
 
   test("starter blueprint already installed", async () => {
@@ -175,7 +178,7 @@ describe("installStarterBlueprints", () => {
     const modComponent = modComponentFactory({
       _recipe: { id: modDefinition.metadata.id } as ModComponentBase["_recipe"],
     }) as ActivatedModComponent;
-    await saveOptions({
+    await saveModComponentState({
       extensions: [modComponent],
     });
 
@@ -187,7 +190,7 @@ describe("installStarterBlueprints", () => {
     ]);
 
     await debouncedInstallStarterMods();
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
     expect(extensions.length).toBe(1);
   });
@@ -198,7 +201,7 @@ describe("installStarterBlueprints", () => {
     const modComponent = modComponentFactory({
       _recipe: undefined,
     }) as ActivatedModComponent;
-    await saveOptions({
+    await saveModComponentState({
       extensions: [modComponent],
     });
 
@@ -207,7 +210,7 @@ describe("installStarterBlueprints", () => {
       .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedInstallStarterMods();
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
     expect(extensions.length).toBe(2);
   });

@@ -18,22 +18,22 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { persistSettingsConfig } from "@/store/settingsStorage";
-import settingsSlice from "@/store/settingsSlice";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/services/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
-import servicesSlice from "@/store/services/servicesSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
 
 function configureCommonStoreForTests(initialState?: any) {
   return configureStore({
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {

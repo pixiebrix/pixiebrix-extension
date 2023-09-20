@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSettingsState } from "@/store/settingsStorage";
+import { getSettingsState } from "@/store/settings/settingsStorage";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { expectContext } from "@/utils/expectContext";
 import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";

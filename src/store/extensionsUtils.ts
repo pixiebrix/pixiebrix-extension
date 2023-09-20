@@ -44,7 +44,7 @@ export function inferRecipeOptions(
  * @see installMod
  */
 export function inferConfiguredModIntegrations(
-  modComponents: Array<Pick<ModComponentBase, "services">>,
+  modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
   { optional = false }: { optional?: boolean } = {}
 ): IntegrationDependency[] {
   // The mod components will only have the integration dependencies that are
@@ -54,8 +54,10 @@ export function inferConfiguredModIntegrations(
   // that case anyway.
 
   const dependenciesByIntegrationId = groupBy(
-    modComponents.flatMap((x) => x.services ?? []),
-    (x) => x.id
+    modComponents.flatMap(
+      ({ integrationDependencies }) => integrationDependencies ?? []
+    ),
+    ({ integrationId }) => integrationId
   );
   const result: IntegrationDependency[] = [];
   for (const [id, dependencies] of Object.entries(
@@ -63,9 +65,10 @@ export function inferConfiguredModIntegrations(
   )) {
     const configuredDependencies = uniqBy(
       dependencies.filter(
-        ({ id, config }) => config != null || id === PIXIEBRIX_INTEGRATION_ID
+        ({ integrationId, configId }) =>
+          configId != null || integrationId === PIXIEBRIX_INTEGRATION_ID
       ),
-      ({ config }) => config
+      ({ configId }) => configId
     );
 
     // PIXIEBRIX_INTEGRATION_ID will never have empty dependencies here, they aren't filtered out above
@@ -101,12 +104,15 @@ export function inferRecipeDependencies(
   installedRecipeExtensions: ModComponentBase[],
   dirtyRecipeElements: ModComponentFormState[]
 ): IntegrationDependency[] {
-  const withServices: Array<{ services?: IntegrationDependency[] }> = [
-    ...installedRecipeExtensions,
-    ...dirtyRecipeElements,
-  ];
+  const withIntegrations: Array<{
+    integrationDependencies?: IntegrationDependency[];
+  }> = [...installedRecipeExtensions, ...dirtyRecipeElements];
   return uniqBy(
-    flatten(withServices.map(({ services }) => services ?? [])),
+    flatten(
+      withIntegrations.map(
+        ({ integrationDependencies }) => integrationDependencies ?? []
+      )
+    ),
     JSON.stringify
   );
 }

@@ -19,58 +19,66 @@ import {
   type MigrationManifest,
   type PersistedState,
 } from "redux-persist/es/types";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import {
-  type ModComponentOptionsState,
-  type LegacyModComponentObjectShapeState,
-  type LegacyModComponentObjectState,
-  type OptionsState,
+  type ModComponentStateV0,
+  type ModComponentStateV1,
+  type ModComponentStateV2,
 } from "@/store/extensionsTypes";
+import { isEmpty } from "lodash";
 
 export const migrations: MigrationManifest = {
-  1: (state: PersistedState & OptionsState) => migrateExtensionsShape(state),
-  2: (state: PersistedState & OptionsState) =>
-    migrateActiveExtensions(
-      state as PersistedState & LegacyModComponentObjectState
-    ),
+  // Redux-persist defaults to version: -1; Initialize to 0-indexed
+  // state version to match state type names and existing versions
+  0: (state) => state,
+  1: (state: ModComponentStateV0 & PersistedState) =>
+    migrateModComponentStateV0(state),
+  2: (state: ModComponentStateV1 & PersistedState) =>
+    migrateModComponentStateV1(state),
 };
 
-// Putting here because it was causing circular dependencies
-export function migrateExtensionsShape<T>(
-  state: T &
-    (LegacyModComponentObjectShapeState | LegacyModComponentObjectState)
-): T & LegacyModComponentObjectState {
-  if (state.extensions == null) {
-    return { ...state, extensions: [] };
-  }
-
-  if (Array.isArray(state.extensions)) {
-    // Already migrated
-    return state as T & LegacyModComponentObjectState;
-  }
-
+function migrateModComponentStateV0(
+  state: ModComponentStateV0 & PersistedState
+): ModComponentStateV1 & PersistedState {
   return {
     ...state,
-    extensions: Object.values(state.extensions).flatMap((extensionMap) =>
-      Object.values(extensionMap)
+    extensions: Object.values(state.extensions).flatMap((extension) =>
+      Object.values(extension)
     ),
   };
 }
 
-export function migrateActiveExtensions<T>(
-  state: T & (LegacyModComponentObjectState | ModComponentOptionsState)
-): T & ModComponentOptionsState {
-  const timestamp = new Date().toISOString();
-
+function migrateModComponentStateV1(
+  state: ModComponentStateV1 & PersistedState
+): ModComponentStateV2 & PersistedState {
+  const now = new Date().toISOString();
   return {
     ...state,
     extensions: state.extensions.map((x) => ({
       ...x,
       active: true,
-      createTimestamp:
-        (x as Partial<ActivatedModComponent>).createTimestamp ?? timestamp,
-      updateTimestamp:
-        (x as Partial<ActivatedModComponent>).updateTimestamp ?? timestamp,
+      createTimestamp: now,
+      updateTimestamp: now,
     })),
   };
+}
+
+export function inferModComponentStateVersion(
+  state: ModComponentStateV0 | ModComponentStateV1 | ModComponentStateV2
+): number {
+  if (isEmpty(state.extensions)) {
+    return 3;
+  }
+
+  if (Array.isArray(state.extensions)) {
+    if (
+      "createTimestamp" in state.extensions[0] &&
+      "updateTimestamp" in state.extensions[0]
+    ) {
+      return 3;
+    }
+
+    return 2;
+  }
+
+  return 1;
 }

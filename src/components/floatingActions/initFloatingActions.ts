@@ -16,7 +16,7 @@
  */
 
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { getSettingsState } from "@/store/settingsStorage";
+import { getSettingsState } from "@/store/settings/settingsStorage";
 import { getUserData } from "@/background/messenger/api";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { syncFlagOn } from "@/store/syncFlags";

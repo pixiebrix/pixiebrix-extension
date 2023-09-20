@@ -17,7 +17,6 @@
 
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import { localStorage } from "redux-persist-webextension-storage";
 import {
   editorSlice,
   persistEditorConfig,
@@ -27,11 +26,11 @@ import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/services/api";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import servicesSlice, {
-  persistServicesConfig,
-} from "@/store/services/servicesSlice";
+import integrationsSlice, {
+  persistIntegrationsConfig,
+} from "@/store/integrations/integrationsSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
@@ -41,7 +40,6 @@ import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
-import { type StorageInterface } from "@/store/StorageInterface";
 import {
   persistSessionChangesConfig,
   sessionChangesSlice,
@@ -50,16 +48,9 @@ import {
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
 import { boolean } from "@/utils/typeUtils";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
-
-const persistSettingsConfig = {
-  key: "settings",
-  // Change the type of localStorage to our overridden version so that it can be exported
-  // See: @/store/StorageInterface.ts
-  storage: localStorage as StorageInterface,
-  version: 1,
-};
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {
@@ -80,7 +71,10 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    integrations: persistReducer(
+      persistIntegrationsConfig,
+      integrationsSlice.reducer
+    ),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,

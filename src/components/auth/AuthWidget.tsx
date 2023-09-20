@@ -25,10 +25,10 @@ import registry from "@/services/registry";
 import { uuidv4 } from "@/types/helpers";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
-import ServiceEditorModal from "@/extensionConsole/pages/services/ServiceEditorModal";
+import IntegrationEditorModal from "@/extensionConsole/pages/integrations/IntegrationEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
-import servicesSlice from "@/store/services/servicesSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
 import notify from "@/utils/notify";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
@@ -38,7 +38,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type IntegrationConfig } from "@/types/integrationTypes";
 
-const { updateServiceConfig } = servicesSlice.actions;
+const { upsertIntegrationConfig } = integrationsSlice.actions;
 
 const AuthWidget: React.FunctionComponent<{
   /**
@@ -47,7 +47,7 @@ const AuthWidget: React.FunctionComponent<{
    */
   name: string;
 
-  serviceId: RegistryId;
+  integrationId: RegistryId;
 
   authOptions: AuthOption[];
 
@@ -55,7 +55,7 @@ const AuthWidget: React.FunctionComponent<{
    * Optional callback to refresh the authOptions.
    */
   onRefresh?: () => void;
-}> = ({ name, serviceId, authOptions, onRefresh }) => {
+}> = ({ name, integrationId, authOptions, onRefresh }) => {
   const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
 
@@ -63,12 +63,12 @@ const AuthWidget: React.FunctionComponent<{
 
   const [serviceDefinition, isFetching, error] = useAsyncState(async () => {
     const serviceDefinitions = await registry.all();
-    return serviceDefinitions.find((x) => x.id === serviceId);
-  }, [serviceId]);
+    return serviceDefinitions.find(({ id }) => id === integrationId);
+  }, [integrationId]);
 
   const options = useMemo(
-    () => authOptions.filter((x) => x.serviceId === serviceId),
-    [authOptions, serviceId]
+    () => authOptions.filter((x) => x.serviceId === integrationId),
+    [authOptions, integrationId]
   );
 
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
@@ -84,9 +84,9 @@ const AuthWidget: React.FunctionComponent<{
       const id = uuidv4();
 
       dispatch(
-        updateServiceConfig({
+        upsertIntegrationConfig({
           ...values,
-          serviceId,
+          integrationId,
           id,
         })
       );
@@ -115,7 +115,7 @@ const AuthWidget: React.FunctionComponent<{
       helpers,
       dispatch,
       setShowServiceModal,
-      serviceId,
+      integrationId,
       onRefresh,
     ]
   );
@@ -140,19 +140,19 @@ const AuthWidget: React.FunctionComponent<{
   const initialConfiguration: IntegrationConfig = useMemo(
     () =>
       ({
-        serviceId,
+        integrationId,
         label: "New Configuration",
         config: {},
       } as IntegrationConfig),
-    [serviceId]
+    [integrationId]
   );
 
   return (
     <>
       {showServiceModal && (
-        <ServiceEditorModal
-          configuration={initialConfiguration}
-          service={serviceDefinition}
+        <IntegrationEditorModal
+          integrationConfig={initialConfiguration}
+          integration={serviceDefinition}
           onClose={() => {
             setShowServiceModal(false);
           }}
@@ -166,7 +166,7 @@ const AuthWidget: React.FunctionComponent<{
             <div className={styles.selector}>
               <ServiceAuthSelector
                 name={name}
-                serviceId={serviceId}
+                serviceId={integrationId}
                 authOptions={options}
                 CustomMenuList={CustomMenuList}
               />

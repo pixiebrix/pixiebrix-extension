@@ -54,7 +54,7 @@ import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {
   ContextMenuReader,
@@ -340,7 +340,9 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
       try {
         const reader = await this.getBaseReader();
-        const serviceContext = await makeServiceContext(extension.services);
+        const serviceContext = await makeServiceContext(
+          extension.integrationDependencies
+        );
 
         const targetElement =
           clickedElement ?? guessSelectedElement() ?? document;

@@ -30,11 +30,17 @@ import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/activeTab";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
-import { type ModComponentOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
-import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import {
+  getModComponentState,
+  saveModComponentState,
+} from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
-import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
+import {
+  getSettingsState,
+  saveSettingsState,
+} from "@/store/settings/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import {
@@ -43,10 +49,10 @@ import {
   mergeDeploymentIntegrationDependencies,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
-import { selectUpdatePromptState } from "@/store/settingsSelectors";
-import settingsSlice from "@/store/settingsSlice";
+import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { locator } from "@/background/locator";
-import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
+import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
@@ -69,19 +75,17 @@ const locateAllForService = locator.locateAllForService.bind(locator);
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
-async function setExtensionsState(
-  state: ModComponentOptionsState
-): Promise<void> {
-  await saveOptions(state);
+async function setExtensionsState(state: ModComponentState): Promise<void> {
+  await saveModComponentState(state);
   await forEachTab(queueReactivateTab);
 }
 
 function uninstallExtensionFromStates(
-  optionsState: ModComponentOptionsState,
+  optionsState: ModComponentState,
   editorState: EditorState | undefined,
   extensionId: UUID
 ): {
-  options: ModComponentOptionsState;
+  options: ModComponentState;
   editor: EditorState;
 } {
   const options = optionsReducer(
@@ -99,7 +103,7 @@ async function uninstallExtensionsAndSaveState(
   {
     editorState,
     optionsState,
-  }: { editorState: EditorState; optionsState: ModComponentOptionsState }
+  }: { editorState: EditorState; optionsState: ModComponentState }
 ): Promise<void> {
   // Uninstall existing versions of the extensions
   for (const extension of toUninstall) {
@@ -125,7 +129,7 @@ async function uninstallExtensionsAndSaveState(
  */
 export async function uninstallAllDeployments(): Promise<void> {
   const [optionsState, editorState] = await Promise.all([
-    loadOptions(),
+    getModComponentState(),
     getEditorState(),
   ]);
   const installed = selectExtensions({ options: optionsState });
@@ -154,7 +158,7 @@ async function uninstallUnmatchedDeployments(
   deployments: Deployment[]
 ): Promise<void> {
   const [optionsState, editorState] = await Promise.all([
-    loadOptions(),
+    getModComponentState(),
     getEditorState(),
   ]);
   const installed = selectExtensions({ options: optionsState });
@@ -186,11 +190,11 @@ async function uninstallUnmatchedDeployments(
 }
 
 async function uninstallRecipe(
-  optionsState: ModComponentOptionsState,
+  optionsState: ModComponentState,
   editorState: EditorState | undefined,
   recipeId: RegistryId
 ): Promise<{
-  options: ModComponentOptionsState;
+  options: ModComponentState;
   editor: EditorState | undefined;
 }> {
   let options = optionsState;
@@ -210,11 +214,11 @@ async function uninstallRecipe(
 }
 
 async function installDeployment(
-  optionsState: ModComponentOptionsState,
+  optionsState: ModComponentState,
   editorState: EditorState | undefined,
   deployment: Deployment
 ): Promise<{
-  options: ModComponentOptionsState;
+  options: ModComponentState;
   editor: EditorState | undefined;
 }> {
   let options = optionsState;
@@ -265,7 +269,7 @@ async function installDeployment(
  */
 async function installDeployments(deployments: Deployment[]): Promise<void> {
   let [optionsState, editorState] = await Promise.all([
-    loadOptions(),
+    getModComponentState(),
     getEditorState(),
   ]);
 
@@ -330,7 +334,7 @@ async function selectUpdatedDeployments(
   { restricted }: { restricted: boolean }
 ): Promise<Deployment[]> {
   // Always get the freshest options slice from the local storage
-  const { extensions } = await loadOptions();
+  const { extensions } = await getModComponentState();
   const updatePredicate = makeUpdatedFilter(extensions, { restricted });
   return deployments.filter((deployment) => updatePredicate(deployment));
 }
@@ -420,7 +424,7 @@ export async function updateDeployments(): Promise<void> {
   }
 
   // Always get the freshest options slice from the local storage
-  const { extensions } = await loadOptions();
+  const { extensions } = await getModComponentState();
 
   // Version to report to the server. The update check happens via isUpdateAvailable below
   const { version: extensionVersionString } = browser.runtime.getManifest();

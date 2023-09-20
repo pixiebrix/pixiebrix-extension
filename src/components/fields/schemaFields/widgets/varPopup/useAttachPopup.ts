@@ -16,7 +16,7 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { useEffect, useReducer, type MutableRefObject } from "react";
 import {
   getLikelyVariableAtPosition,

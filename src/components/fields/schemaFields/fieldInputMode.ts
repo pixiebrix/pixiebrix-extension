@@ -24,7 +24,7 @@ import {
   isGoogleSheetIdValue,
   isIconField,
   isSimpleServiceField,
-  isServiceValueFormat,
+  isIntegrationDependencyValueFormat,
   isLabelledEnumField,
   isSelectField,
 } from "./fieldTypeCheckers";
@@ -103,7 +103,10 @@ export function inferInputMode(
     return isVarExpression(value) ? "var" : "select";
   }
 
-  if (isSimpleServiceField(fieldSchema) && isServiceValueFormat(value)) {
+  if (
+    isSimpleServiceField(fieldSchema) &&
+    isIntegrationDependencyValueFormat(value)
+  ) {
     return "select";
   }
 
