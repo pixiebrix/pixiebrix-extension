@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleMode"] }] */
+
 import React from "react";
 import { render, screen } from "@/pageEditor/testHelpers";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
@@ -49,7 +51,6 @@ describe("option mode switching", () => {
     ).toHaveAttribute("data-test-selected", mode);
   };
 
-  // eslint-disable-next-line jest/expect-expect
   test("switches automatically from variable to text when @ removed - string field", async () => {
     const { container } = renderSchemaField(
       "test",
@@ -71,7 +72,6 @@ describe("option mode switching", () => {
     expectToggleMode(container, "Text");
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("switches automatically from variable to text when @ removed - enum field", async () => {
     const { container } = renderSchemaField(
       "test",
@@ -93,7 +93,6 @@ describe("option mode switching", () => {
     expectToggleMode(container, "Text");
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("automatically switches to var when @ is typed", async () => {
     const { container } = renderSchemaField(
       "test",

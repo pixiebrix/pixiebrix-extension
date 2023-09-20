@@ -85,6 +85,7 @@ beforeAll(async () => {
 });
 
 describe("Add new element", () => {
+  // TODO: find a better way to access the elements so we can remove the linting exceptions
   test("Dropdown 'Add new element' stays open on hovering different elements", async () => {
     // Create a container with a list with a container inside
     const listElement = createNewElement("list") as ListDocumentElement;

@@ -234,7 +234,7 @@ describe("ActivationOptions", () => {
     expect(input).toBeInTheDocument();
     const selectButton = screen.getByRole("button", { name: "Select" });
     expect(selectButton).toBeInTheDocument();
-    // eslint-disable-next-line testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-node-access -- TODO: find better query
     expect(input.parentElement).toContainElement(selectButton);
   });
 });

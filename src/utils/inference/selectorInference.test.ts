@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectSelector", "expectRoundtripSelector", "expectSimilarElements", "expectSelectors"] }] */
+
 import {
   expandedCssSelector,
   generateSelector,
@@ -127,7 +129,6 @@ test("getAttributeSelectorRegex", () => {
 });
 
 describe("safeCssSelector", () => {
-  /* eslint-disable jest/expect-expect -- Custom expectSelector */
   const expectSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
 
@@ -255,12 +256,9 @@ describe("safeCssSelector", () => {
       `
     );
   });
-
-  /* eslint-enable jest/expect-expect */
 });
 
 describe("expandedCssSelector", () => {
-  /* eslint-disable jest/expect-expect -- Custom expectSelector */
   const expectRoundtripSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
     const elements = [...document.body.querySelectorAll<HTMLElement>(selector)];
@@ -399,7 +397,6 @@ describe("expandedCssSelector", () => {
       body
     );
   });
-  /* eslint-enable jest/expect-expect */
 });
 
 describe("sortBySelector", () => {
@@ -435,7 +432,6 @@ test("getSelectorPreference: matches expected sorting", () => {
 });
 
 describe("inferSelectors", () => {
-  /* eslint-disable jest/expect-expect -- Custom expectSelectors */
   const expectSelectors = (selectors: string[], body: string) => {
     document.body.innerHTML = body;
 
@@ -523,13 +519,9 @@ describe("inferSelectors", () => {
       );
     }
   );
-
-  /* eslint-enable jest/expect-expect */
 });
 
 describe("inferSelectorsIncludingStableAncestors", () => {
-  /* eslint-disable jest/expect-expect -- Custom expectSelectors */
-
   const expectSelectors = (selectors: string[], body: string) => {
     document.body.innerHTML = body;
 
@@ -580,8 +572,6 @@ describe("inferSelectorsIncludingStableAncestors", () => {
       `
     );
   });
-
-  /* eslint-enable jest/expect-expect */
 });
 
 describe("inferElementSelector", () => {

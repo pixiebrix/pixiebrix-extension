@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions", "expectTab1Selected"] }] */
+
 import React from "react";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import { render } from "@/pageEditor/testHelpers";
@@ -58,7 +60,6 @@ function expectTab1Selected() {
 }
 
 describe("TabField", () => {
-  // eslint-disable-next-line jest/expect-expect
   it("Renders select and variable toggle options", async () => {
     render(
       <TabField
@@ -78,7 +79,6 @@ describe("TabField", () => {
     await expectToggleOptions("toggle-tabName", ["select", "string", "var"]);
   });
 
-  // eslint-disable-next-line jest/expect-expect
   it("defaults to the first tab name when value is null literal", async () => {
     render(
       <TabField
@@ -98,7 +98,6 @@ describe("TabField", () => {
     expectTab1Selected();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   it("defaults to the first tab name when value is empty nunjucks expression", async () => {
     render(
       <TabField

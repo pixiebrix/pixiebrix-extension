@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleMode"] }] */
+
 import React from "react";
 import { type Schema } from "@/types/schemaTypes";
 import { render } from "@/pageEditor/testHelpers";
@@ -50,7 +52,6 @@ describe("ChildObjectField", () => {
     ).toHaveAttribute("data-test-selected", mode);
   };
 
-  // eslint-disable-next-line jest/expect-expect
   test("renders object schema", async () => {
     const { container } = renderField(
       "test",

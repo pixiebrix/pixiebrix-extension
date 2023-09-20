@@ -117,7 +117,7 @@ test("adds a CSS class to an active element", async () => {
     activeElement: "element",
   });
 
-  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- need to find better way to access this div
   expect(container.querySelector("div")).toHaveClass("active");
   expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
 });
@@ -153,7 +153,7 @@ test("adds a CSS class to a hovered element", async () => {
     hoveredElement: "element",
   });
 
-  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- need to find better way to access this div
   expect(container.querySelector("div")).toHaveClass("hovered");
 });
 

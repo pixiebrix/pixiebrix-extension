@@ -133,7 +133,7 @@ describe("DeploymentModal", () => {
     expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
     expect(
       screen.getByText(
-        /An update to the PixieBrix browser extension is available/
+        "An update to the PixieBrix browser extension is available"
       )
     ).toBeInTheDocument();
     expect(screen.getByText("Remind Me Later")).not.toBeDisabled();

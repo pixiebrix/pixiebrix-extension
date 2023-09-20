@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectLegacyTestSpreadsheetLoaded", "expectTab1Selected", "expectGoogleAccountTestSpreadsheetLoaded", "expectTabSelectWorksProperly"] }] */
+
 import React from "react";
 import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -451,7 +453,6 @@ describe("AppendSpreadsheetOptions", () => {
    * Basic Render Tests
    */
 
-  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when rendered, loads spreadsheet/tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -464,7 +465,6 @@ describe("AppendSpreadsheetOptions", () => {
     expectLegacyTestSpreadsheetLoaded();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/rowValues and null tabName and legacy integration-based spreadsheetId, when rendered, loads tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -480,7 +480,6 @@ describe("AppendSpreadsheetOptions", () => {
     expectTab1Selected();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/rowValues and null tabName and mod input spreadsheetId, when rendered, loads tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -513,7 +512,6 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount and null tabName, when spreadsheet selected, loads spreadsheet/tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -536,7 +534,6 @@ describe("AppendSpreadsheetOptions", () => {
     expectGoogleAccountTestSpreadsheetLoaded();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount and string spreadsheetId and empty tabName/rowValues, when rendered, loads tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -551,7 +548,6 @@ describe("AppendSpreadsheetOptions", () => {
     expectGoogleAccountTestSpreadsheetLoaded();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount/rowValues and null tabName and mod input spreadsheetId, when rendered, loads tabName/headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -592,7 +588,6 @@ describe("AppendSpreadsheetOptions", () => {
    * Tab Name Select Works Properly
    */
 
-  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -605,7 +600,6 @@ describe("AppendSpreadsheetOptions", () => {
     await expectTabSelectWorksProperly();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/tabName/rowValues and legacy integration-based spreadsheetId, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -619,7 +613,6 @@ describe("AppendSpreadsheetOptions", () => {
     await expectTabSelectWorksProperly();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given empty googleAccount/tabName/rowValues and mod input spreadsheetId, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -635,7 +628,6 @@ describe("AppendSpreadsheetOptions", () => {
     await expectTabSelectWorksProperly();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount and string spreadsheetId and empty tabName/rowValues, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -650,7 +642,6 @@ describe("AppendSpreadsheetOptions", () => {
     await expectTabSelectWorksProperly();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given test googleAccount and mod input spreadsheetId and empty tabName/rowValues, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -998,7 +989,6 @@ describe("AppendSpreadsheetOptions", () => {
     );
   });
 
-  // eslint-disable-next-line jest/expect-expect
   test("given selected tabName and entered rowValues, when tab changed, removes invalid rowValues properties", async () => {
     await renderWithValuesAndWait({
       config: {

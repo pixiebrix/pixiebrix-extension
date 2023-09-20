@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions"] }] */
+
 import React from "react";
 import { render, screen, waitFor, within } from "@/pageEditor/testHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
@@ -409,14 +411,10 @@ describe("SchemaField", () => {
       await userEvent.click(toggle);
 
       await waitFor(() => {
-        const testIds =
-          // [
-          // ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
-          // ]
-          screen
-            .getAllByRole("button")
-            .map((x) => x.dataset.testid)
-            .filter(Boolean);
+        const testIds = screen
+          .getAllByRole("button")
+          .map((x) => x.dataset.testid)
+          .filter(Boolean);
         if (testIds.includes("omit")) {
           expect(testIds.at(-1)).toBe("omit");
         }
@@ -434,7 +432,7 @@ describe("SchemaField", () => {
       expectedOptions: ["select", "var", "omit"],
     },
   ];
-  // eslint-disable-next-line jest/expect-expect
+
   test.each(databaseFieldTestCases)(
     "database field toggle options (required: $isRequired)",
     async ({ isRequired, expectedOptions }) => {

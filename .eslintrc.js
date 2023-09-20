@@ -119,7 +119,7 @@ module.exports = {
       },
     },
     {
-      // Settings for rules that should only apply to React Component tests
+      // Settings for regular ts files that should only apply to react component rests
       files: ["**/!(*.test)*.ts?(x)", "**/*.ts"],
       rules: {
         "testing-library/render-result-naming-convention": "off",
