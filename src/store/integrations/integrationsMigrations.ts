@@ -33,6 +33,10 @@ type IntegrationsStateV2 = {
 };
 
 export const migrations: MigrationManifest = {
+  // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
+  // state version to match state type names
+  0: (state) => state,
+  1: (state) => state,
   2: (state: IntegrationsStateV1 & PersistedState) =>
     migrateIntegrationsStateV1(state),
 };
