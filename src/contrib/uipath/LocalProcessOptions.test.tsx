@@ -25,28 +25,26 @@ import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import * as auth from "@/hooks/auth";
-import * as dependencyHooks from "@/services/useDependency";
-import {
-  type SanitizedIntegrationConfig,
-  type IntegrationABC,
-} from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type OutputKey } from "@/types/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
 
 setContext("devToolsPage");
 
-jest.mock("@/services/useDependency", () =>
-  jest.fn().mockReturnValue({
-    // Pass minimal arguments
-    config: undefined,
-    service: undefined,
-    hasPermissions: true,
-    requestPermissions: jest.fn(),
-  })
+jest.mock("@/services/useSanitizedIntegrationConfigFormikAdapter", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
+  useSanitizedIntegrationConfigFormikAdapter
 );
+
 jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
@@ -73,24 +71,29 @@ jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
   };
 });
 
-const serviceId = validateRegistryId("@uipath/cloud");
+const integrationId = validateRegistryId("@uipath/cloud");
 
 function makeBaseState() {
-  const baseFormState = menuItemFormStateFactory();
-  baseFormState.services = [
-    { id: serviceId, outputKey: "uipath" as OutputKey },
-  ];
-  baseFormState.extension.blockPipeline = [
+  return menuItemFormStateFactory(
     {
-      id: UIPATH_ID,
-      config: {
-        service: null,
-        releaseKey: null,
-        inputArguments: {},
-      },
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId,
+          outputKey: validateOutputKey("uipath"),
+        }),
+      ],
     },
-  ];
-  return baseFormState;
+    [
+      {
+        id: UIPATH_ID,
+        config: {
+          service: null,
+          releaseKey: null,
+          inputArguments: {},
+        },
+      },
+    ]
+  );
 }
 
 function renderOptions(formState: ModComponentFormState = makeBaseState()) {
@@ -103,6 +106,12 @@ function renderOptions(formState: ModComponentFormState = makeBaseState()) {
     </Formik>
   );
 }
+
+beforeEach(() => {
+  useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+    valueToAsyncState(null)
+  );
+});
 
 describe("UiPath LocalProcess Options", () => {
   test("Can render options", async () => {
@@ -141,24 +150,22 @@ describe("UiPath LocalProcess Options", () => {
   });
 
   test("Can render arguments", async () => {
-    const config = uuidv4();
-    jest.mocked(dependencyHooks.default).mockReturnValue({
+    const configId = uuidv4();
+    useSanitizedIntegrationConfigFormikAdapterMock
       // Pass minimal arguments
-      config: {
-        id: config,
-        serviceId,
-      } as unknown as SanitizedIntegrationConfig,
-      service: { id: serviceId } as unknown as IntegrationABC,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
-    });
+      .mockReturnValue(
+        valueToAsyncState({
+          id: configId,
+          serviceId: integrationId,
+        } as unknown as SanitizedIntegrationConfig)
+      );
 
     jest.mocked(auth.useAuthOptions).mockReturnValue(
       valueToAsyncState([
         {
           label: "Test Auth",
-          value: config,
-          serviceId,
+          value: configId,
+          serviceId: integrationId,
           local: true,
           sharingType: "private",
         },
@@ -172,7 +179,7 @@ describe("UiPath LocalProcess Options", () => {
     });
 
     const formState = makeBaseState();
-    formState.services[0].config = config;
+    formState.integrationDependencies[0].configId = configId;
     formState.extension.blockPipeline[0].config.service = "@uipath";
 
     renderOptions();

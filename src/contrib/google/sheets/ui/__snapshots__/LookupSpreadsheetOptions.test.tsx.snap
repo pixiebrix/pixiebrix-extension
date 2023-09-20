@@ -1844,7 +1844,6 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
             >
               <div
                 class="d-flex"
-                data-widget="ServiceSelectWidget"
               >
                 <div
                   class="flex-grow-1"
@@ -2676,7 +2675,6 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
             >
               <div
                 class="d-flex"
-                data-widget="ServiceSelectWidget"
               >
                 <div
                   class="flex-grow-1"

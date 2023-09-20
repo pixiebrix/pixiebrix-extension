@@ -24,10 +24,10 @@ import React, { useCallback } from "react";
 import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/token";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pTimeout from "p-timeout";
 import chromeP from "webext-polyfill-kinda";
@@ -46,7 +46,8 @@ const SAVING_URL_TIMEOUT_MS = 4000;
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { restrict, permit } = useFlags();
-  const { partnerId, authServiceId, authMethod } = useSelector(selectSettings);
+  const { partnerId, authIntegrationId, authMethod } =
+    useSelector(selectSettings);
   const { exportDiagnostics } = useDiagnostics();
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
@@ -166,12 +167,12 @@ const AdvancedSettings: React.FunctionComponent = () => {
             <Form.Control
               type="text"
               placeholder={PIXIEBRIX_INTEGRATION_ID}
-              defaultValue={authServiceId ?? ""}
+              defaultValue={authIntegrationId ?? ""}
               onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
                 try {
                   dispatch(
-                    settingsSlice.actions.setAuthServiceId({
-                      serviceId: isEmpty(event.target.value)
+                    settingsSlice.actions.setAuthIntegrationId({
+                      integrationId: isEmpty(event.target.value)
                         ? null
                         : validateRegistryId(event.target.value),
                     })

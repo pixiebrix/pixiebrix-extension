@@ -24,12 +24,11 @@ import {
 } from "@/contrib/automationanywhere/RunBot";
 import { type Schema } from "@/types/schemaTypes";
 import { useField } from "formik";
-import { useAsyncState } from "@/hooks/common";
-import useDependency from "@/services/useDependency";
+import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
-import RequireServiceConfig from "@/contrib/RequireServiceConfig";
+import RequireIntegrationConfig from "@/contrib/RequireIntegrationConfig";
 import {
   cachedFetchBotFile,
   cachedSearchBots,
@@ -39,7 +38,7 @@ import {
   cachedFetchRunAsUsers,
   cachedFetchSchema,
 } from "@/contrib/automationanywhere/aaApi";
-import { AUTOMATION_ANYWHERE_SERVICE_ID, type WorkspaceType } from "./contract";
+import { type WorkspaceType } from "./contract";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
@@ -51,6 +50,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import { joinName } from "@/utils/formUtils";
+import useAsyncState from "@/hooks/useAsyncState";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 
 const WORKSPACE_OPTIONS = [
   { value: "public", label: "Public" },
@@ -68,9 +69,15 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const configName = partial(joinName, name, configKey);
 
-  const { hasPermissions, config } = useDependency(
-    AUTOMATION_ANYWHERE_SERVICE_ID
-  );
+  // FIXME: Should this be using the same integration field schema as the
+  //        RequireIntegrationConfig gate below? In other words, should BotOptions
+  //        be split into two components and have the logic here moved under
+  //        RequireIntegrationConfig instead of calling this hook outside the
+  //        gate as well as inside it?
+  const { data: controlRoomConfig } =
+    useSanitizedIntegrationConfigFormikAdapter(
+      CONTROL_ROOM_TOKEN_INTEGRATION_ID
+    );
 
   const [{ value: workspaceType }, , { setValue: setWorkspaceType }] =
     useField<string>(configName("workspaceType"));
@@ -88,44 +95,50 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   // Default the workspaceType based on the file id
   useAsyncEffect(
     async (isMounted) => {
-      if (config && isCommunityControlRoom(config.config.controlRoomUrl)) {
+      if (!controlRoomConfig) {
+        return;
+      }
+
+      if (isCommunityControlRoom(controlRoomConfig.config.controlRoomUrl)) {
         // In community edition, each user just works in their own private workspace
         await setWorkspaceType("private");
+        return;
       }
 
       // `workspaceType` is optional because it's not required to run the bot. However, we need it to populate dropdowns
       // for the fields in the fieldset
-      if (hasPermissions && config && workspaceType == null && fileId) {
-        const result = await cachedFetchBotFile(config, fileId);
+      if (workspaceType == null && fileId) {
+        const result = await cachedFetchBotFile(controlRoomConfig, fileId);
         const workspaceType =
           result.workspaceType === "PUBLIC" ? "public" : "private";
         if (isMounted()) {
           await setWorkspaceType(workspaceType);
         }
       }
-
-      // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
     },
-    [config, fileId, hasPermissions, workspaceType]
+    // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
+    [controlRoomConfig, fileId, workspaceType]
   );
 
-  const [remoteSchema, remoteSchemaPending, remoteSchemaError] =
-    useAsyncState(async () => {
-      if (hasPermissions && config && fileId) {
-        return cachedFetchSchema(config, fileId);
-      }
-
-      return null;
-    }, [config, fileId, hasPermissions]);
-
-  // Don't care about pending/error state b/c we just fall back to displaying the folderId
-  const [folder] = useAsyncState(async () => {
-    if (hasPermissions && config && config.config.folderId) {
-      return cachedFetchFolder(config, config.config.folderId);
+  const remoteSchemaState = useAsyncState(async () => {
+    if (controlRoomConfig && fileId) {
+      return cachedFetchSchema(controlRoomConfig, fileId);
     }
 
     return null;
-  }, [config, hasPermissions]);
+  }, [controlRoomConfig, fileId]);
+
+  // Don't care about pending/error state b/c we just fall back to displaying the folderId
+  const { data: folder } = useAsyncState(async () => {
+    if (controlRoomConfig?.config.folderId) {
+      return cachedFetchFolder(
+        controlRoomConfig,
+        controlRoomConfig.config.folderId
+      );
+    }
+
+    return null;
+  }, [controlRoomConfig]);
 
   // Additional args passed to the remote options factories
   const factoryArgs = useMemo(
@@ -138,13 +151,13 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 
   return (
-    <RequireServiceConfig
-      serviceSchema={COMMON_PROPERTIES.service as Schema}
-      serviceFieldName={configName("service")}
+    <RequireIntegrationConfig
+      integrationsSchema={COMMON_PROPERTIES.service as Schema}
+      integrationsFieldName={configName("service")}
     >
-      {({ config }) => (
+      {({ sanitizedConfig }) => (
         <>
-          {!isCommunityControlRoom(config.config.controlRoomUrl) && (
+          {!isCommunityControlRoom(sanitizedConfig.config.controlRoomUrl) && (
             <ConnectedFieldTemplate
               label="Workspace"
               name={configName("workspaceType")}
@@ -155,13 +168,13 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             />
           )}
 
-          {!isEmpty(config.config.folderId) && (
+          {!isEmpty(sanitizedConfig.config.folderId) && (
             <Alert variant="info">
               <FontAwesomeIcon icon={faInfoCircle} /> Displaying available bots
               from folder{" "}
               {folder?.name
-                ? `'${folder.name}' (${config.config.folderId})`
-                : config.config.folderId}{" "}
+                ? `'${folder.name}' (${sanitizedConfig.config.folderId})`
+                : sanitizedConfig.config.folderId}{" "}
               configured on the integration. To choose from all bots in the
               workspace, remove the folder from the integration configuration.
             </Alert>
@@ -183,11 +196,11 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               loadingMessage={BotLoadingMessage}
               noOptonsMessage={BotNoOptionsMessage}
               factoryArgs={factoryArgs}
-              config={config}
+              config={sanitizedConfig}
             />
           }
 
-          {isCommunityControlRoom(config.config.controlRoomUrl) ? (
+          {isCommunityControlRoom(sanitizedConfig.config.controlRoomUrl) ? (
             <ConnectedFieldTemplate
               label="Device"
               name={configName("deviceId")}
@@ -195,7 +208,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               as={RemoteSelectWidget}
               optionsFactory={cachedFetchDevices}
               factoryArgs={factoryArgs}
-              config={config}
+              config={sanitizedConfig}
             />
           ) : (
             <>
@@ -226,7 +239,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                         optionsFactory={cachedFetchRunAsUsers}
                         factoryArgs={factoryArgs}
                         blankValue={[]}
-                        config={config}
+                        config={sanitizedConfig}
                       />
                       <ConnectedFieldTemplate
                         label="Device Pools"
@@ -236,7 +249,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                         optionsFactory={cachedFetchDevicePools}
                         factoryArgs={factoryArgs}
                         blankValue={[]}
-                        config={config}
+                        config={sanitizedConfig}
                       />
                     </>
                   )}
@@ -266,15 +279,15 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             <ChildObjectField
               heading="Input Arguments"
               name={configName("data")}
-              schema={remoteSchema}
-              schemaError={remoteSchemaError}
-              schemaLoading={remoteSchemaPending}
+              schema={remoteSchemaState.data}
+              schemaError={remoteSchemaState.error}
+              schemaLoading={remoteSchemaState.isLoading}
               isRequired
             />
           )}
         </>
       )}
-    </RequireServiceConfig>
+    </RequireIntegrationConfig>
   );
 };
 

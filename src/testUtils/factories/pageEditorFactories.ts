@@ -66,7 +66,7 @@ const internalFormStateFactory = define<
   uuid: uuidSequence,
   installed: true,
   optionsArgs: null as OptionsArgs,
-  services(): IntegrationDependency[] {
+  integrationDependencies(): IntegrationDependency[] {
     return [];
   },
   recipe: null,

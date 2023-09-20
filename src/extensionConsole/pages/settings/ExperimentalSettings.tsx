@@ -20,11 +20,11 @@ import React from "react";
 import { Card, Form } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { useDispatch, useSelector } from "react-redux";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { selectSettings } from "@/store/settingsSelectors";
-import { type SkunkworksSettings } from "@/store/settingsTypes";
+import { selectSettings } from "@/store/settings/settingsSelectors";
+import { type SkunkworksSettings } from "@/store/settings/settingsTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 

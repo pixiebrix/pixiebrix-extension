@@ -16,7 +16,7 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { proxyService } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
@@ -64,7 +64,9 @@ export class AddOrganization extends EffectABC {
     }>,
     { logger }: BrickOptions
   ): Promise<void> {
-    const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
+    const { data } = await performConfiguredRequestInBackground<{
+      items: unknown[];
+    }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/organizations/search",
       method: "get",
       params: {
@@ -79,7 +81,7 @@ export class AddOrganization extends EffectABC {
     }
 
     try {
-      await proxyService(pipedrive, {
+      await performConfiguredRequestInBackground(pipedrive, {
         url: "https://api.pipedrive.com/v1/organizations",
         method: "post",
         data: { name, owner_id },
@@ -144,7 +146,9 @@ export class AddPerson extends EffectABC {
     }>,
     { logger }: BrickOptions
   ): Promise<void> {
-    const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
+    const { data } = await performConfiguredRequestInBackground<{
+      items: unknown[];
+    }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",
       params: {
@@ -159,7 +163,7 @@ export class AddPerson extends EffectABC {
     }
 
     try {
-      await proxyService(pipedrive, {
+      await performConfiguredRequestInBackground(pipedrive, {
         url: "https://api.pipedrive.com/v1/persons",
         method: "post",
         data: {

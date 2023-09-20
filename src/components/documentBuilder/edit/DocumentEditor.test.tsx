@@ -27,7 +27,6 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { validateRegistryId } from "@/types/helpers";
 import { render, screen } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { type OutputKey } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -36,6 +35,8 @@ import {
   formStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -170,14 +171,14 @@ describe("remove element", () => {
     });
   }
 
-  test("removes service dependency", async () => {
-    // Services included in the form state
-    const services: IntegrationDependency[] = [
-      {
-        id: validateRegistryId("@test/service"),
-        outputKey: "serviceOutput" as OutputKey,
-        config: uuidSequence(1),
-      },
+  test("removes integration dependency", async () => {
+    // Integration dependencies included in the form state
+    const integrationDependencies: IntegrationDependency[] = [
+      integrationDependencyFactory({
+        integrationId: validateRegistryId("@test/service"),
+        outputKey: validateOutputKey("serviceOutput"),
+        configId: uuidSequence,
+      }),
     ];
 
     // Document brick definition
@@ -203,7 +204,7 @@ describe("remove element", () => {
 
     // Form state for the test
     const formState = formStateFactory({
-      services,
+      integrationDependencies,
       extension: baseExtensionStateFactory({
         blockPipeline: [
           brickConfigFactory({ config: documentWithButtonConfig }),
@@ -215,6 +216,6 @@ describe("remove element", () => {
 
     await userEvent.click(screen.getByText("Remove element"));
 
-    expect(getFormState().services).toStrictEqual([]);
+    expect(getFormState().integrationDependencies).toStrictEqual([]);
   });
 });

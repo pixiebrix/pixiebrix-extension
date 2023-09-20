@@ -107,7 +107,7 @@ describe("getPartnerPrincipals", () => {
     // Local configuration
     readRawConfigurationsMock.mockResolvedValue([
       integrationConfigFactory({
-        serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://control-room.example.com",
           username: "bot_creator",
@@ -161,7 +161,7 @@ describe("refresh partner token", () => {
     readRawConfigurationsMock.mockResolvedValue([
       {
         id: authId,
-        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
         }),
@@ -205,7 +205,7 @@ describe("refresh partner token", () => {
     readRawConfigurationsMock.mockResolvedValue([
       {
         id: authId,
-        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
         }),

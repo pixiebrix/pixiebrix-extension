@@ -27,11 +27,11 @@ import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
-import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
 
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -154,7 +154,7 @@ export async function requirePartnerAuth(): Promise<void> {
 
     if (userData.partner?.theme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
-        AUTOMATION_ANYWHERE_SERVICE_ID
+        CONTROL_ROOM_TOKEN_INTEGRATION_ID
       );
 
       if (!configs.some((x) => !x.proxy)) {

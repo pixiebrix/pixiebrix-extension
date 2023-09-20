@@ -23,25 +23,28 @@ import { Formik } from "formik";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
-import useDependency from "@/services/useDependency";
+import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
-import { uuidv4 } from "@/types/helpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type OutputKey } from "@/types/runtimeTypes";
-import { type Integration } from "@/types/integrationTypes";
+import { type SanitizedConfig } from "@/types/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
-jest.mock("@/services/useDependency", () =>
-  jest.fn().mockReturnValue({
-    // Pass minimal arguments
-    config: undefined,
-    service: undefined,
-    hasPermissions: true,
-    requestPermissions: jest.fn(),
-  })
+jest.mock("@/services/useSanitizedIntegrationConfigFormikAdapter", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
+  useSanitizedIntegrationConfigFormikAdapter
 );
+
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
 }));
@@ -49,24 +52,26 @@ jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
 
 function makeBaseState() {
-  const baseFormState = menuItemFormStateFactory();
-  baseFormState.services = [
+  return menuItemFormStateFactory(
     {
-      id: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-      outputKey: "automationAnywhere" as OutputKey,
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+          outputKey: validateOutputKey("automationAnywhere"),
+        }),
+      ],
     },
-  ];
-  baseFormState.extension.blockPipeline = [
-    {
-      id: AUTOMATION_ANYWHERE_RUN_BOT_ID,
-      config: {
-        service: null,
-        fileId: null,
-        data: {},
+    [
+      {
+        id: AUTOMATION_ANYWHERE_RUN_BOT_ID,
+        config: {
+          service: null,
+          fileId: null,
+          data: {},
+        },
       },
-    },
-  ];
-  return baseFormState;
+    ]
+  );
 }
 
 function renderOptions(formState: ModComponentFormState = makeBaseState()) {
@@ -82,6 +87,12 @@ beforeAll(() => {
   jest.mocked(useAuthOptions).mockReturnValue(valueToAsyncState([]));
 });
 
+beforeEach(() => {
+  useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+    valueToAsyncState(null)
+  );
+});
+
 describe("BotOptions", () => {
   it("should require selected integration", async () => {
     const { asFragment } = renderOptions();
@@ -91,17 +102,14 @@ describe("BotOptions", () => {
   });
 
   it("should render default enterprise fields for private workspace", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl: "https://control.room.com",
-        },
-      },
-      service: {} as Integration,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://control.room.com",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
@@ -124,18 +132,14 @@ describe("BotOptions", () => {
   });
 
   it("should render community fields", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl:
-            "https://community2.cloud-2.automationanywhere.digital",
-        },
-      },
-      service: {} as Integration,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://community2.cloud-2.automationanywhere.digital",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
@@ -159,17 +163,14 @@ describe("BotOptions", () => {
   });
 
   it("should render default enterprise fields for public workspace", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl: "https://control.room.com",
-        },
-      },
-      service: {} as Integration,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://control.room.com",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.workspaceType = "public";
@@ -194,17 +195,14 @@ describe("BotOptions", () => {
   });
 
   it("should render attended enterprise fields for public workspace", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl: "https://control.room.com",
-        },
-      },
-      service: {} as Integration,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://control.room.com",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.workspaceType = "public";
@@ -230,17 +228,14 @@ describe("BotOptions", () => {
   });
 
   it("should render result timeout", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl: "https://control.room.com",
-        },
-      },
-      service: {} as Integration,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://control.room.com",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.awaitResult = true;

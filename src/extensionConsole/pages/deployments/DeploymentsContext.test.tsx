@@ -30,7 +30,7 @@ import {
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type ModComponentOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 
@@ -104,6 +104,6 @@ describe("DeploymentsContext", () => {
     expect(axiosMock.history.get).toHaveLength(0);
 
     const { options } = getReduxStore().getState();
-    expect((options as ModComponentOptionsState).extensions).toHaveLength(1);
+    expect((options as ModComponentState).extensions).toHaveLength(1);
   });
 });

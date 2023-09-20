@@ -205,7 +205,7 @@ class LazyLocatorFactory {
           level: Visibility.Private,
           local: true,
           proxy: false,
-          serviceId: x.serviceId,
+          serviceId: x.integrationId,
         })),
         ...(this.remote ?? []).map((x) => ({
           ...x,
@@ -237,7 +237,7 @@ class LazyLocatorFactory {
         (x) =>
           ({
             id: x.id,
-            serviceId: x.service.name,
+            integrationId: x.service.name,
             label: x.label,
             config: x.config,
             // `config` will contain secrets because we filtered for pushdown configurations
