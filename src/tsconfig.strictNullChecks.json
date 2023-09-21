@@ -151,7 +151,6 @@
     "./utils/stringUtils.ts",
     "./utils/objectUtils.ts",
     "./utils/promiseUtils.ts",
-    "./utils/storageUtils.ts",
     "./utils/sanitize.ts"
   ]
 }

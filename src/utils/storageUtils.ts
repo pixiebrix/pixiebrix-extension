@@ -16,10 +16,8 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
-import browser from "webextension-polyfill";
 import { type MigrationManifest, type PersistedState } from "redux-persist";
 
 /**
