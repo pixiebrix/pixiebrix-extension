@@ -86,7 +86,7 @@ declare module "generate-schema" {
 declare module "marked";
 
 // No types available
-declare module "jq-web";
+declare module "@pixiebrix/jq-web";
 declare module "canvas-confetti";
 
 // From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830

@@ -267,7 +267,7 @@ describe("known jq-web bugs and quirks", () => {
     );
   });
 
-  test.skip("running 2048+ times causes FS errors", async () => {
+  test("running 2048+ times causes FS errors", async () => {
     // https://github.com/fiatjaf/jq-web/issues/18
     // Skipping on CI because it's too slow to run this test
 
