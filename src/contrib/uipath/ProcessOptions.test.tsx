@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@/extensionConsole/testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
@@ -122,12 +122,12 @@ beforeEach(() => {
 
 describe("UiPath Options", () => {
   test("Render integration selector", async () => {
-    const rendered = renderOptions();
+    const { asFragment } = renderOptions();
 
     await waitForEffect();
 
-    expect(rendered.queryByText("Integration")).not.toBeNull();
-    expect(rendered.container).toMatchSnapshot();
+    expect(screen.getByText("Integration")).toBeInTheDocument();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("Render with selected dependency", async () => {
@@ -140,16 +140,16 @@ describe("UiPath Options", () => {
     base.extension.blockPipeline[0].config.uipath =
       makeVariableExpression("@uipath");
 
-    const rendered = renderOptions(base);
+    const { asFragment } = renderOptions(base);
 
     await waitForEffect();
 
-    expect(rendered.queryByText("Integration")).not.toBeNull();
-    expect(rendered.queryByText("Release")).not.toBeNull();
-    expect(rendered.queryByText("Strategy")).not.toBeNull();
-    expect(rendered.queryByText("Await Result")).not.toBeNull();
-    expect(rendered.queryByText("Result Timeout (Milliseconds)")).toBeNull();
-    expect(rendered.container).toMatchSnapshot();
+    expect(screen.getByText("Integration")).toBeInTheDocument();
+    expect(screen.getByText("Release")).toBeInTheDocument();
+    expect(screen.getByText("Strategy")).toBeInTheDocument();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(screen.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("Render timeout field if await result", async () => {
@@ -163,12 +163,12 @@ describe("UiPath Options", () => {
       makeVariableExpression("@uipath");
     base.extension.blockPipeline[0].config.awaitResult = true;
 
-    const rendered = renderOptions(base);
+    renderOptions(base);
 
     await waitForEffect();
 
     expect(
-      rendered.queryByText("Result Timeout (Milliseconds)")
-    ).not.toBeNull();
+      screen.getByText("Result Timeout (Milliseconds)")
+    ).toBeInTheDocument();
   });
 });

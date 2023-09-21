@@ -42,6 +42,7 @@ function testItRenders<TProps = unknown>(
     renderFn = render,
   } = typeof options === "function" ? options() : options;
 
+  // eslint-disable-next-line jest/valid-title
   test(testName, async () => {
     const ui = TemplateComponent ? (
       <TemplateComponent>
@@ -50,12 +51,12 @@ function testItRenders<TProps = unknown>(
     ) : (
       <Component {...props} />
     );
-    const rendered = renderFn(ui);
+    const { asFragment } = renderFn(ui);
     if (isAsync) {
       await waitForEffect();
     }
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 }
 

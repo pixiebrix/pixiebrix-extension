@@ -122,7 +122,7 @@ describe("quickBarExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     // QuickBar adds another div to the body
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div id="pixiebrix-quickbar-container"></div><div></div>'
     );
 
@@ -133,7 +133,7 @@ describe("quickBarExtension", () => {
     await tick();
 
     // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
-    expect(document.body.innerHTML).not.toEqual("<div></div><div></div>");
+    expect(document.body.innerHTML).not.toBe("<div></div><div></div>");
 
     starterBrick.uninstall();
   });

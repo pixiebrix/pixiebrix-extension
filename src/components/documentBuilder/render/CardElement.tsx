@@ -34,8 +34,11 @@ const CardElement: React.FunctionComponent<CardElementProps> = ({
   ...cardProps
 }) => (
   <Card {...cardProps}>
-    <Card.Header>{heading}</Card.Header>
-    <Card.Body className={cx(bodyClassName, "overflow-auto")}>
+    <Card.Header data-testid="card-header">{heading}</Card.Header>
+    <Card.Body
+      className={cx(bodyClassName, "overflow-auto")}
+      data-testid="card-body"
+    >
       {children}
     </Card.Body>
   </Card>

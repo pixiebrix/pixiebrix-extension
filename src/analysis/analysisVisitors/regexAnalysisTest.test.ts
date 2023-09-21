@@ -77,7 +77,7 @@ describe("RegexAnalysis", () => {
     );
 
     expect(analysis.getAnnotations()).toHaveLength(1);
-    expect(analysis.getAnnotations()[0].message).toEqual(
+    expect(analysis.getAnnotations()[0].message).toBe(
       "Invalid regular expression: /(?<foo>abc/: Unterminated group"
     );
   });

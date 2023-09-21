@@ -60,7 +60,7 @@ export async function renderHandlebarsTemplate(
 export async function applyJq(payload: ApplyJqPayload) {
   const { input, filter } = payload;
   const { default: jq } = await import(
-    /* webpackChunkName: "jq-web" */ "jq-web"
+    /* webpackChunkName: "jq-web" */ "@pixiebrix/jq-web"
   );
 
   return jq.promised.json(input, filter);

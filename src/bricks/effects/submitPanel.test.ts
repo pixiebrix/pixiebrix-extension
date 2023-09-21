@@ -35,7 +35,7 @@ describe("SubmitPanelEffect", () => {
     } catch (error) {
       expect(error).toBeInstanceOf(SubmitPanelAction);
       expect((error as SubmitPanelAction).detail).toEqual({});
-      expect((error as SubmitPanelAction).type).toEqual("submit");
+      expect((error as SubmitPanelAction).type).toBe("submit");
     }
   });
 });

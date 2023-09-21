@@ -19,15 +19,15 @@ import { isApiVersionAtLeast } from "@/runtime/runtimeUtils";
 
 describe("isApiVersionAtLeast()", () => {
   test("v2 is at least v1", () => {
-    expect(isApiVersionAtLeast("v2", "v1")).toStrictEqual(true);
+    expect(isApiVersionAtLeast("v2", "v1")).toBe(true);
   });
   test("v2 is at least v2", () => {
-    expect(isApiVersionAtLeast("v2", "v2")).toStrictEqual(true);
+    expect(isApiVersionAtLeast("v2", "v2")).toBe(true);
   });
   test("v3 is at least v1", () => {
-    expect(isApiVersionAtLeast("v3", "v1")).toStrictEqual(true);
+    expect(isApiVersionAtLeast("v3", "v1")).toBe(true);
   });
   test("v1 is not at least v2", () => {
-    expect(isApiVersionAtLeast("v1", "v2")).toStrictEqual(false);
+    expect(isApiVersionAtLeast("v1", "v2")).toBe(false);
   });
 });

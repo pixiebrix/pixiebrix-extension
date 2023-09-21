@@ -49,7 +49,7 @@ beforeAll(() => {
 describe("AddBlockModal", () => {
   test("it renders", async () => {
     const formState = formStateFactory();
-    const rendered = render(<AddBlockModal />, {
+    const { asFragment } = render(<AddBlockModal />, {
       setupRedux(dispatch) {
         dispatch(actions.addElement(formState));
         dispatch(actions.selectElement(formState.uuid));
@@ -68,13 +68,13 @@ describe("AddBlockModal", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders with tag selected and search query", async () => {
     const formState = formStateFactory();
 
-    const rendered = render(<AddBlockModal />, {
+    const { asFragment } = render(<AddBlockModal />, {
       setupRedux(dispatch) {
         dispatch(actions.addElement(formState));
         dispatch(actions.selectElement(formState.uuid));
@@ -101,6 +101,6 @@ describe("AddBlockModal", () => {
     // Enter a query
     await userEvent.type(screen.getByTestId("tag-search-input"), "google");
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

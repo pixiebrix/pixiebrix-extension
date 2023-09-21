@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`FixedInnerObjectWidget handle oneOf object 1`] = `
-<div>
+<DocumentFragment>
   <form
     action="#"
   >
@@ -68,11 +68,11 @@ exports[`FixedInnerObjectWidget handle oneOf object 1`] = `
       Submit
     </button>
   </form>
-</div>
+</DocumentFragment>
 `;
 
 exports[`FixedInnerObjectWidget handle simple object 1`] = `
-<div>
+<DocumentFragment>
   <form
     action="#"
   >
@@ -139,5 +139,5 @@ exports[`FixedInnerObjectWidget handle simple object 1`] = `
       Submit
     </button>
   </form>
-</div>
+</DocumentFragment>
 `;

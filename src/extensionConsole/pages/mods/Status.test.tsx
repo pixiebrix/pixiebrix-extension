@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import Status from "@/extensionConsole/pages/mods/Status";
 import useModsPageActions, {
   type ModsPageActions,
@@ -37,7 +37,7 @@ describe("Status", () => {
   });
 
   it("shows active", async () => {
-    const wrapper = render(
+    const { asFragment } = render(
       <Status
         modViewItem={
           {
@@ -47,8 +47,8 @@ describe("Status", () => {
       />
     );
 
-    expect(wrapper.getByText("Active")).toBeVisible();
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(screen.getByText("Active")).toBeVisible();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("shows activate", async () => {
@@ -56,7 +56,7 @@ describe("Status", () => {
       activate: jest.fn(),
     } as unknown as ModsPageActions);
 
-    const wrapper = render(
+    const { asFragment } = render(
       <Status
         modViewItem={
           {
@@ -66,12 +66,12 @@ describe("Status", () => {
       />
     );
 
-    expect(wrapper.getByText("Activate")).toBeVisible();
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(screen.getByText("Activate")).toBeVisible();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("shows warning for unavailable", async () => {
-    const wrapper = render(
+    const { asFragment } = render(
       <Status
         modViewItem={
           {
@@ -81,12 +81,12 @@ describe("Status", () => {
       />
     );
 
-    expect(wrapper.getByText("No longer available")).toBeVisible();
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(screen.getByText("No longer available")).toBeVisible();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("paused", async () => {
-    const wrapper = render(
+    const { asFragment } = render(
       <Status
         modViewItem={
           {
@@ -96,7 +96,7 @@ describe("Status", () => {
       />
     );
 
-    expect(wrapper.getByText("Paused")).toBeVisible();
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(screen.getByText("Paused")).toBeVisible();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

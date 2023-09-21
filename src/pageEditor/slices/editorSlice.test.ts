@@ -87,7 +87,7 @@ describe("DataPanel state", () => {
       })
     );
 
-    expect(getTabState(editorState).query).toEqual("test query");
+    expect(getTabState(editorState).query).toBe("test query");
   });
 
   test("should set the expanded state", () => {
@@ -118,7 +118,7 @@ describe("DataPanel state", () => {
 
     expect(
       getTabState(editorState, DataPanelTabKey.Preview).activeElement
-    ).toEqual("test-field");
+    ).toBe("test-field");
   });
 });
 

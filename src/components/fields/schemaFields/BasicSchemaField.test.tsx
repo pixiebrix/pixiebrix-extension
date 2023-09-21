@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleMode"] }] */
+
 import React from "react";
 import { render, screen } from "@/pageEditor/testHelpers";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
@@ -131,12 +133,12 @@ describe("option mode switching", () => {
     await waitForEffect();
 
     expectToggleMode(container, "Text");
-    expect(inputElement.value).toStrictEqual("{{@data.foo}} ");
+    expect(inputElement.value).toBe("{{@data.foo}} ");
   });
 });
 
 test("omit if empty", async () => {
-  const rendered = renderSchemaField(
+  renderSchemaField(
     "test",
     {
       type: ["string", "number", "boolean"],
@@ -153,14 +155,14 @@ test("omit if empty", async () => {
     }
   );
 
-  const field = rendered.getByLabelText("testing omit");
-  expect(rendered.getByLabelText("testing omit")).toHaveValue("@data.foo");
+  const field = screen.getByLabelText("testing omit");
+  expect(screen.getByLabelText("testing omit")).toHaveValue("@data.foo");
 
   fireTextInput(field, "");
   await waitForEffect();
 
-  expect(rendered.getByLabelText("testing omit")).toHaveValue("");
+  expect(screen.getByLabelText("testing omit")).toHaveValue("");
 
-  const fieldToggle = rendered.getByTestId("toggle-test");
+  const fieldToggle = screen.getByTestId("toggle-test");
   expect(fieldToggle).toHaveAttribute("data-test-selected", "Exclude");
 });

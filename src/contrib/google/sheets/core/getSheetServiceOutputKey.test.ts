@@ -20,14 +20,14 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 describe("getSheetServiceOutputKey", () => {
   test("abc", () => {
-    expect(
-      getSheetIdIntegrationOutputKey(makeVariableExpression("abc"))
-    ).toEqual("abc");
+    expect(getSheetIdIntegrationOutputKey(makeVariableExpression("abc"))).toBe(
+      "abc"
+    );
   });
   test("@abc", () => {
-    expect(
-      getSheetIdIntegrationOutputKey(makeVariableExpression("@abc"))
-    ).toEqual("abc");
+    expect(getSheetIdIntegrationOutputKey(makeVariableExpression("@abc"))).toBe(
+      "abc"
+    );
   });
   test("@abc.def", () => {
     expect(
@@ -39,7 +39,7 @@ describe("getSheetServiceOutputKey", () => {
       getSheetIdIntegrationOutputKey(
         makeVariableExpression("@abc.spreadsheetId")
       )
-    ).toEqual("abc");
+    ).toBe("abc");
   });
   test("@abc.spreadsheetId.def", () => {
     expect(

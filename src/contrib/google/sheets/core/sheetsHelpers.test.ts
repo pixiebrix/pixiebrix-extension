@@ -22,20 +22,20 @@ import {
 
 describe("normalizeHeader", () => {
   it("trims whitespace", () => {
-    expect(normalizeHeader("  hello  ")).toEqual("hello");
+    expect(normalizeHeader("  hello  ")).toBe("hello");
   });
 
   it("lower cases text", () => {
-    expect(normalizeHeader("HelLo")).toEqual("hello");
+    expect(normalizeHeader("HelLo")).toBe("hello");
   });
 });
 
 describe("columnToLetter", () => {
   it("handles single letter", () => {
-    expect(columnToLetter(1)).toEqual("A");
+    expect(columnToLetter(1)).toBe("A");
   });
 
   it("lower cases text", () => {
-    expect(columnToLetter(28)).toEqual("AB");
+    expect(columnToLetter(28)).toBe("AB");
   });
 });

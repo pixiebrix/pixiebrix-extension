@@ -141,9 +141,9 @@ test("Network error", async () => {
 
   const { title, detailsElement } = getErrorDetails(error);
   expect(title).toBe("Network error. No response received.");
-  const rendered = render(detailsElement);
+  const { asFragment } = render(detailsElement);
   await waitForEffect();
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("RemoteApiErrorDetail", async () => {
@@ -160,7 +160,7 @@ test("RemoteApiErrorDetail", async () => {
 
   const { title, detailsElement } = getErrorDetails(error);
   expect(title).toBe("Invalid data message.");
-  const rendered = render(detailsElement);
+  const { asFragment } = render(detailsElement);
   await waitForEffect();
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });

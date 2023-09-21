@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
@@ -176,7 +176,7 @@ describe("form data normalization", () => {
       imageCrop: ImageCropWidget,
     };
 
-    const rendered = render(
+    const { asFragment } = render(
       <JsonSchemaForm
         schema={schema}
         formData={normalizedData}
@@ -189,16 +189,16 @@ describe("form data normalization", () => {
     await waitForEffect();
 
     // Make sure the form renders the data without errors
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
 
     // Submit and make sure there are no validation errors
     await userEvent.click(
-      rendered.getByRole("button", {
+      screen.getByRole("button", {
         name: "Submit",
       })
     );
 
-    expect(rendered.queryByText("Error")).not.toBeInTheDocument();
+    expect(screen.queryByText("Error")).not.toBeInTheDocument();
   });
 });
 
@@ -228,10 +228,10 @@ describe("CustomFormRenderer", () => {
       } as BrickOptions
     );
 
-    const rendered = render(<Component {...props} />);
+    render(<Component {...props} />);
 
-    expect(rendered.queryByText("Submit")).toBeNull();
-    expect(rendered.container.querySelector("#root_name")).not.toBeNull();
+    expect(screen.queryByText("Submit")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { hidden: true })).toBeInTheDocument();
   });
 
   test("is page state aware", async () => {

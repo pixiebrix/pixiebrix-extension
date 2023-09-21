@@ -85,9 +85,7 @@ describe("aaApi", () => {
       publicPromise2,
     ]) {
       // eslint-disable-next-line no-await-in-loop -- jest expect
-      await expect(promise).rejects.toEqual(
-        "Reject to isn't cached across tests"
-      );
+      await expect(promise).rejects.toBe("Reject to isn't cached across tests");
     }
   });
 });

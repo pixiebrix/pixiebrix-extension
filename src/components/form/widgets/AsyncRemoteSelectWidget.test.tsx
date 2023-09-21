@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
 import React from "react";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
@@ -57,7 +57,7 @@ describe("AsyncRemoteSelectWidget", () => {
       .fn()
       .mockResolvedValue([{ value: "foo", label: "Foo" }]);
 
-    const { container } = render(
+    render(
       <AsyncRemoteSelectWidget
         id={id}
         name={name}
@@ -71,7 +71,7 @@ describe("AsyncRemoteSelectWidget", () => {
 
     await waitForEffect();
 
-    await selectEvent.select(container.querySelector(`#${id}`), "Foo");
+    await selectEvent.select(screen.getByRole("combobox"), "Foo");
 
     expect(onChangeMock).toHaveBeenCalledWith({
       target: {
@@ -85,7 +85,7 @@ describe("AsyncRemoteSelectWidget", () => {
     const onChangeMock = jest.fn();
     const optionsFactoryMock = jest.fn().mockResolvedValue([]);
 
-    const { container } = render(
+    render(
       <AsyncRemoteSelectWidget
         id={id}
         name={name}
@@ -99,15 +99,15 @@ describe("AsyncRemoteSelectWidget", () => {
     await waitForEffect();
     expect(optionsFactoryMock).not.toHaveBeenCalled();
 
+    await userEvent.click(screen.getByRole("combobox"));
+
+    await userEvent.type(screen.getByRole("combobox"), "foo");
+
+    // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
     await act(async () => {
-      await userEvent.click(container.querySelector('[role="combobox"]'));
-
-      await userEvent.type(container.querySelector('[role="combobox"]'), "foo");
-
-      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
       await sleep(1000);
-      await waitForEffect();
     });
+    await waitForEffect();
 
     expect(optionsFactoryMock).toHaveBeenCalledWith(null, {
       query: "foo",
@@ -119,7 +119,7 @@ describe("AsyncRemoteSelectWidget", () => {
     const onChangeMock = jest.fn();
     const optionsFactoryMock = jest.fn().mockRejectedValue(new Error("Oh No!"));
 
-    const { container, ...helpers } = render(
+    render(
       <AsyncRemoteSelectWidget
         id={id}
         name={name}
@@ -133,17 +133,16 @@ describe("AsyncRemoteSelectWidget", () => {
     await waitForEffect();
     expect(optionsFactoryMock).not.toHaveBeenCalled();
 
+    await userEvent.click(screen.getByRole("combobox"));
+
+    await userEvent.type(screen.getByRole("combobox"), "foo");
     await act(async () => {
-      await userEvent.click(container.querySelector('[role="combobox"]'));
-
-      await userEvent.type(container.querySelector('[role="combobox"]'), "foo");
-
       // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
       await sleep(1000);
-      await waitForEffect();
     });
+    await waitForEffect();
 
-    expect(helpers.queryByDisplayValue("Oh No!")).toBeDefined();
+    expect(screen.getByText("Oh No!")).toBeInTheDocument();
   });
 
   test("it passes the current value to the factory", async () => {
@@ -185,7 +184,7 @@ describe("AsyncRemoteSelectWidget", () => {
       return deferredOptions.promise;
     });
 
-    const { container } = render(
+    render(
       <AsyncRemoteSelectWidget
         id={id}
         name={name}
@@ -199,25 +198,30 @@ describe("AsyncRemoteSelectWidget", () => {
     await waitForEffect();
     expect(optionsFactoryMock).not.toHaveBeenCalled();
 
+    await userEvent.click(screen.getByRole("combobox"));
+    await userEvent.type(screen.getByRole("combobox"), "f");
+
     await act(async () => {
-      await userEvent.click(container.querySelector('[role="combobox"]'));
-      await userEvent.type(container.querySelector('[role="combobox"]'), "f");
-
       await sleep(1);
-
-      await waitForEffect();
-      await userEvent.type(container.querySelector('[role="combobox"]'), "o");
-
-      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
-      await sleep(1000);
-
-      await userEvent.type(container.querySelector('[role="combobox"]'), "x");
-
-      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
-      await sleep(1000);
-
-      await waitForEffect();
     });
+
+    await waitForEffect();
+
+    await userEvent.type(screen.getByRole("combobox"), "o");
+
+    await act(async () => {
+      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
+      await sleep(1000);
+    });
+
+    await userEvent.type(screen.getByRole("combobox"), "x");
+
+    await act(async () => {
+      // Wait for the debounce. :shrug: would be cleaner to advance timers here, but this will do for now
+      await sleep(1000);
+    });
+
+    await waitForEffect();
 
     expect(optionsFactoryMock).toHaveBeenCalledTimes(2);
 
@@ -239,7 +243,7 @@ describe("AsyncRemoteSelectWidget", () => {
 
     await act(async () => {
       await waitForEffect();
-      await selectEvent.select(container.querySelector(`#${id}`), "Fox");
+      await selectEvent.select(screen.getByRole("combobox"), "Fox");
     });
   });
 });

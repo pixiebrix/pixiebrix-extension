@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectLegacyTestSpreadsheetLoaded", "expectTab1Selected", "expectGoogleAccountTestSpreadsheetLoaded", "expectTabSelectWorksProperly"] }] */
+
 import React from "react";
 import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -364,7 +366,7 @@ async function expectTabSelectWorksProperly() {
 }
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
-  const rendered = render(
+  const utils = render(
     <AppendSpreadsheetOptions name="" configKey="config" />,
     {
       initialValues,
@@ -374,7 +376,7 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
 
   await waitForEffect();
 
-  return rendered;
+  return utils;
 };
 
 describe("AppendSpreadsheetOptions", () => {
@@ -383,7 +385,7 @@ describe("AppendSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -391,7 +393,7 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given feature flag off and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
@@ -406,7 +408,7 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -414,11 +416,11 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given empty googleAccount and string spreadsheetId and selected tabName and entered rowValues, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: "Tab2",
@@ -429,11 +431,11 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId value and selected tabName and column values, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -446,7 +448,7 @@ describe("AppendSpreadsheetOptions", () => {
       integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   /**
@@ -867,9 +869,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -903,9 +903,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -940,9 +938,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -978,9 +974,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 

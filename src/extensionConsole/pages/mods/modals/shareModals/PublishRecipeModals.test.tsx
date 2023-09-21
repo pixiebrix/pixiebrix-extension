@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@/extensionConsole/testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 import PublishRecipeModals from "./PublishRecipeModals";
 import { authSlice } from "@/auth/authSlice";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
@@ -67,7 +67,7 @@ afterEach(() => {
 });
 
 test("renders publish modal", async () => {
-  const rendered = render(
+  render(
     <MarketplaceListingsWrapper>
       <PublishRecipeModals />
     </MarketplaceListingsWrapper>,
@@ -86,13 +86,13 @@ test("renders publish modal", async () => {
 
   await waitForEffect();
 
-  expect(rendered.getByRole("dialog")).toMatchSnapshot();
+  expect(screen.getByRole("dialog")).toMatchSnapshot();
 });
 
 test("renders edit publish modal", async () => {
   blueprint.sharing.public = true;
 
-  const rendered = render(
+  render(
     <MarketplaceListingsWrapper>
       <PublishRecipeModals />
     </MarketplaceListingsWrapper>,
@@ -111,13 +111,13 @@ test("renders edit publish modal", async () => {
 
   await waitForEffect();
 
-  expect(rendered.getByRole("dialog")).toMatchSnapshot();
+  expect(screen.getByRole("dialog")).toMatchSnapshot();
 });
 
 test("renders cancel publish modal", async () => {
   blueprint.sharing.public = true;
 
-  const rendered = render(
+  render(
     <MarketplaceListingsWrapper>
       <PublishRecipeModals />
     </MarketplaceListingsWrapper>,
@@ -137,5 +137,5 @@ test("renders cancel publish modal", async () => {
 
   await waitForEffect();
 
-  expect(rendered.getByRole("dialog")).toMatchSnapshot();
+  expect(screen.getByRole("dialog")).toMatchSnapshot();
 });

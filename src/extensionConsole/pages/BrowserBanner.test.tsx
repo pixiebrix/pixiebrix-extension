@@ -32,7 +32,7 @@ describe("BrowserBanner", () => {
   it("renders warning for jest environment", async () => {
     await browser.storage.managed.set({ disableBrowserWarning: false });
 
-    const wrapper = render(
+    const { asFragment } = render(
       <div>
         <BrowserBanner />
       </div>
@@ -41,18 +41,18 @@ describe("BrowserBanner", () => {
     await waitForEffect();
 
     expect(
-      screen.queryByText("PixieBrix officially supports Google Chrome", {
+      screen.getByText("PixieBrix officially supports Google Chrome", {
         exact: false,
       })
     ).toBeInTheDocument();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("suppress with managed storage", async () => {
     await browser.storage.managed.set({ disableBrowserWarning: true });
 
-    const wrapper = render(
+    const { asFragment } = render(
       <div>
         <BrowserBanner />
       </div>
@@ -66,6 +66,6 @@ describe("BrowserBanner", () => {
       })
     ).not.toBeInTheDocument();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

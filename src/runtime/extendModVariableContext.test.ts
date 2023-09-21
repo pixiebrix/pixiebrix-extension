@@ -58,7 +58,7 @@ describe("createModVariableProxy", () => {
       { blueprintId: null, options: apiVersionOptions("v3") }
     );
 
-    expect(ctxt["@mod"].foo).toEqual(42);
+    expect(ctxt["@mod"].foo).toBe(42);
   });
 
   it.each(["v1", "v2"])(
@@ -78,7 +78,7 @@ describe("createModVariableProxy", () => {
       { "@mod": "foo" },
       { blueprintId: null, options: apiVersionOptions("v3") }
     );
-    expect(ctxt["@mod"]).toEqual("foo");
+    expect(ctxt["@mod"]).toBe("foo");
   });
 
   it("sets symbol", () => {

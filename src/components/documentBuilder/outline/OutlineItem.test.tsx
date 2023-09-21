@@ -49,7 +49,7 @@ describe("OutlineItem", () => {
       onSelect: action("select"),
     };
 
-    const element = render(
+    const { asFragment } = render(
       <DragDropContext onDragEnd={action("onDragEnd")}>
         <Droppable droppableId="droppable">
           {(provided) => (
@@ -71,6 +71,6 @@ describe("OutlineItem", () => {
       </DragDropContext>
     );
 
-    expect(element).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

@@ -62,7 +62,7 @@ describe("isTextLiteralOrNull", () => {
 
 describe("castTextLiteralOrThrow", () => {
   it("handles null", () => {
-    expect(castTextLiteralOrThrow(null)).toBe(null);
+    expect(castTextLiteralOrThrow(null)).toBeNull();
   });
 
   it("finds literal", () => {

@@ -23,7 +23,6 @@ import AdvancedLinks, {
   DEFAULT_TEMPLATE_ENGINE_VALUE,
   DEFAULT_WINDOW_VALUE,
 } from "./AdvancedLinks";
-import styles from "./AdvancedLinks.module.scss";
 
 const BLOCK_FIELD_NAME = "block";
 
@@ -54,13 +53,9 @@ describe("Advanced options", () => {
       window: DEFAULT_WINDOW_VALUE,
     },
   ])("doesn't show advanced links by default", (blockConfig) => {
-    const { container } = renderAdvancedLinks(blockConfig);
+    renderAdvancedLinks(blockConfig);
 
-    const advancedLinksContainer = container.querySelector(
-      `.${styles.advancedLinks}`
-    );
-
-    expect(advancedLinksContainer).toBeNull();
+    expect(screen.getAllByRole("button")).toHaveLength(1);
   });
 
   test.each([
@@ -85,8 +80,9 @@ describe("Advanced options", () => {
   ])("shows changed advanced options", (blockConfig, expectedOptionText) => {
     renderAdvancedLinks(blockConfig);
 
-    const linkButton = screen.getByText(expectedOptionText);
-
-    expect(linkButton).not.toBeNull();
+    expect(
+      screen.getByRole("button", { name: expectedOptionText })
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("button")).toHaveLength(2);
   });
 });

@@ -17,7 +17,7 @@
 
 import React from "react";
 import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
-import { render } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import { type Schema } from "@/types/schemaTypes";
 // eslint-disable-next-line no-restricted-imports
 import { Formik } from "formik";
@@ -61,35 +61,30 @@ const renderSelect = (value: string, onSubmit?: (formVals: any) => void) =>
 
 describe("SchemaButtonVariantWidget", () => {
   test("renders button variant select widget", () => {
-    const defaultSelect = renderSelect("outline-primary");
+    const { asFragment } = renderSelect("outline-primary");
 
     // General snapshot test
-    expect(defaultSelect).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
 
     // Selected variant matches preview
-    const { getByTestId } = defaultSelect;
-    expect(getByTestId("selected-variant")).toHaveClass("btn-outline-primary");
+    expect(screen.getByTestId("selected-variant")).toHaveClass(
+      "btn-outline-primary"
+    );
   });
 
   test("selecting variants updates form", async () => {
     const onSubmit = jest.fn();
 
-    const defaultSelect = renderSelect("outline-primary", (values) =>
-      onSubmit(values)
-    );
-    const { getByTestId, queryAllByTestId } = defaultSelect;
+    renderSelect("outline-primary", (values) => onSubmit(values));
 
     // All variants present
-    const selectContainerElement =
-      getByTestId("select-container").querySelector("div");
-
-    selectEvent.openMenu(selectContainerElement);
-    const options = queryAllByTestId("variant-option");
+    selectEvent.openMenu(screen.getByRole("combobox"));
+    const options = screen.getAllByTestId("variant-option");
     expect(options).toHaveLength(10);
 
     await userEvent.click(options[4]);
 
-    expect(getByTestId("selected-variant")).toHaveClass("btn-success");
+    expect(screen.getByTestId("selected-variant")).toHaveClass("btn-success");
     expect(onSubmit).toHaveBeenCalledWith({ testField: "success" });
   });
 });
