@@ -29,7 +29,7 @@ beforeAll(() => {
 
 describe("Marketplace Activate Wizard OptionsBody", () => {
   test("renders text field", async () => {
-    const rendered = render(
+    const { asFragment } = render(
       <MemoryRouter>
         <Formik initialValues={{ optionsArgs: {} }} onSubmit={jest.fn()}>
           <OptionsBody
@@ -50,8 +50,8 @@ describe("Marketplace Activate Wizard OptionsBody", () => {
       </MemoryRouter>
     );
 
-    expect(screen.queryByText("Text Field")).not.toBeNull();
+    expect(screen.getByText("Text Field")).not.toBeNull();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

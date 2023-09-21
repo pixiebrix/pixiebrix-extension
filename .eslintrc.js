@@ -111,5 +111,20 @@ module.exports = {
         "@typescript-eslint/no-unsafe-argument": "off",
       },
     },
+    {
+      files: ["src/testUtils/**/*"],
+      rules: {
+        "jest/no-export": "off",
+        "testing-library/render-result-naming-convention": "off",
+      },
+    },
+    {
+      // Settings for regular ts files that should only apply to react component rests
+      files: ["**/!(*.test)*.ts?(x)", "**/*.ts"],
+      rules: {
+        "testing-library/render-result-naming-convention": "off",
+        "testing-library/no-await-sync-queries": "off",
+      },
+    },
   ],
 };

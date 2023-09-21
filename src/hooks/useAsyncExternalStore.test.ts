@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 describe("useAsyncExternalStore", () => {
   it("should subscribe once", async () => {
@@ -35,14 +36,14 @@ describe("useAsyncExternalStore", () => {
     });
 
     // Should only create 1 listener on the external data source
-    expect(listenerCount).toEqual(1);
+    expect(listenerCount).toBe(1);
     expect(wrapper.result.current).toEqual(
       expect.objectContaining({
         isLoading: true,
       })
     );
 
-    await act(async () => {});
+    await waitForEffect();
 
     expect(wrapper.result.current).toEqual(
       expect.objectContaining({
@@ -54,6 +55,6 @@ describe("useAsyncExternalStore", () => {
     wrapper.unmount();
 
     // We're not unsubscribing -- see implementation for explanation
-    expect(listenerCount).toEqual(1);
+    expect(listenerCount).toBe(1);
   });
 });

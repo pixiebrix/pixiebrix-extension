@@ -113,7 +113,7 @@ describe("quickBarProviderExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     // QuickBar installation adds another div to the body
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div id="pixiebrix-quickbar-container"></div><div></div>'
     );
 
@@ -163,7 +163,7 @@ describe("quickBarProviderExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     // QuickBar installation adds another div to the body
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div id="pixiebrix-quickbar-container"></div><div></div>'
     );
 
@@ -174,7 +174,7 @@ describe("quickBarProviderExtension", () => {
     await tick();
 
     // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
-    expect(document.body.innerHTML).not.toEqual(
+    expect(document.body.innerHTML).not.toBe(
       '<div id="pixiebrix-quickbar-container"></div><div></div>'
     );
 

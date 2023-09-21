@@ -103,9 +103,9 @@ const RecipeCard: React.FC = () => {
 describe("ActivateRecipeCard", () => {
   test("renders", async () => {
     setupRecipe(defaultModDefinitionFactory());
-    const rendered = render(<RecipeCard />);
+    const { asFragment } = render(<RecipeCard />);
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders successfully with null services property", async () => {
@@ -114,9 +114,9 @@ describe("ActivateRecipeCard", () => {
         extensionPoints: [modComponentDefinitionFactory({ services: null })],
       })
     );
-    const rendered = render(<RecipeCard />);
+    const { asFragment } = render(<RecipeCard />);
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("activate mod definition with missing required mod definition options", async () => {
@@ -147,10 +147,10 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(modDefinition);
 
-    const rendered = render(<RecipeCard />);
+    const { asFragment } = render(<RecipeCard />);
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
-    await userEvent.click(rendered.getByText("Activate"));
+    expect(asFragment()).toMatchSnapshot();
+    await userEvent.click(screen.getByText("Activate"));
     expect(screen.getByText("Database is a required field")).not.toBeNull();
   });
 
@@ -168,10 +168,10 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(modDefinition);
 
-    const rendered = render(<RecipeCard />);
+    const { asFragment } = render(<RecipeCard />);
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
-    await userEvent.click(rendered.getByText("Activate"));
+    expect(asFragment()).toMatchSnapshot();
+    await userEvent.click(screen.getByText("Activate"));
     await waitForEffect();
     expect(activateRecipeCallbackMock).toHaveBeenCalledWith(
       {
@@ -202,9 +202,9 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(modDefinition);
 
-    const rendered = render(<RecipeCard />);
+    render(<RecipeCard />);
     await waitForEffect();
-    await userEvent.click(rendered.getByText("Activate"));
+    await userEvent.click(screen.getByText("Activate"));
     await waitForEffect();
 
     expect(

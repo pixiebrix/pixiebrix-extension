@@ -21,13 +21,13 @@ import { render } from "@/pageEditor/testHelpers";
 
 describe("NonScriptablePage", () => {
   test("it renders", () => {
-    const rendered = render(<NonScriptablePage url="https://test.url" />);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = render(<NonScriptablePage url="https://test.url" />);
+    expect(asFragment()).toMatchSnapshot();
   });
 
   // Since 1.7.36 http: URLs are permitted
   test("it renders http snapshot", () => {
-    const rendered = render(<NonScriptablePage url="http://test.url" />);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = render(<NonScriptablePage url="http://test.url" />);
+    expect(asFragment()).toMatchSnapshot();
   });
 });

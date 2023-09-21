@@ -235,7 +235,7 @@ beforeEach(() => {
 });
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
-  const rendered = render(
+  const utils = render(
     <LookupSpreadsheetOptions name="" configKey="config" />,
     {
       initialValues,
@@ -245,7 +245,7 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
 
   await waitForEffect();
 
-  return rendered;
+  return utils;
 };
 
 describe("LookupSpreadsheetOptions", () => {
@@ -254,7 +254,7 @@ describe("LookupSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -264,7 +264,7 @@ describe("LookupSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given feature flag off and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
@@ -279,7 +279,7 @@ describe("LookupSpreadsheetOptions", () => {
       },
     });
 
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -289,11 +289,11 @@ describe("LookupSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given empty googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: "Tab2",
@@ -303,11 +303,11 @@ describe("LookupSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -319,11 +319,11 @@ describe("LookupSpreadsheetOptions", () => {
       integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -335,7 +335,7 @@ describe("LookupSpreadsheetOptions", () => {
       integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   /**
@@ -547,7 +547,7 @@ describe("LookupSpreadsheetOptions", () => {
     isGoogleInitializedMock.mockReturnValue(false);
     isGAPISupportedMock.mockReturnValue(false);
 
-    const rendered = render(
+    const { asFragment } = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
       {
         initialValues: { config: {} },
@@ -556,14 +556,14 @@ describe("LookupSpreadsheetOptions", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("should require GAPI loaded", async () => {
     isGoogleInitializedMock.mockReturnValue(false);
     isGAPISupportedMock.mockReturnValue(true);
 
-    const rendered = render(
+    const { asFragment } = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
       {
         initialValues: { config: {} },
@@ -572,6 +572,6 @@ describe("LookupSpreadsheetOptions", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

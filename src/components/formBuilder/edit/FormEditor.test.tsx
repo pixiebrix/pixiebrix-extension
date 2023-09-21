@@ -278,7 +278,7 @@ describe("FormEditor", () => {
       onSubmitMock
     );
 
-    const rendered = render(
+    const { container } = render(
       <FormikTemplate>
         <FormEditor activeField={fieldName} {...defaultProps} />
       </FormikTemplate>
@@ -296,7 +296,8 @@ describe("FormEditor", () => {
     expect(getRequiredFieldFromMock(0)).toBeUndefined();
 
     // Make it required
-    const requiredSwitch = rendered.container.querySelector(".switch.btn");
+    // eslint-disable-next-line testing-library/no-container
+    const requiredSwitch = container.querySelector(".switch.btn");
     fireEvent.click(requiredSwitch);
 
     // Check the field is required

@@ -125,7 +125,7 @@ describe("asyncStateUtils", () => {
     expect(() => {
       checkAsyncStateInvariants(state);
     }).not.toThrow();
-    expect(state.data).toEqual(42);
+    expect(state.data).toBe(42);
   });
 
   it("generates valid fallback for loading state", () => {
@@ -133,7 +133,7 @@ describe("asyncStateUtils", () => {
     expect(() => {
       checkAsyncStateInvariants(state);
     }).not.toThrow();
-    expect(state.data).toEqual(42);
+    expect(state.data).toBe(42);
   });
 
   it("generates valid loading state", () => {

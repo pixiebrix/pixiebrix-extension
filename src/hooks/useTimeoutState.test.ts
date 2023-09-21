@@ -23,11 +23,11 @@ jest.useFakeTimers();
 test("useTimeoutState", () => {
   const { result } = renderHook(() => useTimeoutState(200));
 
-  expect(result.current).toEqual(false);
+  expect(result.current).toBe(false);
   jest.advanceTimersByTime(30);
-  expect(result.current).toEqual(false);
+  expect(result.current).toBe(false);
   jest.advanceTimersByTime(300);
-  expect(result.current).toEqual(true);
+  expect(result.current).toBe(true);
 });
 
 test("clear timeout state", () => {
@@ -35,11 +35,11 @@ test("clear timeout state", () => {
     initialProps: 300,
   });
 
-  expect(result.current).toEqual(false);
+  expect(result.current).toBe(false);
   jest.advanceTimersByTime(30);
-  expect(result.current).toEqual(false);
+  expect(result.current).toBe(false);
   jest.advanceTimersByTime(300);
-  expect(result.current).toEqual(true);
+  expect(result.current).toBe(true);
   rerender(null);
-  expect(result.current).toEqual(false);
+  expect(result.current).toBe(false);
 });

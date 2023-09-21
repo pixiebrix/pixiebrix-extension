@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions"] }] */
+
 import React from "react";
-import { render, screen, waitFor } from "@/pageEditor/testHelpers";
+import { render, screen, waitFor, within } from "@/pageEditor/testHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -206,7 +208,7 @@ describe("SchemaField", () => {
   test.each([["v1"], ["v2"]])(
     "show toggle widget for %s",
     (version: ApiVersion) => {
-      const { container } = render(
+      render(
         <Formik
           onSubmit={() => {}}
           initialValues={{ apiVersion: version, testField: "" }}
@@ -223,13 +225,13 @@ describe("SchemaField", () => {
       );
 
       // Renders text entry HTML element
-      expect(container.querySelector("textarea")).not.toBeNull();
-      expect(container.querySelector("button")).not.toBeNull();
+      expect(screen.getByRole("textbox")).toBeInTheDocument();
+      expect(screen.getByRole("button")).toBeInTheDocument();
     }
   );
 
   test("string field options", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={() => {}}
         initialValues={{ apiVersion: "v3", testField: "" }}
@@ -246,13 +248,13 @@ describe("SchemaField", () => {
     );
 
     // Renders text entry HTML element
-    expect(container.querySelector("textarea")).not.toBeNull();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
 
-    await expectToggleOptions(container, ["string", "var", "omit"]);
+    await expectToggleOptions("toggle-testField", ["string", "var", "omit"]);
   });
 
   test("integer field options", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={() => {}}
         initialValues={{ apiVersion: "v3", testField: 42 }}
@@ -269,8 +271,8 @@ describe("SchemaField", () => {
     );
 
     // Renders number entry HTML element
-    expect(container.querySelector("input[type='number']")).not.toBeNull();
-    await expectToggleOptions(container, ["number", "var", "omit"]);
+    expect(screen.getByRole("spinbutton")).toBeInTheDocument();
+    await expectToggleOptions("toggle-testField", ["number", "var", "omit"]);
   });
 
   test.each`
@@ -303,20 +305,19 @@ describe("SchemaField", () => {
 
       await waitForEffect();
 
-      const toggle = screen
-        .getByTestId("toggle-myField")
-        .querySelector("button");
-      expect(toggle).not.toBeNull();
+      const toggle = within(screen.getByTestId("toggle-myField")).getByRole(
+        "button"
+      );
+      expect(toggle).toBeInTheDocument();
 
       await userEvent.click(toggle);
 
       const newOption = screen.getByText(String(toggleOption), {
         exact: false,
       });
-      expect(newOption).not.toBeNull();
+      expect(newOption).toBeInTheDocument();
 
-      // Await this element to avoid the "unable to click element" error
-      await waitFor(async () => userEvent.click(newOption));
+      await userEvent.click(newOption);
 
       await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
@@ -330,7 +331,7 @@ describe("SchemaField", () => {
   );
 
   test("string/integer field options", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={() => {}}
         initialValues={{ apiVersion: "v3", testField: 42 }}
@@ -347,8 +348,13 @@ describe("SchemaField", () => {
     );
 
     // Renders number entry HTML element because current value is a number
-    expect(container.querySelector("input[type='number']")).not.toBeNull();
-    await expectToggleOptions(container, ["string", "number", "var", "omit"]);
+    expect(screen.getByRole("spinbutton")).toBeInTheDocument();
+    await expectToggleOptions("toggle-testField", [
+      "string",
+      "number",
+      "var",
+      "omit",
+    ]);
   });
 
   test.each(schemaTestCases)(
@@ -356,7 +362,7 @@ describe("SchemaField", () => {
     async (_, schema) => {
       const fieldName = "aTestField";
       const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
-      const { container } = render(
+      render(
         <FormikTemplate>
           <SchemaField name={fieldName} schema={schema} />
         </FormikTemplate>
@@ -369,17 +375,17 @@ describe("SchemaField", () => {
       );
       expect(widgetLoadingIndicator).toBeNull();
 
-      const toggle = screen
-        .queryByTestId(`toggle-${fieldName}`)
-        .querySelector("button");
-      expect(toggle).not.toBeNull();
+      const toggle = within(
+        screen.queryByTestId(`toggle-${fieldName}`)
+      ).getByRole("button");
+      expect(toggle).toBeInTheDocument();
 
       await userEvent.click(toggle);
 
       await waitFor(() => {
-        const testIds = [
-          ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
-        ].map((x) => x.dataset.testid);
+        const testIds = [...screen.getAllByRole("button")].map(
+          (x) => x.dataset.testid
+        );
         expect(testIds).toEqual(uniq(testIds));
       });
     }
@@ -389,7 +395,7 @@ describe("SchemaField", () => {
     "v3 field toggle always renders 'omit' last - %s",
     async (_, schema) => {
       const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
-      const { container } = render(
+      render(
         <FormikTemplate>
           <SchemaField name="aTestField" schema={schema} />
         </FormikTemplate>
@@ -397,19 +403,20 @@ describe("SchemaField", () => {
 
       await waitForEffect();
 
-      const toggle = screen
-        .getByTestId("toggle-aTestField")
-        .querySelector("button");
-      expect(toggle).not.toBeNull();
+      const toggle = within(screen.getByTestId("toggle-aTestField")).getByRole(
+        "button"
+      );
+      expect(toggle).toBeInTheDocument();
 
       await userEvent.click(toggle);
 
       await waitFor(() => {
-        const testIds = [
-          ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
-        ].map((x) => x.dataset.testid);
+        const testIds = screen
+          .getAllByRole("button")
+          .map((x) => x.dataset.testid)
+          .filter(Boolean);
         if (testIds.includes("omit")) {
-          expect(testIds.at(-1)).toEqual("omit");
+          expect(testIds.at(-1)).toBe("omit");
         }
       });
     }
@@ -425,11 +432,11 @@ describe("SchemaField", () => {
       expectedOptions: ["select", "var", "omit"],
     },
   ];
-  // eslint-disable-next-line jest/expect-expect
+
   test.each(databaseFieldTestCases)(
     "database field toggle options (required: $isRequired)",
     async ({ isRequired, expectedOptions }) => {
-      const { container } = render(
+      render(
         <Formik
           onSubmit={() => {}}
           initialValues={{ apiVersion: "v3", testField: null }}
@@ -444,12 +451,12 @@ describe("SchemaField", () => {
         </Formik>
       );
 
-      await expectToggleOptions(container, expectedOptions);
+      await expectToggleOptions("toggle-testField", expectedOptions);
     }
   );
 
   test("don't render truthy root aware field", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={jest.fn()}
         initialValues={{ apiVersion: "v3", config: { isRootAware: true } }}
@@ -464,14 +471,14 @@ describe("SchemaField", () => {
     );
 
     // Renders no HTML element
-    expect(container.querySelector(".switch")).toBeNull();
-    await expectToggleOptions(container, []);
+    expect(screen.queryByText(/isrootaware/i)).toBeNull();
+    await expectToggleOptions("", []);
   });
 
   test.each([undefined, false])(
     "render root aware field with value %s",
     async (value) => {
-      const { container } = render(
+      render(
         <Formik
           onSubmit={jest.fn()}
           initialValues={{ apiVersion: "v3", config: { isRootAware: value } }}
@@ -487,13 +494,13 @@ describe("SchemaField", () => {
       );
 
       // Renders switch HTML element
-      expect(container.querySelector(".switch")).not.toBeNull();
-      await expectToggleOptions(container, []);
+      expect(screen.getByText(/isrootaware/i)).toBeInTheDocument();
+      await expectToggleOptions("", []);
     }
   );
 
   test("labelled enum field schema defaults to selection widget", async () => {
-    const { container } = render(
+    render(
       <Formik
         onSubmit={() => {}}
         initialValues={{ apiVersion: "v3", testField: "foo" }}
@@ -514,11 +521,9 @@ describe("SchemaField", () => {
       </Formik>
     );
 
-    await expectToggleOptions(container, ["select", "string", "var"]);
+    await expectToggleOptions("toggle-testField", ["select", "string", "var"]);
 
-    screen.debug();
-
-    expect(container.querySelector("textarea")).toBeNull();
+    expect(screen.queryByRole("textbox")).toBeNull();
     expect(screen.getByText("Foo")).toBeInTheDocument();
   });
 });

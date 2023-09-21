@@ -39,7 +39,7 @@ describe("smoke tests", () => {
       }
     );
 
-    await expect(promise).resolves.toStrictEqual(42);
+    await expect(promise).resolves.toBe(42);
   });
 
   test("can run concurrently", async () => {
@@ -84,7 +84,7 @@ describe("ctxt", () => {
       }
     );
 
-    await expect(promise).resolves.toStrictEqual(42);
+    await expect(promise).resolves.toBe(42);
   });
 });
 
@@ -102,7 +102,7 @@ describe("json", () => {
     );
 
     // String is returned as-is, not as a JSON array
-    await expect(promise).resolves.toStrictEqual("[]");
+    await expect(promise).resolves.toBe("[]");
   });
 });
 

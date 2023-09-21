@@ -38,14 +38,14 @@ afterEach(async () => {
 describe("logging", () => {
   test("appendEntry", async () => {
     await appendEntry(logEntryFactory());
-    await expect(count()).resolves.toStrictEqual(1);
+    await expect(count()).resolves.toBe(1);
   });
 
   test("clearLog as logs", async () => {
     await appendEntry(logEntryFactory());
-    await expect(count()).resolves.toStrictEqual(1);
+    await expect(count()).resolves.toBe(1);
     await clearLog();
-    await expect(count()).resolves.toStrictEqual(0);
+    await expect(count()).resolves.toBe(0);
   });
 
   test("clearLog by blueprint id", async () => {
@@ -61,7 +61,7 @@ describe("logging", () => {
 
     await clearLog({ blueprintId });
 
-    await expect(count()).resolves.toStrictEqual(1);
+    await expect(count()).resolves.toBe(1);
   });
 
   test("sweep", async () => {
@@ -73,7 +73,7 @@ describe("logging", () => {
 
     await sweepLogs();
 
-    await expect(count()).resolves.toStrictEqual(937);
+    await expect(count()).resolves.toBe(937);
   });
 
   test("getLogEntries by blueprintId", async () => {

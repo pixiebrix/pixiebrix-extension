@@ -43,7 +43,7 @@ describe("recordEvent", () => {
   test("runs", async () => {
     await recordEvent({ event: "TestEvent", data: {} });
     const events = await flushEvents();
-    expect(events.length).toEqual(1);
+    expect(events).toHaveLength(1);
   });
 
   test("successfully persists concurrent telemetry events to local storage", async () => {
@@ -54,7 +54,7 @@ describe("recordEvent", () => {
     await Promise.all(recordTestEvents);
 
     const events = await flushEvents();
-    expect(events.length).toEqual(100);
+    expect(events).toHaveLength(100);
   });
 
   test("skip if feature flag off", async () => {

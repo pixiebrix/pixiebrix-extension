@@ -46,7 +46,7 @@ describe("InstalledEntry", () => {
   test("it renders not active element", async () => {
     const modComponent = modComponentFactory();
     const formState = formStateFactory();
-    const rendered = render(
+    const { asFragment } = render(
       <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
@@ -65,13 +65,13 @@ describe("InstalledEntry", () => {
     );
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders active element", async () => {
     const modComponent = modComponentFactory();
     const formState = formStateFactory();
-    const rendered = render(
+    const { asFragment } = render(
       <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
@@ -84,6 +84,6 @@ describe("InstalledEntry", () => {
     );
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

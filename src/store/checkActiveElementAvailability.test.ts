@@ -110,7 +110,7 @@ describe("checkActiveElementAvailability", () => {
 
     // Check both are unavailable
     expect(availability1.availableDynamicIds).toBeEmpty();
-    expect(availability1.unavailableDynamicCount).toStrictEqual(2);
+    expect(availability1.unavailableDynamicCount).toBe(2);
 
     // Make available element available
     const available = produce(availableDynamicExtension, (draft) => {
@@ -128,6 +128,6 @@ describe("checkActiveElementAvailability", () => {
     expect(availability2.availableDynamicIds).toStrictEqual([
       availableDynamicExtension.uuid,
     ]);
-    expect(availability2.unavailableDynamicCount).toStrictEqual(1);
+    expect(availability2.unavailableDynamicCount).toBe(1);
   });
 });

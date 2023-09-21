@@ -35,7 +35,7 @@ describe("defaultEventKey", () => {
         },
         {}
       )
-    ).toBe(null);
+    ).toBeNull();
   });
 
   it("prefers latest form", () => {
@@ -133,7 +133,7 @@ describe("defaultEventKey", () => {
 
 describe("eventKeyForEntry", () => {
   it.each([[undefined, null]])("returns null for %s", (value?: null) => {
-    expect(eventKeyForEntry(value)).toBe(null);
+    expect(eventKeyForEntry(value)).toBeNull();
   });
 
   it("uses recipeId for activateRecipe", () => {

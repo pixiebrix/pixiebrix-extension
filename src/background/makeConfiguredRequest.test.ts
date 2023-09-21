@@ -121,7 +121,7 @@ describe("unauthenticated direct requests", () => {
   it("makes an unauthenticated request", async () => {
     axiosMock.onAny().reply(200, {});
     const { status } = await performConfiguredRequest(null, requestConfig);
-    expect(status).toEqual(200);
+    expect(status).toBe(200);
   });
 
   it("requires absolute URL for unauthenticated requests", async () => {
@@ -159,7 +159,7 @@ describe("authenticated direct requests", () => {
       directIntegrationConfig,
       requestConfig
     );
-    expect(response.status).toEqual(200);
+    expect(response.status).toBe(200);
   });
 
   it("throws on missing local config", async () => {
@@ -206,7 +206,7 @@ describe("proxy service requests", () => {
       service_id: EXAMPLE_SERVICE_API,
       auth_id: proxiedIntegrationConfig.id,
     });
-    expect(status).toEqual(200);
+    expect(status).toBe(200);
     expect(data).toEqual({ foo: 42 });
   });
 

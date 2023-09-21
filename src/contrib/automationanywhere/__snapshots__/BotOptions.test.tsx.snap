@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`BotOptions should require selected integration 1`] = `
-<div>
+<DocumentFragment>
   <div
     class="formGroup form-group row"
   >
@@ -135,8 +135,7 @@ exports[`BotOptions should require selected integration 1`] = `
         class="text-muted form-text"
       >
         <span>
-          Select an integration configuration.
-           
+          Select an integration configuration. 
           <a
             href="chrome-extension://abcxyz/options.html#/services"
             rel="noopener noreferrer"
@@ -163,5 +162,5 @@ exports[`BotOptions should require selected integration 1`] = `
       </small>
     </div>
   </div>
-</div>
+</DocumentFragment>
 `;

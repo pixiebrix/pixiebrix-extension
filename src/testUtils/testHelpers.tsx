@@ -77,6 +77,7 @@ export const getChromeEventMocks = () => ({
  * "@testing-library/react-hooks"
  */
 export const waitForEffect = async () =>
+  // eslint-disable-next-line testing-library/no-unnecessary-act
   act(async () => {
     // Awaiting the async state update
   });
@@ -240,10 +241,10 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
         )
       : ({ children }) => <Provider store={store}>{children}</Provider>;
 
-    const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
+    const utils = render(ui, { wrapper: Wrapper, ...renderOptions });
 
     return {
-      ...renderResult,
+      ...utils,
       getReduxStore() {
         return store;
       },
@@ -334,13 +335,13 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
           </Provider>
         );
 
-    const renderResult = renderHook(hook, {
+    const utils = renderHook(hook, {
       wrapper: Wrapper,
       ...renderOptions,
     });
 
     return {
-      ...renderResult,
+      ...utils,
       getReduxStore() {
         return store;
       },

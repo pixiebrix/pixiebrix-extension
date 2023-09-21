@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectBlockContainerRendered"] }] */
-
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { render } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/bricks/registry";
 import { MarkdownRenderer } from "@/bricks/renderers/markdown";
@@ -85,18 +83,20 @@ describe("When rendered in panel", () => {
           className: "test-class",
         },
       };
-      const { container } = renderDocument(config);
+      renderDocument(config);
 
-      const element = container.querySelector(tagName);
+      const element = screen.getByRole("heading", {
+        level: Number(tagName.replace("h", "")),
+      });
 
-      expect(element).not.toBeNull();
+      expect(element).toBeInTheDocument();
       expect(element).toHaveClass("test-class");
       expect(element).toHaveTextContent("Test Header");
     }
   );
 
   test.each([1, 2, 3, 4, 5, 6])("renders tag for h%d", (headerLevel) => {
-    const { container } = renderDocument({
+    renderDocument({
       type: "header",
       config: {
         title: "Test Header",
@@ -104,7 +104,7 @@ describe("When rendered in panel", () => {
       },
     });
 
-    const element = container.querySelector(`h${headerLevel}`);
+    const element = screen.getByRole("heading", { level: headerLevel });
 
     expect(element).not.toBeNull();
     expect(element).toHaveTextContent("Test Header");
@@ -118,27 +118,27 @@ describe("When rendered in panel", () => {
         className: "test-class",
       },
     };
-    const { container } = renderDocument(config);
+    renderDocument(config);
 
-    const element = container.querySelector("p");
+    const element = screen.getByText("Test Paragraph");
 
     expect(element).not.toBeNull();
     expect(element).toHaveClass("test-class");
-    expect(element).toHaveTextContent("Test Paragraph");
   });
 
   test("does not render hidden element at root", () => {
+    const text = "Test Paragraph";
     const config: DocumentElement = {
       type: "text",
       config: {
-        text: "Test Paragraph",
+        text,
         className: "test-class",
         hidden: true,
       },
     };
-    const { container } = renderDocument(config);
-    const element = container.querySelector("p");
-    expect(element).toBeNull();
+    renderDocument(config);
+
+    expect(screen.queryByText(text)).toBeNull();
   });
 
   test("renders markdown", () => {
@@ -150,8 +150,8 @@ describe("When rendered in panel", () => {
         className: "test-class",
       },
     };
-    const rendered = renderDocument(config);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = renderDocument(config);
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders unknown type", () => {
@@ -160,14 +160,13 @@ describe("When rendered in panel", () => {
       type: "TheTypeForWhichAComponentIsNotDefined",
       className: "test-class",
     };
-    const { container } = renderDocument(config);
+    renderDocument(config);
 
-    const element = container.querySelector("div");
-
-    expect(element).not.toBeNull();
-    expect(element).toHaveTextContent(
-      "Unknown component type: TheTypeForWhichAComponentIsNotDefined"
-    );
+    expect(
+      screen.getByText(
+        /unknown component type: thetypeforwhichacomponentisnotdefined/i
+      )
+    ).toBeInTheDocument();
   });
 
   test("renders grid", () => {
@@ -229,26 +228,30 @@ describe("When rendered in panel", () => {
       ],
     } as DocumentElement;
 
-    const { container } = renderDocument(config);
+    renderDocument(config);
 
-    const bsContainer = container.querySelector(".container");
+    const bsContainer = screen.getByTestId("container");
     expect(bsContainer).not.toBeNull();
     expect(bsContainer).toHaveClass("container-test-class");
 
-    const rows = bsContainer.querySelectorAll(".row");
+    const rows = screen.getAllByTestId("row");
     expect(rows).toHaveLength(2);
 
     // First row should have 1 column with h1
-    expect(rows[0].querySelector(".col h1")).not.toBeNull();
+    const firstRowColumn = within(rows[0]).getByTestId("column");
+    expect(firstRowColumn).toBeInTheDocument();
+    expect(
+      within(firstRowColumn).getByRole("heading", { level: 1 })
+    ).toBeInTheDocument();
 
     // Second row should have a class and 2 columns
     const secondRow = rows[1];
     expect(secondRow).toHaveClass("row-test-class");
-    const columns = secondRow.querySelectorAll(".col");
+    const columns = within(secondRow).getAllByTestId("column");
     expect(columns).toHaveLength(2);
     expect(columns[0]).toHaveClass("column-test-class");
-    expect(columns[0].querySelector("p")).not.toBeNull();
-    expect(columns[1].querySelector("p")).not.toBeNull();
+    expect(within(columns[0]).getByText(/left column/i)).toBeInTheDocument();
+    expect(within(columns[1]).getByText(/right column/i)).toBeInTheDocument();
   });
 
   describe("button", () => {
@@ -265,8 +268,8 @@ describe("When rendered in panel", () => {
           },
         },
       };
-      const wrapper = renderDocument(config);
-      const element = wrapper.getByRole("button");
+      renderDocument(config);
+      const element = screen.getByRole("button");
 
       expect(element).not.toBeNull();
       expect(element).toHaveClass("test-class");
@@ -286,8 +289,8 @@ describe("When rendered in panel", () => {
           },
         },
       };
-      const wrapper = renderDocument(config);
-      const element = wrapper.getByRole("button");
+      renderDocument(config);
+      const element = screen.getByRole("button");
 
       expect(element).toHaveClass("btn-block");
     });
@@ -311,8 +314,8 @@ describe("When rendered in panel", () => {
             },
           },
         };
-        const wrapper = renderDocument(config);
-        const element = wrapper.getByRole("button");
+        renderDocument(config);
+        const element = screen.getByRole("button");
 
         expect(element).toHaveClass(className);
       }
@@ -332,8 +335,8 @@ describe("When rendered in panel", () => {
         },
       };
 
-      const wrapper = renderDocument(config);
-      const element = wrapper.getByRole("button");
+      renderDocument(config);
+      const element = screen.getByRole("button");
 
       expect(element).not.toBeNull();
       expect(element).toHaveClass("test-class");
@@ -350,17 +353,17 @@ describe("When rendered in panel", () => {
           heading: "Test Heading of Card",
         },
       };
-      const { container } = renderDocument(config);
+      renderDocument(config);
 
-      const rootElement = container.querySelector(".card");
-      expect(rootElement).not.toBeNull();
+      const rootElement = screen.getByTestId("card");
+      expect(rootElement).toBeInTheDocument();
       expect(rootElement).toHaveClass("test-class");
 
-      const cardHeading = rootElement.querySelector(".card-header");
+      const cardHeading = screen.getByTestId("card-header");
       expect(cardHeading).toHaveTextContent("Test Heading of Card");
 
-      const cardBody = rootElement.querySelector(".card-body");
-      expect(cardBody).not.toBeNull();
+      const cardBody = screen.getByTestId("card-body");
+      expect(cardBody).toBeInTheDocument();
     });
     test("renders card children", () => {
       const config: DocumentElement = {
@@ -378,12 +381,12 @@ describe("When rendered in panel", () => {
           },
         ],
       };
-      const { container } = renderDocument(config);
+      renderDocument(config);
 
-      const cardBody = container.querySelector(".card-body");
-      const paragraph = cardBody.querySelector("p");
-      expect(paragraph).not.toBeNull();
-      expect(paragraph).toHaveTextContent("Test body of card");
+      const cardBody = screen.getByTestId("card-body");
+      expect(
+        within(cardBody).getByText("Test body of card")
+      ).toBeInTheDocument();
     });
   });
 
@@ -408,26 +411,13 @@ config:
         markdown: ${markdown}`;
 
     const config = loadBrickYaml(yamlConfig) as DocumentElement;
-    const { container } = renderDocument(config);
+    renderDocument(config);
 
     // Wait for useAsyncState inside the PipelineComponent
     await waitForEffect();
 
-    expectBlockContainerRendered(container, markdownBlock.id);
-  });
-
-  function expectBlockContainerRendered(
-    container: HTMLElement,
-    blockId: string
-  ) {
-    // We can't query by the text because PipelineComponent -> PanelBody wraps it in a shadow dom. If we want to
-    // test against the shadow DOM, we could either: 1) mock react-shadow-dom to not use the shadow dom, or 2) use
-    // a library like https://www.npmjs.com/package/testing-library__dom
-
-    const blockContainer = container.querySelector(
-      `[data-block-id="${blockId}"]`
-    );
-    expect(blockContainer).not.toBeNull();
+    const blockContainer = screen.getByTestId(markdownBlock.id);
+    expect(blockContainer).toBeInTheDocument();
     expect(blockContainer).toHaveClass("full-height");
-  }
+  });
 });

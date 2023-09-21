@@ -36,11 +36,11 @@ describe("useSearchOptions", () => {
       editablePackageMetadataFactory({ kind: "Block" }),
     ];
 
-    const wrapper = renderHook(() => {
+    const { result } = renderHook(() => {
       const bricks = useEnrichBricks(packages);
       return useSearchOptions(bricks);
     });
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       collectionOptions: [{ label: "test", value: "test" }],
       kindOptions: [{ label: "Brick", value: "Brick" }],
       scopeOptions: [{ label: "[No Scope]", value: undefined }],
@@ -53,7 +53,7 @@ describe("WorkshopPage", () => {
     const { asFragment } = render(<WorkshopPage />);
 
     expect(
-      screen.queryByText(
+      screen.getByText(
         "To use the Workshop, you must first set an account alias for your PixieBrix account"
       )
     ).toBeInTheDocument();
@@ -91,7 +91,7 @@ describe("WorkshopPage", () => {
     ).not.toBeInTheDocument();
 
     expect(screen.queryByTestId("loader")).not.toBeInTheDocument();
-    expect(screen.queryByText("No records found.")).toBeInTheDocument();
+    expect(screen.getByText("No records found.")).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
   });

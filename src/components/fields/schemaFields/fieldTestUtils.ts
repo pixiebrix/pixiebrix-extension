@@ -16,16 +16,20 @@
  */
 
 import userEvent from "@testing-library/user-event";
-import { waitFor } from "@testing-library/react";
+import { waitFor, screen, within } from "@testing-library/react";
 
-export async function expectToggleOptions(
-  container: HTMLElement,
-  expected: string[]
-) {
-  // React Bootstrap dropdown does not render children items unless toggled
-  await userEvent.click(container.querySelector("button"));
+export async function expectToggleOptions(testId: string, expected: string[]) {
+  if (testId) {
+    // React Bootstrap dropdown does not render children items unless toggled
+    await userEvent.click(
+      within(screen.getByTestId(testId)).getAllByRole("button").at(0)
+    );
+  }
+
   const actual = new Set(
-    [...container.querySelectorAll("a")].map((x) => x.dataset.testid)
+    [...screen.queryAllByRole("button")]
+      .filter((x) => x.dataset.testid)
+      .map((x) => x.dataset.testid)
   );
   await waitFor(() => {
     expect(actual).toEqual(new Set(expected));

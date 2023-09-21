@@ -83,7 +83,7 @@ describe("installStarterBlueprints", () => {
     await debouncedInstallStarterMods();
     const { extensions } = await getModComponentState();
 
-    expect(extensions.length).toBe(1);
+    expect(extensions).toHaveLength(1);
     expect((refreshRegistries as jest.Mock).mock.calls).toHaveLength(1);
   });
 
@@ -118,7 +118,7 @@ describe("installStarterBlueprints", () => {
     await debouncedInstallStarterMods();
     const { extensions } = await getModComponentState();
 
-    expect(extensions.length).toBe(0);
+    expect(extensions).toHaveLength(0);
   });
 
   test("starter blueprints installation request fails", async () => {
@@ -131,7 +131,7 @@ describe("installStarterBlueprints", () => {
     await debouncedInstallStarterMods();
     const { extensions } = await getModComponentState();
 
-    expect(extensions.length).toBe(1);
+    expect(extensions).toHaveLength(1);
   });
 
   test("install starter blueprint with built-in auths", async () => {
@@ -192,7 +192,7 @@ describe("installStarterBlueprints", () => {
     await debouncedInstallStarterMods();
     const { extensions } = await getModComponentState();
 
-    expect(extensions.length).toBe(1);
+    expect(extensions).toHaveLength(1);
   });
 
   test("extension with no _recipe doesn't throw undefined error", async () => {
@@ -212,6 +212,6 @@ describe("installStarterBlueprints", () => {
     await debouncedInstallStarterMods();
     const { extensions } = await getModComponentState();
 
-    expect(extensions.length).toBe(2);
+    expect(extensions).toHaveLength(2);
   });
 });

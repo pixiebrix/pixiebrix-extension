@@ -41,8 +41,8 @@ beforeAll(() => {
 
 describe("CssClassWidget", () => {
   it("should render blank literal", () => {
-    const result = renderWidget("");
-    expect(result.asFragment()).toMatchSnapshot();
+    const { asFragment } = renderWidget("");
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("text align buttons", async () => {
