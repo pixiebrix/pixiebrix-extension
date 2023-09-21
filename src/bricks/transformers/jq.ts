@@ -26,7 +26,7 @@ import { applyJq } from "@/sandbox/messenger/executor";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { retryWithJitter } from "@/utils/promiseUtils";
 
-const jqStacktraceRegexp = /jq: error \(at <stdin>:0\): (?<message>.*)/;
+const jqStacktraceRegexp = /jq: error \(at \/dev\/stdin:0\): (?<message>.*)/;
 
 // https://github.com/fiatjaf/jq-web/issues/32
 const JSON_ERROR = "Unexpected end of JSON input";
