@@ -290,12 +290,7 @@ describe("known jq-web bugs and quirks", () => {
       )
     );
 
-    await expect(values).rejects.toThrow(
-      "Error opening stream, reload the page"
-    );
-
-    // Uncomment this when the bug in the dependency has been fixed
-    // await expect(values).resolves.toStrictEqual(range(3000).map((n) => n));
+    await expect(values).resolves.toStrictEqual(range(3000).map((n) => n));
   });
 
   test.skip("error using modulo operator in filter", async () => {
