@@ -20,8 +20,8 @@ import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import { AnnotationType } from "@/types/annotationTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
-import { type BaseFormState } from "@/pageEditor/starterBricks/elementConfig";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import { BaseFormState } from "@/pageEditor/baseFormStateTypes";
 
 describe("PageStateAnalysis", () => {
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(

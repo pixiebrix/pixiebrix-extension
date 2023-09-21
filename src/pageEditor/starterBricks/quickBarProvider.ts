@@ -33,10 +33,7 @@ import {
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
-import {
-  type ElementConfig,
-  type SingleLayerReaderConfig,
-} from "@/pageEditor/starterBricks/elementConfig";
+import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarProviderFormState } from "./formStateTypes";
 import {
@@ -45,6 +42,7 @@ import {
   QuickBarProviderStarterBrickABC,
 } from "@/starterBricks/quickBarProviderExtension";
 import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
+import { SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 
 function fromNativeElement(
   url: string,

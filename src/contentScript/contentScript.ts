@@ -29,6 +29,7 @@ import {
 } from "@/contentScript/ready";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { logPromiseDuration } from "@/utils/promiseUtils";
+import { startsWith } from "lodash";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -94,7 +95,10 @@ async function initContentScript() {
 // Support running in secure pages and about: pages, which are used by srcdoc frames
 // Note: Due to our permissive settings for content script running in frames, there
 // are cases where this can execute in a frame within an invalid parent context/protocol.
-if (ALLOWED_PROTOCOLS.includes(location.protocol) || DEBUG) {
+if (
+  !startsWith(location.href, "https://content-sheets.googleapis.com") &&
+  (ALLOWED_PROTOCOLS.includes(location.protocol) || DEBUG)
+) {
   // eslint-disable-next-line promise/prefer-await-to-then -- top-level await isn't available
   void initContentScript().catch((error) => {
     throw new Error("Error initializing contentScript", { cause: error });
