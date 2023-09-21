@@ -62,7 +62,7 @@ import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type BaseExtensionState,
   type BaseFormState,
-  SingleLayerReaderConfig,
+  type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
 
 export interface WizardStep {

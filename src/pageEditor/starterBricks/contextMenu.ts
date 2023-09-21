@@ -42,7 +42,7 @@ import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuC
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 
 function fromNativeElement(
   url: string,

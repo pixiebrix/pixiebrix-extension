@@ -42,7 +42,7 @@ import {
   QuickBarProviderStarterBrickABC,
 } from "@/starterBricks/quickBarProviderExtension";
 import QuickBarProviderConfiguration from "@/pageEditor/tabs/quickBarProvider/QuickBarProviderConfiguration";
-import { SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 
 function fromNativeElement(
   url: string,

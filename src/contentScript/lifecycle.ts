@@ -226,9 +226,6 @@ function checkLifecycleInvariants(): void {
  * being edited in the Page Editor.
  */
 export function getActiveExtensionPoints(): StarterBrick[] {
-  console.debug("contentScript:getActiveExtensionPoints", {
-    _activeExtensionPoints,
-  });
   return [..._activeExtensionPoints];
 }
 

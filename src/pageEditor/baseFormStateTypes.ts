@@ -31,7 +31,7 @@ import {
   type BrickPipeline,
   type NormalizedAvailability,
 } from "@/bricks/types";
-import { type Metadata, RegistryId } from "@/types/registryTypes";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation

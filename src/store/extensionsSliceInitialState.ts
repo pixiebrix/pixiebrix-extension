@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ModComponentState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 
 export const initialState: ModComponentState = {
   extensions: [],

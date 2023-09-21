@@ -32,8 +32,8 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  BaseFormStateV1,
-  BaseFormStateV2,
+  type BaseFormStateV1,
+  type BaseFormStateV2,
 } from "@/pageEditor/baseFormStateTypes";
 
 const initialStateV1: PersistedEditorStateV1 = {

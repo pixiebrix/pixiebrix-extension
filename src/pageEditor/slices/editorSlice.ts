@@ -92,9 +92,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { createMigrate } from "redux-persist";
 import { migrations } from "@/store/editorMigrations";
-import { StarterBrick } from "@/types/starterBrickTypes";
-import { getErrorMessage } from "@/errors/errorHelpers";
-import { BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -167,20 +165,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
   const elements = selectNotDeletedElements(thunkAPI.getState());
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
-  console.debug(
-    "checkAvailableInstalledExtensions - getting installed extension points"
-  );
-  let extensionPoints: StarterBrick[];
-  try {
-    extensionPoints = await getInstalledExtensionPoints(thisTab);
-  } catch (error) {
-    console.error(getErrorMessage(error));
-    throw error;
-  }
-
-  console.debug(
-    "checkAvailableInstalledExtensions - finished getting extension points"
-  );
+  const extensionPoints = await getInstalledExtensionPoints(thisTab);
   const installedExtensionPoints = new Map(
     extensionPoints.map((extensionPoint) => [extensionPoint.id, extensionPoint])
   );
@@ -995,5 +980,5 @@ export const persistEditorConfig = {
   storage: localStorage as StorageInterface,
   version: 2,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: ["isVarPopoverVisible", "error"],
+  blacklist: ["isVarPopoverVisible"],
 };

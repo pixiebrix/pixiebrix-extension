@@ -47,7 +47,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
 
 /**
  * Bricks to preview even if there's no trace.

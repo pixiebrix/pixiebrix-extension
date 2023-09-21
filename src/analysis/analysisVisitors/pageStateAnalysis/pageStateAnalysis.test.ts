@@ -21,7 +21,7 @@ import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pag
 import { AnnotationType } from "@/types/annotationTypes";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
-import { BaseFormState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
 
 describe("PageStateAnalysis", () => {
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(

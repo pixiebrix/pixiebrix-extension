@@ -42,7 +42,7 @@ import {
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type QuickBarFormState } from "./formStateTypes";
-import { SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
