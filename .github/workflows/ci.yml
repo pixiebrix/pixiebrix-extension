@@ -84,6 +84,11 @@ jobs:
       - run: "! grep 'loaded in a browser extension' dist/pageScript.js"
         name: Detect browser-polyfill in pageScript.js
 
+      # The messenger cannot be executed twice
+      # https://github.com/pixiebrix/webext-messenger/issues/88
+      - run: "! grep '__getTabData' dist/loadActivationEnhancements.js"
+        name: Detect webext-messenger in loadActivationEnhancements.js
+
       - uses: actions/upload-artifact@v3
         name: Save report.html
         with:
