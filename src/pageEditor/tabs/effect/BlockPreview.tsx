@@ -40,6 +40,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { makeServiceContext } from "@/services/integrationUtils";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
+import { type BaseExtensionPointState } from "@/pageEditor/starterBricks/elementConfig";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { type RegistryId } from "@/types/registryTypes";
@@ -47,7 +48,6 @@ import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
 
 /**
  * Bricks to preview even if there's no trace.

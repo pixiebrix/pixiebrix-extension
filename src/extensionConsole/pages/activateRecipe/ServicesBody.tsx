@@ -58,10 +58,9 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     useAuthOptions(),
     emptyAuthOptions
   );
-  const [
-    integrationDependenciesField,
-    { error: integrationDependenciesFieldError },
-  ] = useField<IntegrationDependency[]>("integrationDependencies");
+  const [field, { error }] = useField<IntegrationDependency[]>(
+    "integrationDependencies"
+  );
   const { data: serviceConfigs } = useGetIntegrationsQuery();
 
   const requiredServiceIds = useMemo(
@@ -95,7 +94,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     return true;
   }
 
-  const fieldsToShow: ValueField[] = integrationDependenciesField.value
+  const fieldsToShow: ValueField[] = field.value
     // We need to grab the index before filtering, because the index used
     // in the field name for AuthWidget needs to be consistent with the
     // index in field.value
@@ -104,11 +103,8 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
 
   return (
     <>
-      {typeof integrationDependenciesFieldError === "string" && (
-        <FieldAnnotationAlert
-          message={integrationDependenciesFieldError}
-          type={AnnotationType.Error}
-        />
+      {typeof error === "string" && (
+        <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
       )}
       {fieldsToShow.length > 0 && showOwnTitle && (
         <div className="mt-1">
@@ -117,10 +113,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
       )}
       {fieldsToShow.map(({ serviceId, index }) => (
         <div key={serviceId}>
-          <ServiceFieldError
-            servicesError={integrationDependenciesFieldError}
-            fieldIndex={index}
-          />
+          <ServiceFieldError servicesError={error} fieldIndex={index} />
           <Card className={styles.serviceCard}>
             <ServiceDescriptor
               serviceId={serviceId}
@@ -129,11 +122,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
             <AuthWidget
               authOptions={authOptions}
               integrationId={serviceId}
-              name={joinName(
-                integrationDependenciesField.name,
-                String(index),
-                "configId"
-              )}
+              name={joinName(field.name, String(index), "configId")}
               onRefresh={refreshAuthOptions}
             />
           </Card>

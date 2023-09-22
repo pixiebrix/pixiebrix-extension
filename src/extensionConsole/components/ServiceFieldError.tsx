@@ -39,10 +39,10 @@ const ServiceFieldError: React.FC<{
 
   if (
     typeof fieldError === "object" &&
-    "configId" in fieldError &&
-    typeof fieldError.configId === "string"
+    "config" in fieldError &&
+    typeof fieldError.config === "string"
   ) {
-    errorMessage = fieldError.configId;
+    errorMessage = fieldError.config;
   }
 
   if (isEmpty(errorMessage)) {

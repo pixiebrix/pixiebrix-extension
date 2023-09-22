@@ -28,6 +28,7 @@ import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, partition } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
+import { type ModComponentState } from "@/store/extensionsTypes";
 import { type Except } from "type-fest";
 import { assertModComponentNotResolved } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
@@ -48,7 +49,10 @@ import {
   getIntegrationIds,
   pickModDefinitionMetadata,
 } from "@/utils/modDefinitionUtils";
-import { initialState } from "@/store/extensionsSliceInitialState";
+
+export const initialState: ModComponentState = {
+  extensions: [],
+};
 
 type ActivateModComponentParam = {
   modComponentDefinition: ModComponentDefinition;

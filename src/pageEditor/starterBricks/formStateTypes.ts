@@ -50,16 +50,16 @@ import {
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
 import {
+  type BaseExtensionState,
+  type BaseExtensionPointState,
+  type SingleLayerReaderConfig,
+  type BaseFormState,
+} from "./elementConfig";
+import {
   type QuickBarProviderConfig,
   type QuickBarProviderDefaultOptions,
 } from "@/starterBricks/quickBarProviderExtension";
 import { type TourDefinition } from "@/starterBricks/tourExtension";
-import {
-  type BaseExtensionPointState,
-  type BaseExtensionState,
-  type BaseFormState,
-  type SingleLayerReaderConfig,
-} from "@/pageEditor/baseFormStateTypes";
 
 // ActionFormState
 type ActionExtensionState = BaseExtensionState &

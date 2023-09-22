@@ -22,6 +22,10 @@ import {
 } from "@/store/editorMigrations";
 import { initialState } from "@/pageEditor/slices/editorSlice";
 import { mapValues, omit } from "lodash";
+import {
+  type BaseFormStateV1,
+  type BaseFormStateV2,
+} from "@/pageEditor/starterBricks/elementConfig";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
   type IntegrationDependencyV1,
@@ -31,10 +35,6 @@ import { integrationDependencyFactory } from "@/testUtils/factories/integrationF
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
-import {
-  type BaseFormStateV1,
-  type BaseFormStateV2,
-} from "@/pageEditor/baseFormStateTypes";
 
 const initialStateV1: PersistedEditorStateV1 = {
   ...omit(initialState, "elements", "deletedElementsByRecipeId"),

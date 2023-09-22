@@ -37,12 +37,14 @@ import {
   type MenuDefinition,
 } from "@/starterBricks/contextMenu";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
+import {
+  type ElementConfig,
+  type SingleLayerReaderConfig,
+} from "@/pageEditor/starterBricks/elementConfig";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 
 function fromNativeElement(
   url: string,

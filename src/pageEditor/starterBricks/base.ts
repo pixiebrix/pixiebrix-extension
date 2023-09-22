@@ -30,6 +30,11 @@ import {
 import { registry } from "@/background/messenger/api";
 import type React from "react";
 import { createSitePattern } from "@/permissions/patterns";
+import {
+  type BaseExtensionState,
+  type BaseFormState,
+  type SingleLayerReaderConfig,
+} from "@/pageEditor/starterBricks/elementConfig";
 import { type Except } from "type-fest";
 import {
   isInnerDefinitionRegistryId,
@@ -59,11 +64,6 @@ import { isExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { deepPickBy } from "@/utils/objectUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
-import {
-  type BaseExtensionState,
-  type BaseFormState,
-  type SingleLayerReaderConfig,
-} from "@/pageEditor/baseFormStateTypes";
 
 export interface WizardStep {
   step: string;
