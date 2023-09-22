@@ -44,19 +44,22 @@ describe("useModViewItems", () => {
   it("creates entry for ModComponentBase", async () => {
     const modComponent = modComponentFactory() as ResolvedModComponent;
 
-    const wrapper = renderHook(() => useModViewItems([modComponent]), {
-      setupRedux(dispatch) {
-        dispatch(
-          extensionsSlice.actions.UNSAFE_setExtensions([
-            modComponent as unknown as ActivatedModComponent,
-          ])
-        );
-      },
-    });
+    const { waitForEffect, result } = renderHook(
+      () => useModViewItems([modComponent]),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            extensionsSlice.actions.UNSAFE_setExtensions([
+              modComponent as unknown as ActivatedModComponent,
+            ])
+          );
+        },
+      }
+    );
 
-    await wrapper.waitForEffect();
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       isLoading: false,
       modViewItems: [expect.toBeObject()],
     });
@@ -68,17 +71,22 @@ describe("useModViewItems", () => {
       _recipe: pickModDefinitionMetadata(recipe),
     });
 
-    const wrapper = renderHook(() => useModViewItems([recipe]), {
-      setupRedux(dispatch) {
-        dispatch(
-          extensionsSlice.actions.UNSAFE_setExtensions([activatedModComponent])
-        );
-      },
-    });
+    const { waitForEffect, result } = renderHook(
+      () => useModViewItems([recipe]),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            extensionsSlice.actions.UNSAFE_setExtensions([
+              activatedModComponent,
+            ])
+          );
+        },
+      }
+    );
 
-    await wrapper.waitForEffect();
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       isLoading: false,
       modViewItems: [expect.toBeObject()],
     });
@@ -94,17 +102,22 @@ describe("useModViewItems", () => {
       activatedModComponent
     );
 
-    const wrapper = renderHook(() => useModViewItems([unavailableRecipe]), {
-      setupRedux(dispatch) {
-        dispatch(
-          extensionsSlice.actions.UNSAFE_setExtensions([activatedModComponent])
-        );
-      },
-    });
+    const { waitForEffect, result } = renderHook(
+      () => useModViewItems([unavailableRecipe]),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            extensionsSlice.actions.UNSAFE_setExtensions([
+              activatedModComponent,
+            ])
+          );
+        },
+      }
+    );
 
-    await wrapper.waitForEffect();
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       isLoading: false,
       modViewItems: [expect.toBeObject()],
     });

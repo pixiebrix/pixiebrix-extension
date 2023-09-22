@@ -755,18 +755,18 @@ describe("Collecting available vars", () => {
       expect(annotations).toHaveLength(2);
 
       // Check warning is generated for @foo but not @element
-      expect(annotations[0].message).toEqual(
+      expect(annotations[0].message).toBe(
         'Variable "@foo" might not be defined'
       );
-      expect(annotations[0].position.path).toEqual(
+      expect(annotations[0].position.path).toBe(
         "extension.blockPipeline.0.config.body.0.config.element.__value__.config.text"
       );
 
       // Not available in to the peer element to the list
-      expect(annotations[1].message).toEqual(
+      expect(annotations[1].message).toBe(
         'Variable "@element" might not be defined'
       );
-      expect(annotations[1].position.path).toEqual(
+      expect(annotations[1].position.path).toBe(
         "extension.blockPipeline.0.config.body.1.config.text"
       );
     });
@@ -1033,7 +1033,7 @@ describe("Invalid template", () => {
 
     // Only the second (index = 1) block should be annotated
     expect(annotations).toHaveLength(1);
-    expect(annotations[0].position.path).toEqual(
+    expect(annotations[0].position.path).toBe(
       "extension.blockPipeline.1.config.message"
     );
   });

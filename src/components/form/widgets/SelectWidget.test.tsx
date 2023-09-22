@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 import selectEvent from "react-select-event";
 import SelectWidget, { type Option } from "./SelectWidget";
@@ -33,7 +33,7 @@ const options: Option[] = [
 
 test("renders value", () => {
   const name = "Name for Test";
-  const rendered = render(
+  const { asFragment } = render(
     <SelectWidget
       id="idForTest"
       name={name}
@@ -42,14 +42,14 @@ test("renders value", () => {
       onChange={jest.fn()}
     />
   );
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("calls onChange", async () => {
   const id = "idForTest";
   const name = "Name for Test";
   const onChangeMock = jest.fn();
-  const { container } = render(
+  render(
     <SelectWidget
       id={id}
       name={name}
@@ -60,10 +60,7 @@ test("calls onChange", async () => {
   );
 
   const optionToSelect = options[0];
-  await selectEvent.select(
-    container.querySelector(`#${id}`),
-    optionToSelect.label
-  );
+  await selectEvent.select(screen.getByRole("combobox"), optionToSelect.label);
 
   expect(onChangeMock).toHaveBeenCalledWith({
     target: {

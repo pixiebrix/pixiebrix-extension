@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import React, { type MutableRefObject } from "react";
 import VarMenu from "@/components/fields/schemaFields/widgets/varPopup/VarMenu";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -47,7 +47,7 @@ describe("VarMenu", () => {
   test("shows variables not available message", async () => {
     const formState = formStateFactory();
 
-    const wrapper = render(
+    render(
       <TestWrapper
         renderMenu={(inputElementRef) => (
           <VarMenu
@@ -69,14 +69,14 @@ describe("VarMenu", () => {
     await waitForEffect();
 
     expect(
-      wrapper.getByText("Available variables have not been computed yet.")
+      screen.getByText("Available variables have not been computed yet.")
     ).toBeInTheDocument();
   });
 
   test("shows view for unmatched top-level variable", async () => {
     const formState = formStateFactory();
 
-    const wrapper = render(
+    render(
       <TestWrapper
         renderMenu={(inputElementRef) => (
           <VarMenu
@@ -114,13 +114,13 @@ describe("VarMenu", () => {
     await waitForEffect();
 
     // Can't include @foo in query because it's within a span
-    expect(wrapper.queryByText("No variables found for")).toBeInTheDocument();
+    expect(screen.getByText("No variables found for")).toBeInTheDocument();
   });
 
   test("shows view for match", async () => {
     const formState = formStateFactory();
 
-    const wrapper = render(
+    const { asFragment } = render(
       <TestWrapper
         renderMenu={(inputElementRef) => (
           <VarMenu
@@ -158,12 +158,12 @@ describe("VarMenu", () => {
     await waitForEffect();
 
     expect(
-      wrapper.queryByText("No variables found for")
+      screen.queryByText("No variables found for")
     ).not.toBeInTheDocument();
 
     // @inp matches @input
-    expect(wrapper.queryByText("@input")).toBeInTheDocument();
+    expect(screen.getByText("@input")).toBeInTheDocument();
 
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

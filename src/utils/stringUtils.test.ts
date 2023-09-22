@@ -46,7 +46,7 @@ describe("string utilities", () => {
       splitStartingEmoji(
         "🏜️ using apples troublesome emoji with .trim()"
       ).rest.trim()
-    ).toStrictEqual("using apples troublesome emoji with .trim()");
+    ).toBe("using apples troublesome emoji with .trim()");
 
     expect(
       splitStartingEmoji("🏜️ using apples troublesome emoji with .trim()")

@@ -32,7 +32,7 @@ describe("getPipelineMap", () => {
     const pipeline = pipelineFactory();
     const pipelineMap = getPipelineMap(pipeline);
 
-    expect(Object.keys(pipelineMap).length).toBe(2);
+    expect(Object.keys(pipelineMap)).toHaveLength(2);
 
     const firstBlock = pipeline[0];
     expect(pipelineMap[firstBlock.instanceId]).toEqual({
@@ -70,7 +70,7 @@ describe("getPipelineMap", () => {
 
     const pipelineMap = getPipelineMap(pipeline);
 
-    expect(Object.keys(pipelineMap).length).toBe(3);
+    expect(Object.keys(pipelineMap)).toHaveLength(3);
 
     const subPipelineFirstBlock = subPipeline[0];
 
@@ -113,7 +113,7 @@ describe("getPipelineMap", () => {
 
     const pipelineMap = getPipelineMap(pipeline);
 
-    expect(Object.keys(pipelineMap).length).toBe(3);
+    expect(Object.keys(pipelineMap)).toHaveLength(3);
 
     const subPipelineFirstBlock = subPipeline[0];
     expect(pipelineMap[subPipelineFirstBlock.instanceId]).toEqual({

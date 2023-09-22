@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`UiPath Options Render integration selector 1`] = `
-<div>
+<DocumentFragment>
   <div
     class="formGroup form-group row"
   >
@@ -135,8 +135,7 @@ exports[`UiPath Options Render integration selector 1`] = `
         class="text-muted form-text"
       >
         <span>
-          Select an integration configuration.
-           
+          Select an integration configuration. 
           <a
             href="chrome-extension://abcxyz/options.html#/services"
             rel="noopener noreferrer"
@@ -163,11 +162,11 @@ exports[`UiPath Options Render integration selector 1`] = `
       </small>
     </div>
   </div>
-</div>
+</DocumentFragment>
 `;
 
 exports[`UiPath Options Render with selected dependency 1`] = `
-<div>
+<DocumentFragment>
   <div
     class="formGroup form-group row"
   >
@@ -301,8 +300,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
         class="text-muted form-text"
       >
         <span>
-          Select an integration configuration.
-           
+          Select an integration configuration. 
           <a
             href="chrome-extension://abcxyz/options.html#/services"
             rel="noopener noreferrer"
@@ -357,8 +355,7 @@ exports[`UiPath Options Render with selected dependency 1`] = `
           <div
             class="text-danger"
           >
-            Error loading options: 
-            No integration configured
+            Error loading options: No integration configured
           </div>
         </div>
         <div>
@@ -717,5 +714,5 @@ exports[`UiPath Options Render with selected dependency 1`] = `
       </div>
     </div>
   </div>
-</div>
+</DocumentFragment>
 `;

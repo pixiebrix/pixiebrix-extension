@@ -91,12 +91,12 @@ describe("JQueryReaderOptions", () => {
       property: makeVariableExpression("@foo"),
     };
 
-    const { container } = renderOptions(state);
+    renderOptions(state);
 
     await waitForEffect();
 
     expect(screen.queryByText("Add Property")).not.toBeInTheDocument();
-    expect(container.querySelector(".alert")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 
   it("shows workshop message variable selectors", async () => {
@@ -104,12 +104,12 @@ describe("JQueryReaderOptions", () => {
     state.extension.blockPipeline[0].config.selectors =
       makeVariableExpression("@foo");
 
-    const { container } = renderOptions(state);
+    renderOptions(state);
 
     await waitForEffect();
 
     expect(screen.queryByText("Add New Property")).not.toBeInTheDocument();
-    expect(container.querySelector(".alert")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 
   it("normalizes primitive selectors", async () => {
@@ -128,7 +128,7 @@ describe("JQueryReaderOptions", () => {
       screen.getByTestId(
         "toggle-extension.blockPipeline.0.config.selectors.property.selector"
       ).dataset.testSelected
-    ).toEqual("Selector");
+    ).toBe("Selector");
 
     expect(screen.getByPlaceholderText("Select an element")).toHaveValue("h1");
   });
@@ -152,12 +152,12 @@ describe("JQueryReaderOptions", () => {
       screen.getByTestId(
         "toggle-extension.blockPipeline.0.config.selectors.outer.selector"
       ).dataset.testSelected
-    ).toEqual("Selector");
+    ).toBe("Selector");
     expect(
       screen.getByTestId(
         "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector"
       ).dataset.testSelected
-    ).toEqual("Selector");
+    ).toBe("Selector");
 
     expect(screen.queryAllByText("Loading...")).toHaveLength(0);
   });
@@ -181,12 +181,12 @@ describe("JQueryReaderOptions", () => {
       screen.getByTestId(
         "toggle-extension.blockPipeline.0.config.selectors.outer.selector"
       ).dataset.testSelected
-    ).toEqual("Selector");
+    ).toBe("Selector");
     expect(
       screen.getByTestId(
         "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector"
       ).dataset.testSelected
-    ).toEqual("Selector");
+    ).toBe("Selector");
 
     expect(screen.queryAllByText("Loading...")).toHaveLength(0);
   });
@@ -284,7 +284,7 @@ describe("type options", () => {
         multi: false,
         find: {},
       })
-    ).toEqual("element");
+    ).toBe("element");
   });
 
   it("infers attribute", () => {
@@ -294,7 +294,7 @@ describe("type options", () => {
         multi: false,
         attr: "foo",
       })
-    ).toEqual("attr:foo");
+    ).toBe("attr:foo");
   });
 
   it("infers data attribute", () => {
@@ -304,7 +304,7 @@ describe("type options", () => {
         data: "foo",
         multi: false,
       })
-    ).toEqual("attr:data-foo");
+    ).toBe("attr:data-foo");
   });
 
   it("creates new option for unknown type", () => {

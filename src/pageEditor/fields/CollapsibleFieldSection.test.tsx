@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import React from "react";
 import userEvent from "@testing-library/user-event";
@@ -23,7 +23,7 @@ describe("CollapsibleFieldSection", () => {
   it("does not toggle on input click in header", async () => {
     const onToggle = jest.fn();
 
-    const wrapper = render(
+    render(
       <CollapsibleFieldSection
         title={<input name="foo" />}
         toggleExpanded={onToggle}
@@ -31,11 +31,11 @@ describe("CollapsibleFieldSection", () => {
       />
     );
 
-    await userEvent.click(wrapper.container.querySelector("input"));
+    await userEvent.click(screen.getByRole("textbox"));
 
     expect(onToggle).not.toHaveBeenCalled();
 
-    await userEvent.click(wrapper.container.querySelector("svg"));
+    await userEvent.click(screen.getByRole("img", { hidden: true }));
 
     expect(onToggle).toHaveBeenCalled();
   });

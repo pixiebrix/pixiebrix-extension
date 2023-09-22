@@ -16,16 +16,17 @@
  */
 
 import pDefer from "p-defer";
-import { act, renderHook } from "@testing-library/react-hooks";
+import { renderHook, act } from "@testing-library/react-hooks";
 import useAsyncState from "@/hooks/useAsyncState";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 describe("useAsyncState", () => {
   it("should handle resolve promise", async () => {
     const dependency = pDefer<number>();
 
-    const wrapper = renderHook(() => useAsyncState(dependency.promise, []));
+    const { result } = renderHook(() => useAsyncState(dependency.promise, []));
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       isFetching: true,
       isLoading: true,
       currentData: undefined,
@@ -39,9 +40,9 @@ describe("useAsyncState", () => {
 
     dependency.resolve(42);
 
-    await act(async () => {});
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       isFetching: false,
       isLoading: false,
       currentData: 42,
@@ -57,9 +58,9 @@ describe("useAsyncState", () => {
   it("should handle reject promise", async () => {
     const dependency = pDefer<number>();
 
-    const wrapper = renderHook(() => useAsyncState(dependency.promise, []));
+    const { result } = renderHook(() => useAsyncState(dependency.promise, []));
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       isFetching: true,
       isLoading: true,
       currentData: undefined,
@@ -73,9 +74,9 @@ describe("useAsyncState", () => {
 
     dependency.reject(new Error("Expected error"));
 
-    await act(async () => {});
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       isFetching: false,
       isLoading: false,
       currentData: undefined,
@@ -92,7 +93,7 @@ describe("useAsyncState", () => {
     let deferred = pDefer<number>();
     let factory = async () => deferred.promise;
 
-    const wrapper = renderHook(
+    const { result, rerender } = renderHook(
       ({ factory, dependency }) => useAsyncState(factory, [dependency]),
       {
         initialProps: {
@@ -106,7 +107,7 @@ describe("useAsyncState", () => {
       deferred.resolve(42);
     });
 
-    expect(wrapper.result.current).toEqual(
+    expect(result.current).toEqual(
       expect.objectContaining({
         data: 42,
         currentData: 42,
@@ -116,11 +117,9 @@ describe("useAsyncState", () => {
     deferred = pDefer<number>();
     factory = async () => deferred.promise;
 
-    await act(async () => {
-      wrapper.rerender({ factory, dependency: 43 });
-    });
+    rerender({ factory, dependency: 43 });
 
-    expect(wrapper.result.current).toEqual(
+    expect(result.current).toEqual(
       expect.objectContaining({
         data: 42,
         currentData: undefined,
@@ -132,7 +131,7 @@ describe("useAsyncState", () => {
       deferred.resolve(43);
     });
 
-    expect(wrapper.result.current).toEqual(
+    expect(result.current).toEqual(
       expect.objectContaining({
         data: 43,
         currentData: 43,
@@ -143,13 +142,16 @@ describe("useAsyncState", () => {
 
   it("should handle refetch for same arguments", async () => {
     const originalFactory = async () => 42;
-    const wrapper = renderHook((props) => useAsyncState(props, []), {
-      initialProps: originalFactory,
-    });
+    const { result, rerender } = renderHook(
+      (props) => useAsyncState(props, []),
+      {
+        initialProps: originalFactory,
+      }
+    );
 
-    await act(async () => {});
+    await waitForEffect();
 
-    expect(wrapper.result.current).toEqual(
+    expect(result.current).toEqual(
       expect.objectContaining({
         data: 42,
         currentData: 42,
@@ -159,16 +161,12 @@ describe("useAsyncState", () => {
     const deferred = pDefer<number>();
     const deferredFactory = async () => deferred.promise;
 
-    await act(async () => {
-      wrapper.rerender(deferredFactory);
-    });
+    rerender(deferredFactory);
 
     // Separate react to allow the factor to swap out
-    await act(async () => {
-      wrapper.result.current.refetch();
-    });
+    result.current.refetch();
 
-    expect(wrapper.result.current).toEqual(
+    expect(result.current).toEqual(
       expect.objectContaining({
         data: 42,
         currentData: 42,
@@ -180,7 +178,7 @@ describe("useAsyncState", () => {
       deferred.resolve(43);
     });
 
-    expect(wrapper.result.current).toEqual(
+    expect(result.current).toEqual(
       expect.objectContaining({
         data: 43,
         currentData: 43,

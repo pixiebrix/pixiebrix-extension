@@ -74,14 +74,14 @@ test("renders", async () => {
   const initialState = formStateFactory({ apiVersion: "v3" }, [
     brickConfigFactory({ id: block.id }),
   ]);
-  const rendered = renderBlockConfiguration(
+  const { asFragment } = renderBlockConfiguration(
     <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
     initialState
   );
 
   await waitForEffect();
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 describe("shows root mode", () => {

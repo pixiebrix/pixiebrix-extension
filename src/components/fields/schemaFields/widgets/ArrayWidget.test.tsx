@@ -21,7 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import userEvent from "@testing-library/user-event";
 import { stringToExpression } from "@/pageEditor/starterBricks/upgrade";
-import { render, screen } from "@/pageEditor/testHelpers";
+import { render, screen, within } from "@/pageEditor/testHelpers";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -142,7 +142,7 @@ describe("ArrayWidget", () => {
 
     // Open the field type toggle
     await userEvent.click(
-      screen.getByTestId(`toggle-${fieldName}.1`).querySelector("button")
+      within(screen.getByTestId(`toggle-${fieldName}.1`)).getByRole("button")
     );
 
     // Select "Remove" since we're in an array

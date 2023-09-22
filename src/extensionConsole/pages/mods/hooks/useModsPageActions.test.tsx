@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable jest/expect-expect -- assertions in expectActions helper function */
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectActions"] }] */
 /// <reference types="jest-extended" />
 
 import useModsPageActions, {

@@ -22,7 +22,7 @@ import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
 import { cleanup, perf } from "@/vendors/reactPerformanceTesting/perf";
 import { type RenderCountField } from "@/vendors/reactPerformanceTesting/perfTypes";
-import { act } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { render } from "@/pageEditor/testHelpers";
 import * as sinonTimers from "@sinonjs/fake-timers";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -68,9 +68,9 @@ afterEach(() => {
 });
 
 test("renders the DataTabJsonTree component", async () => {
-  const rendered = renderJsonTree();
+  const { asFragment } = renderJsonTree();
   await flushAsyncEffects();
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("doesn't re-render internal JSONTree on expand", async () => {
@@ -78,14 +78,14 @@ test("doesn't re-render internal JSONTree on expand", async () => {
   // See: https://onestepcode.com/testing-library-user-event-with-fake-timers/?utm_source=rss&utm_medium=rss&utm_campaign=testing-library-user-event-with-fake-timers
   const immediateUserEvent = userEvent.setup({ delay: null });
   const { renderCount } = perf(React);
-  const rendered = renderJsonTree();
+  renderJsonTree();
 
   await flushAsyncEffects();
 
   expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
 
   // Get the element to expand the tree
-  const bullet = rendered.container.querySelector("li > div > div");
+  const bullet = screen.getByText("▶");
 
   await immediateUserEvent.click(bullet);
 

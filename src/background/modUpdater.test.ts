@@ -231,7 +231,7 @@ describe("fetchModUpdates function", () => {
 
     await fetchModUpdates();
 
-    expect(axiosMock.history.post.length).toBe(1);
+    expect(axiosMock.history.post).toHaveLength(1);
     const payload = JSON.parse(String(axiosMock.history.post[0].data));
 
     expect(payload).toEqual({
@@ -292,10 +292,10 @@ describe("deactivateMod function", () => {
       editor: priorEditorState,
     });
 
-    expect(deactivatedModComponents.length).toEqual(2);
+    expect(deactivatedModComponents).toHaveLength(2);
     expect(deactivatedModComponents[0]._recipe.id).toEqual(modToDeactivate.id);
     expect(deactivatedModComponents[1]._recipe.id).toEqual(modToDeactivate.id);
-    expect(resultingState.extensions.length).toEqual(1);
+    expect(resultingState.extensions).toHaveLength(1);
 
     // Verify that deactivate removes the context menu UI globally. See call for explanation of why that's necessary.
     expect(uninstallContextMenuMock).toHaveBeenCalledTimes(2);
@@ -386,7 +386,7 @@ describe("updateModsIfUpdatesAvailable", () => {
     const resultingOptionsState = await getModComponentState();
 
     expect(resultingOptionsState).toEqual(priorOptionsState);
-    expect(axiosMock.history.get.length).toBe(1);
+    expect(axiosMock.history.get).toHaveLength(1);
   });
 
   it("should not update if no updates available", async () => {
@@ -428,9 +428,7 @@ describe("updateModsIfUpdatesAvailable", () => {
     await updateModsIfForceUpdatesAvailable();
 
     const resultingOptionsState = await getModComponentState();
-    expect(resultingOptionsState.extensions.length).toEqual(1);
-    expect(resultingOptionsState.extensions[0]._recipe.version).toEqual(
-      "2.0.1"
-    );
+    expect(resultingOptionsState.extensions).toHaveLength(1);
+    expect(resultingOptionsState.extensions[0]._recipe.version).toBe("2.0.1");
   });
 });

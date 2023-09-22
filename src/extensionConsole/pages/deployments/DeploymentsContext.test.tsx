@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from "react";
-import { render } from "@/extensionConsole/testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 import DeploymentsContext, {
   DeploymentsProvider,
 } from "@/extensionConsole/pages/deployments/DeploymentsContext";
@@ -25,7 +25,6 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import userEvent from "@testing-library/user-event";
-import { act } from "@testing-library/react";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
@@ -67,7 +66,7 @@ describe("DeploymentsContext", () => {
 
   it("don't error on activating empty list of deployments", async () => {
     axiosMock.onPost("/api/deployments/").reply(200, []);
-    const wrapper = render(
+    render(
       <DeploymentsProvider>
         <Component />
       </DeploymentsProvider>
@@ -75,19 +74,17 @@ describe("DeploymentsContext", () => {
 
     await waitForEffect();
 
-    expect(wrapper.queryAllByTestId("Component")).toHaveLength(1);
-    expect(wrapper.queryAllByTestId("Error")).toHaveLength(0);
+    expect(screen.queryAllByTestId("Component")).toHaveLength(1);
+    expect(screen.queryAllByTestId("Error")).toHaveLength(0);
 
-    await act(async () => {
-      await userEvent.click(wrapper.getByText("Update"));
-    });
+    await userEvent.click(screen.getByText("Update"));
   });
 
   it("activate single deployment from empty state", async () => {
     axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
     requestPermissionsMock.mockResolvedValue(true);
 
-    const wrapper = render(
+    const { getReduxStore } = render(
       <DeploymentsProvider>
         <Component />
       </DeploymentsProvider>
@@ -95,20 +92,18 @@ describe("DeploymentsContext", () => {
 
     await waitForEffect();
 
-    expect(wrapper.queryAllByTestId("Component")).toHaveLength(1);
-    expect(wrapper.queryAllByTestId("Error")).toHaveLength(0);
+    expect(screen.queryAllByTestId("Component")).toHaveLength(1);
+    expect(screen.queryAllByTestId("Error")).toHaveLength(0);
 
     axiosMock.reset();
 
-    await act(async () => {
-      await userEvent.click(wrapper.getByText("Update"));
-    });
+    await userEvent.click(screen.getByText("Update"));
 
     expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
     // No additional requests should be made
     expect(axiosMock.history.get).toHaveLength(0);
 
-    const { options } = wrapper.getReduxStore().getState();
+    const { options } = getReduxStore().getState();
     expect((options as ModComponentState).extensions).toHaveLength(1);
   });
 });

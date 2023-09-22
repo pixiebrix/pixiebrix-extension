@@ -50,7 +50,7 @@ describe("ReplaceTextEffect", () => {
         { logger, root: document } as BrickOptions
       );
 
-      expect(document.body.innerHTML).toEqual(
+      expect(document.body.innerHTML).toBe(
         '<div><mark style="background-color: yellow;">foo</mark>bar</div>'
       );
     }
@@ -67,7 +67,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><mark style="background-color: yellow;">fOo</mark>bAr</div>'
     );
   });
@@ -82,7 +82,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual("<div>fOobAr</div>");
+    expect(document.body.innerHTML).toBe("<div>fOobAr</div>");
   });
 
   test("escapes special chars in regex", async () => {
@@ -96,7 +96,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><mark style="background-color: yellow;">[fOo]</mark>bAr</div>'
     );
   });
@@ -111,7 +111,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div>foo<mark style="background-color: yellow;">bar</mark></div>'
     );
   });
@@ -126,7 +126,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div>fo<mark style="background-color: yellow;">oba</mark>r</div>'
     );
   });
@@ -145,7 +145,7 @@ describe("ReplaceTextEffect", () => {
       );
     }
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><mark style="background-color: yellow;">foo</mark>bar</div>'
     );
   });
@@ -162,7 +162,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><div><mark style="background-color: yellow;">foo</mark>bar</div></div>'
     );
   });
@@ -179,7 +179,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><mark style="background-color: yellow;">foo</mark>bar</div>'
     );
   });
@@ -196,7 +196,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       // `markjs` highlights with rgb
       '<div><mark style="background-color: rgb(160, 32, 240);">foo</mark>bar</div>'
     );
@@ -214,7 +214,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><mark style="background-color: yellow;">foo</mark>bar<mark style="background-color: yellow;">foo</mark></div>'
     );
   });
@@ -231,7 +231,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><div><mark style="background-color: yellow;">foo</mark></div><div><mark style="background-color: yellow;">foo</mark></div></div>'
     );
   });
@@ -248,8 +248,8 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.head.innerHTML).toEqual("<title>Support page</title>");
-    expect(document.body.innerHTML).toEqual(
+    expect(document.head.innerHTML).toBe("<title>Support page</title>");
+    expect(document.body.innerHTML).toBe(
       '<h1><mark style="background-color: yellow;">Sup</mark>erlatives Abound</h1>'
     );
   });
@@ -267,7 +267,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual("<div><mark>foo</mark>bar</div>");
+    expect(document.body.innerHTML).toBe("<div><mark>foo</mark>bar</div>");
   });
 
   test("sanitize HTML", async () => {
@@ -284,7 +284,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       // The text content was sanitized
       "<div><mark style=\"background-color: yellow;\">&lt;script&gt;alert('xss')&lt;/script&gt;</mark></div>"
     );
@@ -303,7 +303,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><h1><mark style="background-color: yellow;">foo</mark>bar</h1><h2>foobaz</h2></div>'
     );
   });
@@ -320,7 +320,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div><span><mark style="background-color: yellow;">foo</mark></span><span><mark style="background-color: yellow;">bar</mark></span></div>'
     );
   });

@@ -86,5 +86,5 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: "release"
+          SLACK_CHANNEL: "release-notifications"
           SLACK_MESSAGE: "Chrome release build succeeded :rocket:"

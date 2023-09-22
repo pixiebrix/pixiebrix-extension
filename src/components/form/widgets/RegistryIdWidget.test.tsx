@@ -54,8 +54,9 @@ describe("RegistryIdWidget", () => {
       },
     });
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const scopeInput = container.querySelector("input[name='testField-scope']");
-    const idInput = screen.getByTestId("registryId-testField-id");
+    const idInput = screen.getByRole("textbox");
 
     expect(scopeInput).toHaveValue(testUserScope);
     expect(idInput).toHaveValue(testIdValue);
@@ -144,7 +145,7 @@ describe("RegistryIdWidget", () => {
       ],
     });
 
-    const { container } = render(<RegistryIdWidget name="testField" />, {
+    render(<RegistryIdWidget name="testField" />, {
       initialValues: { testField: id },
       setupRedux(dispatch) {
         dispatch(authActions.setAuth(authState));
@@ -152,12 +153,11 @@ describe("RegistryIdWidget", () => {
     });
 
     await userEvent.click(screen.getByText(testUserScope));
-    // Using the hardcoded id of the DOM element as the easiest option to access an element within React Select
-    const reactSelectOptionsSelector = "#react-select-5-listbox div";
-    const reactSelectOptions = container.querySelector(
-      reactSelectOptionsSelector
-    );
 
+    // eslint-disable-next-line testing-library/no-node-access
+    const reactSelectOptions = screen.getByRole("combobox").closest("div");
+
+    // eslint-disable-next-line testing-library/no-node-access
     expect(reactSelectOptions.children).toHaveLength(1);
   });
 });

@@ -88,7 +88,7 @@ describe("cachePromise", () => {
 
     deferred[0].resolve(42);
 
-    await expect(cached1).resolves.toEqual(42);
-    await expect(cached2).resolves.toEqual(42);
+    await expect(cached1).resolves.toBe(42);
+    await expect(cached2).resolves.toBe(42);
   });
 });
