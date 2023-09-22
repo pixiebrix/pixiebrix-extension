@@ -52,14 +52,15 @@ const punctuation = [...".,;:?!"];
 export function smartAppendPeriod(string: string): string {
   const trimmed = string.trimEnd();
   const [secondLastChar = "", lastChar = ""] = trimmed.slice(-2);
-  if (punctuation.includes(lastChar) || punctuation.includes(secondLastChar)) {
-    // Already punctuated
+
+  const isAlreadyPunctuated =
+    punctuation.includes(lastChar) || punctuation.includes(secondLastChar);
+  if (isAlreadyPunctuated) {
     return trimmed;
   }
 
-  // Else: No punctuation, find where to place it
-
-  if (lastChar === '"' || lastChar === "'") {
+  const endsInAQuotation = lastChar === '"' || lastChar === "'";
+  if (endsInAQuotation) {
     return trimmed.slice(0, -1) + "." + lastChar;
   }
 
