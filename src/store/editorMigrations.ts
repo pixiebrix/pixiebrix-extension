@@ -21,11 +21,11 @@ import {
 } from "redux-persist/es/types";
 import { type Except } from "type-fest";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
+import { mapValues, omit } from "lodash";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
-} from "@/pageEditor/starterBricks/elementConfig";
-import { mapValues, omit } from "lodash";
+} from "@/pageEditor/baseFormStateTypes";
 
 /**
  * @deprecated - Do not use versioned state types directly, exported for testing

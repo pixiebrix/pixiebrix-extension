@@ -28,8 +28,8 @@ import {
   setReduxStorage,
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
-import { initialState } from "@/store/extensionsSlice";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { initialState } from "@/store/extensionsSliceInitialState";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
 

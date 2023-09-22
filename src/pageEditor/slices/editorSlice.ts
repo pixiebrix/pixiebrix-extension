@@ -79,7 +79,6 @@ import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
-import { type BaseExtensionPointState } from "@/pageEditor/starterBricks/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
@@ -93,6 +92,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { createMigrate } from "redux-persist";
 import { migrations } from "@/store/editorMigrations";
+import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
