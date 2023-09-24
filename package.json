@@ -129,7 +129,7 @@
     "react-redux": "^7.2.4",
     "react-router": "5.3.4",
     "react-router-dom": "^5.3.4",
-    "react-select": "^5.7.4",
+    "react-select": "^5.7.5",
     "react-select-virtualized": "^5.5.0",
     "react-shadow": "^20.4.0",
     "react-spinners": "^0.13.0",
