@@ -212,7 +212,7 @@
     "@types/lodash": "^4.14.198",
     "@types/mark.js": "^8.11.8",
     "@types/mustache": "^4.1.2",
-    "@types/nunjucks": "^3.2.3",
+    "@types/nunjucks": "^3.2.4",
     "@types/object-hash": "^2.1.1",
     "@types/papaparse": "^5.3.8",
     "@types/psl": "^1.1.0",
