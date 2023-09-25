@@ -71,7 +71,7 @@ export async function selectExtraContext(
 ): Promise<JsonObject & { extensionVersion: SemVerString }> {
   const { version } = browser.runtime.getManifest();
   const extensionVersion = validateSemVerString(version);
-  let extraContext: JsonObject & { extensionVersion: SemVerString } = {
+  const extraContext: JsonObject & { extensionVersion: SemVerString } = {
     extensionVersion,
   };
 
@@ -85,10 +85,7 @@ export async function selectExtraContext(
     axiosError &&
     ((await flagOn("enterprise-telemetry")) || (await isAppRequest(axiosError)))
   ) {
-    extraContext = {
-      ...extraContext,
-      url: selectAbsoluteUrl(axiosError.config),
-    };
+    extraContext.url = selectAbsoluteUrl(axiosError.config);
   }
 
   const { name, stack, code, cause } = error;
