@@ -177,7 +177,9 @@ export function wizardStateFactory({
       Yup.object().test(
         "integrationConfigsRequired",
         "Please select a configuration",
-        (value) => value.id === PIXIEBRIX_INTEGRATION_ID || value.config != null
+        (value) =>
+          value.integrationId === PIXIEBRIX_INTEGRATION_ID ||
+          value.configId != null
       )
     ),
     optionsArgs: optionsValidationSchema,
