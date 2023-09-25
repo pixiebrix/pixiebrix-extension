@@ -153,10 +153,16 @@ function isBadRequestResponse(
 export function isSingleObjectBadRequestError(
   error: unknown
 ): error is AxiosError<BadRequestObjectData> {
+  if (!isAxiosError(error)) {
+    return false;
+  }
+
+  if (!error.response) {
+    return false;
+  }
+
   return (
-    isAxiosError(error) &&
-    isBadRequestResponse(error.response) &&
-    !Array.isArray(error.response.data)
+    isBadRequestResponse(error.response) && !Array.isArray(error.response.data)
   );
 }
 
@@ -205,16 +211,10 @@ function selectServerErrorMessage(response: AxiosResponse): string | null {
       ? response.data.find((x) => isEmpty(x))
       : response.data;
 
-    // Prefer object-level errors
-    if (data?.non_field_errors) {
-      return data.non_field_errors[0];
-    }
+    const objectLevelError = data?.non_field_errors?.[0];
+    const arbitraryFieldMessage = data ? Object.values(data)[0]?.[0] : null;
 
-    // Take an arbitrary field
-    const fieldMessages = Object.values(data)[0];
-
-    // Take an arbitrary message
-    return fieldMessages[0];
+    return objectLevelError ?? arbitraryFieldMessage ?? null;
   }
 
   // Handle 4XX responses created by DRF
@@ -227,6 +227,7 @@ function selectServerErrorMessage(response: AxiosResponse): string | null {
   // to avoid dumping JSON to the user
   if (
     typeof response.data === "string" &&
+    typeof response.headers["content-type"] === "string" &&
     ["text/plain", "application/json"].includes(
       response.headers["content-type"]
     )
