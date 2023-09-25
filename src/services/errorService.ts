@@ -91,12 +91,11 @@ export async function selectExtraContext(
     };
   }
 
-  const { name, message, stack, code, cause } = error;
+  const { name, stack, code, cause } = error;
 
   return {
     ...extraContext,
     name,
-    message,
     stack,
     ...(cause ? { cause: cause as JsonValue } : {}),
     code,
