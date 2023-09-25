@@ -54,12 +54,9 @@ const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
 // See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
 // and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
 const cleanUpStarterBrickForElement = (
-  element: EditorState["elements"][number] | null
+  element: EditorState["elements"][number]
 ) => {
-  if (
-    !element ||
-    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(element.type)
-  ) {
+  if (STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(element.type)) {
     return;
   }
 
@@ -88,6 +85,10 @@ const PanelContent: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (!activeElement) {
+      return;
+    }
+
     cleanUpStarterBrickForElement(activeElement);
   }, [activeElement]);
 
