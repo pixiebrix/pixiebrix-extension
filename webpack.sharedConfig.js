@@ -59,7 +59,7 @@ const shared = {
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!@pixiebrix)/,
         options: {
           transpileOnly: true,
         },

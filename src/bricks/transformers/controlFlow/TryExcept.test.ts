@@ -78,6 +78,6 @@ describe("TryExcept", () => {
       simpleInput({}),
       testOptions("v3")
     );
-    expect(result).toStrictEqual(null);
+    expect(result).toBeNull();
   });
 });

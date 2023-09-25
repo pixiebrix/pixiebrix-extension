@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadOptions } from "@/store/extensionsStorage";
+import { getModComponentState } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
@@ -416,7 +416,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
   console.debug("lifecycle:loadPersistedExtensions");
   const options = await logPromiseDuration(
     "loadPersistedExtensions:loadOptions",
-    loadOptions()
+    getModComponentState()
   );
 
   // Exclude the following:

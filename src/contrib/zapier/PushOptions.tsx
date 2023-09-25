@@ -24,7 +24,10 @@ import { type Webhook } from "@/contrib/zapier/contract";
 import { pixiebrixConfigurationFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
-import { containsPermissions, proxyService } from "@/background/messenger/api";
+import {
+  containsPermissions,
+  performConfiguredRequestInBackground,
+} from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
@@ -46,14 +49,13 @@ function useHooks(): {
   error: unknown;
 } {
   const [hooks, isPending, error] = useAsyncState(async () => {
-    const { data } = await proxyService<{ new_push_fields: Webhook[] }>(
-      await pixiebrixConfigurationFactory(),
-      {
-        baseURL: await getBaseURL(),
-        url: "/api/webhooks/hooks/",
-        method: "get",
-      }
-    );
+    const { data } = await performConfiguredRequestInBackground<{
+      new_push_fields: Webhook[];
+    }>(await pixiebrixConfigurationFactory(), {
+      baseURL: await getBaseURL(),
+      url: "/api/webhooks/hooks/",
+      method: "get",
+    });
 
     return data.new_push_fields;
   }, []);

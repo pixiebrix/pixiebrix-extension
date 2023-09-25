@@ -60,9 +60,9 @@ describe("ModsPageLayout", () => {
   });
 
   test("renders", async () => {
-    const rendered = render(<ModsPageLayout mods={mods} />);
+    const { asFragment } = render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("doesn't flash the 'Get Started' tab while loading", async () => {
@@ -81,18 +81,18 @@ describe("ModsPageLayout", () => {
 
     await waitForEffect();
     expect(
-      screen.queryByText("Welcome to the PixieBrix Extension Console")
+      screen.getByText("Welcome to the PixieBrix Extension Console")
     ).not.toBeNull();
-    expect(screen.queryByText("Get Started")).not.toBeNull();
+    expect(screen.getByText("Get Started")).not.toBeNull();
   });
 
   test("get started tab is active by default", async () => {
     render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(
-      screen.queryByText("Welcome to the PixieBrix Extension Console")
+      screen.getByText("Welcome to the PixieBrix Extension Console")
     ).not.toBeNull();
-    expect(screen.queryByText("Get Started")).not.toBeNull();
+    expect(screen.getByText("Get Started")).not.toBeNull();
     expect(screen.getByTestId("get-started-mod-tab")).toHaveClass("active");
   });
 
@@ -168,7 +168,7 @@ describe("ModsPageLayout", () => {
       },
     });
     await waitForEffect();
-    expect(screen.queryByText("Bot Games")).not.toBeNull();
+    expect(screen.getByText("Bot Games")).not.toBeNull();
     expect(screen.getByTestId("bot-games-mod-tab")).toHaveClass("active");
   });
 
@@ -185,7 +185,7 @@ describe("ModsPageLayout", () => {
     act(() => {
       jest.runAllTimers();
     });
-    expect(screen.queryByText('0 results for "hello world"')).not.toBeNull();
+    expect(screen.getByText('0 results for "hello world"')).not.toBeNull();
 
     await user.type(
       screen.getByTestId("blueprints-search-input"),
@@ -195,7 +195,7 @@ describe("ModsPageLayout", () => {
       jest.runAllTimers();
     });
     expect(
-      screen.queryByText('0 results for "hello world hello world again!"')
+      screen.getByText('0 results for "hello world hello world again!"')
     ).not.toBeNull();
   });
 });

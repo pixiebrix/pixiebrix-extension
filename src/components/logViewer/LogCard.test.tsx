@@ -16,7 +16,7 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 import { Provider } from "react-redux";
 import LogCard from "./LogCard";
@@ -45,16 +45,16 @@ function renderLogCard(state?: LogState) {
 }
 
 test("shows loader", () => {
-  const rendered = renderLogCard({
+  renderLogCard({
     ...initialLogState,
     isLoading: true,
   });
 
-  expect(rendered.getByTestId("loader")).toBeInTheDocument();
+  expect(screen.getByTestId("loader")).toBeInTheDocument();
 });
 
 test("renders empty table", () => {
-  const rendered = renderLogCard();
+  const { asFragment } = renderLogCard();
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });

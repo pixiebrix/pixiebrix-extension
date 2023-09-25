@@ -23,17 +23,20 @@ import { persistReducer } from "redux-persist";
 import { appApi, useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import servicesSlice, {
-  persistServicesConfig,
-} from "@/store/services/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
+import integrationsSlice, {
+  persistIntegrationsConfig,
+} from "@/store/integrations/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { type Me } from "@/types/contract";
 
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
-      services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+      integrations: persistReducer(
+        persistIntegrationsConfig,
+        integrationsSlice.reducer
+      ),
       settings: settingsSlice.reducer,
     },
     preloadedState: initialState,

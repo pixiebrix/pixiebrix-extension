@@ -30,7 +30,7 @@ import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/Work
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produce } from "immer";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker";
 import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";

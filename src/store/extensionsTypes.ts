@@ -21,9 +21,9 @@ import {
 } from "@/types/modComponentTypes";
 
 /**
- * @deprecated use PersistedOptionsState - this is only used in the migration
+ * @deprecated - Do not use versioned state types directly
  */
-export type LegacyModComponentObjectShapeState = {
+export type ModComponentStateV0 = {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
   extensions: {
     // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
@@ -33,22 +33,22 @@ export type LegacyModComponentObjectShapeState = {
   };
 };
 
-export type ModComponentOptionsState = {
-  extensions: ActivatedModComponent[];
-};
-
 /**
- * @deprecated use ModComponentOptionsState - this is only used in a migration
+ * @deprecated - Do not use versioned state types directly
  */
-export type LegacyModComponentObjectState = {
+export type ModComponentStateV1 = {
   extensions: UnresolvedModComponent[];
 };
 
-export type OptionsState =
-  | LegacyModComponentObjectShapeState
-  | LegacyModComponentObjectState
-  | ModComponentOptionsState;
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentStateV2 = {
+  extensions: ActivatedModComponent[];
+};
+
+export type ModComponentState = ModComponentStateV2;
 
 export type ModComponentsRootState = {
-  options: OptionsState;
+  options: ModComponentState;
 };

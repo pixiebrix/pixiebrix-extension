@@ -33,8 +33,9 @@ const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
  */
 function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | null> {
   const { integrationDependencies } = useContext(ModIntegrationsContext);
+  // Dependency may not exist, do not destructure here
   const googleDependency = integrationDependencies.find(
-    (dependency) => dependency.id === GOOGLE_PKCE_INTEGRATION_ID
+    ({ integrationId }) => integrationId === GOOGLE_PKCE_INTEGRATION_ID
   );
   const { flagOff } = useFlags();
 
@@ -43,14 +44,14 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
       return null;
     }
 
-    if (googleDependency?.config == null) {
+    if (googleDependency?.configId == null) {
       return null;
     }
 
     try {
       return await services.locate(
-        googleDependency.id,
-        googleDependency.config
+        googleDependency.integrationId,
+        googleDependency.configId
       );
     } catch (error: unknown) {
       reportError(error);

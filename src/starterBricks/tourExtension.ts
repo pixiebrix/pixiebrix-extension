@@ -42,7 +42,7 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import {
   cancelAllTours,
@@ -152,7 +152,9 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     const initialValues: InitialValues = {
       input: ctxt,
       root: document,
-      serviceContext: await makeServiceContext(extension.services),
+      serviceContext: await makeServiceContext(
+        extension.integrationDependencies
+      ),
       optionsArgs: extension.optionsArgs,
     };
 

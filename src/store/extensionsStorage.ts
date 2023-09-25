@@ -17,43 +17,27 @@
 
 import { localStorage } from "redux-persist-webextension-storage";
 import { createMigrate } from "redux-persist";
-import {
-  migrateActiveExtensions,
-  migrateExtensionsShape,
-  migrations,
-} from "@/store/extensionsMigrations";
-import { type ModComponentOptionsState } from "./extensionsTypes";
+import { migrations } from "@/store/extensionsMigrations";
+import { type ModComponentState } from "./extensionsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { type RegistryId } from "@/types/registryTypes";
-import { compact } from "lodash";
+import { compact, isEmpty } from "lodash";
 import { boolean } from "@/utils/typeUtils";
 import {
   readReduxStorage,
-  type ReduxStorageKey,
   setReduxStorage,
+  validateReduxStorageKey,
 } from "@/utils/storageUtils";
+import { initialState } from "@/store/extensionsSlice";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 
-const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
+const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
 
-type JSONString = string;
-
-type PersistedOptionsState = Record<string, JSONString>;
-
-async function getOptionsState(): Promise<PersistedOptionsState> {
-  return readReduxStorage(STORAGE_KEY, {});
-}
-
-/**
- * Read extension options from local storage (without going through redux-persistor).
- */
-export async function loadOptions(): Promise<ModComponentOptionsState> {
-  const base = await getOptionsState();
-  // The redux persist layer persists the extensions value as JSON-string.
-  // Also apply the upgradeExtensionsState migration here because the migration in store might not have run yet.
-  return migrateActiveExtensions(
-    migrateExtensionsShape({
-      extensions: JSON.parse(base.extensions ?? "[]"),
-    })
+export async function getModComponentState(): Promise<ModComponentState> {
+  return readReduxStorage<ModComponentState>(
+    STORAGE_KEY,
+    migrations,
+    initialState
   );
 }
 
@@ -61,29 +45,28 @@ export async function loadOptions(): Promise<ModComponentOptionsState> {
  * Returns the set of currently activated mod ids. Reads current activated mods from storage.
  */
 export async function getActivatedModIds(): Promise<Set<RegistryId>> {
-  const options = await loadOptions();
+  const modComponentState = await getModComponentState();
 
-  if (!options) {
+  if (isEmpty(modComponentState?.extensions)) {
     return new Set();
   }
 
   return new Set(
-    compact(options.extensions.map((extension) => extension._recipe?.id))
+    compact(modComponentState.extensions.map(({ _recipe }) => _recipe?.id))
   );
 }
 
 /**
- * Save extension options to local storage (without going through redux-persistor).
+ * Save mod component state to local storage (without going through redux-persistor).
  */
-export async function saveOptions(
-  state: ModComponentOptionsState
+export async function saveModComponentState(
+  state: ModComponentState
 ): Promise<void> {
-  const base = await getOptionsState();
-  await setReduxStorage(STORAGE_KEY, {
-    ...base,
-    // The redux persist layer persists the extensions value as a JSON-string
-    extensions: JSON.stringify(state.extensions),
-  });
+  await setReduxStorage(
+    STORAGE_KEY,
+    state,
+    getMaxMigrationsVersion(migrations)
+  );
 }
 
 export const persistExtensionOptionsConfig = {

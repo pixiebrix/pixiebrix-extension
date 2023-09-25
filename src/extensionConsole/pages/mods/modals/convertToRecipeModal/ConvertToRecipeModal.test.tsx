@@ -17,7 +17,7 @@
 
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
-import { render } from "@/extensionConsole/testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -63,7 +63,7 @@ describe("it renders", () => {
   test("default state", () => {
     const standaloneModDefinition = standaloneModDefinitionFactory();
 
-    const rendered = render(<ConvertToRecipeModal />, {
+    render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
@@ -79,14 +79,14 @@ describe("it renders", () => {
       },
     });
 
-    const dialogRoot = rendered.getByRole("dialog");
+    const dialogRoot = screen.getByRole("dialog");
     expect(dialogRoot).toMatchSnapshot();
   });
 
   test("requires user scope", async () => {
     const standaloneModDefinition = standaloneModDefinitionFactory();
 
-    const rendered = render(<ConvertToRecipeModal />, {
+    render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(anonAuth));
         dispatch(
@@ -103,11 +103,11 @@ describe("it renders", () => {
     });
 
     // Scope input field is on the screen
-    const scopeInput = await rendered.findAllByLabelText("Account Alias");
+    const scopeInput = await screen.findAllByLabelText("Account Alias");
     expect(scopeInput).not.toBeNull();
 
     // Screen matches the snapshot
-    const dialogRoot = rendered.getByRole("dialog");
+    const dialogRoot = screen.getByRole("dialog");
     expect(dialogRoot).toMatchSnapshot();
   });
 
@@ -139,7 +139,7 @@ describe("it renders", () => {
 
       const standaloneModDefinition = standaloneModDefinitionFactory();
 
-      const rendered = render(
+      const { getReduxStore } = render(
         <div>
           <ConvertToRecipeModal />
         </div>,
@@ -160,18 +160,18 @@ describe("it renders", () => {
         }
       );
 
-      const submit = await rendered.findByRole("button", {
+      const submit = await screen.findByRole("button", {
         name: "Save and Continue",
       });
       await userEvent.click(submit);
 
       const modalState = selectModalsContext(
-        rendered.getReduxStore().getState() as RootState
+        getReduxStore().getState() as RootState
       );
 
       expect(modalState[contextToBeEmpty]).toBeNull();
       expect(modalState[sharingContext].extensionId).toBeUndefined();
-      expect(modalState[sharingContext].blueprintId).not.toBeUndefined();
+      expect(modalState[sharingContext].blueprintId).toBeDefined();
     }
   );
 
@@ -192,7 +192,7 @@ describe("it renders", () => {
       deleteCloudExtensionMock,
     ]);
 
-    const rendered = render(<ConvertToRecipeModal />, {
+    const { getReduxStore } = render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
@@ -203,7 +203,7 @@ describe("it renders", () => {
       },
     });
 
-    const submit = await rendered.findByRole("button", {
+    const submit = await screen.findByRole("button", {
       name: "Save and Continue",
     });
     await userEvent.click(submit);
@@ -212,10 +212,10 @@ describe("it renders", () => {
     expect(deleteCloudExtensionMock).toHaveBeenCalled();
 
     const showShareContext = selectShowShareContext(
-      rendered.getReduxStore().getState() as RootState
+      getReduxStore().getState() as RootState
     );
 
     expect(showShareContext.extensionId).toBeUndefined();
-    expect(showShareContext.blueprintId).not.toBeUndefined();
+    expect(showShareContext.blueprintId).toBeDefined();
   });
 });

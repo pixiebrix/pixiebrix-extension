@@ -19,7 +19,7 @@ import { type Dispatch } from "react";
 import {
   removeDynamicElements,
   removeDynamicElementsForRecipe,
-} from "@/store/dynamicElementStorage";
+} from "@/store/editorStorage";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { removeExtensionForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";

@@ -42,7 +42,7 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import initialize from "@/vendors/initialize";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -360,7 +360,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const initialValues: InitialValues = {
       input: ctxt,
       root,
-      serviceContext: await makeServiceContext(extension.services),
+      serviceContext: await makeServiceContext(
+        extension.integrationDependencies
+      ),
       optionsArgs: extension.optionsArgs,
     };
 

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// From https://github.com/sindresorhus/p-memoize/blob/52fe6052ff2287f528c954c4c67fc5a61ff21360/test.ts#LL198
-import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { memoizeUntilSettled, retryWithJitter } from "@/utils/promiseUtils";
 
+// From https://github.com/sindresorhus/p-memoize/blob/52fe6052ff2287f528c954c4c67fc5a61ff21360/test.ts#LL198
 test("memoizeUntilSettled", async () => {
   let index = 0;
 
@@ -27,4 +27,82 @@ test("memoizeUntilSettled", async () => {
   expect(await memoized()).toBe(1);
   expect(await memoized()).toBe(2);
   expect(await Promise.all([memoized(), memoized()])).toStrictEqual([3, 3]);
+});
+
+describe("retryWithJitter", () => {
+  test("retry count excludes initial attempt", async () => {
+    const fn = jest.fn(async () => 1);
+    const result = retryWithJitter(fn, {
+      retries: 0,
+    });
+    await expect(result).resolves.toBe(1);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  test("no retries", async () => {
+    const fn = jest.fn(async () => {
+      throw new Error("error");
+    });
+    const result = retryWithJitter(fn, {
+      retries: 0,
+    });
+    await expect(result).rejects.toThrow("error");
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  test("it executes a function successfully and returns the result", async () => {
+    const fn = jest.fn(async () => 1);
+    const result = await retryWithJitter(fn, {
+      retries: 3,
+    });
+    expect(result).toBe(1);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  test("it retries a function that fails once and returns the result", async () => {
+    const fn = jest.fn(async () => {
+      if (fn.mock.calls.length === 1) {
+        throw new Error("error");
+      }
+
+      return 1;
+    });
+    const result = await retryWithJitter(fn, {
+      retries: 3,
+    });
+    expect(result).toBe(1);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  test("it throws an error if the function fails more than the max retries", async () => {
+    const fn = jest.fn(async () => {
+      throw new Error("error");
+    });
+
+    await expect(
+      retryWithJitter(fn, {
+        retries: 3,
+      })
+    ).rejects.toThrow("error");
+    expect(fn).toHaveBeenCalledTimes(3);
+  });
+
+  test("it retries on the specified error, and throws on all other errors", async () => {
+    const fn = jest.fn(async () => {
+      if (fn.mock.calls.length === 1) {
+        throw new Error("a specified error");
+      }
+
+      throw new Error("different non-specified error");
+    });
+
+    await expect(
+      retryWithJitter(fn, {
+        retries: 3,
+        shouldRetry: (error) =>
+          (error as Error).message.includes("a specified error"),
+      })
+    ).rejects.toThrow("different non-specified error");
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
 });

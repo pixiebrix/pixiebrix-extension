@@ -59,11 +59,11 @@ export class ExportCsv extends EffectABC {
     { filename = "exported", useBOM = false, data }: BrickArgs,
     { ctxt }: BrickOptions
   ): Promise<void> {
-    const { ExportToCsv } = await import(
+    const { mkConfig, generateCsv, download } = await import(
       /* webpackChunkName: "export-to-csv" */ "export-to-csv"
     );
 
-    const csvExporter = new ExportToCsv({
+    const csvConfig = mkConfig({
       useKeysAsHeaders: true,
       filename,
       useBom: useBOM,
@@ -81,6 +81,8 @@ export class ExportCsv extends EffectABC {
       );
     }
 
-    csvExporter.generateCsv(rows);
+    const csv = generateCsv(csvConfig)(rows);
+
+    download(csvConfig)(csv);
   }
 }

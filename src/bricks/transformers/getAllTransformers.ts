@@ -56,6 +56,7 @@ import { SplitText } from "@/bricks/transformers/splitText";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import ConvertDocument from "@/bricks/transformers/convertDocument";
 import { SearchText } from "@/bricks/transformers/searchText";
+import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -101,6 +102,7 @@ function getAllTransformers(): Brick[] {
     new Retry(),
     new Run(),
     new MapValues(),
+    new WithAsyncModVariable(),
 
     // Render Pipelines
     new DisplayTemporaryInfo(),

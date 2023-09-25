@@ -27,17 +27,18 @@ import {
 } from "@/pageEditor/slices/editorSlice";
 import RecipeEntry, { type RecipeEntryProps } from "./RecipeEntry";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { type ModComponentOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
 import {
   defaultModDefinitionFactory,
   metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
+import { screen } from "@testing-library/react";
 
 let renderRecipeEntry: RenderFunctionWithRedux<
   {
     editor: EditorState;
-    options: ModComponentOptionsState;
+    options: ModComponentState;
   },
   RecipeEntryProps
 >;
@@ -45,6 +46,7 @@ let renderRecipeEntry: RenderFunctionWithRedux<
 beforeEach(() => {
   const recipe = defaultModDefinitionFactory();
   const recipeId = recipe.metadata.id;
+  // eslint-disable-next-line testing-library/no-render-in-lifecycle -- higher order function, not the actual render
   renderRecipeEntry = createRenderFunctionWithRedux({
     reducer: {
       editor: editorSlice.reducer,
@@ -71,30 +73,30 @@ beforeEach(() => {
 });
 
 test("it renders", () => {
-  const rendered = renderRecipeEntry();
+  const { asFragment } = renderRecipeEntry();
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("renders with empty recipe", () => {
-  const rendered = renderRecipeEntry({
+  const { asFragment } = renderRecipeEntry({
     propsOverride: {
       recipe: undefined,
     },
   });
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("renders with empty metadata", () => {
   const recipe = defaultModDefinitionFactory({ metadata: null });
-  const rendered = renderRecipeEntry({
+  const { asFragment } = renderRecipeEntry({
     propsOverride: {
       recipe,
     },
   });
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("renders the warning icon when has update", () => {
@@ -103,13 +105,13 @@ test("renders the warning icon when has update", () => {
       version: validateSemVerString("2.0.0"),
     }),
   });
-  const rendered = renderRecipeEntry({
+  renderRecipeEntry({
     propsOverride: {
       recipe,
     },
   });
 
-  const warningIcon = rendered.getByTitle(
+  const warningIcon = screen.getByTitle(
     "You are editing version 1.0.0 of this mod, the latest version is 2.0.0."
   );
 

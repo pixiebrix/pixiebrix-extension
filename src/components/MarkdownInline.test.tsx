@@ -20,7 +20,7 @@ import MarkdownInline from "@/components/MarkdownInline";
 
 describe("MarkdownInline", () => {
   it("renders without p tag", () => {
-    const wrapper = render(
+    const { asFragment } = render(
       <MarkdownInline
         markdown="**Hello** World"
         sanitizeConfig={{
@@ -28,11 +28,11 @@ describe("MarkdownInline", () => {
         }}
       />
     );
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("linkifies text", () => {
-    const wrapper = render(
+    const { asFragment } = render(
       <MarkdownInline
         markdown="**Hello** https://www.example.com"
         sanitizeConfig={{
@@ -40,6 +40,6 @@ describe("MarkdownInline", () => {
         }}
       />
     );
-    expect(wrapper.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

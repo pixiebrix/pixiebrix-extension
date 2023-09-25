@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import React from "react";
 import FixedInnerObjectWidget from "@/components/fields/schemaFields/widgets/FixedInnerObjectWidget";
 import { type Schema } from "@/types/schemaTypes";
@@ -27,10 +27,10 @@ beforeAll(() => {
 
 describe("FixedInnerObjectWidget", () => {
   it("bail on allOf", () => {
-    const wrapper = render(
-      <FixedInnerObjectWidget name="test" schema={{ allOf: [] }} />
-    );
-    expect(wrapper.queryByDisplayValue("Use Workshop to edit")).not.toBeNull();
+    render(<FixedInnerObjectWidget name="test" schema={{ allOf: [] }} />);
+    expect(
+      screen.getByDisplayValue("Use Workshop to edit")
+    ).toBeInTheDocument();
   });
 
   it("handle simple object", () => {
@@ -38,14 +38,14 @@ describe("FixedInnerObjectWidget", () => {
       type: "object",
       properties: { foo: { type: "string" } },
     } as Schema;
-    const wrapper = render(
+    const { asFragment } = render(
       <FixedInnerObjectWidget name="test" schema={schema} />,
       {
         initialValues: { test: { foo: "bar" } },
       }
     );
-    expect(wrapper.queryByDisplayValue("Use Workshop to edit")).toBeNull();
-    expect(wrapper.container).toMatchSnapshot();
+    expect(screen.queryByDisplayValue("Use Workshop to edit")).toBeNull();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("handle oneOf object", () => {
@@ -55,13 +55,13 @@ describe("FixedInnerObjectWidget", () => {
         { type: "string" },
       ],
     } as Schema;
-    const wrapper = render(
+    const { asFragment } = render(
       <FixedInnerObjectWidget name="test" schema={schema} />,
       {
         initialValues: { test: { foo: "bar" } },
       }
     );
-    expect(wrapper.queryByDisplayValue("Use Workshop to edit")).toBeNull();
-    expect(wrapper.container).toMatchSnapshot();
+    expect(screen.queryByDisplayValue("Use Workshop to edit")).toBeNull();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

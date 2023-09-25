@@ -16,8 +16,8 @@
  */
 
 import { useContext, useEffect, useMemo } from "react";
-import { selectSettings } from "@/store/settingsSelectors";
-import settingsSlice from "@/store/settingsSlice";
+import { selectSettings } from "@/store/settings/settingsSelectors";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
 import { activatePartnerTheme } from "@/background/messenger/api";

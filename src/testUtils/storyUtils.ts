@@ -16,7 +16,7 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/services/api";
 
 export function settingsStore() {

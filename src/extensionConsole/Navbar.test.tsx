@@ -35,7 +35,7 @@ const renderNavbar = () => {
 
 describe("Navbar", () => {
   test("renders", () => {
-    const rendered = renderNavbar();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = renderNavbar();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

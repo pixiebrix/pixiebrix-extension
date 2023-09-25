@@ -37,7 +37,7 @@ export async function asyncMapValues<T, TResult>(
     entries.map(async ([key, value]) => fn(value, key, mapping))
   );
   return Object.fromEntries(
-    zip(entries, values).map(([[key], value]) => [key, value])
+    zip(entries, values).map(([[key] = [], value]) => [key, value])
   ) as any;
 }
 
@@ -136,6 +136,43 @@ export async function pollUntilTruthy<T>(
     // eslint-disable-next-line no-await-in-loop -- It's a retry loop
     await sleep(intervalMillis);
   } while (Date.now() < endBy);
+}
+
+/**
+ * Retry with delay jitter.
+ * @param fn the function to execute
+ * @param retries the number of times to retry, excluding the initial attempt
+ * @param shouldRetry whether to retry on a given error; defaults to always retrying
+ * @param maxDelayMillis the maximum delay between retries, in milliseconds
+ */
+export async function retryWithJitter<T>(
+  fn: () => Promise<T>,
+  {
+    retries = 1,
+    shouldRetry = () => true,
+    maxDelayMillis = 100,
+  }: {
+    retries?: number;
+    shouldRetry?: (error: unknown) => boolean;
+    maxDelayMillis?: number;
+  }
+): Promise<T> {
+  for (let attemptCount = 0; attemptCount < retries + 1; attemptCount++) {
+    try {
+      // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule https://eslint.org/docs/latest/rules/no-await-in-loop#when-not-to-use-it
+      return await fn();
+    } catch (error) {
+      if (!shouldRetry(error) || attemptCount >= retries - 1) {
+        throw error;
+      }
+
+      // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule
+      await sleep(Math.random() * maxDelayMillis);
+    }
+  }
+
+  // Can't reach due to check in catch block, unless retries is 0
+  throw new Error("retries must be >= 0");
 }
 
 /**

@@ -196,8 +196,8 @@ describe("isDeploymentActive", () => {
   );
 });
 
-describe("extractRecipeServiceIds", () => {
-  test("find unique service ids", async () => {
+describe("getIntegrationIds", () => {
+  test("find unique integration ids", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
         config: defaultModDefinitionFactory({
@@ -219,8 +219,8 @@ describe("extractRecipeServiceIds", () => {
   });
 });
 
-describe("findPersonalServiceConfigurations", () => {
-  test("missing personal service", async () => {
+describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
+  test("missing personal integration", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
         config: defaultModDefinitionFactory({
@@ -243,7 +243,7 @@ describe("findPersonalServiceConfigurations", () => {
       )
     ).toStrictEqual([
       {
-        id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
         isOptional: false,
         apiVersion: "v1",
@@ -252,7 +252,7 @@ describe("findPersonalServiceConfigurations", () => {
     ]);
   });
 
-  test("found personal service", async () => {
+  test("found personal integration", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
         config: defaultModDefinitionFactory({
@@ -279,7 +279,7 @@ describe("findPersonalServiceConfigurations", () => {
       )
     ).toStrictEqual([
       {
-        id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
         isOptional: false,
         apiVersion: "v1",
@@ -288,7 +288,7 @@ describe("findPersonalServiceConfigurations", () => {
     ]);
   });
 
-  test("exclude bound services", async () => {
+  test("exclude bound integrations", async () => {
     const registryId = validateRegistryId("test/bound");
 
     const deployment = deploymentFactory({
@@ -319,7 +319,7 @@ describe("findPersonalServiceConfigurations", () => {
     ).toBeArrayOfSize(0);
   });
 
-  test("exclude pixiebrix service", async () => {
+  test("exclude pixiebrix integration", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
         config: defaultModDefinitionFactory({
@@ -348,8 +348,8 @@ describe("findPersonalServiceConfigurations", () => {
   });
 });
 
-describe("mergeDeploymentServiceConfigurations", () => {
-  test("prefer bound services", async () => {
+describe("mergeDeploymentIntegrationDependencies", () => {
+  test("prefer bound integration dependencies", async () => {
     const registryId = validateRegistryId("test/bound");
     const boundId = uuidv4();
 
@@ -377,16 +377,16 @@ describe("mergeDeploymentServiceConfigurations", () => {
       await mergeDeploymentIntegrationDependencies(deployment, locator)
     ).toStrictEqual([
       {
-        id: registryId,
+        integrationId: registryId,
         outputKey: "foo",
-        config: boundId,
+        configId: boundId,
         isOptional: false,
         apiVersion: "v1",
       },
     ]);
   });
 
-  test("take local service", async () => {
+  test("take local integration dependency", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
         config: defaultModDefinitionFactory({
@@ -410,16 +410,16 @@ describe("mergeDeploymentServiceConfigurations", () => {
       await mergeDeploymentIntegrationDependencies(deployment, locator)
     ).toStrictEqual([
       {
-        id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
-        config: auth.id,
+        configId: auth.id,
         isOptional: false,
         apiVersion: "v1",
       },
     ]);
   });
 
-  test("ignore personal remote service", async () => {
+  test("ignore personal remote integration dependency", async () => {
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
         config: defaultModDefinitionFactory({
@@ -473,5 +473,38 @@ describe("mergeDeploymentServiceConfigurations", () => {
     await expect(
       mergeDeploymentIntegrationDependencies(deployment, locator)
     ).rejects.toThrow("Multiple local configurations found for integration:");
+  });
+
+  test("preserve PixieBrix Integration placeholder if included", async () => {
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        config: defaultModDefinitionFactory({
+          extensionPoints: [
+            modComponentDefinitionFactory({
+              services: {
+                // @ts-expect-error - this is a placeholder
+                pixiebrix: PIXIEBRIX_INTEGRATION_ID,
+              },
+            }),
+          ],
+        }),
+      }),
+    });
+
+    const auth = sanitizedIntegrationConfigFactory({
+      serviceId: PIXIEBRIX_INTEGRATION_ID,
+    });
+
+    const locator = async () => [auth];
+    expect(
+      await mergeDeploymentIntegrationDependencies(deployment, locator)
+    ).toStrictEqual([
+      {
+        integrationId: PIXIEBRIX_INTEGRATION_ID,
+        outputKey: "pixiebrix",
+        isOptional: false,
+        apiVersion: "v1",
+      },
+    ]);
   });
 });

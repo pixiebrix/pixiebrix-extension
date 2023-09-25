@@ -16,13 +16,12 @@
  */
 
 import { useField } from "formik";
-import { isServiceValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { isIntegrationDependencyValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEmpty } from "lodash";
-import { pickDependency } from "@/services/useDependency";
 import { services } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
-import { getSheetServiceOutputKey } from "@/contrib/google/sheets/core/getSheetServiceOutputKey";
+import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
 import { type Expression, type OptionsArgs } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -32,7 +31,7 @@ import { joinName } from "@/utils/formUtils";
 import { useContext } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
-export async function findSpreadsheetId(
+async function findSpreadsheetIdFromFieldValue(
   integrationDependencies: IntegrationDependency[],
   spreadsheetIdValue: string | Expression | null,
   optionsArgs: OptionsArgs
@@ -59,33 +58,36 @@ export async function findSpreadsheetId(
     return optionsSpreadsheetIdValue;
   }
 
-  if (!isServiceValueFormat(spreadsheetIdValue)) {
-    throw new Error("Invalid spreadsheetId value");
+  if (!isIntegrationDependencyValueFormat(spreadsheetIdValue)) {
+    throw new Error(
+      "Invalid spreadsheetId value, expected integration dependency"
+    );
   }
 
+  // At this point, we know the field value is formatted as a variable with the @ prefix, so,
+  // if the dependencies passed in are empty, we're not going to be able to match against one
   if (isEmpty(integrationDependencies)) {
     throw new Error(
       "Invalid spreadsheetId variable, please use a Mod Inputs variable instead"
     );
   }
 
-  const serviceOutputKey = getSheetServiceOutputKey(spreadsheetIdValue);
-  const integrationDependency = integrationDependencies.find(
-    (service) => service.outputKey === serviceOutputKey
+  const sheetIdIntegrationDependencyOutputKey =
+    getSheetIdIntegrationOutputKey(spreadsheetIdValue);
+  const sheetIdIntegrationDependency = integrationDependencies.find(
+    ({ outputKey }) => outputKey === sheetIdIntegrationDependencyOutputKey
   );
 
-  if (!integrationDependency) {
+  if (!sheetIdIntegrationDependency) {
     throw new Error(
       "Unable to locate a matching Google Sheets integration configuration on this mod, please use a Mod Inputs variable instead"
     );
   }
 
-  const dependency = pickDependency(integrationDependencies, [
-    integrationDependency.id,
-  ]);
+  const { integrationId, configId } = sheetIdIntegrationDependency;
   const sanitizedIntegrationConfig = await services.locate(
-    dependency.id,
-    dependency.config
+    integrationId,
+    configId
   );
   const configSpreadsheetId = sanitizedIntegrationConfig.config?.spreadsheetId;
 
@@ -115,7 +117,7 @@ function useSpreadsheetId(
 
   return useAsyncState<string | null>(async () => {
     try {
-      return await findSpreadsheetId(
+      return await findSpreadsheetIdFromFieldValue(
         integrationDependencies,
         fieldValue,
         optionsArgs

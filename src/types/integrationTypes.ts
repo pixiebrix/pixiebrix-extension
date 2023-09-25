@@ -20,7 +20,7 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type BrickIcon } from "@/types/iconTypes";
-import { type JsonObject, type JsonValue } from "type-fest";
+import { type Except, type JsonObject, type JsonValue } from "type-fest";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
 /**
@@ -35,7 +35,10 @@ import { type Metadata, type RegistryId } from "@/types/registryTypes";
  */
 export type ModDependencyAPIVersion = "v1" | "v2";
 
-export interface IntegrationDependency {
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export interface IntegrationDependencyV1 {
   /**
    * The registry id of the integration.
    */
@@ -63,6 +66,36 @@ export interface IntegrationDependency {
    */
   apiVersion?: ModDependencyAPIVersion;
 }
+
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type IntegrationDependencyV2 = Except<
+  IntegrationDependencyV1,
+  "id" | "config"
+> & {
+  /**
+   * The registry id of the integration.
+   *
+   * @since 1.7.41 renamed from `id` to `integrationId`
+   */
+  integrationId: RegistryId;
+
+  /**
+   * The UUID of the integration config.
+   *
+   * @since 1.7.41 renamed from `config` to `configId`
+   */
+  configId?: UUID;
+};
+
+/**
+ * Normalized linking entity between a mod integration and its configuration/outputKey/optionality
+ * @see Integration.id
+ *
+ * V1/V2 types for persistence migration
+ */
+export type IntegrationDependency = IntegrationDependencyV2;
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 
@@ -99,8 +132,10 @@ export interface AuthData {
   [key: string]: unknown;
 }
 
-/** Integration configuration provided by a user. */
-export type IntegrationConfig = {
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type IntegrationConfigV1 = {
   // Nominal typing to distinguish from SanitizedIntegrationConfig
   _rawIntegrationConfigBrand: null;
 
@@ -125,6 +160,25 @@ export type IntegrationConfig = {
    */
   config: SecretsConfig;
 };
+
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type IntegrationConfigV2 = Except<IntegrationConfigV1, "serviceId"> & {
+  /**
+   * Registry identifier for the integration, e.g., `@pixiebrix/api`.
+   *
+   * @since 1.7.41 renamed from `serviceId` to `integrationId`
+   */
+  integrationId: RegistryId;
+};
+
+/**
+ * Integration configuration provided by a user.
+ *
+ * V1/V2 types for persistence migration.
+ */
+export type IntegrationConfig = IntegrationConfigV2;
 
 export interface SanitizedIntegrationConfig {
   // Nominal typing to distinguish from IntegrationConfig

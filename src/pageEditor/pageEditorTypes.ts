@@ -19,7 +19,7 @@ import { type AuthRootState } from "@/auth/authTypes";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
-import { type SettingsRootState } from "@/store/settingsTypes";
+import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { type StarterBrickType } from "@/starterBricks/types";
 import { type UUID } from "@/types/stringTypes";

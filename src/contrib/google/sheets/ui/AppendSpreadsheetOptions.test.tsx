@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectLegacyTestSpreadsheetLoaded", "expectTab1Selected", "expectGoogleAccountTestSpreadsheetLoaded", "expectTabSelectWorksProperly"] }] */
+
 import React from "react";
 import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -34,7 +36,10 @@ import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
 import { selectSchemaFieldInputMode } from "@/testUtils/formHelpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
 import {
   type FileList,
   type Spreadsheet,
@@ -44,11 +49,10 @@ import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
-import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
 import useFlags from "@/hooks/useFlags";
 
 let idSequence = 0;
@@ -117,17 +121,17 @@ const testSpreadsheetAuthOption: AuthOption = {
   sharingType: "private",
 };
 
-const googlePKCEIntegrationDependency: IntegrationDependency = {
-  id: GOOGLE_PKCE_SERVICE_ID,
+const googlePKCEIntegrationDependency = integrationDependencyFactory({
+  integrationId: GOOGLE_PKCE_SERVICE_ID,
   outputKey: validateOutputKey("google"),
-  config: GOOGLE_PKCE_AUTH_CONFIG,
-};
+  configId: GOOGLE_PKCE_AUTH_CONFIG,
+});
 
-const testSpreadsheetIntegrationDependency: IntegrationDependency = {
-  id: GOOGLE_SHEET_SERVICE_ID,
+const testSpreadsheetIntegrationDependency = integrationDependencyFactory({
+  integrationId: GOOGLE_SHEET_SERVICE_ID,
   outputKey: validateOutputKey("google"),
-  config: TEST_SPREADSHEET_AUTH_CONFIG,
-};
+  configId: TEST_SPREADSHEET_AUTH_CONFIG,
+});
 
 const testSpreadsheet: Spreadsheet = {
   spreadsheetId: TEST_SPREADSHEET_ID,
@@ -362,17 +366,17 @@ async function expectTabSelectWorksProperly() {
 }
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
-  const rendered = render(
+  const utils = render(
     <AppendSpreadsheetOptions name="" configKey="config" />,
     {
       initialValues,
-      wrapper: ServicesSliceModIntegrationsContextAdapter,
+      wrapper: IntegrationsSliceModIntegrationsContextAdapter,
     }
   );
 
   await waitForEffect();
 
-  return rendered;
+  return utils;
 };
 
 describe("AppendSpreadsheetOptions", () => {
@@ -381,7 +385,7 @@ describe("AppendSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -389,7 +393,7 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given feature flag off and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
@@ -404,7 +408,7 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -412,11 +416,11 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given empty googleAccount and string spreadsheetId and selected tabName and entered rowValues, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: "Tab2",
@@ -427,11 +431,11 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId value and selected tabName and column values, when rendered, matches snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -441,10 +445,10 @@ describe("AppendSpreadsheetOptions", () => {
           Bar: "barValue",
         },
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   /**
@@ -470,7 +474,7 @@ describe("AppendSpreadsheetOptions", () => {
         tabName: null,
         rowValues: {},
       },
-      services: [testSpreadsheetIntegrationDependency],
+      integrationDependencies: [testSpreadsheetIntegrationDependency],
     });
 
     // Legacy service widget for spreadsheet isn't supported anymore, so title won't load,
@@ -518,7 +522,7 @@ describe("AppendSpreadsheetOptions", () => {
         tabName: null,
         rowValues: {},
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Select the first spreadsheet
@@ -540,7 +544,7 @@ describe("AppendSpreadsheetOptions", () => {
         tabName: null,
         rowValues: {},
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     expectGoogleAccountTestSpreadsheetLoaded();
@@ -557,7 +561,7 @@ describe("AppendSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Mod input var field won't render title
@@ -572,7 +576,7 @@ describe("AppendSpreadsheetOptions", () => {
         tabName: makeVariableExpression("@mySheetTab"),
         rowValues: {},
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Ensure that no header names have been loaded into the rowValues field
@@ -605,7 +609,7 @@ describe("AppendSpreadsheetOptions", () => {
         tabName: makeTemplateExpression("nunjucks", ""),
         rowValues: {},
       },
-      services: [testSpreadsheetIntegrationDependency],
+      integrationDependencies: [testSpreadsheetIntegrationDependency],
     });
 
     await expectTabSelectWorksProperly();
@@ -634,7 +638,7 @@ describe("AppendSpreadsheetOptions", () => {
         tabName: makeTemplateExpression("nunjucks", ""),
         rowValues: {},
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     await expectTabSelectWorksProperly();
@@ -651,7 +655,7 @@ describe("AppendSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     await expectTabSelectWorksProperly();
@@ -760,7 +764,7 @@ describe("AppendSpreadsheetOptions", () => {
           Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
@@ -782,7 +786,7 @@ describe("AppendSpreadsheetOptions", () => {
           Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
@@ -807,7 +811,7 @@ describe("AppendSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Mod input var field won't render title, tabName is nunjucks input
@@ -834,7 +838,7 @@ describe("AppendSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Mod input var field won't render title
@@ -865,9 +869,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -901,9 +903,7 @@ describe("AppendSpreadsheetOptions", () => {
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -931,16 +931,14 @@ describe("AppendSpreadsheetOptions", () => {
           Bar: makeTemplateExpression("nunjucks", "valueB"),
         },
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 
@@ -971,14 +969,12 @@ describe("AppendSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     const tabNameField = screen.getByLabelText("Tab Name");
 
-    await act(async () => {
-      await userEvent.clear(tabNameField);
-    });
+    await userEvent.clear(tabNameField);
 
     await waitForEffect();
 

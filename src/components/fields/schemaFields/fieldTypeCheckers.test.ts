@@ -17,7 +17,7 @@
 
 import {
   isSelectField,
-  isServiceValueFormat,
+  isIntegrationDependencyValueFormat,
 } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import {
   makeTemplateExpression,
@@ -26,21 +26,25 @@ import {
 
 describe("isServiceValue", () => {
   it("null is service value", () => {
-    expect(isServiceValueFormat(null)).toBe(true);
+    expect(isIntegrationDependencyValueFormat(null)).toBe(true);
   });
 
   it("literal is not a service value", () => {
-    expect(isServiceValueFormat("foo")).toBe(false);
+    expect(isIntegrationDependencyValueFormat("foo")).toBe(false);
   });
 
   it("nunjucks is not a service value", () => {
     expect(
-      isServiceValueFormat(makeTemplateExpression("nunjucks", "@foo"))
+      isIntegrationDependencyValueFormat(
+        makeTemplateExpression("nunjucks", "@foo")
+      )
     ).toBe(false);
   });
 
   it("var is a service value", () => {
-    expect(isServiceValueFormat(makeVariableExpression("@foo"))).toBe(true);
+    expect(
+      isIntegrationDependencyValueFormat(makeVariableExpression("@foo"))
+    ).toBe(true);
   });
 });
 

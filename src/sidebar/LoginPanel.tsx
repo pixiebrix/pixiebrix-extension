@@ -22,7 +22,7 @@ import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { useSelector } from "react-redux";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const DefaultLogin: React.FunctionComponent = () => (

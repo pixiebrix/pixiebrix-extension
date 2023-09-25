@@ -73,6 +73,8 @@ async function initRollbar(): Promise<Rollbar> {
     // NOTE: we aren't passing ignoredMessages, because we are applying our own filtering in reportUncaughtErrors and
     // reportError
     // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
+    //
+    // @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Rollbar
 
     return Rollbar.init({
       enabled: accessToken && accessToken !== "undefined" && !isContentScript(),
@@ -105,6 +107,7 @@ async function initRollbar(): Promise<Rollbar> {
           }
         }
       },
+      ignoredMessages: [/ResizeObserver loop/],
     });
   } catch (error) {
     console.error("Error during Rollbar init", { error });

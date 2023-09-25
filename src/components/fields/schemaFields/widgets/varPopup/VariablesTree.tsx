@@ -102,7 +102,6 @@ const VariablesTree: React.FunctionComponent<{
     theme={popoverTheme}
     postprocessValue={sortVarMapKeys}
     shouldExpandNodeInitially={expandCurrentVariableLevel(vars, likelyVariable)}
-    invertTheme
     hideRoot
     labelRenderer={(relativePath) => (
       <NodeLabel

@@ -79,7 +79,7 @@ describe("useFieldAnnotations", () => {
     }).result.current;
     expect(annotations).toHaveLength(1);
     expect(annotations[0].type).toEqual(AnnotationType.Error);
-    expect(annotations[0].message).toEqual("test error");
+    expect(annotations[0].message).toBe("test error");
   });
 
   test("shows analysis error annotation", () => {
@@ -144,6 +144,6 @@ describe("useFieldAnnotations", () => {
       .result.current;
     expect(annotations).toHaveLength(1);
     expect(annotations[0].type).toEqual(AnnotationType.Error);
-    expect(annotations[0].message).toEqual("test error annotation");
+    expect(annotations[0].message).toBe("test error annotation");
   });
 });

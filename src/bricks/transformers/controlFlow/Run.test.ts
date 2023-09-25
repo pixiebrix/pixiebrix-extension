@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
+  DeferredEchoBrick,
   echoBrick,
   simpleInput,
   testOptions,
@@ -25,37 +26,13 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { makePipelineExpression } from "@/runtime/expressionCreators";
 import Run from "@/bricks/transformers/controlFlow/Run";
-import { BrickABC } from "@/types/brickTypes";
-import { validateRegistryId } from "@/types/helpers";
-import { propertiesToSchema } from "@/validators/generic";
-import { type BrickArgs } from "@/types/runtimeTypes";
 import pDefer from "p-defer";
 
 const runBlock = new Run();
 
-class DeferredEchoBlock extends BrickABC {
-  static BLOCK_ID = validateRegistryId("test/deferred");
-  readonly promise: Promise<unknown>;
-  constructor(promise: Promise<unknown>) {
-    super(DeferredEchoBlock.BLOCK_ID, "Deferred Brick");
-    this.promise = promise;
-  }
-
-  inputSchema = propertiesToSchema({
-    message: {
-      type: "string",
-    },
-  });
-
-  async run({ message }: BrickArgs) {
-    await this.promise;
-    return { message };
-  }
-}
-
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([throwBrick, echoBrick, runBlock]);
+  brickRegistry.clear();
+  brickRegistry.register([throwBrick, echoBrick, runBlock]);
 });
 
 describe("Run", () => {
@@ -107,16 +84,16 @@ describe("Run", () => {
 
   test("async returns immediately", async () => {
     const deferred = pDefer();
-    const asyncBlock = new DeferredEchoBlock(deferred.promise);
+    const asyncBrick = new DeferredEchoBrick(deferred.promise);
 
-    blockRegistry.register([asyncBlock]);
+    brickRegistry.register([asyncBrick]);
     const pipeline = {
       id: runBlock.id,
       config: {
         async: true,
         body: makePipelineExpression([
           {
-            id: asyncBlock.id,
+            id: asyncBrick.id,
             config: {
               message: "Hello, world!",
             },

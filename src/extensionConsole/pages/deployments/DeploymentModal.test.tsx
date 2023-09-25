@@ -20,9 +20,11 @@ import { render, screen } from "@testing-library/react";
 import DeploymentModal from "@/extensionConsole/pages/deployments/DeploymentModal";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import settingsSlice, { initialSettingsState } from "@/store/settingsSlice";
+import settingsSlice, {
+  initialSettingsState,
+} from "@/store/settings/settingsSlice";
 import MockDate from "mockdate";
-import { type SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import { authSlice } from "@/auth/authSlice";
 import { useUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
 import { type AuthState } from "@/auth/authTypes";
@@ -132,10 +134,10 @@ describe("DeploymentModal", () => {
 
     expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
     expect(
-      screen.queryAllByText(
-        "An update to the PixieBrix browser extension is available"
+      screen.getByText(
+        "An update to the PixieBrix browser extension is available. After updating, you will need need to reload any pages where PixieBrix is running."
       )
-    ).not.toBeNull();
+    ).toBeInTheDocument();
     expect(screen.getByText("Remind Me Later")).not.toBeDisabled();
   });
 

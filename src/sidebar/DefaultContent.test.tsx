@@ -52,7 +52,7 @@ describe("renders DefaultPanel", () => {
       </Provider>
     );
 
-    expect(screen.queryByText("Get started with PixieBrix")).not.toBeNull();
+    expect(screen.getByText("Get started with PixieBrix")).not.toBeNull();
   });
 
   it("renders restricted user content", () => {
@@ -67,8 +67,6 @@ describe("renders DefaultPanel", () => {
       </Provider>
     );
 
-    expect(
-      screen.queryByText("No panels activated for the page")
-    ).not.toBeNull();
+    expect(screen.getByText("No panels activated for the page")).not.toBeNull();
   });
 });

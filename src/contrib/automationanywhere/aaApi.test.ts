@@ -16,26 +16,28 @@
  */
 
 import { cachedSearchBots } from "@/contrib/automationanywhere/aaApi";
-import { proxyService } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { type RemoteResponse } from "@/types/contract";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
 import {
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
 } from "@/types/integrationTypes";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 
 jest.mock("@/background/messenger/api", () => ({
-  proxyService: jest.fn(),
+  performConfiguredRequestInBackground: jest.fn(),
 }));
 
-const proxyServiceMock = jest.mocked(proxyService);
+const performConfiguredRequestInBackgroundMock = jest.mocked(
+  performConfiguredRequestInBackground
+);
 
 describe("aaApi", () => {
   it("should vary bot cache on workspace type", async () => {
     const deferred: Array<DeferredPromise<RemoteResponse>> = [];
 
-    proxyServiceMock.mockImplementation(async () => {
+    performConfiguredRequestInBackgroundMock.mockImplementation(async () => {
       const deferredResponse = pDefer<RemoteResponse>();
       deferred.push(deferredResponse);
       return deferredResponse.promise;
@@ -46,7 +48,7 @@ describe("aaApi", () => {
         folderId: null,
       } as unknown as SanitizedConfig,
       proxy: false,
-      serviceId: AUTOMATION_ANYWHERE_SERVICE_ID,
+      serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
     } as SanitizedIntegrationConfig;
 
     const privatePromise1 = cachedSearchBots(partialConfig, {
@@ -70,7 +72,7 @@ describe("aaApi", () => {
       value: null,
     });
 
-    expect(proxyServiceMock).toHaveBeenCalledTimes(2);
+    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledTimes(2);
 
     for (const { reject } of deferred) {
       reject("Reject to isn't cached across tests");
@@ -83,9 +85,7 @@ describe("aaApi", () => {
       publicPromise2,
     ]) {
       // eslint-disable-next-line no-await-in-loop -- jest expect
-      await expect(promise).rejects.toEqual(
-        "Reject to isn't cached across tests"
-      );
+      await expect(promise).rejects.toBe("Reject to isn't cached across tests");
     }
   });
 });

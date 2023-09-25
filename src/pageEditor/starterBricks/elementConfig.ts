@@ -31,10 +31,15 @@ import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import type { Permissions } from "webextension-polyfill";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import {
+  type IntegrationDependency,
+  type IntegrationDependencyV1,
+  type IntegrationDependencyV2,
+} from "@/types/integrationTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
+import { type Except } from "type-fest";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
@@ -59,7 +64,10 @@ export interface BaseExtensionState {
   blockPipeline: BrickPipeline;
 }
 
-export interface BaseFormState<
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export interface BaseFormStateV1<
   TExtension extends BaseExtensionState = BaseExtensionState,
   TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
 > {
@@ -80,7 +88,7 @@ export interface BaseFormState<
   readonly type: StarterBrickType;
 
   /**
-   * True if the extensionPoint exists in in the registry
+   * True if the extensionPoint exists in the registry
    */
   installed?: boolean;
 
@@ -101,7 +109,7 @@ export interface BaseFormState<
    */
   optionsArgs: OptionsArgs;
 
-  services: IntegrationDependency[];
+  services: IntegrationDependencyV1[];
 
   /**
    * The extra permissions required by the extension
@@ -127,6 +135,35 @@ export interface BaseFormState<
    */
   optionsDefinition?: ModOptionsDefinition;
 }
+
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type BaseFormStateV2<
+  TExtension extends BaseExtensionState = BaseExtensionState,
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
+> = Except<BaseFormStateV1<TExtension, TExtensionPoint>, "services"> & {
+  /**
+   * The integration dependencies configured for the extension
+   *
+   * @since 1.7.41 renamed from `services` to `integrationDependencies`, also
+   * changed from IntegrationDependencyV1 to IntegrationDependencyV2
+   */
+  integrationDependencies: IntegrationDependencyV2[];
+};
+
+export type BaseFormState<
+  TExtension extends BaseExtensionState = BaseExtensionState,
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
+> = Except<
+  BaseFormStateV2<TExtension, TExtensionPoint>,
+  "integrationDependencies"
+> & {
+  /**
+   * Using the un-versioned type
+   */
+  integrationDependencies: IntegrationDependency[];
+};
 
 /**
  * ExtensionPoint configuration for use with the Page Editor.
