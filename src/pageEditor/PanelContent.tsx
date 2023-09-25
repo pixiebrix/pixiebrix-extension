@@ -48,7 +48,8 @@ const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "panel",
 ];
 
-// Avoid adding duplicate starter bricks to the page when selecting them in the Page Editor.
+// When selecting a starter brick in the Page Editor, remove any existing starter bricks
+// to avoid adding duplicate starter bricks to the page.
 // Issue doesn't apply to certain starter bricks, e.g. sidebar panels
 // See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
 // and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
