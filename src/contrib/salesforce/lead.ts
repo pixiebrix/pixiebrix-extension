@@ -18,7 +18,7 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { proxyService } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 
 export class AddLead extends EffectABC {
@@ -74,7 +74,7 @@ export class AddLead extends EffectABC {
     salesforce,
     ...data
   }: BrickArgs<{ salesforce: SanitizedIntegrationConfig }>): Promise<void> {
-    await proxyService(salesforce, {
+    await performConfiguredRequestInBackground(salesforce, {
       url: "/services/data/v49.0/sobjects/Lead/",
       method: "post",
       data,

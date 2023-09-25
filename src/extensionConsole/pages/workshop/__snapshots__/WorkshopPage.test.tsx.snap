@@ -728,6 +728,13 @@ exports[`WorkshopPage require account alias 1`] = `
         <div
           class="formGroup form-group row"
         >
+          <div
+            class="mb-2 annotation-transition col-12"
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <label
             class="label form-label col-form-label col-lg-auto"
             for="scope"

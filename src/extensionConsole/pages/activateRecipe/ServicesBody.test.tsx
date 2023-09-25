@@ -30,6 +30,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
 import { getIntegrationIds } from "@/utils/modDefinitionUtils";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -129,7 +130,9 @@ describe("ServicesBody", () => {
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
-        integrationDependencies: [{ id: serviceId1, config: null }],
+        integrationDependencies: [
+          integrationDependencyFactory({ integrationId: serviceId1 }),
+        ],
       },
     });
     await waitForEffect();
@@ -148,7 +151,9 @@ describe("ServicesBody", () => {
       <ServicesBody blueprint={defaultModDefinitionFactory()} showOwnTitle />,
       {
         initialValues: {
-          integrationDependencies: [{ id: serviceId1, config: null }],
+          integrationDependencies: [
+            integrationDependencyFactory({ integrationId: serviceId1 }),
+          ],
         },
       }
     );
@@ -169,7 +174,9 @@ describe("ServicesBody", () => {
       />,
       {
         initialValues: {
-          integrationDependencies: [{ id: serviceId1, config: null }],
+          integrationDependencies: [
+            integrationDependencyFactory({ integrationId: serviceId1 }),
+          ],
         },
       }
     );
@@ -188,7 +195,10 @@ describe("ServicesBody", () => {
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
         integrationDependencies: [
-          { id: serviceId1, config: sharedOption1a.value },
+          integrationDependencyFactory({
+            integrationId: serviceId1,
+            configId: sharedOption1a.value,
+          }),
         ],
       },
     });
@@ -207,7 +217,10 @@ describe("ServicesBody", () => {
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
         integrationDependencies: [
-          { id: serviceId1, config: sharedOption1a.value },
+          integrationDependencyFactory({
+            integrationId: serviceId1,
+            configId: sharedOption1a.value,
+          }),
         ],
       },
     });
@@ -238,8 +251,14 @@ describe("ServicesBody", () => {
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
       initialValues: {
         integrationDependencies: [
-          { id: serviceId1, config: sharedOption1a.value },
-          { id: serviceId2, config: sharedOption2a.value },
+          integrationDependencyFactory({
+            integrationId: serviceId1,
+            configId: sharedOption1a.value,
+          }),
+          integrationDependencyFactory({
+            integrationId: serviceId2,
+            configId: sharedOption2a.value,
+          }),
         ],
       },
     });
@@ -264,7 +283,10 @@ describe("ServicesBody", () => {
       {
         initialValues: {
           integrationDependencies: [
-            { id: serviceId1, config: builtInOption1a.value },
+            integrationDependencyFactory({
+              integrationId: serviceId1,
+              configId: builtInOption1a.value,
+            }),
           ],
         },
       }
@@ -294,7 +316,10 @@ describe("ServicesBody", () => {
       {
         initialValues: {
           integrationDependencies: [
-            { id: serviceId1, config: builtInOption1a.value },
+            integrationDependencyFactory({
+              integrationId: serviceId1,
+              configId: builtInOption1a.value,
+            }),
           ],
         },
       }
@@ -324,7 +349,10 @@ describe("ServicesBody", () => {
       {
         initialValues: {
           integrationDependencies: [
-            { id: serviceId1, config: builtInOption1a.value },
+            integrationDependencyFactory({
+              integrationId: serviceId1,
+              configId: builtInOption1a.value,
+            }),
           ],
         },
       }
@@ -349,7 +377,10 @@ describe("ServicesBody", () => {
       {
         initialValues: {
           integrationDependencies: [
-            { id: serviceId1, config: sharedOption1a.value },
+            integrationDependencyFactory({
+              integrationId: serviceId1,
+              configId: sharedOption1a.value,
+            }),
           ],
         },
       }
@@ -385,8 +416,14 @@ describe("ServicesBody", () => {
       {
         initialValues: {
           integrationDependencies: [
-            { id: serviceId1, config: builtInOption1a.value },
-            { id: serviceId2, config: sharedOption2a.value },
+            integrationDependencyFactory({
+              integrationId: serviceId1,
+              configId: builtInOption1a.value,
+            }),
+            integrationDependencyFactory({
+              integrationId: serviceId2,
+              configId: sharedOption2a.value,
+            }),
           ],
         },
       }
@@ -418,8 +455,14 @@ describe("ServicesBody", () => {
       {
         initialValues: {
           integrationDependencies: [
-            { id: serviceId1, config: builtInOption1a.value },
-            { id: serviceId2, config: sharedOption2a.value },
+            integrationDependencyFactory({
+              integrationId: serviceId1,
+              configId: builtInOption1a.value,
+            }),
+            integrationDependencyFactory({
+              integrationId: serviceId2,
+              configId: sharedOption2a.value,
+            }),
           ],
         },
       }

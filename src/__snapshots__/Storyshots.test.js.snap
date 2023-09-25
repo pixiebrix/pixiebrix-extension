@@ -4,6 +4,13 @@ exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
 <div
   className="formGroup form-group row"
 >
+  <div
+    className="mb-2 annotation-transition col-12"
+  >
+    <div
+      className="annotationPlaceholder"
+    />
+  </div>
   <label
     className="label form-label col-form-label col-xl-2 col-lg-3"
     htmlFor="optionsArgs.textField"
@@ -1120,7 +1127,7 @@ exports[`Storyshots Components/JsonTree Empty Tree 1`] = `
       {
         "MozUserSelect": "none",
         "WebkitUserSelect": "none",
-        "backgroundColor": "#FDFFFF",
+        "backgroundColor": "#FFFFFF",
         "border": 0,
         "listStyle": "none",
         "marginBottom": "0.5em",
@@ -1160,6 +1167,13 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-lg-auto"
       htmlFor="traceSearch"
@@ -1214,7 +1228,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
       {
         "MozUserSelect": "none",
         "WebkitUserSelect": "none",
-        "backgroundColor": "#FDFFFF",
+        "backgroundColor": "#FFFFFF",
         "border": 0,
         "listStyle": "none",
         "marginBottom": "0.5em",
@@ -1272,7 +1286,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
                   "WebkitTransform": "rotateZ(0deg)",
                   "WebkitTransformOrigin": "45% 50%",
                   "WebkitTransition": "150ms",
-                  "color": "#427AF5",
+                  "color": "#3971ED",
                   "fontSize": "0.75em",
                   "lineHeight": "1.1em",
                   "marginLeft": 0,
@@ -1292,7 +1306,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
               {
                 "MozUserSelect": "inherit",
                 "WebkitUserSelect": "inherit",
-                "color": "#427AF5",
+                "color": "#3971ED",
                 "cursor": "pointer",
                 "display": "inline-block",
                 "margin": 0,
@@ -1337,7 +1351,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
             onClick={[Function]}
             style={
               {
-                "color": "#40AF6C",
+                "color": "#007124",
                 "cursor": "default",
                 "paddingLeft": "0.5em",
               }
@@ -1388,7 +1402,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
           <label
             style={
               {
-                "color": "#427AF5",
+                "color": "#3971ED",
                 "display": "inline-block",
                 "margin": "0 0.5em 0 0",
               }
@@ -1430,7 +1444,7 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
           <span
             style={
               {
-                "color": "#F36433",
+                "color": "#F96A38",
               }
             }
           >
@@ -1450,6 +1464,13 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-lg-auto"
       htmlFor="traceSearch"
@@ -1474,7 +1495,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
       {
         "MozUserSelect": "none",
         "WebkitUserSelect": "none",
-        "backgroundColor": "#FDFFFF",
+        "backgroundColor": "#FFFFFF",
         "border": 0,
         "listStyle": "none",
         "marginBottom": "0.5em",
@@ -1532,7 +1553,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
                   "WebkitTransform": "rotateZ(0deg)",
                   "WebkitTransformOrigin": "45% 50%",
                   "WebkitTransition": "150ms",
-                  "color": "#427AF5",
+                  "color": "#3971ED",
                   "fontSize": "0.75em",
                   "lineHeight": "1.1em",
                   "marginLeft": 0,
@@ -1552,7 +1573,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
               {
                 "MozUserSelect": "inherit",
                 "WebkitUserSelect": "inherit",
-                "color": "#427AF5",
+                "color": "#3971ED",
                 "cursor": "pointer",
                 "display": "inline-block",
                 "margin": 0,
@@ -1569,7 +1590,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
             onClick={[Function]}
             style={
               {
-                "color": "#40AF6C",
+                "color": "#007124",
                 "cursor": "default",
                 "paddingLeft": "0.5em",
               }
@@ -1620,7 +1641,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
           <label
             style={
               {
-                "color": "#427AF5",
+                "color": "#3971ED",
                 "display": "inline-block",
                 "margin": "0 0.5em 0 0",
               }
@@ -1634,7 +1655,7 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
           <span
             style={
               {
-                "color": "#F36433",
+                "color": "#F96A38",
               }
             }
           >
@@ -3633,6 +3654,13 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
     className="formGroup form-group row"
   >
     <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
+    <div
       className="col-xl-12 col-lg-12"
     >
       <div
@@ -3649,6 +3677,13 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
           <div
             className="formGroup form-group row"
           >
+            <div
+              className="mb-2 annotation-transition col-12"
+            >
+              <div
+                className="annotationPlaceholder"
+              />
+            </div>
             <label
               className="label form-label col-form-label col-xl-2 col-lg-3"
               htmlFor="childObject.InputValue"
@@ -3928,6 +3963,13 @@ exports[`Storyshots Fields/SchemaField Array Items 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -3999,6 +4041,13 @@ exports[`Storyshots Fields/SchemaField Boolean 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testBoolean"
@@ -4084,6 +4133,13 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4257,6 +4313,13 @@ exports[`Storyshots Fields/SchemaField Integer 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4327,6 +4390,13 @@ exports[`Storyshots Fields/SchemaField Multi Schema 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4416,6 +4486,13 @@ exports[`Storyshots Fields/SchemaField Normal Text 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4487,6 +4564,13 @@ exports[`Storyshots Fields/SchemaField Not Required Text 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4558,6 +4642,13 @@ exports[`Storyshots Fields/SchemaField Number 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4628,6 +4719,13 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -4677,6 +4775,13 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                     <div
                       className="formGroup mb-0 form-group row"
                     >
+                      <div
+                        className="mb-2 annotation-transition col-12"
+                      >
+                        <div
+                          className="annotationPlaceholder"
+                        />
+                      </div>
                       <div
                         className="col-xl-12 col-lg-12"
                       >
@@ -4740,6 +4845,13 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                       className="formGroup mb-0 form-group row"
                     >
                       <div
+                        className="mb-2 annotation-transition col-12"
+                      >
+                        <div
+                          className="annotationPlaceholder"
+                        />
+                      </div>
+                      <div
                         className="col-xl-12 col-lg-12"
                       >
                         <div
@@ -4802,6 +4914,13 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                       className="formGroup mb-0 form-group row"
                     >
                       <div
+                        className="mb-2 annotation-transition col-12"
+                      >
+                        <div
+                          className="annotationPlaceholder"
+                        />
+                      </div>
+                      <div
                         className="col-xl-12 col-lg-12"
                       >
                         <div
@@ -4863,6 +4982,13 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                     <div
                       className="formGroup mb-0 form-group row"
                     >
+                      <div
+                        className="mb-2 annotation-transition col-12"
+                      >
+                        <div
+                          className="annotationPlaceholder"
+                        />
+                      </div>
                       <div
                         className="col-xl-12 col-lg-12"
                       >
@@ -4958,6 +5084,13 @@ exports[`Storyshots Fields/SchemaField Password 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -5070,6 +5203,13 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -5243,6 +5383,13 @@ exports[`Storyshots Fields/SchemaField Text Area 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="topObj.parentObj.testField"
@@ -5346,6 +5493,13 @@ exports[`Storyshots Fields/UrlMatchPatternField Default 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="matchPatterns"
@@ -5446,6 +5600,13 @@ exports[`Storyshots Fields/UrlPatternField Default 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="urlsPatterns"
@@ -5511,6 +5672,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation-transition col-12"
+        >
+          <div
+            className="annotationPlaceholder"
+          />
+        </div>
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="dynamicForm.schema.title"
@@ -5565,6 +5733,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation-transition col-12"
+        >
+          <div
+            className="annotationPlaceholder"
+          />
+        </div>
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="dynamicForm.schema.description"
@@ -5705,6 +5880,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation-transition col-12"
+          >
+            <div
+              className="annotationPlaceholder"
+            />
+          </div>
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName"
@@ -5739,6 +5921,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation-transition col-12"
+          >
+            <div
+              className="annotationPlaceholder"
+            />
+          </div>
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.title"
@@ -5804,6 +5993,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation-transition col-12"
+          >
+            <div
+              className="annotationPlaceholder"
+            />
+          </div>
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.description"
@@ -5869,6 +6065,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation-transition col-12"
+          >
+            <div
+              className="annotationPlaceholder"
+            />
+          </div>
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.uiType"
@@ -6003,6 +6206,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation-transition col-12"
+          >
+            <div
+              className="annotationPlaceholder"
+            />
+          </div>
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.default"
@@ -6057,6 +6267,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         <div
           className="formGroup form-group row"
         >
+          <div
+            className="mb-2 annotation-transition col-12"
+          >
+            <div
+              className="annotationPlaceholder"
+            />
+          </div>
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.required"
@@ -6101,6 +6318,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation-transition col-12"
+        >
+          <div
+            className="annotationPlaceholder"
+          />
+        </div>
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="layoutButtons"
@@ -6410,6 +6634,13 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation-transition col-12"
+        >
+          <div
+            className="annotationPlaceholder"
+          />
+        </div>
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="dynamicForm.schema.title"
@@ -6463,6 +6694,13 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
       <div
         className="formGroup form-group row"
       >
+        <div
+          className="mb-2 annotation-transition col-12"
+        >
+          <div
+            className="annotationPlaceholder"
+          />
+        </div>
         <label
           className="label form-label col-form-label col-xl-2 col-lg-3"
           htmlFor="dynamicForm.schema.description"
@@ -6592,6 +6830,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="name"
@@ -6625,6 +6870,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="story"
@@ -6659,6 +6911,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="select"
@@ -6787,6 +7046,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="select-add-new"
@@ -6915,6 +7181,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="public"
@@ -6977,6 +7250,13 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="bsCustomFormControl"
@@ -7036,6 +7316,13 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
     className="formGroup form-group row"
   >
     <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
+    <div
       className="col-xl-12 col-lg-12"
     >
       <input
@@ -7052,6 +7339,13 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="name"
@@ -7085,6 +7379,13 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="age"
@@ -7133,6 +7434,13 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
     className="formGroup form-group row"
   >
     <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
+    <div
       className="col-xl-12 col-lg-12"
     >
       <input
@@ -7149,6 +7457,13 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="name"
@@ -7183,6 +7498,13 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
   <div
     className="formGroup form-group row"
   >
+    <div
+      className="mb-2 annotation-transition col-12"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
     <label
       className="label form-label col-form-label col-xl-2 col-lg-3"
       htmlFor="age"
@@ -7878,6 +8200,13 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
                   <div
                     className="formGroup form-group row"
                   >
+                    <div
+                      className="mb-2 annotation-transition col-12"
+                    >
+                      <div
+                        className="annotationPlaceholder"
+                      />
+                    </div>
                     <label
                       className="label form-label col-form-label col-xl-2 col-lg-3"
                       htmlFor="controlRoomUrl"
@@ -8318,7 +8647,7 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
     {
       "MozUserSelect": "none",
       "WebkitUserSelect": "none",
-      "backgroundColor": "#FDFFFF",
+      "backgroundColor": "#FFFFFF",
       "border": 0,
       "listStyle": "none",
       "marginBottom": "0.5em",
@@ -8430,7 +8759,7 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           onClick={[Function]}
           style={
             {
-              "color": "#40AF6C",
+              "color": "#007124",
               "cursor": "default",
               "paddingLeft": "0.5em",
             }
@@ -10763,7 +11092,6 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
 exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
 <div
   className="d-flex"
-  data-widget="ServiceSelectWidget"
 >
   <div
     className="flex-grow-1"
@@ -10905,7 +11233,6 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
 exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
 <div
   className="d-flex"
-  data-widget="ServiceSelectWidget"
 >
   <div
     className="flex-grow-1"

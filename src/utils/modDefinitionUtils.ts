@@ -23,7 +23,7 @@ import {
 import { isEmpty, pick, uniq, groupBy } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type Schema } from "@/types/schemaTypes";
-import { extractServiceIds } from "@/services/serviceUtils";
+import { extractIntegrationIds } from "@/services/integrationUtils";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
@@ -46,9 +46,9 @@ function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
       return [];
     }
 
-    const integrationIds = extractServiceIds(schema);
-    return integrationIds.map((id) => ({
-      id,
+    const integrationIds = extractIntegrationIds(schema);
+    return integrationIds.map((integrationId) => ({
+      integrationId,
       outputKey: validateOutputKey(key),
       isOptional: services.required != null && !services.required.includes(key),
       apiVersion: "v2",
@@ -59,8 +59,8 @@ function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
 function getIntegrationsFromRecord(
   services: Record<OutputKey, RegistryId>
 ): IntegrationDependency[] {
-  return Object.entries(services).map(([key, id]) => ({
-    id,
+  return Object.entries(services).map(([key, integrationId]) => ({
+    integrationId,
     outputKey: validateOutputKey(key),
     isOptional: false,
     apiVersion: "v1",
@@ -88,7 +88,9 @@ export function getUnconfiguredComponentIntegrations({
   );
 
   const dedupedIntegrationDependencies = [];
-  for (const group of Object.values(groupBy(integrationDependencies, "id"))) {
+  for (const group of Object.values(
+    groupBy(integrationDependencies, "integrationId")
+  )) {
     if (group.some(({ isOptional }) => !isOptional)) {
       dedupedIntegrationDependencies.push(
         group.find(({ isOptional }) => !isOptional)
@@ -124,7 +126,7 @@ export function getIntegrationIds(
             .filter(
               ([key]) => !requiredOnly || services.required?.includes(key)
             )
-            .flatMap(([, schema]) => extractServiceIds(schema as Schema))
+            .flatMap(([, schema]) => extractIntegrationIds(schema as Schema))
         : Object.values(services ?? {});
     })
   );

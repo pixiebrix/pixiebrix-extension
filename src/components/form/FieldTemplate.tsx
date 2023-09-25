@@ -194,18 +194,25 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
-      {!isEmpty(annotations) && (
-        <Col xs="12" className="mb-2">
-          {annotations.map(({ message, type, actions }) => (
+      <Col
+        xs="12"
+        className={cx("mb-2", "annotation-transition", {
+          show: !isEmpty(annotations),
+        })}
+      >
+        {isEmpty(annotations) ? (
+          <div className={styles.annotationPlaceholder} />
+        ) : (
+          annotations.map(({ message, type, actions }) => (
             <FieldAnnotationAlert
               key={`${type}-${message.slice(0, 10)}`}
               message={message}
               type={type}
               actions={actions}
             />
-          ))}
-        </Col>
-      )}
+          ))
+        )}
+      </Col>
       {label && (
         <BootstrapForm.Label
           column

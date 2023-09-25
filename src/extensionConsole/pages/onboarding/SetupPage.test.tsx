@@ -29,7 +29,7 @@ import {
   readManagedStorage,
 } from "@/store/enterprise/managedStorage";
 import { render } from "@/extensionConsole/testHelpers";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 import notify from "@/utils/notify";
@@ -103,8 +103,8 @@ describe("SetupPage", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            settingsSlice.actions.setAuthServiceId({
-              serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            settingsSlice.actions.setAuthIntegrationId({
+              integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
             })
           );
         },
@@ -143,10 +143,10 @@ describe("SetupPage", () => {
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value")
       // Schema should get pre-pended automatically from hostname
-    ).toStrictEqual("https://mycontrolroom.com");
+    ).toBe("https://mycontrolroom.com");
 
     // Sanity check we haven't redirected away from the start screen yet
-    expect(location.href).toStrictEqual(
+    expect(location.href).toBe(
       "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com"
     );
 
@@ -156,9 +156,7 @@ describe("SetupPage", () => {
     await waitForEffect();
 
     // Should have redirected away from the start page
-    expect(location.href).toStrictEqual(
-      "chrome-extension://abc123/options.html#/"
-    );
+    expect(location.href).toBe("chrome-extension://abc123/options.html#/");
   });
 
   test("Start URL with Community Edition hostname if user is unauthenticated", async () => {
@@ -214,7 +212,7 @@ describe("SetupPage", () => {
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value")
       // Schema get pre-pended automatically
-    ).toStrictEqual("https://community2.cloud-2.automationanywhere.digital");
+    ).toBe("https://community2.cloud-2.automationanywhere.digital");
 
     expect(screen.getByLabelText("Username")).not.toBeNull();
 

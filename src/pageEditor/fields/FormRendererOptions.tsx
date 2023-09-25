@@ -30,9 +30,9 @@ import {
   customFormRendererSchema,
   type Storage,
 } from "@/bricks/renderers/customForm";
-import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
+import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/AppApiIntegrationDependencyField";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { type Options } from "react-select";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
@@ -150,7 +150,9 @@ const FormRendererOptions: React.FC<{
             isRequired
             schema={databaseIdSchema}
           />
-          <AppServiceField name={makeName("storage", "service")} />
+          <AppApiIntegrationDependencyField
+            name={makeName("storage", "service")}
+          />
         </>
       )}
 

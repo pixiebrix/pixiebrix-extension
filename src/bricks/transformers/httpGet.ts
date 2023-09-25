@@ -16,7 +16,7 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { proxyService } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
@@ -84,7 +84,7 @@ export class GetAPITransformer extends TransformerABC {
       );
     }
 
-    const { data } = await proxyService(
+    const { data } = await performConfiguredRequestInBackground(
       isNullOrBlank(service) ? null : service,
       {
         ...requestProps,

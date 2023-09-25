@@ -40,7 +40,7 @@ export const secretsConfigFactory = define<SecretsConfig>({} as SecretsConfig);
 
 export const integrationConfigFactory = define<IntegrationConfig>({
   id: uuidSequence,
-  serviceId: (n: number) => validateRegistryId(`test/integration-${n}`),
+  integrationId: (n: number) => validateRegistryId(`test/integration-${n}`),
   label: (n: number) => `Integration ${n}`,
   config: secretsConfigFactory,
   // Nominal brand without casting
@@ -75,7 +75,7 @@ export const remoteIntegrationConfigurationFactory =
   });
 
 export const integrationDependencyFactory = define<IntegrationDependency>({
-  id(n: number) {
+  integrationId(n: number) {
     return validateRegistryId(`@test/integration${n}`);
   },
   outputKey(n: number) {

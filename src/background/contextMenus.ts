@@ -27,7 +27,7 @@ import {
   type ContextMenuConfig,
   ContextMenuStarterBrickABC,
 } from "@/starterBricks/contextMenu";
-import { loadOptions } from "@/store/extensionsStorage";
+import { getModComponentState } from "@/store/extensionsStorage";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { type UUID } from "@/types/stringTypes";
 import {
@@ -201,7 +201,7 @@ export async function preloadContextMenus(
 }
 
 async function preloadAllContextMenus(): Promise<void> {
-  const { extensions } = await loadOptions();
+  const { extensions } = await getModComponentState();
   const resolved = await allSettledValues(
     extensions.map(async (x) => resolveExtensionInnerDefinitions(x))
   );

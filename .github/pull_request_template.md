@@ -35,4 +35,5 @@ _Leave all that are relevant and check off as completed_
 ## Checklist
 
 - [ ] Add tests
+- [ ] New files added to `src/tsconfig.strictNullChecks.json` (if possible)
 - [ ] Designate a primary reviewer

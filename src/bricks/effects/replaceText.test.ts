@@ -184,7 +184,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.head.innerHTML).toEqual("<title>Support page</title>");
-    expect(document.body.innerHTML).toEqual("<h1>Fooerlatives Abound</h1>");
+    expect(document.head.innerHTML).toBe("<title>Support page</title>");
+    expect(document.body.innerHTML).toBe("<h1>Fooerlatives Abound</h1>");
   });
 });

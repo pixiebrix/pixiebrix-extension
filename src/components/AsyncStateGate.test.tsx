@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
@@ -28,35 +28,35 @@ import {
 describe("AsyncStateGate", () => {
   it("renders loader on uninitialized", () => {
     const state = queryUninitializedFactory();
-    const wrapper = render(
+    render(
       <AsyncStateGate state={state}>
         {({ data }) => <div>{data}</div>}
       </AsyncStateGate>
     );
 
-    expect(wrapper.getByTestId("loader")).toBeVisible();
+    expect(screen.getByTestId("loader")).toBeVisible();
   });
 
   it("renders data", () => {
     const state = valueToAsyncState("foo");
-    const wrapper = render(
+    render(
       <AsyncStateGate state={state}>
         {({ data }) => <div>{data}</div>}
       </AsyncStateGate>
     );
 
-    expect(wrapper.getByText("foo")).toBeVisible();
+    expect(screen.getByText("foo")).toBeVisible();
   });
 
   it("renders loader", () => {
     const state = queryLoadingFactory();
-    const wrapper = render(
+    render(
       <AsyncStateGate state={state}>
         {({ data }) => <div>{data}</div>}
       </AsyncStateGate>
     );
 
-    expect(wrapper.getByTestId("loader")).toBeVisible();
+    expect(screen.getByTestId("loader")).toBeVisible();
   });
 
   it("throws on error by default", () => {
@@ -72,7 +72,7 @@ describe("AsyncStateGate", () => {
 
   it("renders error component", () => {
     const state = queryErrorFactory(new Error("test error"));
-    const wrapper = render(
+    render(
       <AsyncStateGate
         state={state}
         renderError={(props) => <StandardError {...props} />}
@@ -81,9 +81,13 @@ describe("AsyncStateGate", () => {
       </AsyncStateGate>
     );
 
-    expect(wrapper.container).toHaveTextContent(
-      "Error fetching data: test error"
+    expect(screen.getByText(/error fetching data: test error/i)).toHaveClass(
+      "text-danger"
     );
-    expect(wrapper.getByText("Try again")).toBeVisible();
+    expect(
+      screen.getByRole("button", {
+        name: /try again/i,
+      })
+    ).toBeVisible();
   });
 });

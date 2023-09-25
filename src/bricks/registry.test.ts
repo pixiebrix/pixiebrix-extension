@@ -110,6 +110,26 @@ describe("bricksRegistry", () => {
     expect(bricksRegistry.cached).toEqual([echoBrick]);
   });
 
+  test("skips invalid block", async () => {
+    const validBrick = {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      ...parsePackage(starterBrickConfigFactory() as any),
+      timestamp: new Date(),
+    };
+    const invalidBrick = {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      ...parsePackage(starterBrickConfigFactory() as any),
+      timestamp: new Date(),
+    };
+    // No config makes the brick invalid
+    invalidBrick.config = {};
+
+    getByKindsMock.mockResolvedValueOnce([validBrick, invalidBrick]);
+
+    const bricks = await bricksRegistry.all();
+    expect(bricks.map((x) => x.id)).toEqual([validBrick.id]);
+  });
+
   test("preserves JS block on clear", async () => {
     bricksRegistry.register([echoBrick]);
     bricksRegistry.clear();

@@ -24,6 +24,7 @@ import {
 } from "@/utils/deploymentUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import { type IntegrationDependency } from "@/types/integrationTypes";
 
 /**
  * Return permissions required to activate a deployment.
@@ -45,13 +46,13 @@ export async function checkDeploymentPermissions(
     locate
   );
 
-  const integrationDependencies = localAuths.flatMap(
-    ({ id, outputKey, isOptional, configs }) =>
+  const integrationDependencies: IntegrationDependency[] = localAuths.flatMap(
+    ({ integrationId, outputKey, isOptional, configs }) =>
       configs.map((config) => ({
-        id,
+        integrationId,
         outputKey,
         isOptional,
-        config: config.id,
+        configId: config.id,
       }))
   );
 

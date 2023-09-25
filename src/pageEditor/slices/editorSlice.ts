@@ -53,8 +53,8 @@ import {
   selectNotDeletedExtensions,
 } from "./editorSelectors";
 import {
-  type ModComponentFormState,
   isQuickBarExtensionPoint,
+  type ModComponentFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
@@ -79,21 +79,20 @@ import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
-import { type BaseExtensionPointState } from "@/pageEditor/starterBricks/elementConfig";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
-import {
-  keyToFieldValue,
-  selectServiceVariables,
-} from "@/components/fields/schemaFields/serviceFieldUtils";
+import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
+import { createMigrate } from "redux-persist";
+import { migrations } from "@/store/editorMigrations";
+import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -818,11 +817,7 @@ export const editorSlice = createSlice({
           : pipeline[index + 1]; // Not last item, select next
       pipeline.splice(index, 1);
 
-      const used = selectServiceVariables(element);
-
-      element.services = element.services.filter((x) =>
-        used.has(keyToFieldValue(x.outputKey).__value__)
-      );
+      removeUnusedDependencies(element);
 
       syncElementNodeUIStates(state, element);
 
@@ -983,6 +978,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 1,
+  version: 2,
+  migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: ["isVarPopoverVisible"],
 };

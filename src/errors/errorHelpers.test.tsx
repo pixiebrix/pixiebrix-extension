@@ -16,6 +16,7 @@
  */
 
 import {
+  formatSchemaValidationMessage,
   getErrorMessage,
   getErrorMessageWithCauses,
   hasSpecificErrorCause,
@@ -29,7 +30,11 @@ import {
 } from "@/errors/errorHelpers";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
-import { InputValidationError, OutputValidationError } from "@/bricks/errors";
+import {
+  InputValidationError,
+  OutputValidationError,
+  type SchemaValidationError,
+} from "@/bricks/errors";
 import { configureStore, isPlainObject } from "@reduxjs/toolkit";
 import axios, { type AxiosError } from "axios";
 import {
@@ -264,6 +269,61 @@ describe("getErrorMessage", () => {
     expect(getErrorMessage(serializeError(error))).toBe(
       "These aren't the droids you're looking for"
     );
+  });
+
+  test("if error object, return error message", () => {
+    const errorObject = { message: "error message" };
+    const message = getErrorMessage(errorObject, "default message");
+    expect(message).toEqual(errorObject.message);
+  });
+
+  test("if InputValidationError, prefer error message property if it exists", () => {
+    const inputValidationError = {
+      message: "error message",
+      schema: {},
+      errors: [{ error: "error", keywordLocation: "#/foo" }],
+    } as InputValidationError;
+    const message = getErrorMessage(inputValidationError, "default message");
+    expect(message).toEqual(inputValidationError.message);
+  });
+
+  test("if InputValidationError with no message property, return first error", () => {
+    const firstError = { error: "error", keywordLocation: "#/foo" };
+    const inputValidationError = {
+      schema: {},
+      errors: [firstError, { error: "second error", keywordLocation: "#/bar" }],
+    } as InputValidationError;
+    const message = getErrorMessage(inputValidationError, "default message");
+    expect(message).toBe(`${firstError.keywordLocation}: ${firstError.error}`);
+  });
+});
+
+const validationError = {
+  keywordLocation: "#/foo",
+  error: "Property bar does not match schema",
+} as SchemaValidationError["errors"][number];
+
+describe("formatSchemaValidationMessage", () => {
+  test("it returns a message in the form of 'keywordLocation: error'", () => {
+    const message = formatSchemaValidationMessage(validationError);
+    expect(message).toBe(
+      `${validationError.keywordLocation}: ${validationError.error}`
+    );
+  });
+
+  test("it returns just the error if no keyword location", () => {
+    const message = formatSchemaValidationMessage({
+      ...validationError,
+      keywordLocation: undefined,
+    });
+    expect(message).toEqual(validationError.error);
+  });
+
+  test("it returns empty string if no error or keyword location", () => {
+    const message = formatSchemaValidationMessage(
+      {} as SchemaValidationError["errors"][number]
+    );
+    expect(message).toBe("");
   });
 });
 

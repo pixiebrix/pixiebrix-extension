@@ -19,7 +19,7 @@ import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 import { renderHook } from "@/testUtils/renderWithCommonStore";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { uuidv4 } from "@/types/helpers";
 import { authSlice } from "@/auth/authSlice";
 import {

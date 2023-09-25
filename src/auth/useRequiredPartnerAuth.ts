@@ -18,8 +18,8 @@
 import { appApi } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
-import { selectConfiguredServices } from "@/store/services/servicesSelectors";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import {
   addListener as addAuthListener,
@@ -33,7 +33,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/services/constants";
 import { type AuthState } from "@/auth/authTypes";
-import { type SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type RegistryId } from "@/types/registryTypes";
 
@@ -87,17 +87,17 @@ type RequiredPartnerState = {
   error: unknown;
 };
 
-function decidePartnerServiceIds({
-  authServiceIdOverride,
+function decidePartnerIntegrationIds({
+  authIntegrationIdOverride,
   authMethodOverride,
   partnerId,
 }: {
-  authServiceIdOverride: RegistryId | null;
+  authIntegrationIdOverride: RegistryId | null;
   authMethodOverride: SettingsState["authMethod"];
   partnerId: AuthState["partner"]["theme"] | null;
 }): Set<RegistryId> {
-  if (authServiceIdOverride) {
-    return new Set<RegistryId>([authServiceIdOverride]);
+  if (authIntegrationIdOverride) {
+    return new Set<RegistryId>([authIntegrationIdOverride]);
   }
 
   if (authMethodOverride === "partner-oauth2") {
@@ -123,11 +123,11 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const { isLoading, data: me, error } = appApi.endpoints.getMe.useQueryState();
   const localAuth = useSelector(selectAuth);
   const {
-    authServiceId: authServiceIdOverride,
+    authIntegrationId: authIntegrationIdOverride,
     authMethod: authMethodOverride,
     partnerId: partnerIdOverride,
   } = useSelector(selectSettings);
-  const configuredServices = useSelector(selectConfiguredServices);
+  const integrationConfigs = useSelector(selectIntegrationConfigs);
 
   // Read enterprise managed state
   const { data: managedState = {} } = useManagedStorageState();
@@ -155,14 +155,14 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     partner?.theme ??
     (hasControlRoom || isCommunityEditionUser ? "automation-anywhere" : null);
 
-  const partnerServiceIds = decidePartnerServiceIds({
-    authServiceIdOverride,
+  const partnerIntegrationIds = decidePartnerIntegrationIds({
+    authIntegrationIdOverride,
     authMethodOverride,
     partnerId,
   });
 
-  const partnerConfiguration = configuredServices.find((service) =>
-    partnerServiceIds.has(service.serviceId)
+  const partnerConfiguration = integrationConfigs.find((integrationConfig) =>
+    partnerIntegrationIds.has(integrationConfig.integrationId)
   );
 
   // WARNING: the logic in this method must match the logic in usePartnerLoginMode

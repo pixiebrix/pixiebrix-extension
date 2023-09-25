@@ -30,11 +30,6 @@ import {
 import { registry } from "@/background/messenger/api";
 import type React from "react";
 import { createSitePattern } from "@/permissions/patterns";
-import {
-  type BaseExtensionState,
-  type BaseFormState,
-  type SingleLayerReaderConfig,
-} from "@/pageEditor/starterBricks/elementConfig";
 import { type Except } from "type-fest";
 import {
   isInnerDefinitionRegistryId,
@@ -64,6 +59,11 @@ import { isExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { deepPickBy } from "@/utils/objectUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
+import {
+  type BaseExtensionState,
+  type BaseFormState,
+  type SingleLayerReaderConfig,
+} from "@/pageEditor/baseFormStateTypes";
 
 export interface WizardStep {
   step: string;
@@ -103,7 +103,7 @@ export function baseFromExtension<T extends StarterBrickType>(
   | "apiVersion"
   | "installed"
   | "label"
-  | "services"
+  | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
   | "recipe"
@@ -114,7 +114,7 @@ export function baseFromExtension<T extends StarterBrickType>(
     installed: true,
     label: config.label,
     // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
-    services: config.services ?? [],
+    integrationDependencies: config.integrationDependencies ?? [],
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
@@ -154,7 +154,7 @@ export function baseSelectExtension({
   uuid,
   label,
   optionsArgs,
-  services,
+  integrationDependencies,
   permissions,
   extensionPoint,
   recipe,
@@ -165,7 +165,7 @@ export function baseSelectExtension({
   | "extensionPointId"
   | "_recipe"
   | "label"
-  | "services"
+  | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
 > {
@@ -175,7 +175,7 @@ export function baseSelectExtension({
     extensionPointId: extensionPoint.metadata.id,
     _recipe: recipe,
     label,
-    services,
+    integrationDependencies,
     permissions,
     optionsArgs,
   };
@@ -187,7 +187,7 @@ export function makeInitialBaseState(
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    services: [],
+    integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
     extension: {

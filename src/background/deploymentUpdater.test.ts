@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import {
+  getModComponentState,
+  saveModComponentState,
+} from "@/store/extensionsStorage";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -24,8 +27,11 @@ import reportEvent from "@/telemetry/reportEvent";
 import { isLinked, readAuthData } from "@/auth/token";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { isUpdateAvailable } from "@/background/installer";
-import { getSettingsState, saveSettingsState } from "@/store/settingsStorage";
-import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
+import {
+  getSettingsState,
+  saveSettingsState,
+} from "@/store/settings/settingsStorage";
+import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import {
   editorSlice,
   initialState as initialEditorState,
@@ -53,7 +59,7 @@ import { type RegistryPackage } from "@/types/contract";
 setContext("background");
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("@/store/settingsStorage", () => ({
+jest.mock("@/store/settings/settingsStorage", () => ({
   getSettingsState: jest.fn(),
   saveSettingsState: jest.fn(),
 }));
@@ -112,7 +118,10 @@ beforeEach(async () => {
   jest.resetModules();
 
   // Reset local states
-  await Promise.all([saveOptions({ extensions: [] }), clearEditorReduxState()]);
+  await Promise.all([
+    saveModComponentState({ extensions: [] }),
+    clearEditorReduxState(),
+  ]);
 
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
@@ -213,9 +222,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
-    expect(extensions.length).toBe(1);
+    expect(extensions).toHaveLength(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
   });
 
@@ -236,7 +245,7 @@ describe("updateDeployments", () => {
     delete modComponent._recipe;
     delete modComponent._deployment;
 
-    await saveOptions({
+    await saveModComponentState({
       extensions: [modComponent],
     });
 
@@ -260,11 +269,11 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(2);
-    const { elements } = await getEditorState();
+    const foo = await getEditorState();
     // Expect unrelated dynamic element not to be removed
-    expect(elements).toBeArrayOfSize(1);
+    expect(foo.elements).toBeArrayOfSize(1);
   });
 
   test("uninstall existing recipe mod component with no dynamic elements", async () => {
@@ -284,7 +293,7 @@ describe("updateDeployments", () => {
     }) as ActivatedModComponent;
     delete modComponent._deployment;
 
-    await saveOptions({
+    await saveModComponentState({
       extensions: [modComponent],
     });
 
@@ -299,7 +308,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(1);
     expect(extensions[0]._recipe.version).toBe(deployment.package.version);
   });
@@ -329,7 +338,7 @@ describe("updateDeployments", () => {
     }) as ActivatedModComponent;
     delete modComponent._deployment;
 
-    await saveOptions({
+    await saveModComponentState({
       extensions: [modComponent],
     });
 
@@ -351,7 +360,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(1);
     const { elements } = await getEditorState();
     // Expect dynamic element to be removed
@@ -376,9 +385,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
-    expect(extensions.length).toBe(0);
+    expect(extensions).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
@@ -396,8 +405,8 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect((uninstallAllDeployments as jest.Mock).mock.calls.length).toBe(0);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect((uninstallAllDeployments as jest.Mock).mock.calls).toHaveLength(0);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
   });
 
@@ -413,9 +422,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(0);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(0);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
   });
 
   test("open options page if refresh registries fails", async () => {
@@ -432,9 +441,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(1);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
   test("open options page on update if restricted-version flag is set", async () => {
@@ -449,9 +458,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(1);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
   });
 
   test("open options page on update if enforce_update_millis is set even if snoozed", async () => {
@@ -472,9 +481,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(1);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
   });
 
   test("do not open options page if enforce_update_millis is set but no updates available", async () => {
@@ -495,9 +504,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
-    expect(openOptionsPageMock.mock.calls.length).toBe(0);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(0);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
   });
 
   test("skip update if snoozed", async () => {
@@ -516,9 +525,9 @@ describe("updateDeployments", () => {
     await updateDeployments();
 
     // Unmatched deployments are always uninstalled if snoozed
-    expect(isUpdateAvailableMock.mock.calls.length).toBe(0);
-    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
-    expect(openOptionsPageMock.mock.calls.length).toBe(0);
+    expect(isUpdateAvailableMock.mock.calls).toHaveLength(0);
+    expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(0);
   });
 
   test("can uninstall all deployments", async () => {
@@ -574,7 +583,7 @@ describe("updateDeployments", () => {
       editorSlice.actions.addElement(deploymentElement)
     );
 
-    await saveOptions({
+    await saveModComponentState({
       extensions: [
         personalModComponent,
         deploymentModComponent,
@@ -588,9 +597,9 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
 
-    expect(extensions.length).toBe(2);
+    expect(extensions).toHaveLength(2);
 
     const installedIds = extensions.map((x) => x.id);
     expect(installedIds).toContain(personalModComponent.id);

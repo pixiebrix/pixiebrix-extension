@@ -33,7 +33,7 @@ import {
   selectActiveElement,
   selectSelectionSeq,
 } from "@/pageEditor/slices/editorSelectors";
-import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -64,14 +64,14 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   }, [element.uuid, element.recipe, dispatch]);
 
   return (
-    <ServicesSliceModIntegrationsContextAdapter>
+    <IntegrationsSliceModIntegrationsContextAdapter>
       <Effect
         values={element}
         onChange={syncReduxState}
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
       <ElementWizard element={element} />
-    </ServicesSliceModIntegrationsContextAdapter>
+    </IntegrationsSliceModIntegrationsContextAdapter>
   );
 };
 
@@ -82,29 +82,27 @@ const EditorPane: React.VFC = () => {
   const key = `${activeElement.uuid}-${activeElement.installed}-${selectionSeq}`;
 
   return (
-    <>
-      <ErrorBoundary key={key}>
-        <Formik
-          key={key}
-          initialValues={activeElement}
-          onSubmit={() => {
-            console.error(
-              "Formik's submit should not be called to save an extension."
-            );
-          }}
-          // We're validating on blur instead of on change as a stop-gap measure to improve typing
-          // performance in schema fields of block configs in dev builds of the extension.
-          // The long-term better solution is to split up our pipeline validation code to work
-          // on one block at a time, and then modify the usePipelineField hook to only validate
-          // one block at a time. Then we can re-enable change validation here once this doesn't
-          // cause re-rendering the entire form on every change.
-          validateOnChange={false}
-          validateOnBlur={true}
-        >
-          {({ values: element }) => <EditorPaneContent element={element} />}
-        </Formik>
-      </ErrorBoundary>
-    </>
+    <ErrorBoundary key={key}>
+      <Formik
+        key={key}
+        initialValues={activeElement}
+        onSubmit={() => {
+          console.error(
+            "Formik's submit should not be called to save an extension."
+          );
+        }}
+        // We're validating on blur instead of on change as a stop-gap measure to improve typing
+        // performance in schema fields of block configs in dev builds of the extension.
+        // The long-term better solution is to split up our pipeline validation code to work
+        // on one block at a time, and then modify the usePipelineField hook to only validate
+        // one block at a time. Then we can re-enable change validation here once this doesn't
+        // cause re-rendering the entire form on every change.
+        validateOnChange={false}
+        validateOnBlur={true}
+      >
+        {({ values: element }) => <EditorPaneContent element={element} />}
+      </Formik>
+    </ErrorBoundary>
   );
 };
 

@@ -21,10 +21,10 @@ import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import servicesSlice, {
-  persistServicesConfig,
+import integrationsSlice, {
+  persistIntegrationsConfig,
   type ServicesRootState,
-} from "@/store/services/servicesSlice";
+} from "@/store/integrations/integrationsSlice";
 import {
   type ModModalsRootState,
   modModalsSlice,
@@ -32,14 +32,14 @@ import {
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import workshopSlice, {
   persistWorkshopConfig,
   type WorkshopRootState,
 } from "@/store/workshopSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import { persistSettingsConfig } from "@/store/settingsStorage";
-import { type SettingsRootState } from "@/store/settingsTypes";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import modsPageSlice, {
   persistModsConfig,
 } from "@/extensionConsole/pages/mods/modsPageSlice";
@@ -98,7 +98,10 @@ const store = configureStore({
       extensionsSlice.reducer
     ),
     modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
-    services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    integrations: persistReducer(
+      persistIntegrationsConfig,
+      integrationsSlice.reducer
+    ),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),

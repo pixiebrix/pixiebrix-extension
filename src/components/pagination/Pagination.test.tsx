@@ -20,10 +20,10 @@ import { render } from "@testing-library/react";
 import Pagination, { MAX_DISPLAYED_PAGES } from "./Pagination";
 
 test(`renders ${MAX_DISPLAYED_PAGES} pages`, () => {
-  const rendered = render(
+  const { asFragment } = render(
     <Pagination page={1} numPages={MAX_DISPLAYED_PAGES} setPage={jest.fn()} />
   );
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test.each([
@@ -37,13 +37,13 @@ test.each([
 ])(
   `renders ${3 * MAX_DISPLAYED_PAGES} pages with %s being current`,
   (currentPage: number) => {
-    const rendered = render(
+    const { asFragment } = render(
       <Pagination
         page={currentPage - 1}
         numPages={3 * MAX_DISPLAYED_PAGES}
         setPage={jest.fn()}
       />
     );
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   }
 );

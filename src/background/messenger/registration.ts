@@ -40,7 +40,7 @@ import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
-import { proxyService } from "@/background/requests";
+import { performConfiguredRequest } from "@/background/requests";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
@@ -134,7 +134,7 @@ declare global {
 
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
-    PROXY: typeof proxyService;
+    CONFIGURED_REQUEST: typeof performConfiguredRequest;
     CLEAR_SERVICE_CACHE: VoidFunction;
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
@@ -217,7 +217,7 @@ export default function registerMessenger(): void {
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
-    PROXY: proxyService,
+    CONFIGURED_REQUEST: performConfiguredRequest,
 
     GET_DATA_STORE: getRecord,
     SET_DATA_STORE: setRecord,

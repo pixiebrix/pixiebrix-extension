@@ -31,7 +31,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { runRendererBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { type UUID } from "@/types/stringTypes";
@@ -107,7 +107,7 @@ export default function useDocumentPreviewRunBlock(
     uuid: extensionId,
     recipe,
     apiVersion,
-    services,
+    integrationDependencies,
     extensionPoint,
   } = useSelector(selectActiveElement);
 
@@ -138,8 +138,8 @@ export default function useDocumentPreviewRunBlock(
     selectActiveElementTraceForBlock(blockInstanceId)
   );
   const [serviceContext, isLoadingServiceContext] = useAsyncState(
-    makeServiceContext(services),
-    [services]
+    makeServiceContext(integrationDependencies),
+    [integrationDependencies]
   );
   const context = {
     ...traceRecord?.templateContext,

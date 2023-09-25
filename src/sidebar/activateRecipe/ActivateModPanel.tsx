@@ -242,7 +242,7 @@ const ActivateRecipePanelContent: React.FC<
   async function checkPermissions() {
     const configuredDependencies =
       formValuesRef.current.integrationDependencies.filter(
-        ({ config }) => !isEmpty(config)
+        ({ configId }) => !isEmpty(configId)
       );
 
     const { hasPermissions } = await checkModDefinitionPermissions(

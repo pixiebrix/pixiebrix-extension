@@ -52,6 +52,6 @@ describe("defaultBlockConfig", () => {
       },
     } as Schema;
     const config = defaultBlockConfig(schema);
-    expect(config.myProp).toStrictEqual(false);
+    expect(config.myProp).toBe(false);
   });
 });

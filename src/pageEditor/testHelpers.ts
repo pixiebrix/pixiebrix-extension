@@ -18,8 +18,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import servicesSlice from "@/store/services/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
@@ -41,7 +41,7 @@ const configureStoreForTests = () =>
     reducer: {
       auth: authSlice.reducer,
       options: extensionsSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       settings: settingsSlice.reducer,
       editor: editorSlice.reducer,
       session: sessionSlice.reducer,

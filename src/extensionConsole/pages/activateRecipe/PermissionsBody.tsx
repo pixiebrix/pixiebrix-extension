@@ -31,7 +31,7 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 
 function selectedAuths(values: WizardValues): IntegrationDependency[] {
-  return values.integrationDependencies.filter((x) => x.config);
+  return values.integrationDependencies.filter(({ configId }) => configId);
 }
 
 export function useSelectedAuths(): IntegrationDependency[] {

@@ -109,6 +109,6 @@ describe("checkAvailableDynamicElements", () => {
       selectExtensionAvailability(state);
 
     expect(availableDynamicIds).toStrictEqual([availableDynamicExtension.uuid]);
-    expect(unavailableDynamicCount).toStrictEqual(1);
+    expect(unavailableDynamicCount).toBe(1);
   });
 });

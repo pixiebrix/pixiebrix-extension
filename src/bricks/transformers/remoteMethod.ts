@@ -16,7 +16,7 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { proxyService } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -96,7 +96,7 @@ export class RemoteMethod extends TransformerABC {
       );
     }
 
-    const { data } = await proxyService(
+    const { data } = await performConfiguredRequestInBackground(
       service,
       requestConfig as AxiosRequestConfig
     );

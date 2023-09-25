@@ -36,13 +36,13 @@ jest.mock("@/contentScript/messenger/api", () => ({
 
 describe("SidebarApp", () => {
   test("it renders", () => {
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = render(<SidebarApp />);
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders error when context is invalidated", () => {
     (useContextInvalidated as jest.Mock).mockReturnValue(true);
-    const rendered = render(<SidebarApp />);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = render(<SidebarApp />);
+    expect(asFragment()).toMatchSnapshot();
   });
 });
