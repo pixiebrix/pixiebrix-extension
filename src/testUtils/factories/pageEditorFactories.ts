@@ -50,9 +50,9 @@ import { type TraceRecord } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
 import sidebar from "@/pageEditor/starterBricks/sidebar";
 import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
-import { type BaseExtensionState } from "@/pageEditor/starterBricks/elementConfig";
 import { pipelineFactory } from "@/testUtils/factories/brickFactories";
 import { type DerivedFunction } from "cooky-cutter/dist/derive";
+import { type BaseExtensionState } from "@/pageEditor/baseFormStateTypes";
 
 export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
