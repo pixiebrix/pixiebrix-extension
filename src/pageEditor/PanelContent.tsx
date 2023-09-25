@@ -54,16 +54,16 @@ const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
 // See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
 // and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
 const cleanUpStarterBrickForElement = (
-  activeElement: EditorState["elements"][number] | null
+  element: EditorState["elements"][number] | null
 ) => {
   if (
-    !activeElement ||
-    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(activeElement.type)
+    !element ||
+    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(element.type)
   ) {
     return;
   }
 
-  removeInstalledExtension(thisTab, activeElement.uuid);
+  removeInstalledExtension(thisTab, element.uuid);
 };
 
 const PanelContent: React.FC = () => {
