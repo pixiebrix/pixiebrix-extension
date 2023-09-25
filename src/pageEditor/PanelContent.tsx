@@ -41,15 +41,26 @@ import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
 import type { StarterBrickType } from "@/starterBricks/types";
+import type { EditorState } from "@/pageEditor/pageEditorTypes";
 
-const STARTER_BRICKS_TO_CLEANUP: StarterBrickType[] = [
-  "menuItem",
-  "trigger",
-  "contextMenu",
-  "quickBar",
-  "quickBarProvider",
-  "tour",
+const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
+  "actionPanel",
+  "panel",
 ];
+
+// Avoid adding duplicate starter bricks to the page when selecting them in the Page Editor.
+// Issue doesn't apply to certain starter bricks, e.g. sidebar panels
+// See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
+// and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
+const cleanUpStarterBrick = (
+  activeElement: EditorState["elements"][number]
+) => {
+  if (STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(activeElement.type)) {
+    return;
+  }
+
+  removeInstalledExtension(thisTab, activeElement.uuid);
+};
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
@@ -73,13 +84,7 @@ const PanelContent: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // Avoid adding duplicate starter bricks to the page when selecting them in the Page Editor.
-    // Issue doesn't apply to certain starter bricks, e.g. sidebar panels
-    // See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
-    // and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
-    if (STARTER_BRICKS_TO_CLEANUP.includes(activeElement?.type)) {
-      removeInstalledExtension(thisTab, activeElement.uuid);
-    }
+    cleanUpStarterBrick(activeElement);
   }, [activeElement]);
 
   const authPersistenceContext: ReduxPersistenceContextType = {

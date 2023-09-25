@@ -18,6 +18,7 @@
 import { createSelector } from "reselect";
 import {
   type EditorRootState,
+  type EditorState,
   ModalKey,
   type RootState,
 } from "@/pageEditor/pageEditorTypes";
@@ -46,12 +47,14 @@ export const selectActiveElementId = ({ editor }: EditorRootState) => {
   return editor.activeElementId;
 };
 
-export const selectElements = ({ editor }: EditorRootState) => editor.elements;
+export const selectElements = ({
+  editor,
+}: EditorRootState): EditorState["elements"] => editor.elements;
 
 export const selectActiveElement = createSelector(
   selectActiveElementId,
   selectElements,
-  (activeElementId, elements) =>
+  (activeElementId, elements): EditorState["elements"][number] =>
     elements.find((x) => x.uuid === activeElementId)
 );
 
