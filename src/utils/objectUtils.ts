@@ -76,7 +76,7 @@ export function deepPickBy(
  * @param value the value.
  */
 export function isObject(value: unknown): value is Record<string, unknown> {
-  return value && typeof value === "object";
+  return Boolean(value) && typeof value === "object";
 }
 
 export function ensureJsonObject(value: Record<string, unknown>): JsonObject {
@@ -90,7 +90,7 @@ export function ensureJsonObject(value: Record<string, unknown>): JsonObject {
 export function getProperty<TResult = unknown>(
   obj: UnknownObject,
   property: string
-): TResult {
+): TResult | undefined {
   if (Object.hasOwn(obj, property)) {
     // Checking for hasOwn
     // eslint-disable-next-line security/detect-object-injection

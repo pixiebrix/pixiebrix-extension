@@ -15,12 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type MigrationManifest,
-  type PersistedState,
-} from "redux-persist/es/types";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 import { produce } from "immer";
-import { type SetOptional } from "type-fest";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
 
@@ -30,6 +26,12 @@ export function getMaxMigrationsVersion(migrations: MigrationManifest): number {
   }
 
   return Math.max(...Object.keys(migrations).map(Number));
+}
+
+function isPersistedState(
+  state: UnknownObject & Partial<PersistedState>
+): state is UnknownObject & PersistedState {
+  return Boolean(state._persist);
 }
 
 /**
@@ -44,7 +46,7 @@ export function getMaxMigrationsVersion(migrations: MigrationManifest): number {
  */
 // Optional persisted state for backwards compatibility
 export default function migratePersistedState<MigratedState>(
-  state: UnknownObject & SetOptional<PersistedState, "_persist">,
+  state: UnknownObject & Partial<PersistedState>,
   migrations: MigrationManifest,
   inferPersistedVersion?: (state: UnknownObject) => number
 ): MigratedState {
@@ -52,7 +54,7 @@ export default function migratePersistedState<MigratedState>(
 
   let storedState: PersistedState;
 
-  if (state._persist) {
+  if (isPersistedState(state)) {
     storedState = {
       ...state,
       _persist: {
@@ -77,9 +79,9 @@ export default function migratePersistedState<MigratedState>(
   }
 
   while (storedState._persist.version < maxVersion) {
-    const newVersion = storedState._persist.version + 1;
-    // eslint-disable-next-line security/detect-object-injection -- number
-    const migration = migrations[newVersion];
+    const newVersion: number = storedState._persist.version + 1;
+    const migration: MigrationManifest[string] | undefined =
+      migrations[newVersion.toString()];
 
     if (migration == null) {
       throw new Error(
