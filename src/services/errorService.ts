@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject } from "type-fest";
+import { type JsonObject, type JsonValue } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import {
@@ -89,16 +89,15 @@ export async function selectExtraContext(
     };
   }
 
-  const { name, message, stack, code, cause, context, ...additionalData } =
-    error;
+  const { name, message, stack, code, cause } = error;
 
   return {
     extensionVersion,
     name,
     message,
     stack,
+    ...(cause ? { cause: cause as JsonValue } : {}),
     code,
-    ...additionalData,
   };
 }
 
