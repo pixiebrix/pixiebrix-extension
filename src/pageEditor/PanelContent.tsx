@@ -53,9 +53,12 @@ const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
 // See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
 // and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
 const cleanUpStarterBrick = (
-  activeElement: EditorState["elements"][number]
+  activeElement: EditorState["elements"][number] | null
 ) => {
-  if (STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(activeElement.type)) {
+  if (
+    !activeElement ||
+    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(activeElement.type)
+  ) {
     return;
   }
 
