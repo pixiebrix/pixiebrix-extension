@@ -49,7 +49,7 @@ export const NO_RESPONSE_MESSAGE =
  */
 export function selectNetworkErrorMessage(error: unknown): string | null {
   if (!isAxiosError(error)) {
-    return;
+    return null;
   }
 
   if (!navigator.onLine) {
@@ -74,6 +74,7 @@ export function selectNetworkErrorMessage(error: unknown): string | null {
   }
 
   // Likely a non-200 error. No special handling needed, getErrorMessage can handle it
+  return null;
 }
 
 /**
@@ -97,7 +98,8 @@ type BadRequestObjectData = {
   // the model? See: https://github.com/encode/django-rest-framework/issues/1450
   // If __all__ the  only key, it will still end up getting reported as the error message in getErrorMessage
   non_field_errors?: string[];
-  [field: string]: string[];
+  // TODO: why not just rope non_field_errors into this?
+  [field: string]: string[] | undefined;
 };
 // If an array of objects is passed to an endpoint, DRF will return an array of BadRequestObjectData
 type BadRequestData = BadRequestObjectData | BadRequestObjectData[];
@@ -111,7 +113,9 @@ type ClientErrorData = {
 export function isBadRequestObjectData(
   data: unknown
 ): data is BadRequestObjectData {
-  if (!isPlainObject(data)) {
+  // TODO: isPlainObject is not a type guard; we might consider using
+  //  something else, or wrapping isPlainObject in our own type guard func
+  if (!isPlainObject(data) || typeof data !== "object" || data === null) {
     return false;
   }
 
