@@ -16,6 +16,8 @@
  */
 
 export const Events = {
+  ALL_SPREADSHEETS_LOADED: "AllSpreadsheetsLoaded",
+
   BRICK_ADD: "BrickAdd",
   BRICK_DELETE: "BrickDelete",
 

@@ -274,6 +274,9 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
       const spreadsheetFileList = await sheets.getAllSpreadsheets(
         googleAccount
       );
+
+      reportEvent(Events.ALL_SPREADSHEETS_LOADED);
+
       if (isEmpty(spreadsheetFileList.files)) {
         return baseSchema;
       }
