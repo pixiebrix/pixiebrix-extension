@@ -47,6 +47,7 @@ import {
 import notify from "@/utils/notify";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
+import { screen } from "@testing-library/react";
 
 jest.mock("@/errors/contextInvalidated", () => {
   const actual = jest.requireActual("@/errors/contextInvalidated");
@@ -170,7 +171,7 @@ describe("triggerExtension", () => {
 
       expect(rootReader.readCount).toBe(0);
 
-      document.querySelector("button").click();
+      screen.getByRole("button").click();
       await tick();
       expect(rootReader.readCount).toBe(1);
 
@@ -186,7 +187,7 @@ describe("triggerExtension", () => {
       await tick();
 
       // Check click handler was not re-attached
-      document.querySelector("button").click();
+      screen.getByRole("button").click();
       await tick();
 
       expect(rootReader.readCount).toBe(attachMode === "watch" ? 2 : 1);
@@ -219,12 +220,10 @@ describe("triggerExtension", () => {
       await extensionPoint.install();
       await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
-      document.querySelector("button").click();
+      screen.getByRole("button").click();
       await tick();
 
-      const buttonRef = getReferenceForElement(
-        document.querySelector("button")
-      );
+      const buttonRef = getReferenceForElement(screen.getByRole("button"));
 
       expect(rootReader.readCount).toBe(1);
       expect(rootReader.ref).toBe(buttonRef);
@@ -235,7 +234,7 @@ describe("triggerExtension", () => {
 
   it("targetMode: root", async () => {
     document.body.innerHTML = getDocument(
-      "<div><button>Click Me</button></div>"
+      "<div data-testid=ref><button>Click Me</button></div>"
     ).body.innerHTML;
 
     const extensionPoint = fromJS(
@@ -255,10 +254,10 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
-    document.querySelector("button").click();
+    screen.getByRole("button").click();
     await tick();
 
-    const divRef = getReferenceForElement(document.querySelector("div"));
+    const divRef = getReferenceForElement(screen.getByTestId("ref"));
 
     expect(rootReader.readCount).toBe(1);
     expect(rootReader.ref).toBe(divRef);
@@ -287,7 +286,7 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
-    const element = document.querySelector("input");
+    const element = screen.getByRole("textbox");
 
     await userEvent.type(element, "a");
     await waitForEffect();
@@ -318,7 +317,7 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
-    const buttonElement = document.querySelector("button");
+    const buttonElement = screen.getByRole("button");
 
     // This causes the hoverintent.js:handleHover handle to fire. But the vendored logic doesn't recognize it as a
     // hover for purposes of triggering the event
@@ -446,10 +445,10 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
-    document.querySelector("button").click();
+    screen.getByRole("button").click();
     await tick();
 
-    document.querySelector("button").click();
+    screen.getByRole("button").click();
     await tick();
 
     // Should not be called directly

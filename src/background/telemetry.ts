@@ -20,7 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, isEmpty, once, throttle, uniq } from "lodash";
 import { isLinked } from "@/auth/token";
 import { type UUID } from "@/types/stringTypes";
-import { loadOptions } from "@/store/extensionsStorage";
+import { getModComponentState } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
@@ -318,7 +318,7 @@ async function collectUserSummary(): Promise<UserSummary> {
   let numActiveBlueprints: number = null;
 
   try {
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
     numActiveExtensions = extensions.length;
     numActiveBlueprints = uniq(
       compact(extensions.map((x) => x._recipe?.id))

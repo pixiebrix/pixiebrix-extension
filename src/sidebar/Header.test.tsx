@@ -32,9 +32,9 @@ beforeEach(() => {
 
 describe("Header", () => {
   it("renders", () => {
-    const rendered = render(<Header />);
+    const { asFragment } = render(<Header />);
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
@@ -49,8 +49,8 @@ describe("Header", () => {
       })
     );
 
-    const rendered = render(<Header />);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = render(<Header />);
+    expect(asFragment()).toMatchSnapshot();
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 

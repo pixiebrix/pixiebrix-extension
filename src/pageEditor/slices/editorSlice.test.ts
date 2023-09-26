@@ -39,6 +39,7 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
 function getTabState(
   state: EditorState,
@@ -86,7 +87,7 @@ describe("DataPanel state", () => {
       })
     );
 
-    expect(getTabState(editorState).query).toEqual("test query");
+    expect(getTabState(editorState).query).toBe("test query");
   });
 
   test("should set the expanded state", () => {
@@ -117,7 +118,7 @@ describe("DataPanel state", () => {
 
     expect(
       getTabState(editorState, DataPanelTabKey.Preview).activeElement
-    ).toEqual("test-field");
+    ).toBe("test-field");
   });
 });
 
@@ -127,12 +128,12 @@ describe("Add/Remove Bricks", () => {
   const source = formStateFactory(
     {
       label: "Test Extension",
-      services: [
-        {
-          id: GOOGLE_SHEET_SERVICE_ID,
-          config: uuidSequence(2),
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: GOOGLE_SHEET_SERVICE_ID,
           outputKey: "google" as OutputKey,
-        },
+          configId: uuidSequence,
+        }),
       ],
     },
     [brickWithService, standardBrick]
@@ -165,30 +166,32 @@ describe("Add/Remove Bricks", () => {
     );
   });
 
-  test("Remove Brick with Service", async () => {
-    // Get initial bricks and services
+  test("Remove Brick with Integration Dependency", async () => {
+    // Get initial bricks and integration dependencies
     const initialBricks = editor.elements[0].extension.blockPipeline;
-    const initialServices = editor.elements[0].services;
+    const initialIntegrationDependencies =
+      editor.elements[0].integrationDependencies;
 
-    // Remove the brick with service
+    // Remove the brick with integration dependency
     editor = editorSlice.reducer(
       editor,
       actions.removeNode(brickWithService.instanceId)
     );
 
-    // Ensure Service was removed
+    // Ensure Integration Dependency was removed
     expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
       initialBricks.length - 1
     );
-    expect(editor.elements[0].services).toBeArrayOfSize(
-      initialServices.length - 1
+    expect(editor.elements[0].integrationDependencies).toBeArrayOfSize(
+      initialIntegrationDependencies.length - 1
     );
   });
 
-  test("Remove Brick without Service", async () => {
+  test("Remove Brick without Integration Dependency", async () => {
     // Get initial bricks and services
     const initialBricks = editor.elements[0].extension.blockPipeline;
-    const initialServices = editor.elements[0].services;
+    const initialIntegrationDependencies =
+      editor.elements[0].integrationDependencies;
 
     // Remove the brick with service
     editor = editorSlice.reducer(
@@ -200,7 +203,9 @@ describe("Add/Remove Bricks", () => {
     expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
       initialBricks.length - 1
     );
-    expect(editor.elements[0].services).toBeArrayOfSize(initialServices.length);
+    expect(editor.elements[0].integrationDependencies).toBeArrayOfSize(
+      initialIntegrationDependencies.length
+    );
   });
 
   test("Can clone an extension", async () => {

@@ -254,7 +254,13 @@ export class MemoryRegistry<
       ...this.kinds.values(),
     ]);
 
-    const remoteItems = packages.map((raw) => this.parse(raw.config));
+    const remoteItems: Item[] = [];
+    for (const raw of packages) {
+      const item = this.parse(raw.config);
+      if (item) {
+        remoteItems.push(item);
+      }
+    }
 
     console.debug(
       "Parsed %d registry item(s) from IDB for %s",

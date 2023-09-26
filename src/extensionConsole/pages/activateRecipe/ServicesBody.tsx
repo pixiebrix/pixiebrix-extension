@@ -24,7 +24,7 @@ import AuthWidget from "@/components/auth/AuthWidget";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import { useField } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
-import { useGetServicesQuery } from "@/services/api";
+import { useGetIntegrationsQuery } from "@/services/api";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -58,10 +58,11 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     useAuthOptions(),
     emptyAuthOptions
   );
-  const [field, { error }] = useField<IntegrationDependency[]>(
-    "integrationDependencies"
-  );
-  const { data: serviceConfigs } = useGetServicesQuery();
+  const [
+    integrationDependenciesField,
+    { error: integrationDependenciesFieldError },
+  ] = useField<IntegrationDependency[]>("integrationDependencies");
+  const { data: serviceConfigs } = useGetIntegrationsQuery();
 
   const requiredServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so no need to include it
@@ -94,17 +95,20 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     return true;
   }
 
-  const fieldsToShow: ValueField[] = field.value
+  const fieldsToShow: ValueField[] = integrationDependenciesField.value
     // We need to grab the index before filtering, because the index used
     // in the field name for AuthWidget needs to be consistent with the
     // index in field.value
-    .map(({ id: serviceId }, index) => ({ serviceId, index }))
+    .map(({ integrationId: serviceId }, index) => ({ serviceId, index }))
     .filter(({ serviceId }) => shouldShowField(serviceId));
 
   return (
     <>
-      {typeof error === "string" && (
-        <FieldAnnotationAlert message={error} type={AnnotationType.Error} />
+      {typeof integrationDependenciesFieldError === "string" && (
+        <FieldAnnotationAlert
+          message={integrationDependenciesFieldError}
+          type={AnnotationType.Error}
+        />
       )}
       {fieldsToShow.length > 0 && showOwnTitle && (
         <div className="mt-1">
@@ -113,7 +117,10 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
       )}
       {fieldsToShow.map(({ serviceId, index }) => (
         <div key={serviceId}>
-          <ServiceFieldError servicesError={error} fieldIndex={index} />
+          <ServiceFieldError
+            servicesError={integrationDependenciesFieldError}
+            fieldIndex={index}
+          />
           <Card className={styles.serviceCard}>
             <ServiceDescriptor
               serviceId={serviceId}
@@ -121,8 +128,12 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
             />
             <AuthWidget
               authOptions={authOptions}
-              serviceId={serviceId}
-              name={joinName(field.name, String(index), "config")}
+              integrationId={serviceId}
+              name={joinName(
+                integrationDependenciesField.name,
+                String(index),
+                "configId"
+              )}
               onRefresh={refreshAuthOptions}
             />
           </Card>

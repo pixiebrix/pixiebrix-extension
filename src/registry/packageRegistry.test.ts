@@ -42,7 +42,7 @@ describe("localRegistry", () => {
     await syncPackages();
     const recipes = await getByKinds(["recipe"]);
     expect(recipes).toHaveLength(1);
-    expect(appApiMock.history.get[0].url).toEqual("/api/registry/bricks/");
+    expect(appApiMock.history.get[0].url).toBe("/api/registry/bricks/");
   });
 
   it("should sync packages", async () => {

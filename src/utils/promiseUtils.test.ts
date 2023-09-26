@@ -35,7 +35,7 @@ describe("retryWithJitter", () => {
     const result = retryWithJitter(fn, {
       retries: 0,
     });
-    await expect(result).resolves.toEqual(1);
+    await expect(result).resolves.toBe(1);
     expect(fn).toHaveBeenCalledTimes(1);
   });
 

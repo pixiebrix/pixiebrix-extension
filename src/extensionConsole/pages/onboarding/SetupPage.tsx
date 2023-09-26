@@ -21,7 +21,7 @@ import { useTitle } from "@/hooks/title";
 import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/services/baseService";
 import { useSelector } from "react-redux";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import Loader from "@/components/Loader";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";

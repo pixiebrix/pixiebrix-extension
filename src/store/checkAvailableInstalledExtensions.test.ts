@@ -152,6 +152,6 @@ describe("checkAvailableInstalledExtensions", () => {
       availableButton.id,
       availableQb.id,
     ]);
-    expect(unavailableInstalledCount).toStrictEqual(2);
+    expect(unavailableInstalledCount).toBe(2);
   });
 });

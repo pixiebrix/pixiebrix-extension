@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import EphemeralPanel from "@/bricks/transformers/temporaryInfo/EphemeralPanel";
 import { uuidv4 } from "@/types/helpers";
 import useTemporaryPanelDefinition from "@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition";
@@ -27,6 +27,7 @@ import {
 } from "@/contentScript/messenger/api";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import userEvent from "@testing-library/user-event";
 
 jest.mock(
   "@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition",
@@ -75,11 +76,11 @@ describe("EphemeralPanel", () => {
       isLoading: null,
     });
 
-    const rendered = render(<EphemeralPanel />);
+    const { asFragment } = render(<EphemeralPanel />);
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test.each(["modal", "popover"])("renders error state: %s", async (mode) => {
@@ -92,13 +93,13 @@ describe("EphemeralPanel", () => {
       isLoading: null,
     });
 
-    const rendered = render(<EphemeralPanel />);
+    const { asFragment } = render(<EphemeralPanel />);
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
 
-    rendered.queryByText("Close").click();
+    await userEvent.click(screen.getByRole("button", { name: /close/i }));
 
     expect(cancelTemporaryPanelMock).toHaveBeenCalled();
   });
@@ -120,13 +121,15 @@ describe("EphemeralPanel", () => {
         isLoading: null,
       });
 
-      const rendered = render(<EphemeralPanel />);
+      const { asFragment } = render(<EphemeralPanel />);
 
       await waitForEffect();
 
-      expect(rendered.asFragment()).toMatchSnapshot();
+      expect(asFragment()).toMatchSnapshot();
 
-      rendered.queryByText("Test Click").click();
+      await userEvent.click(
+        screen.getByRole("button", { name: /test click/i })
+      );
 
       expect(cancelTemporaryPanelMock).not.toHaveBeenCalled();
       expect(resolveTemporaryPanelMock).toHaveBeenCalledWith(null, panelNonce, {

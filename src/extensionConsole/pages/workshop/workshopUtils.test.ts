@@ -22,14 +22,14 @@ describe("getKindDisplayName", () => {
   it.each(["block", "Block", "reader"])(
     "maps %s to Brick",
     (kind: EditablePackageMetadata["kind"]) => {
-      expect(mapKindToKindUiValue(kind)).toEqual("Brick");
+      expect(mapKindToKindUiValue(kind)).toBe("Brick");
     }
   );
 
   it.each(["blueprint", "Blueprint"])(
     "maps %s to Mod",
     (kind: EditablePackageMetadata["kind"]) => {
-      expect(mapKindToKindUiValue(kind)).toEqual("Mod");
+      expect(mapKindToKindUiValue(kind)).toBe("Mod");
     }
   );
 });

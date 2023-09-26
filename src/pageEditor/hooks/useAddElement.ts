@@ -24,7 +24,7 @@ import { isSpecificError } from "@/errors/errorHelpers";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
-import { type SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";

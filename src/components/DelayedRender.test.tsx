@@ -30,11 +30,11 @@ afterAll(() => {
 
 describe("DelayedRender", () => {
   test("renders", async () => {
-    const rendered = render(
+    const { asFragment } = render(
       <DelayedRender millis={300}>Delayed content</DelayedRender>
     );
 
-    expect(rendered.asFragment()).toMatchInlineSnapshot(`
+    expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
           hidden=""
@@ -45,7 +45,7 @@ describe("DelayedRender", () => {
     `);
 
     jest.runAllTimers();
-    expect(rendered.asFragment()).toMatchInlineSnapshot(`
+    expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         Delayed content
       </DocumentFragment>

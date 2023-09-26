@@ -19,9 +19,9 @@ import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Form } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";

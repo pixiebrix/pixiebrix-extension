@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions"] }] */
+
 import React from "react";
 import { type Schema } from "@/types/schemaTypes";
-import { render, screen } from "@/pageEditor/testHelpers";
+import { render, screen, within } from "@/pageEditor/testHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import userEvent from "@testing-library/user-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -151,7 +153,9 @@ describe("ObjectWidget", () => {
 
     // Open the field type toggle
     await userEvent.click(
-      screen.getByTestId(`toggle-${fieldName}.myField`).querySelector("button")
+      within(screen.getByTestId(`toggle-${fieldName}.myField`)).getByRole(
+        "button"
+      )
     );
 
     // Select "Exclude"
@@ -197,7 +201,7 @@ describe("ObjectWidget", () => {
 
     // Open the field type toggle
     await userEvent.click(
-      screen.getByTestId(`toggle-${fieldName}.bar`).querySelector("button")
+      within(screen.getByTestId(`toggle-${fieldName}.bar`)).getByRole("button")
     );
 
     // Select "Exclude"
@@ -227,7 +231,7 @@ describe("ObjectWidget", () => {
       },
       required: ["foo"],
     };
-    const { container } = render(
+    render(
       <ObjectWidget
         name={fieldName}
         schema={schema}
@@ -246,18 +250,18 @@ describe("ObjectWidget", () => {
     );
 
     // Find the field type toggles
-    const fooToggle = screen
-      .getByTestId(`toggle-${fieldName}.foo`)
-      .querySelector("button");
-    const barToggle = screen
-      .getByTestId(`toggle-${fieldName}.bar`)
-      .querySelector("button");
+    const fooToggle = within(
+      screen.getByTestId(`toggle-${fieldName}.foo`)
+    ).getByRole("button");
+    const barToggle = within(
+      screen.getByTestId(`toggle-${fieldName}.bar`)
+    ).getByRole("button");
 
     // Open foo's field type toggle
     await userEvent.click(fooToggle);
 
     // Expect not to find "Exclude" for a required field
-    await expectToggleOptions(container, ["string", "var"]);
+    await expectToggleOptions("toggle-testField.foo", ["string", "var"]);
 
     // Close foo's toggle
     await userEvent.click(fooToggle);
@@ -266,6 +270,10 @@ describe("ObjectWidget", () => {
     await userEvent.click(barToggle);
 
     // Expect to find the "Exclude" (omit) option
-    await expectToggleOptions(container, ["string", "var", "omit"]);
+    await expectToggleOptions("toggle-testField.bar", [
+      "string",
+      "var",
+      "omit",
+    ]);
   });
 });

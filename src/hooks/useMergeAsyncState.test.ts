@@ -21,16 +21,17 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { identity } from "lodash";
 import pDefer from "p-defer";
 import useAsyncState from "@/hooks/useAsyncState";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 describe("useMergeAsyncState", () => {
   it("should handle success", async () => {
     const state = valueToAsyncState(42);
-    const wrapper = renderHook(() => useMergeAsyncState(state, identity));
+    const { result } = renderHook(() => useMergeAsyncState(state, identity));
 
-    await act(async () => {});
+    await waitForEffect();
 
-    expect(wrapper.result.current.isSuccess).toBe(true);
-    expect(wrapper.result.current.data).toBe(42);
+    expect(result.current.isSuccess).toBe(true);
+    expect(result.current.data).toBe(42);
   });
 
   it("should handle merge error", async () => {
@@ -39,46 +40,46 @@ describe("useMergeAsyncState", () => {
     };
 
     const state = valueToAsyncState(42);
-    const wrapper = renderHook(() => useMergeAsyncState(state, merge));
+    const { result } = renderHook(() => useMergeAsyncState(state, merge));
 
-    await act(async () => {});
+    await waitForEffect();
 
-    expect(wrapper.result.current.isError).toBe(true);
+    expect(result.current.isError).toBe(true);
   });
 
   it("wait for state", async () => {
     const deferredPromise = pDefer();
 
-    const wrapper = renderHook(() => {
+    const { result } = renderHook(() => {
       const state = useAsyncState(async () => deferredPromise.promise, []);
       return useMergeAsyncState(state, identity);
     });
 
-    expect(wrapper.result.current.isLoading).toBe(true);
+    expect(result.current.isLoading).toBe(true);
 
     deferredPromise.resolve(42);
-    await act(async () => {});
+    await waitForEffect();
 
-    expect(wrapper.result.current.isLoading).toBe(false);
+    expect(result.current.isLoading).toBe(false);
   });
 
   it("should refetch", async () => {
     let value = "hello";
     const valueFactory = async () => value;
 
-    const wrapper = renderHook(() => {
+    const { result } = renderHook(() => {
       const state = useAsyncState(valueFactory, []);
       return useMergeAsyncState(state, identity);
     });
 
-    await act(async () => {});
-    expect(wrapper.result.current.data).toBe("hello");
+    await waitForEffect();
+    expect(result.current.data).toBe("hello");
 
     await act(async () => {
       value = "goodbye";
-      wrapper.result.current.refetch();
+      result.current.refetch();
     });
 
-    expect(wrapper.result.current.data).toBe("goodbye");
+    expect(result.current.data).toBe("goodbye");
   });
 });

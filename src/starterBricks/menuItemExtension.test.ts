@@ -127,7 +127,7 @@ describe("menuItemExtension", () => {
       await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
       expect(document.querySelectorAll("button")).toHaveLength(1);
-      expect(document.body.innerHTML).toEqual(
+      expect(document.body.innerHTML).toBe(
         `<div data-pb-extension-point="${extensionPoint.id}">foo<button data-pb-uuid="${modComponent.id}">Hello World</button></div>`
       );
 
@@ -153,7 +153,7 @@ describe("menuItemExtension", () => {
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(document.querySelectorAll("button")).toHaveLength(1);
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       `<div data-pb-extension-point="${extensionPoint.id}"><button data-pb-uuid="${modComponent.id}">Hello World</button>foo</div>`
     );
 
@@ -183,7 +183,7 @@ describe("menuItemExtension", () => {
 
     await tick();
 
-    expect(rootReader.readCount).toEqual(1);
+    expect(rootReader.readCount).toBe(1);
     const buttonRef = getReferenceForElement(document.querySelector("button"));
     expect(rootReader.ref).toEqual(buttonRef);
 
@@ -224,7 +224,7 @@ describe("menuItemExtension", () => {
 
     await tick();
 
-    expect(rootReader.readCount).toEqual(1);
+    expect(rootReader.readCount).toBe(1);
     const outerRef = getReferenceForElement(
       document.querySelector<HTMLElement>("#outer")
     );
@@ -268,7 +268,7 @@ describe("menuItemExtension", () => {
       document.querySelector("button").click();
       await tick();
 
-      expect(rootReader.readCount).toEqual(1);
+      expect(rootReader.readCount).toBe(1);
       const documentRef = getReferenceForElement(document);
       expect(rootReader.ref).toEqual(documentRef);
 

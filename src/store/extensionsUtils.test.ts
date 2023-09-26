@@ -38,94 +38,103 @@ describe("inferRecipeOptions", () => {
 });
 
 describe("inferConfiguredModIntegrations", () => {
-  it("handles undefined services", () => {
+  it("handles undefined integrationDependencies", () => {
     expect(
-      inferConfiguredModIntegrations([{ services: undefined }])
+      inferConfiguredModIntegrations([{ integrationDependencies: undefined }])
     ).toStrictEqual([]);
   });
 
-  it("handles same service", () => {
-    const service = validateRegistryId("foo/bar");
-    const config = uuidv4();
-    const dependency: IntegrationDependency = {
-      id: service,
+  it("handles duplicate integration", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const configId = uuidv4();
+    const integrationDependency = integrationDependencyFactory({
+      integrationId,
       outputKey: validateOutputKey("foo"),
-      config,
-    };
+      configId,
+    });
 
     expect(
       inferConfiguredModIntegrations([
-        { services: [dependency] },
-        { services: [dependency] },
+        { integrationDependencies: [integrationDependency] },
+        { integrationDependencies: [integrationDependency] },
       ])
-    ).toStrictEqual([dependency]);
+    ).toStrictEqual([integrationDependency]);
   });
 
-  it("throw on mismatch", () => {
-    const service = validateRegistryId("foo/bar");
-    const config = uuidv4();
-    const dependency: IntegrationDependency = {
-      id: service,
+  it("throw on mismatched configId", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const configId = uuidv4();
+    const integrationDependency = integrationDependencyFactory({
+      integrationId,
       outputKey: validateOutputKey("foo"),
-      config,
-    };
+      configId,
+    });
 
     expect(() =>
       inferConfiguredModIntegrations([
-        { services: [dependency] },
-        { services: [{ ...dependency, config: uuidv4() }] },
+        { integrationDependencies: [integrationDependency] },
+        {
+          integrationDependencies: [
+            { ...integrationDependency, configId: uuidv4() },
+          ],
+        },
       ])
     ).toThrow(/has multiple configurations/);
   });
 
-  it("throw on missing config", () => {
-    const service = validateRegistryId("foo/bar");
-    const dependency: IntegrationDependency = {
-      id: service,
+  it("throw on missing configId", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const unconfiguredDependency: IntegrationDependency = {
+      integrationId,
       outputKey: validateOutputKey("foo"),
     };
 
     expect(() =>
-      inferConfiguredModIntegrations([{ services: [dependency] }])
+      inferConfiguredModIntegrations([
+        { integrationDependencies: [unconfiguredDependency] },
+      ])
     ).toThrow(/is not configured/);
   });
 
   it("handles unconfigured (optional) integrations", () => {
+    // Factory does not add a configId by default
     const unconfigured = integrationDependencyFactory();
-    delete unconfigured.config;
     expect(
-      inferConfiguredModIntegrations([{ services: [unconfigured] }], {
-        optional: true,
-      })
+      inferConfiguredModIntegrations(
+        [{ integrationDependencies: [unconfigured] }],
+        {
+          optional: true,
+        }
+      )
     ).toBeEmpty();
   });
 
   it("does NOT filter out the pixiebrix integration", () => {
     const pixiebrix = integrationDependencyFactory({
-      id: PIXIEBRIX_INTEGRATION_ID,
+      integrationId: PIXIEBRIX_INTEGRATION_ID,
     });
     expect(
-      inferConfiguredModIntegrations([{ services: [pixiebrix] }])
+      inferConfiguredModIntegrations([{ integrationDependencies: [pixiebrix] }])
     ).toStrictEqual([pixiebrix]);
   });
 
   it("handles multiple pixiebrix integrations and others", () => {
     const pixiebrix = integrationDependencyFactory({
-      id: PIXIEBRIX_INTEGRATION_ID,
+      integrationId: PIXIEBRIX_INTEGRATION_ID,
     });
     const optional = integrationDependencyFactory({
       isOptional: true,
     });
     const configured = integrationDependencyFactory({
-      config: uuidv4(),
+      configId: uuidv4(),
     });
     expect(
       inferConfiguredModIntegrations(
         [
-          { services: [pixiebrix, pixiebrix] },
-          { services: [pixiebrix, optional] },
-          { services: [configured, pixiebrix, optional] },
-          { services: [configured, optional] },
+          { integrationDependencies: [pixiebrix, pixiebrix] },
+          { integrationDependencies: [pixiebrix, optional] },
+          { integrationDependencies: [configured, pixiebrix, optional] },
+          { integrationDependencies: [configured, optional] },
         ],
         { optional: true }
       )

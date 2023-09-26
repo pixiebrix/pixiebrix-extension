@@ -27,8 +27,8 @@ beforeEach(async () => {
 
 describe("useManagedStorageState", () => {
   it("handles state initialization", async () => {
-    const wrapper = renderHook(() => useManagedStorageState());
-    expect(wrapper.result.current).toStrictEqual({
+    const { result } = renderHook(() => useManagedStorageState());
+    expect(result.current).toStrictEqual({
       data: undefined,
       isLoading: true,
     });
@@ -36,9 +36,11 @@ describe("useManagedStorageState", () => {
 
   it("handles already initialized state", async () => {
     await browser.storage.managed.set({ partnerId: "taco-bell" });
-    const wrapper = renderHook(() => useManagedStorageState());
-    await wrapper.waitForNextUpdate();
-    expect(wrapper.result.current).toStrictEqual({
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useManagedStorageState()
+    );
+    await waitForNextUpdate();
+    expect(result.current).toStrictEqual({
       data: { partnerId: "taco-bell" },
       isLoading: false,
     });
@@ -46,11 +48,13 @@ describe("useManagedStorageState", () => {
 
   // Can't test because mock doesn't fire change events: https://github.com/clarkbw/jest-webextension-mock/issues/170
   it.skip("listens for changes", async () => {
-    const wrapper = renderHook(() => useManagedStorageState());
-    expect(wrapper.result.current.data).toBeUndefined();
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useManagedStorageState()
+    );
+    expect(result.current.data).toBeUndefined();
     await browser.storage.managed.set({ partnerId: "taco-bell" });
-    await wrapper.waitForNextUpdate();
-    expect(wrapper.result.current).toStrictEqual({
+    await waitForNextUpdate();
+    expect(result.current).toStrictEqual({
       data: { partnerId: "taco-bell" },
       isLoading: false,
     });

@@ -34,7 +34,7 @@ describe("DataPanel", () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const extensionId = formState.uuid;
     const { instanceId } = formState.extension.blockPipeline[1];
-    const rendered = render(<DataPanel />, {
+    const { asFragment } = render(<DataPanel />, {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
@@ -50,6 +50,6 @@ describe("DataPanel", () => {
     });
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

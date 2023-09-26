@@ -21,8 +21,8 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import LoginPanel from "@/sidebar/LoginPanel";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import settingsSlice from "@/store/settingsSlice";
-import servicesSlice from "@/store/services/servicesSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -36,7 +36,7 @@ function optionsStore(initialState?: UnknownObject) {
   return configureStore({
     reducer: {
       settings: settingsSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       auth: authSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },

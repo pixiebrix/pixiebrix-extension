@@ -28,8 +28,8 @@ jest.mock("@/bricks/transformers/ephemeralForm/formTransformer", () => ({
 describe("FormBody", () => {
   it("renders successfully", async () => {
     const form = formEntryFactory();
-    const rendered = render(<FormBody form={form} />);
+    const { asFragment } = render(<FormBody form={form} />);
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

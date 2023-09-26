@@ -24,7 +24,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/services/constants";
 import {
-  proxyService,
+  performConfiguredRequestInBackground,
   getCachedAuthData,
   getUserData,
 } from "@/background/messenger/api";
@@ -34,7 +34,7 @@ import { type AuthData } from "@/types/integrationTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/background/messenger/api", () => ({
-  proxyService: jest.fn().mockResolvedValue({
+  performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
     status: 201,
     data: {},
     $$proxied: false,
@@ -43,7 +43,9 @@ jest.mock("@/background/messenger/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
-const proxyServiceMock = jest.mocked(proxyService);
+const performConfiguredRequestInBackgroundMock = jest.mocked(
+  performConfiguredRequestInBackground
+);
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const getUserDataMock = jest.mocked(getUserData);
 
@@ -67,13 +69,13 @@ const DEPLOYMENT_ID = "789";
 
 describe("Automation Anywhere - RunBot", () => {
   beforeEach(() => {
-    proxyServiceMock.mockReset();
+    performConfiguredRequestInBackgroundMock.mockReset();
     getCachedAuthDataMock.mockReset();
     getUserDataMock.mockReset();
   });
 
   it("run Community Edition bot", async () => {
-    proxyServiceMock.mockResolvedValue({
+    performConfiguredRequestInBackgroundMock.mockResolvedValue({
       status: 201,
       statusText: "Created",
       data: {},
@@ -98,7 +100,7 @@ describe("Automation Anywhere - RunBot", () => {
       { logger } as BrickOptions
     );
 
-    expect(proxyServiceMock).toHaveBeenCalledWith(
+    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
       {
         config: {
           controlRoomUrl: CE_CONTROL_ROOM_URL,
@@ -124,7 +126,7 @@ describe("Automation Anywhere - RunBot", () => {
   });
 
   it("runs private unattended Enterprise Edition bot using token authentication", async () => {
-    proxyServiceMock.mockResolvedValue({
+    performConfiguredRequestInBackgroundMock.mockResolvedValue({
       status: 201,
       statusText: "Created",
       data: {
@@ -159,7 +161,7 @@ describe("Automation Anywhere - RunBot", () => {
 
     expect(getCachedAuthDataMock).not.toHaveBeenCalled();
 
-    expect(proxyServiceMock).toHaveBeenCalledWith(
+    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
       {
         config: {
           controlRoomUrl: EE_CONTROL_ROOM_URL,
@@ -189,7 +191,7 @@ describe("Automation Anywhere - RunBot", () => {
   });
 
   it("runs public attended Enterprise Edition bot using token configuration", async () => {
-    proxyServiceMock.mockResolvedValue({
+    performConfiguredRequestInBackgroundMock.mockResolvedValue({
       status: 201,
       statusText: "Created",
       data: {
@@ -223,7 +225,7 @@ describe("Automation Anywhere - RunBot", () => {
 
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(tokenAuthId);
 
-    expect(proxyServiceMock).toHaveBeenCalledWith(
+    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
       {
         config: {
           controlRoomUrl: EE_CONTROL_ROOM_URL,
@@ -253,7 +255,7 @@ describe("Automation Anywhere - RunBot", () => {
   });
 
   it("runs unattended public Enterprise Edition bot using token authentication", async () => {
-    proxyServiceMock.mockResolvedValue({
+    performConfiguredRequestInBackgroundMock.mockResolvedValue({
       status: 201,
       statusText: "Created",
       data: {
@@ -286,7 +288,7 @@ describe("Automation Anywhere - RunBot", () => {
       { logger } as BrickOptions
     );
 
-    expect(proxyServiceMock).toHaveBeenCalledWith(
+    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
       {
         config: {
           controlRoomUrl: EE_CONTROL_ROOM_URL,
@@ -315,7 +317,7 @@ describe("Automation Anywhere - RunBot", () => {
   });
 
   it("runs Enterprise Edition bot in attended mode using oauth2 configuration", async () => {
-    proxyServiceMock.mockResolvedValue({
+    performConfiguredRequestInBackgroundMock.mockResolvedValue({
       status: 201,
       statusText: "Created",
       data: {
@@ -351,7 +353,7 @@ describe("Automation Anywhere - RunBot", () => {
       { logger } as BrickOptions
     );
 
-    expect(proxyServiceMock).toHaveBeenCalledWith(
+    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
       {
         config: {
           controlRoomUrl: EE_CONTROL_ROOM_URL,
@@ -382,56 +384,58 @@ describe("Automation Anywhere - RunBot", () => {
   it("awaits Enterprise Edition result", async () => {
     const activityId = "288bf36b-e902-4ed2-a5bf-b5534eca137e_6bb3be11a848a48b";
 
-    proxyServiceMock.mockImplementation(async (service, request) => {
-      if (request.url.includes("deploy")) {
-        return {
-          status: 201,
-          statusText: "Created",
-          data: {
-            deploymentId: DEPLOYMENT_ID,
-          },
-          $$proxied: false,
-        };
-      }
+    performConfiguredRequestInBackgroundMock.mockImplementation(
+      async (service, request) => {
+        if (request.url.includes("deploy")) {
+          return {
+            status: 201,
+            statusText: "Created",
+            data: {
+              deploymentId: DEPLOYMENT_ID,
+            },
+            $$proxied: false,
+          };
+        }
 
-      if (request.url.endsWith("/v3/activity/list")) {
-        return {
-          status: 200,
-          statusText: "Success",
-          data: {
-            list: [
-              {
-                id: activityId,
-                status: "COMPLETED",
-              },
-            ],
-          },
-          $$proxied: false,
-        };
-      }
+        if (request.url.endsWith("/v3/activity/list")) {
+          return {
+            status: 200,
+            statusText: "Success",
+            data: {
+              list: [
+                {
+                  id: activityId,
+                  status: "COMPLETED",
+                },
+              ],
+            },
+            $$proxied: false,
+          };
+        }
 
-      if (request.url.endsWith(`/v3/activity/execution/${activityId}`)) {
-        return {
-          status: 200,
-          statusText: "Success",
-          data: {
-            id: activityId,
-            botOutVariables: {
-              values: {
-                foo: {
-                  type: "STRING",
-                  string: "bar",
-                  number: "",
-                  boolean: "",
+        if (request.url.endsWith(`/v3/activity/execution/${activityId}`)) {
+          return {
+            status: 200,
+            statusText: "Success",
+            data: {
+              id: activityId,
+              botOutVariables: {
+                values: {
+                  foo: {
+                    type: "STRING",
+                    string: "bar",
+                    number: "",
+                    boolean: "",
+                  },
                 },
               },
             },
-          },
-        };
-      }
+          };
+        }
 
-      throw new Error("Unexpected request");
-    });
+        throw new Error("Unexpected request");
+      }
+    );
 
     getCachedAuthDataMock.mockResolvedValue({
       user: { id: CONTROL_ROOM_USER_ID },
@@ -458,7 +462,7 @@ describe("Automation Anywhere - RunBot", () => {
       { logger } as BrickOptions
     );
 
-    expect(proxyServiceMock).toHaveBeenCalledWith(
+    expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
       {
         config: {
           controlRoomUrl: EE_CONTROL_ROOM_URL,

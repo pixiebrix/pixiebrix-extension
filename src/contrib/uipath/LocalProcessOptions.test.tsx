@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import * as contentScriptApi from "@/contentScript/messenger/api";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -25,28 +25,26 @@ import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import * as auth from "@/hooks/auth";
-import * as dependencyHooks from "@/services/useDependency";
-import {
-  type SanitizedIntegrationConfig,
-  type IntegrationABC,
-} from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type OutputKey } from "@/types/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
 
 setContext("devToolsPage");
 
-jest.mock("@/services/useDependency", () =>
-  jest.fn().mockReturnValue({
-    // Pass minimal arguments
-    config: undefined,
-    service: undefined,
-    hasPermissions: true,
-    requestPermissions: jest.fn(),
-  })
+jest.mock("@/services/useSanitizedIntegrationConfigFormikAdapter", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
+  useSanitizedIntegrationConfigFormikAdapter
 );
+
 jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
@@ -73,24 +71,29 @@ jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
   };
 });
 
-const serviceId = validateRegistryId("@uipath/cloud");
+const integrationId = validateRegistryId("@uipath/cloud");
 
 function makeBaseState() {
-  const baseFormState = menuItemFormStateFactory();
-  baseFormState.services = [
-    { id: serviceId, outputKey: "uipath" as OutputKey },
-  ];
-  baseFormState.extension.blockPipeline = [
+  return menuItemFormStateFactory(
     {
-      id: UIPATH_ID,
-      config: {
-        service: null,
-        releaseKey: null,
-        inputArguments: {},
-      },
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId,
+          outputKey: validateOutputKey("uipath"),
+        }),
+      ],
     },
-  ];
-  return baseFormState;
+    [
+      {
+        id: UIPATH_ID,
+        config: {
+          service: null,
+          releaseKey: null,
+          inputArguments: {},
+        },
+      },
+    ]
+  );
 }
 
 function renderOptions(formState: ModComponentFormState = makeBaseState()) {
@@ -104,6 +107,12 @@ function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   );
 }
 
+beforeEach(() => {
+  useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+    valueToAsyncState(null)
+  );
+});
+
 describe("UiPath LocalProcess Options", () => {
   test("Can render options", async () => {
     jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
@@ -113,12 +122,12 @@ describe("UiPath LocalProcess Options", () => {
       missingComponents: false,
     });
 
-    const rendered = renderOptions();
+    const { asFragment } = renderOptions();
 
     await waitForEffect();
 
-    expect(rendered.queryByText("UiPath Assistant not found")).toBeNull();
-    expect(rendered.container).toMatchSnapshot();
+    expect(screen.queryByText("UiPath Assistant not found")).toBeNull();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("Can render consent code and service selector", async () => {
@@ -130,35 +139,33 @@ describe("UiPath LocalProcess Options", () => {
       missingComponents: false,
     });
 
-    const rendered = renderOptions();
+    renderOptions();
 
     await waitForEffect();
 
     expect(
-      rendered.queryByText("UiPath Assistant consent code: abc123")
-    ).not.toBeNull();
-    expect(rendered.queryByLabelText("Integration")).not.toBeNull();
+      screen.getByText("UiPath Assistant consent code: abc123")
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Integration")).toBeInTheDocument();
   });
 
   test("Can render arguments", async () => {
-    const config = uuidv4();
-    jest.mocked(dependencyHooks.default).mockReturnValue({
+    const configId = uuidv4();
+    useSanitizedIntegrationConfigFormikAdapterMock
       // Pass minimal arguments
-      config: {
-        id: config,
-        serviceId,
-      } as unknown as SanitizedIntegrationConfig,
-      service: { id: serviceId } as unknown as IntegrationABC,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
-    });
+      .mockReturnValue(
+        valueToAsyncState({
+          id: configId,
+          serviceId: integrationId,
+        } as unknown as SanitizedIntegrationConfig)
+      );
 
     jest.mocked(auth.useAuthOptions).mockReturnValue(
       valueToAsyncState([
         {
           label: "Test Auth",
-          value: config,
-          serviceId,
+          value: configId,
+          serviceId: integrationId,
           local: true,
           sharingType: "private",
         },
@@ -172,17 +179,19 @@ describe("UiPath LocalProcess Options", () => {
     });
 
     const formState = makeBaseState();
-    formState.services[0].config = config;
+    formState.integrationDependencies[0].configId = configId;
     formState.extension.blockPipeline[0].config.service = "@uipath";
 
-    const rendered = renderOptions();
+    renderOptions();
 
     await waitForEffect();
 
-    expect(rendered.queryByText("UiPath Assistant consent code")).toBeNull();
-    expect(rendered.queryByLabelText("Integration")).not.toBeNull();
-    expect(rendered.queryByLabelText("Process")).not.toBeNull();
-    expect(rendered.queryByText("Input Arguments")).not.toBeNull();
-    expect(rendered.queryByText("Add Property")).not.toBeNull();
+    expect(
+      screen.queryByText("UiPath Assistant consent code")
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Integration")).toBeInTheDocument();
+    expect(screen.getByLabelText("Process")).toBeInTheDocument();
+    expect(screen.getByText("Input Arguments")).toBeInTheDocument();
+    expect(screen.getByText("Add Property")).toBeInTheDocument();
   });
 });

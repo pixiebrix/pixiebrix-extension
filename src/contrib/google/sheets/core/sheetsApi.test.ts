@@ -23,8 +23,8 @@ import {
 import { ensureGoogleToken } from "@/contrib/google/auth";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { proxyService as realProxyService } from "@/background/requests";
-import { proxyService as apiProxyService } from "@/background/messenger/api";
+import { performConfiguredRequest as realProxyService } from "@/background/requests";
+import { performConfiguredRequestInBackground as apiProxyService } from "@/background/messenger/api";
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { locator } from "@/background/locator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
@@ -122,7 +122,7 @@ describe("error handling", () => {
     axiosMock.resetHistory();
 
     integrationConfig = integrationConfigFactory({
-      serviceId: googleIntegration.id,
+      integrationId: googleIntegration.id,
     });
 
     // No remote integration configurations

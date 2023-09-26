@@ -22,23 +22,23 @@ import {
 
 describe("Infer shape", () => {
   it("Infer entries shape", () => {
-    expect(detectShape([{ header: "Foo", value: "bar" }])).toEqual("entries");
+    expect(detectShape([{ header: "Foo", value: "bar" }])).toBe("entries");
   });
 
   it("Infer multi shape for additional properties", () => {
-    expect(detectShape([{ header: "Foo", value: "bar", other: "42" }])).toEqual(
+    expect(detectShape([{ header: "Foo", value: "bar", other: "42" }])).toBe(
       "multi"
     );
   });
 
   it("Infer multi shape", () => {
-    expect(detectShape([{ "column A": "Foo" }, { "column A": "Foo" }])).toEqual(
+    expect(detectShape([{ "column A": "Foo" }, { "column A": "Foo" }])).toBe(
       "multi"
     );
   });
 
   it("Infer single shape", () => {
-    expect(detectShape({ "column A": "Foo", "column B": "Bar" })).toEqual(
+    expect(detectShape({ "column A": "Foo", "column B": "Bar" })).toBe(
       "single"
     );
   });

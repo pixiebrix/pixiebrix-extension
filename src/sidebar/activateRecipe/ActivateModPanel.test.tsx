@@ -155,7 +155,7 @@ describe("ActivateRecipePanel", () => {
       permissions: { origins: ["https://newurl.com"] },
     });
 
-    const rendered = setupMocksAndRender({
+    const { asFragment } = setupMocksAndRender({
       options: {
         schema: propertiesToSchema({
           foo: {
@@ -174,21 +174,19 @@ describe("ActivateRecipePanel", () => {
 
     await waitForEffect();
 
-    rendered.debug();
-
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("activates basic recipe automatically and renders well-done page", async () => {
-    const rendered = setupMocksAndRender();
+    const { asFragment } = setupMocksAndRender();
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("activates basic recipe with empty options structure automatically and renders well-done page", async () => {
-    const rendered = setupMocksAndRender({
+    const { asFragment } = setupMocksAndRender({
       options: {
         schema: {},
       },
@@ -196,11 +194,11 @@ describe("ActivateRecipePanel", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("activates recipe with database preview automatically and renders well-done page", async () => {
-    const rendered = setupMocksAndRender({
+    const { asFragment } = setupMocksAndRender({
       options: {
         schema: propertiesToSchema({
           testDatabase: {
@@ -214,17 +212,17 @@ describe("ActivateRecipePanel", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders well-done page for quick bar mod shortcut not configured", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
-    const rendered = setupMocksAndRender();
+    const { asFragment } = setupMocksAndRender();
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders well-done page for quick bar mod shortcut is configured on MacOS", async () => {
@@ -235,11 +233,11 @@ describe("ActivateRecipePanel", () => {
       isConfigured: true,
     });
 
-    const rendered = setupMocksAndRender();
+    const { asFragment } = setupMocksAndRender();
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders well-done page for quick bar mod shortcut is configured on Windows", async () => {
@@ -250,23 +248,24 @@ describe("ActivateRecipePanel", () => {
       isConfigured: true,
     });
 
-    const rendered = setupMocksAndRender();
+    const { asFragment } = setupMocksAndRender();
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders with service configuration if no built-in service configs available", async () => {
     const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
 
-    const rendered = setupMocksAndRender(modDefinition);
+    const { asFragment, container } = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
     expect(
-      rendered.container.querySelector(".actionButton")
+      // eslint-disable-next-line testing-library/no-container
+      container.querySelector(".actionButton")
     ).not.toBeDisabled();
   });
 
@@ -278,11 +277,11 @@ describe("ActivateRecipePanel", () => {
       .onGet("/api/services/shared/")
       .reply(200, builtInIntegrationConfigs);
 
-    const rendered = setupMocksAndRender(modDefinition);
+    const { asFragment } = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("doesn't flicker while built-in auths are loading", async () => {
@@ -290,11 +289,11 @@ describe("ActivateRecipePanel", () => {
 
     onDeferredGet("/api/services/shared/");
 
-    const rendered = setupMocksAndRender(modDefinition);
+    setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
-    expect(rendered.getByTestId("loader")).not.toBeNull();
+    expect(screen.getByTestId("loader")).not.toBeNull();
   });
 });
 
@@ -307,7 +306,7 @@ describe("ActivateMultipleModsPanel", () => {
       .onGet("/api/services/shared/")
       .reply(200, builtInIntegrationConfigs);
 
-    const rendered = setupMocksAndRender(modDefinition, {
+    const { asFragment } = setupMocksAndRender(modDefinition, {
       componentOverride: (
         <ActivateMultipleModsPanel modIds={[modDefinition.metadata.id]} />
       ),
@@ -315,7 +314,7 @@ describe("ActivateMultipleModsPanel", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("shows error if any mod requires configuration", async () => {
@@ -332,7 +331,7 @@ describe("ActivateMultipleModsPanel", () => {
     await waitForEffect();
 
     expect(
-      screen.queryByText(
+      screen.getByText(
         "One or more mods require configuration. Activate the mods individually to configure them."
       )
     ).toBeInTheDocument();

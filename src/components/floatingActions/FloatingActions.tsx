@@ -28,7 +28,7 @@ import dragIcon from "@/icons/drag-handle.svg";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { Provider, useSelector } from "react-redux";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 
 // Putting this outside the component since it doesn't need to trigger a re-render

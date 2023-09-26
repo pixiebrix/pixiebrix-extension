@@ -57,25 +57,25 @@ describe("detects the variable and returns its name", () => {
   test.each([8, 23])("repeated variables at position %s", (position) => {
     const template = "abc {{ @foo }} xyz {{@foo}}.";
     const actual = getLikelyVariableAtPosition(template, position).name;
-    expect(actual).toEqual("@foo");
+    expect(actual).toBe("@foo");
   });
 
   test("indexed access", () => {
     const template = "abc {{ @foo[0].bar }}.";
     const actual = getLikelyVariableAtPosition(template, 8).name;
-    expect(actual).toEqual("@foo[0].bar");
+    expect(actual).toBe("@foo[0].bar");
   });
 
   test("access with []", () => {
     const template = "abc {{ @foo['bar baz'] }}.";
     const actual = getLikelyVariableAtPosition(template, 8).name;
-    expect(actual).toEqual("@foo['bar baz']");
+    expect(actual).toBe("@foo['bar baz']");
   });
 
   test("standalone @", () => {
     const template = "abc @";
     const actual = getLikelyVariableAtPosition(template, 4).name;
-    expect(actual).toEqual("@");
+    expect(actual).toBe("@");
   });
 
   test("clamp position on full match", () => {
@@ -84,7 +84,7 @@ describe("detects the variable and returns its name", () => {
       clampPosition: true,
       includeBoundary: true,
     }).name;
-    expect(actual).toEqual("@a");
+    expect(actual).toBe("@a");
   });
 
   test("clamp position on partial match", () => {
@@ -93,7 +93,7 @@ describe("detects the variable and returns its name", () => {
       clampPosition: true,
       includeBoundary: true,
     }).name;
-    expect(actual).toEqual("@a");
+    expect(actual).toBe("@a");
   });
 
   test("match end boundary", () => {
@@ -102,7 +102,7 @@ describe("detects the variable and returns its name", () => {
       includeBoundary: true,
       clampPosition: true,
     }).name;
-    expect(actual).toEqual("@abc");
+    expect(actual).toBe("@abc");
   });
 
   test("match end boundary on partial match", () => {
@@ -111,7 +111,7 @@ describe("detects the variable and returns its name", () => {
       includeBoundary: true,
       clampPosition: true,
     }).name;
-    expect(actual).toEqual("@abc");
+    expect(actual).toBe("@abc");
   });
 
   test("match start boundary", () => {
@@ -120,7 +120,7 @@ describe("detects the variable and returns its name", () => {
       includeBoundary: true,
       clampPosition: true,
     }).name;
-    expect(actual).toEqual("@");
+    expect(actual).toBe("@");
   });
 });
 
@@ -141,8 +141,8 @@ describe("returns the start and end index of the variable", () => {
   test("standalone @", () => {
     const template = "abc @";
     const actual = getLikelyVariableAtPosition(template, 4);
-    expect(actual.startIndex).toEqual(4);
-    expect(actual.endIndex).toEqual(5);
+    expect(actual.startIndex).toBe(4);
+    expect(actual.endIndex).toBe(5);
   });
 });
 
@@ -202,7 +202,7 @@ describe("replaceLikelyVariable", () => {
     const expectedTemplate = "abc {{ @bar }} xyz";
     const endOfVariableIndex = expectedTemplate.indexOf("@bar") + "@bar".length;
 
-    expect(actual).toEqual(expectedTemplate);
+    expect(actual).toBe(expectedTemplate);
     expect(newCursorPosition).toEqual(endOfVariableIndex);
   });
 
@@ -216,7 +216,7 @@ describe("replaceLikelyVariable", () => {
     const expectedTemplate = "abc {{ @bar }} xyz";
     const endOfVariableIndex = expectedTemplate.indexOf("@bar") + "@bar".length;
 
-    expect(actual).toEqual("abc {{ @bar}} xyz");
+    expect(actual).toBe("abc {{ @bar}} xyz");
     expect(newCursorPosition).toEqual(endOfVariableIndex);
   });
 
@@ -239,7 +239,7 @@ describe("replaceLikelyVariable", () => {
       "@baz"
     );
 
-    expect(actual).toEqual(expectedTemplate);
+    expect(actual).toBe(expectedTemplate);
     expect(newCursorPosition).toEqual(endOfVariableIndex);
   });
 

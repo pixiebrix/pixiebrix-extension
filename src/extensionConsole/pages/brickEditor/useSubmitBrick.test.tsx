@@ -20,13 +20,13 @@ import useSubmitBrick from "@/extensionConsole/pages/brickEditor/useSubmitBrick"
 import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import { type AuthState } from "@/auth/authTypes";
-import servicesSlice, {
-  type ServicesState,
-} from "@/store/services/servicesSlice";
-import { type SettingsState } from "@/store/settingsTypes";
+import integrationsSlice, {
+  type IntegrationsState,
+} from "@/store/integrations/integrationsSlice";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 // FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
 import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
 import { appApi } from "@/services/api";
@@ -57,13 +57,13 @@ const errorMock = notify.error as jest.Mock;
 
 function testStore(initialState?: {
   auth: AuthState;
-  services: ServicesState;
+  services: IntegrationsState;
   settings: SettingsState;
 }) {
   return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      services: servicesSlice.reducer,
+      services: integrationsSlice.reducer,
       settings: settingsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },

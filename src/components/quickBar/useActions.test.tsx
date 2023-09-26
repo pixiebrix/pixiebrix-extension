@@ -24,7 +24,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 
 describe("useActions", () => {
   test("should return the default actions", () => {
-    const hook = renderHook(
+    const { result } = renderHook(
       () => {
         useActions();
         return useKBar(({ actions }) => ({ actions }));
@@ -34,13 +34,13 @@ describe("useActions", () => {
       }
     );
 
-    expect(Object.keys(hook.result.current.actions)).toHaveLength(
+    expect(Object.keys(result.current.actions)).toHaveLength(
       defaultActions.length
     );
   });
 
   test("should add/remove action", async () => {
-    const hook = renderHook(
+    const { result } = renderHook(
       () => {
         useActions();
         return useKBar(({ actions }) => ({ actions }));
@@ -57,7 +57,7 @@ describe("useActions", () => {
       });
     });
 
-    expect(Object.keys(hook.result.current.actions)).toHaveLength(
+    expect(Object.keys(result.current.actions)).toHaveLength(
       defaultActions.length + 1
     );
 
@@ -65,7 +65,7 @@ describe("useActions", () => {
       quickBarRegistry.removeAction("test");
     });
 
-    expect(Object.keys(hook.result.current.actions)).toHaveLength(
+    expect(Object.keys(result.current.actions)).toHaveLength(
       defaultActions.length
     );
   });

@@ -23,7 +23,7 @@ import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefiniti
 import extensionPointRegistry from "@/starterBricks/registry";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/services/integrationUtils";
 
 extensionPointRegistry.lookup = jest.fn();
 
@@ -42,10 +42,10 @@ describe("getUnconfiguredComponentIntegrations", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service2"],
@@ -64,19 +64,19 @@ describe("getUnconfiguredComponentIntegrations", () => {
       })
     ).toEqual([
       {
-        id: serviceId1,
+        integrationId: serviceId1,
         outputKey: validateOutputKey("service1"),
         isOptional: false,
         apiVersion: "v2",
       },
       {
-        id: serviceId2,
+        integrationId: serviceId2,
         outputKey: validateOutputKey("service2"),
         isOptional: false,
         apiVersion: "v2",
       },
       {
-        id: serviceId3,
+        integrationId: serviceId3,
         outputKey: validateOutputKey("service3"),
         isOptional: false,
         apiVersion: "v1",
@@ -91,10 +91,10 @@ describe("getUnconfiguredComponentIntegrations", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service2"],
@@ -105,7 +105,7 @@ describe("getUnconfiguredComponentIntegrations", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
         },
         required: ["service1"],
@@ -119,13 +119,13 @@ describe("getUnconfiguredComponentIntegrations", () => {
     ).toEqual(
       expect.arrayContaining([
         {
-          id: serviceId1,
+          integrationId: serviceId1,
           outputKey: validateOutputKey("service1"),
           isOptional: false,
           apiVersion: "v2",
         },
         {
-          id: serviceId2,
+          integrationId: serviceId2,
           outputKey: validateOutputKey("service2"),
           isOptional: false,
           apiVersion: "v2",
@@ -142,10 +142,10 @@ describe("getUnconfiguredComponentIntegrations", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: [],
@@ -165,13 +165,13 @@ describe("getUnconfiguredComponentIntegrations", () => {
     ).toEqual(
       expect.arrayContaining([
         {
-          id: serviceId1,
+          integrationId: serviceId1,
           outputKey: validateOutputKey("service1"),
           isOptional: false,
           apiVersion: "v1",
         },
         {
-          id: serviceId2,
+          integrationId: serviceId2,
           outputKey: validateOutputKey("service2"),
           isOptional: true,
           apiVersion: "v2",
@@ -215,10 +215,10 @@ describe("getIntegrationIds", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service2"],
@@ -228,7 +228,7 @@ describe("getIntegrationIds", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
         },
         required: ["service1"],
@@ -248,10 +248,10 @@ describe("getIntegrationIds", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId2}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service2"],
@@ -261,7 +261,7 @@ describe("getIntegrationIds", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICE_BASE_SCHEMA}${serviceId1}`,
+            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
           },
         },
         required: ["service1"],

@@ -46,7 +46,7 @@ describe("PanelBody", () => {
       extensionId,
     };
 
-    const result = render(
+    const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
@@ -55,7 +55,7 @@ describe("PanelBody", () => {
       />
     );
 
-    expect(result.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders business error", () => {
@@ -66,7 +66,7 @@ describe("PanelBody", () => {
       extensionId,
     };
 
-    const result = render(
+    const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
@@ -75,7 +75,7 @@ describe("PanelBody", () => {
       />
     );
 
-    expect(result.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders cancellation", () => {
@@ -86,7 +86,7 @@ describe("PanelBody", () => {
       extensionId,
     };
 
-    const result = render(
+    const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
@@ -95,7 +95,7 @@ describe("PanelBody", () => {
       />
     );
 
-    expect(result.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders html brick", async () => {
@@ -110,7 +110,7 @@ describe("PanelBody", () => {
       ctxt: {},
     };
 
-    const result = render(
+    const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
@@ -122,7 +122,7 @@ describe("PanelBody", () => {
     await waitForEffect();
 
     // There's a shadow root in BodyContainer, so the snapshot cuts off at the div
-    expect(result.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("delays loading indicator render", async () => {

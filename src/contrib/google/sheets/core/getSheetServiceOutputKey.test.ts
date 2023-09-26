@@ -15,38 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSheetServiceOutputKey } from "@/contrib/google/sheets/core/getSheetServiceOutputKey";
+import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 describe("getSheetServiceOutputKey", () => {
   test("abc", () => {
-    expect(getSheetServiceOutputKey(makeVariableExpression("abc"))).toEqual(
+    expect(getSheetIdIntegrationOutputKey(makeVariableExpression("abc"))).toBe(
       "abc"
     );
   });
   test("@abc", () => {
-    expect(getSheetServiceOutputKey(makeVariableExpression("@abc"))).toEqual(
+    expect(getSheetIdIntegrationOutputKey(makeVariableExpression("@abc"))).toBe(
       "abc"
     );
   });
   test("@abc.def", () => {
     expect(
-      getSheetServiceOutputKey(makeVariableExpression("@abc.def"))
+      getSheetIdIntegrationOutputKey(makeVariableExpression("@abc.def"))
     ).toBeUndefined();
   });
   test("@abc.spreadsheetId", () => {
     expect(
-      getSheetServiceOutputKey(makeVariableExpression("@abc.spreadsheetId"))
-    ).toEqual("abc");
+      getSheetIdIntegrationOutputKey(
+        makeVariableExpression("@abc.spreadsheetId")
+      )
+    ).toBe("abc");
   });
   test("@abc.spreadsheetId.def", () => {
     expect(
-      getSheetServiceOutputKey(makeVariableExpression("@abc.spreadsheetId.def"))
+      getSheetIdIntegrationOutputKey(
+        makeVariableExpression("@abc.spreadsheetId.def")
+      )
     ).toBeUndefined();
   });
   test("@abc.def.spreadsheetId", () => {
     expect(
-      getSheetServiceOutputKey(makeVariableExpression("@abc.def.spreadsheetId"))
+      getSheetIdIntegrationOutputKey(
+        makeVariableExpression("@abc.def.spreadsheetId")
+      )
     ).toBeUndefined();
   });
 });

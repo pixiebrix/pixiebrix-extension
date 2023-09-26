@@ -31,7 +31,7 @@ import {
 } from "@/auth/token";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
-import { type SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
 import { type ThemeLogo } from "@/themes/themeUtils";

@@ -39,7 +39,7 @@ import {
   mergeDeploymentIntegrationDependencies,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import useAsyncState from "@/hooks/useAsyncState";
 

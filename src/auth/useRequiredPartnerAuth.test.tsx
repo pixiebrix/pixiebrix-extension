@@ -16,30 +16,25 @@
  */
 
 import React from "react";
-import { renderHook, act } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { Provider } from "react-redux";
 import { appApi } from "@/services/api";
 import { uuidv4 } from "@/types/helpers";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import servicesSlice, {
-  type ServicesState,
-} from "@/store/services/servicesSlice";
+import integrationsSlice, {
+  type IntegrationsState,
+} from "@/store/integrations/integrationsSlice";
 import { type AuthState } from "@/auth/authTypes";
-import settingsSlice from "@/store/settingsSlice";
-import { type SettingsState } from "@/store/settingsTypes";
+import settingsSlice from "@/store/settings/settingsSlice";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import { type Me } from "@/types/contract";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type IntegrationConfig } from "@/types/integrationTypes";
-
-// `waitForEffect` for @testing-library/react-hooks
-const waitForEffect = async () =>
-  act(async () => {
-    // Awaiting the async state update
-  });
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/store/enterprise/useManagedStorageState", () => ({
   __esModule: true,
@@ -70,13 +65,13 @@ function mockMeQuery(state: {
 
 function testStore(initialState?: {
   auth: AuthState;
-  services: ServicesState;
+  integrations: IntegrationsState;
   settings: SettingsState;
 }) {
   return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       settings: settingsSlice.reducer,
     },
     preloadedState: initialState,
@@ -126,10 +121,10 @@ describe("useRequiredPartnerAuth", () => {
   test("require partner via settings screen", async () => {
     const store = testStore({
       auth: authSlice.getInitialState(),
-      services: servicesSlice.getInitialState(),
+      integrations: integrationsSlice.getInitialState(),
       settings: {
         ...settingsSlice.getInitialState(),
-        authServiceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        authIntegrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         authMethod: "partner-oauth2",
       },
     });
@@ -292,11 +287,11 @@ describe("useRequiredPartnerAuth", () => {
   test("has required integration", async () => {
     const store = testStore({
       auth: authSlice.getInitialState(),
-      services: {
-        ...servicesSlice.getInitialState(),
+      integrations: {
+        ...integrationsSlice.getInitialState(),
         configured: {
           [uuidv4()]: {
-            serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
           } as IntegrationConfig,
         },
       },

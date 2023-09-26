@@ -20,7 +20,7 @@ import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 
 describe("safeGuessStatusText", () => {
   it("returns http statusText", () => {
-    expect(safeGuessStatusText(200)).toEqual("OK");
+    expect(safeGuessStatusText(200)).toBe("OK");
   });
 
   it("doesn't throw error on invalid code", () => {
@@ -32,13 +32,13 @@ describe("selectAbsoluteUrl", () => {
   it("combines URL", () => {
     expect(
       selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com" })
-    ).toEqual("https://example.com/foo");
+    ).toBe("https://example.com/foo");
   });
 
   it("handles trailing baseURL slash", () => {
     expect(
       selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com/" })
-    ).toEqual("https://example.com/foo");
+    ).toBe("https://example.com/foo");
   });
 
   it("handles absolute URL", () => {
@@ -47,6 +47,6 @@ describe("selectAbsoluteUrl", () => {
         url: "https://example.com/foo",
         baseURL: "https://example.com/",
       })
-    ).toEqual("https://example.com/foo");
+    ).toBe("https://example.com/foo");
   });
 });

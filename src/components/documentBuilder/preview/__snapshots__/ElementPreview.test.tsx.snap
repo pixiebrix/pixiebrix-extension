@@ -36,14 +36,17 @@ exports[`can preview default card 1`] = `
     >
       <div
         class="card"
+        data-testid="card"
       >
         <div
           class="card-header"
+          data-testid="card-header"
         >
           Header
         </div>
         <div
           class="container cardBody overflow-auto card-body"
+          data-testid="card-body"
         >
           <div
             class="addElement dropdown"

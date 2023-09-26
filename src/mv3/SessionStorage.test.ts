@@ -19,25 +19,25 @@ import { SessionMap, SessionValue } from "./SessionStorage";
 
 test("SessionMap", async () => {
   const map = new SessionMap("jester", import.meta.url);
-  await expect(map.get("alpha")).resolves.toBe(undefined);
+  await expect(map.get("alpha")).resolves.toBeUndefined();
 
   await map.set("alpha", 1);
   await expect(map.get("alpha")).resolves.toBe(1);
 
   // Other props should be left untouched
-  await expect(map.get("beta")).resolves.toBe(undefined);
+  await expect(map.get("beta")).resolves.toBeUndefined();
 
   await map.set("alpha", undefined);
-  await expect(map.get("alpha")).resolves.toBe(undefined);
+  await expect(map.get("alpha")).resolves.toBeUndefined();
 });
 
 test("SessionValue", async () => {
   const map = new SessionValue("jester", import.meta.url);
-  await expect(map.get()).resolves.toBe(undefined);
+  await expect(map.get()).resolves.toBeUndefined();
 
   await map.set(1);
   await expect(map.get()).resolves.toBe(1);
 
   await map.set(undefined);
-  await expect(map.get()).resolves.toBe(undefined);
+  await expect(map.get()).resolves.toBeUndefined();
 });

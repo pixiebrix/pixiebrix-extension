@@ -37,7 +37,7 @@ export async function asyncMapValues<T, TResult>(
     entries.map(async ([key, value]) => fn(value, key, mapping))
   );
   return Object.fromEntries(
-    zip(entries, values).map(([[key], value]) => [key, value])
+    zip(entries, values).map(([[key] = [], value]) => [key, value])
   ) as any;
 }
 
