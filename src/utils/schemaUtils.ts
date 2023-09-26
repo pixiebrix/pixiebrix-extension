@@ -30,23 +30,17 @@ import { isNullOrBlank } from "@/utils/stringUtils";
  */
 export function getSubSchema(schema: Schema, path: string): Schema {
   const parts = split(path, ".");
-  let subSchema: Schema | boolean = schema;
+  let subSchema: Schema = schema;
 
   for (const part of parts) {
-    if (typeof subSchema === "boolean") {
+    // eslint-disable-next-line security/detect-object-injection -- expected that this is called locally
+    const nextSubSchema = subSchema.properties?.[part];
+
+    if (typeof nextSubSchema === "boolean" || nextSubSchema == null) {
       throw new TypeError(`Invalid property path: ${path}`);
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- expected that this is called locally
-    subSchema = subSchema.properties?.[part];
-  }
-
-  if (subSchema == null) {
-    throw new TypeError(`Invalid property path: ${path}`);
-  }
-
-  if (typeof subSchema === "boolean") {
-    throw new TypeError(`Invalid property path: ${path}`);
+    subSchema = nextSubSchema;
   }
 
   return subSchema;
@@ -61,7 +55,7 @@ export function missingProperties(
 ): string[] {
   const acc = [];
   for (const propertyKey of schema.required ?? []) {
-    const property = schema.properties[propertyKey];
+    const property = schema.properties?.[propertyKey];
     if (typeof property === "object" && property?.type === "string") {
       const value = obj[propertyKey];
       if (isNullOrBlank(value)) {
@@ -78,7 +72,11 @@ export function missingProperties(
  * @param inputSchema the schema or object
  */
 export function inputProperties(inputSchema: Schema): SchemaProperties {
-  if (typeof inputSchema === "object" && "properties" in inputSchema) {
+  if (
+    typeof inputSchema === "object" &&
+    "properties" in inputSchema &&
+    inputSchema.properties != null
+  ) {
     return inputSchema.properties;
   }
 
@@ -166,7 +164,9 @@ export function unionSchemaDefinitionTypes(
   }
 
   // Merge the objects
-  const result: Schema = {
+  const result: Required<
+    Pick<Schema, "type" | "properties" | "required" | "additionalProperties">
+  > = {
     type: "object",
     properties: {},
     // Must be required in both to be required
@@ -185,13 +185,18 @@ export function unionSchemaDefinitionTypes(
     // eslint-disable-next-line security/detect-object-injection -- from keys
     const rhsProperty = rhs.properties?.[property];
 
-    if (lhsProperty == null) {
+    if (lhsProperty == null && rhsProperty != null) {
       // eslint-disable-next-line security/detect-object-injection -- from keys
       result.properties[property] = rhsProperty;
-    } else if (rhsProperty == null) {
+    } else if (rhsProperty == null && lhsProperty != null) {
       // eslint-disable-next-line security/detect-object-injection -- from keys
       result.properties[property] = lhsProperty;
     } else {
+      if (lhsProperty == null || rhsProperty == null) {
+        // This should never happen, but checking here for type inference
+        continue;
+      }
+
       // eslint-disable-next-line security/detect-object-injection -- from keys
       result.properties[property] = unionSchemaDefinitionTypes(
         lhsProperty,

@@ -152,6 +152,7 @@
     "./utils/objectUtils.ts",
     "./utils/promiseUtils.ts",
     "./utils/sanitize.ts",
-    "./errors/networkErrorHelpers.ts"
+    "./errors/networkErrorHelpers.ts",
+    "./utils/schemaUtils.ts"
   ]
 }
