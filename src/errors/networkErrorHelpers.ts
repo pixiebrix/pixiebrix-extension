@@ -112,9 +112,7 @@ type ClientErrorData = {
 export function isBadRequestObjectData(
   data: unknown
 ): data is BadRequestObjectData {
-  // TODO: isPlainObject is not a type guard; we might consider using
-  //  something else, or wrapping isPlainObject in our own type guard func
-  if (!isPlainObject(data) || typeof data !== "object" || data === null) {
+  if (!isPlainObject(data) || !isObject(data)) {
     return false;
   }
 
