@@ -154,6 +154,7 @@
     "./utils/sanitize.ts",
     "./errors/networkErrorHelpers.ts",
     "./utils/schemaUtils.ts",
-    "./utils/urlUtils.ts"
+    "./utils/urlUtils.ts",
+    "./store/migratePersistedState.ts"
   ]
 }
