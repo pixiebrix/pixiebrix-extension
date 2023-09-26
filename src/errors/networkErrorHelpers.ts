@@ -98,7 +98,6 @@ type BadRequestObjectData = {
   // the model? See: https://github.com/encode/django-rest-framework/issues/1450
   // If __all__ the  only key, it will still end up getting reported as the error message in getErrorMessage
   non_field_errors?: string[];
-  // TODO: why not just rope non_field_errors into this?
   [field: string]: string[] | undefined;
 };
 // If an array of objects is passed to an endpoint, DRF will return an array of BadRequestObjectData
