@@ -312,8 +312,8 @@ async function reportToRollbar(
 ): Promise<void> {
   // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
   if (
-    hasSpecificErrorCause(error, BusinessError) &&
-    !(await flagOn("skip-rollbar-report"))
+    hasSpecificErrorCause(error, BusinessError) ||
+    (await flagOn("skip-rollbar-report"))
   ) {
     return;
   }
