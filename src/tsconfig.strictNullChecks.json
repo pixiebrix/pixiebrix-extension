@@ -153,6 +153,7 @@
     "./utils/promiseUtils.ts",
     "./utils/sanitize.ts",
     "./errors/networkErrorHelpers.ts",
-    "./utils/schemaUtils.ts"
+    "./utils/schemaUtils.ts",
+    "./utils/urlUtils.ts"
   ]
 }
