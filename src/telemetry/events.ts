@@ -102,12 +102,15 @@ export const Events = {
   SELECT_GOOGLE_SPREADSHEET_START: "SelectGoogleSpreadsheetStart",
   SELECT_GOOGLE_SPREADSHEET_VIEW_WARNING: "SelectGoogleSpreadsheetViewWarning",
 
+  SETTINGS_EXPERIMENTAL_CONFIGURE: "SettingsExperimentalConfigure",
+
   SIDEBAR_HIDE: "SidePanelHide",
   SIDEBAR_SHOW: "SidePanelShow",
   SIDEBAR_TAB_CLOSE: "SidebarTabClose",
 
+  SPREADSHEET_SELECTED: "SpreadsheetSelected",
+
   SNOOZE_UPDATES: "SnoozeUpdates",
-  SETTINGS_EXPERIMENTAL_CONFIGURE: "SettingsExperimentalConfigure",
 
   START_MOD_ACTIVATE: "StartInstallBlueprint",
 

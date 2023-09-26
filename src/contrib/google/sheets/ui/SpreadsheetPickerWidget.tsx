@@ -56,6 +56,7 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import useAsyncEffect from "use-async-effect";
+import { JSONSchema7 } from "json-schema";
 
 /**
  * Timeout indicating that the Chrome identity API may be hanging.
@@ -257,8 +258,34 @@ const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
   );
 };
 
+const ReportSheetSelected: React.FC<{ name: string; schema: JSONSchema7 }> = ({
+  children,
+  name,
+  schema,
+}) => {
+  const [{ value: spreadsheetId }] = useField(name);
+
+  useEffect(() => {
+    if (spreadsheetId) {
+      const sheet = schema.oneOf?.find(
+        (sheet) =>
+          typeof sheet === "object" &&
+          "const" in sheet &&
+          sheet.const === spreadsheetId
+      );
+
+      reportEvent(Events.SPREADSHEET_SELECTED, {
+        spreadsheetId,
+        title: typeof sheet === "object" ? sheet.title : undefined,
+      });
+    }
+  }, [schema.oneOf, spreadsheetId]);
+
+  return <>{children}</>;
+};
+
 const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
-  const { schema: baseSchema } = props;
+  const { schema: baseSchema, name } = props;
   // Need to lift this into an AsyncState to force the useDeriveAsyncState() call below to
   // recalculate when baseSchema changes
   const baseSchemaAsyncState = valueToAsyncState(baseSchema);
@@ -300,7 +327,9 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
         schema === baseSchema ? (
           <LegacySpreadsheetPickerWidget {...props} />
         ) : (
-          <SchemaSelectWidget {...props} schema={schema} />
+          <ReportSheetSelected name={name} schema={schema}>
+            <SchemaSelectWidget {...props} schema={schema} />
+          </ReportSheetSelected>
         )
       }
     </AsyncStateGate>
