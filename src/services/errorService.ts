@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject, type JsonValue } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import {
@@ -37,6 +36,7 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { isObject } from "@/utils/objectUtils";
+import { UnknownObject } from "@/types/objectTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -68,10 +68,10 @@ async function flush(): Promise<void> {
  */
 export async function selectExtraContext(
   error: Error | SerializedError
-): Promise<JsonObject & { extensionVersion: SemVerString }> {
+): Promise<UnknownObject & { extensionVersion: SemVerString }> {
   const { version } = browser.runtime.getManifest();
   const extensionVersion = validateSemVerString(version);
-  const extraContext: JsonObject & { extensionVersion: SemVerString } = {
+  const extraContext: UnknownObject & { extensionVersion: SemVerString } = {
     extensionVersion,
   };
 
@@ -94,7 +94,7 @@ export async function selectExtraContext(
     ...extraContext,
     name,
     stack,
-    ...(cause ? { cause: cause as JsonValue } : {}),
+    cause,
     code,
   };
 }
