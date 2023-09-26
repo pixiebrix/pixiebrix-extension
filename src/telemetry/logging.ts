@@ -32,6 +32,7 @@ import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
+import { flagOn } from "@/auth/token";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
@@ -310,7 +311,10 @@ async function reportToRollbar(
   message: string
 ): Promise<void> {
   // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
-  if (hasSpecificErrorCause(error, BusinessError)) {
+  if (
+    hasSpecificErrorCause(error, BusinessError) &&
+    !(await flagOn("skip-rollbar-report"))
+  ) {
     return;
   }
 
