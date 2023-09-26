@@ -45,6 +45,10 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
+import { selectAuth } from "@/auth/authSelectors";
+import { useSelector } from "react-redux";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */
@@ -178,6 +182,7 @@ const IntegrationDependencyWidget: React.FC<
     useFormikContext<IntegrationsFormSlice>();
   const [{ value, ...field }, , helpers] =
     useField<Expression<ServiceVarRef>>(props);
+  const { email } = useSelector(selectAuth);
 
   const { validDefaultIntegrationIds, options } = useMemo(() => {
     // Registry ids specified by the schema, or returns empty if any allowed
@@ -204,6 +209,12 @@ const IntegrationDependencyWidget: React.FC<
               options
             );
       await setRootValues(newState);
+
+      reportEvent(Events.INTEGRATION_CONFIG_SELECTED, {
+        email,
+        selectionType: "user",
+      });
+
       // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
       helpers.setError(undefined);
     },
@@ -247,6 +258,10 @@ const IntegrationDependencyWidget: React.FC<
           onChange({
             target: { value: options[0].value, name: field.name, options },
           } as ChangeEvent<SelectLike<AuthOption>>);
+          reportEvent(Events.INTEGRATION_CONFIG_SELECTED, {
+            email,
+            selectionType: "auto",
+          });
         }
       } else if (
         value &&

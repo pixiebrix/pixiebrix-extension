@@ -148,7 +148,7 @@ export async function uninstallAllDeployments(): Promise<void> {
     optionsState,
   });
 
-  reportEvent("DeploymentDeactivateAll", {
+  reportEvent(Events.DEPLOYMENT_DEACTIVATE_ALL, {
     auto: true,
     deployments: toUninstall.map((x) => x._deployment.id),
   });

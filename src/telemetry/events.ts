@@ -47,6 +47,7 @@ export const Events = {
   IDB_RECOVER_CONNECTION: "IDBRecoverConnection",
 
   INTEGRATION_ADD: "ServiceAdd",
+  INTEGRATION_CONFIG_SELECTED: "IntegrationConfigSelected",
 
   LINK_EXTENSION: "LinkExtension",
 
