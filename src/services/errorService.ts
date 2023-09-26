@@ -36,7 +36,7 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { isObject } from "@/utils/objectUtils";
-import { UnknownObject } from "@/types/objectTypes";
+import type { UnknownObject } from "@/types/objectTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
