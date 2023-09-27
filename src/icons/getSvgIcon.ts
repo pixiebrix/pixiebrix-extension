@@ -49,5 +49,5 @@ export default async function getSvgIcon({
       height: size,
       fill: color,
     })
-    .get(0).outerHTML;
+    .get(0)!.outerHTML;
 }

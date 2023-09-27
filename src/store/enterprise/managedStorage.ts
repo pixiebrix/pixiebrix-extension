@@ -16,7 +16,7 @@
  */
 
 import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
-import { isEmpty, once, remove } from "lodash";
+import { isEmpty, once } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
@@ -27,9 +27,9 @@ const MAX_MANAGED_STORAGE_WAIT_MILLIS = 2000;
  * The managedStorageState, or undefined if it hasn't been initialized yet.
  */
 let managedStorageState: ManagedStorageState | undefined;
-const listeners: Array<(state: ManagedStorageState) => void> = [];
+const listeners = new Set<(state: ManagedStorageState) => void>();
 
-function notifyAll(): void {
+function notifyAll(managedStorageState: ManagedStorageState): void {
   for (const listener of listeners) {
     listener(managedStorageState);
   }
@@ -54,7 +54,7 @@ async function readManagedStorageImmediately(): Promise<ManagedStorageState> {
 // uBlock (still) contains a workaround to automatically reload the extension on initial install
 // - https://github.com/gorhill/uBlock/commit/32bd47f05368557044dd3441dcaa414b7b009b39
 const waitForInitialManagedStorage = pMemoize(async () => {
-  managedStorageState = await pollUntilTruthy<ManagedStorageState>(
+  managedStorageState = await pollUntilTruthy<ManagedStorageState | undefined>(
     async () => {
       const values = await readManagedStorageImmediately();
       if (typeof values === "object" && !isEmpty(values)) {
@@ -67,6 +67,8 @@ const waitForInitialManagedStorage = pMemoize(async () => {
   );
 
   if (managedStorageState) {
+    notifyAll(managedStorageState);
+
     console.info("Read managed storage settings", {
       managedStorageState,
     });
@@ -75,8 +77,6 @@ const waitForInitialManagedStorage = pMemoize(async () => {
       managedStorageState,
     });
   }
-
-  notifyAll();
 
   return managedStorageState;
 });
@@ -94,7 +94,7 @@ export const initManagedStorage = once(() => {
     browser.storage.onChanged.addListener(async (changes, area) => {
       if (area === "managed") {
         managedStorageState = await readManagedStorageImmediately();
-        notifyAll();
+        notifyAll(managedStorageState);
       }
     });
   } catch (error) {
@@ -174,10 +174,10 @@ export function subscribe(
 ): () => void {
   expectContext("extension");
 
-  listeners.push(callback);
+  listeners.add(callback);
 
   return () => {
-    remove(listeners, (x) => x === callback);
+    listeners.delete(callback);
   };
 }
 
@@ -186,6 +186,6 @@ export function subscribe(
  */
 export function INTERNAL_reset(): void {
   managedStorageState = undefined;
-  listeners.splice(0, listeners.length);
+  listeners.clear();
   pMemoizeClear(waitForInitialManagedStorage);
 }

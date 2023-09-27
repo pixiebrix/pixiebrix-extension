@@ -4,6 +4,14 @@
     "strictNullChecks": true
   },
   "files": [
+    "./telemetry/dnt.ts",
+    "./bricks/transformers/tourStep/overlay.ts",
+    "./icons/list.ts",
+    "./utils/detectRandomString.ts",
+    "./icons/getSvgIcon.ts",
+    "./components/form/widgets/switchButton/SwitchButtonWidget.tsx",
+    "./store/enterprise/managedStorage.ts",
+    "./permissions/patterns.ts",
     "./__mocks__/@/components/DelayedRender.tsx",
     "./__mocks__/@/hooks/useContextInvalidated.ts",
     "./__mocks__/@/icons/getSvgIcon.ts",

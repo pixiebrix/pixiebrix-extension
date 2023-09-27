@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ParsedDomain, parse } from "psl";
+import psl from "psl";
 
 export const HTTPS_PATTERN = "https://*/*";
 
@@ -29,8 +29,7 @@ export const SITES_PATTERN = "*://*/*";
  */
 export function getDomain(url: string): string {
   const urlClass = new URL(url);
-  const { domain } = parse(urlClass.hostname) as ParsedDomain;
-  return domain;
+  return psl.get(urlClass.hostname)!;
 }
 
 export function createSitePattern(url: string): string {

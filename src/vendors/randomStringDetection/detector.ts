@@ -116,9 +116,6 @@ var dbl = Array(
 );
 var whitelist = Array("cpl", "srx", "tkt", "pbm", "slp", "ch");
 
-var regex: RegExp = null;
-var regexwl: RegExp = null;
-
 function makeRegex(tab: string[]) {
   var strregex = "(";
   for (var i = 0; i < tab.length; i++) {
@@ -148,8 +145,8 @@ for (var i = 0; i < number.length; i++) {
   }
 }
 
-regex = makeRegex(dbl);
-regexwl = makeRegex(whitelist);
+var regex = makeRegex(dbl);
+var regexwl = makeRegex(whitelist);
 
 export default function detectRandomString(
   str: string,
@@ -176,7 +173,7 @@ export default function detectRandomString(
     // @ts-expect-error It's a vendored file, we don't need this to be exact
     tab = [...new Set(tab)];
 
-    var tmpregex = makeRegex(tab);
+    var tmpregex = makeRegex(tab!);
     while ((result = tmpregex.exec(str))) {
       score++;
     }
