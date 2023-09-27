@@ -160,7 +160,7 @@ export async function readReduxStorage<T extends object>(
 export async function setReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
   // Optional persistence for flexibility at call-sites
-  state: T & SetOptional<PersistedState, "_persist">,
+  state: T & SetOptional<NonNullable<PersistedState>, "_persist">,
   defaultPersistenceVersion: number
 ): Promise<void> {
   if (typeof state !== "object") {

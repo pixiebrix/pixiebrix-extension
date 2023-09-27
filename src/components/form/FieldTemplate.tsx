@@ -81,9 +81,9 @@ export type CustomFieldWidget<
 > = React.ComponentType<TFieldWidgetProps>;
 
 type ComputeLabelAndColSizeArgs = {
-  fitLabelWidth: boolean;
-  widerLabel: boolean;
-  label: ReactNode;
+  fitLabelWidth?: boolean;
+  widerLabel?: boolean;
+  label?: ReactNode;
 };
 
 export function computeLabelAndColSize({
@@ -120,7 +120,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   fitLabelWidth,
   widerLabel,
   description,
-  annotations: untypedAnnotations,
+  annotations,
   touched,
   value,
   children,
@@ -129,7 +129,6 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   className,
   ...restFieldProps
 }) => {
-  const annotations: FieldAnnotation[] = untypedAnnotations;
   const isInvalid = !isEmpty(
     annotations?.filter(
       (annotation) => annotation.type === AnnotationType.Error
@@ -200,7 +199,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
           show: !isEmpty(annotations),
         })}
       >
-        {isEmpty(annotations) ? (
+        {!annotations || annotations.length > 0 ? (
           <div className={styles.annotationPlaceholder} />
         ) : (
           annotations.map(({ message, type, actions }) => (

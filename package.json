@@ -10,6 +10,7 @@
     "watch": "concurrently 'npm:watch:*' -r",
     "watch:webpack": "ENV_FILE='.env.development' webpack --mode development --watch",
     "watch:typescript": "tsc --noEmit --watch --preserveWatchOutput",
+    "watch:strictNullChecks": "npm run build:strictNullChecks -- --watch",
     "build": "concurrently npm:build:webpack npm:build:typescript -r",
     "build:webpack": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
     "build:typescript": "tsc --noEmit",

@@ -38,7 +38,7 @@ export function useEventListener(
     }
 
     const eventListener = (event: Event) => {
-      savedHandler.current(event);
+      savedHandler.current?.(event);
     };
 
     element.addEventListener(eventName, eventListener);
