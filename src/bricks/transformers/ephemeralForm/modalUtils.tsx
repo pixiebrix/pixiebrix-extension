@@ -29,6 +29,7 @@ export function showModal({
   render(
     <dialog
       ref={(dialog) => {
+        if (!dialog) return;
         dialog.showModal();
         // No types support for "onClose" attribute
         dialog.addEventListener(
@@ -38,6 +39,13 @@ export function showModal({
           },
           { once: true }
         );
+
+        // This doesn't work below the modal, because the Shadow Root extends
+        dialog.addEventListener("click", () => {
+          // Normally you'd check for event.target = dialog. But given the shadow root, the target ends up being
+          // somewhere on the page, not the dialog itself
+          onOutsideClick?.();
+        });
       }}
       style={{
         border: 0,
@@ -59,15 +67,6 @@ export function showModal({
     </dialog>,
     shadowRoot
   );
-
-  const dialog = shadowRoot.querySelector("dialog");
-
-  // This doesn't work below the modal, because the Shadow Root extends
-  dialog.addEventListener("click", () => {
-    // Normally you'd check for event.target = dialog. But given the shadow root, the target ends up being
-    // somewhere on the page, not the dialog itself
-    onOutsideClick?.();
-  });
 
   controller.signal.addEventListener("abort", () => {
     unmountComponentAtNode(container);

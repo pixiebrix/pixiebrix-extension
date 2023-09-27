@@ -12,6 +12,8 @@
     "./components/form/widgets/switchButton/SwitchButtonWidget.tsx",
     "./store/enterprise/managedStorage.ts",
     "./permissions/patterns.ts",
+    "./bricks/transformers/ephemeralForm/modalUtils.tsx",
+    "./themes/themeUtils.ts",
     "./__mocks__/@/components/DelayedRender.tsx",
     "./__mocks__/@/hooks/useContextInvalidated.ts",
     "./__mocks__/@/icons/getSvgIcon.ts",
