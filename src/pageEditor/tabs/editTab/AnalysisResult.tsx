@@ -36,7 +36,7 @@ const AnalysisResult: React.FunctionComponent = () => {
       <Col>
         {annotations.map(({ message, type }, index) => (
           <FieldAnnotationAlert
-            key={`${message}-${index}`}
+            key={`${type}-${index}`}
             message={message}
             type={type}
           />

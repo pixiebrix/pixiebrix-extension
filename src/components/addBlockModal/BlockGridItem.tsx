@@ -32,7 +32,7 @@ type BlockItemProps = {
   block: BlockResult;
   onSelect: () => void;
   onShowDetail: () => void;
-  invalidMessage?: string;
+  invalidMessage?: React.ReactNode;
 };
 
 const BlockGridItem: React.VFC<BlockItemProps> = ({

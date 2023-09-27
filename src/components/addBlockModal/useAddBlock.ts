@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type React from "react";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
@@ -40,7 +41,7 @@ import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
 
 type TestAddBlockResult = {
-  error?: string;
+  error?: React.ReactNode;
 };
 
 type AddBlock = {
