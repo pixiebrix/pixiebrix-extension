@@ -61,7 +61,7 @@ const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
           <span>{message}</span>
         </div>
       </div>
-      {Boolean(actions?.length) && (
+      {actions?.length ? (
         <div className={styles.actions}>
           {actions.map(({ caption, action }) => (
             <AsyncButton key={caption} onClick={action}>
@@ -69,7 +69,7 @@ const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
             </AsyncButton>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
