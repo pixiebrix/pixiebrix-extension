@@ -19,6 +19,7 @@ import React, { type ReactNode } from "react";
 import {
   Col,
   type ColProps,
+  // eslint-disable-next-line no-restricted-imports -- never uses the actual Form component
   Form as BootstrapForm,
   type FormControlProps,
   Row,
