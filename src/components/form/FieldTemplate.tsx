@@ -199,7 +199,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
           show: !isEmpty(annotations),
         })}
       >
-        {!annotations || annotations.length > 0 ? (
+        {!annotations || annotations.length === 0 ? (
           <div className={styles.annotationPlaceholder} />
         ) : (
           annotations.map(({ message, type, actions }) => (
