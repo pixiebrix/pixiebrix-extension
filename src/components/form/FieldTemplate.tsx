@@ -199,9 +199,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
           show: !isEmpty(annotations),
         })}
       >
-        {!annotations || annotations.length === 0 ? (
-          <div className={styles.annotationPlaceholder} />
-        ) : (
+        {annotations?.length ? (
           annotations.map(({ message, type, actions }) => (
             <FieldAnnotationAlert
               key={`${type}-${message.slice(0, 10)}`}
@@ -210,6 +208,8 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
               actions={actions}
             />
           ))
+        ) : (
+          <div className={styles.annotationPlaceholder} />
         )}
       </Col>
       {label && (
