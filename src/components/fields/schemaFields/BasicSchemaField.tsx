@@ -162,7 +162,11 @@ const BasicSchemaField: SchemaFieldComponent = ({
 
   useSetInitialValueForField({ name, isRequired, inputModeOptions });
 
-  const { onOmitField } = useToggleFormField(name, normalizedSchema);
+  const { onOmitField } = useToggleFormField(
+    name,
+    normalizedSchema,
+    isRequired
+  );
 
   if (isEmpty(inputModeOptions)) {
     return (

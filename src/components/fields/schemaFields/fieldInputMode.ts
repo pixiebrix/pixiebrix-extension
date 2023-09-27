@@ -58,17 +58,18 @@ export function inferInputMode(
   fieldSchema: Schema,
   options: {
     safeDefault?: boolean;
+    isRequired?: boolean;
   } = DEFAULT_OPTIONS
 ): FieldInputMode {
-  const { safeDefault = true } = options;
+  const { safeDefault = true, isRequired } = options;
 
   const hasField = Object.hasOwn(fieldConfig, fieldName);
-  if (!hasField) {
-    return "omit";
-  }
-
   // eslint-disable-next-line security/detect-object-injection -- config field names
   const value = fieldConfig[fieldName];
+
+  if (!hasField || (value == null && !isRequired)) {
+    return "omit";
+  }
 
   // We need to check sub-schemas first so things like services don't end up as var
   // Labelled enum fields (using oneOf and const) are handled by isSelectField check
@@ -81,12 +82,14 @@ export function inferInputMode(
       ]);
 
   if (!isEmpty(subSchemas)) {
+    const required = fieldSchema.required ?? [];
     const inputModes = compact(
       subSchemas
         .filter((x) => typeof x !== "boolean")
         .map((subSchema) =>
           inferInputMode(fieldConfig, fieldName, subSchema as Schema, {
             safeDefault: false,
+            isRequired: required.includes(fieldName),
           })
         )
     );
