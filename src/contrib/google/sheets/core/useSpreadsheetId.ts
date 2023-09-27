@@ -117,11 +117,13 @@ function useSpreadsheetId(
 
   return useAsyncState<string | null>(async () => {
     try {
-      return await findSpreadsheetIdFromFieldValue(
+      const result = await findSpreadsheetIdFromFieldValue(
         integrationDependencies,
         fieldValue,
         optionsArgs
       );
+      setError(null);
+      return result;
     } catch (error: unknown) {
       setError(getErrorMessage(error));
       return null;
