@@ -302,7 +302,7 @@ const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
 const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number = null;
 
-async function reportToRollbar(
+export async function reportToRollbar(
   // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
   // (It treats POJO as the custom data)
   // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
@@ -313,7 +313,7 @@ async function reportToRollbar(
   // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
   if (
     hasSpecificErrorCause(error, BusinessError) ||
-    (await flagOn("skip-rollbar-report"))
+    (await flagOn("rollbar-disable-report"))
   ) {
     return;
   }

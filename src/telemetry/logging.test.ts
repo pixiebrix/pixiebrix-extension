@@ -21,7 +21,11 @@ import {
   count,
   getLogEntries,
   sweepLogs,
+  reportToRollbar,
 } from "@/telemetry/logging";
+import type Rollbar from "rollbar";
+import { flagOn } from "@/auth/token";
+import { getRollbar } from "@/telemetry/initRollbar";
 import {
   logEntryFactory,
   messageContextFactory,
@@ -31,8 +35,21 @@ import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 jest.unmock("@/telemetry/logging");
 
+jest.mock("@/auth/token", () => ({
+  flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
+}));
+
+const flagOnMock = jest.mocked(flagOn);
+
+jest.mock("@/telemetry/initRollbar", () => ({
+  getRollbar: jest.fn(),
+}));
+
+const getRollbarMock = jest.mocked(getRollbar);
+
 afterEach(async () => {
   await clearLog();
+  flagOnMock.mockReset();
 });
 
 describe("logging", () => {
@@ -92,5 +109,39 @@ describe("logging", () => {
         context: expect.objectContaining({ blueprintId }),
       }),
     ]);
+  });
+
+  test("allow rollbar reporting", async () => {
+    const errorMock = jest.fn();
+    // @ts-expect-error -- Don't need to mock out the other methods for this test
+    getRollbarMock.mockResolvedValue({
+      error: errorMock,
+    } as Rollbar);
+
+    flagOnMock.mockResolvedValue(false);
+
+    await reportToRollbar(new Error("test"), null, null);
+
+    expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
+      "rollbar-disable-report"
+    );
+    expect(errorMock).toHaveBeenCalledOnce();
+  });
+
+  test("disable rollbar reporting", async () => {
+    const errorMock = jest.fn();
+    // @ts-expect-error -- Don't need to mock out the other methods for this test
+    getRollbarMock.mockResolvedValue({
+      error: errorMock,
+    } as Rollbar);
+
+    flagOnMock.mockResolvedValue(true);
+
+    await reportToRollbar(new Error("test"), null, null);
+
+    expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
+      "rollbar-disable-report"
+    );
+    expect(errorMock).not.toHaveBeenCalledOnce();
   });
 });
