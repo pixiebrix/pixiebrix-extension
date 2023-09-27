@@ -286,16 +286,21 @@ class VarMap {
    */
   public isVariableDefined(path: string): boolean {
     const pathParts = toPath(path);
+    const [outputKey] = pathParts;
+
+    if (!outputKey) {
+      return false;
+    }
 
     for (const sourceMap of Object.values(this.map).filter(
       // Only check the sources (bricks) that provide the output key (the first part of the path)
       // Usually there is one brick providing the output key and the vars from traces
-      (x) => x[pathParts[0]] != null
+      (x) => x[outputKey] != null
     )) {
       const pathPartsCopy = [...pathParts];
-      let bag = sourceMap;
+      let bag: ExistenceNode | undefined = sourceMap;
       while (pathPartsCopy.length > 0) {
-        const part = pathPartsCopy.shift();
+        const part = pathPartsCopy.shift()!; // Existence verified via `length` check so `!` is fine
 
         // Handle the array case (allow only numeric keys)
         const isNumberPart = numberRegex.test(part);
