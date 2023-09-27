@@ -21,7 +21,6 @@ import WarningIcon from "@/icons/warning.svg?loadAsComponent";
 import InfoIcon from "@/icons/info.svg?loadAsComponent";
 import cx from "classnames";
 import styles from "./FieldAnnotationAlert.module.scss";
-import { isEmpty } from "lodash";
 import AsyncButton from "@/components/AsyncButton";
 import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
@@ -62,7 +61,7 @@ const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
           <span>{message}</span>
         </div>
       </div>
-      {!isEmpty(actions) && (
+      {actions?.length ? (
         <div className={styles.actions}>
           {actions.map(({ caption, action }, index) => (
             <AsyncButton key={index} onClick={action}>
@@ -70,7 +69,7 @@ const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
             </AsyncButton>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
