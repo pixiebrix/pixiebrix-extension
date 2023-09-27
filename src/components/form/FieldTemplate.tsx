@@ -19,7 +19,6 @@ import React, { type ReactNode } from "react";
 import {
   Col,
   type ColProps,
-  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
   Form as BootstrapForm,
   type FormControlProps,
   Row,
@@ -203,9 +202,9 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
         {isEmpty(annotations) ? (
           <div className={styles.annotationPlaceholder} />
         ) : (
-          annotations.map(({ message, type, actions }) => (
+          annotations.map(({ message, type, actions }, index) => (
             <FieldAnnotationAlert
-              key={`${type}-${message.slice(0, 10)}`}
+              key={`${index}-${type}`}
               message={message}
               type={type}
               actions={actions}

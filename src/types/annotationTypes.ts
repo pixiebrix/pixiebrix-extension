@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type React from "react";
+
 /**
  * An analysis engine annotation.
  */
@@ -31,7 +33,7 @@ export type BaseAnnotation = {
   /**
    * A user-readable message for the annotation
    */
-  message: string;
+  message: React.ReactNode;
   /**
    * The type of annotation
    */
