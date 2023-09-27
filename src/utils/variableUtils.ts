@@ -39,7 +39,9 @@ export function freshIdentifier(
 
   const used = identifiers
     .map((identifier) =>
-      identifier === root ? startNumber : regexp.exec(identifier)?.groups.number
+      identifier === root
+        ? startNumber
+        : regexp.exec(identifier)?.groups?.number
     )
     .filter((x) => x != null)
     .map(Number);
