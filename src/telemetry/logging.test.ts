@@ -134,6 +134,6 @@ describe("logging", () => {
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "rollbar-disable-report"
     );
-    expect(rollbarErrorMock).not.toHaveBeenCalledOnce();
+    expect(rollbarErrorMock).not.toHaveBeenCalled();
   });
 });

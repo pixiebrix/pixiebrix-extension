@@ -302,6 +302,10 @@ const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
 const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number = null;
 
+/**
+ * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
+ * It's only exported for testing.
+ */
 export async function reportToRollbar(
   // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
   // (It treats POJO as the custom data)
