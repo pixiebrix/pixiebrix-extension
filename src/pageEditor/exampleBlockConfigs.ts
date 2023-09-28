@@ -135,7 +135,6 @@ export function getExampleBlockConfig(
     // Adding text to the second row
     const text = createNewElement("text");
     text.config.text = "Example text element. **Markdown** is supported.";
-    text.config.className = "text-success";
     container.children[1].children[0].children.push(text);
 
     return {
