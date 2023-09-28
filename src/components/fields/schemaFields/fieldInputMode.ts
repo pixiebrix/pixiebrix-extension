@@ -63,11 +63,9 @@ export function inferInputMode(
 ): FieldInputMode {
   const { safeDefault = true, isRequired } = options;
 
-  const hasField = Object.hasOwn(fieldConfig, fieldName);
   // eslint-disable-next-line security/detect-object-injection -- config field names
   const value = fieldConfig[fieldName];
-
-  if (!hasField || (value == null && !isRequired)) {
+  if (value === undefined && !isRequired) {
     return "omit";
   }
 
