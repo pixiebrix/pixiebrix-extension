@@ -58,16 +58,33 @@ const RequireGoogleSheet: React.FC<{
       googleAccount: SanitizedIntegrationConfig | null,
       spreadsheetId: string | null,
       baseSchema: Schema
-    ) => ({
-      googleAccount,
-      spreadsheet: spreadsheetId
-        ? await sheets.getSpreadsheet({
+    ) => {
+      if (!spreadsheetId) {
+        return {
+          googleAccount,
+          spreadsheet: null,
+          spreadsheetFieldSchema: baseSchema,
+        };
+      }
+
+      if (!googleAccount || (await sheets.isLoggedIn(googleAccount))) {
+        return {
+          googleAccount,
+          // Sheets API will handle legacy authentication when googleAccount is null
+          spreadsheet: await sheets.getSpreadsheet({
             googleAccount,
             spreadsheetId,
-          })
-        : null,
-      spreadsheetFieldSchema: baseSchema,
-    })
+          }),
+          spreadsheetFieldSchema: baseSchema,
+        };
+      }
+
+      return {
+        googleAccount,
+        spreadsheet: null,
+        spreadsheetFieldSchema: baseSchema,
+      };
+    }
   );
 
   return (

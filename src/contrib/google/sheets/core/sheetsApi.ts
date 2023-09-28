@@ -30,7 +30,10 @@ import initGoogle, {
 } from "@/contrib/google/initGoogle";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import {
+  getCachedAuthData,
+  performConfiguredRequestInBackground,
+} from "@/background/messenger/api";
 import {
   type AppendValuesResponse,
   type BatchUpdateSpreadsheetRequest,
@@ -41,6 +44,8 @@ import {
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
 import pTimeout from "p-timeout";
+import pDefer from "p-defer";
+import { isEmpty } from "lodash";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
@@ -128,7 +133,14 @@ export async function ensureSheetsReady({
   throw lastError;
 }
 
-async function executeRequest<Response, RequestData = never>(
+export async function isLoggedIn(
+  googleAccount: SanitizedIntegrationConfig
+): Promise<boolean> {
+  const authData = await getCachedAuthData(googleAccount.id);
+  return !isEmpty(authData);
+}
+
+async function _executeRequest<Response, RequestData = never>(
   requestConfig: AxiosRequestConfig<RequestData>,
   googleAccount: SanitizedIntegrationConfig | null
 ): Promise<Response> {
@@ -154,6 +166,31 @@ async function executeRequest<Response, RequestData = never>(
       googleAccount,
       legacyClientToken
     );
+  }
+}
+
+// Serialize the requests through this API in case authentication is needed, and to make error handling easier
+let inFlightRequest: Promise<void> | null = null;
+
+async function executeRequest<Response, RequestData = never>(
+  requestConfig: AxiosRequestConfig<RequestData>,
+  googleAccount: SanitizedIntegrationConfig | null
+): Promise<Response> {
+  if (inFlightRequest != null) {
+    await inFlightRequest;
+  }
+
+  const deferred = pDefer<void>();
+  inFlightRequest = deferred.promise;
+
+  try {
+    return await _executeRequest<Response, RequestData>(
+      requestConfig,
+      googleAccount
+    );
+  } finally {
+    deferred.resolve();
+    inFlightRequest = null;
   }
 }
 
