@@ -46,10 +46,15 @@ jest.mock("@/telemetry/initRollbar", () => ({
 }));
 
 const getRollbarMock = jest.mocked(getRollbar);
+const rollbarErrorMock = jest.fn();
+getRollbarMock.mockResolvedValue({
+  error: rollbarErrorMock,
+} as unknown as Rollbar);
 
 afterEach(async () => {
   await clearLog();
   flagOnMock.mockReset();
+  rollbarErrorMock.mockReset();
 });
 
 describe("logging", () => {
@@ -112,12 +117,6 @@ describe("logging", () => {
   });
 
   test("allow rollbar reporting", async () => {
-    const errorMock = jest.fn();
-    // @ts-expect-error -- Don't need to mock out the other methods for this test
-    getRollbarMock.mockResolvedValue({
-      error: errorMock,
-    } as Rollbar);
-
     flagOnMock.mockResolvedValue(false);
 
     await reportToRollbar(new Error("test"), null, null);
@@ -125,16 +124,10 @@ describe("logging", () => {
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "rollbar-disable-report"
     );
-    expect(errorMock).toHaveBeenCalledOnce();
+    expect(rollbarErrorMock).toHaveBeenCalledOnce();
   });
 
   test("disable rollbar reporting", async () => {
-    const errorMock = jest.fn();
-    // @ts-expect-error -- Don't need to mock out the other methods for this test
-    getRollbarMock.mockResolvedValue({
-      error: errorMock,
-    } as Rollbar);
-
     flagOnMock.mockResolvedValue(true);
 
     await reportToRollbar(new Error("test"), null, null);
@@ -142,6 +135,6 @@ describe("logging", () => {
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "rollbar-disable-report"
     );
-    expect(errorMock).not.toHaveBeenCalledOnce();
+    expect(rollbarErrorMock).not.toHaveBeenCalledOnce();
   });
 });
