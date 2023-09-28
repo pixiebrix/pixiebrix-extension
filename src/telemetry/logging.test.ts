@@ -45,9 +45,8 @@ jest.mock("@/telemetry/initRollbar", () => ({
   getRollbar: jest.fn(),
 }));
 
-const getRollbarMock = jest.mocked(getRollbar);
 const rollbarErrorMock = jest.fn();
-getRollbarMock.mockResolvedValue({
+jest.mocked(getRollbar).mockResolvedValue({
   error: rollbarErrorMock,
 } as unknown as Rollbar);
 
