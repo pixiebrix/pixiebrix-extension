@@ -28,7 +28,7 @@ import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
 import { extractIntegrationIds } from "@/services/integrationUtils";
-import { isEmpty, isEqual } from "lodash";
+import { isEmpty, isEqual, unset } from "lodash";
 import {
   type SelectLike,
   type SelectWidgetOnChange,
@@ -154,9 +154,16 @@ function setIntegrationAuthSelectionForField(
 
 function clearIntegrationSelection(
   state: IntegrationsFormSlice,
-  fieldName: string
+  fieldName: string,
+  isRequired?: boolean
 ): IntegrationsFormSlice {
-  const nextState = setIn(state, fieldName, null);
+  const nextState = produce(state, (draft) => {
+    if (isRequired) {
+      setIn(draft, fieldName, null);
+    } else {
+      unset(draft, fieldName);
+    }
+  });
   return produceExcludeUnusedDependencies(nextState);
 }
 
@@ -169,7 +176,7 @@ const NO_AUTH_OPTIONS = Object.freeze([] as AuthOption[]);
 const IntegrationDependencyWidget: React.FC<
   IntegrationDependencyWidgetProps
 > = ({ detectDefault = true, ...props }) => {
-  const { schema } = props;
+  const { schema, isRequired } = props;
   const { data: authOptions, refetch: refreshOptions } = fallbackValue(
     useAuthOptions(),
     NO_AUTH_OPTIONS
@@ -196,7 +203,7 @@ const IntegrationDependencyWidget: React.FC<
       // Value will be null when the selection is "cleared"
       const newState =
         value == null
-          ? clearIntegrationSelection(rootValues, field.name)
+          ? clearIntegrationSelection(rootValues, field.name, isRequired)
           : setIntegrationAuthSelectionForField(
               rootValues,
               field.name,
@@ -289,7 +296,7 @@ const IntegrationDependencyWidget: React.FC<
       onChange={onChange}
       options={options}
       refreshOptions={refreshOptions}
-      isClearable
+      isClearable={!isRequired}
     />
   );
 };
