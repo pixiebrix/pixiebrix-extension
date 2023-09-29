@@ -15,9 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLoggingConfig, setLoggingConfig } from "@/telemetry/logging";
-import useUpdatableAsyncState from "./useUpdatableAsyncState.js";
+import {
+  type ManualStorageKey,
+  readStorage,
+  setStorage,
+} from "@/utils/storageUtils.js";
 
-export function useLoggingConfig() {
-  return useUpdatableAsyncState(getLoggingConfig, setLoggingConfig);
+const MESSENGER_LOGGING_KEY = "MESSENGER_LOGGING" as ManualStorageKey;
+
+export async function getMessengerLogging(): Promise<boolean> {
+  return readStorage(MESSENGER_LOGGING_KEY, false);
+}
+
+export async function setMessengerLogging(config: boolean): Promise<void> {
+  await setStorage(MESSENGER_LOGGING_KEY, config);
 }

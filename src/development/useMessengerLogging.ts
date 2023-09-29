@@ -15,9 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLoggingConfig, setLoggingConfig } from "@/telemetry/logging";
-import useUpdatableAsyncState from "./useUpdatableAsyncState.js";
+import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState.js";
+import {
+  getMessengerLogging,
+  setMessengerLogging,
+} from "./messengerLogging.js";
 
-export function useLoggingConfig() {
-  return useUpdatableAsyncState(getLoggingConfig, setLoggingConfig);
+export default function useMessengerLogging(): [
+  boolean | undefined,
+  (value: boolean) => void
+] {
+  return useUpdatableAsyncState(getMessengerLogging, setMessengerLogging);
 }
