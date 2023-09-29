@@ -23,6 +23,7 @@ import "./sidebar.scss";
 
 import "@/extensionContext";
 
+import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/sidebar/messenger/registration";
 import App from "@/sidebar/SidebarApp";
 import ReactDOM from "react-dom";
@@ -36,6 +37,7 @@ function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
 }
 
+void initMessengerLogging();
 registerMessenger();
 void initGoogle();
 registerContribBlocks();

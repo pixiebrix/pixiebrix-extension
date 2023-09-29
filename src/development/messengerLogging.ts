@@ -20,6 +20,7 @@ import {
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";
+import { toggleLogging } from "webext-messenger";
 
 const MESSENGER_LOGGING_KEY = "MESSENGER_LOGGING" as ManualStorageKey;
 
@@ -29,4 +30,10 @@ export async function getMessengerLogging(): Promise<boolean> {
 
 export async function setMessengerLogging(config: boolean): Promise<void> {
   await setStorage(MESSENGER_LOGGING_KEY, config);
+}
+
+export async function initMessengerLogging(): Promise<void> {
+  if (await getMessengerLogging()) {
+    toggleLogging(true);
+  }
 }

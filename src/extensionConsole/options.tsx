@@ -29,6 +29,7 @@ import App from "@/extensionConsole/App";
 import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
 import { initTelemetry } from "@/background/messenger/api";
+import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/extensionConsole/messenger/registration";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 
@@ -36,6 +37,7 @@ function init(): void {
   render(<App />, document.querySelector("#container"));
 }
 
+void initMessengerLogging();
 registerMessenger();
 void initGoogle();
 initToaster();
