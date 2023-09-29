@@ -44,7 +44,6 @@ import {
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
 import pTimeout from "p-timeout";
-import pDefer from "p-defer";
 import { isEmpty } from "lodash";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
@@ -140,7 +139,7 @@ export async function isLoggedIn(
   return !isEmpty(authData);
 }
 
-async function _executeRequest<Response, RequestData = never>(
+async function executeRequest<Response, RequestData = never>(
   requestConfig: AxiosRequestConfig<RequestData>,
   googleAccount: SanitizedIntegrationConfig | null
 ): Promise<Response> {
@@ -166,31 +165,6 @@ async function _executeRequest<Response, RequestData = never>(
       googleAccount,
       legacyClientToken
     );
-  }
-}
-
-// Serialize the requests through this API in case authentication is needed, and to make error handling easier
-let inFlightRequest: Promise<void> | null = null;
-
-async function executeRequest<Response, RequestData = never>(
-  requestConfig: AxiosRequestConfig<RequestData>,
-  googleAccount: SanitizedIntegrationConfig | null
-): Promise<Response> {
-  if (inFlightRequest != null) {
-    await inFlightRequest;
-  }
-
-  const deferred = pDefer<void>();
-  inFlightRequest = deferred.promise;
-
-  try {
-    return await _executeRequest<Response, RequestData>(
-      requestConfig,
-      googleAccount
-    );
-  } finally {
-    deferred.resolve();
-    inFlightRequest = null;
   }
 }
 
