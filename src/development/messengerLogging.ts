@@ -19,7 +19,7 @@ import {
   type ManualStorageKey,
   readStorage,
   setStorage,
-} from "@/utils/storageUtils.js";
+} from "@/utils/storageUtils";
 
 const MESSENGER_LOGGING_KEY = "MESSENGER_LOGGING" as ManualStorageKey;
 

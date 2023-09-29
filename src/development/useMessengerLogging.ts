@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState.js";
-import {
-  getMessengerLogging,
-  setMessengerLogging,
-} from "./messengerLogging.js";
+import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
+import { getMessengerLogging, setMessengerLogging } from "./messengerLogging";
 
 export default function useMessengerLogging(): [
   boolean | undefined,

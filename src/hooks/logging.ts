@@ -16,7 +16,7 @@
  */
 
 import { getLoggingConfig, setLoggingConfig } from "@/telemetry/logging";
-import useUpdatableAsyncState from "./useUpdatableAsyncState.js";
+import useUpdatableAsyncState from "./useUpdatableAsyncState";
 
 export function useLoggingConfig() {
   return useUpdatableAsyncState(getLoggingConfig, setLoggingConfig);
