@@ -30,7 +30,10 @@ import initGoogle, {
 } from "@/contrib/google/initGoogle";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import {
+  getCachedAuthData,
+  performConfiguredRequestInBackground,
+} from "@/background/messenger/api";
 import {
   type AppendValuesResponse,
   type BatchUpdateSpreadsheetRequest,
@@ -41,6 +44,7 @@ import {
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
 import pTimeout from "p-timeout";
+import { isEmpty } from "lodash";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
@@ -126,6 +130,13 @@ export async function ensureSheetsReady({
   } while (retry < maxRetries);
 
   throw lastError;
+}
+
+export async function isLoggedIn(
+  googleAccount: SanitizedIntegrationConfig
+): Promise<boolean> {
+  const authData = await getCachedAuthData(googleAccount.id);
+  return !isEmpty(authData);
 }
 
 async function executeRequest<Response, RequestData = never>(
