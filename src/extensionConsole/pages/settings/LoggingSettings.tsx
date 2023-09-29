@@ -75,6 +75,26 @@ const LoggingSettings: React.FunctionComponent = () => {
                 }
               />
             </Form.Group>
+
+            <Form.Group controlId="messenger-logging">
+              <div>
+                <Form.Label>
+                  Display messaging in browser console:{" "}
+                  <i>{config.logValues ? "Enabled" : "Disabled"}</i>
+                </Form.Label>
+              </div>
+              <BootstrapSwitchButton
+                size="sm"
+                onstyle="info"
+                offstyle="light"
+                onlabel=" "
+                offlabel=" "
+                checked={config.logValues}
+                onChange={async (value) =>
+                  setConfig({ ...config, logValues: value })
+                }
+              />
+            </Form.Group>
           </Form>
         ) : (
           <Loader />
