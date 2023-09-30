@@ -15,6 +15,9 @@
     "./__mocks__/@/utils/injectScriptTag.ts",
     "./__mocks__/@/utils/injectStylesheet.ts",
     "./__mocks__/@uipath/robot.ts",
+    "./development/messengerLogging.ts",
+    "./development/useMessengerLogging.ts",
+    "./hooks/useUpdatableAsyncState.ts",
     "./background/axiosFetch.ts",
     "./bricks/transformers/ephemeralForm/formTypes.ts",
     "./components/Alert.tsx",
@@ -164,9 +167,6 @@
     "./store/migratePersistedState.ts",
     "./analysis/analysisVisitors/varAnalysis/varMap.ts",
     "./components/quickBar/defaultActions.tsx",
-    "./telemetry/dnt.ts",
-    "./development/messengerLogging.ts",
-    "./development/useMessengerLogging.ts",
-    "./hooks/useUpdatableAsyncState.ts"
+    "./telemetry/dnt.ts"
   ]
 }
