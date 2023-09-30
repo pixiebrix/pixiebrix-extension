@@ -29,7 +29,10 @@ export function showModal({
   render(
     <dialog
       ref={(dialog) => {
-        if (!dialog) return;
+        if (!dialog) {
+          return;
+        }
+
         dialog.showModal();
         // No types support for "onClose" attribute
         dialog.addEventListener(
