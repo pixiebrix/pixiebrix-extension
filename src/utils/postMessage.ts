@@ -34,7 +34,6 @@ import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type JsonValue } from "type-fest";
 import { type SerializedError } from "@/types/messengerTypes";
-import { once } from "lodash";
 import { getMessengerLogging } from "@/development/messengerLogging";
 
 const TIMEOUT_MS = 3000;
@@ -43,10 +42,8 @@ type Payload = JsonValue;
 
 // Disable logging by default
 let log = (...args: unknown[]) => {};
-const updateLog = once(async () => {
-  if (await getMessengerLogging()) {
-    log = console.debug;
-  }
+void getMessengerLogging().then((setting) => {
+  log = console.debug;
 });
 
 export type RequestPacket = {
@@ -70,9 +67,6 @@ export default async function postMessage({
   payload,
   recipient,
 }: PostMessageInfo): Promise<Payload> {
-  // Update on the first call, don't move this call to the top scope to avoid side-effects
-  void updateLog();
-
   const promise = new Promise<Payload>((resolve, reject) => {
     const privateChannel = new MessageChannel();
     privateChannel.port1.start(); // Mandatory to start receiving messages
@@ -111,9 +105,6 @@ export function addPostMessageListener(
   listener: PostMessageListener,
   { signal }: { signal?: AbortSignal } = {}
 ): void {
-  // Update on the first call, don't move this call to the top scope to avoid side-effects
-  void updateLog();
-
   const rawListener = async ({
     data,
     ports: [source],
