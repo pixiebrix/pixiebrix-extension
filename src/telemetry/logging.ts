@@ -436,7 +436,7 @@ export type LoggingConfig = {
 const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
 
 export async function getLoggingConfig(): Promise<LoggingConfig> {
-  return readStorage(LOG_CONFIG_STORAGE_KEY, {
+  return readStorage<LoggingConfig>(LOG_CONFIG_STORAGE_KEY, {
     logValues: false,
   });
 }

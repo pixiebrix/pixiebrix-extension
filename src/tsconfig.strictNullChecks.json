@@ -164,6 +164,9 @@
     "./store/migratePersistedState.ts",
     "./analysis/analysisVisitors/varAnalysis/varMap.ts",
     "./components/quickBar/defaultActions.tsx",
-    "./telemetry/dnt.ts"
+    "./telemetry/dnt.ts",
+    "./development/messengerLogging.ts",
+    "./development/useMessengerLogging.ts",
+    "./hooks/useUpdatableAsyncState.ts"
   ]
 }
