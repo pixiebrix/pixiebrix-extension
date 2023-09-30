@@ -17,7 +17,7 @@
 
 import "./SheetsFileWidget.module.scss";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { type SheetMeta } from "@/contrib/google/sheets/core/types";
 import { useField, useFormikContext } from "formik";
 import { sheets } from "@/background/messenger/api";
@@ -56,6 +56,10 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import useAsyncEffect from "use-async-effect";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { AnnotationType } from "@/types/annotationTypes";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import { type AsyncStateArray } from "@/types/sliceTypes";
 
 /**
  * Timeout indicating that the Chrome identity API may be hanging.
@@ -259,35 +263,87 @@ const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
 
 const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
   const { schema: baseSchema } = props;
+  const [errorAnnotation, setErrorAnnotation] =
+    useState<FieldAnnotation | null>(null);
   // Need to lift this into an AsyncState to force the useDeriveAsyncState() call below to
   // recalculate when baseSchema changes
   const baseSchemaAsyncState = valueToAsyncState(baseSchema);
   const googleAccountAsyncState = useGoogleAccount();
-  const schemaAsyncState = useDeriveAsyncState(
+
+  const [isRetrying, setIsRetrying] = useState(false);
+  const retry = useCallback(async () => {
+    if (isRetrying) {
+      return;
+    }
+
+    setIsRetrying(true);
+    googleAccountAsyncState.refetch();
+  }, [googleAccountAsyncState, isRetrying]);
+
+  const schemaAsyncState = useDeriveAsyncState<AsyncStateArray, Schema>(
     baseSchemaAsyncState,
     googleAccountAsyncState,
     async (baseSchema: Schema, googleAccount: SanitizedIntegrationConfig) => {
-      if (!googleAccount) {
-        return baseSchema;
+      async function getSchema(): Promise<Schema> {
+        if (!googleAccount) {
+          return baseSchema;
+        }
+
+        const spreadsheetFileList = await sheets.getAllSpreadsheets(
+          googleAccount
+        );
+
+        if (isEmpty(spreadsheetFileList.files)) {
+          return baseSchema;
+        }
+
+        const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
+          const: file.id,
+          title: file.name,
+        }));
+        return {
+          type: "string",
+          title: SPREADSHEET_FIELD_TITLE,
+          description: SPREADSHEET_FIELD_DESCRIPTION,
+          oneOf: spreadsheetSchemaEnum,
+        };
       }
 
-      const spreadsheetFileList = await sheets.getAllSpreadsheets(
-        googleAccount
-      );
-      if (isEmpty(spreadsheetFileList.files)) {
-        return baseSchema;
+      try {
+        const schemaResult = await getSchema();
+        setErrorAnnotation(null);
+        return schemaResult;
+      } catch (error: unknown) {
+        console.error(error);
+        setErrorAnnotation({
+          message: (
+            <>
+              <p>
+                <strong>Unable to complete Google Authentication</strong>
+              </p>
+              <p>
+                PixieBrix needs to connect to your Google account to use Google
+                Sheets.
+              </p>
+            </>
+          ),
+          type: AnnotationType.Error,
+          actions: [
+            {
+              caption: "Connect Google Account",
+              action: retry,
+            },
+          ],
+        });
+        return {
+          type: "string",
+          title: SPREADSHEET_FIELD_TITLE,
+          description: SPREADSHEET_FIELD_DESCRIPTION,
+          enum: [],
+        };
+      } finally {
+        setIsRetrying(false);
       }
-
-      const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
-        const: file.id,
-        title: file.name,
-      }));
-      return {
-        type: "string",
-        title: SPREADSHEET_FIELD_TITLE,
-        description: SPREADSHEET_FIELD_DESCRIPTION,
-        oneOf: spreadsheetSchemaEnum,
-      } as Schema;
     }
   );
 
@@ -296,6 +352,35 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
       {({ data: schema }) =>
         schema === baseSchema ? (
           <LegacySpreadsheetPickerWidget {...props} />
+        ) : errorAnnotation ? (
+          <FieldTemplate
+            name={props.name}
+            disabled
+            annotations={[
+              {
+                message: (
+                  <>
+                    <p>
+                      <strong>Unable to complete Google Authentication</strong>
+                    </p>
+                    <p>
+                      PixieBrix needs to connect to your Google account to use
+                      Google Sheets.
+                    </p>
+                  </>
+                ),
+                type: AnnotationType.Error,
+                actions: [
+                  {
+                    caption: isRetrying
+                      ? "Connecting..."
+                      : "Connect Google Account",
+                    action: isRetrying ? async () => {} : retry,
+                  },
+                ],
+              },
+            ]}
+          />
         ) : (
           <SchemaSelectWidget {...props} schema={schema} />
         )
