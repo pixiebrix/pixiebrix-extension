@@ -15,8 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Skip the sandbox messenger during tests
-export {
-  renderNunjucksTemplate,
-  renderHandlebarsTemplate,
-} from "@/sandbox/messenger/executor";
+import { type JsonValue } from "type-fest";
+
+export type ApplyJqPayload = {
+  input: JsonValue;
+  filter: string;
+};
+
+export async function applyJq(payload: ApplyJqPayload) {
+  const { input, filter } = payload;
+  const { default: jq } = await import(
+    /* webpackChunkName: "jq-web" */ "@pixiebrix/jq-web"
+  );
+
+  return jq.promised.json(input, filter);
+}

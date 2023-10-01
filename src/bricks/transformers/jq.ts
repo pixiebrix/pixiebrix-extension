@@ -22,7 +22,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { InputValidationError } from "@/bricks/errors";
 import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { applyJq } from "@/sandbox/messenger/executor";
+import { applyJq } from "@/utils/jq";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { retryWithJitter } from "@/utils/promiseUtils";
 
