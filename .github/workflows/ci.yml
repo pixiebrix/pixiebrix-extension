@@ -13,12 +13,11 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version-file: package.json
-          cache: npm
-      - run: npm ci
-      - run: npm run test -- --coverage
+          bun-version: latest
+      - run: bun install
+      - run: bun run test -- --coverage
       - uses: actions/upload-artifact@v3
         with:
           name: extension-test-coverage
@@ -53,12 +52,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version-file: package.json
-          cache: npm
-      - run: npm ci
-      - run: npm run build:webpack
+          bun-version: latest
+      - run: bun install
+      - run: bun run build:webpack
         env:
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
@@ -114,13 +112,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version-file: package.json
-          cache: npm
-      - run: npm ci
-      - run: npm run build:scripts
-      - run: npm run generate:headers
+          bun-version: latest
+      - run: bun install
+      - run: bun run build:scripts
+      - run: bun run generate:headers
       - uses: actions/upload-artifact@v3
         name: Save headers.json
         with:
@@ -135,26 +132,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version-file: package.json
-          cache: npm
-      - run: npm ci
-      - run: npm run build:typescript
+          bun-version: latest
+      - run: bun install
+      - run: bun run build:typescript
       # Prevent regressions in the files that have already been made strictNullCheck-compliant
-      - run: npm run build:strictNullChecks
+      - run: bun run build:strictNullChecks
 
   lint:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version-file: package.json
-          cache: npm
-      - run: npm ci
-      - run: npm run lint:full
+          bun-version: latest
+      - run: bun install
+      - run: bun run lint:full
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
