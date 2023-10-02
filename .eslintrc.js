@@ -113,6 +113,17 @@ module.exports = {
       },
     },
     {
+      files: [
+        "**/testEnv.js",
+        "**/testHelpers.*",
+        "**/testUtils/*",
+        "**/*.stories.tsx",
+      ],
+      rules: {
+        "unicorn/prefer-spread": "off",
+      },
+    },
+    {
       files: ["src/testUtils/**/*"],
       rules: {
         "jest/no-export": "off",

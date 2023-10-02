@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable promise/prefer-await-to-then */
-
 import { configureStore, type Store } from "@reduxjs/toolkit";
 import { renderHook, act } from "@testing-library/react-hooks";
 import React from "react";
@@ -109,13 +107,7 @@ test("maintains wizard open state", () => {
 
   // Save will open the modal window.
   // Should not await for the promise to resolve to check that window is open.
-  act(() => {
-    void result.current.save().catch((error) => {
-      // Got an error, failing the test
-      console.error(error);
-      expect(error).toBeUndefined();
-    });
-  });
+  void act(async () => expect(result.current.save()).toResolve());
 
   // Modal is open/
   expect(result.current.isWizardOpen).toBe(true);
@@ -143,13 +135,7 @@ test("saves non recipe element", async () => {
 
   const { result } = renderUseSavingWizard(store);
 
-  act(() => {
-    result.current.save().catch((error) => {
-      // Got an error, failing the test
-      console.error(error);
-      expect(error).toBeUndefined();
-    });
-  });
+  void act(async () => expect(result.current.save()).toResolve());
 
   expect(result.current.isSaving).toBe(true);
   expect(createMock).toHaveBeenCalledTimes(1);
@@ -246,13 +232,7 @@ describe("saving a Recipe Extension", () => {
     const { result } = renderUseSavingWizard(store);
 
     // Get into the saving process
-    act(() => {
-      void result.current.save().catch((error) => {
-        // Got an error, failing the test
-        console.error(error);
-        expect(error).toBeUndefined();
-      });
-    });
+    void act(async () => expect(result.current.save()).toResolve());
 
     // Ensure the Saving dialog is open, but saving hasn't started yet
     expect(result.current.isWizardOpen).toBe(true);
