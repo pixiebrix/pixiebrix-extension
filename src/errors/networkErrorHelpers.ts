@@ -212,8 +212,12 @@ function selectServerErrorMessage(response: AxiosResponse): string | null {
       ? response.data.find((x) => isEmpty(x))
       : response.data;
 
-    const objectLevelError = data?.non_field_errors?.[0];
-    const arbitraryFieldMessage = data ? Object.values(data)[0]?.[0] : null;
+    if (!data) {
+      return null;
+    }
+
+    const objectLevelError = data.non_field_errors?.[0];
+    const arbitraryFieldMessage = Object.values(data)[0]?.[0];
 
     return objectLevelError ?? arbitraryFieldMessage ?? null;
   }
