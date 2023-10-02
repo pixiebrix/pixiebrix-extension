@@ -43,7 +43,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@mozilla/readability": "^0.4.4",
     "@pixiebrix/jq-web": "^0.5.1",
-    "@reduxjs/toolkit": "^1.9.3",
+    "@reduxjs/toolkit": "^1.9.6",
     "@rjsf/bootstrap-4": "^4.2.3",
     "@rjsf/core": "^4.2.3",
     "@types/use-sync-external-store": "^0.0.4",
