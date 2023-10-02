@@ -19,7 +19,7 @@ import React, { type ReactNode } from "react";
 import {
   Col,
   type ColProps,
-  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+  // eslint-disable-next-line no-restricted-imports -- never uses the actual Form component
   Form as BootstrapForm,
   type FormControlProps,
   Row,
@@ -81,9 +81,9 @@ export type CustomFieldWidget<
 > = React.ComponentType<TFieldWidgetProps>;
 
 type ComputeLabelAndColSizeArgs = {
-  fitLabelWidth: boolean;
-  widerLabel: boolean;
-  label: ReactNode;
+  fitLabelWidth?: boolean;
+  widerLabel?: boolean;
+  label?: ReactNode;
 };
 
 export function computeLabelAndColSize({
@@ -120,7 +120,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   fitLabelWidth,
   widerLabel,
   description,
-  annotations: untypedAnnotations,
+  annotations,
   touched,
   value,
   children,
@@ -129,7 +129,6 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   className,
   ...restFieldProps
 }) => {
-  const annotations: FieldAnnotation[] = untypedAnnotations;
   const isInvalid = !isEmpty(
     annotations?.filter(
       (annotation) => annotation.type === AnnotationType.Error
@@ -200,17 +199,17 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
           show: !isEmpty(annotations),
         })}
       >
-        {isEmpty(annotations) ? (
-          <div className={styles.annotationPlaceholder} />
-        ) : (
-          annotations.map(({ message, type, actions }) => (
+        {annotations?.length ? (
+          annotations.map(({ message, type, actions }, index) => (
             <FieldAnnotationAlert
-              key={`${type}-${message.slice(0, 10)}`}
+              key={`${index}-${type}`}
               message={message}
               type={type}
               actions={actions}
             />
           ))
+        ) : (
+          <div className={styles.annotationPlaceholder} />
         )}
       </Col>
       {label && (

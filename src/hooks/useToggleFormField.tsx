@@ -48,7 +48,8 @@ export function removeField(parent: unknown, fieldName: string): void {
 
 function useToggleFormField(
   name: string,
-  schema: Schema
+  schema: Schema,
+  isRequired: boolean
 ): {
   inputMode: FieldInputMode;
   onOmitField: () => void;
@@ -61,7 +62,7 @@ function useToggleFormField(
   const value = getIn(formState, name);
 
   const inputMode = useMemo(
-    () => inferInputMode(parentValues, fieldName, schema),
+    () => inferInputMode(parentValues, fieldName, schema, { isRequired }),
     // eslint-disable-next-line -- run when value changes
     [fieldName, value, schema]
   );

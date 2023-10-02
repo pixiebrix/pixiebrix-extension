@@ -151,6 +151,19 @@
     "./utils/stringUtils.ts",
     "./utils/objectUtils.ts",
     "./utils/promiseUtils.ts",
-    "./utils/sanitize.ts"
+    "./utils/sanitize.ts",
+    "./globals.d.ts",
+    "./utils/storageUtils.ts",
+    "./components/annotationAlert/FieldAnnotationAlert.tsx",
+    "./components/Loader.tsx",
+    "./components/MarkdownInline.tsx",
+    "./utils/variableUtils.ts",
+    "./hooks/useEventListener.ts",
+    "./components/form/FieldTemplate.tsx",
+    "./utils/urlUtils.ts",
+    "./store/migratePersistedState.ts",
+    "./analysis/analysisVisitors/varAnalysis/varMap.ts",
+    "./components/quickBar/defaultActions.tsx",
+    "./telemetry/dnt.ts"
   ]
 }

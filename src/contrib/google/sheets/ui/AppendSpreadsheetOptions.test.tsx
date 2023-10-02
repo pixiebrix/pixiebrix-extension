@@ -76,6 +76,7 @@ jest.mock("@/hooks/auth", () => ({
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
+const isLoggedInMock = jest.mocked(sheets.isLoggedIn);
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
 const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
@@ -209,6 +210,7 @@ beforeAll(() => {
   useAuthOptionsMock.mockReturnValue(
     valueToAsyncState([googlePKCEAuthOption, testSpreadsheetAuthOption])
   );
+  isLoggedInMock.mockResolvedValue(true);
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
   getSpreadsheetMock.mockImplementation(
     async ({ spreadsheetId }: SpreadsheetTarget) =>
