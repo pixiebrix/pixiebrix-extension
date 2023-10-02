@@ -20,7 +20,6 @@ import Page from "@/layout/Page";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
 import PrivacySettings from "@/extensionConsole/pages/settings/PrivacySettings";
 import LoggingSettings from "@/extensionConsole/pages/settings/LoggingSettings";
-import PermissionsSettings from "@/extensionConsole/pages/settings/PermissionsSettings";
 import FactoryResetSettings from "@/extensionConsole/pages/settings/FactoryResetSettings";
 import AdvancedSettings from "@/extensionConsole/pages/settings/AdvancedSettings";
 import ExperimentalSettings from "@/extensionConsole/pages/settings/ExperimentalSettings";
@@ -76,12 +75,6 @@ const SettingsPage: React.FunctionComponent = () => {
       {flagOn("settings-experimental") && (
         <Section>
           <ExperimentalSettings />
-        </Section>
-      )}
-
-      {permit("permissions") && (
-        <Section>
-          <PermissionsSettings />
         </Section>
       )}
 

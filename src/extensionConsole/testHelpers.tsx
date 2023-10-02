@@ -45,11 +45,9 @@ const configureStoreForTests = () =>
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware()
         .concat(appApi.middleware)
         .concat(modDefinitionsMiddleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
   });
 

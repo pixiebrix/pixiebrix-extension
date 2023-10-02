@@ -75,7 +75,7 @@ const SchemaSelectWidget: React.VFC<
 
   const selectOnChange = useCallback(
     async (option: StringOption) => {
-      await setValue(option?.value ?? null);
+      await setValue(option?.value);
     },
     [setValue]
   );
