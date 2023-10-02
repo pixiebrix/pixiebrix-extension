@@ -133,8 +133,12 @@ function isClientErrorData(data: unknown): data is ClientErrorData {
  * @param response the API response
  */
 function isBadRequestResponse(
-  response: AxiosResponse
+  response?: AxiosResponse
 ): response is AxiosResponse<BadRequestData> {
+  if (!response) {
+    return false;
+  }
+
   if (response.status !== 400) {
     return false;
   }
@@ -155,10 +159,6 @@ export function isSingleObjectBadRequestError(
   error: unknown
 ): error is AxiosError<BadRequestObjectData> {
   if (!isAxiosError(error)) {
-    return false;
-  }
-
-  if (!error.response) {
     return false;
   }
 
