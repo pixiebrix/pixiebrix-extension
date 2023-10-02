@@ -24,12 +24,13 @@
  * @see getBaseURL
  * @see AdvancedSettings
  */
-export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL!; // The build fails if this is undefined, so `!` is appropriate;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The build fails if this is undefined, so `!` is appropriate
+export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL!;
 
 /**
  * URL of the marketplace, including `/marketplace/` path, e.g., https://www.pixiebrix.com/marketplace/
  */
-// @typescript-eslint/no-unnecessary-type-assertion -- The build fails if this is undefined, so `!` is appropriate
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The build fails if this is undefined, so `!` is appropriate
 export const MARKETPLACE_URL = process.env.MARKETPLACE_URL!;
 
 /**

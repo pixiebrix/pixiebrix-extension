@@ -300,7 +300,8 @@ class VarMap {
       const pathPartsCopy = [...pathParts];
       let bag: ExistenceNode | undefined = sourceMap;
       while (pathPartsCopy.length > 0) {
-        const part = pathPartsCopy.shift()!; // Existence verified via `length` check so `!` is fine
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Existence verified via `length` check so `!` is fine
+        const part = pathPartsCopy.shift()!;
 
         // Handle the array case (allow only numeric keys)
         const isNumberPart = numberRegex.test(part);
