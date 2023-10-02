@@ -155,7 +155,7 @@
     "./errors/networkErrorHelpers.ts",
     "./utils/schemaUtils.ts",
     "./utils/urlUtils.ts",
-    "./store/migratePersistedState.ts"
+    "./store/migratePersistedState.ts",
     "./globals.d.ts",
     "./utils/storageUtils.ts",
     "./components/annotationAlert/FieldAnnotationAlert.tsx",
