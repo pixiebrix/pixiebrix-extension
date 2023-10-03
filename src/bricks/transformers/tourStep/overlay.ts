@@ -90,7 +90,7 @@ Z`;
  */
 function _getVisibleHeight(
   element: HTMLElement,
-  scrollParent: HTMLElement = null
+  scrollParent: HTMLElement | null
 ) {
   const elementRect = element.getBoundingClientRect();
   let top = elementRect.y || elementRect.top;
@@ -113,7 +113,7 @@ function _getVisibleHeight(
  * @returns {HTMLElement}
  * @private
  */
-function _getScrollParent(element: HTMLElement): HTMLElement | null {
+function _getScrollParent(element: HTMLElement | null): HTMLElement | null {
   if (!element) {
     return null;
   }
@@ -138,7 +138,7 @@ function _getScrollParent(element: HTMLElement): HTMLElement | null {
 export function positionModal(
   modalOverlayOpeningPadding: number,
   modalOverlayOpeningRadius: number,
-  scrollParent: HTMLElement,
+  scrollParent: HTMLElement | null,
   targetElement: HTMLElement
 ) {
   const { y, height } = _getVisibleHeight(targetElement, scrollParent);
@@ -207,6 +207,8 @@ export function addOverlay(
 
   return () => {
     $svg.remove();
-    cancelAnimationFrame(rafId);
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+    }
   };
 }
