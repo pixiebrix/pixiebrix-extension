@@ -20,8 +20,10 @@ import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type MessengerMeta, type Sender } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
-import { WebNavigation } from "webextension-polyfill";
-import GetAllFramesCallbackDetailsItemType = WebNavigation.GetAllFramesCallbackDetailsItemType;
+import { type WebNavigation } from "webextension-polyfill";
+
+type GetAllFramesCallbackDetailsItemType =
+  WebNavigation.GetAllFramesCallbackDetailsItemType;
 
 browser.webNavigation.getAllFrames = jest.fn();
 

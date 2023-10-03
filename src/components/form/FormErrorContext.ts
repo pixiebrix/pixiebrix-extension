@@ -18,9 +18,9 @@
 import { createContext, useContext } from "react";
 
 type FormErrorContextProps = {
-  shouldUseAnalysis: boolean;
-  showUntouchedErrors: boolean;
-  showFieldActions: boolean;
+  shouldUseAnalysis?: boolean;
+  showUntouchedErrors?: boolean;
+  showFieldActions?: boolean;
   /**
    * An optional array of analysis ids to ignore.
    * @since 1.7.34

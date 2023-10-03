@@ -24,9 +24,8 @@ import {
   ENSURE_CONTENT_SCRIPT_READY,
   getTargetState,
 } from "@/contentScript/ready";
-import { Runtime } from "webextension-polyfill";
-import MessageSender = Runtime.MessageSender;
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { type Runtime } from "webextension-polyfill";
 
 const debug = console.debug.bind(console, "ensureContentScript:");
 
@@ -36,7 +35,7 @@ const debug = console.debug.bind(console, "ensureContentScript:");
  */
 const targetReadyPromiseMap = new Map<string, DeferredPromise<Event>>();
 
-export function makeSenderKey(sender: MessageSender): string {
+export function makeSenderKey(sender: Runtime.MessageSender): string {
   // Be defensive: `tab?` to handle messages from other locations (so we can ignore instead of error)
   return JSON.stringify({ tabId: sender.tab?.id, frameId: sender.frameId });
 }
@@ -50,7 +49,7 @@ function makeTargetKey(target: Target): string {
  */
 function onContentScriptReadyMessage(
   message: unknown,
-  sender: MessageSender
+  sender: Runtime.MessageSender
 ): null | undefined {
   if (
     isRemoteProcedureCallRequest(message) &&

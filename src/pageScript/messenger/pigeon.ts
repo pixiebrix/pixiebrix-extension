@@ -32,17 +32,33 @@ type SendScriptMessage<TReturn = unknown, TPayload = unknown> = (
 
 type CallbackMap = Map<number, (result: unknown) => void>;
 
+function assertCustomEvent(
+  type: string,
+  event: Event
+): asserts event is CustomEvent<{
+  id: number;
+  result?: unknown;
+  error?: unknown;
+}> {
+  if (!(event instanceof CustomEvent) || event.detail.id == null) {
+    throw new TypeError(
+      `Handler for ${type} did not provide a detail property`
+    );
+  }
+}
+
 export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   messageType: string
 ): SendScriptMessage<TReturn, TPayload> {
-  if (!globalThis.document?.defaultView) {
+  const currentWindow = globalThis.document?.defaultView;
+  if (!currentWindow) {
     return async () => {
       throw new Error("Not running in a browser context");
     };
   }
 
   let messageSeq = 0;
-  const targetOrigin = document.defaultView.origin;
+  const targetOrigin = currentWindow.origin;
   const fulfillmentCallbacks: CallbackMap = new Map();
   const rejectionCallbacks: CallbackMap = new Map();
 
@@ -51,33 +67,24 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
     callbacks: CallbackMap,
     prop: "result" | "error"
   ) => {
-    document.addEventListener(
-      type,
-      (
-        event: CustomEvent<{ id: number; result?: unknown; error?: unknown }>
-      ) => {
-        if (!event.detail) {
-          throw new Error(
-            `Handler for ${type} did not provide a detail property`
-          );
-        }
+    document.addEventListener(type, (event: Event) => {
+      assertCustomEvent(type, event);
 
-        const { id } = event.detail;
-        // This listener also receives it's own FULFILLED/REJECTED messages it sends back to the content
-        // script. So if you add any logging outside of the if, the logs are confusing.
-        const callback = callbacks.get(id);
+      const { id } = event.detail;
+      // This listener also receives it's own FULFILLED/REJECTED messages it sends back to the content
+      // script. So if you add any logging outside of the if, the logs are confusing.
+      const callback = callbacks.get(id);
 
-        if (callback != null) {
-          // Clean up callbacks
-          fulfillmentCallbacks.delete(id);
-          rejectionCallbacks.delete(id);
+      if (callback != null) {
+        // Clean up callbacks
+        fulfillmentCallbacks.delete(id);
+        rejectionCallbacks.delete(id);
 
-          // Only getting called with "result" or "error"
-          // eslint-disable-next-line security/detect-object-injection
-          callback(event.detail[prop]);
-        }
+        // Only getting called with "result" or "error"
+        // eslint-disable-next-line security/detect-object-injection
+        callback(event.detail[prop]);
       }
-    );
+    });
   };
 
   listen(`${messageType}_FULFILLED`, fulfillmentCallbacks, "result");
@@ -96,7 +103,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
 
     // As an alternative to postMessage, could potentially use cloneInto and CustomEvent's but that
     // appears to be deprecated: https://bugzilla.mozilla.org/show_bug.cgi?id=1294935
-    document.defaultView.postMessage(
+    currentWindow.postMessage(
       {
         type: messageType,
         meta: { id },

@@ -20,7 +20,7 @@
 import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 import postMessage from "@/utils/postMessage";
 import pMemoize from "p-memoize";
-import { type JsonValue, type JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 
 // Uses pMemoize to allow retries after a failure
 const loadSandbox = pMemoize(async () => {
@@ -59,18 +59,5 @@ export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
     recipient: await loadSandbox(),
     payload,
     type: "RENDER_HANDLEBARS",
-  });
-}
-
-export type ApplyJqPayload = {
-  input: JsonValue;
-  filter: string;
-};
-
-export async function applyJq(payload: ApplyJqPayload) {
-  return postMessage({
-    recipient: await loadSandbox(),
-    payload,
-    type: "APPLY_JQ",
   });
 }

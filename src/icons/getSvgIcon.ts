@@ -42,6 +42,8 @@ export default async function getSvgIcon({
   const response = await fetch(iconUrl);
   const svgText = await response.text();
 
+  // We just created an element, it can't be "undefined". `!` is fine
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return $(svgText)
     .filter("svg") // There might also be comment nodes, so they need to be filtered out
     .attr({
@@ -49,5 +51,5 @@ export default async function getSvgIcon({
       height: size,
       fill: color,
     })
-    .get(0).outerHTML;
+    .get(0)!.outerHTML;
 }

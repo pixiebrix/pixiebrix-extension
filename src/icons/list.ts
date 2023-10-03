@@ -24,7 +24,9 @@ type RequireContext = __WebpackModuleApi.RequireContext;
 function getIconMap(resolve: RequireContext): Map<string, string> {
   const icons = new Map<string, string>();
   for (const url of resolve.keys()) {
-    const iconName = url.split("/").pop().replace(".svg", "");
+    // `.split()` will always create an array with at least one item
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const iconName = url.split("/").pop()!.replace(".svg", "");
     icons.set(iconName, String(resolve(url)));
   }
 
