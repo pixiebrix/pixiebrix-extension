@@ -196,8 +196,10 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
       <Collapse in={!isEmpty(annotations)}>
         <Col xs="12" className="mb-2">
-          {annotations?.length > 0 ? (
-            annotations.map(({ message, type, actions }, index) => (
+          {isEmpty(annotations) ? (
+            <div className={styles.annotationPlaceholder} />
+          ) : (
+            annotations?.map(({ message, type, actions }, index) => (
               <FieldAnnotationAlert
                 key={`${index}-${type}`}
                 message={message}
@@ -205,8 +207,6 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
                 actions={actions}
               />
             ))
-          ) : (
-            <div className={styles.annotationPlaceholder} />
           )}
         </Col>
       </Collapse>
