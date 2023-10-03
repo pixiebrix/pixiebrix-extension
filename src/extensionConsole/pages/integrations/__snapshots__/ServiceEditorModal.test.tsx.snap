@@ -50,7 +50,7 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
             class="formGroup form-group row"
           >
             <div
-              class="mb-2 annotation-transition col-12"
+              class="mb-2 collapse col-12"
             >
               <div
                 class="annotationPlaceholder"
@@ -84,7 +84,7 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
             class="formGroup form-group row"
           >
             <div
-              class="mb-2 annotation-transition col-12"
+              class="mb-2 collapse col-12"
             >
               <div
                 class="annotationPlaceholder"
@@ -113,7 +113,7 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
             class="formGroup form-group row"
           >
             <div
-              class="mb-2 annotation-transition col-12"
+              class="mb-2 collapse col-12"
             >
               <div
                 class="annotationPlaceholder"
@@ -204,7 +204,7 @@ exports[`ServiceEditorModal Can render Pipedrive configuration modal without exi
             class="formGroup form-group row"
           >
             <div
-              class="mb-2 annotation-transition col-12"
+              class="mb-2 collapse col-12"
             >
               <div
                 class="annotationPlaceholder"
