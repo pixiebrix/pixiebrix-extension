@@ -96,19 +96,15 @@ export const ModalProvider: React.FunctionComponent<{
   useEffect(
     // On unmount, resolve the promise as if the user cancelled out of the modal
     () => () => {
-      if (callback) {
-        callback(false);
-      }
+      callback?.(false);
     },
     [callback]
   );
 
   const showConfirmation = useCallback(
     async (modalProps: ModalProps) => {
-      if (callback) {
-        // Cancel any previous modal that was showing
-        callback(false);
-      }
+      // Cancel any previous modal that was showing
+      callback?.(false);
 
       return new Promise<boolean>((resolve) => {
         setModalProps(modalProps);
@@ -124,25 +120,27 @@ export const ModalProvider: React.FunctionComponent<{
     [callback, setModalProps]
   );
 
+  if (!modalProps) {
+    return null;
+  }
+
   return (
     <ModalContext.Provider value={{ showConfirmation }}>
-      {
-        <ConfirmationModal
-          {...modalProps}
-          onSubmit={() => {
-            setIsModalVisible(false);
-            callback(true);
-          }}
-          onCancel={() => {
-            setIsModalVisible(false);
-            callback(false);
-          }}
-          isVisible={isModalVisible}
-          onExited={() => {
-            setModalProps(null);
-          }}
-        />
-      }
+      <ConfirmationModal
+        {...modalProps}
+        onSubmit={() => {
+          setIsModalVisible(false);
+          callback?.(true);
+        }}
+        onCancel={() => {
+          setIsModalVisible(false);
+          callback?.(false);
+        }}
+        isVisible={isModalVisible}
+        onExited={() => {
+          setModalProps(null);
+        }}
+      />
       {children}
     </ModalContext.Provider>
   );

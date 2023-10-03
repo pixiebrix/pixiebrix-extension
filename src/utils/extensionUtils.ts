@@ -30,9 +30,10 @@ export async function openShortcutsTab({
 }: { command?: Command } = {}): Promise<void> {
   const description =
     // eslint-disable-next-line security/detect-object-injection -- type-checked
-    browser.runtime.getManifest().commands[command]?.description;
+    browser.runtime.getManifest().commands?.[command]?.description;
+  const hash = description ? `#:~:text=${encodeURIComponent(description)}` : "";
   await browser.tabs.create({
-    url: `${SHORTCUTS_URL}#:~:text=${encodeURIComponent(description)}`,
+    url: SHORTCUTS_URL + hash,
   });
 }
 
