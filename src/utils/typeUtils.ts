@@ -52,3 +52,12 @@ export function boolean(value: unknown): boolean {
 
   return false;
 }
+
+export function assert<T>(
+  value: T,
+  assertionMessage: string
+): asserts value is Exclude<T, null | undefined> {
+  if (value == null) {
+    throw new TypeError(assertionMessage);
+  }
+}

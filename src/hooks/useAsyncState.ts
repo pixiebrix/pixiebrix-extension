@@ -26,6 +26,7 @@ import {
   loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
+import { UUID } from "@/types/stringTypes.js";
 
 type ValueFactory<T> = Promise<T> | (() => Promise<T>);
 
@@ -113,7 +114,7 @@ function useAsyncState<T = unknown>(
   // Ref to track if this is the initial mount
   const initialMountRef = useRef(true);
   // Ref to ensure promise results come back in order
-  const promiseNonceRef = useRef(null);
+  const promiseNonceRef = useRef<UUID>();
   const [state, dispatch] = useReducer(
     slice.reducer,
     initialValue === undefined

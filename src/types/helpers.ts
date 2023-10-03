@@ -50,7 +50,7 @@ export function validateUUID(uuid: unknown): UUID {
   if (uuid == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
     // we can remove this check as strictNullChecks will check the call site
-    return uuid as UUID;
+    return uuid as unknown as UUID;
   }
 
   if (typeof uuid !== "string") {
