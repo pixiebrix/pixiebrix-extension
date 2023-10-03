@@ -17,7 +17,10 @@
 
 import { localStorage } from "redux-persist-webextension-storage";
 import { createMigrate } from "redux-persist";
-import { migrations } from "@/store/extensionsMigrations";
+import {
+  inferModComponentStateVersion,
+  migrations,
+} from "@/store/extensionsMigrations";
 import { type ModComponentState } from "./extensionsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { type RegistryId } from "@/types/registryTypes";
@@ -33,11 +36,13 @@ import { initialState } from "@/store/extensionsSliceInitialState";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
 
+// TODO: test that readReduxStorage is called with inferModComponentStateVersion
 export async function getModComponentState(): Promise<ModComponentState> {
   return readReduxStorage<ModComponentState>(
     STORAGE_KEY,
     migrations,
-    initialState
+    initialState,
+    inferModComponentStateVersion
   );
 }
 
@@ -74,7 +79,8 @@ export const persistExtensionOptionsConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 2,
+  // TODO: write a test that this number is higher than the highest migration version
+  version: 3,
   // https://github.com/rt2zz/redux-persist#migrations
   migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
 };
