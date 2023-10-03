@@ -49,7 +49,7 @@ function makeTargetKey(target: Target): string {
  */
 function onContentScriptReadyMessage(
   message: unknown,
-  sender: MessageSender
+  sender: Runtime.MessageSender
 ): null | undefined {
   if (
     isRemoteProcedureCallRequest(message) &&
