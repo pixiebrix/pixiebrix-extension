@@ -22,9 +22,9 @@ import { propertiesToSchema } from "@/validators/generic";
 import { InputValidationError } from "@/bricks/errors";
 import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { applyJq } from "@/sandbox/messenger/executor";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { retryWithJitter } from "@/utils/promiseUtils";
+import { type JsonValue } from "type-fest";
 
 const jqStacktraceRegexp = /jq: error \(at \/dev\/stdin:0\): (?<message>.*)/;
 
@@ -55,6 +55,20 @@ function isTransientError(error: unknown): boolean {
     (error.message.includes(JSON_ERROR) ||
       error.message.includes(GENERIC_ERROR))
   );
+}
+
+type ApplyJqPayload = {
+  input: JsonValue;
+  filter: string;
+};
+
+async function applyJq(payload: ApplyJqPayload) {
+  const { input, filter } = payload;
+  const { default: jq } = await import(
+    /* webpackChunkName: "jq-web" */ "@pixiebrix/jq-web"
+  );
+
+  return jq.promised.json(input, filter);
 }
 
 export class JQTransformer extends TransformerABC {
