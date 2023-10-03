@@ -117,6 +117,8 @@ export function replaceLikelyVariable(
 
   const templatePartLeftOfLikelyVariable = template.slice(0, startIndex);
   const templatePartRightOfLikelyVariable = template.slice(endIndex);
+  let blockTokenLeft: "{" | "%" = "{";
+  let blockTokenRight: "}" | "%" = "}";
 
   // Check if we need to add braces before the inserted variable
   // For instance, in the case of "@foo }}"
@@ -125,18 +127,13 @@ export function replaceLikelyVariable(
   for (let i = templatePartLeftOfLikelyVariable.length - 1; i > 0; i--) {
     // eslint-disable-next-line security/detect-object-injection -- is a number
     const char = templatePartLeftOfLikelyVariable[i];
-    if (
-      char === "}" &&
-      (templatePartLeftOfLikelyVariable[i - 1] === "}" ||
-        templatePartLeftOfLikelyVariable[i - 1] === "%")
-    ) {
+    const charLeftOfChar = templatePartLeftOfLikelyVariable[i - 1];
+    if (char === "}" && (charLeftOfChar === "}" || charLeftOfChar === "%")) {
       break;
     }
 
-    if (
-      (char === "{" || char === "%") &&
-      templatePartLeftOfLikelyVariable[i - 1] === "{"
-    ) {
+    if ((char === "{" || char === "%") && charLeftOfChar === "{") {
+      blockTokenRight = char === "%" ? "%" : "}";
       shouldInsertBracesLeft = false;
       break;
     }
@@ -149,35 +146,24 @@ export function replaceLikelyVariable(
   for (let i = 0; i < templatePartRightOfLikelyVariable.length - 1; i++) {
     // eslint-disable-next-line security/detect-object-injection -- is a number
     const char = templatePartRightOfLikelyVariable[i];
-    if (
-      char === "{" &&
-      (templatePartRightOfLikelyVariable[i + 1] === "{" ||
-        templatePartRightOfLikelyVariable[i + 1] === "%")
-    ) {
+    const charRightOfChar = templatePartRightOfLikelyVariable[i + 1];
+    if (char === "{" && (charRightOfChar === "{" || charRightOfChar === "%")) {
       break;
     }
 
-    if (
-      (char === "}" || char === "%") &&
-      templatePartRightOfLikelyVariable[i + 1] === "}"
-    ) {
+    if ((char === "}" || char === "%") && charRightOfChar === "}") {
+      blockTokenLeft = char === "%" ? "%" : "{";
       shouldInsertBracesRight = false;
       break;
     }
   }
 
-  const lastBrace = templatePartLeftOfLikelyVariable.lastIndexOf("{");
-  const lastPercent = templatePartLeftOfLikelyVariable.lastIndexOf("%");
-
-  const blockToken =
-    lastBrace > lastPercent ? "{" : lastPercent > lastBrace ? "%" : "{";
-
-  const leftBraces = `{${blockToken} `;
-  const rightBrances = ` ${blockToken === "%" ? "%" : "}"}}`;
+  const leftBraces = `{${blockTokenLeft} `;
+  const rightBraces = ` ${blockTokenRight}}`;
 
   const replacementWithBraces = `${
     shouldInsertBracesLeft ? leftBraces : ""
-  }${replacement}${shouldInsertBracesRight ? rightBrances : ""}`;
+  }${replacement}${shouldInsertBracesRight ? rightBraces : ""}`;
 
   const endOfVariableIndex =
     startIndex +
