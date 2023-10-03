@@ -122,10 +122,6 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
       },
-      // Adding the redux-persist migration causes immutableCheck to run in an infinite loop
-      // redux-toolkit 1.9.6 is supposed to resolve stack overflows, but it doesn't seem to work with redux-persist
-      // TODO: open an issue with redux-toolkit
-      immutableCheck: false,
     })
       .concat(appApi.middleware)
       .concat(modDefinitionsMiddleware)
