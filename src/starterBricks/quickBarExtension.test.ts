@@ -32,8 +32,7 @@ import {
   type QuickBarConfig,
   type QuickBarDefinition,
 } from "@/starterBricks/quickBarExtension";
-import { Menus } from "webextension-polyfill";
-import ContextType = Menus.ContextType;
+import { type Menus } from "webextension-polyfill";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
@@ -61,7 +60,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
-      contexts: () => ["all"] as ContextType[],
+      contexts: () => ["all"] as Menus.ContextType[],
       targetMode: "eventTarget",
       reader: () => [rootReaderId],
       ...definitionOverrides,
