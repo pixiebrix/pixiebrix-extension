@@ -54,8 +54,7 @@ const CollapsibleFieldSection: React.FC<{
         <FontAwesomeIcon
           icon={faChevronRight}
           className={cx(styles.activeIndicator, {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `classnames` can handle it
-            [styles.active!]: expanded,
+            [styles.active ?? ""]: expanded,
           })}
         />
         {title}
