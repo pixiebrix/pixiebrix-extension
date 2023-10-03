@@ -26,7 +26,7 @@ import {
   loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
-import { UUID } from "@/types/stringTypes.js";
+import { type UUID } from "@/types/stringTypes";
 
 type ValueFactory<T> = Promise<T> | (() => Promise<T>);
 

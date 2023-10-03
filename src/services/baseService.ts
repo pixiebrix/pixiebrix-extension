@@ -16,7 +16,7 @@
  */
 
 import { isExtensionContext } from "webext-detect-page";
-import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState.js";
+import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
 import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 import {
   type ManualStorageKey,
@@ -57,7 +57,10 @@ export async function getBaseURL(): Promise<string> {
   return withoutTrailingSlash(DEFAULT_SERVICE_URL);
 }
 
-type ConfiguredHostResult = [ConfiguredHost | undefined, (url: string) => void];
+type ConfiguredHostResult = [
+  ConfiguredHost | undefined,
+  (url: string) => Promise<void>
+];
 
 /**
  * Hook for retrieving/setting the manually configured host.

@@ -20,7 +20,7 @@ import ReactCrop, { type Crop } from "react-image-crop";
 import { FormGroup, FormLabel } from "react-bootstrap";
 import { type WidgetProps } from "@rjsf/core";
 import "react-image-crop/src/ReactCrop.scss";
-import { assert } from "@/utils/typeUtils.js";
+import { assert } from "@/utils/typeUtils";
 
 const ImageCropWidget: React.VFC<WidgetProps> = ({
   schema,
