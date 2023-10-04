@@ -22,7 +22,6 @@ import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import Loader from "@/components/Loader";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
 import { clearTraces } from "@/telemetry/trace";
@@ -57,55 +56,53 @@ const LoggingSettings: React.FunctionComponent = () => {
           Brick logs are never transmitted from your browser.
         </Card.Text>
 
-        {logValues ? (
-          <Form>
-            <Form.Group controlId="logging">
-              <div>
-                <Form.Label>
-                  Log values:{" "}
-                  <i>{logValues.logValues ? "Enabled" : "Disabled"}</i>
-                </Form.Label>
-              </div>
-              <BootstrapSwitchButton
-                size="sm"
-                onstyle="info"
-                offstyle="light"
-                onlabel=" "
-                offlabel=" "
-                checked={logValues.logValues}
-                onChange={async (value) => {
-                  setLogValues({ ...logValues, logValues: value });
-                }}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="messenger-logging">
-              <div>
-                <Form.Label>
-                  Display messaging in browser console:{" "}
-                  <i>{logValues.logValues ? "Enabled" : "Disabled"}</i>
-                </Form.Label>
-              </div>
-              <BootstrapSwitchButton
-                size="sm"
-                onstyle="info"
-                offstyle="light"
-                onlabel=" "
-                offlabel=" "
-                checked={logMessenger}
-                onChange={async (toggleValue) => {
-                  setLogMessenger(toggleValue);
-                }}
-              />
-            </Form.Group>
-          </Form>
-        ) : (
-          <Loader />
-        )}
+        <Form>
+          <Form.Group controlId="logging">
+            <div>
+              <Form.Label>
+                Log values:{" "}
+                <i>{logValues?.logValues ? "Enabled" : "Disabled"}</i>
+              </Form.Label>
+            </div>
+            <BootstrapSwitchButton
+              size="sm"
+              onstyle="info"
+              offstyle="light"
+              onlabel=" "
+              offlabel=" "
+              checked={logValues?.logValues}
+              onChange={async (value) => {
+                setLogValues({ ...logValues, logValues: value });
+              }}
+            />
+          </Form.Group>
+          <hr />
+          <Card.Text className="text-info">
+            <FontAwesomeIcon icon={faInfoCircle} /> Internal messaging can be
+            temporarily logged to the browser console for debugging purposes.
+          </Card.Text>
+          <Form.Group controlId="messenger-logging">
+            <div>
+              <Form.Label>
+                Display messaging in browser console:{" "}
+                <i>{logMessenger ? "Enabled" : "Disabled"}</i>
+              </Form.Label>
+            </div>
+            <BootstrapSwitchButton
+              size="sm"
+              onstyle="info"
+              offstyle="light"
+              onlabel=" "
+              offlabel=" "
+              checked={logMessenger}
+              onChange={setLogMessenger}
+            />
+          </Form.Group>
+        </Form>
       </Card.Body>
       <Card.Footer>
         <AsyncButton variant="info" onClick={clearAction}>
-          <FontAwesomeIcon icon={faTrash} /> Clear Local Logs
+          <FontAwesomeIcon icon={faTrash} /> Clear Local Brick Logs
         </AsyncButton>
       </Card.Footer>
     </Card>
