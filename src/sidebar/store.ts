@@ -16,7 +16,16 @@
  */
 
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
-import { persistReducer, persistStore } from "redux-persist";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -62,8 +71,9 @@ const store = configureStore({
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
     return getDefaultMiddleware({
       // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+      // See https://redux-toolkit.js.org/usage/usage-guide#use-with-redux-persist
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     })
       .concat(appApi.middleware)

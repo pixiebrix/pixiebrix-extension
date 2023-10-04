@@ -32,6 +32,14 @@ import { rest } from "msw";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import { addThemeClassToDocumentRoot } from "@/themes/themeUtils";
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -72,8 +80,9 @@ const Template: Story<{
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware({
         // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+        // See https://redux-toolkit.js.org/usage/usage-guide#use-with-redux-persist
         serializableCheck: {
-          ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
       }).concat(appApi.middleware);
     },
