@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useState,
-} from "react";
+import { type SetStateAction, useCallback, useState } from "react";
+import { type Promisable } from "type-fest";
 import useAsyncEffect from "use-async-effect";
 
 export default function useUpdatableAsyncState<S = undefined>(
   getter: () => Promise<S>,
-  setter: (value: S) => Promise<void>
-): [S | undefined, Dispatch<SetStateAction<S | undefined>>] {
+  setter: (value: S) => Promisable<void>
+  // TODO: Accept dependencies
+): [S | undefined, (value: SetStateAction<S | undefined>) => Promise<void>] {
   const [value, setValue] = useState<S>();
 
   useAsyncEffect(

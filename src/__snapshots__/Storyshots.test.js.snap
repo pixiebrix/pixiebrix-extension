@@ -4161,7 +4161,7 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
           >
             <span
               className="css-1f43avz-a11yText-A11yText"
-              id="react-select-3-live-region"
+              id="react-select-2-live-region"
             />
             <span
               aria-atomic="false"
@@ -5231,7 +5231,7 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
           >
             <span
               className="css-1f43avz-a11yText-A11yText"
-              id="react-select-2-live-region"
+              id="react-select-3-live-region"
             />
             <span
               aria-atomic="false"

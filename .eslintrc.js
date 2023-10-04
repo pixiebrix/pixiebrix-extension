@@ -36,7 +36,7 @@ const restrictedZones = [
 module.exports = {
   root: true,
   extends: [
-    // Full config: https://github.com/fregante/eslint-config-pixiebrix/blob/main/index.js
+    // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
     "plugin:pixiebrix-extension/all",
   ],
@@ -80,6 +80,7 @@ module.exports = {
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
+    "@typescript-eslint/no-non-null-assertion": "error", // TODO: Move to shared config
 
     // Enabled for the IDE, but it's disabled in the `lint` script
     "import/no-cycle": "warn",
@@ -109,6 +110,17 @@ module.exports = {
       files: ["**/*.js"],
       rules: {
         "@typescript-eslint/no-unsafe-argument": "off",
+      },
+    },
+    {
+      files: [
+        "**/testEnv.js",
+        "**/testHelpers.*",
+        "**/testUtils/*",
+        "**/*.stories.tsx",
+      ],
+      rules: {
+        "unicorn/prefer-spread": "off",
       },
     },
     {

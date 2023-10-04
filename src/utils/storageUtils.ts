@@ -90,9 +90,9 @@ async function readStorage(
 
 export { readStorage };
 
-export async function setStorage(
+export async function setStorage<T>(
   storageKey: ManualStorageKey,
-  value: unknown,
+  value: T,
   area: "local" | "session" = "local"
 ): Promise<void> {
   // eslint-disable-next-line security/detect-object-injection -- type-checked constant
