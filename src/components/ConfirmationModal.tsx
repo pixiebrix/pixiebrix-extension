@@ -90,7 +90,9 @@ type Callback = (submit: boolean) => void;
 export const ModalProvider: React.FunctionComponent<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [modalProps, setModalProps] = useState<ModalProps | null>();
+  const [modalProps, setModalProps] = useState<ModalProps>({
+    message: "Are you sure?",
+  });
   const [callback, setCallback] = useState<Callback | null>();
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   useEffect(
@@ -119,10 +121,6 @@ export const ModalProvider: React.FunctionComponent<{
     },
     [callback, setModalProps]
   );
-
-  if (!modalProps) {
-    return null;
-  }
 
   return (
     <ModalContext.Provider value={{ showConfirmation }}>
