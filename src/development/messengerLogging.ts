@@ -38,9 +38,10 @@ export async function initMessengerLogging(): Promise<void> {
   }
 
   browser.storage.onChanged.addListener(async (changes) => {
-    if (changes[MESSENGER_LOGGING_KEY]) {
-      // eslint-disable-next-line security/detect-object-injection -- Constant key
-      toggleLogging(changes[MESSENGER_LOGGING_KEY].newValue);
+    // eslint-disable-next-line security/detect-object-injection -- Constant key
+    const change = changes[MESSENGER_LOGGING_KEY];
+    if (change) {
+      toggleLogging(change.newValue);
     }
   });
 }
