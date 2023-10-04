@@ -278,6 +278,19 @@ describe("replaceLikelyVariable", () => {
     expect(newCursorPosition).toEqual(endOfVariableIndex);
   });
 
+  test("inserts %}", () => {
+    const { newTemplate: actual, newCursorPosition } = replaceLikelyVariable(
+      "abc {% for foo in @bar xyz",
+      18,
+      "@bar"
+    );
+    const expectedTemplate = "abc {% for foo in @bar %} xyz";
+    const endOfVariableIndex = expectedTemplate.indexOf("@bar") + "@bar".length;
+
+    expect(actual).toEqual(expectedTemplate);
+    expect(newCursorPosition).toEqual(endOfVariableIndex);
+  });
+
   test("inserts }} only in for body", () => {
     const template = `
     {% for qux in @foo %}
