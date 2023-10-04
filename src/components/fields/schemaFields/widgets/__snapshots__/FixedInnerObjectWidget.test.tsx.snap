@@ -9,7 +9,7 @@ exports[`FixedInnerObjectWidget handle oneOf object 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation-transition col-12"
+        class="mb-2 collapse col-12"
       >
         <div
           class="annotationPlaceholder"
@@ -80,7 +80,7 @@ exports[`FixedInnerObjectWidget handle simple object 1`] = `
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 annotation-transition col-12"
+        class="mb-2 collapse col-12"
       >
         <div
           class="annotationPlaceholder"
