@@ -32,6 +32,8 @@ import { isEmpty } from "lodash";
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed
   // state version to match state type names and existing versions
+  // The typeguards shouldn't be necessary, but in certain cases, the rehydration can run
+  // on ModComponentStateV2 extensions before the _persist key is added
   0: (state) => state,
   1(state: ModComponentStateVersions & PersistedState) {
     if (isModComponentStateV0(state)) {
