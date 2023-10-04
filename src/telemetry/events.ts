@@ -46,6 +46,12 @@ export const Events = {
   IDB_RECLAIM_QUOTA: "IDBReclaimQuota",
   IDB_RECOVER_CONNECTION: "IDBRecoverConnection",
 
+  INTEGRATION_WIDGET_SELECTED: "IntegrationWidgetSelected",
+  INTEGRATION_WIDGET_CLEARED: "IntegrationWidgetCleared",
+  INTEGRATION_WIDGET_REFRESH: "IntegrationWidgetRefresh",
+  INTEGRATION_WIDGET_CONFIGURE_LINK_CLICKED:
+    "IntegrationWidgetConfigureLinkClicked",
+
   INTEGRATION_ADD: "ServiceAdd",
 
   LINK_EXTENSION: "LinkExtension",

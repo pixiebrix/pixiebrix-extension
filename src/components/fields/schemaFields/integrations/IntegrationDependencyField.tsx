@@ -24,6 +24,8 @@ import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schema
 import IntegrationDependencyWidget, {
   type IntegrationDependencyWidgetProps,
 } from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 export const IntegrationDependencyFieldDescription: React.FC<{
   schema: Schema;
@@ -42,8 +44,15 @@ export const IntegrationDependencyFieldDescription: React.FC<{
         target="_blank"
         rel="noopener noreferrer"
       >
-        <FontAwesomeIcon icon={faCloud} />
-        &nbsp;Configure additional integrations here.
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions -- only tracking the click */}
+        <span
+          onClick={() => {
+            reportEvent(Events.INTEGRATION_WIDGET_CONFIGURE_LINK_CLICKED);
+          }}
+        >
+          <FontAwesomeIcon icon={faCloud} />
+          &nbsp;Configure additional integrations here.
+        </span>
       </a>
     </span>
   </>
