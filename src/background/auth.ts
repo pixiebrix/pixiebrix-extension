@@ -28,8 +28,8 @@ import { type UUID } from "@/types/stringTypes";
 import {
   type AuthData,
   type Integration,
-  type OAuth2Context,
   type IntegrationConfig,
+  type OAuth2Context,
 } from "@/types/integrationTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -38,6 +38,8 @@ import {
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 
@@ -366,7 +368,12 @@ export async function launchOAuth2Flow(
 
   const oauth2 = service.getOAuth2Context(auth.config);
 
-  const { authorizeUrl: rawAuthorizeUrl, tokenUrl: rawTokenUrl } = oauth2;
+  const {
+    host,
+    authorizeUrl: rawAuthorizeUrl,
+    tokenUrl: rawTokenUrl,
+    client_id,
+  } = oauth2;
 
   // `tokenUrl` is not required for implicit flow
   if (!rawAuthorizeUrl) {
@@ -375,11 +382,34 @@ export async function launchOAuth2Flow(
 
   const isImplicitFlow = rawTokenUrl === undefined;
 
+  const eventPayload = {
+    integration_id: service.id,
+    auth_label: auth.label,
+    host,
+    client_id,
+    authorize_url: rawAuthorizeUrl,
+    token_url: rawTokenUrl,
+  };
+
+  reportEvent(Events.OAUTH2_LOGIN_START, eventPayload);
+
   if (isImplicitFlow) {
     console.debug("Using implicitGrantFlow because not tokenUrl was provided");
     return implicitGrantFlow(auth, oauth2);
   }
 
   console.debug("Using codeGrantFlow");
-  return codeGrantFlow(auth, oauth2);
+  try {
+    const result = await codeGrantFlow(auth, oauth2);
+    reportEvent(Events.OAUTH2_LOGIN_SUCCESS, eventPayload);
+    return result;
+  } catch (error) {
+    const errorMessage = getErrorMessage(error);
+    console.log(errorMessage);
+    reportEvent(Events.OAUTH2_LOGIN_ERROR, {
+      ...eventPayload,
+      error_message: errorMessage,
+    });
+    throw error;
+  }
 }

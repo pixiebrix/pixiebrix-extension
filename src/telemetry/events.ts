@@ -65,6 +65,10 @@ export const Events = {
 
   MODS_PAGE_VIEW: "BlueprintsPageView",
 
+  OAUTH2_LOGIN_START: "OAuth2LoginStart",
+  OAUTH2_LOGIN_SUCCESS: "OAuth2LoginSuccess",
+  OAUTH2_LOGIN_ERROR: "OAuth2LoginError",
+
   ORGANIZATION_EXTENSION_LINK: "OrganizationExtensionLink",
 
   PAGE_EDITOR_CREATE: "PageEditorCreate",
