@@ -72,7 +72,7 @@ const LoggingSettings: React.FunctionComponent = () => {
               offlabel=" "
               checked={logValues?.logValues}
               onChange={async (value) => {
-                setLogValues({ ...logValues, logValues: value });
+                await setLogValues({ ...logValues, logValues: value });
               }}
             />
           </Form.Group>

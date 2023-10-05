@@ -41,7 +41,7 @@ export async function initMessengerLogging(): Promise<void> {
     // eslint-disable-next-line security/detect-object-injection -- Constant key
     const change = changes[MESSENGER_LOGGING_KEY];
     if (change) {
-      toggleLogging(change.newValue);
+      toggleLogging(change.newValue as boolean);
     }
   });
 }
