@@ -26,7 +26,6 @@ import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
-import { getToken } from "@/background/auth";
 import {
   type IntegrationABC,
   type IntegrationConfig,
@@ -34,6 +33,7 @@ import {
 } from "@/types/integrationTypes";
 import { setContext } from "@/testUtils/detectPageMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { getToken } from "@/background/auth/getToken";
 
 jest.unmock("@/services/apiClient");
 setContext("background");

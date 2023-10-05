@@ -39,7 +39,6 @@ import {
 import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
 import serviceRegistry from "@/services/registry";
-import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
 import { performConfiguredRequest } from "@/background/requests";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
@@ -78,6 +77,10 @@ import {
   getPartnerPrincipals,
   launchAuthIntegration,
 } from "@/background/partnerIntegrations";
+import {
+  deleteCachedAuthData,
+  getCachedAuthData,
+} from "@/background/auth/authStorage";
 
 expectContext("background");
 

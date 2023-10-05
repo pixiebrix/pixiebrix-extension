@@ -21,9 +21,12 @@ import {
   type Integration,
   type SanitizedIntegrationConfig,
 } from "@/types/integrationTypes";
-import { getCachedAuthData, setCachedAuthData } from "@/background/auth";
 import { locator as serviceLocator } from "@/background/locator";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
+import {
+  getCachedAuthData,
+  setCachedAuthData,
+} from "@/background/auth/authStorage";
 
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.

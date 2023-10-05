@@ -31,11 +31,12 @@ import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "@/services/factory";
 import { readRawConfigurations } from "@/services/registry";
 import { type IntegrationConfig } from "@/types/integrationTypes";
+
 import {
+  deleteCachedAuthData,
   getCachedAuthData,
   setCachedAuthData,
-  deleteCachedAuthData,
-} from "@/background/auth";
+} from "@/background/auth/authStorage";
 
 const axiosMock = new MockAdapter(axios);
 
