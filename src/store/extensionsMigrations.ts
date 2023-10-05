@@ -37,21 +37,21 @@ export const migrations: MigrationManifest = {
   0: (state) => state,
   1(state: ModComponentStateVersions & PersistedState) {
     if (isModComponentStateV0(state)) {
-      return migrateModComponentStateV0(state);
+      return migrateModComponentStateV0ToV1(state);
     }
 
     return state;
   },
   2(state: ModComponentStateV1 & PersistedState) {
     if (isModComponentStateV1(state)) {
-      return migrateModComponentStateV1(state);
+      return migrateModComponentStateV1ToV2(state);
     }
 
     return state;
   },
 };
 
-function migrateModComponentStateV0(
+function migrateModComponentStateV0ToV1(
   state: ModComponentStateV0 & PersistedState
 ): ModComponentStateV1 & PersistedState {
   return {
@@ -62,7 +62,7 @@ function migrateModComponentStateV0(
   };
 }
 
-function migrateModComponentStateV1(
+function migrateModComponentStateV1ToV2(
   state: ModComponentStateV1 & PersistedState
 ): ModComponentStateV2 & PersistedState {
   const now = new Date().toISOString();
@@ -81,14 +81,14 @@ export function inferModComponentStateVersion(
   state: ModComponentStateVersions
 ): number {
   if (isModComponentStateV2(state)) {
-    return 3;
-  }
-
-  if (isModComponentStateV1(state)) {
     return 2;
   }
 
-  if (isModComponentStateV0(state)) {
+  if (isModComponentStateV1(state)) {
     return 1;
+  }
+
+  if (isModComponentStateV0(state)) {
+    return 0;
   }
 }
