@@ -77,10 +77,11 @@ const IntegrationsPage: React.FunctionComponent<OwnProps> = ({
     isPending: servicesPending,
   } = useIntegrationDefinitions();
 
-  const isConfiguring =
+  const isConfiguring = Boolean(
     configurationId &&
-    ((integrationToCreate && newIntegrationConfig) ||
-      (activeIntegration && activeConfiguration));
+      ((integrationToCreate && newIntegrationConfig) ||
+        (activeIntegration && activeConfiguration))
+  );
 
   const handleSave = useCallback(
     async (config: IntegrationConfig) => {

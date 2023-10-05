@@ -47,7 +47,7 @@ export const IntegrationDependencyFieldDescription: React.FC<{
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions -- only tracking the click */}
         <span
           onClick={() => {
-            reportEvent(Events.INTEGRATION_WIDGET_CONFIGURE_LINK_CLICKED);
+            reportEvent(Events.INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK);
           }}
         >
           <FontAwesomeIcon icon={faCloud} />

@@ -204,7 +204,7 @@ const IntegrationDependencyWidget: React.FC<
       // Value will be null when the selection is "cleared"
       if (value == null) {
         newState = clearIntegrationSelection(rootValues, field.name);
-        reportEvent(Events.INTEGRATION_WIDGET_CLEARED);
+        reportEvent(Events.INTEGRATION_WIDGET_CLEAR);
       } else {
         const authOption = options.find((x) => x.value === value);
         newState = setIntegrationAuthSelectionForField(
@@ -213,7 +213,7 @@ const IntegrationDependencyWidget: React.FC<
           authOption
         );
         reportEvent(
-          Events.INTEGRATION_WIDGET_SELECTED,
+          Events.INTEGRATION_WIDGET_SELECT,
           makeSelectedEventPayload(authOption, true)
         );
       }
@@ -254,7 +254,7 @@ const IntegrationDependencyWidget: React.FC<
             ({ value }) => value === match.configId
           );
           reportEvent(
-            Events.INTEGRATION_WIDGET_SELECTED,
+            Events.INTEGRATION_WIDGET_SELECT,
             makeSelectedEventPayload(authOption, false)
           );
         } else if (options.length === 1) {
@@ -272,7 +272,7 @@ const IntegrationDependencyWidget: React.FC<
           );
           await setRootValues(newState);
           reportEvent(
-            Events.INTEGRATION_WIDGET_SELECTED,
+            Events.INTEGRATION_WIDGET_SELECT,
             makeSelectedEventPayload(authOption, false)
           );
         }
@@ -316,7 +316,10 @@ const IntegrationDependencyWidget: React.FC<
       value={selectedValue}
       onChange={onChange}
       options={options}
-      refreshOptions={refreshOptions}
+      refreshOptions={() => {
+        refreshOptions();
+        reportEvent(Events.INTEGRATION_WIDGET_REFRESH);
+      }}
       isClearable
     />
   );

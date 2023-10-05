@@ -37,6 +37,10 @@ import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type IntegrationConfig } from "@/types/integrationTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { sanitizeIntegrationConfig } from "@/services/sanitizeIntegrationConfig";
+import { curry } from "lodash";
 
 const { upsertIntegrationConfig } = integrationsSlice.actions;
 
@@ -52,19 +56,23 @@ const AuthWidget: React.FunctionComponent<{
   authOptions: AuthOption[];
 
   /**
-   * Optional callback to refresh the authOptions.
+   * Callback to refresh the authOptions.
    */
-  onRefresh?: () => void;
+  onRefresh: () => void;
 }> = ({ name, integrationId, authOptions, onRefresh }) => {
   const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
 
-  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showServiceEditorModal, setShowServiceEditorModal] = useState(false);
 
   const [serviceDefinition, isFetching, error] = useAsyncState(async () => {
     const serviceDefinitions = await registry.all();
     return serviceDefinitions.find(({ id }) => id === integrationId);
   }, [integrationId]);
+
+  const sanitizeConfigArgs = curry(sanitizeIntegrationConfig)(
+    serviceDefinition
+  );
 
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === integrationId),
@@ -97,9 +105,7 @@ const AuthWidget: React.FunctionComponent<{
       // Also refresh the service locator on the background so the new auth works immediately
       await services.refresh({ remote: false, local: true });
 
-      if (onRefresh) {
-        onRefresh();
-      }
+      onRefresh();
 
       notify.success("Added configuration for integration");
 
@@ -108,33 +114,46 @@ const AuthWidget: React.FunctionComponent<{
 
       await helpers.setValue(id);
 
-      setShowServiceModal(false);
+      reportEvent(Events.AUTH_WIDGET_SELECT, {
+        integration_id: integrationId,
+        is_user_action: true,
+        is_create: true,
+        auth_label: values.label,
+        auth_sharing_type: "private",
+        auth_is_local: true,
+        ...sanitizeConfigArgs(values.config),
+      });
+
+      // The IntegrationEditorModal will call the onClose function after
+      // calling onSave, so we don't need to close anything manually here.
     },
     [
-      flushReduxPersistence,
-      helpers,
       dispatch,
-      setShowServiceModal,
       integrationId,
+      flushReduxPersistence,
       onRefresh,
+      helpers,
+      sanitizeConfigArgs,
     ]
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
 
-  const CustomMenuList = useMemo(
-    () =>
-      createMenuListWithAddButton(async () => {
-        if (serviceDefinition.isAuthorizationGrant) {
-          void launchAuthorizationGrantFlow(serviceDefinition, {
-            target: "_self",
-          });
-          return;
-        }
+  const onClickNew = useCallback(() => {
+    if (serviceDefinition.isAuthorizationGrant) {
+      void launchAuthorizationGrantFlow(serviceDefinition, {
+        target: "_self",
+      });
+      return;
+    }
 
-        setShowServiceModal(true);
-      }),
-    [setShowServiceModal, launchAuthorizationGrantFlow, serviceDefinition]
+    setShowServiceEditorModal(true);
+    reportEvent(Events.AUTH_WIDGET_SHOW_ADD_NEW);
+  }, [launchAuthorizationGrantFlow, serviceDefinition]);
+
+  const CustomMenuList = useMemo(
+    () => createMenuListWithAddButton(onClickNew),
+    [onClickNew]
   );
 
   const initialConfiguration: IntegrationConfig = useMemo(
@@ -147,14 +166,30 @@ const AuthWidget: React.FunctionComponent<{
     [integrationId]
   );
 
+  const refreshButton = (buttonText = "") => (
+    <Button
+      size="sm"
+      variant="info"
+      className={styles.actionButton}
+      onClick={() => {
+        refreshAuthOptions();
+        reportEvent(Events.AUTH_WIDGET_REFRESH);
+      }}
+      title="Refresh integration configurations"
+    >
+      <FontAwesomeIcon icon={faSync} /> {buttonText}
+    </Button>
+  );
+
   return (
     <>
-      {showServiceModal && (
+      {showServiceEditorModal && (
         <IntegrationEditorModal
           integrationConfig={initialConfiguration}
           integration={serviceDefinition}
           onClose={() => {
-            setShowServiceModal(false);
+            setShowServiceEditorModal(false);
+            reportEvent(Events.AUTH_WIDGET_HIDE_ADD_NEW);
           }}
           onSave={save}
         />
@@ -169,21 +204,10 @@ const AuthWidget: React.FunctionComponent<{
                 serviceId={integrationId}
                 authOptions={options}
                 CustomMenuList={CustomMenuList}
+                sanitizeConfigArgs={sanitizeConfigArgs}
               />
             </div>
-            {onRefresh && (
-              <div>
-                <Button
-                  size="sm"
-                  variant="info"
-                  className={styles.actionButton}
-                  onClick={refreshAuthOptions}
-                  title="Refresh integration configurations"
-                >
-                  <FontAwesomeIcon icon={faSync} />
-                </Button>
-              </div>
-            )}
+            <div>{refreshButton()}</div>
           </>
         ) : (
           <>
@@ -191,32 +215,13 @@ const AuthWidget: React.FunctionComponent<{
               variant="info"
               size="sm"
               className={styles.actionButton}
-              onClick={() => {
-                if (serviceDefinition.isAuthorizationGrant) {
-                  void launchAuthorizationGrantFlow(serviceDefinition, {
-                    target: "_self",
-                  });
-                  return;
-                }
-
-                setShowServiceModal(true);
-              }}
+              onClick={onClickNew}
               disabled={isFetching || error != null}
             >
               <FontAwesomeIcon icon={faPlus} /> Configure
             </Button>
 
-            {onRefresh && (
-              <Button
-                size="sm"
-                variant="info"
-                className={styles.actionButton}
-                onClick={refreshAuthOptions}
-                title="Refresh integration configurations"
-              >
-                <FontAwesomeIcon icon={faSync} /> Refresh
-              </Button>
-            )}
+            {refreshButton("Refresh")}
           </>
         )}
       </div>

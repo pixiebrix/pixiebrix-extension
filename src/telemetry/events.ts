@@ -16,6 +16,11 @@
  */
 
 export const Events = {
+  AUTH_WIDGET_SELECT: "AuthWidgetSelect",
+  AUTH_WIDGET_REFRESH: "AuthWidgetRefresh",
+  AUTH_WIDGET_SHOW_ADD_NEW: "AuthWidgetShowAddNew",
+  AUTH_WIDGET_HIDE_ADD_NEW: "AuthWidgetHideAddNew",
+
   BRICK_ADD: "BrickAdd",
   BRICK_DELETE: "BrickDelete",
 
@@ -46,11 +51,11 @@ export const Events = {
   IDB_RECLAIM_QUOTA: "IDBReclaimQuota",
   IDB_RECOVER_CONNECTION: "IDBRecoverConnection",
 
-  INTEGRATION_WIDGET_SELECTED: "IntegrationWidgetSelected",
-  INTEGRATION_WIDGET_CLEARED: "IntegrationWidgetCleared",
+  INTEGRATION_WIDGET_SELECT: "IntegrationWidgetSelect",
+  INTEGRATION_WIDGET_CLEAR: "IntegrationWidgetClear",
   INTEGRATION_WIDGET_REFRESH: "IntegrationWidgetRefresh",
-  INTEGRATION_WIDGET_CONFIGURE_LINK_CLICKED:
-    "IntegrationWidgetConfigureLinkClicked",
+  INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK:
+    "IntegrationWidgetConfigureLinkClick",
 
   INTEGRATION_ADD: "ServiceAdd",
 

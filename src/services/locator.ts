@@ -16,7 +16,7 @@
  */
 
 import { type RemoteIntegrationConfig } from "@/types/contract";
-import { sortBy, isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import servicesRegistry, { readRawConfigurations } from "@/services/registry";
 import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
@@ -29,44 +29,20 @@ import {
 } from "@/errors/businessErrors";
 import { DoesNotExistError } from "@/registry/memoryRegistry";
 import {
-  type Integration,
-  type IntegrationConfigArgs,
+  type IntegrationABC,
   type IntegrationConfig,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
-  type IntegrationABC,
   type SecretsConfig,
 } from "@/types/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { inputProperties } from "@/utils/schemaUtils";
-
-const REF_SECRETS = [
-  "https://app.pixiebrix.com/schemas/key#",
-  "https://app.pixiebrix.com/schemas/key",
-];
+import { sanitizeIntegrationConfig } from "@/services/sanitizeIntegrationConfig";
 
 enum Visibility {
   Private = 0,
   Team,
   BuiltIn,
-}
-
-/** Return config excluding any secrets/keys. */
-function sanitizeConfig(
-  service: Integration,
-  config: IntegrationConfigArgs
-): SanitizedConfig {
-  const result: SanitizedConfig = {} as SanitizedConfig;
-  for (const [key, type] of Object.entries(inputProperties(service.schema))) {
-    if (typeof type !== "boolean" && !REF_SECRETS.includes(type.$ref)) {
-      // Safe because we're getting from Object.entries
-      // eslint-disable-next-line security/detect-object-injection
-      result[key] = config[key];
-    }
-  }
-
-  return result;
 }
 
 export async function pixiebrixConfigurationFactory(): Promise<SanitizedIntegrationConfig> {
@@ -281,7 +257,7 @@ class LazyLocatorFactory {
         id: match.id,
         serviceId,
         proxy: match.proxy,
-        config: sanitizeConfig(service, match.config),
+        config: sanitizeIntegrationConfig(service, match.config),
       }));
   }
 
@@ -347,7 +323,7 @@ class LazyLocatorFactory {
       id: authId,
       serviceId,
       proxy: match.proxy,
-      config: sanitizeConfig(service, match.config),
+      config: sanitizeIntegrationConfig(service, match.config),
     };
   }
 }
