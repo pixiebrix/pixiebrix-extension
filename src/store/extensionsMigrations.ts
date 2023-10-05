@@ -28,7 +28,6 @@ import {
   isModComponentStateV1,
   isModComponentStateV2,
 } from "@/store/extensionsTypes";
-import { isEmpty } from "lodash";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed
