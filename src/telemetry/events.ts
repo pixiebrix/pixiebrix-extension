@@ -103,6 +103,9 @@ export const Events = {
   PIXIEBRIX_RELOAD: "PixieBrixReload",
   PIXIEBRIX_UPDATE: "PixieBrixUpdate",
 
+  SCHEMA_SELECT_WIDGET_SELECT: "SchemaSelectWidgetSelect",
+  SCHEMA_SELECT_WIDGET_CLEAR: "SchemaSelectWidgetClear",
+
   SELECT_GOOGLE_SPREADSHEET_CANCELLED: "SelectGoogleSpreadsheetCancelled",
   SELECT_GOOGLE_SPREADSHEET_ENSURE_TOKEN_START:
     "SelectGoogleSpreadsheetEnsureTokenStart",
