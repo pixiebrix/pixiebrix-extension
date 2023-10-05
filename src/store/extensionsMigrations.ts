@@ -20,23 +20,38 @@ import {
   type PersistedState,
 } from "redux-persist/es/types";
 import {
+  type ModComponentStateVersions,
   type ModComponentStateV0,
   type ModComponentStateV1,
   type ModComponentStateV2,
+  isModComponentStateV0,
+  isModComponentStateV1,
+  isModComponentStateV2,
 } from "@/store/extensionsTypes";
-import { isEmpty } from "lodash";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed
   // state version to match state type names and existing versions
+  // The typeguards shouldn't be necessary, but in certain cases, the rehydration can run
+  // on ModComponentStateV2 extensions before the _persist key is added
   0: (state) => state,
-  1: (state: ModComponentStateV0 & PersistedState) =>
-    migrateModComponentStateV0(state),
-  2: (state: ModComponentStateV1 & PersistedState) =>
-    migrateModComponentStateV1(state),
+  1(state: ModComponentStateVersions & PersistedState) {
+    if (isModComponentStateV0(state)) {
+      return migrateModComponentStateV0ToV1(state);
+    }
+
+    return state;
+  },
+  2(state: ModComponentStateV1 & PersistedState) {
+    if (isModComponentStateV1(state)) {
+      return migrateModComponentStateV1ToV2(state);
+    }
+
+    return state;
+  },
 };
 
-function migrateModComponentStateV0(
+function migrateModComponentStateV0ToV1(
   state: ModComponentStateV0 & PersistedState
 ): ModComponentStateV1 & PersistedState {
   return {
@@ -47,7 +62,7 @@ function migrateModComponentStateV0(
   };
 }
 
-function migrateModComponentStateV1(
+function migrateModComponentStateV1ToV2(
   state: ModComponentStateV1 & PersistedState
 ): ModComponentStateV2 & PersistedState {
   const now = new Date().toISOString();
@@ -63,22 +78,17 @@ function migrateModComponentStateV1(
 }
 
 export function inferModComponentStateVersion(
-  state: ModComponentStateV0 | ModComponentStateV1 | ModComponentStateV2
+  state: ModComponentStateVersions
 ): number {
-  if (isEmpty(state.extensions)) {
-    return 3;
-  }
-
-  if (Array.isArray(state.extensions)) {
-    if (
-      "createTimestamp" in state.extensions[0] &&
-      "updateTimestamp" in state.extensions[0]
-    ) {
-      return 3;
-    }
-
+  if (isModComponentStateV2(state)) {
     return 2;
   }
 
-  return 1;
+  if (isModComponentStateV1(state)) {
+    return 1;
+  }
+
+  if (isModComponentStateV0(state)) {
+    return 0;
+  }
 }
