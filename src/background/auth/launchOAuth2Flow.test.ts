@@ -42,6 +42,10 @@ jest.mock("@/background/auth/implicitGrantFlow", () => ({
 const reportEventMock = jest.mocked(reportEvent);
 
 describe("oauth2 event reporting", () => {
+  beforeEach(() => {
+    reportEventMock.mockReset();
+  });
+
   it("reports start and success", async () => {
     const oauth2Context: OAuth2Context = {
       host: "www.fakehost.com",
