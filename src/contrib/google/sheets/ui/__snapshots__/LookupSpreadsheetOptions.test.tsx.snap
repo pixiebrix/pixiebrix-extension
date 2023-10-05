@@ -12,7 +12,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -68,7 +68,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -157,7 +157,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -285,7 +285,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -348,7 +348,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -476,7 +476,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -538,7 +538,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -633,7 +633,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -689,7 +689,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -778,7 +778,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -906,7 +906,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -969,7 +969,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1097,7 +1097,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1161,7 +1161,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1256,7 +1256,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1345,7 +1345,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1473,7 +1473,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1536,7 +1536,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1664,7 +1664,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1726,7 +1726,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -1821,7 +1821,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -2036,7 +2036,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -2176,7 +2176,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -2304,7 +2304,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -2367,7 +2367,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -2495,7 +2495,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -2557,7 +2557,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -2652,7 +2652,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -2867,7 +2867,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -3007,7 +3007,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -3135,7 +3135,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -3198,7 +3198,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -3326,7 +3326,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"
@@ -3390,7 +3390,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
         class="formGroup form-group row"
       >
         <div
-          class="mb-2 annotation-transition col-12"
+          class="mb-2 collapse col-12"
         >
           <div
             class="annotationPlaceholder"

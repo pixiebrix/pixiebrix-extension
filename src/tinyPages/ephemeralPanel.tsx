@@ -25,6 +25,7 @@ import { render } from "react-dom";
 import EphemeralPanel from "@/bricks/transformers/temporaryInfo/EphemeralPanel";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/bricks/transformers/temporaryInfo/messenger/registration";
 import "iframe-resizer/js/iframeResizer.contentWindow";
 
@@ -33,6 +34,7 @@ function init(): void {
   render(<EphemeralPanel />, document.querySelector("#container"));
 }
 
+void initMessengerLogging();
 registerMessenger();
 registerContribBlocks();
 registerBuiltinBlocks();

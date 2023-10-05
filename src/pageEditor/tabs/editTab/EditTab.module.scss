@@ -20,17 +20,6 @@
   display: flex;
   align-items: stretch;
   height: 100%;
-
-  :global(.annotation-transition) {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 500ms ease 0s;
-
-    &:global(.show) {
-      transition: max-height 500ms ease 1s;
-      max-height: fit-content;
-    }
-  }
 }
 
 .nodePanel {

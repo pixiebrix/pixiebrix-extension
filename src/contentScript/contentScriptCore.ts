@@ -20,6 +20,7 @@ import "./contentScript.scss";
 import "@/extensionContext";
 
 // Normal imports
+import { initMessengerLogging } from "@/development/messengerLogging";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
@@ -51,6 +52,7 @@ onUncaughtError((error) => {
 export async function init(): Promise<void> {
   console.debug(`contentScriptCore: init, location: ${location.href}`);
 
+  void initMessengerLogging();
   registerMessenger();
   registerExternalMessenger();
   registerBuiltinBlocks();

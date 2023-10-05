@@ -23,6 +23,7 @@ import {
   Form as BootstrapForm,
   type FormControlProps,
   Row,
+  Collapse,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
 import cx from "classnames";
@@ -193,25 +194,22 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
-      <Col
-        xs="12"
-        className={cx("mb-2", "annotation-transition", {
-          show: !isEmpty(annotations),
-        })}
-      >
-        {annotations?.length ? (
-          annotations.map(({ message, type, actions }, index) => (
-            <FieldAnnotationAlert
-              key={`${index}-${type}`}
-              message={message}
-              type={type}
-              actions={actions}
-            />
-          ))
-        ) : (
-          <div className={styles.annotationPlaceholder} />
-        )}
-      </Col>
+      <Collapse in={!isEmpty(annotations)}>
+        <Col xs="12" className="mb-2">
+          {isEmpty(annotations) ? (
+            <div className={styles.annotationPlaceholder} />
+          ) : (
+            annotations?.map(({ message, type, actions }, index) => (
+              <FieldAnnotationAlert
+                key={`${index}-${type}`}
+                message={message}
+                type={type}
+                actions={actions}
+              />
+            ))
+          )}
+        </Col>
+      </Collapse>
       {label && (
         <BootstrapForm.Label
           column
