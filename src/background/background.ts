@@ -24,6 +24,7 @@ import "@/development/errorsBadge";
 // Required for MV3; Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
 
+import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/background/messenger/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
@@ -45,6 +46,7 @@ import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
 
 void initLocator();
+void initMessengerLogging();
 registerMessenger();
 registerExternalMessenger();
 initBrowserAction();

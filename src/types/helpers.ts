@@ -50,7 +50,8 @@ export function validateUUID(uuid: unknown): UUID {
   if (uuid == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
     // we can remove this check as strictNullChecks will check the call site
-    return uuid as UUID;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    return uuid as unknown as UUID;
   }
 
   if (typeof uuid !== "string") {

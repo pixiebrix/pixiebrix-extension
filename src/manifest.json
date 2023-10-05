@@ -22,6 +22,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*"],
+      "exclude_matches": ["https://*.googleapis.com/*"],
       "js": ["contentScript.js"],
       "css": ["contentScript.css"],
       "all_frames": true,
@@ -31,6 +32,7 @@
     {
       "matches": ["https://*/*"],
       "js": ["loadActivationEnhancements.js"],
+      "exclude_matches": ["https://*.googleapis.com/*"],
       "run_at": "document_end"
     }
   ],

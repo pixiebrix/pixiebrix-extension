@@ -86,6 +86,8 @@ expectContext("background");
 
 declare global {
   interface MessengerMethods {
+    GOOGLE_DRIVE_IS_LOGGED_IN: typeof sheets.isLoggedIn;
+
     GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: typeof sheets.getAllSpreadsheets;
     GOOGLE_SHEETS_GET_SPREADSHEET: typeof sheets.getSpreadsheet;
     GOOGLE_SHEETS_GET_TAB_NAMES: typeof sheets.getTabNames;
@@ -167,6 +169,8 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
+    GOOGLE_DRIVE_IS_LOGGED_IN: sheets.isLoggedIn,
+
     GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: sheets.getAllSpreadsheets,
     GOOGLE_SHEETS_GET_SPREADSHEET: sheets.getSpreadsheet,
     GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,

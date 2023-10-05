@@ -15,30 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext, useContext } from "react";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
 
-type FormErrorContextProps = {
-  shouldUseAnalysis?: boolean;
-  showUntouchedErrors?: boolean;
-  showFieldActions?: boolean;
-  /**
-   * An optional array of analysis ids to ignore.
-   * @since 1.7.34
-   */
-  ignoreAnalysisIds?: string[];
+// See https://redux-toolkit.js.org/api/getDefaultMiddleware#customizing-the-included-middleware
+const defaultMiddlewareConfig = {
+  serializableCheck: {
+    // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+    // See https://redux-toolkit.js.org/usage/usage-guide#use-with-redux-persist
+    ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+  },
 };
 
-const defaultValue: FormErrorContextProps = {
-  shouldUseAnalysis: false,
-  showUntouchedErrors: false,
-  showFieldActions: false,
-  ignoreAnalysisIds: [],
-};
-
-export const FormErrorContext =
-  createContext<FormErrorContextProps>(defaultValue);
-
-export function useFormErrorSettings(): FormErrorContextProps {
-  const errorContext = useContext(FormErrorContext);
-  return errorContext ?? defaultValue;
-}
+export default defaultMiddlewareConfig;

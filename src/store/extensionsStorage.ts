@@ -17,7 +17,10 @@
 
 import { localStorage } from "redux-persist-webextension-storage";
 import { createMigrate } from "redux-persist";
-import { migrations } from "@/store/extensionsMigrations";
+import {
+  inferModComponentStateVersion,
+  migrations,
+} from "@/store/extensionsMigrations";
 import { type ModComponentState } from "./extensionsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { type RegistryId } from "@/types/registryTypes";
@@ -37,7 +40,8 @@ export async function getModComponentState(): Promise<ModComponentState> {
   return readReduxStorage<ModComponentState>(
     STORAGE_KEY,
     migrations,
-    initialState
+    initialState,
+    inferModComponentStateVersion
   );
 }
 

@@ -28,8 +28,11 @@ import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
 import { extractIntegrationIds } from "@/services/integrationUtils";
-import { isEmpty, isEqual } from "lodash";
-import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidget";
+import { isEmpty, isEqual, unset } from "lodash";
+import {
+  type SelectLike,
+  type SelectWidgetOnChange,
+} from "@/components/form/widgets/SelectWidget";
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import {
   type Expression,
@@ -150,9 +153,16 @@ function setIntegrationAuthSelectionForField(
 
 function clearIntegrationSelection(
   state: IntegrationsFormSlice,
-  fieldName: string
+  fieldName: string,
+  isRequired?: boolean
 ): IntegrationsFormSlice {
-  const nextState = setIn(state, fieldName, null);
+  const nextState = produce(state, (draft) => {
+    if (isRequired) {
+      setIn(draft, fieldName, null);
+    } else {
+      unset(draft, fieldName);
+    }
+  });
   return produceExcludeUnusedDependencies(nextState);
 }
 
@@ -176,7 +186,7 @@ const makeSelectedEventPayload = (
 const IntegrationDependencyWidget: React.FC<
   IntegrationDependencyWidgetProps
 > = ({ detectDefault = true, ...props }) => {
-  const { schema } = props;
+  const { schema, isRequired } = props;
   const { data: authOptions, refetch: refreshOptions } = fallbackValue(
     useAuthOptions(),
     NO_AUTH_OPTIONS
@@ -203,7 +213,11 @@ const IntegrationDependencyWidget: React.FC<
       let newState: IntegrationsFormSlice;
       // Value will be null when the selection is "cleared"
       if (value == null) {
-        newState = clearIntegrationSelection(rootValues, field.name);
+        newState = clearIntegrationSelection(
+          rootValues,
+          field.name,
+          isRequired
+        );
         reportEvent(Events.INTEGRATION_WIDGET_CLEAR);
       } else {
         const authOption = options.find((x) => x.value === value);
@@ -320,7 +334,7 @@ const IntegrationDependencyWidget: React.FC<
         refreshOptions();
         reportEvent(Events.INTEGRATION_WIDGET_REFRESH);
       }}
-      isClearable
+      isClearable={!isRequired}
     />
   );
 };

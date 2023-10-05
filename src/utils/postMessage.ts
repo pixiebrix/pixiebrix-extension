@@ -34,12 +34,17 @@ import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type JsonValue } from "type-fest";
 import { type SerializedError } from "@/types/messengerTypes";
+import { getMessengerLogging } from "@/development/messengerLogging";
 
 const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
-const LOGGING_ENABLED = process.env.WEBEXT_MESSENGER_LOGGING === "true";
+// Disable logging by default
+let log = (...args: unknown[]) => {};
+void getMessengerLogging().then((setting) => {
+  log = console.debug;
+});
 
 export type RequestPacket = {
   type: string;
@@ -77,9 +82,7 @@ export default async function postMessage({
       { once: true }
     );
 
-    if (LOGGING_ENABLED) {
-      console.debug("SANDBOX:", type, "Posting payload:", payload);
-    }
+    log("SANDBOX:", type, "Posting payload:", payload);
 
     const packet: RequestPacket = {
       type,
@@ -110,23 +113,16 @@ export function addPostMessageListener(
       return;
     }
 
-    // Only log with process.env.WEBEXT_MESSENGER_LOGGING to avoid large logging payloads
     try {
-      if (LOGGING_ENABLED) {
-        console.debug("SANDBOX:", type, "Received payload:", data.payload);
-      }
+      log("SANDBOX:", type, "Received payload:", data.payload);
 
       const response = await listener(data.payload);
 
-      if (LOGGING_ENABLED) {
-        console.debug("SANDBOX:", type, "Responding with", response);
-      }
+      log("SANDBOX:", type, "Responding with", response);
 
       source.postMessage({ response } satisfies ResponsePacket);
     } catch (error) {
-      if (LOGGING_ENABLED) {
-        console.debug("SANDBOX:", type, "Throwing", error);
-      }
+      log("SANDBOX:", type, "Throwing", error);
 
       source.postMessage({
         error: serializeError(error),

@@ -32,6 +32,7 @@ import { rest } from "msw";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import { addThemeClassToDocumentRoot } from "@/themes/themeUtils";
+import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -70,14 +71,9 @@ const Template: Story<{
       integrations: integrationsSlice.getInitialState(),
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-      return getDefaultMiddleware({
-        // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-        serializableCheck: {
-          ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
-        },
-      }).concat(appApi.middleware);
-      /* eslint-enable unicorn/prefer-spread */
+      return getDefaultMiddleware(defaultMiddlewareConfig).concat(
+        appApi.middleware
+      );
     },
   });
 

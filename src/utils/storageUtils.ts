@@ -63,11 +63,18 @@ export type StorageKey = ManualStorageKey | ReduxStorageKey;
  * @param area the storage area
  * @see readManagedStorage
  */
-export async function readStorage<T = unknown>(
+// The overload ensures that the return value is `undefined` when no `defaultValue` is specified
+async function readStorage<T>(storageKey: StorageKey): Promise<T | undefined>;
+async function readStorage<T>(
   storageKey: StorageKey,
-  defaultValue?: T,
+  defaultValue: T,
+  area?: "local" | "session"
+): Promise<T>;
+async function readStorage(
+  storageKey: StorageKey,
+  defaultValue?: unknown,
   area: "local" | "session" = "local"
-): Promise<T | undefined> {
+): Promise<unknown> {
   // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
   // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
   // eslint-disable-next-line security/detect-object-injection -- type-checked
@@ -75,15 +82,17 @@ export async function readStorage<T = unknown>(
 
   if (Object.hasOwn(result, storageKey)) {
     // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwn
-    return result[storageKey] as T;
+    return result[storageKey];
   }
 
   return defaultValue;
 }
 
-export async function setStorage(
+export { readStorage };
+
+export async function setStorage<T>(
   storageKey: ManualStorageKey,
-  value: unknown,
+  value: T,
   area: "local" | "session" = "local"
 ): Promise<void> {
   // eslint-disable-next-line security/detect-object-injection -- type-checked constant
@@ -110,7 +119,7 @@ export async function readReduxStorage<T extends object>(
   defaultValue?: T,
   inferPersistedVersion?: (state: UnknownObject) => number
 ): Promise<T | undefined> {
-  const storageValue = await readStorage(storageKey);
+  const storageValue = await readStorage<T>(storageKey);
 
   if (typeof storageValue !== "string") {
     if (storageValue !== undefined) {

@@ -22,6 +22,7 @@ import "@/utils/layout.scss";
 import "@/extensionContext";
 import "@/development/darkMode";
 
+import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/pageEditor/messenger/registration";
 
 import ReactDOM from "react-dom";
@@ -34,6 +35,7 @@ import { markAppStart } from "@/utils/performance";
 
 markAppStart();
 
+void initMessengerLogging();
 registerMessenger();
 void initGoogle();
 watchNavigation();

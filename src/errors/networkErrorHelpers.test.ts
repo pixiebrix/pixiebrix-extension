@@ -56,7 +56,7 @@ describe("isSingleObjectBadRequestError", () => {
 
 describe("selectNetworkErrorMessage", () => {
   test("handles non-axios error", async () => {
-    expect(selectNetworkErrorMessage(new Error("test"))).toBeUndefined();
+    expect(selectNetworkErrorMessage(new Error("test"))).toBeNull();
   });
 
   test("handles network error", async () => {
