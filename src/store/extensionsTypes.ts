@@ -70,7 +70,7 @@ export function isModComponentStateV1(
   return (
     Array.isArray(state.extensions) &&
     !isEmpty(state.extensions) &&
-    !("timestamp" in state.extensions[0])
+    !("createTimestamp" in state.extensions[0])
   );
 }
 
@@ -79,6 +79,6 @@ export function isModComponentStateV2(
 ): state is ModComponentStateV2 {
   return (
     Array.isArray(state.extensions) &&
-    (isEmpty(state.extensions) || "timestamp" in state.extensions[0])
+    (isEmpty(state.extensions) || "createTimestamp" in state.extensions[0])
   );
 }

@@ -26,6 +26,7 @@ import {
   type ModComponentStateV2,
   isModComponentStateV0,
   isModComponentStateV1,
+  isModComponentStateV2,
 } from "@/store/extensionsTypes";
 import { isEmpty } from "lodash";
 
@@ -80,20 +81,15 @@ function migrateModComponentStateV1(
 export function inferModComponentStateVersion(
   state: ModComponentStateVersions
 ): number {
-  if (isEmpty(state.extensions)) {
+  if (isModComponentStateV2(state)) {
     return 3;
   }
 
-  if (Array.isArray(state.extensions)) {
-    if (
-      "createTimestamp" in state.extensions[0] &&
-      "updateTimestamp" in state.extensions[0]
-    ) {
-      return 3;
-    }
-
+  if (isModComponentStateV1(state)) {
     return 2;
   }
 
-  return 1;
+  if (isModComponentStateV0(state)) {
+    return 1;
+  }
 }
