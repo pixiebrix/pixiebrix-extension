@@ -58,8 +58,8 @@ describe("getModComponentState", () => {
 });
 
 describe("persistExtensionOptionsConfig", () => {
-  test("version is 1 higher than the highest migration version", () => {
+  test("version is the highest migration version", () => {
     const maxVersion = getMaxMigrationsVersion(migrations);
-    expect(persistExtensionOptionsConfig.version).toBe(maxVersion + 1);
+    expect(persistExtensionOptionsConfig.version).toBe(maxVersion);
   });
 });

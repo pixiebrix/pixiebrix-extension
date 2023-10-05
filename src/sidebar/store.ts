@@ -31,6 +31,7 @@ import integrationsSlice, {
 } from "@/store/integrations/integrationsSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { boolean } from "@/utils/typeUtils";
+import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -60,12 +61,7 @@ const store = configureStore({
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-    return getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
-      },
-    })
+    return getDefaultMiddleware(defaultMiddlewareConfig)
       .concat(appApi.middleware)
       .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
