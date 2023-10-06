@@ -44,7 +44,7 @@ const NodeActionsView: React.VFC<NodeActionsProps> = ({
 }) => (
   <div
     className={cx(styles.root, {
-      [styles.biggerActions]: showBiggerActions && !isEmpty(nodeActions),
+      [styles.biggerActions ?? ""]: showBiggerActions && !isEmpty(nodeActions),
     })}
   >
     {nodeActions.map(({ name, icon, onClick, tooltipText }) => (

@@ -52,7 +52,9 @@ const FormPreviewFieldTemplate: React.FC<FormPreviewFieldTemplateProps> = ({
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- TODO
     <div
       onClick={onClick}
-      className={cx(styles.root, className, { [styles.isActive]: isActive })}
+      className={cx(styles.root, className, {
+        [styles.isActive ?? ""]: isActive,
+      })}
       role="group"
     >
       <FieldComponent {...rest} />

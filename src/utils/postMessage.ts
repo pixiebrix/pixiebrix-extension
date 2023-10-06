@@ -35,6 +35,7 @@ import { deserializeError, serializeError } from "serialize-error";
 import { type JsonValue } from "type-fest";
 import { type SerializedError } from "@/types/messengerTypes";
 import { getMessengerLogging } from "@/development/messengerLogging";
+import { assert } from "./typeUtils";
 
 const TIMEOUT_MS = 3000;
 
@@ -48,7 +49,7 @@ void getMessengerLogging().then((setting) => {
 
 export type RequestPacket = {
   type: string;
-  payload: Payload;
+  payload?: Payload;
 };
 
 type ResponsePacket = { response: Payload } | { error: SerializedError };
@@ -59,7 +60,7 @@ export interface PostMessageInfo {
   recipient: Window;
 }
 
-type PostMessageListener = (payload: Payload) => Promise<Payload>;
+type PostMessageListener = (payload?: Payload) => Promise<Payload>;
 
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage({
@@ -112,6 +113,8 @@ export function addPostMessageListener(
     if (data?.type !== type) {
       return;
     }
+
+    assert(source, "No source port was provided");
 
     try {
       log("SANDBOX:", type, "Received payload:", data.payload);

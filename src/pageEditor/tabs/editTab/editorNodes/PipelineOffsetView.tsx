@@ -35,7 +35,7 @@ const PipelineOffsetView: React.VFC<PipelineOffsetViewProps> = ({
         <div
           key={n}
           className={cx(styles.pipeLine, {
-            [styles.active]: active,
+            [styles.active ?? ""]: active,
           })}
         />
       ))}

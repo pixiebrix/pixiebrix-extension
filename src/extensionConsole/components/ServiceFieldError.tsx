@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { isEmpty } from "lodash";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 
@@ -31,7 +30,7 @@ const ServiceFieldError: React.FC<{
   // eslint-disable-next-line security/detect-object-injection -- index
   const fieldError = servicesError[fieldIndex];
 
-  let errorMessage: string = null;
+  let errorMessage: string | null = null;
 
   if (typeof fieldError === "string") {
     errorMessage = fieldError;
@@ -45,7 +44,7 @@ const ServiceFieldError: React.FC<{
     errorMessage = fieldError.configId;
   }
 
-  if (isEmpty(errorMessage)) {
+  if (!errorMessage) {
     return null;
   }
 
