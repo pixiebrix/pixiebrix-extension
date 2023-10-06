@@ -28,6 +28,9 @@ import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { sheets } from "@/background/messenger/api";
 import { type AsyncState } from "@/types/sliceTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
+import { type Except } from "type-fest";
+import { joinName } from "@/utils/formUtils";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
@@ -37,7 +40,9 @@ type GoogleSheetState = {
 
 const RequireGoogleSheet: React.FC<{
   blockConfigPath: string;
-  children: (props: GoogleSheetState) => ReactElement;
+  children: (
+    props: Except<GoogleSheetState, "spreadsheetFieldSchema">
+  ) => ReactElement;
 }> = ({ blockConfigPath, children }) => {
   const googleAccountAsyncState = useGoogleAccount();
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
@@ -89,7 +94,16 @@ const RequireGoogleSheet: React.FC<{
 
   return (
     <AsyncStateGate state={resultAsyncState}>
-      {({ data }) => children(data)}
+      {({ data: { spreadsheetFieldSchema, ...others } }) => (
+        <>
+          <SchemaField
+            name={joinName(blockConfigPath, "spreadsheetId")}
+            schema={spreadsheetFieldSchema}
+            isRequired
+          />
+          {children(others)}
+        </>
+      )}
     </AsyncStateGate>
   );
 };
