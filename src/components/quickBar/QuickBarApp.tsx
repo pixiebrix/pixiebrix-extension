@@ -112,7 +112,12 @@ const KBarComponent: React.FC = () => {
 
   return (
     <KBarPortal>
-      <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
+      <KBarPositioner
+        style={{
+          zIndex: MAX_Z_INDEX,
+          backgroundColor: "transparent",
+        }}
+      >
         <KBarAnimator style={animatorStyle}>
           {/*
               Wrap the quickbar in a shadow dom. This isolates the quickbar from styles being passed down from
