@@ -16,9 +16,9 @@
  */
 
 import {
-  AuthData,
-  Integration,
-  IntegrationConfig,
+  type AuthData,
+  type Integration,
+  type IntegrationConfig,
 } from "@/types/integrationTypes";
 import { expectContext } from "@/utils/expectContext";
 import axios from "axios";
