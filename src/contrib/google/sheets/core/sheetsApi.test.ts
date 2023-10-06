@@ -49,8 +49,8 @@ jest.mock("@/contrib/google/initGoogle", () => ({
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
-jest.mock("@/background/auth", () => ({
-  ...jest.requireActual("@/background/auth"),
+jest.mock("@/background/auth/authStorage", () => ({
+  ...jest.requireActual("@/background/auth/authStorage"),
   deleteCachedAuthData: jest.fn(),
 }));
 

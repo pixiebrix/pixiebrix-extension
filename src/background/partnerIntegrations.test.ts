@@ -60,7 +60,7 @@ jest.mock("@/services/registry", () => {
   };
 });
 
-jest.mock("@/background/auth", () => ({
+jest.mock("@/background/auth/authStorage", () => ({
   setCachedAuthData: jest.fn().mockResolvedValue(undefined),
 }));
 

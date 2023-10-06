@@ -29,10 +29,7 @@ import { setIn, useField, useFormikContext } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
 import { extractIntegrationIds } from "@/services/integrationUtils";
 import { isEmpty, isEqual, unset } from "lodash";
-import {
-  type SelectLike,
-  type SelectWidgetOnChange,
-} from "@/components/form/widgets/SelectWidget";
+import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidget";
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import {
   type Expression,
@@ -168,16 +165,24 @@ function clearIntegrationSelection(
 
 const NO_AUTH_OPTIONS = Object.freeze([] as AuthOption[]);
 
+// The only reason these inputs are optional is for tests, need to investigate better mocking instead
+// @see BotOptions.test.ts
 const makeSelectedEventPayload = (
-  authOption: AuthOption,
-  isUserAction: boolean
-) => ({
-  integration_id: authOption.serviceId,
-  is_user_action: isUserAction,
-  auth_label: authOption.label,
-  auth_sharing_type: authOption.sharingType,
-  auth_is_local: authOption.local,
-});
+  authOption?: AuthOption,
+  isUserAction?: boolean
+) => {
+  if (!authOption) {
+    return {};
+  }
+
+  return {
+    integration_id: authOption.serviceId,
+    is_user_action: isUserAction,
+    auth_label: authOption.label,
+    auth_sharing_type: authOption.sharingType,
+    auth_is_local: authOption.local,
+  };
+};
 
 /**
  * A schema-driven Service Selector that automatically maintains the services form state (and output keys)

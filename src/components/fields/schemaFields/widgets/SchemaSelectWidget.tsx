@@ -73,7 +73,7 @@ const SchemaSelectWidget: React.VFC<
   });
 
   const selectedValue = options.find((x) => x.value === value) ?? {
-    label: "",
+    label: null,
     value: null,
   };
 

@@ -41,7 +41,7 @@ const greenhouseIntegration = fromJS(greenhouseDefintion as any);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
 const microsoftIntegration = fromJS(microsoftDefinition as any);
 
-jest.mock("@/background/auth", () => ({
+jest.mock("@/background/auth/authStorage", () => ({
   getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
   setCachedAuthData: jest.fn(),
 }));

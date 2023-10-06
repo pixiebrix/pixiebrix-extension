@@ -43,10 +43,13 @@ const mockGetToken = getToken as jest.Mock;
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
-jest.mock("@/background/auth", () => ({
+jest.mock("@/background/auth/authStorage", () => ({
   getCachedAuthData: jest.fn().mockResolvedValue(null),
-  getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
   deleteCachedAuthData: jest.fn().mockResolvedValue(undefined),
+}));
+jest.mock("@/background/auth/getToken", () => ({
+  __esModule: true,
+  getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
 }));
 jest.mock("@/auth/token");
 jest.mock("@/services/locator");
