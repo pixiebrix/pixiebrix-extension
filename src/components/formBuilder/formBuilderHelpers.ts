@@ -128,8 +128,8 @@ export const moveStringInArray = (
   const copy = [...array];
   const fromIndex = copy.indexOf(stringToBeMoved);
   const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-  // eslint-disable-next-line security/detect-object-injection
-  [copy[fromIndex], copy[toIndex]] = [copy[toIndex], copy[fromIndex]];
+  // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion -- checked with indexOf
+  [copy[fromIndex], copy[toIndex]] = [copy[toIndex]!, copy[fromIndex]!];
   return copy;
 };
 

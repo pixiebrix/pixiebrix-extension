@@ -53,7 +53,7 @@ function SingleValue(props: OptionProps<IconOption, false>): JSX.Element {
 }
 
 interface OwnProps {
-  value: { id: string; library: IconLibrary };
+  value: { id: string; library: IconLibrary } | null;
   isClearable?: boolean;
   onChange: (option: IconOption | null) => void;
   disabled?: boolean;
