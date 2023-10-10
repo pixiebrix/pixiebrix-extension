@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type UUID } from "@/types/stringTypes";
+import { getToken } from "@/background/auth/getToken";
+import { uuidv4 } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { getToken } from "./auth";
-import { type UUID } from "@/types/stringTypes";
-import { uuidv4 } from "@/types/helpers";
 
 const axiosMock = new MockAdapter(axios);
 

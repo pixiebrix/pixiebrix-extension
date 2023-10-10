@@ -16,7 +16,6 @@
  */
 
 import refreshPKCEToken from "@/background/refreshToken";
-import { getCachedAuthData, setCachedAuthData } from "@/background/auth";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { type IntegrationConfig } from "@/types/integrationTypes";
@@ -28,6 +27,10 @@ import aaDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml"
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import greenhouseDefintion from "@contrib/integrations/greenhouse.yaml";
 import microsoftDefinition from "@contrib/integrations/microsoft-oauth2-pkce.yaml";
+import {
+  getCachedAuthData,
+  setCachedAuthData,
+} from "@/background/auth/authStorage";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
 const aaIntegration = fromJS(aaDefinition as any);
@@ -38,7 +41,7 @@ const greenhouseIntegration = fromJS(greenhouseDefintion as any);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
 const microsoftIntegration = fromJS(microsoftDefinition as any);
 
-jest.mock("@/background/auth", () => ({
+jest.mock("@/background/auth/authStorage", () => ({
   getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
   setCachedAuthData: jest.fn(),
 }));

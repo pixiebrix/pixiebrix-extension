@@ -25,8 +25,11 @@ import { isExpression } from "@/utils/expressionUtils";
 import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 import Creatable from "react-select/creatable";
 import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 export type StringOption = {
+  label: string;
   value: string;
 };
 
@@ -70,14 +73,29 @@ const SchemaSelectWidget: React.VFC<
   });
 
   const selectedValue = options.find((x) => x.value === value) ?? {
+    label: null,
     value: null,
   };
 
   const selectOnChange = useCallback(
     async (option: StringOption) => {
-      await setValue(option?.value);
+      if (option == null) {
+        await setValue(null);
+        reportEvent(Events.SCHEMA_SELECT_WIDGET_CLEAR, {
+          field_name: name,
+          schema_title: schema.title,
+        });
+      } else {
+        await setValue(option.value);
+        reportEvent(Events.SCHEMA_SELECT_WIDGET_SELECT, {
+          field_name: name,
+          schema_title: schema.title,
+          option_label: option.label,
+          option_value: option.value,
+        });
+      }
     },
-    [setValue]
+    [name, schema.title, setValue]
   );
 
   if (isEmpty(options)) {

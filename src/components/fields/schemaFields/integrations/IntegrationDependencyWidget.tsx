@@ -15,24 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ChangeEvent, useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { type AuthOption } from "@/auth/authTypes";
 import {
+  type IntegrationsFormSlice,
   keyToFieldValue,
   produceExcludeUnusedDependencies,
-  type IntegrationsFormSlice,
 } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
 import { extractIntegrationIds } from "@/services/integrationUtils";
 import { isEmpty, isEqual, unset } from "lodash";
-import {
-  type SelectLike,
-  type SelectWidgetOnChange,
-} from "@/components/form/widgets/SelectWidget";
+import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidget";
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import {
   type Expression,
@@ -45,6 +42,8 @@ import { type IntegrationDependency } from "@/types/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */
@@ -103,11 +102,8 @@ function lookupAuthId(
 function setIntegrationAuthSelectionForField(
   state: IntegrationsFormSlice,
   fieldName: string,
-  integrationId: UUID,
-  options: AuthOption[]
+  authOption: AuthOption
 ): IntegrationsFormSlice {
-  const authOption = options.find((x) => x.value === integrationId);
-
   let outputKey: OutputKey;
 
   let nextState = produce(state, (draft) => {
@@ -169,6 +165,25 @@ function clearIntegrationSelection(
 
 const NO_AUTH_OPTIONS = Object.freeze([] as AuthOption[]);
 
+// The only reason these inputs are optional is for tests, need to investigate better mocking instead
+// @see BotOptions.test.ts
+const makeSelectedEventPayload = (
+  authOption?: AuthOption,
+  isUserAction?: boolean
+) => {
+  if (!authOption) {
+    return {};
+  }
+
+  return {
+    integration_id: authOption.serviceId,
+    is_user_action: isUserAction,
+    auth_label: authOption.label,
+    auth_sharing_type: authOption.sharingType,
+    auth_is_local: authOption.local,
+  };
+};
+
 /**
  * A schema-driven Service Selector that automatically maintains the services form state (and output keys)
  * @see IntegrationDependency
@@ -200,16 +215,28 @@ const IntegrationDependencyWidget: React.FC<
 
   const onChange: SelectWidgetOnChange<AuthOption> = useCallback(
     async ({ target: { value, options } }) => {
+      let newState: IntegrationsFormSlice;
       // Value will be null when the selection is "cleared"
-      const newState =
-        value == null
-          ? clearIntegrationSelection(rootValues, field.name, isRequired)
-          : setIntegrationAuthSelectionForField(
-              rootValues,
-              field.name,
-              value,
-              options
-            );
+      if (value == null) {
+        newState = clearIntegrationSelection(
+          rootValues,
+          field.name,
+          isRequired
+        );
+        reportEvent(Events.INTEGRATION_WIDGET_CLEAR);
+      } else {
+        const authOption = options.find((x) => x.value === value);
+        newState = setIntegrationAuthSelectionForField(
+          rootValues,
+          field.name,
+          authOption
+        );
+        reportEvent(
+          Events.INTEGRATION_WIDGET_SELECT,
+          makeSelectedEventPayload(authOption, true)
+        );
+      }
+
       await setRootValues(newState);
       // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
       helpers.setError(undefined);
@@ -242,18 +269,31 @@ const IntegrationDependencyWidget: React.FC<
             { rootValues, match }
           );
           await helpers.setValue(keyToFieldValue(match.outputKey));
+          const authOption = authOptions.find(
+            ({ value }) => value === match.configId
+          );
+          reportEvent(
+            Events.INTEGRATION_WIDGET_SELECT,
+            makeSelectedEventPayload(authOption, false)
+          );
         } else if (options.length === 1) {
           // This condition is only true when the auth services have been filtered by the schema
-
           console.debug("Defaulting to only integration option", {
             option: options[0],
             options,
           });
-          // Try defaulting to the only option available. Use onChange instead of helpers.setValue b/c it automatically
-          // updates the integration dependencies part of the form state
-          onChange({
-            target: { value: options[0].value, name: field.name, options },
-          } as ChangeEvent<SelectLike<AuthOption>>);
+          // Try defaulting to the only option available.
+          const authOption = options[0];
+          const newState = setIntegrationAuthSelectionForField(
+            rootValues,
+            field.name,
+            authOption
+          );
+          await setRootValues(newState);
+          reportEvent(
+            Events.INTEGRATION_WIDGET_SELECT,
+            makeSelectedEventPayload(authOption, false)
+          );
         }
       } else if (
         value &&
@@ -295,7 +335,10 @@ const IntegrationDependencyWidget: React.FC<
       value={selectedValue}
       onChange={onChange}
       options={options}
-      refreshOptions={refreshOptions}
+      refreshOptions={() => {
+        refreshOptions();
+        reportEvent(Events.INTEGRATION_WIDGET_REFRESH);
+      }}
       isClearable={!isRequired}
     />
   );

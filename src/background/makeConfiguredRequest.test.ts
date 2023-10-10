@@ -26,7 +26,6 @@ import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
-import { getToken } from "@/background/auth";
 import {
   type IntegrationABC,
   type IntegrationConfig,
@@ -34,6 +33,7 @@ import {
 } from "@/types/integrationTypes";
 import { setContext } from "@/testUtils/detectPageMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { getToken } from "@/background/auth/getToken";
 
 jest.unmock("@/services/apiClient");
 setContext("background");
@@ -43,10 +43,13 @@ const mockGetToken = getToken as jest.Mock;
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
-jest.mock("@/background/auth", () => ({
+jest.mock("@/background/auth/authStorage", () => ({
   getCachedAuthData: jest.fn().mockResolvedValue(null),
-  getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
   deleteCachedAuthData: jest.fn().mockResolvedValue(undefined),
+}));
+jest.mock("@/background/auth/getToken", () => ({
+  __esModule: true,
+  getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
 }));
 jest.mock("@/auth/token");
 jest.mock("@/services/locator");

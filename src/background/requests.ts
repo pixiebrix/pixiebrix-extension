@@ -26,12 +26,7 @@ import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { isEmpty } from "lodash";
-import {
-  deleteCachedAuthData,
-  getCachedAuthData,
-  getToken,
-  launchOAuth2Flow,
-} from "@/background/auth";
+import { launchOAuth2Flow } from "@/background/auth/launchOAuth2Flow";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import {
@@ -67,6 +62,11 @@ import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
 import { isObject } from "@/utils/objectUtils";
+import {
+  deleteCachedAuthData,
+  getCachedAuthData,
+} from "@/background/auth/authStorage";
+import { getToken } from "@/background/auth/getToken";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
