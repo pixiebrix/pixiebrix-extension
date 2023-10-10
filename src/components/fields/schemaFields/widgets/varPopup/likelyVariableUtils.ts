@@ -50,14 +50,15 @@ export function getLikelyVariableAtPosition(
 ): LikelyVariable {
   // Cursor is at whitespace, detect if the cursor is at the end of the variable
   const matchPosition =
-    includeBoundary && [" ", null].includes(template.at(position))
+    includeBoundary && [" ", undefined].includes(template.at(position))
       ? position - 1
       : position;
 
   // This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
   let match = varRegex.exec(template);
   while (match !== null) {
-    const { varName } = match.groups;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Guaranteed by regex
+    const varName = match.groups!.varName!;
     const startIndex = match.index;
     const variableEndIndex = startIndex + varName.length;
     if (startIndex <= matchPosition && matchPosition <= variableEndIndex) {

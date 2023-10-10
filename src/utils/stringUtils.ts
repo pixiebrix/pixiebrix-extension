@@ -22,7 +22,7 @@
 export function splitStartingEmoji(value: string) {
   const emojiRegex =
     /^((?:\p{Extended_Pictographic}\p{Emoji_Modifier_Base}?\p{Emoji_Modifier}?\uFE0F?))?(.*)/u;
-  const [, startingEmoji, rest] = emojiRegex.exec(value) ?? [];
+  const [, startingEmoji, rest = ""] = emojiRegex.exec(value) ?? [];
   return {
     startingEmoji,
     rest,
