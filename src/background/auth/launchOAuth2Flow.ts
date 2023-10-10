@@ -64,7 +64,7 @@ export async function launchOAuth2Flow(
   reportEvent(Events.OAUTH2_LOGIN_START, eventPayload);
 
   if (isImplicitFlow) {
-    console.debug("Using implicitGrantFlow because not tokenUrl was provided");
+    console.debug("Using implicitGrantFlow because tokenUrl was not provided");
     return implicitGrantFlow(auth, oauth2);
   }
 

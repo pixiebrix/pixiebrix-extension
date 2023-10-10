@@ -44,6 +44,32 @@ import { curry } from "lodash";
 
 const { upsertIntegrationConfig } = integrationsSlice.actions;
 
+const RefreshButton: React.VFC<{
+  buttonText: string;
+  onRefresh: () => void;
+}> = ({ buttonText = "", onRefresh }) => {
+  const refreshAuthOptions = () => {
+    // `onRefresh` is not awaitable. Indicate that clicking the button did something
+    notify.info("Refreshing integration configurations");
+    onRefresh();
+  };
+
+  return (
+    <Button
+      size="sm"
+      variant="info"
+      className={styles.actionButton}
+      onClick={() => {
+        refreshAuthOptions();
+        reportEvent(Events.AUTH_WIDGET_REFRESH);
+      }}
+      title="Refresh integration configurations"
+    >
+      <FontAwesomeIcon icon={faSync} /> {buttonText}
+    </Button>
+  );
+};
+
 const AuthWidget: React.FunctionComponent<{
   /**
    * The field name. WARNING: do not use `serviceId`s as part of a field name because they can contain periods which
@@ -80,12 +106,6 @@ const AuthWidget: React.FunctionComponent<{
   );
 
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
-
-  const refreshAuthOptions = () => {
-    // `onRefresh` is not awaitable. Indicate that clicking the button did something
-    notify.info("Refreshing integration configurations");
-    onRefresh();
-  };
 
   const save = useCallback(
     async (values: IntegrationConfig) => {
@@ -166,21 +186,6 @@ const AuthWidget: React.FunctionComponent<{
     [integrationId]
   );
 
-  const refreshButton = (buttonText = "") => (
-    <Button
-      size="sm"
-      variant="info"
-      className={styles.actionButton}
-      onClick={() => {
-        refreshAuthOptions();
-        reportEvent(Events.AUTH_WIDGET_REFRESH);
-      }}
-      title="Refresh integration configurations"
-    >
-      <FontAwesomeIcon icon={faSync} /> {buttonText}
-    </Button>
-  );
-
   return (
     <>
       {showServiceEditorModal && (
@@ -207,7 +212,10 @@ const AuthWidget: React.FunctionComponent<{
                 sanitizeConfigArgs={sanitizeConfigArgs}
               />
             </div>
-            <div>{refreshButton()}</div>
+            <div>
+              {" "}
+              <RefreshButton onRefresh={onRefresh} buttonText="Refresh" />
+            </div>
           </>
         ) : (
           <>
@@ -220,8 +228,7 @@ const AuthWidget: React.FunctionComponent<{
             >
               <FontAwesomeIcon icon={faPlus} /> Configure
             </Button>
-
-            {refreshButton("Refresh")}
+            <RefreshButton onRefresh={onRefresh} buttonText="Refresh" />
           </>
         )}
       </div>

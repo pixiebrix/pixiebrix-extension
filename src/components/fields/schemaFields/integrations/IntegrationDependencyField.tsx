@@ -43,16 +43,12 @@ export const IntegrationDependencyFieldDescription: React.FC<{
         href={`${browser.runtime.getURL("options.html")}#/services`}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => {
+          reportEvent(Events.INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK);
+        }}
       >
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions -- only tracking the click */}
-        <span
-          onClick={() => {
-            reportEvent(Events.INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK);
-          }}
-        >
-          <FontAwesomeIcon icon={faCloud} />
-          &nbsp;Configure additional integrations here.
-        </span>
+        <FontAwesomeIcon icon={faCloud} />
+        &nbsp;Configure additional integrations here.
       </a>
     </span>
   </>
