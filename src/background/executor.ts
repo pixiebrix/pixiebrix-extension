@@ -32,7 +32,7 @@ import { canAccessTab } from "@/permissions/permissionsUtils";
 import { SessionMap } from "@/mv3/SessionStorage";
 import { asyncForEach, groupPromisesByStatus } from "@/utils/promiseUtils";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
-import { forEachTab } from "@/utils/extensionUtils.js";
+import { forEachTab } from "@/utils/extensionUtils";
 
 type TabId = number;
 
