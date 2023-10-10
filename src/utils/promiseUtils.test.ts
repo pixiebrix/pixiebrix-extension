@@ -36,7 +36,7 @@ test("memoizeUntilSettled", async () => {
 test("groupPromisesByStatus", async () => {
   const promises = [
     Promise.resolve(1),
-    Promise.reject(new Error("error")),
+    Promise.reject(new Error("something happened")),
     Promise.resolve(2),
   ];
 
@@ -47,7 +47,7 @@ test("groupPromisesByStatus", async () => {
   expect(fulfilled).toStrictEqual([1, 2]);
   expect(rejected).toHaveLength(1);
   expect(rejected[0]).toBeInstanceOf(Error);
-  expect(rejected[0].error).toBe("error");
+  expect(rejected[0].message).toBe("something happened");
 });
 
 describe("retryWithJitter", () => {
