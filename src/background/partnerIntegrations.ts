@@ -232,14 +232,17 @@ export async function safeTokenRefresh(): Promise<void> {
   }
 }
 
-const TWENTY_THREE_HOURS = 1000 * 60 * 60 * 23;
+const TEN_HOURS = 1000 * 60 * 60 * 10;
 
 /**
- * The Automation Anywhere JWT acess token expires every 24 hours
- * Refresh the JWT every 23 hours to avoid
+ * The Automation Anywhere JWT access token expires every 24 hours
+ * The refresh token expires every 30 days, with an inactivity expiry of 15 days
+ * Refresh the JWT every 10 hours to ensure the token is always valid
+ * NOTE: this assumes the background script is always running
+ * TODO: re-architect to refresh the token in @/background/refreshToken.ts
  */
 export function initPartnerTokenRefresh(): void {
   setInterval(async () => {
     await safeTokenRefresh();
-  }, TWENTY_THREE_HOURS);
+  }, TEN_HOURS);
 }
