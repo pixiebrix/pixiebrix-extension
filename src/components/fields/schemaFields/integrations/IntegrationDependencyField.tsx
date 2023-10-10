@@ -24,6 +24,8 @@ import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schema
 import IntegrationDependencyWidget, {
   type IntegrationDependencyWidgetProps,
 } from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 export const IntegrationDependencyFieldDescription: React.FC<{
   schema: Schema;
@@ -41,6 +43,9 @@ export const IntegrationDependencyFieldDescription: React.FC<{
         href={`${browser.runtime.getURL("options.html")}#/services`}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => {
+          reportEvent(Events.INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK);
+        }}
       >
         <FontAwesomeIcon icon={faCloud} />
         &nbsp;Configure additional integrations here.

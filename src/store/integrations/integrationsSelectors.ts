@@ -23,3 +23,9 @@ export const selectIntegrationConfigs = ({
 }: {
   integrations: IntegrationsState;
 }): IntegrationConfig[] => Object.values(integrations.configured);
+
+export const selectIntegrationConfigMap = ({
+  integrations,
+}: {
+  integrations: IntegrationsState;
+}): Record<string, IntegrationConfig> => integrations.configured;

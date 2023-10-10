@@ -16,6 +16,11 @@
  */
 
 export const Events = {
+  AUTH_WIDGET_SELECT: "AuthWidgetSelect",
+  AUTH_WIDGET_REFRESH: "AuthWidgetRefresh",
+  AUTH_WIDGET_SHOW_ADD_NEW: "AuthWidgetShowAddNew",
+  AUTH_WIDGET_HIDE_ADD_NEW: "AuthWidgetHideAddNew",
+
   BRICK_ADD: "BrickAdd",
   BRICK_DELETE: "BrickDelete",
 
@@ -46,6 +51,12 @@ export const Events = {
   IDB_RECLAIM_QUOTA: "IDBReclaimQuota",
   IDB_RECOVER_CONNECTION: "IDBRecoverConnection",
 
+  INTEGRATION_WIDGET_SELECT: "IntegrationWidgetSelect",
+  INTEGRATION_WIDGET_CLEAR: "IntegrationWidgetClear",
+  INTEGRATION_WIDGET_REFRESH: "IntegrationWidgetRefresh",
+  INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK:
+    "IntegrationWidgetConfigureLinkClick",
+
   INTEGRATION_ADD: "ServiceAdd",
 
   LINK_EXTENSION: "LinkExtension",
@@ -64,6 +75,10 @@ export const Events = {
   MOD_REMOVE: "BlueprintRemove",
 
   MODS_PAGE_VIEW: "BlueprintsPageView",
+
+  OAUTH2_LOGIN_START: "OAuth2LoginStart",
+  OAUTH2_LOGIN_SUCCESS: "OAuth2LoginSuccess",
+  OAUTH2_LOGIN_ERROR: "OAuth2LoginError",
 
   ORGANIZATION_EXTENSION_LINK: "OrganizationExtensionLink",
 
@@ -87,6 +102,9 @@ export const Events = {
   PIXIEBRIX_INSTALL: "PixieBrixInstall",
   PIXIEBRIX_RELOAD: "PixieBrixReload",
   PIXIEBRIX_UPDATE: "PixieBrixUpdate",
+
+  SCHEMA_SELECT_WIDGET_SELECT: "SchemaSelectWidgetSelect",
+  SCHEMA_SELECT_WIDGET_CLEAR: "SchemaSelectWidgetClear",
 
   SELECT_GOOGLE_SPREADSHEET_CANCELLED: "SelectGoogleSpreadsheetCancelled",
   SELECT_GOOGLE_SPREADSHEET_ENSURE_TOKEN_START:

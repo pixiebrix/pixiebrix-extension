@@ -31,11 +31,12 @@ import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "@/services/factory";
 import { readRawConfigurations } from "@/services/registry";
 import { type IntegrationConfig } from "@/types/integrationTypes";
+
 import {
+  deleteCachedAuthData,
   getCachedAuthData,
   setCachedAuthData,
-  deleteCachedAuthData,
-} from "@/background/auth";
+} from "@/background/auth/authStorage";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -48,8 +49,8 @@ jest.mock("@/contrib/google/initGoogle", () => ({
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
-jest.mock("@/background/auth", () => ({
-  ...jest.requireActual("@/background/auth"),
+jest.mock("@/background/auth/authStorage", () => ({
+  ...jest.requireActual("@/background/auth/authStorage"),
   deleteCachedAuthData: jest.fn(),
 }));
 
