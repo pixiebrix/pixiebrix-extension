@@ -185,3 +185,21 @@ export async function resolveObj<T>(
     await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
   );
 }
+
+export function groupPromisesByStatus<T>(
+  results: Array<PromiseSettledResult<T>>
+) {
+  const rejected = results
+    .filter(
+      (result): result is PromiseRejectedResult => result.status === "rejected"
+    )
+    .map(({ reason }) => reason);
+  const fulfilled = results
+    .filter(
+      (result): result is PromiseFulfilledResult<T> =>
+        result.status === "fulfilled"
+    )
+    .map(({ value }) => value);
+
+  return { fulfilled, rejected };
+}

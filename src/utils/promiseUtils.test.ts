@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { memoizeUntilSettled, retryWithJitter } from "@/utils/promiseUtils";
+import {
+  groupPromisesByStatus,
+  memoizeUntilSettled,
+  retryWithJitter,
+} from "@/utils/promiseUtils";
 
 // From https://github.com/sindresorhus/p-memoize/blob/52fe6052ff2287f528c954c4c67fc5a61ff21360/test.ts#LL198
 test("memoizeUntilSettled", async () => {
@@ -27,6 +31,23 @@ test("memoizeUntilSettled", async () => {
   expect(await memoized()).toBe(1);
   expect(await memoized()).toBe(2);
   expect(await Promise.all([memoized(), memoized()])).toStrictEqual([3, 3]);
+});
+
+test("groupPromisesByStatus", async () => {
+  const promises = [
+    Promise.resolve(1),
+    Promise.reject(new Error("error")),
+    Promise.resolve(2),
+  ];
+
+  const { fulfilled, rejected } = groupPromisesByStatus(
+    await Promise.allSettled(promises)
+  );
+
+  expect(fulfilled).toStrictEqual([1, 2]);
+  expect(rejected).toHaveLength(1);
+  expect(rejected[0]).toBeInstanceOf(Error);
+  expect(rejected[0].error).toBe("error");
 });
 
 describe("retryWithJitter", () => {

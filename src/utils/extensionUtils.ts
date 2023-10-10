@@ -66,26 +66,32 @@ export class RuntimeNotFoundError extends Error {
   override name = "RuntimeNotFoundError";
 }
 
-async function getTabsWithAccess(): Promise<TabId[]> {
+export async function getTabsWithAccess(): Promise<TabId[]> {
   const tabs = await browser.tabs.query({
     url: ["https://*/*", "http://*/*"],
     discarded: false,
   });
-  return tabs.map((tab) => tab.id);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The type isn't tight enough for tabs.query()
+  return tabs.map((tab) => tab.id!);
 }
 
 /**
  * Runs a callback for each tab the extension has access to
  */
 export async function forEachTab<
-  TCallback extends (target: { tabId: number }) => Promisable<void>
->(callback: TCallback): Promise<void> {
+  TCallback extends (target: { tabId: number }) => Promisable<unknown>
+>(
+  callback: TCallback,
+  options?: { exclude: number }
+): Promise<Array<PromiseSettledResult<unknown>>> {
   const tabs = await getTabsWithAccess();
 
   if (tabs.length > 20) {
     console.warn("forEachTab called on more than 20");
   }
 
-  const promises = tabs.map((tabId) => callback({ tabId }));
-  await Promise.allSettled(promises);
+  const promises = tabs
+    .filter((tabId) => tabId !== options?.exclude)
+    .map((tabId) => callback({ tabId }));
+  return Promise.allSettled(promises);
 }
