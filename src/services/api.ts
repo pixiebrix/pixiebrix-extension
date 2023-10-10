@@ -146,7 +146,7 @@ export const appApi = createApi({
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
           role: (apiOrganization as any).members?.some(
-            (member: { role: number }) => member.role === UserRole.admin
+            (member: { role: UserRole }) => member.role === UserRole.admin
           )
             ? UserRole.admin
             : UserRole.restricted,

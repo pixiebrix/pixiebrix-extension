@@ -123,7 +123,6 @@ export const ensureContentScript = memoizeUntilSettled(
       await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
         signal,
         milliseconds: timeoutMillis,
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- known to be a number
         message: `contentScript not ready in ${timeoutMillis}ms`,
       });
 
