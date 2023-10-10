@@ -17,6 +17,9 @@
 
 import pTimeout from "p-timeout";
 import { foreverPendingPromise } from "@/utils/promiseUtils";
+import { type Promisable } from "type-fest";
+
+type TabId = number;
 
 export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
 type Command = "toggle-quick-bar";
@@ -61,4 +64,28 @@ export async function reloadIfNewVersionIsReady(): Promise<
 
 export class RuntimeNotFoundError extends Error {
   override name = "RuntimeNotFoundError";
+}
+
+async function getTabsWithAccess(): Promise<TabId[]> {
+  const tabs = await browser.tabs.query({
+    url: ["https://*/*", "http://*/*"],
+    discarded: false,
+  });
+  return tabs.map((tab) => tab.id);
+}
+
+/**
+ * Runs a callback for each tab the extension has access to
+ */
+export async function forEachTab<
+  TCallback extends (target: { tabId: number }) => Promisable<void>
+>(callback: TCallback): Promise<void> {
+  const tabs = await getTabsWithAccess();
+
+  if (tabs.length > 20) {
+    console.warn("forEachTab called on more than 20");
+  }
+
+  const promises = tabs.map((tabId) => callback({ tabId }));
+  await Promise.allSettled(promises);
 }

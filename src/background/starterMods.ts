@@ -22,7 +22,7 @@ import {
   saveModComponentState,
 } from "@/store/extensionsStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { forEachTab } from "@/background/activeTab";
+import { forEachTab } from "@/utils/extensionUtils";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";

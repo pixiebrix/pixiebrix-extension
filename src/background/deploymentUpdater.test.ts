@@ -68,7 +68,7 @@ jest.mock("@/hooks/useRefreshRegistries", () => ({
   refreshRegistries: jest.fn(),
 }));
 
-jest.mock("@/background/activeTab", () => ({
+jest.mock("@/utils/extensionUtils", () => ({
   forEachTab: jest.fn().mockResolvedValue(undefined),
 }));
 
