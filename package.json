@@ -179,7 +179,7 @@
     "@sinonjs/fake-timers": "^11.1.0",
     "@storybook/addon-actions": "^6.5.15",
     "@storybook/addon-essentials": "^6.5.15",
-    "@storybook/addon-links": "^6.5.15",
+    "@storybook/addon-links": "^7.4.6",
     "@storybook/addon-storyshots": "^6.5.15",
     "@storybook/builder-webpack5": "^6.5.15",
     "@storybook/manager-webpack5": "^6.5.15",
