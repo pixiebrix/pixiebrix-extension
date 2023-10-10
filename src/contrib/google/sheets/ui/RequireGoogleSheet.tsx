@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactElement } from "react";
+import React, { type ReactElement, useEffect, useState } from "react";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { type Schema } from "@/types/schemaTypes";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
@@ -24,19 +24,30 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import {
+  type AuthData,
+  type SanitizedIntegrationConfig,
+} from "@/types/integrationTypes";
 import { sheets } from "@/background/messenger/api";
 import { type AsyncState } from "@/types/sliceTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { type Except } from "type-fest";
 import { joinName } from "@/utils/formUtils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { type UUID } from "@/types/stringTypes";
+import { isEmpty } from "lodash";
+import { OAUTH2_STORAGE_KEY } from "@/auth/authConstants";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
   spreadsheet: Spreadsheet | null;
   spreadsheetFieldSchema: Schema;
 };
+
+type LoginListener = (
+  changes: Record<string, chrome.storage.StorageChange>,
+  areaName: string
+) => void;
 
 const RequireGoogleSheet: React.FC<{
   blockConfigPath: string;
@@ -46,13 +57,50 @@ const RequireGoogleSheet: React.FC<{
 }> = ({ blockConfigPath, children }) => {
   const googleAccountAsyncState = useGoogleAccount();
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
-
   const baseSchemaAsyncState = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
     [],
     {
       initialValue: BASE_SHEET_SCHEMA,
     }
+  );
+
+  const [loginListener, setLoginListener] = useState<LoginListener | null>(
+    null
+  );
+
+  function listenForLogin(googleAccount: SanitizedIntegrationConfig) {
+    const listener: LoginListener = (changes, areaName) => {
+      if (areaName !== "local") {
+        return;
+      }
+
+      if (OAUTH2_STORAGE_KEY in changes) {
+        // eslint-disable-next-line security/detect-object-injection -- UUID, not user input
+        const newValue = changes[OAUTH2_STORAGE_KEY].newValue as Record<
+          UUID,
+          AuthData
+        >;
+        if (!isEmpty(newValue[googleAccount.id])) {
+          googleAccountAsyncState.refetch();
+          browser.storage.onChanged.removeListener(listener);
+        }
+      }
+    };
+
+    browser.storage.onChanged.addListener(listener);
+    setLoginListener(listener);
+  }
+
+  // Clean up the listener on unmount if it hasn't fired yet
+  useEffect(
+    () => () => {
+      if (loginListener) {
+        browser.storage.onChanged.removeListener(loginListener);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount/unmount
+    []
   );
 
   const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
@@ -72,7 +120,10 @@ const RequireGoogleSheet: React.FC<{
         };
       }
 
-      if (!googleAccount || (await sheets.isLoggedIn(googleAccount))) {
+      const isLoggedIn =
+        googleAccount && (await sheets.isLoggedIn(googleAccount));
+
+      if (!googleAccount || isLoggedIn) {
         return {
           googleAccount,
           // Sheets API will handle legacy authentication when googleAccount is null
@@ -83,6 +134,8 @@ const RequireGoogleSheet: React.FC<{
           spreadsheetFieldSchema: baseSchema,
         };
       }
+
+      listenForLogin(googleAccount);
 
       return {
         googleAccount,
