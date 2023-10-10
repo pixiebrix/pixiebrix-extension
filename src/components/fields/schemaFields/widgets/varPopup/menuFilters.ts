@@ -40,7 +40,7 @@ export type MenuOptions = Array<[string, UnknownRecord]>;
 export function excludeIntegrationVariables(options: MenuOptions): MenuOptions {
   return options.filter(([source]) => {
     const [kind] = source.split(":");
-    return kind !== KnownSources.SERVICE;
+    return (kind as KnownSources) !== KnownSources.SERVICE;
   });
 }
 

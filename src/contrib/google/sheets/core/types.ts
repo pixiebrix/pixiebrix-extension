@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents -- TODO: The rule is right, but is this used for documentation? */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -27,7 +26,7 @@ export interface Doc extends SheetMeta {
 }
 
 export interface Data {
-  action: string;
+  action: google.picker.Action;
   docs: Doc[];
 }
 
