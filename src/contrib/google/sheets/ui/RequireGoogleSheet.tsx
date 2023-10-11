@@ -120,10 +120,7 @@ const RequireGoogleSheet: React.FC<{
         };
       }
 
-      const isLoggedIn =
-        googleAccount && (await sheets.isLoggedIn(googleAccount));
-
-      if (!googleAccount || isLoggedIn) {
+      if (!googleAccount || (await sheets.isLoggedIn(googleAccount))) {
         return {
           googleAccount,
           // Sheets API will handle legacy authentication when googleAccount is null
