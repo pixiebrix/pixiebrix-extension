@@ -15,16 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { readStorage, setStorage } from "@/utils/storageUtils";
 import { type UUID } from "@/types/stringTypes";
 import { expectContext } from "@/utils/expectContext";
 import { type AuthData } from "@/types/integrationTypes";
-
-export const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
+import { OAUTH2_STORAGE_KEY } from "@/auth/authConstants";
 
 export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   serviceAuthId: UUID,

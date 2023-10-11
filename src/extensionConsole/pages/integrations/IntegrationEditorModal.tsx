@@ -74,8 +74,8 @@ const IntegrationEditorModal: React.FunctionComponent<OwnProps> = ({
   const onSubmit = useCallback<OnSubmit<IntegrationConfig>>(
     async (values, helpers) => {
       helpers.setSubmitting(true);
-      await onSave(values);
       onClose();
+      await onSave(values);
     },
     [onSave, onClose]
   );
