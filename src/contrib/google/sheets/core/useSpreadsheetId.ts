@@ -28,7 +28,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import hash from "object-hash";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { joinName } from "@/utils/formUtils";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
 async function findSpreadsheetIdFromFieldValue(
@@ -115,6 +115,8 @@ function useSpreadsheetId(
 
   const [{ value: optionsArgs }] = useField<OptionsArgs>("optionsArgs");
 
+  const lastGoodSpreadsheetId = useRef<string | null>();
+
   return useAsyncState<string | null>(async () => {
     try {
       const result = await findSpreadsheetIdFromFieldValue(
@@ -123,7 +125,11 @@ function useSpreadsheetId(
         optionsArgs
       );
       setError(null);
-      return result;
+      if (result != null) {
+        lastGoodSpreadsheetId.current = result;
+      }
+
+      return lastGoodSpreadsheetId.current;
     } catch (error: unknown) {
       setError(getErrorMessage(error));
       return null;

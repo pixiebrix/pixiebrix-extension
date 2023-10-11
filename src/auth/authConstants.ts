@@ -16,6 +16,7 @@
  */
 
 import { type AuthState } from "./authTypes";
+import { type ManualStorageKey } from "@/utils/storageUtils";
 
 export const anonAuth: AuthState = Object.freeze({
   userId: undefined,
@@ -31,3 +32,4 @@ export const anonAuth: AuthState = Object.freeze({
   groups: [],
   enforceUpdateMillis: null,
 });
+export const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;

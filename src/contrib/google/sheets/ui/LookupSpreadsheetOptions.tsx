@@ -143,7 +143,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         />
       )}
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
-        {({ googleAccount, spreadsheet, spreadsheetFieldSchema }) => (
+        {({ googleAccount, spreadsheet }) => (
           <>
             <FormErrorContext.Provider
               value={{
@@ -152,11 +152,6 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
                 showFieldActions: false,
               }}
             >
-              <SchemaField
-                name={joinName(blockConfigPath, "spreadsheetId")}
-                schema={spreadsheetFieldSchema}
-                isRequired
-              />
               {
                 // The problem with including these inside the nested FormErrorContext.Provider is that we
                 // would like analysis to run if they are in text/template mode, but not in select mode.
