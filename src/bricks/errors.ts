@@ -24,7 +24,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickArgsContext } from "@/types/runtimeTypes";
-import { isObject } from "@/utils/objectUtils.js";
+import { isObject } from "@/utils/objectUtils";
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";
