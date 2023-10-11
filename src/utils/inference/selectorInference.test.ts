@@ -576,7 +576,7 @@ describe("inferSelectorsIncludingStableAncestors", () => {
 
 describe("inferElementSelector", () => {
   beforeEach(() => {
-    SELECTOR_HINTS.splice(0, SELECTOR_HINTS.length);
+    SELECTOR_HINTS.length = 0;
     SELECTOR_HINTS.push({
       siteName: "TestHint",
       siteValidator: ({ element }: { element: HTMLElement }) =>

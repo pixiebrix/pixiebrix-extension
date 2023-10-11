@@ -95,7 +95,9 @@ export function onUncaughtError(handler: (error: Error) => void): void {
   self.addEventListener("unhandledrejection", listener);
 }
 
-export function isErrorObject(error: unknown): error is ErrorObject {
+export function isErrorObject(
+  error: unknown
+): error is ErrorObject & { name: string } {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function, and it uses ?.
   return typeof (error as any)?.message === "string";
 }
@@ -242,7 +244,8 @@ export function getErrorMessage(
 
   if (isSchemaValidationError(error)) {
     const firstError = error.errors[0];
-    const formattedMessage = formatSchemaValidationMessage(firstError);
+    const formattedMessage =
+      firstError && formatSchemaValidationMessage(firstError);
 
     if (formattedMessage) {
       return formattedMessage;

@@ -19,7 +19,6 @@ import {
   type ActivatedModComponent,
   type UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { isEmpty } from "lodash";
 
 /**
  * @deprecated - Do not use versioned state types directly
@@ -67,10 +66,10 @@ export function isModComponentStateV0(
 export function isModComponentStateV1(
   state: ModComponentStateVersions
 ): state is ModComponentStateV1 {
-  return (
+  return Boolean(
     Array.isArray(state.extensions) &&
-    !isEmpty(state.extensions) &&
-    !("createTimestamp" in state.extensions[0])
+      state.extensions[0] &&
+      !("createTimestamp" in state.extensions[0])
   );
 }
 
@@ -79,6 +78,6 @@ export function isModComponentStateV2(
 ): state is ModComponentStateV2 {
   return (
     Array.isArray(state.extensions) &&
-    (isEmpty(state.extensions) || "createTimestamp" in state.extensions[0])
+    (!state.extensions[0] || "createTimestamp" in state.extensions[0])
   );
 }

@@ -178,6 +178,8 @@
     "./types/stringTypes.ts",
     "./types/swagger.ts",
     "./urlConstants.ts",
+    "./sidebar/messenger/api.ts",
+    "./sidebar/messenger/registration.ts",
     "./utils/SimpleEventTarget.ts",
     "./utils/arrayUtils.ts",
     "./utils/asyncStateUtils.ts",

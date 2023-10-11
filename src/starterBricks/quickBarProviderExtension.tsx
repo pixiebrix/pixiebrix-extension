@@ -148,7 +148,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       this.modComponents.map((x) => x.id)
     );
     quickBarRegistry.removeExtensionPointActions(this.id);
-    this.modComponents.splice(0, this.modComponents.length);
+    this.modComponents.length = 0;
   }
 
   /**
