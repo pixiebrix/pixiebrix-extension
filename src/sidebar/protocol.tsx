@@ -214,5 +214,5 @@ export async function showActivateMods(
 }
 
 export async function hideActivateMods(sequence: number): Promise<void> {
-  runListeners("onHideActivateRecipe", sequence, undefined);
+  runListeners("onHideActivateRecipe", sequence);
 }
