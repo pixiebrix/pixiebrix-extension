@@ -133,7 +133,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   return (
     <div className="my-2">
-      {flagOn("gsheets-pkce-integration") && (
+      {flagOn("gsheets-pkce-integration-release") && (
         <SchemaField
           name={joinName(blockConfigPath, "googleAccount")}
           schema={APPEND_SCHEMA.properties.googleAccount as Schema}
