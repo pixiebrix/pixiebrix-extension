@@ -185,6 +185,18 @@ export type ModComponentBaseV2<Config extends UnknownObject = UnknownObject> =
 export type ModComponentBase<Config extends UnknownObject = UnknownObject> =
   ModComponentBaseV2<Config>;
 
+export type UnresolvedModComponentV1<
+  Config extends UnknownObject = UnknownObject
+> = ModComponentBaseV1<Config> & {
+  _unresolvedModComponentBrand: never;
+};
+
+export type UnresolvedModComponentV2<
+  Config extends UnknownObject = UnknownObject
+> = ModComponentBaseV2<Config> & {
+  _unresolvedModComponentBrand: never;
+};
+
 /**
  * An ModComponentBase that is known not to have had its definitions resolved.
  *
@@ -200,14 +212,7 @@ export type UnresolvedModComponent<
   _unresolvedModComponentBrand: never;
 };
 
-/**
- * A ModComponent that has been saved locally
- * @see ModComponentBase
- * @see UserExtension
- */
-export type ActivatedModComponent<
-  Config extends UnknownObject = UnknownObject
-> = UnresolvedModComponent<Config> & {
+type ActivatedModComponentBase = {
   /**
    * True to indicate this ModComponent has been activated on the client.
    */
@@ -227,6 +232,23 @@ export type ActivatedModComponent<
    */
   updateTimestamp: string;
 };
+
+export type ActivatedModComponentV1<
+  Config extends UnknownObject = UnknownObject
+> = UnresolvedModComponentV1<Config> & ActivatedModComponentBase;
+
+export type ActivatedModComponentV2<
+  Config extends UnknownObject = UnknownObject
+> = UnresolvedModComponentV2<Config> & ActivatedModComponentBase;
+
+/**
+ * A ModComponent that has been saved locally
+ * @see ModComponentBase
+ * @see UserExtension
+ */
+export type ActivatedModComponent<
+  Config extends UnknownObject = UnknownObject
+> = ActivatedModComponentV2<Config>;
 
 /**
  * An `ModComponentBase` with all inner definitions resolved.
