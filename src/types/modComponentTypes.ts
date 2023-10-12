@@ -212,9 +212,7 @@ export type UnresolvedModComponent<
   _unresolvedModComponentBrand: never;
 };
 
-export type ActivatedModComponentV1<
-  Config extends UnknownObject = UnknownObject
-> = UnresolvedModComponentV1<Config> & {
+type ActivatedModComponentBase = {
   /**
    * True to indicate this ModComponent has been activated on the client.
    */
@@ -234,29 +232,14 @@ export type ActivatedModComponentV1<
    */
   updateTimestamp: string;
 };
+
+export type ActivatedModComponentV1<
+  Config extends UnknownObject = UnknownObject
+> = UnresolvedModComponentV1<Config> & ActivatedModComponentBase;
 
 export type ActivatedModComponentV2<
   Config extends UnknownObject = UnknownObject
-> = UnresolvedModComponentV2<Config> & {
-  /**
-   * True to indicate this ModComponent has been activated on the client.
-   */
-  active: true;
-
-  /**
-   * Creation timestamp in ISO format with timezone.
-   *
-   * Currently, not used for anything - might be used for sorting, etc. in the future.
-   */
-  createTimestamp: string;
-
-  /**
-   * Update timestamp in ISO format with timezone.
-   *
-   * Used to determine if local version is outdated compared to user's version on the server.
-   */
-  updateTimestamp: string;
-};
+> = UnresolvedModComponentV2<Config> & ActivatedModComponentBase;
 
 /**
  * A ModComponent that has been saved locally

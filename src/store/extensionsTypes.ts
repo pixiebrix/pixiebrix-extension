@@ -20,7 +20,6 @@ import {
   type ActivatedModComponentV2,
   type UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { isEmpty } from "lodash";
 
 /**
  * @deprecated - Do not use versioned state types directly
@@ -78,7 +77,7 @@ export function isModComponentStateV1(
 ): state is ModComponentStateV1 {
   return (
     Array.isArray(state.extensions) &&
-    !isEmpty(state.extensions) &&
+    state.extensions[0] != null &&
     !("createTimestamp" in state.extensions[0])
   );
 }
@@ -88,7 +87,7 @@ export function isModComponentStateV2(
 ): state is ModComponentStateV2 {
   return (
     Array.isArray(state.extensions) &&
-    !isEmpty(state.extensions) &&
+    state.extensions[0] != null &&
     // See: ActivatedModComponentV1
     "createTimestamp" in state.extensions[0] &&
     "services" in state.extensions[0]
@@ -100,7 +99,7 @@ export function isModComponentStateV3(
 ): state is ModComponentStateV3 {
   return (
     Array.isArray(state.extensions) &&
-    (isEmpty(state.extensions) ||
+    (state.extensions[0] == null ||
       // See: ActivatedModComponentV2 -- Also, if the services/integrationDependencies
       // field is missing completely, the app logic will properly handle it as a V3 type.
       !("services" in state.extensions[0]))
