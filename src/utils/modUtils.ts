@@ -63,10 +63,8 @@ export function isModComponentFromRecipe(mod: Mod): boolean {
  * Return true if the mod is a ModDefinition or UnavailableMod
  * @param mod the mod
  */
-export function isModDefinition(
-  mod: Mod
-): mod is ModDefinition | UnavailableMod {
-  return !isResolvedModComponent(mod);
+export function isModDefinition(mod: Mod): mod is ModDefinition {
+  return mod && "kind" in mod && mod.kind === "recipe" && "sharing" in mod;
 }
 
 /**
@@ -212,6 +210,10 @@ export function getSharingType({
   scope: string;
   installedExtensions: UnresolvedModComponent[];
 }): SharingSource {
+  if (!isModDefinition(mod) && !isResolvedModComponent(mod)) {
+    throw new Error("Mod must be a ModDefinition or ResolvedModComponent");
+  }
+
   let sharingType: SharingType = null;
   const organization = getOrganization(mod, organizations);
 
@@ -320,11 +322,11 @@ function getOrganization(
  * Select UnresolvedExtensions currently installed from the mod.
  */
 export const selectExtensionsFromMod = createSelector(
-  [selectExtensions, (state: unknown, mod: Mod) => mod],
+  [selectExtensions, (_state: unknown, mod: Mod) => mod],
   (installedExtensions, mod) =>
-    isModDefinition(mod)
-      ? installedExtensions.filter(
+    isResolvedModComponent(mod)
+      ? installedExtensions.filter((x) => x.id === mod.id)
+      : installedExtensions.filter(
           (extension) => extension._recipe?.id === mod.metadata.id
         )
-      : installedExtensions.filter((x) => x.id === mod.id)
 );

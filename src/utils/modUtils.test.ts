@@ -29,6 +29,18 @@ import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactorie
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 describe("getSharingType", () => {
+  test("throws on invalid type", () => {
+    const mod: Mod = {} as any;
+    expect(() =>
+      getSharingType({
+        mod,
+        organizations: [],
+        scope: "test_scope",
+        installedExtensions: [],
+      })
+    ).toThrow();
+  });
+
   test("personal extension", () => {
     const mod: Mod = modComponentFactory() as any;
     const { type, label } = getSharingType({
