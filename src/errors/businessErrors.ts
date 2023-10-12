@@ -153,7 +153,7 @@ export class MissingConfigurationError extends BusinessError {
 
   id: string;
 
-  constructor(message: string, serviceId: string, id?: string) {
+  constructor(message: string, serviceId: string, id: string) {
     super(message);
     this.serviceId = serviceId;
     this.id = id;
@@ -170,7 +170,7 @@ export class NotConfiguredError extends BusinessError {
   constructor(
     message: string,
     serviceId: string,
-    missingProperties?: string[]
+    missingProperties: string[] = []
   ) {
     super(message);
     this.serviceId = serviceId;

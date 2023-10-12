@@ -363,6 +363,8 @@ export async function recordError(
   serializedError: SerializedError,
   context: MessageContext,
   data?: JsonObject
+  // NOTE: If this function signature is changed, also update it in sidebar/messenger/registration.ts
+  // If those types are removed from that file, then also remove this comment.
 ): Promise<void> {
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
   expectContext(

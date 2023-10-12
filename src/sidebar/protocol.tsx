@@ -57,7 +57,7 @@ export type SidebarListener = {
 const messageBuffer: Array<{
   method: keyof SidebarListener;
   sequence: number;
-  data: unknown;
+  data: Parameters<SidebarListener[keyof SidebarListener]>[0];
 }> = [];
 
 const listeners: SidebarListener[] = [];
@@ -102,7 +102,7 @@ function flushMessageBuffer(): void {
 
   // `sortBy` to handle case where messages were received out of order
   const orderedMessageBuffer = sortBy(messageBuffer, "sequence");
-  messageBuffer.splice(0, messageBuffer.length);
+  messageBuffer.length = 0;
 
   for (const { method, sequence, data } of orderedMessageBuffer) {
     console.debug("flushMessageBuffer: %s", method, {
@@ -117,7 +117,7 @@ function flushMessageBuffer(): void {
 function runListeners<Method extends keyof SidebarListener>(
   method: Method,
   sequence: number,
-  data: Parameters<SidebarListener[Method]>[0],
+  data?: Parameters<SidebarListener[Method]>[0],
   { force = false }: { force?: boolean } = {}
 ): void {
   // Buffer messages until the listener is initialized
@@ -214,5 +214,5 @@ export async function showActivateMods(
 }
 
 export async function hideActivateMods(sequence: number): Promise<void> {
-  runListeners("onHideActivateRecipe", sequence, null);
+  runListeners("onHideActivateRecipe", sequence);
 }

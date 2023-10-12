@@ -307,7 +307,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.installedEvents.clear();
 
     // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
-    this.modComponents.splice(0, this.modComponents.length);
+    this.modComponents.length = 0;
   }
 
   inputSchema: Schema = propertiesToSchema({
