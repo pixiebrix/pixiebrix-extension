@@ -27,7 +27,11 @@ import {
   isModComponentStateV0,
   isModComponentStateV1,
   isModComponentStateV2,
+  ModComponentStateV3,
+  isModComponentStateV3,
 } from "@/store/extensionsTypes";
+import { omit } from "lodash";
+import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed
@@ -45,6 +49,13 @@ export const migrations: MigrationManifest = {
   2(state: ModComponentStateV1 & PersistedState) {
     if (isModComponentStateV1(state)) {
       return migrateModComponentStateV1ToV2(state);
+    }
+
+    return state;
+  },
+  3(state: ModComponentStateV2 & PersistedState) {
+    if (isModComponentStateV2(state)) {
+      return migrateModComponentStateV2toV3(state);
     }
 
     return state;
@@ -77,9 +88,27 @@ function migrateModComponentStateV1ToV2(
   };
 }
 
+function migrateModComponentStateV2toV3(
+  state: ModComponentStateV2 & PersistedState
+): ModComponentStateV3 & PersistedState {
+  return {
+    ...state,
+    extensions: state.extensions.map((extension) => ({
+      ...omit(extension, "services"),
+      integrationDependencies: migrateIntegrationDependenciesV1toV2(
+        extension.services
+      ),
+    })),
+  };
+}
+
 export function inferModComponentStateVersion(
   state: ModComponentStateVersions
 ): number {
+  if (isModComponentStateV3(state)) {
+    return 3;
+  }
+
   if (isModComponentStateV2(state)) {
     return 2;
   }
