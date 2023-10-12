@@ -26,7 +26,7 @@ import {
   getInstalledVersionNumber,
   getLabel,
   getPackageId,
-  getSharingType,
+  getSharingSource,
   getUpdatedAt,
   isDeployment,
   isResolvedModComponent,
@@ -115,7 +115,7 @@ function useModViewItems(mods: Mod[]): {
         description: getDescription(mod),
         sharing: {
           packageId,
-          source: getSharingType({
+          source: getSharingSource({
             mod,
             organizations,
             scope,

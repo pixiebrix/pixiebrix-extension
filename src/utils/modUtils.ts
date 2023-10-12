@@ -199,7 +199,7 @@ export function isRecipePendingPublish(
   return recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
 }
 
-export function getSharingType({
+export function getSharingSource({
   mod,
   organizations,
   scope,

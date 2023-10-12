@@ -16,7 +16,7 @@
  */
 
 import {
-  getSharingType,
+  getSharingSource,
   isResolvedModComponent,
   isUnavailableMod,
 } from "./modUtils";
@@ -32,7 +32,7 @@ describe("getSharingType", () => {
   test("throws on invalid type", () => {
     const mod: Mod = {} as any;
     expect(() =>
-      getSharingType({
+      getSharingSource({
         mod,
         organizations: [],
         scope: "test_scope",
@@ -43,7 +43,7 @@ describe("getSharingType", () => {
 
   test("personal extension", () => {
     const mod: Mod = modComponentFactory() as any;
-    const { type, label } = getSharingType({
+    const { type, label } = getSharingSource({
       mod,
       organizations: [],
       scope: "test_scope",
@@ -62,7 +62,7 @@ describe("getSharingType", () => {
         timestamp: new Date().toISOString(),
       },
     }) as any;
-    const { type, label } = getSharingType({
+    const { type, label } = getSharingSource({
       mod,
       organizations: [],
       scope: "test_scope",
@@ -99,7 +99,7 @@ describe("getSharingType", () => {
       },
     ];
 
-    const { type, label } = getSharingType({
+    const { type, label } = getSharingSource({
       mod,
       organizations: testOrganizations,
       scope: "test_scope",
@@ -124,7 +124,7 @@ describe("getSharingType", () => {
       },
     ];
 
-    const { type, label } = getSharingType({
+    const { type, label } = getSharingSource({
       mod,
       organizations: testOrganizations,
       scope: "test_scope",
@@ -140,7 +140,7 @@ describe("getSharingType", () => {
       sharing: sharingDefinitionFactory({ public: true }),
     }) as any;
 
-    const { type, label } = getSharingType({
+    const { type, label } = getSharingSource({
       mod,
       organizations: [],
       scope: "test_scope",
