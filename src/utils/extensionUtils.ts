@@ -18,6 +18,7 @@
 import pTimeout from "p-timeout";
 import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
+import { isScriptableUrl } from "webext-content-scripts";
 
 type TabId = number;
 
@@ -72,7 +73,7 @@ export async function getTabsWithAccess(): Promise<TabId[]> {
     discarded: false,
   });
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The type isn't tight enough for tabs.query()
-  return tabs.map((tab) => tab.id!);
+  return tabs.filter((tab) => isScriptableUrl(tab.url!)).map((tab) => tab.id!);
 }
 
 /**
