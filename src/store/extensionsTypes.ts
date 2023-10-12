@@ -20,7 +20,6 @@ import {
   type ActivatedModComponentV2,
   type UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { isEmpty } from "lodash";
 
 /**
  * @deprecated - Do not use versioned state types directly
