@@ -24,10 +24,10 @@ import {
   type ModComponentStateV0,
   type ModComponentStateV1,
   type ModComponentStateV2,
+  type ModComponentStateV3,
   isModComponentStateV0,
   isModComponentStateV1,
   isModComponentStateV2,
-  ModComponentStateV3,
   isModComponentStateV3,
 } from "@/store/extensionsTypes";
 import { omit } from "lodash";
