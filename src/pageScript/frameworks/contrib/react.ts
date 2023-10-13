@@ -112,6 +112,7 @@ function findReactComponent(node: Node, traverseUp = 0): Fiber {
     key.startsWith("__reactInternalInstance$")
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Internal React types
   const domFiber: Fiber | LegacyInstance | null = (node as any)[key];
 
   if (domFiber == null) {

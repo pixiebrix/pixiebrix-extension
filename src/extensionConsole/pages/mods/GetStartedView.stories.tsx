@@ -36,7 +36,7 @@ export default {
   component: GetStartedView,
 } as ComponentMeta<typeof GetStartedView>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: unknown) {
   return configureStore({
     reducer: {
       modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),

@@ -17,7 +17,7 @@
 
 import { type Except } from "type-fest";
 import { type AxiosError, type AxiosResponse } from "axios";
-import { isEmpty, isPlainObject } from "lodash";
+import { isEmpty } from "lodash";
 import { getReasonPhrase } from "http-status-codes";
 import { isObject } from "@/utils/objectUtils";
 
@@ -112,7 +112,7 @@ type ClientErrorData = {
 export function isBadRequestObjectData(
   data: unknown
 ): data is BadRequestObjectData {
-  if (!isPlainObject(data) || !isObject(data)) {
+  if (!isObject(data)) {
     return false;
   }
 

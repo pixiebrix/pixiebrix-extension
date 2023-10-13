@@ -18,6 +18,7 @@
 import { withReadWindow } from "@/pageScript/messenger/api";
 import { registerFactory } from "@/bricks/readers/factory";
 import { type JsonObject } from "type-fest";
+import { isObject } from "@/utils/objectUtils";
 
 type PathSpecObj = Record<string, string>;
 export type PathSpec = string | PathSpecObj;
@@ -28,14 +29,14 @@ export interface WindowConfig {
   pathSpec: PathSpec;
 }
 
-async function handleFlatten(
+async function handleFlatten<T>(
   pathSpec: PathSpec,
-  factory: (arg: PathSpecObj) => Promise<any>
-): Promise<any> {
+  factory: (arg: PathSpecObj) => Promise<T>
+): Promise<T> {
   const pathSpecObj: PathSpecObj =
     typeof pathSpec === "string" ? { value: pathSpec } : pathSpec;
   const values = await factory(pathSpecObj);
-  return typeof values === "object" ? values.value : values;
+  return isObject(values) ? (values.value as T) : values;
 }
 
 async function doRead(reader: WindowConfig): Promise<JsonObject> {

@@ -59,6 +59,7 @@ function monkeyPatchForm() {
   // https://github.com/rjsf-team/react-jsonschema-form/issues/2095#issuecomment-844309622
   const registry = utils.getDefaultRegistry();
   const defaultFileWidget = registry.widgets.FileWidget;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Remove this monkeypatch since it was fixed in March 2023
   (Theme as any).widgets.FileWidget = defaultFileWidget;
   return withTheme(Theme);
 }

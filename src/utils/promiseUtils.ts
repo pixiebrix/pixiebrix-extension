@@ -38,6 +38,7 @@ export async function asyncMapValues<T, TResult>(
   );
   return Object.fromEntries(
     zip(entries, values).map(([[key] = [], value]) => [key, value])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Use p-props when it's ready
   ) as any;
 }
 
