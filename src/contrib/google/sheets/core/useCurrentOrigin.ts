@@ -58,19 +58,11 @@ function useCurrentOrigin(): string | null {
     // since the tab with the sidebar will be active when this code is run
     // in this PR. But, to be correct in all cases, we don't want to rely
     // on the tab/page this is running on being active.
-    //
-    // NOTE2: Make sure to use browser.tabs instead of chrome.tabs, in order to
-    // use the MV3 promise-based syntax as opposed to the callback version.
     const tabs = await browser.tabs.query({
       active: true,
       lastFocusedWindow: true,
     });
-    const url = new URL(tabs[0].url);
-    // See google.picker:
-    // The origin should be set to the window.location.protocol + '//' +
-    // window.location.host of the top-most page, if your application is
-    // running in an iframe.
-    return url.protocol + "//" + url.host;
+    return new URL(tabs[0].url).origin;
   }, []);
 
   useEffect(() => {

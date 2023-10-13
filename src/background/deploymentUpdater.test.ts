@@ -68,8 +68,9 @@ jest.mock("@/hooks/useRefreshRegistries", () => ({
   refreshRegistries: jest.fn(),
 }));
 
-jest.mock("@/background/activeTab", () => ({
+jest.mock("@/utils/extensionUtils", () => ({
   forEachTab: jest.fn().mockResolvedValue(undefined),
+  getExtensionVersion: () => browser.runtime.getManifest().version,
 }));
 
 jest.mock("webext-messenger");

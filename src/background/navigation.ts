@@ -16,7 +16,7 @@
  */
 
 import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
-import { forEachTab } from "@/background/activeTab";
+import { forEachTab } from "@/utils/extensionUtils";
 import { type Target } from "@/types/messengerTypes";
 import { canAccessTab, isScriptableUrl } from "@/permissions/permissionsUtils";
 import { debounce } from "lodash";

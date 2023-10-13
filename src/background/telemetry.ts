@@ -40,6 +40,7 @@ import {
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";
+import { getTabsWithAccess } from "@/utils/extensionUtils";
 
 const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
@@ -436,7 +437,7 @@ export async function pong(): Promise<{ timestamp: number }> {
  */
 export async function collectPerformanceDiagnostics(): Promise<Diagnostics> {
   const timestamp = Date.now();
-  const allTabs = await browser.tabs.query({});
+  const allTabs = await getTabsWithAccess();
 
   return {
     timestamp,

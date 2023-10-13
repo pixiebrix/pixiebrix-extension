@@ -3,7 +3,7 @@ import {
   clearDynamicElements,
   removeSidebars,
 } from "@/contentScript/messenger/api";
-import { forEachTabAsync } from "@/background/activeTab";
+import { forEachTab } from "@/utils/extensionUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uninstallContextMenu } from "./contextMenus";
 import { clearExtensionTraces } from "@/telemetry/trace";
@@ -14,7 +14,7 @@ export async function removeExtensionForEveryTab(
 ): Promise<void> {
   console.debug("Remove extension for all tabs", { extensionId });
 
-  await forEachTabAsync(async (tab) => {
+  await forEachTab(async (tab) => {
     removeInstalledExtension(tab, extensionId);
     await clearDynamicElements(tab, { uuid: extensionId });
     await removeSidebars(tab, [extensionId]);
