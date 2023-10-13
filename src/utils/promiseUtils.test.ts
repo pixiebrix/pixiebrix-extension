@@ -19,6 +19,7 @@ import {
   groupPromisesByStatus,
   memoizeUntilSettled,
   retryWithJitter,
+  asyncMapValues,
 } from "@/utils/promiseUtils";
 
 // From https://github.com/sindresorhus/p-memoize/blob/52fe6052ff2287f528c954c4c67fc5a61ff21360/test.ts#LL198
@@ -125,5 +126,22 @@ describe("retryWithJitter", () => {
       })
     ).rejects.toThrow("different non-specified error");
     expect(fn).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("asyncMapValues", () => {
+  test("it maps values", async () => {
+    const result = await asyncMapValues(
+      {
+        a: 1,
+        b: 2,
+      },
+      async (value): Promise<number> => value * 2
+    );
+
+    expect(result).toStrictEqual({
+      a: 2,
+      b: 4,
+    });
   });
 });
