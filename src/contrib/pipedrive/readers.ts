@@ -59,13 +59,12 @@ export class PipedriveReader extends ReaderABC {
   }
 
   async read(): Promise<JsonObject> {
-    // TODO: This casting doesn't make sense but it's how it worked before
-    const castSpec =
+    const pathSpecObj =
       typeof this.pathSpec === "string"
-        ? Object.fromEntries([...this.pathSpec].entries())
+        ? { value: this.pathSpec }
         : this.pathSpec;
     return withReadWindow({
-      pathSpec: mapObject(castSpec, (x: string) => `${this.ROOT_PATH}.${x}`),
+      pathSpec: mapObject(pathSpecObj, (x: string) => `${this.ROOT_PATH}.${x}`),
     });
   }
 }
