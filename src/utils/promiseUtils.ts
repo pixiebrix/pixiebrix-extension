@@ -36,10 +36,9 @@ export async function asyncMapValues<T, TResult>(
   const values = await Promise.all(
     entries.map(async ([key, value]) => fn(value, key, mapping))
   );
-  return Object.fromEntries(
-    zip(entries, values).map(([[key] = [], value]) => [key, value])
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Use p-props when it's ready
-  ) as any;
+  return Object.fromEntries(zip(Object.keys(mapping), values)) as {
+    [K in keyof T]: TResult;
+  };
 }
 
 export async function allSettledValues<T = unknown>(

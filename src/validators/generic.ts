@@ -177,7 +177,7 @@ const pixieResolver: ResolverOptions = {
   canRead: /^https?:\/\//i,
   async read(file: FileInfo) {
     if (SCHEMA_URLS[file.url]) {
-      return SCHEMA_URLS[file.url] as unknown;
+      return SCHEMA_URLS[file.url];
     }
 
     throw new Error(`Unknown file ${file.url}`);

@@ -18,7 +18,7 @@
 import { type UnknownObject } from "@/types/objectTypes";
 import { type JsonObject } from "type-fest";
 import safeJsonStringify from "json-stringify-safe";
-import { isPlainObject, mapValues, partial, pickBy } from "lodash";
+import { mapValues, partial, pickBy } from "lodash";
 
 export function isGetter(obj: Record<string, unknown>, prop: string): boolean {
   return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
@@ -144,7 +144,7 @@ export function cleanValue(
 }
 
 export function excludeUndefined(obj: unknown): unknown {
-  if (isPlainObject(obj) && typeof obj === "object") {
+  if (isObject(obj)) {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
       excludeUndefined
@@ -158,9 +158,9 @@ export function removeUndefined(obj: unknown): unknown {
   return deepPickBy(obj, (value: unknown) => value !== undefined);
 }
 
-export function mapObject<T, U>(
-  obj: Record<string, T>,
-  fn: (value: T, key: string) => U
-): Record<string, U> {
+export function mapObject<Input, Output>(
+  obj: Record<string, Input>,
+  fn: (value: Input, key: string) => Output
+): Record<string, Output> {
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
 }
