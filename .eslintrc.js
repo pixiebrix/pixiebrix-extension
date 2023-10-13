@@ -68,6 +68,7 @@ module.exports = {
         ],
       },
     ],
+    // TODO: Move to shared config
     "@typescript-eslint/no-explicit-any": [
       "error",
       {
@@ -110,7 +111,7 @@ module.exports = {
       rules: {
         "import/no-restricted-paths": "off",
         "@typescript-eslint/no-non-null-assertion": "off", // TODO: Move to shared config,
-        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-explicit-any": "off", // TODO: Move to shared config
       },
     },
     {
