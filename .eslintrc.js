@@ -110,7 +110,7 @@ module.exports = {
       extends: ["pixiebrix/server"],
       rules: {
         "import/no-restricted-paths": "off",
-        "@typescript-eslint/no-non-null-assertion": "off", // TODO: Move to shared config,
+        "@typescript-eslint/no-non-null-assertion": "off", // TODO: Move to shared config
         "@typescript-eslint/no-explicit-any": "off", // TODO: Move to shared config
       },
     },
