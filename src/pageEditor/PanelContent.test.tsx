@@ -64,7 +64,7 @@ describe("Listen to navigationEvent", () => {
     await waitForEffect();
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(1);
 
-    navigationEvent.emit(thisTab.tabId);
+    navigationEvent.emit();
 
     // One call on load and one on navigation event
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
@@ -85,7 +85,7 @@ describe("Listen to navigationEvent", () => {
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(1);
     expect(updateDynamicElement).not.toHaveBeenCalled();
 
-    navigationEvent.emit(thisTab.tabId);
+    navigationEvent.emit();
 
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
     // Panels are not automatically updated on navigation

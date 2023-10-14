@@ -77,10 +77,12 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
               bindKey: { win: "Ctrl-O", mac: "Command-O" },
               exec(editor) {
                 const { row, column } = editor.getCursorPosition();
-                const id = trim(
-                  editor.session.getTokenAt(row, column).value,
-                  "'\" \t"
-                );
+                const token = editor.session.getTokenAt(row, column);
+                if (!token) {
+                  return;
+                }
+
+                const id = trim(token.value, "'\" \t");
                 if (!isEmpty(id)) {
                   openEditorRef.current(id);
                 }
@@ -91,10 +93,12 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
               bindKey: { win: "Ctrl-B", mac: "Command-B" },
               exec(editor) {
                 const { row, column } = editor.getCursorPosition();
-                const id = trim(
-                  editor.session.getTokenAt(row, column).value,
-                  "'\" \t"
-                );
+                const token = editor.session.getTokenAt(row, column);
+                if (!token) {
+                  return;
+                }
+
+                const id = trim(token.value, "'\" \t");
                 if (!isEmpty(id)) {
                   openDefinitionRef.current(id);
                 }
