@@ -20,7 +20,7 @@ import React from "react";
 import { type FormPreviewFieldProps } from "./FormPreviewFieldTemplate";
 import { type SchemaDefinition } from "@/types/schemaTypes";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it exists
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We know it exists
 const RjsfSchemaField = RjsfTheme.fields!.SchemaField!;
 
 /**

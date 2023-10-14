@@ -43,7 +43,7 @@ function flattenListContent(list: HTMLDListElement): NormalizedItem[] {
   let dtStartsNewGroup = true;
   for (const element of list.querySelectorAll("dt, dd")) {
     if (element.tagName === "DT") {
-      if (!current || dtStartsNewGroup) {
+      if (dtStartsNewGroup) {
         dtStartsNewGroup = false;
         current = {
           terms: [],

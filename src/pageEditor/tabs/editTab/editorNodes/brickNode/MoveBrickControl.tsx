@@ -21,8 +21,8 @@ import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import styles from "./MoveBrickControl.module.scss";
 
 export type MoveBrickControlProps = {
-  onClickMoveUp: () => void;
-  onClickMoveDown: () => void;
+  onClickMoveUp?: () => void;
+  onClickMoveDown?: () => void;
 };
 
 const MoveBrickControl: React.VFC<MoveBrickControlProps> = ({
@@ -32,12 +32,12 @@ const MoveBrickControl: React.VFC<MoveBrickControlProps> = ({
   const canMoveUp = Boolean(onClickMoveUp);
   const canMoveDown = Boolean(onClickMoveDown);
 
-  return canMoveUp || canMoveDown ? (
+  return !canMoveUp && !canMoveDown ? null : (
     <div className={styles.root}>
       <button
         type="button"
         onClick={(event) => {
-          onClickMoveUp();
+          onClickMoveUp?.();
           event.stopPropagation();
         }}
         title="Move brick higher"
@@ -49,7 +49,7 @@ const MoveBrickControl: React.VFC<MoveBrickControlProps> = ({
       <button
         type="button"
         onClick={(event) => {
-          onClickMoveDown();
+          onClickMoveDown?.();
           event.stopPropagation();
         }}
         title="Move brick lower"
@@ -59,7 +59,7 @@ const MoveBrickControl: React.VFC<MoveBrickControlProps> = ({
         <FontAwesomeIcon icon={faArrowDown} size="sm" />
       </button>
     </div>
-  ) : null;
+  );
 };
 
 export default MoveBrickControl;

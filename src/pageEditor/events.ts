@@ -16,7 +16,7 @@
  */
 
 import { type WebNavigation } from "webextension-polyfill";
-import { SimpleEventTarget } from "@/utils/SimpleEventTarget.js";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 

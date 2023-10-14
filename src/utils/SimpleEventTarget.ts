@@ -18,10 +18,10 @@
 type SimpleEventListener<Detail> = (detail: Detail) => void;
 
 /**
- * Thinnest possible wrapper around native events
+ * Thinnest possible wrapper around native events. It simplifies typing the custom event detail.
  *
  * @usage
- *   const smokeSignals = new SimpleEventTarget();
+ *   const smokeSignals = new SimpleEventTarget<string>();
  *   smokeSignals.add(details => console.log(details))
  *   smokeSignals.emit('The BBQ is ready');
  */

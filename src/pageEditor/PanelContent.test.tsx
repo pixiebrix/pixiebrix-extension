@@ -22,7 +22,6 @@ import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
-import { thisTab } from "./utils";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
