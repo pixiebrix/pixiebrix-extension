@@ -216,3 +216,15 @@ declare const browser: ChromeifiedBrowser;
 declare namespace CSS {
   function px(length: number): string;
 }
+
+// These types are unnecessarily loose
+// https://dom.spec.whatwg.org/#dom-node-textcontent
+interface ChildNode {
+  textContent: string;
+}
+interface Text {
+  textContent: string;
+}
+interface Element {
+  textContent: string;
+}

@@ -55,10 +55,10 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   nodePreviewElement,
   isPipelineLoading,
 }) => {
-  const nodeRef = useRef(null);
+  const nodeRef = useRef<HTMLAnchorElement | null>(null);
 
   const scrollIntoView = () => {
-    nodeRef.current.scrollIntoView({
+    nodeRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
@@ -92,9 +92,9 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
       <ListGroup.Item
         active={active}
         className={cx(styles.root, {
-          [styles.clickable]: Boolean(nodePreviewElement),
-          [styles.parentNodeActive]: isParentActive,
-          [styles.ancestorActive]: isAncestorActive,
+          [styles.clickable ?? ""]: Boolean(nodePreviewElement),
+          [styles.parentNodeActive ?? ""]: isParentActive,
+          [styles.ancestorActive ?? ""]: isAncestorActive,
         })}
         onClick={nodePreviewElement?.focus}
         ref={nodeRef}
@@ -103,12 +103,12 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
         <div className={styles.header}>
           <div
             className={cx(styles.headerPipeLineTop, {
-              [styles.active]: active,
+              [styles.active ?? ""]: active,
             })}
           />
           <div
             className={cx(styles.headerPipeLineBottom, {
-              [styles.active]: active,
+              [styles.active ?? ""]: active,
             })}
           />
           <div className={styles.headerContent}>

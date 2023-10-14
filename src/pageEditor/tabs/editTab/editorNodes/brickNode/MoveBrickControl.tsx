@@ -21,8 +21,8 @@ import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import styles from "./MoveBrickControl.module.scss";
 
 export type MoveBrickControlProps = {
-  onClickMoveUp?: () => void;
-  onClickMoveDown?: () => void;
+  onClickMoveUp: () => void;
+  onClickMoveDown: () => void;
 };
 
 const MoveBrickControl: React.VFC<MoveBrickControlProps> = ({
@@ -32,36 +32,34 @@ const MoveBrickControl: React.VFC<MoveBrickControlProps> = ({
   const canMoveUp = Boolean(onClickMoveUp);
   const canMoveDown = Boolean(onClickMoveDown);
 
-  return (
-    (canMoveUp || canMoveDown) && (
-      <div className={styles.root}>
-        <button
-          type="button"
-          onClick={(event) => {
-            onClickMoveUp();
-            event.stopPropagation();
-          }}
-          title="Move brick higher"
-          disabled={!canMoveUp}
-          className={styles.moveButton}
-        >
-          <FontAwesomeIcon icon={faArrowUp} size="sm" />
-        </button>
-        <button
-          type="button"
-          onClick={(event) => {
-            onClickMoveDown();
-            event.stopPropagation();
-          }}
-          title="Move brick lower"
-          disabled={!canMoveDown}
-          className={styles.moveButton}
-        >
-          <FontAwesomeIcon icon={faArrowDown} size="sm" />
-        </button>
-      </div>
-    )
-  );
+  return canMoveUp || canMoveDown ? (
+    <div className={styles.root}>
+      <button
+        type="button"
+        onClick={(event) => {
+          onClickMoveUp();
+          event.stopPropagation();
+        }}
+        title="Move brick higher"
+        disabled={!canMoveUp}
+        className={styles.moveButton}
+      >
+        <FontAwesomeIcon icon={faArrowUp} size="sm" />
+      </button>
+      <button
+        type="button"
+        onClick={(event) => {
+          onClickMoveDown();
+          event.stopPropagation();
+        }}
+        title="Move brick lower"
+        disabled={!canMoveDown}
+        className={styles.moveButton}
+      >
+        <FontAwesomeIcon icon={faArrowDown} size="sm" />
+      </button>
+    </div>
+  ) : null;
 };
 
 export default MoveBrickControl;

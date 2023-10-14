@@ -27,9 +27,13 @@ interface NormalizedItem {
   definitions: string[];
 }
 
+// As defined in https://html.spec.whatwg.org/multipage/grouping-content.html#htmldlistelement
 function flattenListContent(list: HTMLDListElement): NormalizedItem[] {
   const flattened: NormalizedItem[] = [];
-  let current: NormalizedItem;
+  let current: NormalizedItem = {
+    terms: [],
+    definitions: [],
+  };
 
   // This boolean marks the `dd -> dt` sequence, where the old definition ends
   // and a new term is found. This allows `dt, dt, dd, dd` sequences which are
@@ -39,7 +43,7 @@ function flattenListContent(list: HTMLDListElement): NormalizedItem[] {
   let dtStartsNewGroup = true;
   for (const element of list.querySelectorAll("dt, dd")) {
     if (element.tagName === "DT") {
-      if (dtStartsNewGroup) {
+      if (!current || dtStartsNewGroup) {
         dtStartsNewGroup = false;
         current = {
           terms: [],

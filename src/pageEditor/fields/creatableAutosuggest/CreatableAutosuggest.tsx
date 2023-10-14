@@ -29,7 +29,7 @@ import Autosuggest, {
   type OnSuggestionSelected,
 } from "react-autosuggest";
 import cx from "classnames";
-import { noop } from "lodash";
+import { identity, noop } from "lodash";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 
@@ -61,7 +61,7 @@ export interface Props<SuggestionType extends SuggestionTypeBase> {
   filterSuggestionsByValue?: boolean;
 
   // Text value of the input
-  inputValue?: string;
+  inputValue?: string | null;
 
   // Placeholder for the input field
   inputPlaceholder?: string;
@@ -111,11 +111,11 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
   inputValue,
   inputPlaceholder = "",
   renderSuggestion,
-  renderCreateNew,
+  renderCreateNew = identity,
   onSuggestionHighlighted = noop,
   onSuggestionsClosed = noop,
   onSuggestionSelected = noop,
-  onCreateNew,
+  onCreateNew = identity,
   onTextChanged = noop,
 }: Props<SuggestionType>) => {
   const [currentValue, setCurrentValue] = useState(inputValue ?? "");
@@ -158,7 +158,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
 
   const onHighlighted = useCallback(
     ({ suggestion }: { suggestion: SuggestionType | CreateNew | null }) => {
-      if (isNew(suggestion)) return;
+      if (!suggestion || isNew(suggestion)) return;
       onSuggestionHighlighted(suggestion);
     },
     [onSuggestionHighlighted]
@@ -210,7 +210,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
   const theme = useMemo(
     () => ({
       input: cx("form-control", styles.input, {
-        [styles.notClearable]: !isClearable,
+        [styles.notClearable ?? ""]: !isClearable,
       }),
       suggestionsContainer: "dropdown",
       suggestionsList: cx("dropdown-menu", "show", styles.suggestionList),

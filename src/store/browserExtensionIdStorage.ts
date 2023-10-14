@@ -18,7 +18,8 @@
 import { forbidContext } from "@/utils/expectContext";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
-const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The build fails without this
+const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID!;
 const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 
 // Used only in the app
