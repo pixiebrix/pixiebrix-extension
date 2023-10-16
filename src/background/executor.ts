@@ -30,12 +30,11 @@ import type { RunBrick } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { SessionMap } from "@/mv3/SessionStorage";
-import { asyncForEach } from "@/utils/promiseUtils";
+import { groupPromisesByStatus } from "@/utils/promiseUtils";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
+import { forEachTab } from "@/utils/extensionUtils";
 
 type TabId = number;
-
-type FrameId = number;
 
 // TODO: One tab could have multiple targets, but `tabToTarget` currently only supports one at a time
 const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
@@ -163,33 +162,23 @@ export async function requestRunInOtherTabs(
   const sourceTabId = this.trace[0].tab.id;
   const subRequest = { ...request, sourceTabId };
 
-  const fulfilled = new Map<TabId, unknown>();
-  const rejected = new Map<TabId, unknown>();
-
-  const { origins } = await browser.permissions.getAll();
-  const tabs = await browser.tabs.query({ url: origins });
-
-  await asyncForEach(tabs, async (tab) => {
-    if (tab.id === sourceTabId) {
-      return;
+  const results = await forEachTab(
+    async ({ tabId }) =>
+      safelyRunBrick({ tabId, frameId: TOP_LEVEL_FRAME_ID }, subRequest),
+    {
+      exclude: sourceTabId,
     }
+  );
 
-    try {
-      const response = safelyRunBrick(
-        { tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID },
-        subRequest
-      );
-      fulfilled.set(tab.id, await response);
-    } catch (error) {
-      rejected.set(tab.id, error);
-    }
-  });
+  const { rejected, fulfilled } = groupPromisesByStatus(results);
 
-  if (rejected.size > 0) {
-    console.warn(`Broadcast rejected for ${rejected.size} tabs`, { rejected });
+  if (rejected.length > 0) {
+    console.warn(`Broadcast rejected for ${rejected.length} tabs`, {
+      rejected,
+    });
   }
 
-  return [...fulfilled].map(([, value]) => value);
+  return fulfilled;
 }
 
 export async function requestRunInAllFrames(
@@ -199,30 +188,25 @@ export async function requestRunInAllFrames(
   const sourceTabId = this.trace[0].tab.id;
   const subRequest = { ...request, sourceTabId };
 
-  const fulfilled = new Map<FrameId, unknown>();
-  const rejected = new Map<FrameId, unknown>();
-
   const frames = await browser.webNavigation.getAllFrames({
     tabId: sourceTabId,
   });
 
-  await asyncForEach(frames, async ({ frameId }) => {
-    try {
-      const response = safelyRunBrick(
-        { tabId: sourceTabId, frameId },
-        subRequest
-      );
-      fulfilled.set(frameId, await response);
-    } catch (error) {
-      rejected.set(frameId, error);
-    }
-  });
+  const results = await Promise.allSettled(
+    frames.map(async ({ frameId }) =>
+      safelyRunBrick({ tabId: sourceTabId, frameId }, subRequest)
+    )
+  );
 
-  if (rejected.size > 0) {
-    console.warn(`Broadcast rejected for ${rejected.size} frame`, { rejected });
+  const { rejected, fulfilled } = groupPromisesByStatus(results);
+
+  if (rejected.length > 0) {
+    console.warn(`Broadcast rejected for ${rejected.length} frame`, {
+      rejected,
+    });
   }
 
-  return [...fulfilled].map(([, value]) => value);
+  return fulfilled;
 }
 
 export async function openTab(

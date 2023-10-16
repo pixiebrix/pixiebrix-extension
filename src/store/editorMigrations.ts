@@ -21,11 +21,15 @@ import {
 } from "redux-persist/es/types";
 import { type Except } from "type-fest";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { mapValues, omit } from "lodash";
+import { isEmpty, mapValues, omit } from "lodash";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
 } from "@/pageEditor/baseFormStateTypes";
+import {
+  type IntegrationDependencyV1,
+  type IntegrationDependencyV2,
+} from "@/types/integrationTypes";
 
 /**
  * @deprecated - Do not use versioned state types directly, exported for testing
@@ -53,17 +57,27 @@ export const migrations: MigrationManifest = {
   2: (state: PersistedEditorStateV1) => migrateEditorStateV1(state),
 };
 
+export function migrateIntegrationDependenciesV1toV2(
+  services: IntegrationDependencyV1[]
+): IntegrationDependencyV2[] {
+  if (isEmpty(services)) {
+    return [];
+  }
+
+  return services.map((dependency) => ({
+    integrationId: dependency.id,
+    outputKey: dependency.outputKey,
+    configId: dependency.config,
+    isOptional: dependency.isOptional,
+    apiVersion: dependency.apiVersion,
+  }));
+}
+
 function migrateFormStateV1(state: BaseFormStateV1): BaseFormStateV2 {
   return {
     ...omit(state, "services"),
-    integrationDependencies: state.services.map(
-      ({ id, outputKey, config, isOptional, apiVersion }) => ({
-        integrationId: id,
-        outputKey,
-        configId: config,
-        isOptional,
-        apiVersion,
-      })
+    integrationDependencies: migrateIntegrationDependenciesV1toV2(
+      state.services
     ),
   };
 }

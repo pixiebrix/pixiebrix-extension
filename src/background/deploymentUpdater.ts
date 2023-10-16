@@ -28,7 +28,7 @@ import {
 } from "@/store/extensionsSelectors";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
-import { forEachTab } from "@/background/activeTab";
+import { forEachTab, getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -66,8 +66,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
-
-import { getExtensionVersion } from "@/utils/extensionUtils";
 
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
 const { reducer: editorReducer, actions: editorActions } = editorSlice;

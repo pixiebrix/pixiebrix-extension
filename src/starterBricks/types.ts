@@ -201,7 +201,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     this.clearModComponentInterfaceAndEvents(removed.map((x) => x.id));
 
     // Clear extensions and re-populate with updated components
-    this.modComponents.splice(0, this.modComponents.length);
+    this.modComponents.length = 0;
     this.modComponents.push(...components);
 
     console.debug("synchronizeComponents for extension point %s", this.id, {

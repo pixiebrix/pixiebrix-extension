@@ -272,13 +272,14 @@ describe("getErrorMessage", () => {
   });
 
   test("if error object, return error message", () => {
-    const errorObject = { message: "error message" };
+    const errorObject = { name: "Error", message: "error message" };
     const message = getErrorMessage(errorObject, "default message");
     expect(message).toEqual(errorObject.message);
   });
 
   test("if InputValidationError, prefer error message property if it exists", () => {
     const inputValidationError = {
+      name: "InputValidationError",
       message: "error message",
       schema: {},
       errors: [{ error: "error", keywordLocation: "#/foo" }],
@@ -289,9 +290,10 @@ describe("getErrorMessage", () => {
 
   test("if InputValidationError with no message property, return first error", () => {
     const firstError = { error: "error", keywordLocation: "#/foo" };
+    const secondError = { error: "second error", keywordLocation: "#/bar" };
     const inputValidationError = {
       schema: {},
-      errors: [firstError, { error: "second error", keywordLocation: "#/bar" }],
+      errors: [firstError, secondError],
     } as InputValidationError;
     const message = getErrorMessage(inputValidationError, "default message");
     expect(message).toBe(`${firstError.keywordLocation}: ${firstError.error}`);

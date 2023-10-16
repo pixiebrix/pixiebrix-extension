@@ -16,10 +16,10 @@
  */
 
 import {
-  type ActivatedModComponent,
+  type ActivatedModComponentV1,
+  type ActivatedModComponentV2,
   type UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { isEmpty } from "lodash";
 
 /**
  * @deprecated - Do not use versioned state types directly
@@ -45,14 +45,22 @@ export type ModComponentStateV1 = {
  * @deprecated - Do not use versioned state types directly
  */
 export type ModComponentStateV2 = {
-  extensions: ActivatedModComponent[];
+  extensions: ActivatedModComponentV1[];
+};
+
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentStateV3 = {
+  extensions: ActivatedModComponentV2[];
 };
 
 export type ModComponentStateVersions =
   | ModComponentStateV0
   | ModComponentStateV1
-  | ModComponentStateV2;
-export type ModComponentState = ModComponentStateV2;
+  | ModComponentStateV2
+  | ModComponentStateV3;
+export type ModComponentState = ModComponentStateV3;
 
 export type ModComponentsRootState = {
   options: ModComponentState;
@@ -69,7 +77,7 @@ export function isModComponentStateV1(
 ): state is ModComponentStateV1 {
   return (
     Array.isArray(state.extensions) &&
-    !isEmpty(state.extensions) &&
+    state.extensions[0] != null &&
     !("createTimestamp" in state.extensions[0])
   );
 }
@@ -79,6 +87,21 @@ export function isModComponentStateV2(
 ): state is ModComponentStateV2 {
   return (
     Array.isArray(state.extensions) &&
-    (isEmpty(state.extensions) || "createTimestamp" in state.extensions[0])
+    state.extensions[0] != null &&
+    // See: ActivatedModComponentV1
+    "createTimestamp" in state.extensions[0] &&
+    "services" in state.extensions[0]
+  );
+}
+
+export function isModComponentStateV3(
+  state: ModComponentStateVersions
+): state is ModComponentStateV3 {
+  return (
+    Array.isArray(state.extensions) &&
+    (state.extensions[0] == null ||
+      // See: ActivatedModComponentV2 -- Also, if the services/integrationDependencies
+      // field is missing completely, the app logic will properly handle it as a V3 type.
+      !("services" in state.extensions[0]))
   );
 }

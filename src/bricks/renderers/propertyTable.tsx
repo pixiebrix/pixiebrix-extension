@@ -35,7 +35,7 @@ interface Item {
 function richValue(value: unknown): unknown {
   if (typeof value === "string" && isValidUrl(value)) {
     return (
-      <a href={value} target="_blank" rel="noopener, noreferrer">
+      <a href={value} target="_blank" rel="noopener noreferrer">
         {value}
       </a>
     );

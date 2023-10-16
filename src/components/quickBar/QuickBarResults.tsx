@@ -29,7 +29,7 @@ const ResultItem = forwardRef(
     }: {
       action: ActionImpl;
       active: boolean;
-      currentRootActionId: ActionId;
+      currentRootActionId: ActionId | undefined | null;
     },
     ref: React.Ref<HTMLDivElement>
   ) => {

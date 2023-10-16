@@ -25,6 +25,7 @@ import {
 } from "@/types/rendererTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
+import { isObject } from "@/utils/objectUtils";
 
 /**
  * Entry types supported by the sidebar.
@@ -55,19 +56,24 @@ export type PanelPayload =
 export function isRendererRunPayload(
   payload: PanelPayload
 ): payload is RendererRunPayload {
-  return "blockId" in payload && "args" in payload && "ctxt" in payload;
+  return (
+    isObject(payload) &&
+    "blockId" in payload &&
+    "args" in payload &&
+    "ctxt" in payload
+  );
 }
 
 export function isRendererLoadingPayload(
   payload: PanelPayload
 ): payload is RendererLoadingPayload {
-  return "loadingMessage" in payload;
+  return isObject(payload) && "loadingMessage" in payload;
 }
 
 export function isRendererErrorPayload(
   payload: PanelPayload
 ): payload is RendererErrorPayload {
-  return "error" in payload;
+  return isObject(payload) && "error" in payload;
 }
 
 /**
