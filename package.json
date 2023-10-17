@@ -17,8 +17,8 @@
     "build:strictNullChecks": "tsc --noEmit --project src/tsconfig.strictNullChecks.json",
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook",
+    "storybook": "storybook dev -p 6006 -s public",
+    "build-storybook": "storybook build",
     "madge:circular": "madge --extensions js,ts,tsx --circular src/** --ts-config tsconfig.json"
   },
   "engine-strict": true,
