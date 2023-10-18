@@ -24,23 +24,25 @@ const rootDir = path.resolve(__dirname, "../");
 
 module.exports = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
+
   addons: [
     "storybook-addon-swc",
     "@storybook/addon-links",
     "@storybook/addon-essentials",
   ],
-  core: {
-    builder: "webpack5",
+
+  framework: "@storybook/react-webpack5",
+
+  docs: {
+    autodocs: true,
   },
-  typescript: {
-    // Remove this after upgrading to Storybook 7
-    reactDocgen: "react-docgen-typescript-plugin",
-  },
+
   features: {
     // Not currently compatible with Storyshots: https://github.com/storybookjs/storybook/issues/18994
     // Enable for Storybook since it has significant performance benefits
     storyStoreV7: process.env.NODE_ENV !== "test",
   },
+
   // https://storybook.js.org/docs/react/builders/webpack#extending-storybooks-webpack-config
   webpackFinal: async (config) => {
     const mergedConfig = mergeWithShared(config, {
