@@ -24,7 +24,11 @@ const rootDir = path.resolve(__dirname, "../");
 
 module.exports = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
-  addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
+  addons: [
+    "storybook-addon-swc",
+    "@storybook/addon-links",
+    "@storybook/addon-essentials",
+  ],
   core: {
     builder: "webpack5",
   },
