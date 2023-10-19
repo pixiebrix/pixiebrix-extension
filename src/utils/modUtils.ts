@@ -34,6 +34,7 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
+import reportError from "@/telemetry/reportError";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -217,12 +218,14 @@ export function getSharingSource({
   const organization = getOrganization(mod, organizations);
 
   if (!isModDefinition(mod) && !isResolvedModComponent(mod)) {
-    reportError(
-      new InvalidTypeError(
-        "Mod is not a ModDefinition or ResolvedModComponent",
-        { mod, organization, scope, installedExtensions }
-      )
+    const error = new InvalidTypeError(
+      "Mod is not a ModDefinition or ResolvedModComponent",
+      { mod, organization, scope, installedExtensions }
     );
+
+    reportError(error);
+
+    throw error;
   }
 
   if (isPersonal(mod, scope)) {

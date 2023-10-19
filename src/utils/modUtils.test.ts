@@ -27,6 +27,7 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { InvalidTypeError } from "@/errors/genericErrors";
 
 describe("getSharingType", () => {
   test("throws on invalid type", () => {
@@ -38,7 +39,7 @@ describe("getSharingType", () => {
         scope: "test_scope",
         installedExtensions: [],
       })
-    ).toThrow();
+    ).toThrow(InvalidTypeError);
   });
 
   test("personal extension", () => {
