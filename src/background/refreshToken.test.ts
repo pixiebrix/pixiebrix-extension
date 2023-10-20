@@ -32,13 +32,12 @@ import {
   setCachedAuthData,
 } from "@/background/auth/authStorage";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
 const aaIntegration = fromJS(aaDefinition as any);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
+
 const googleIntegration = fromJS(googleDefinition as any);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
+
 const greenhouseIntegration = fromJS(greenhouseDefintion as any);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
+
 const microsoftIntegration = fromJS(microsoftDefinition as any);
 
 jest.mock("@/background/auth/authStorage", () => ({

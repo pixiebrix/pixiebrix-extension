@@ -71,12 +71,10 @@ describe("blocksMap", () => {
   test("caches the typed blocks", async () => {
     getByKindsMock.mockResolvedValueOnce([
       {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         ...parsePackage(starterBrickConfigFactory() as any),
         timestamp: new Date(),
       },
       {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         ...parsePackage(starterBrickConfigFactory() as any),
         timestamp: new Date(),
       },
@@ -112,12 +110,10 @@ describe("bricksRegistry", () => {
 
   test("skips invalid block", async () => {
     const validBrick = {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       ...parsePackage(starterBrickConfigFactory() as any),
       timestamp: new Date(),
     };
     const invalidBrick = {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       ...parsePackage(starterBrickConfigFactory() as any),
       timestamp: new Date(),
     };
@@ -151,7 +147,6 @@ describe("bricksRegistry", () => {
 
   test("cache invalid until all()", async () => {
     const value = starterBrickConfigFactory();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const brick = { ...parsePackage(value as any), timestamp: new Date() };
 
     getByKindsMock.mockResolvedValueOnce([brick]);
