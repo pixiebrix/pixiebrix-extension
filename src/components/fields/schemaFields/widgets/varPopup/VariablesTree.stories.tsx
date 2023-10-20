@@ -26,7 +26,7 @@ export default {
 } as ComponentMeta<typeof VariablesTree>;
 
 // Empty objects in the tree correspond to the ExistenceMap leaf
-const knownVars: any = {
+const knownVars = {
   "root:Array Composite Reader": {
     "@input": {
       description: {},

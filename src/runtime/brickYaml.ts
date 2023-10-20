@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- TODO: The types around schemas are loose and complex */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *

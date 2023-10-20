@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeUndefined } from "@/utils/objectUtils";
+import { removeUndefined, mapObject } from "@/utils/objectUtils";
 
 describe("removeUndefined", () => {
   test("remove top-level undefined", () => {
@@ -26,6 +26,32 @@ describe("removeUndefined", () => {
   test("remove nested undefined", () => {
     expect(removeUndefined({ foo: { bar: undefined } })).toStrictEqual({
       foo: {},
+    });
+  });
+});
+
+describe("mapObject", () => {
+  test("callback arguments", () => {
+    const callback = jest.fn();
+    mapObject({ foo: "bar" }, callback);
+    expect(callback).toHaveBeenCalledWith("bar", "foo");
+  });
+
+  test("callback called for each key", () => {
+    const callback = jest.fn();
+    mapObject({ foo: "bar", baz: "qux" }, callback);
+    expect(callback).toHaveBeenCalledTimes(2);
+  });
+
+  test("the callback alters the type of the Record", () => {
+    const callback = (value: string) => value.codePointAt(0);
+    const result: Record<string, number> = mapObject(
+      { foo: "bar", baz: "qux" },
+      callback
+    );
+    expect(result).toStrictEqual({
+      foo: 98,
+      baz: 113,
     });
   });
 });

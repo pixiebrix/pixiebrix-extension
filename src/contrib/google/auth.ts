@@ -96,6 +96,7 @@ class PermissionsError extends Error {
 export async function handleLegacyGoogleClientRequestRejection(
   token: string,
   // TODO: Find a better solution than casting to any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any
 ): Promise<Error> {
   console.debug("Google rejected request", { error });

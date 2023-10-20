@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any -- test factories */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *

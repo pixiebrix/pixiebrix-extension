@@ -28,7 +28,7 @@ import {
 } from "@/testUtils/testHelpers";
 import integrationsSlice from "@/store/integrations/integrationsSlice";
 
-function configureCommonStoreForTests(initialState?: any) {
+function configureCommonStoreForTests(initialState?: unknown) {
   return configureStore({
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),

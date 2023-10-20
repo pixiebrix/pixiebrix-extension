@@ -45,7 +45,7 @@ export default {
   },
 } as ComponentMeta<typeof OnboardingView>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: unknown) {
   return configureStore({
     reducer: {
       mods: persistReducer(persistModsConfig, modsPageSlice.reducer),

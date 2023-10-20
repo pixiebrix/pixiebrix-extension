@@ -68,7 +68,14 @@ module.exports = {
         ],
       },
     ],
-
+    // TODO: Move to shared config
+    "@typescript-eslint/no-explicit-any": [
+      "error",
+      {
+        fixToUnknown: true,
+        ignoreRestArgs: true,
+      },
+    ],
     "no-restricted-syntax": [
       "error",
       {
@@ -78,7 +85,6 @@ module.exports = {
     ],
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
-    "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
     "@typescript-eslint/no-non-null-assertion": "error", // TODO: Move to shared config
 
@@ -105,6 +111,7 @@ module.exports = {
       rules: {
         "import/no-restricted-paths": "off",
         "@typescript-eslint/no-non-null-assertion": "off", // TODO: Move to shared config
+        "@typescript-eslint/no-explicit-any": "off", // TODO: Move to shared config
       },
     },
     {
@@ -122,11 +129,7 @@ module.exports = {
       ],
       rules: {
         "unicorn/prefer-spread": "off",
-      },
-    },
-    {
-      files: ["src/testUtils/**/*"],
-      rules: {
+        "@typescript-eslint/no-explicit-any": "off",
         "jest/no-export": "off",
         "testing-library/render-result-naming-convention": "off",
       },
