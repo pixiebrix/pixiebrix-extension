@@ -33,11 +33,8 @@ import {
 } from "@/background/auth/authStorage";
 
 const aaIntegration = fromJS(aaDefinition as any);
-
 const googleIntegration = fromJS(googleDefinition as any);
-
 const greenhouseIntegration = fromJS(greenhouseDefintion as any);
-
 const microsoftIntegration = fromJS(microsoftDefinition as any);
 
 jest.mock("@/background/auth/authStorage", () => ({
