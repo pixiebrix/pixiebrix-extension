@@ -30,6 +30,8 @@ interface NormalizedItem {
 // As defined in https://html.spec.whatwg.org/multipage/grouping-content.html#htmldlistelement
 function flattenListContent(list: HTMLDListElement): NormalizedItem[] {
   const flattened: NormalizedItem[] = [];
+  // This first item won't be used unless the list starts with a `dd` element,
+  // which is invalid but we can handle it anyway.
   let current: NormalizedItem = {
     terms: [],
     definitions: [],
