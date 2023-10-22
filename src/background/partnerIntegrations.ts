@@ -32,6 +32,7 @@ import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
 import { safeParseUrl } from "@/utils/urlUtils";
 import { setCachedAuthData } from "@/background/auth/authStorage";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
@@ -137,13 +138,14 @@ export async function launchAuthIntegration({
         },
       });
     } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 401) {
+      if (isAxiosError(error) && [401, 403].includes(error.response?.status)) {
         // Clear the token to allow the user re-login with the SAML/SSO provider
         // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
         await chromeP.identity.clearAllCachedAuthTokens();
 
         throw new Error(
-          "Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration."
+          `Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration.
+          Error: ${getErrorMessage(error)}`
         );
       }
 
