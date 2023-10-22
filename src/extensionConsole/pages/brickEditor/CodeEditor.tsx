@@ -21,7 +21,7 @@ import React, { useRef, Suspense, useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 
 import AceEditor from "@/vendors/AceEditor";
-import { Ace } from "ace-builds";
+import { type Ace } from "ace-builds";
 
 interface OwnProps {
   name: string;
