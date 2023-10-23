@@ -229,6 +229,11 @@
     "./store/migratePersistedState.ts",
     "./analysis/analysisVisitors/varAnalysis/varMap.ts",
     "./components/quickBar/defaultActions.tsx",
-    "./telemetry/dnt.ts"
+    "./telemetry/dnt.ts",
+    "./bricks/types.ts",
+    "./types/integrationTypes.ts",
+    "./types/loggerTypes.ts",
+    "./types/registryTypes.ts",
+    "./types/runtimeTypes.ts"
   ]
 }
