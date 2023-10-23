@@ -17,6 +17,10 @@
 
 import pTimeout from "p-timeout";
 import { foreverPendingPromise } from "@/utils/promiseUtils";
+import { type Promisable } from "type-fest";
+import { isScriptableUrl } from "webext-content-scripts";
+
+type TabId = number;
 
 export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
 type Command = "toggle-quick-bar";
@@ -30,9 +34,10 @@ export async function openShortcutsTab({
 }: { command?: Command } = {}): Promise<void> {
   const description =
     // eslint-disable-next-line security/detect-object-injection -- type-checked
-    browser.runtime.getManifest().commands[command]?.description;
+    browser.runtime.getManifest().commands?.[command]?.description;
+  const hash = description ? `#:~:text=${encodeURIComponent(description)}` : "";
   await browser.tabs.create({
-    url: `${SHORTCUTS_URL}#:~:text=${encodeURIComponent(description)}`,
+    url: SHORTCUTS_URL + hash,
   });
 }
 
@@ -60,4 +65,34 @@ export async function reloadIfNewVersionIsReady(): Promise<
 
 export class RuntimeNotFoundError extends Error {
   override name = "RuntimeNotFoundError";
+}
+
+export async function getTabsWithAccess(): Promise<TabId[]> {
+  const tabs = await browser.tabs.query({
+    url: ["https://*/*", "http://*/*"],
+    discarded: false,
+  });
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The type isn't tight enough for tabs.query()
+  return tabs.filter((tab) => isScriptableUrl(tab.url!)).map((tab) => tab.id!);
+}
+
+/**
+ * Runs a callback for each tab the extension has access to
+ */
+export async function forEachTab<
+  TCallback extends (target: { tabId: number }) => Promisable<unknown>
+>(
+  callback: TCallback,
+  options?: { exclude: number }
+): Promise<Array<PromiseSettledResult<unknown>>> {
+  const tabs = await getTabsWithAccess();
+
+  if (tabs.length > 20) {
+    console.warn("forEachTab called on more than 20");
+  }
+
+  const promises = tabs
+    .filter((tabId) => tabId !== options?.exclude)
+    .map((tabId) => callback({ tabId }));
+  return Promise.allSettled(promises);
 }

@@ -270,13 +270,15 @@ const AddBlockModal: React.FC = () => {
     return [...popular, ...regular];
   }, [searchResults, state.query, taggedBrickIds]);
 
-  const [invalidBlockMessages] = useAsyncState<Map<RegistryId, string>>(
+  const [invalidBlockMessages] = useAsyncState<
+    BlockGridData["invalidBlockMessages"]
+  >(
     async () =>
       new Map(
         compact(
           await Promise.all(
             blockOptions.map(
-              async (blockOption): Promise<[RegistryId, string]> => {
+              async (blockOption): Promise<[RegistryId, React.ReactNode]> => {
                 const result = await testAddBlock(blockOption.blockResult);
                 if (result.error) {
                   return [blockOption.blockResult.id, result.error];

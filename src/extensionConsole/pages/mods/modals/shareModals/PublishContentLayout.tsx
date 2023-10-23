@@ -15,29 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactElement } from "react";
-import { type UUID } from "@/types/stringTypes";
+import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
-import { sortBy } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faInfoCircle,
-  faUser,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faUsers } from "@fortawesome/free-solid-svg-icons";
 import styles from "./ShareModals.module.scss";
-import { selectAuth } from "@/auth/authSelectors";
-import { type Organization, UserRole } from "@/types/contract";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { RequireScope } from "@/auth/RequireScope";
-import { getScopeAndId } from "@/utils/registryUtils";
-
-const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
-
-const sortOrganizations = (organizations: Organization[]) =>
-  sortBy(organizations, (organization) => organization.name);
+import OwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/OwnerLabel";
+import useHasEditPermissions from "@/extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions";
+import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
 
 type PublishContentLayoutProps = React.PropsWithChildren<{
   title: string;
@@ -47,47 +36,10 @@ const PublishContentLayout: React.FunctionComponent<
   PublishContentLayoutProps
 > = ({ title, children }) => {
   const { blueprintId } = useSelector(selectShowPublishContext);
-  const { scope: userScope, organizations: userOrganizations } =
-    useSelector(selectAuth);
   const { data: recipe } = useOptionalModDefinition(blueprintId);
 
-  // Sorting returns new array, so it safe to mutate it
-  const sortedOrganizations = sortOrganizations(userOrganizations);
-  const [recipeScope] = getScopeAndId(recipe?.metadata.id);
-  let ownerLabel: ReactElement;
-  let hasEditPermissions = false;
-  if (recipeScope === userScope) {
-    ownerLabel = (
-      <span>
-        <FontAwesomeIcon icon={faUser} /> You
-      </span>
-    );
-    hasEditPermissions = true;
-  } else {
-    const ownerOrganizationIndex = sortedOrganizations.findIndex(
-      (x) => x.scope === recipeScope
-    );
-
-    if (ownerOrganizationIndex === -1) {
-      ownerLabel = (
-        <span>
-          <FontAwesomeIcon icon={faUsers} /> Unknown
-        </span>
-      );
-    } else {
-      // We get the owner's organization and remove it from the list of organizations (splice mutates the array)
-      const ownerOrganization = sortedOrganizations.splice(
-        ownerOrganizationIndex,
-        1
-      )[0];
-      ownerLabel = (
-        <span>
-          <FontAwesomeIcon icon={faUsers} /> {ownerOrganization.name}
-        </span>
-      );
-      hasEditPermissions = editorRoles.has(ownerOrganization?.role);
-    }
-  }
+  const sortedOrganizations = useSortOrganizations();
+  const hasEditPermissions = useHasEditPermissions(blueprintId);
 
   const body = hasEditPermissions ? (
     children
@@ -98,11 +50,11 @@ const PublishContentLayout: React.FunctionComponent<
         to change sharing
       </div>
       <div className={styles.row}>
-        {ownerLabel}
+        <OwnerLabel blueprintId={blueprintId} />
         <span className="text-muted">Owner</span>
       </div>
       {sortedOrganizations
-        .filter((x) => recipe.sharing.organizations.includes(x.id as UUID))
+        .filter((x) => recipe.sharing.organizations.includes(x.id))
         .map((organization) => (
           <div className={styles.row} key={organization.id}>
             <span>

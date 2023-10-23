@@ -30,7 +30,10 @@ import initGoogle, {
 } from "@/contrib/google/initGoogle";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
-import { proxyService } from "@/background/messenger/api";
+import {
+  getCachedAuthData,
+  performConfiguredRequestInBackground,
+} from "@/background/messenger/api";
 import {
   type AppendValuesResponse,
   type BatchUpdateSpreadsheetRequest,
@@ -41,6 +44,7 @@ import {
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
 import pTimeout from "p-timeout";
+import { isEmpty } from "lodash";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
@@ -128,6 +132,13 @@ export async function ensureSheetsReady({
   throw lastError;
 }
 
+export async function isLoggedIn(
+  googleAccount: SanitizedIntegrationConfig
+): Promise<boolean> {
+  const authData = await getCachedAuthData(googleAccount.id);
+  return !isEmpty(authData);
+}
+
 async function executeRequest<Response, RequestData = never>(
   requestConfig: AxiosRequestConfig<RequestData>,
   googleAccount: SanitizedIntegrationConfig | null
@@ -143,7 +154,10 @@ async function executeRequest<Response, RequestData = never>(
   }
 
   try {
-    const result = await proxyService<Response>(googleAccount, requestConfig);
+    const result = await performConfiguredRequestInBackground<Response>(
+      googleAccount,
+      requestConfig
+    );
     return result.data;
   } catch (error) {
     throw await handleGoogleRequestRejection(
@@ -291,6 +305,7 @@ export async function getSheetProperties(
     });
     const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
       // TODO: Find a better solution than casting to any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);
@@ -331,6 +346,7 @@ export async function getTabNames(spreadsheetId: string): Promise<string[]> {
     });
     const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
       // TODO: Find a better solution than casting to any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);

@@ -21,16 +21,12 @@ import { Card, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
-  const {
-    suggestElements,
-    excludeRandomClasses,
-    selectionTools,
-    performanceTracing,
-  } = useSelector(selectSettings);
+  const { suggestElements, excludeRandomClasses, performanceTracing } =
+    useSelector(selectSettings);
 
   return (
     <Card>
@@ -54,13 +50,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             elements from a website"
             isEnabled={excludeRandomClasses}
             flag="excludeRandomClasses"
-          />
-          <SettingToggle
-            controlId="selectionTools"
-            label="Detect and Support Multi-Element Selection Tools:"
-            description="Toggle on to support multi-element selection tools"
-            isEnabled={selectionTools}
-            flag="selectionTools"
           />
           <SettingToggle
             controlId="performanceTracing"

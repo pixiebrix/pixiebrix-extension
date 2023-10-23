@@ -24,8 +24,8 @@ import { useEffect, useRef } from "react";
  */
 function useMemoCompare<T>(
   next: T,
-  compare: (previous: T, next: T) => boolean
-): T {
+  compare: (previous: T | undefined, next: T) => boolean
+): T | undefined {
   // https://usehooks.com/useMemoCompare/
   // Ref for storing previous value
   const previousRef = useRef<T>();

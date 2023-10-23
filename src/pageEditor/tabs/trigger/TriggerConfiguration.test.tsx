@@ -4,7 +4,7 @@ import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
@@ -36,12 +36,10 @@ describe("TriggerConfiguration", () => {
 
     expect(screen.getByLabelText("Custom Event")).toBeInTheDocument();
 
-    await act(async () => {
-      await userEvent.click(screen.getByLabelText("Custom Event"));
-    });
+    await userEvent.click(screen.getByLabelText("Custom Event"));
 
     expect(screen.queryByText("No options")).not.toBeInTheDocument();
-    expect(screen.queryByText("otherevent")).toBeInTheDocument();
+    expect(screen.getByText("otherevent")).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
   });

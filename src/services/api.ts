@@ -17,9 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type Kind, type RegistryId } from "@/types/registryTypes";
-import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
-import { type AxiosRequestConfig } from "axios";
-import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import {
   type EditablePackageMetadata,
   type StandaloneModDefinition,
@@ -40,7 +38,6 @@ import {
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
-import { serializeError } from "serialize-error";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type IntegrationDefinition } from "@/types/integrationTypes";
@@ -48,83 +45,17 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-
-type QueryArgs = {
-  /**
-   * The relative PixieBrix URL. The client will apply the configured base service URL.
-   */
-  url: string;
-
-  /**
-   * The REST method
-   */
-  method: AxiosRequestConfig["method"];
-
-  /**
-   * The REST JSON data
-   */
-  data?: AxiosRequestConfig["data"];
-
-  /**
-   * True if a Token is required to make the request.
-   * @see isLinked
-   */
-  requireLinked?: boolean;
-
-  /**
-   * Optional additional metadata to pass through to the result.
-   */
-  meta?: unknown;
-
-  /**
-   * Optional URL parameters to be sent with the request
-   */
-  params?: AxiosRequestConfig["params"];
-};
-
-// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
-  url,
-  method,
-  data,
-  requireLinked = true,
-  meta,
-  params,
-}) => {
-  try {
-    const client = await (requireLinked
-      ? getLinkedApiClient()
-      : getApiClient());
-    const result = await client({ url, method, data, params });
-
-    return { data: result.data, meta };
-  } catch (error) {
-    if (isAxiosError(error)) {
-      // Was running into issues with AxiosError generation in axios-mock-adapter where the prototype was AxiosError
-      // but the Error name was Error and there was no isAxiosError present after serializeError
-      // See line here: https://github.com/axios/axios/blob/v0.27.2/lib/core/AxiosError.js#L79
-      error.name = "AxiosError";
-      return {
-        // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level). `useToJSON: false` skips that.
-        error: serializeError(error, { useToJSON: false }),
-      };
-    }
-
-    return {
-      error: serializeError(error),
-    };
-  }
-};
+import baseQuery from "@/services/baseQuery";
 
 export const appApi = createApi({
   reducerPath: "appApi",
-  baseQuery: appBaseQuery,
+  baseQuery,
   tagTypes: [
     "Me",
     "Auth",
     "Databases",
-    "Services",
-    "ServiceAuths",
+    "Integrations",
+    "IntegrationAuths",
     "Organizations",
     "Groups",
     "MarketplaceListings",
@@ -177,22 +108,22 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Databases"],
     }),
-    getServices: builder.query<IntegrationDefinition[], void>({
+    getIntegrations: builder.query<IntegrationDefinition[], void>({
       query: () => ({
         url: "/api/services/",
         method: "get",
         // Returns public service definitions if not authenticated
         requireLinked: false,
       }),
-      providesTags: ["Services"],
+      providesTags: ["Integrations"],
     }),
-    getServiceAuths: builder.query<RemoteIntegrationConfig[], void>({
+    getIntegrationAuths: builder.query<RemoteIntegrationConfig[], void>({
       query: () => ({
         url: "/api/services/shared/",
         method: "get",
         params: { meta: 1 },
       }),
-      providesTags: ["ServiceAuths"],
+      providesTags: ["IntegrationAuths"],
     }),
     getOrganizations: builder.query<Organization[], void>({
       query: () => ({ url: "/api/organizations/", method: "get" }),
@@ -215,7 +146,7 @@ export const appApi = createApi({
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
           role: (apiOrganization as any).members?.some(
-            (member: { role: number }) => member.role === UserRole.admin
+            (member: { role: UserRole }) => member.role === UserRole.admin
           )
             ? UserRole.admin
             : UserRole.restricted,
@@ -474,8 +405,8 @@ export const {
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
   useAddDatabaseToGroupMutation,
-  useGetServicesQuery,
-  useGetServiceAuthsQuery,
+  useGetIntegrationsQuery,
+  useGetIntegrationAuthsQuery,
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,

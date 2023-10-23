@@ -41,7 +41,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { CancelError } from "@/errors/businessErrors";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {
   type InitialValues,
@@ -148,7 +148,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       this.modComponents.map((x) => x.id)
     );
     quickBarRegistry.removeExtensionPointActions(this.id);
-    this.modComponents.splice(0, this.modComponents.length);
+    this.modComponents.length = 0;
   }
 
   /**
@@ -279,7 +279,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
       const [reader, serviceContext] = await Promise.all([
         this.getBaseReader(),
-        makeServiceContext(extension.services),
+        makeServiceContext(extension.integrationDependencies),
       ]);
 
       const targetElement = guessSelectedElement() ?? document;

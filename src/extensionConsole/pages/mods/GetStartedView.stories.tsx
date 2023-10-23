@@ -36,7 +36,7 @@ export default {
   component: GetStartedView,
 } as ComponentMeta<typeof GetStartedView>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: unknown) {
   return configureStore({
     reducer: {
       modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
@@ -45,9 +45,7 @@ function optionsStore(initialState?: any) {
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
       return getDefaultMiddleware().concat(appApi.middleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
     preloadedState: initialState,
   });

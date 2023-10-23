@@ -124,7 +124,7 @@ export async function setActivatingMods({
  * @see setActivatingMods
  */
 export async function getActivatingModIds(): Promise<RegistryId[] | null> {
-  const value: RegistryId | RegistryId[] = await readStorage(
+  const value = await readStorage<RegistryId | RegistryId[]>(
     STORAGE_MOD_IDS_KEY
   );
 

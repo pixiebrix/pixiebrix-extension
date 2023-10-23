@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { type Column } from "react-table";
 import { MemoryRouter } from "react-router";
@@ -30,13 +30,13 @@ describe("initialRecord", () => {
       },
     ];
 
-    const component = render(
+    render(
       <MemoryRouter>
         <PaginatedTable data={[]} columns={columns} showSearchFilter />
       </MemoryRouter>
     );
 
-    expect(component.container.querySelector("table")).not.toBeNull();
+    expect(screen.getByRole("table")).not.toBeNull();
   });
 
   it("shows page with initialRecord", async () => {
@@ -48,7 +48,7 @@ describe("initialRecord", () => {
       },
     ];
 
-    const component = render(
+    render(
       <MemoryRouter>
         <PaginatedTable
           initialPageSize={1}
@@ -62,8 +62,6 @@ describe("initialRecord", () => {
 
     await waitForEffect();
 
-    expect(component.container.querySelector("td").textContent).toStrictEqual(
-      "2"
-    );
+    expect(screen.getByRole("row", { name: "2" })).toBeInTheDocument();
   });
 });

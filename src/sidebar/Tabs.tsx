@@ -267,7 +267,12 @@ const Tabs: React.FC = () => {
             <FontAwesomeIcon icon={faPlus} />
           </Button>
         </Nav>
-        <Tab.Content className="p-0 border-0 full-height bg-white">
+        <Tab.Content
+          className={cx(
+            "p-0 border-0 full-height bg-white",
+            styles.tabContainer
+          )}
+        >
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
               className={cx("full-height flex-grow", styles.paneOverrides)}

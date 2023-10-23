@@ -17,7 +17,6 @@
 
 import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
 import { readRawConfigurations } from "@/services/registry";
-import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { type IntegrationConfig } from "@/types/integrationTypes";
@@ -27,6 +26,7 @@ import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
+import { useGetIntegrationAuthsQuery } from "@/services/api";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
@@ -67,22 +67,22 @@ function getRemoteLabel(auth: RemoteIntegrationConfig): string {
 }
 
 function mapConfigurationsToOptions(
-  localServices: IntegrationConfig[],
-  remoteServices: RemoteIntegrationConfig[]
+  locationIntegrationConfigs: IntegrationConfig[],
+  remoteIntegrationConfigs: RemoteIntegrationConfig[]
 ) {
   const localOptions = sortBy(
-    localServices.map((serviceConfiguration) => ({
-      value: serviceConfiguration.id,
-      label: `${defaultLabel(serviceConfiguration.label)} — Private`,
+    locationIntegrationConfigs.map((integrationConfig) => ({
+      value: integrationConfig.id,
+      label: `${defaultLabel(integrationConfig.label)} — Private`,
       local: true,
-      serviceId: serviceConfiguration.serviceId,
+      serviceId: integrationConfig.integrationId,
       sharingType: "private" as AuthSharing,
     })),
     (x) => x.label
   );
 
   const sharedOptions = sortBy(
-    remoteServices.map((remoteAuth) => ({
+    remoteIntegrationConfigs.map((remoteAuth) => ({
       value: remoteAuth.id,
       label: getRemoteLabel(remoteAuth),
       local: false,
@@ -104,16 +104,16 @@ export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
   // store to reload if it's changed on another tab
-  const localServicesState = useAsyncState<IntegrationConfig[]>(
+  const locationIntegrationConfigsState = useAsyncState<IntegrationConfig[]>(
     readRawConfigurations,
     []
   );
 
-  const remoteServiceState = useGetServiceAuthsQuery();
+  const remoteIntegrationAuthsState = useGetIntegrationAuthsQuery();
 
   return useMergeAsyncState(
-    localServicesState,
-    remoteServiceState,
+    locationIntegrationConfigsState,
+    remoteIntegrationAuthsState,
     mapConfigurationsToOptions
   );
 }

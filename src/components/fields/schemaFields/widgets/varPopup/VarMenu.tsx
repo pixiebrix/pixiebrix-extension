@@ -43,6 +43,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { getPageState } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { isEmpty } from "lodash";
+import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/widgets/varPopup/utils";
 
 const emptyVarMap = new VarMap();
 
@@ -116,8 +117,13 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
       return;
     }
 
+    // Create a virtual element for the selected line
+    const selectedLineBorderBox = getSelectedLineVirtualElement(
+      inputElementRef.current as HTMLTextAreaElement
+    );
+
     const position = await computePosition(
-      inputElementRef.current,
+      selectedLineBorderBox,
       rootElementRef.current,
       {
         placement: "bottom-start",

@@ -34,6 +34,7 @@ export function selectRemoteResponseErrorMessage(
   }
 
   if (typeof errorData.json === "object") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Loose parsing of 3rd party error object, uses ?.
     const errorPayload = errorData.json as any;
     // OpenAI uses error.message payload
     const customMessage = errorPayload?.error?.message ?? errorPayload?.message;

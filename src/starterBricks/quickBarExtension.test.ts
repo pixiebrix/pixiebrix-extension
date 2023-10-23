@@ -32,8 +32,7 @@ import {
   type QuickBarConfig,
   type QuickBarDefinition,
 } from "@/starterBricks/quickBarExtension";
-import { Menus } from "webextension-polyfill";
-import ContextType = Menus.ContextType;
+import { type Menus } from "webextension-polyfill";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
@@ -61,7 +60,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
-      contexts: () => ["all"] as ContextType[],
+      contexts: () => ["all"] as Menus.ContextType[],
       targetMode: "eventTarget",
       reader: () => [rootReaderId],
       ...definitionOverrides,
@@ -122,7 +121,7 @@ describe("quickBarExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     // QuickBar adds another div to the body
-    expect(document.body.innerHTML).toEqual(
+    expect(document.body.innerHTML).toBe(
       '<div id="pixiebrix-quickbar-container"></div><div></div>'
     );
 
@@ -133,7 +132,7 @@ describe("quickBarExtension", () => {
     await tick();
 
     // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
-    expect(document.body.innerHTML).not.toEqual("<div></div><div></div>");
+    expect(document.body.innerHTML).not.toBe("<div></div><div></div>");
 
     starterBrick.uninstall();
   });

@@ -24,7 +24,7 @@ import {
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { pixiebrixConfigurationFactory } from "@/services/locator";
@@ -36,6 +36,7 @@ import {
   type IntegrationDependency,
 } from "@/types/integrationTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -51,10 +52,10 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         .mockResolvedValue(pixiebrixConfigurationFactory());
 
       const dependencies: IntegrationDependency[] = [
-        {
-          id: PIXIEBRIX_INTEGRATION_ID,
+        integrationDependencyFactory({
+          integrationId: PIXIEBRIX_INTEGRATION_ID,
           outputKey: validateOutputKey("pixiebrix"),
-        },
+        }),
       ];
 
       const result = await reducePipeline(
@@ -88,10 +89,10 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       .mockResolvedValue(pixiebrixConfigurationFactory());
 
     const dependencies: IntegrationDependency[] = [
-      {
-        id: PIXIEBRIX_INTEGRATION_ID,
+      integrationDependencyFactory({
+        integrationId: PIXIEBRIX_INTEGRATION_ID,
         outputKey: validateOutputKey("pixiebrix"),
-      },
+      }),
     ];
 
     const result = await reducePipeline(
@@ -124,7 +125,10 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     } as unknown as SanitizedIntegrationConfig);
 
     const dependencies: IntegrationDependency[] = [
-      { id: serviceId, outputKey: validateOutputKey("service") },
+      integrationDependencyFactory({
+        integrationId: serviceId,
+        outputKey: validateOutputKey("service"),
+      }),
     ];
 
     const result = await reducePipeline(
@@ -151,10 +155,10 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       .mockResolvedValue(pixiebrixConfigurationFactory());
 
     const dependencies: IntegrationDependency[] = [
-      {
-        id: PIXIEBRIX_INTEGRATION_ID,
+      integrationDependencyFactory({
+        integrationId: PIXIEBRIX_INTEGRATION_ID,
         outputKey: validateOutputKey("pixiebrix"),
-      },
+      }),
     ];
 
     const result = await reducePipeline(
@@ -192,7 +196,10 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     } as unknown as SanitizedIntegrationConfig);
 
     const dependencies: IntegrationDependency[] = [
-      { id: serviceId, outputKey: validateOutputKey("service") },
+      integrationDependencyFactory({
+        integrationId: serviceId,
+        outputKey: validateOutputKey("service"),
+      }),
     ];
 
     const result = await reducePipeline(
@@ -236,7 +243,10 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       } as unknown as SanitizedIntegrationConfig);
 
       const dependencies: IntegrationDependency[] = [
-        { id: serviceId, outputKey: validateOutputKey("service") },
+        integrationDependencyFactory({
+          integrationId: serviceId,
+          outputKey: validateOutputKey("service"),
+        }),
       ];
 
       const result = await reducePipeline(

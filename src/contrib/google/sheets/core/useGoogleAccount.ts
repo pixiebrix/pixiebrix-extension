@@ -29,28 +29,30 @@ const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
 
 /**
  * Hook to get the Google account from mod integrations context
- * Note: 2023-08-08: Currently gated to just the internal team using the feature flag gsheets-pkce-integration
+ * As of 1.8.0: Updating feature flag to gsheets-pkce-integration-release to enable for all users
+ * Without enabling in previous versions of the Extension
  */
 function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | null> {
   const { integrationDependencies } = useContext(ModIntegrationsContext);
+  // Dependency may not exist, do not destructure here
   const googleDependency = integrationDependencies.find(
-    (dependency) => dependency.id === GOOGLE_PKCE_INTEGRATION_ID
+    ({ integrationId }) => integrationId === GOOGLE_PKCE_INTEGRATION_ID
   );
   const { flagOff } = useFlags();
 
   return useAsyncState(async () => {
-    if (flagOff("gsheets-pkce-integration")) {
+    if (flagOff("gsheets-pkce-integration-release")) {
       return null;
     }
 
-    if (googleDependency?.config == null) {
+    if (googleDependency?.configId == null) {
       return null;
     }
 
     try {
       return await services.locate(
-        googleDependency.id,
-        googleDependency.config
+        googleDependency.integrationId,
+        googleDependency.configId
       );
     } catch (error: unknown) {
       reportError(error);

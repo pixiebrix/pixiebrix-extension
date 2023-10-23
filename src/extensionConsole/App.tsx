@@ -21,7 +21,7 @@ import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import ServicesEditor from "@/extensionConsole/pages/services/ServicesEditor";
+import ServicesEditor from "@/extensionConsole/pages/integrations/IntegrationsPage";
 import BrickCreatePage from "@/extensionConsole/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/extensionConsole/pages/brickEditor/EditPage";
 import ModsPage from "@/extensionConsole/pages/mods/ModsPage";

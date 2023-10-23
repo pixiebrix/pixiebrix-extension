@@ -40,7 +40,7 @@ const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
       return detailsElement;
     }
 
-    return entry.error.toString();
+    return String(entry.error);
   }, [entry.error]);
 
   return <div style={{ whiteSpace: "pre-wrap" }}>{detail}</div>;

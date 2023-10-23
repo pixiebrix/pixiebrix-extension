@@ -34,7 +34,7 @@ import CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWid
 import DatabaseWidget from "./DatabaseWidget";
 import PasswordWidget from "./PasswordWidget";
 import IconWidget from "@/components/fields/IconWidget";
-import ServiceWidget from "@/components/fields/schemaFields/widgets/ServiceWidget";
+import IntegrationDependencyWidget from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
 import SheetsFileWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import FixedInnerObjectWidget from "@/components/fields/schemaFields/widgets/FixedInnerObjectWidget";
 
@@ -58,7 +58,7 @@ const defaultWidgets = {
   DatabaseWidget,
   IconWidget,
   PasswordWidget,
-  ServiceWidget,
+  ServiceWidget: IntegrationDependencyWidget,
   SheetsFileWidget,
 } as const;
 

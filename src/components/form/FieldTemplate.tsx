@@ -19,10 +19,11 @@ import React, { type ReactNode } from "react";
 import {
   Col,
   type ColProps,
-  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+  // eslint-disable-next-line no-restricted-imports -- never uses the actual Form component
   Form as BootstrapForm,
   type FormControlProps,
   Row,
+  Collapse,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
 import cx from "classnames";
@@ -81,9 +82,9 @@ export type CustomFieldWidget<
 > = React.ComponentType<TFieldWidgetProps>;
 
 type ComputeLabelAndColSizeArgs = {
-  fitLabelWidth: boolean;
-  widerLabel: boolean;
-  label: ReactNode;
+  fitLabelWidth?: boolean;
+  widerLabel?: boolean;
+  label?: ReactNode;
 };
 
 export function computeLabelAndColSize({
@@ -120,7 +121,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   fitLabelWidth,
   widerLabel,
   description,
-  annotations: untypedAnnotations,
+  annotations,
   touched,
   value,
   children,
@@ -129,7 +130,6 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   className,
   ...restFieldProps
 }) => {
-  const annotations: FieldAnnotation[] = untypedAnnotations;
   const isInvalid = !isEmpty(
     annotations?.filter(
       (annotation) => annotation.type === AnnotationType.Error
@@ -194,18 +194,22 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
-      {!isEmpty(annotations) && (
+      <Collapse in={!isEmpty(annotations)}>
         <Col xs="12" className="mb-2">
-          {annotations.map(({ message, type, actions }) => (
-            <FieldAnnotationAlert
-              key={`${type}-${message.slice(0, 10)}`}
-              message={message}
-              type={type}
-              actions={actions}
-            />
-          ))}
+          {isEmpty(annotations) ? (
+            <div className={styles.annotationPlaceholder} />
+          ) : (
+            annotations?.map(({ message, type, actions }, index) => (
+              <FieldAnnotationAlert
+                key={`${index}-${type}`}
+                message={message}
+                type={type}
+                actions={actions}
+              />
+            ))
+          )}
         </Col>
-      )}
+      </Collapse>
       {label && (
         <BootstrapForm.Label
           column

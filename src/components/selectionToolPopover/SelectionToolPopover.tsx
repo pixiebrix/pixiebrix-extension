@@ -32,8 +32,13 @@ import pluralize from "@/utils/pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripHorizontal } from "@fortawesome/free-solid-svg-icons";
 
+// "Every property exists" (via Proxy), TypeScript doesn't offer such type
+// Also strictNullChecks config mismatch
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+const ShadowRoot = EmotionShadowRoot.div!;
+
 export type SelectionHandlerType = (count: number) => void;
-type SetSelectionHandlerType = (handler: SelectionHandlerType) => void;
+type SetSelectionHandlerType = (handler: SelectionHandlerType | null) => void;
 
 const SelectionToolPopover: React.FC<{
   isMulti: boolean;
@@ -69,7 +74,7 @@ const SelectionToolPopover: React.FC<{
     // To support react-select and any future potential emotion components we used the
     // emotion variant of the react-shadow library.
 
-    <EmotionShadowRoot.div>
+    <ShadowRoot>
       <Stylesheets href={[bootstrap, switchStyle, switchButtonStyle, custom]}>
         <Draggable>
           <div className="popover-wrapper">
@@ -129,7 +134,7 @@ const SelectionToolPopover: React.FC<{
           </div>
         </Draggable>
       </Stylesheets>
-    </EmotionShadowRoot.div>
+    </ShadowRoot>
   );
 };
 

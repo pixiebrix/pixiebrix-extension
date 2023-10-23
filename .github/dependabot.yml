@@ -17,9 +17,10 @@ updates:
     open-pull-requests-limit: 30
     assignees:
       - grahamlangford
-    ignore:
-      # Update it manually instead https://github.com/pixiebrix/pixiebrix-extension/issues/4436
-      - dependency-name: "@storybook/*"
+    groups:
+      storybook:
+        patterns:
+          - "*storybook*"
   - package-ecosystem: github-actions
     directory: /
     schedule:

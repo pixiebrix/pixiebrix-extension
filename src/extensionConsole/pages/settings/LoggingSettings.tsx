@@ -27,9 +27,11 @@ import useUserAction from "@/hooks/useUserAction";
 import { clearTraces } from "@/telemetry/trace";
 import { clearLogs } from "@/telemetry/logging";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
+import useMessengerLogging from "@/development/useMessengerLogging";
 
 const LoggingSettings: React.FunctionComponent = () => {
-  const [config, setConfig] = useLoggingConfig();
+  const [logValues, setLogValues] = useLoggingConfig();
+  const [logMessenger, setLogMessenger] = useMessengerLogging();
 
   const clearAction = useUserAction(
     async () => {
@@ -55,24 +57,37 @@ const LoggingSettings: React.FunctionComponent = () => {
           Brick logs are never transmitted from your browser.
         </Card.Text>
 
-        {config ? (
-          <Form>
-            <SettingToggle
-              controlId="logging"
-              label="Log values"
-              isEnabled={config.logValues}
-              onChange={async (value: boolean) =>
-                setConfig({ ...config, logValues: value })
-              }
-            />
-          </Form>
-        ) : (
-          <Loader />
-        )}
+        <Form>
+          {logValues ? (
+            <>
+              <SettingToggle
+                controlId="logging"
+                label="Log values"
+                isEnabled={logValues?.logValues}
+                onChange={async (value: boolean) => {
+                  await setLogValues({ ...logValues, logValues: value });
+                }}
+              />
+              <hr />
+            </>
+          ) : (
+            <Loader />
+          )}
+          <Card.Text className="text-info">
+            <FontAwesomeIcon icon={faInfoCircle} /> Internal messaging can be
+            temporarily logged to the browser console for debugging purposes.
+          </Card.Text>
+          <SettingToggle
+            controlId="messenger-logging"
+            label="Display messaging in browser console"
+            isEnabled={logMessenger}
+            onChange={setLogMessenger}
+          />
+        </Form>
       </Card.Body>
       <Card.Footer>
         <AsyncButton variant="info" onClick={clearAction}>
-          <FontAwesomeIcon icon={faTrash} /> Clear Local Logs
+          <FontAwesomeIcon icon={faTrash} /> Clear Local Brick Logs
         </AsyncButton>
       </Card.Footer>
     </Card>

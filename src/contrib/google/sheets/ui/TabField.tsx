@@ -39,17 +39,22 @@ const TabField: React.FC<
     string | Expression
   >(name);
 
-  const tabNames =
-    spreadsheet?.sheets?.map((sheet) => sheet.properties.title) ??
-    emptyTabNames;
+  const lastGoodTabNames = useRef(emptyTabNames);
+
+  if (spreadsheet) {
+    lastGoodTabNames.current =
+      spreadsheet.sheets?.map((sheet) => sheet.properties.title) ??
+      emptyTabNames;
+  }
+
   const fieldSchema: Schema = {
     type: "string",
     title: "Tab Name",
     description: "The spreadsheet tab",
-    enum: tabNames,
+    enum: lastGoodTabNames.current,
   };
 
-  const allTabNames = tabNames.join(",");
+  const allTabNames = lastGoodTabNames.current.join(",");
   useAsyncEffect(
     async () => {
       // Don't modify the field if it's currently focused
@@ -61,6 +66,8 @@ const TabField: React.FC<
       if (isExpression(tabName) && !isEmpty(tabName.__value__)) {
         return;
       }
+
+      const tabNames = lastGoodTabNames.current;
 
       // Set to empty nunjucks expression if no tab names have loaded
       if (isEmpty(tabNames)) {

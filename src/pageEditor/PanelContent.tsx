@@ -40,6 +40,28 @@ import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
+import type { StarterBrickType } from "@/starterBricks/types";
+import type { EditorState } from "@/pageEditor/pageEditorTypes";
+
+const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
+  "actionPanel",
+  "panel",
+];
+
+// When selecting a starter brick in the Page Editor, remove any existing starter bricks
+// to avoid adding duplicate starter bricks to the page.
+// Issue doesn't apply to certain starter bricks, e.g. sidebar panels
+// See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
+// and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
+const cleanUpStarterBrickForElement = (
+  element: EditorState["elements"][number]
+) => {
+  if (STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(element.type)) {
+    return;
+  }
+
+  removeInstalledExtension(thisTab, element.uuid);
+};
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
@@ -63,10 +85,11 @@ const PanelContent: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // Remove the installed extension
-    if (activeElement != null) {
-      removeInstalledExtension(thisTab, activeElement.uuid);
+    if (!activeElement) {
+      return;
     }
+
+    cleanUpStarterBrickForElement(activeElement);
   }, [activeElement]);
 
   const authPersistenceContext: ReduxPersistenceContextType = {

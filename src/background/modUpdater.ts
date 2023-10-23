@@ -18,15 +18,18 @@
 import type { Me, PackageVersionUpdates } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
-import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import {
+  getModComponentState,
+  saveModComponentState,
+} from "@/store/extensionsStorage";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import { groupBy, isEmpty, uniq } from "lodash";
-import { forEachTab } from "@/background/activeTab";
+import { forEachTab } from "@/utils/extensionUtils";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
-import { getEditorState, saveEditorState } from "@/store/dynamicElementStorage";
+import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import type {
@@ -37,13 +40,13 @@ import {
   inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import type { ModComponentOptionsState } from "@/store/extensionsTypes";
+import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
 type ActivatedModState = {
-  options: ModComponentOptionsState;
+  options: ModComponentState;
   editor: EditorState;
 };
 
@@ -84,7 +87,7 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
 export async function getActivatedMarketplaceModVersions(): Promise<
   PackageVersionPair[]
 > {
-  const { extensions: activatedModComponents } = await loadOptions();
+  const { extensions: activatedModComponents } = await getModComponentState();
 
   // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
   // the deployment updater will handle the updates.
@@ -262,7 +265,9 @@ function updateMod(
   newEditorState = nextEditorState;
 
   const configuredDependencies = inferConfiguredModIntegrations(
-    deactivatedModComponents.filter((modComponent) => modComponent.services)
+    deactivatedModComponents.filter(
+      ({ integrationDependencies }) => integrationDependencies
+    )
   );
 
   const optionsArgs = inferRecipeOptions(
@@ -287,7 +292,7 @@ function updateMod(
 }
 
 async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
-  let newOptionsState = await loadOptions();
+  let newOptionsState = await getModComponentState();
   let newEditorState = await getEditorState();
 
   for (const { backwards_compatible: update } of modUpdates) {
@@ -300,7 +305,7 @@ async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
   }
 
   await Promise.all([
-    saveOptions(newOptionsState),
+    saveModComponentState(newOptionsState),
     saveEditorState(newEditorState),
   ]);
 

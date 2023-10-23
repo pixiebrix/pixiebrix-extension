@@ -24,7 +24,7 @@ import { Events } from "@/telemetry/events";
 import AsyncButton from "@/components/AsyncButton";
 import notify from "@/utils/notify";
 import { useDispatch } from "react-redux";
-import SettingsSlice from "@/store/settingsSlice";
+import SettingsSlice from "@/store/settings/settingsSlice";
 
 /**
  * Opens the quickbar menu

@@ -14,6 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+// WARNING: this file MUST NOT directly or transitively import webext-messenger because it does not support being
+// imported multiple times in the same contentScript. It's only safe to import webext-messenger in contentScriptCore.ts
+// which is behind a guarded dynamic import.
+
 import { isEmpty, startsWith } from "lodash";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { type RegistryId } from "@/types/registryTypes";

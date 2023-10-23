@@ -15,13 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deserializeError, type ErrorObject } from "serialize-error";
+import {
+  deserializeError,
+  isErrorLike,
+  type ErrorObject,
+} from "serialize-error";
 import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, truncate, uniq } from "lodash";
 import { selectNetworkErrorMessage } from "@/errors/networkErrorHelpers";
 import { type MessageContext } from "@/types/loggerTypes";
 import { matchesAnyPattern, smartAppendPeriod } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
+import {
+  isSchemaValidationError,
+  type SchemaValidationError,
+} from "@/bricks/errors";
+import { type SetRequired } from "type-fest";
 
 // From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
@@ -91,9 +100,11 @@ export function onUncaughtError(handler: (error: Error) => void): void {
   self.addEventListener("unhandledrejection", listener);
 }
 
-export function isErrorObject(error: unknown): error is ErrorObject {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
-  return typeof (error as any)?.message === "string";
+export function isErrorObject(
+  error: unknown
+): error is SetRequired<ErrorObject, "name" | "message"> {
+  // We should probably just use ErrorLike everywhere but it requires changing a lot of code
+  return isErrorLike(error);
 }
 
 export function isSpecificError<
@@ -115,7 +126,9 @@ export function isSpecificError<
 export function isCustomAggregateError(
   error: unknown
 ): error is ErrorObject & { errors: unknown[] } {
-  return isObject(error) && "errors" in error && Array.isArray(error.errors);
+  return (
+    isErrorObject(error) && "errors" in error && Array.isArray(error.errors)
+  );
 }
 
 export function selectSpecificError<
@@ -183,6 +196,15 @@ function isBusinessError(error: unknown): boolean {
   return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
 }
 
+export function formatSchemaValidationMessage(
+  error: SchemaValidationError["errors"][number]
+) {
+  const { keywordLocation, error: validationError } = error;
+  return `${keywordLocation ? `${keywordLocation}: ` : ""}${
+    validationError ?? ""
+  }`;
+}
+
 // List all ClientRequestError subclasses as text:
 // - because not all of our errors can be deserialized with the right class:
 //   https://github.com/sindresorhus/serialize-error/issues/72
@@ -208,7 +230,6 @@ export function getErrorMessage(
   error: unknown,
   defaultMessage = DEFAULT_ERROR_MESSAGE
 ): string {
-  // Two shortcuts first
   if (!error) {
     return defaultMessage;
   }
@@ -222,11 +243,33 @@ export function getErrorMessage(
     return requestErrorMessage;
   }
 
-  if (isCustomAggregateError(error)) {
-    return error.errors.filter((x) => typeof x === "string").join(". ");
+  // In most cases, prefer the error message property over all. We don't want to override
+  // the original error message unless necessary.
+  if (isObject(error) && error.message) {
+    return error.message as string;
   }
 
-  return String(selectError(error).message ?? defaultMessage);
+  if (isSchemaValidationError(error)) {
+    const firstError = error.errors[0];
+    const formattedMessage =
+      firstError && formatSchemaValidationMessage(firstError);
+
+    if (formattedMessage) {
+      return formattedMessage;
+    }
+  }
+
+  if (isCustomAggregateError(error)) {
+    const aggregatedMessage = error.errors
+      .filter((x) => typeof x === "string")
+      .join(". ");
+
+    if (aggregatedMessage) {
+      return aggregatedMessage;
+    }
+  }
+
+  return String(selectError(error).message || defaultMessage);
 }
 
 /**

@@ -20,6 +20,7 @@ import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { FORM_MODAL_ID } from "@/pageEditor/fields/FormModalOptions";
 import { AnnotationType } from "@/types/annotationTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 
 class FormBrickAnalysis extends AnalysisVisitorABC {
   get id() {
@@ -40,7 +41,7 @@ class FormBrickAnalysis extends AnalysisVisitorABC {
     // The other direction (not placing the renderer form in an action, is already handled by brickTypeAnalysis.ts)
 
     if (
-      extra.pipelineFlavor === "noEffect" &&
+      extra.pipelineFlavor === PipelineFlavor.NoEffect &&
       blockConfig.id === FORM_MODAL_ID
     ) {
       this.annotations.push({

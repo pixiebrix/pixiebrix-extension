@@ -18,7 +18,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import {
   createRenderHookWithWrappers,
@@ -28,7 +28,7 @@ import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { appApi } from "@/services/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
-import servicesSlice from "@/store/services/servicesSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
 import workshopSlice from "@/store/workshopSlice";
 
 const configureStoreForTests = () =>
@@ -40,16 +40,14 @@ const configureStoreForTests = () =>
       modModals: modModalsSlice.reducer,
       modsPage: modsPageSlice.reducer,
       modDefinitions: modDefinitionsSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       workshop: workshopSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware()
         .concat(appApi.middleware)
         .concat(modDefinitionsMiddleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
   });
 

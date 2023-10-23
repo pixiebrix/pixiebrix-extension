@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty, negate, type ObjectIterator, unary, zip } from "lodash";
+import { isEmpty, negate, type ObjectIterator, unary } from "lodash";
 import pMemoize from "p-memoize";
 import { TimeoutError } from "p-timeout";
 import { sleep } from "@/utils/timeUtils";
@@ -28,17 +28,21 @@ export const foreverPendingPromise = new Promise(() => {});
 /**
  * Same as lodash mapValues but supports promises
  */
-export async function asyncMapValues<T, TResult>(
-  mapping: Record<string, T[keyof T]>,
-  fn: ObjectIterator<Record<string, T[keyof T]>, Promise<TResult>>
-): Promise<{ [K in keyof T]: TResult }> {
-  const entries = Object.entries(mapping);
-  const values = await Promise.all(
-    entries.map(async ([key, value]) => fn(value, key, mapping))
+export async function asyncMapValues<
+  InputObject extends Record<string, unknown>,
+  OutputValues
+>(mapping: InputObject, fn: ObjectIterator<InputObject, OutputValues>) {
+  const entries = Object.entries(mapping) as Array<
+    [string, InputObject[keyof InputObject]]
+  >;
+  const resolvedEntries = await Promise.all(
+    entries.map(async ([key, value]) =>
+      Promise.all([key, fn(value, key, mapping)])
+    )
   );
-  return Object.fromEntries(
-    zip(entries, values).map(([[key], value]) => [key, value])
-  ) as any;
+  return Object.fromEntries(resolvedEntries) as {
+    [K in keyof InputObject]: Awaited<OutputValues>;
+  };
 }
 
 export async function allSettledValues<T = unknown>(
@@ -139,6 +143,43 @@ export async function pollUntilTruthy<T>(
 }
 
 /**
+ * Retry with delay jitter.
+ * @param fn the function to execute
+ * @param retries the number of times to retry, excluding the initial attempt
+ * @param shouldRetry whether to retry on a given error; defaults to always retrying
+ * @param maxDelayMillis the maximum delay between retries, in milliseconds
+ */
+export async function retryWithJitter<T>(
+  fn: () => Promise<T>,
+  {
+    retries = 1,
+    shouldRetry = () => true,
+    maxDelayMillis = 100,
+  }: {
+    retries?: number;
+    shouldRetry?: (error: unknown) => boolean;
+    maxDelayMillis?: number;
+  }
+): Promise<T> {
+  for (let attemptCount = 0; attemptCount < retries + 1; attemptCount++) {
+    try {
+      // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule https://eslint.org/docs/latest/rules/no-await-in-loop#when-not-to-use-it
+      return await fn();
+    } catch (error) {
+      if (!shouldRetry(error) || attemptCount >= retries - 1) {
+        throw error;
+      }
+
+      // eslint-disable-next-line no-await-in-loop -- retry use-case is an exception to the rule
+      await sleep(Math.random() * maxDelayMillis);
+    }
+  }
+
+  // Can't reach due to check in catch block, unless retries is 0
+  throw new Error("retries must be >= 0");
+}
+
+/**
  * Returns a new object with all the values from the original resolved
  */
 export async function resolveObj<T>(
@@ -147,4 +188,22 @@ export async function resolveObj<T>(
   return Object.fromEntries(
     await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
   );
+}
+
+export function groupPromisesByStatus<T>(
+  results: Array<PromiseSettledResult<T>>
+) {
+  const rejected = results
+    .filter(
+      (result): result is PromiseRejectedResult => result.status === "rejected"
+    )
+    .map(({ reason }) => reason);
+  const fulfilled = results
+    .filter(
+      (result): result is PromiseFulfilledResult<T> =>
+        result.status === "fulfilled"
+    )
+    .map(({ value }) => value);
+
+  return { fulfilled, rejected };
 }

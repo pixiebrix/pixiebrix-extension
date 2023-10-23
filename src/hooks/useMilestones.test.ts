@@ -104,6 +104,6 @@ describe("useMilestones", () => {
     ]);
 
     expect(getMilestone("test_milestone_1")).toBe(test_milestone);
-    expect(getMilestone("does_not_exist")).toBe(undefined);
+    expect(getMilestone("does_not_exist")).toBeUndefined();
   });
 });

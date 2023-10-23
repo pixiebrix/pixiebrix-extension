@@ -27,7 +27,7 @@ import {
   CKEDITOR_SET_VALUE,
 } from "@/pageScript/messenger/constants";
 import { type ElementInfo } from "@/pageScript/frameworks";
-import { type JsonObject } from "type-fest";
+import { type JsonObject, type JsonValue } from "type-fest";
 
 export type PathSpec =
   | string
@@ -71,11 +71,9 @@ export const getElementInfo = createSendScriptMessage<
 type ReadSpec = <T extends Record<string, string>>(arg: {
   pathSpec: T;
   waitMillis?: number;
-}) => Promise<Record<keyof T, unknown>>;
+}) => Promise<Record<keyof T, JsonValue>>;
 
-export const withReadWindow = createSendScriptMessage(
-  READ_WINDOW
-) as unknown as ReadSpec;
+export const withReadWindow: ReadSpec = createSendScriptMessage(READ_WINDOW);
 
 export const withDetectFrameworkVersions = createSendScriptMessage<
   FrameworkMeta[]

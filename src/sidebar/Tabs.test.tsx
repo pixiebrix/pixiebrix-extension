@@ -51,7 +51,7 @@ async function setupPanelsAndRender(options: {
     })
   );
 
-  const renderResult = render(<Tabs />, {
+  const utils = render(<Tabs />, {
     setupRedux(dispatch) {
       dispatch(
         sidebarSlice.actions.setInitialPanels({
@@ -72,7 +72,7 @@ async function setupPanelsAndRender(options: {
 
   await waitForEffect();
 
-  return renderResult;
+  return utils;
 }
 
 jest.mock("@/contentScript/messenger/api", () => ({

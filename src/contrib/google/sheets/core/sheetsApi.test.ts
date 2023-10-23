@@ -23,19 +23,20 @@ import {
 import { ensureGoogleToken } from "@/contrib/google/auth";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { proxyService as realProxyService } from "@/background/requests";
-import { proxyService as apiProxyService } from "@/background/messenger/api";
+import { performConfiguredRequest as realProxyService } from "@/background/requests";
+import { performConfiguredRequestInBackground as apiProxyService } from "@/background/messenger/api";
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { locator } from "@/background/locator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "@/services/factory";
 import { readRawConfigurations } from "@/services/registry";
 import { type IntegrationConfig } from "@/types/integrationTypes";
+
 import {
+  deleteCachedAuthData,
   getCachedAuthData,
   setCachedAuthData,
-  deleteCachedAuthData,
-} from "@/background/auth";
+} from "@/background/auth/authStorage";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -48,8 +49,8 @@ jest.mock("@/contrib/google/initGoogle", () => ({
   subscribe: jest.fn().mockImplementation(() => () => {}),
 }));
 
-jest.mock("@/background/auth", () => ({
-  ...jest.requireActual("@/background/auth"),
+jest.mock("@/background/auth/authStorage", () => ({
+  ...jest.requireActual("@/background/auth/authStorage"),
   deleteCachedAuthData: jest.fn(),
 }));
 
@@ -122,7 +123,7 @@ describe("error handling", () => {
     axiosMock.resetHistory();
 
     integrationConfig = integrationConfigFactory({
-      serviceId: googleIntegration.id,
+      integrationId: googleIntegration.id,
     });
 
     // No remote integration configurations

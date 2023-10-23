@@ -37,11 +37,14 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
   rows = 4,
   ...props
 }) => {
-  const templateInput = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
+  const templateInput = useRef<HTMLTextAreaElement | HTMLInputElement | null>(
+    null
+  );
 
   const insertSnippet = useCallback((snippet: string) => {
     const { current } = templateInput;
-    const pos = current.selectionStart;
+    if (!current) return;
+    const pos = current.selectionStart ?? 0;
     current.setRangeText(snippet, pos, pos);
     current.focus();
 

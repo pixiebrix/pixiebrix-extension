@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApplyJqPayload, type TemplateRenderPayload } from "./api";
+import { type TemplateRenderPayload } from "./api";
 import { isErrorObject } from "@/errors/errorHelpers";
 import { InvalidTemplateError } from "@/errors/businessErrors";
 
@@ -55,13 +55,4 @@ export async function renderHandlebarsTemplate(
     noEscape: !autoescape,
   });
   return compiledTemplate(context);
-}
-
-export async function applyJq(payload: ApplyJqPayload) {
-  const { input, filter } = payload;
-  const { default: jq } = await import(
-    /* webpackChunkName: "jq-web" */ "jq-web"
-  );
-
-  return jq.promised.json(input, filter);
 }

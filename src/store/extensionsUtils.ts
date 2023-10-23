@@ -36,15 +36,15 @@ export function inferRecipeOptions(
 
 /**
  * Infer configured integration dependencies from existing mod-component-like
- * instances for reinstalling a mod. Filters out the PixieBrix integration, as
- * well as any optional integrations that don't have a config set.
+ * instances for reinstalling a mod. Filters out any optional integrations that
+ * don't have a config set.
  * @param modComponents mod components from which to extract integration dependencies
  * @param optional don't check integration dependencies for valid configs
  * @returns IntegrationDependency[] the configured integration dependencies for the mod components
  * @see installMod
  */
 export function inferConfiguredModIntegrations(
-  modComponents: Array<Pick<ModComponentBase, "services">>,
+  modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
   { optional = false }: { optional?: boolean } = {}
 ): IntegrationDependency[] {
   // The mod components will only have the integration dependencies that are
@@ -54,26 +54,28 @@ export function inferConfiguredModIntegrations(
   // that case anyway.
 
   const dependenciesByIntegrationId = groupBy(
-    modComponents.flatMap((x) => x.services ?? []),
-    (x) => x.id
+    modComponents.flatMap(
+      ({ integrationDependencies }) => integrationDependencies ?? []
+    ),
+    ({ integrationId }) => integrationId
   );
   const result: IntegrationDependency[] = [];
   for (const [id, dependencies] of Object.entries(
     dependenciesByIntegrationId
   )) {
     const configuredDependencies = uniqBy(
-      dependencies.filter(({ config }) => config != null),
-      ({ config }) => config
+      dependencies.filter(
+        ({ integrationId, configId }) =>
+          configId != null || integrationId === PIXIEBRIX_INTEGRATION_ID
+      ),
+      ({ configId }) => configId
     );
 
-    if (
-      id !== PIXIEBRIX_INTEGRATION_ID &&
-      configuredDependencies.length === 0
-    ) {
+    // PIXIEBRIX_INTEGRATION_ID will never have empty dependencies here, they aren't filtered out above
+    if (configuredDependencies.length === 0) {
       if (optional) {
         continue;
       } else {
-        // PIXIEBRIX_SERVICE_ID gets the implicit configuration
         throw new Error(`Integration ${id} is not configured`);
       }
     }
@@ -81,7 +83,11 @@ export function inferConfiguredModIntegrations(
     // If optional is passed in, we know that the user is being given an
     // opportunity to switch which configuration is applied, so the user can
     // always switch to a different config if they want.
-    if (configuredDependencies.length > 1 && !optional) {
+    if (
+      id !== PIXIEBRIX_INTEGRATION_ID &&
+      configuredDependencies.length > 1 &&
+      !optional
+    ) {
       throw new Error(`Integration ${id} has multiple configurations`);
     }
 
@@ -98,12 +104,15 @@ export function inferRecipeDependencies(
   installedRecipeExtensions: ModComponentBase[],
   dirtyRecipeElements: ModComponentFormState[]
 ): IntegrationDependency[] {
-  const withServices: Array<{ services?: IntegrationDependency[] }> = [
-    ...installedRecipeExtensions,
-    ...dirtyRecipeElements,
-  ];
+  const withIntegrations: Array<{
+    integrationDependencies?: IntegrationDependency[];
+  }> = [...installedRecipeExtensions, ...dirtyRecipeElements];
   return uniqBy(
-    flatten(withServices.map(({ services }) => services ?? [])),
+    flatten(
+      withIntegrations.map(
+        ({ integrationDependencies }) => integrationDependencies ?? []
+      )
+    ),
     JSON.stringify
   );
 }

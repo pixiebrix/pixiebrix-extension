@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { assert } from "@/utils/typeUtils";
+
 const elementsCollectionRegexp =
   /((?<collectionName>.*)\.)?(?<elementIndex>\d+)/;
 
@@ -26,11 +28,15 @@ function getElementCollectionName(elementName: string): {
   collectionName: string;
   elementIndex: number;
 } {
-  const {
-    groups: { collectionName, elementIndex },
-  } = elementsCollectionRegexp.exec(elementName);
+  const match = elementsCollectionRegexp.exec(elementName)?.groups;
 
-  return { collectionName, elementIndex: Number(elementIndex) };
+  assert(match, `Unable to parse the collection name in: ${elementName}`);
+
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Guaranteed by the regexp
+    collectionName: match.collectionName!,
+    elementIndex: Number(match.elementIndex),
+  };
 }
 
 export default getElementCollectionName;

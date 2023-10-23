@@ -61,7 +61,7 @@ describe("ActivationOptions", () => {
   test("renders empty options", async () => {
     const modDefinition = defaultModDefinitionFactory();
     mockModDefinition(modDefinition);
-    const rendered = render(<RecipeOptionsValues />, {
+    const { asFragment } = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
         extensionsSlice.actions.installMod({
           modDefinition,
@@ -71,7 +71,7 @@ describe("ActivationOptions", () => {
       },
     });
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders blueprint options", async () => {
@@ -119,7 +119,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const rendered = render(<RecipeOptionsValues />, {
+    const { asFragment } = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
         extensionsSlice.actions.installMod({
           modDefinition,
@@ -129,7 +129,7 @@ describe("ActivationOptions", () => {
       },
     });
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders blueprint options with additional props", async () => {
@@ -144,7 +144,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const rendered = render(<RecipeOptionsValues />, {
+    const { asFragment } = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
         extensionsSlice.actions.installMod({
           modDefinition,
@@ -154,7 +154,7 @@ describe("ActivationOptions", () => {
       },
     });
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders blueprint options with uiSchema sort order", async () => {
@@ -234,6 +234,7 @@ describe("ActivationOptions", () => {
     expect(input).toBeInTheDocument();
     const selectButton = screen.getByRole("button", { name: "Select" });
     expect(selectButton).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access -- TODO: find better query
     expect(input.parentElement).toContainElement(selectButton);
   });
 });

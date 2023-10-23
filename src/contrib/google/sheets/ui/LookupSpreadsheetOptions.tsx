@@ -124,18 +124,26 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     joinName(blockConfigPath, "tabName")
   );
 
+  const filterRowsFieldPath = joinName(blockConfigPath, "filterRows");
+  const [{ value: filterRows }] = useField<boolean | undefined>(
+    filterRowsFieldPath
+  );
+
+  // For backwards compatibility, we want to show the filters if the field is undefined.
+  const showFilters = filterRows === undefined || filterRows;
+
   const { flagOn } = useFlags();
 
   return (
     <div className="my-2">
-      {flagOn("gsheets-pkce-integration") && (
+      {flagOn("gsheets-pkce-integration-release") && (
         <SchemaField
           name={joinName(blockConfigPath, "googleAccount")}
           schema={LOOKUP_SCHEMA.properties.googleAccount as Schema}
         />
       )}
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
-        {({ googleAccount, spreadsheet, spreadsheetFieldSchema }) => (
+        {({ googleAccount, spreadsheet }) => (
           <>
             <FormErrorContext.Provider
               value={{
@@ -144,11 +152,6 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
                 showFieldActions: false,
               }}
             >
-              <SchemaField
-                name={joinName(blockConfigPath, "spreadsheetId")}
-                schema={spreadsheetFieldSchema}
-                isRequired
-              />
               {
                 // The problem with including these inside the nested FormErrorContext.Provider is that we
                 // would like analysis to run if they are in text/template mode, but not in select mode.
@@ -159,29 +162,40 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
                     schema={LOOKUP_SCHEMA.properties.tabName as Schema}
                     spreadsheet={spreadsheet}
                   />
-                  <HeaderField
-                    name={joinName(blockConfigPath, "header")}
-                    googleAccount={googleAccount}
-                    spreadsheetId={spreadsheet?.spreadsheetId}
-                    tabName={tabName}
+                  <SchemaField
+                    name={filterRowsFieldPath}
+                    schema={LOOKUP_SCHEMA.properties.filterRows as Schema}
+                    defaultType="boolean"
                   />
+                  {showFilters && (
+                    <HeaderField
+                      name={joinName(blockConfigPath, "header")}
+                      googleAccount={googleAccount}
+                      spreadsheetId={spreadsheet?.spreadsheetId}
+                      tabName={tabName}
+                    />
+                  )}
                 </>
               }
             </FormErrorContext.Provider>
-            <SchemaField
-              name={joinName(blockConfigPath, "query")}
-              label="Query"
-              description="Value to search for in the column"
-              schema={LOOKUP_SCHEMA.properties.query as Schema}
-              isRequired
-            />
-            <SchemaField
-              name={joinName(blockConfigPath, "multi")}
-              label="All Matches"
-              description="Toggle on to return an array of matches"
-              schema={LOOKUP_SCHEMA.properties.multi as Schema}
-              isRequired
-            />
+            {showFilters && (
+              <>
+                <SchemaField
+                  name={joinName(blockConfigPath, "query")}
+                  label="Query"
+                  description="Value to search for in the column"
+                  schema={LOOKUP_SCHEMA.properties.query as Schema}
+                  isRequired
+                />
+                <SchemaField
+                  name={joinName(blockConfigPath, "multi")}
+                  label="All Matches"
+                  description="Toggle on to return an array of matches"
+                  schema={LOOKUP_SCHEMA.properties.multi as Schema}
+                  isRequired
+                />
+              </>
+            )}
           </>
         )}
       </RequireGoogleSheet>

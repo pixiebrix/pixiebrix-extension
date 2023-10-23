@@ -85,6 +85,7 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   );
 
   const selectedValue = options.find((x) => x.value === value) ?? {
+    label: null,
     value: null,
   };
 

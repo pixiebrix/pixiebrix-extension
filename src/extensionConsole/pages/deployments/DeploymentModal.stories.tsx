@@ -22,7 +22,7 @@ import DeploymentModal from "@/extensionConsole/pages/deployments/DeploymentModa
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/services/api";
 
@@ -54,9 +54,7 @@ const Template: Story<StoryType> = ({
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware().concat(appApi.middleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
     preloadedState: {
       options: extensionsSlice.getInitialState(),

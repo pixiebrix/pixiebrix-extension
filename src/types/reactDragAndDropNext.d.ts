@@ -119,7 +119,7 @@ declare module "react-beautiful-dnd-next" {
     "data-react-beautiful-dnd-droppable": string;
   }
   export interface DroppableProvided {
-    innerRef(element: HTMLElement | null): any;
+    innerRef(element: HTMLElement | null): unknown;
     placeholder?: React.ReactElement<HTMLElement> | null | undefined;
     droppableProps: DroppableProvidedProps;
   }
@@ -176,16 +176,16 @@ declare module "react-beautiful-dnd-next" {
   }
 
   export interface DraggableProvidedDragHandleProps {
-    onMouseDown: React.MouseEventHandler<any>;
-    onKeyDown: React.KeyboardEventHandler<any>;
-    onTouchStart: React.TouchEventHandler<any>;
-    onTouchMove: React.TouchEventHandler<any>;
+    onMouseDown: React.MouseEventHandler<unknown>;
+    onKeyDown: React.KeyboardEventHandler<unknown>;
+    onTouchStart: React.TouchEventHandler<unknown>;
+    onTouchMove: React.TouchEventHandler<unknown>;
     "data-react-beautiful-dnd-drag-handle": string;
     "aria-roledescription": string;
     tabIndex: number;
     "aria-grabbed": boolean;
     draggable: boolean;
-    onDragStart: React.DragEventHandler<any>;
+    onDragStart: React.DragEventHandler<unknown>;
   }
 
   export interface DraggableProvided {
@@ -193,7 +193,7 @@ declare module "react-beautiful-dnd-next" {
     dragHandleProps: DraggableProvidedDragHandleProps | null;
 
     // Will be removed after move to react 16
-    innerRef(element?: HTMLElement | null): any;
+    innerRef(element?: HTMLElement | null): unknown;
     placeholder?: React.ReactElement<HTMLElement> | null | undefined;
   }
 

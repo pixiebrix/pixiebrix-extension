@@ -96,7 +96,7 @@ function useActivateRecipe(
       }
 
       const configuredDependencies = formValues.integrationDependencies.filter(
-        ({ config }) => Boolean(config)
+        ({ configId }) => Boolean(configId)
       );
 
       try {

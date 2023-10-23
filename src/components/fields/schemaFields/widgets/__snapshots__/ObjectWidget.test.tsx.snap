@@ -80,6 +80,13 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                 class="formGroup mb-0 form-group row"
               >
                 <div
+                  class="mb-2 collapse col-12"
+                >
+                  <div
+                    class="annotationPlaceholder"
+                  />
+                </div>
+                <div
                   class="col-xl-12 col-lg-12"
                 >
                   <div
@@ -136,6 +143,13 @@ exports[`ObjectWidget renders widget with properties 1`] = `
                 class="formGroup mb-0 form-group row"
               >
                 <div
+                  class="mb-2 collapse col-12"
+                >
+                  <div
+                    class="annotationPlaceholder"
+                  />
+                </div>
+                <div
                   class="col-xl-12 col-lg-12"
                 >
                   <div
@@ -191,6 +205,13 @@ exports[`ObjectWidget renders widget with properties 1`] = `
               <div
                 class="formGroup mb-0 form-group row"
               >
+                <div
+                  class="mb-2 collapse col-12"
+                >
+                  <div
+                    class="annotationPlaceholder"
+                  />
+                </div>
                 <div
                   class="col-xl-12 col-lg-12"
                 >

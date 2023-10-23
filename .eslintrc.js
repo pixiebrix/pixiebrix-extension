@@ -36,7 +36,7 @@ const restrictedZones = [
 module.exports = {
   root: true,
   extends: [
-    // Full config: https://github.com/fregante/eslint-config-pixiebrix/blob/main/index.js
+    // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
     "plugin:pixiebrix-extension/all",
   ],
@@ -68,7 +68,14 @@ module.exports = {
         ],
       },
     ],
-
+    // TODO: Move to shared config
+    "@typescript-eslint/no-explicit-any": [
+      "error",
+      {
+        fixToUnknown: true,
+        ignoreRestArgs: true,
+      },
+    ],
     "no-restricted-syntax": [
       "error",
       {
@@ -78,8 +85,8 @@ module.exports = {
     ],
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
-    "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
+    "@typescript-eslint/no-non-null-assertion": "error", // TODO: Move to shared config
 
     // Enabled for the IDE, but it's disabled in the `lint` script
     "import/no-cycle": "warn",
@@ -103,12 +110,36 @@ module.exports = {
       extends: ["pixiebrix/server"],
       rules: {
         "import/no-restricted-paths": "off",
+        "@typescript-eslint/no-non-null-assertion": "off", // TODO: Move to shared config
+        "@typescript-eslint/no-explicit-any": "off", // TODO: Move to shared config
       },
     },
     {
       files: ["**/*.js"],
       rules: {
         "@typescript-eslint/no-unsafe-argument": "off",
+      },
+    },
+    {
+      files: [
+        "**/testEnv.js",
+        "**/testHelpers.*",
+        "**/testUtils/*",
+        "**/*.stories.tsx",
+      ],
+      rules: {
+        "unicorn/prefer-spread": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "jest/no-export": "off",
+        "testing-library/render-result-naming-convention": "off",
+      },
+    },
+    {
+      // Settings for regular ts files that should only apply to react component rests
+      files: ["**/!(*.test)*.ts?(x)", "**/*.ts"],
+      rules: {
+        "testing-library/render-result-naming-convention": "off",
+        "testing-library/no-await-sync-queries": "off",
       },
     },
   ],

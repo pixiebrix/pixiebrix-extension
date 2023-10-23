@@ -45,16 +45,14 @@ export default {
   },
 } as ComponentMeta<typeof OnboardingView>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: unknown) {
   return configureStore({
     reducer: {
       mods: persistReducer(persistModsConfig, modsPageSlice.reducer),
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware().concat(appApi.middleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
     preloadedState: initialState,
   });

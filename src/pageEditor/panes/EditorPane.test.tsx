@@ -18,12 +18,7 @@
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] */
 
 import React from "react";
-import {
-  getByText,
-  getByTitle,
-  render,
-  screen,
-} from "@/pageEditor/testHelpers";
+import { render, screen, within } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -215,7 +210,7 @@ describe("renders", () => {
   test("the first selected node", async () => {
     const formState = getPlainFormState();
     const { instanceId } = formState.extension.blockPipeline[0];
-    const rendered = render(<EditorPane />, {
+    const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
         dispatch(editorActions.selectElement(formState.uuid));
@@ -225,12 +220,12 @@ describe("renders", () => {
 
     await tickAsyncEffects();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("an extension with sub pipeline", async () => {
     const formState = getFormStateWithSubPipelines();
-    const rendered = render(<EditorPane />, {
+    const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
         dispatch(editorActions.selectElement(formState.uuid));
@@ -239,7 +234,7 @@ describe("renders", () => {
 
     await tickAsyncEffects();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });
 
@@ -366,7 +361,7 @@ describe("can add a node", () => {
 async function renderEditorPaneWithBasicFormState() {
   const element = getFormStateWithSubPipelines();
   const activeNodeId = element.extension.blockPipeline[0].instanceId;
-  const renderResult = render(
+  const utils = render(
     <div>
       <EditorPane />
       <AddBlockModal />
@@ -380,7 +375,7 @@ async function renderEditorPaneWithBasicFormState() {
     }
   );
   await waitForEffect();
-  return renderResult;
+  return utils;
 }
 
 describe("can remove a node", () => {
@@ -605,14 +600,13 @@ describe("can copy and paste a node", () => {
 
 describe("validation", () => {
   function expectEditorError(container: HTMLElement, errorMessage: string) {
+    // eslint-disable-next-line testing-library/no-node-access
     const errorBadge = container.querySelector(
       '.active[data-testid="editor-node"] span.badge'
     );
     expect(errorBadge).toBeInTheDocument();
 
-    expect(
-      getByText(container.querySelector(".configPanel"), errorMessage)
-    ).toBeInTheDocument();
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
   }
 
   test("validates string templates", async () => {
@@ -620,7 +614,7 @@ describe("validation", () => {
     const subEchoNode = (
       formState.extension.blockPipeline[1].config.body as PipelineExpression
     ).__value__[0];
-    const rendered = render(<EditorPane />, {
+    const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
         dispatch(editorActions.selectElement(formState.uuid));
@@ -631,13 +625,13 @@ describe("validation", () => {
     await tickAsyncEffects();
 
     // By some reason, the validation doesn't fire with userEvent.type
-    fireTextInput(rendered.getByLabelText("message"), "{{!");
+    fireTextInput(screen.getByLabelText("message"), "{{!");
 
     // Run the timers of the Formik-Redux state synchronization and analysis
     await tickAsyncEffects();
 
     expectEditorError(
-      rendered.container,
+      container,
       "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
     );
   });
@@ -657,7 +651,7 @@ describe("validation", () => {
     // Selecting the Echo brick in the first extension
     const { instanceId: echoBlockInstanceId } =
       extension1.extension.blockPipeline[0];
-    const rendered = render(
+    const { container, getReduxStore } = render(
       <>
         <EditorPane />
         <AddBlockModal />
@@ -676,7 +670,7 @@ describe("validation", () => {
 
     // Make invalid string template
     // This is field level error
-    fireTextInput(rendered.getByLabelText("message"), "{{!");
+    fireTextInput(screen.getByLabelText("message"), "{{!");
 
     await tickAsyncEffects();
 
@@ -693,21 +687,21 @@ describe("validation", () => {
 
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select extension1 again
-    await immediateUserEvent.click(rendered.queryAllByTestId("editor-node")[0]);
+    await immediateUserEvent.click(screen.getAllByTestId("editor-node")[0]);
 
     // Ensure 2 nodes have error badges
     expect(
-      rendered.container.querySelectorAll(
-        '[data-testid="editor-node"] span.badge'
-      )
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      container.querySelectorAll('[data-testid="editor-node"] span.badge')
     ).toHaveLength(2);
 
     // Selecting another extension. Only possible with Redux
-    const store = rendered.getReduxStore();
+    const store = getReduxStore();
     store.dispatch(editorActions.selectElement(extension2.uuid));
 
     // Ensure no error is displayed
-    const errorBadgesOfAnotherExtension = rendered.container.querySelectorAll(
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const errorBadgesOfAnotherExtension = container.querySelectorAll(
       '[data-testid="editor-node"] span.badge'
     );
     expect(errorBadgesOfAnotherExtension).toHaveLength(0);
@@ -720,23 +714,22 @@ describe("validation", () => {
 
     // Should show 2 error in the Node Layout
     expect(
-      rendered.container.querySelectorAll(
-        '[data-testid="editor-node"] span.badge'
-      )
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      container.querySelectorAll('[data-testid="editor-node"] span.badge')
     ).toHaveLength(2);
 
-    const editorNodes = rendered.queryAllByTestId("editor-node");
+    const editorNodes = screen.getAllByTestId("editor-node");
 
     // Selecting the markdown brick in the first extension
     await immediateUserEvent.click(editorNodes[1]);
 
-    expectEditorError(rendered.container, "A renderer must be the last brick.");
+    expectEditorError(container, "A renderer must be the last brick.");
 
     // Selecting the echo brick
     await immediateUserEvent.click(editorNodes[2]);
 
     expectEditorError(
-      rendered.container,
+      container,
       "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
     );
   });
@@ -751,7 +744,7 @@ describe("validation", () => {
         },
       })
     );
-    const rendered = render(
+    const { container } = render(
       <>
         <EditorPane />
         <AddBlockModal />
@@ -775,7 +768,7 @@ describe("validation", () => {
 
     await tickAsyncEffects();
 
-    expectEditorError(rendered.container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
+    expectEditorError(container, MULTIPLE_RENDERERS_ERROR_MESSAGE);
   });
 
   test("validates that renderer is the last node on move", async () => {
@@ -791,7 +784,7 @@ describe("validation", () => {
 
     // Selecting the last node (renderer)
     const { instanceId } = formState.extension.blockPipeline[2];
-    const rendered = render(<EditorPane />, {
+    const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
         dispatch(editorActions.selectElement(formState.uuid));
@@ -801,16 +794,15 @@ describe("validation", () => {
 
     await waitForEffect();
 
-    const moveUpButton = getByTitle(
-      rendered.container.querySelector('.active[data-testid="editor-node"]'),
-      "Move brick higher"
-    );
+    const moveUpButton = within(
+      screen.getAllByTestId("editor-node").at(-1)
+    ).getByTitle("Move brick higher");
 
     await immediateUserEvent.click(moveUpButton);
 
     await tickAsyncEffects();
 
-    expectEditorError(rendered.container, "A renderer must be the last brick.");
+    expectEditorError(container, "A renderer must be the last brick.");
   });
 
   const disallowedBlockValidationTestCases = [
@@ -835,7 +827,7 @@ describe("validation", () => {
         config: defaultBlockConfig(disallowedBlock.inputSchema),
       });
 
-      const rendered = render(
+      const { container } = render(
         <>
           <EditorPane />
         </>,
@@ -864,7 +856,7 @@ describe("validation", () => {
 
       const brickType = await getType(disallowedBlock);
       expectEditorError(
-        rendered.container,
+        container,
         `Brick of type "${brickType}" is not allowed in this pipeline`
       );
     }
@@ -912,7 +904,7 @@ describe("brick validation in Add Brick Modal UI", () => {
 
       // Try to find the disallowed brick and make sure it's not there
       await immediateUserEvent.type(
-        screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+        within(screen.getByRole("dialog")).getByRole("textbox"),
         disallowedBlockName
       );
 
@@ -920,8 +912,9 @@ describe("brick validation in Add Brick Modal UI", () => {
       await tickAsyncEffects();
 
       // Check for the alert on hover
-      const firstResult = screen.queryAllByRole("button", { name: /add/i })[0]
-        .parentElement;
+      const firstResult =
+        // eslint-disable-next-line testing-library/no-node-access
+        screen.getAllByRole("button", { name: /add/i })[0].parentElement;
       await immediateUserEvent.hover(firstResult);
       expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
     }
@@ -953,17 +946,18 @@ describe("brick validation in Add Brick Modal UI", () => {
 
     // Try to find the disallowed brick and make sure it's not there
     await immediateUserEvent.type(
-      screen.getByRole("dialog").querySelector('input[name="brickSearch"]'),
+      within(screen.getByRole("dialog")).getByRole("textbox"),
       "uipath"
     );
 
     // Run the debounced search
     await tickAsyncEffects();
 
-    const addButtons = screen.queryAllByRole("button", { name: /add/i });
+    const addButtons = screen.getAllByRole("button", { name: /add/i });
 
     // Assert that no UiPath bricks are available
     for (const button of addButtons) {
+      // eslint-disable-next-line testing-library/no-node-access
       const brick = button.parentElement;
       expect(brick).not.toHaveTextContent("uipath");
     }

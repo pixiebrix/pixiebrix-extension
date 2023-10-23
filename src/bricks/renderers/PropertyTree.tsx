@@ -16,6 +16,7 @@
  */
 
 import { TreeTable } from "primereact/treetable";
+import type TreeNode from "primereact/treenode";
 import { Column } from "primereact/column";
 import { Stylesheets } from "@/components/Stylesheets";
 import React from "react";
@@ -24,7 +25,9 @@ import theme from "primereact/resources/themes/saga-blue/theme.css?loadAsUrl";
 import primereact from "primereact/resources/primereact.min.css?loadAsUrl";
 import primeicons from "primeicons/primeicons.css?loadAsUrl";
 
-const PropertyTree: React.FunctionComponent<{ value: any }> = ({ value }) => (
+const PropertyTree: React.FunctionComponent<{ value: TreeNode[] }> = ({
+  value,
+}) => (
   <React.Fragment>
     <Stylesheets href={[theme, primereact, primeicons]}>
       <TreeTable value={value}>

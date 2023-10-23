@@ -17,25 +17,34 @@
 
 import React from "react";
 
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 
 describe("RootErrorPanel", () => {
   it("should render business error", () => {
-    const result = render(<RootErrorPanel error={new BusinessError()} />);
-    expect(result).toMatchSnapshot();
+    const expectedErrorMessage = "Business error message";
+    const { asFragment } = render(
+      <RootErrorPanel error={new BusinessError(expectedErrorMessage)} />
+    );
+    expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("should render application error", () => {
-    const result = render(
-      <RootErrorPanel error={new Error("Unknown error")} />
+    const expectedErrorMessage = "Application error message";
+    const { asFragment } = render(
+      <RootErrorPanel error={new Error(expectedErrorMessage)} />
     );
-    expect(result).toMatchSnapshot();
+    expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("should render no renderer error", () => {
-    const result = render(<RootErrorPanel error={new NoRendererError()} />);
-    expect(result).toMatchSnapshot();
+    const { asFragment } = render(
+      <RootErrorPanel error={new NoRendererError()} />
+    );
+    expect(screen.getByText("No renderer found")).toBeInTheDocument();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

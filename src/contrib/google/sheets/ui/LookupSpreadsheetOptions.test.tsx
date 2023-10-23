@@ -29,7 +29,10 @@ import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
 import { services, sheets } from "@/background/messenger/api";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
 import {
   type FileList,
   type Spreadsheet,
@@ -37,7 +40,6 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { type AuthOption } from "@/auth/authTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import {
@@ -45,7 +47,7 @@ import {
   isGoogleInitialized,
 } from "@/contrib/google/initGoogle";
 import { type FormikValues } from "formik";
-import ServicesSliceModIntegrationsContextAdapter from "@/store/services/ServicesSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
 import useFlags from "@/hooks/useFlags";
 
 let idSequence = 0;
@@ -70,6 +72,7 @@ jest.mock("@/hooks/auth", () => ({
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
+const isLoggedInMock = jest.mocked(sheets.isLoggedIn);
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
 const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
@@ -113,11 +116,11 @@ const testSpreadsheetAuthOption: AuthOption = {
   sharingType: "private",
 };
 
-const googlePKCEIntegrationDependency: IntegrationDependency = {
-  id: GOOGLE_PKCE_SERVICE_ID,
+const googlePKCEIntegrationDependency = integrationDependencyFactory({
+  integrationId: GOOGLE_PKCE_SERVICE_ID,
   outputKey: validateOutputKey("google"),
-  config: GOOGLE_PKCE_AUTH_CONFIG,
-};
+  configId: GOOGLE_PKCE_AUTH_CONFIG,
+});
 
 const testSpreadsheet: Spreadsheet = {
   spreadsheetId: TEST_SPREADSHEET_ID,
@@ -204,6 +207,7 @@ beforeAll(() => {
   useAuthOptionsMock.mockReturnValue(
     valueToAsyncState([googlePKCEAuthOption, testSpreadsheetAuthOption])
   );
+  isLoggedInMock.mockResolvedValue(true);
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
   getSpreadsheetMock.mockResolvedValue(testSpreadsheet);
   getSheetPropertiesMock.mockResolvedValue({ title: TEST_SPREADSHEET_NAME });
@@ -233,17 +237,17 @@ beforeEach(() => {
 });
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
-  const rendered = render(
+  const utils = render(
     <LookupSpreadsheetOptions name="" configKey="config" />,
     {
       initialValues,
-      wrapper: ServicesSliceModIntegrationsContextAdapter,
+      wrapper: IntegrationsSliceModIntegrationsContextAdapter,
     }
   );
 
   await waitForEffect();
 
-  return rendered;
+  return utils;
 };
 
 describe("LookupSpreadsheetOptions", () => {
@@ -252,7 +256,7 @@ describe("LookupSpreadsheetOptions", () => {
    */
 
   test("given empty googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -262,7 +266,7 @@ describe("LookupSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given feature flag off and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
@@ -277,7 +281,7 @@ describe("LookupSpreadsheetOptions", () => {
       },
     });
 
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: makeTemplateExpression("nunjucks", ""),
@@ -287,11 +291,11 @@ describe("LookupSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given empty googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: "Tab2",
@@ -301,11 +305,11 @@ describe("LookupSpreadsheetOptions", () => {
       },
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -314,14 +318,14 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeTemplateExpression("nunjucks", ""),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("given test googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
-    const rendered = await renderWithValuesAndWait({
+    const { asFragment } = await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -330,10 +334,10 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeTemplateExpression("nunjucks", "test query"),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   /**
@@ -387,7 +391,7 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeTemplateExpression("nunjucks", ""),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Tab1 will be picked automatically since it's first in the list
@@ -409,7 +413,7 @@ describe("LookupSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Tab1 will be picked automatically since it's first in the list
@@ -428,7 +432,7 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeTemplateExpression("nunjucks", ""),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Select the first spreadsheet
@@ -506,7 +510,7 @@ describe("LookupSpreadsheetOptions", () => {
       optionsArgs: {
         sheetId: TEST_SPREADSHEET_ID,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     expect(screen.getByDisplayValue("@options.sheetId")).toBeVisible();
@@ -525,7 +529,7 @@ describe("LookupSpreadsheetOptions", () => {
         query: makeVariableExpression("@query"),
         multi: false,
       },
-      services: [googlePKCEIntegrationDependency],
+      integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
     // Spreadsheet ID should not be user-visible
@@ -545,7 +549,7 @@ describe("LookupSpreadsheetOptions", () => {
     isGoogleInitializedMock.mockReturnValue(false);
     isGAPISupportedMock.mockReturnValue(false);
 
-    const rendered = render(
+    const { asFragment } = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
       {
         initialValues: { config: {} },
@@ -554,14 +558,14 @@ describe("LookupSpreadsheetOptions", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("should require GAPI loaded", async () => {
     isGoogleInitializedMock.mockReturnValue(false);
     isGAPISupportedMock.mockReturnValue(true);
 
-    const rendered = render(
+    const { asFragment } = render(
       <LookupSpreadsheetOptions name="" configKey="config" />,
       {
         initialValues: { config: {} },
@@ -570,6 +574,6 @@ describe("LookupSpreadsheetOptions", () => {
 
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

@@ -26,6 +26,7 @@ import { ClosePanelAction } from "@/bricks/errors";
 import { CancelError } from "@/errors/businessErrors";
 import { type Except } from "type-fest";
 import { type Location } from "@/types/starterBrickTypes";
+import { isObject } from "@/utils/objectUtils";
 
 export type RegisteredPanel = {
   /**
@@ -261,11 +262,7 @@ export async function cancelTemporaryPanels(
 
   // :shrug: the error doesn't get deserialized by the messenger because it's not a rejection and the messenger
   // doesn't attempt to deserialize it. So we have to do it manually
-  if (
-    typeof error === "object" &&
-    "name" in error &&
-    error.name === "ClosePanelAction"
-  ) {
+  if (isObject(error) && "name" in error && error.name === "ClosePanelAction") {
     rejectError = new ClosePanelAction("User closed the panel");
   }
 

@@ -31,15 +31,13 @@ export default {
   component: BrickDetail,
 } as ComponentMeta<typeof BrickDetail>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: unknown) {
   return configureStore({
     reducer: {
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware().concat(appApi.middleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
     preloadedState: initialState,
   });

@@ -61,6 +61,7 @@ export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 export const sheets = {
+  isLoggedIn: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getAllSpreadsheets: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getSpreadsheet: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getTabNames: jest.fn().mockRejectedValue(new Error("Not implemented")),
@@ -116,8 +117,11 @@ export const services = {
 };
 
 // `getMethod` currently strips generics, so we must copy the function signature here
-export const proxyService = getMethod("PROXY", bg) as <TData>(
-  serviceConfig: SanitizedIntegrationConfig | null,
+export const performConfiguredRequestInBackground = getMethod(
+  "CONFIGURED_REQUEST",
+  bg
+) as <TData>(
+  integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 

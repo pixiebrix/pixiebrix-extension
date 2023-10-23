@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions", "expectTab1Selected"] }] */
+
 import React from "react";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import { render } from "@/pageEditor/testHelpers";
@@ -57,6 +59,11 @@ function expectTab1Selected() {
   expect(screen.queryByText("Tab2")).not.toBeInTheDocument();
 }
 
+function expectTab2Selected() {
+  expect(screen.getByText("Tab2")).toBeVisible();
+  expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
+}
+
 describe("TabField", () => {
   it("Renders select and variable toggle options", async () => {
     render(
@@ -74,11 +81,7 @@ describe("TabField", () => {
 
     await waitForEffect();
 
-    await expectToggleOptions(screen.getByTestId("toggle-tabName"), [
-      "select",
-      "string",
-      "var",
-    ]);
+    await expectToggleOptions("toggle-tabName", ["select", "string", "var"]);
   });
 
   it("defaults to the first tab name when value is null literal", async () => {
@@ -170,8 +173,6 @@ describe("TabField", () => {
 
     await waitForEffect();
 
-    screen.debug();
-
     expect(screen.queryByText("Foo")).not.toBeInTheDocument();
     expect(screen.getByText("InvalidTab")).toBeVisible();
   });
@@ -227,7 +228,7 @@ describe("TabField", () => {
   });
 
   test("given non-empty expression tabName value, when spreadsheet changes, does not clear the value", async () => {
-    const { rerender } = render(
+    const { rerender, container } = render(
       <TabField
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
@@ -251,7 +252,7 @@ describe("TabField", () => {
     await userEvent.type(input, "InvalidTab");
 
     // Clear input focus
-    (document.activeElement as HTMLElement).blur();
+    await userEvent.click(container);
 
     // Change spreadsheet
     rerender(
@@ -286,7 +287,7 @@ describe("TabField", () => {
   });
 
   test("given empty expression tabName value, when spreadsheet changes, then updates the value", async () => {
-    const { rerender } = render(
+    const { rerender, container } = render(
       <TabField
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
@@ -308,7 +309,7 @@ describe("TabField", () => {
     await userEvent.clear(screen.getByRole("textbox"));
 
     // Clear input focus
-    (document.activeElement as HTMLElement).blur();
+    await userEvent.click(container);
 
     // Change spreadsheet
     rerender(
@@ -340,5 +341,87 @@ describe("TabField", () => {
     // Should have selected first tab automatically
     expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
     expect(screen.getByText("Foo")).toBeVisible();
+  });
+
+  // eslint-disable-next-line jest/expect-expect -- custom assertion function is used
+  test("given string tabName value, when spreadsheet changes to null, then does not update the value", async () => {
+    const { rerender } = render(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={TEST_SPREADSHEET}
+      />,
+      {
+        initialValues: {
+          tabName: "Tab2",
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expectTab2Selected();
+
+    // Change spreadsheet
+    rerender(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={null}
+      />
+    );
+
+    await waitForEffect();
+
+    // Tab name should not be cleared yet
+    expectTab2Selected();
+  });
+
+  // eslint-disable-next-line jest/expect-expect -- custom assertion function is used
+  test("given string tabName value, when spreadsheet changes to null and back to the same spreadsheet, should not reset the value", async () => {
+    const { rerender } = render(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={TEST_SPREADSHEET}
+      />,
+      {
+        initialValues: {
+          tabName: "Tab2",
+        },
+      }
+    );
+
+    await waitForEffect();
+
+    expectTab2Selected();
+
+    // Change spreadsheet to null (simulate google login)
+    rerender(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={null}
+      />
+    );
+
+    await waitForEffect();
+
+    // Tab name should not be cleared yet
+    expectTab2Selected();
+
+    // Change spreadsheet back
+    rerender(
+      <TabField
+        name="tabName"
+        schema={{}} // Does not currently check the passed-in schema
+        spreadsheet={TEST_SPREADSHEET}
+      />
+    );
+
+    await waitForEffect();
+
+    // Tab2 should still be selected
+    expectTab2Selected();
   });
 });

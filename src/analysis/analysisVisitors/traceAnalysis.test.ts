@@ -59,7 +59,7 @@ describe("TraceAnalysis.mapErrorAnnotations", () => {
 
     expect(annotations).toHaveLength(1);
     expect(annotations[0].position).toEqual({ path: "config.filter" });
-    expect(annotations[0].message).toEqual(
+    expect(annotations[0].message).toBe(
       "Error from the last run: This field is required."
     );
   });
@@ -72,6 +72,6 @@ describe("TraceAnalysis.mapErrorAnnotations", () => {
 
     expect(annotations).toHaveLength(1);
     expect(annotations[0].position).toEqual({ path: "" });
-    expect(annotations[0].message).toEqual("foo");
+    expect(annotations[0].message).toBe("foo");
   });
 });

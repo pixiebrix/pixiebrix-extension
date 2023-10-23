@@ -77,6 +77,7 @@ export const getChromeEventMocks = () => ({
  * "@testing-library/react-hooks"
  */
 export const waitForEffect = async () =>
+  // eslint-disable-next-line testing-library/no-unnecessary-act
   act(async () => {
     // Awaiting the async state update
   });
@@ -90,7 +91,6 @@ export const runPendingTimers = async () =>
   });
 
 // NoInfer is internal type of @reduxjs/toolkit tsHelpers
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from @reduxjs/toolkit typings
 declare type NoInfer<T> = [T][T extends any ? 0 : never];
 type CreateRenderFunctionOptions<TState, TAction extends Action, TProps> = {
   reducer: Reducer<TState, TAction> | ReducersMapObject<TState, TAction>;
@@ -101,7 +101,6 @@ type CreateRenderFunctionOptions<TState, TAction extends Action, TProps> = {
 };
 
 export type RenderFunctionWithRedux<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
   P = {}
@@ -114,7 +113,6 @@ export type RenderFunctionWithRedux<
  * @deprecated Prefer using `createRenderWithWrappers` instead
  */
 export function createRenderFunctionWithRedux<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   A extends Action = AnyAction,
   // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
@@ -240,10 +238,10 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
         )
       : ({ children }) => <Provider store={store}>{children}</Provider>;
 
-    const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
+    const utils = render(ui, { wrapper: Wrapper, ...renderOptions });
 
     return {
-      ...renderResult,
+      ...utils,
       getReduxStore() {
         return store;
       },
@@ -334,13 +332,13 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
           </Provider>
         );
 
-    const renderResult = renderHook(hook, {
+    const utils = renderHook(hook, {
       wrapper: Wrapper,
       ...renderOptions,
     });
 
     return {
-      ...renderResult,
+      ...utils,
       getReduxStore() {
         return store;
       },

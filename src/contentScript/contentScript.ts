@@ -16,8 +16,9 @@
  */
 
 // WARNING: this file MUST NOT directly or transitively import webext-messenger because it does not support being
-// imported multiple times in the same contentScript. It's only save to import webext-messenger in contentScriptCore.ts
+// imported multiple times in the same contentScript. It's only safe to import webext-messenger in contentScriptCore.ts
 // which is behind a guarded dynamic import.
+
 import "./contentScript.scss";
 import { addContentScriptIndicator } from "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";

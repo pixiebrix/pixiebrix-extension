@@ -20,14 +20,14 @@ import { type BlockOptionProps } from "@/components/fields/schemaFields/genericO
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { useField } from "formik";
-import { proxyService } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type ODataResponseData, type Robot } from "./uipathContract";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
-import RequireServiceConfig from "@/contrib/RequireServiceConfig";
+import RequireIntegrationConfig from "@/contrib/RequireIntegrationConfig";
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import cachePromise from "@/utils/cachePromise";
@@ -42,7 +42,9 @@ import useAsyncEffect from "use-async-effect";
 async function fetchRobots(
   config: SanitizedIntegrationConfig
 ): Promise<Array<Option<number>>> {
-  const response = await proxyService<ODataResponseData<Robot>>(config, {
+  const response = await performConfiguredRequestInBackground<
+    ODataResponseData<Robot>
+  >(config, {
     url: "/odata/Robots",
     method: "get",
   });
@@ -99,11 +101,11 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   return isExpression(releaseKey) ? (
     <WorkshopMessage />
   ) : (
-    <RequireServiceConfig
-      serviceSchema={UIPATH_PROPERTIES.uipath as Schema}
-      serviceFieldName={configName("uipath")}
+    <RequireIntegrationConfig
+      integrationsSchema={UIPATH_PROPERTIES.uipath as Schema}
+      integrationsFieldName={configName("uipath")}
     >
-      {({ config }) => (
+      {({ sanitizedConfig }) => (
         <>
           <ConnectedFieldTemplate
             label="Release"
@@ -127,7 +129,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
               as={RemoteMultiSelectWidget}
               optionsFactory={robotOptionsFactory}
               blankValue={[]}
-              config={config}
+              config={sanitizedConfig}
             />
           )}
           {strategy === "JobsCount" && (
@@ -161,7 +163,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
           />
         </>
       )}
-    </RequireServiceConfig>
+    </RequireIntegrationConfig>
   );
 };
 

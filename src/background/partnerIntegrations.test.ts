@@ -29,7 +29,6 @@ import {
 } from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
-import { setCachedAuthData } from "@/background/auth";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IntegrationConfig } from "@/types/integrationTypes";
@@ -39,6 +38,7 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { registry } from "@/background/messenger/api";
+import { setCachedAuthData } from "@/background/auth/authStorage";
 
 const integrationDefinitionMap = new Map([
   [CONTROL_ROOM_TOKEN_INTEGRATION_ID, tokenIntegrationDefinition],
@@ -60,7 +60,7 @@ jest.mock("@/services/registry", () => {
   };
 });
 
-jest.mock("@/background/auth", () => ({
+jest.mock("@/background/auth/authStorage", () => ({
   setCachedAuthData: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -107,7 +107,7 @@ describe("getPartnerPrincipals", () => {
     // Local configuration
     readRawConfigurationsMock.mockResolvedValue([
       integrationConfigFactory({
-        serviceId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://control-room.example.com",
           username: "bot_creator",
@@ -161,7 +161,7 @@ describe("refresh partner token", () => {
     readRawConfigurationsMock.mockResolvedValue([
       {
         id: authId,
-        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
         }),
@@ -205,7 +205,7 @@ describe("refresh partner token", () => {
     readRawConfigurationsMock.mockResolvedValue([
       {
         id: authId,
-        serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+        integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         config: secretsConfigFactory({
           controlRoomUrl: "https://controlroom.com",
         }),

@@ -20,7 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, isEmpty, once, throttle, uniq } from "lodash";
 import { isLinked } from "@/auth/token";
 import { type UUID } from "@/types/stringTypes";
-import { loadOptions } from "@/store/extensionsStorage";
+import { getModComponentState } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
@@ -40,6 +40,7 @@ import {
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";
+import { getTabsWithAccess } from "@/utils/extensionUtils";
 
 const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
@@ -318,7 +319,7 @@ async function collectUserSummary(): Promise<UserSummary> {
   let numActiveBlueprints: number = null;
 
   try {
-    const { extensions } = await loadOptions();
+    const { extensions } = await getModComponentState();
     numActiveExtensions = extensions.length;
     numActiveBlueprints = uniq(
       compact(extensions.map((x) => x._recipe?.id))
@@ -436,7 +437,7 @@ export async function pong(): Promise<{ timestamp: number }> {
  */
 export async function collectPerformanceDiagnostics(): Promise<Diagnostics> {
   const timestamp = Date.now();
-  const allTabs = await browser.tabs.query({});
+  const allTabs = await getTabsWithAccess();
 
   return {
     timestamp,

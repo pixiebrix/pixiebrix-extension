@@ -38,7 +38,7 @@ const iconOptions: IconOption[] = sortBy(
 );
 
 // https://github.com/JedWatson/react-select/issues/3480#issuecomment-481566579
-function SingleValue(props: OptionProps<IconOption>): JSX.Element {
+function SingleValue(props: OptionProps<IconOption, false>): JSX.Element {
   const { SingleValue } = components;
   return (
     <SingleValue {...props}>
@@ -53,7 +53,7 @@ function SingleValue(props: OptionProps<IconOption>): JSX.Element {
 }
 
 interface OwnProps {
-  value: { id: string; library: IconLibrary };
+  value: { id: string; library: IconLibrary } | null;
   isClearable?: boolean;
   onChange: (option: IconOption | null) => void;
   disabled?: boolean;

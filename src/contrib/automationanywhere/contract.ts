@@ -15,12 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "@/types/helpers";
-
-export const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
-  "automation-anywhere/control-room"
-);
-
 export type ListResponse<TData> = {
   page: {
     offset: number;

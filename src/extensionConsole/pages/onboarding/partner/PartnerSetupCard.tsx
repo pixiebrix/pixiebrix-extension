@@ -21,7 +21,7 @@ import OnboardingChecklistCard, {
 } from "@/components/onboarding/OnboardingChecklistCard";
 import ControlRoomOAuthForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomOAuthForm";
 import ControlRoomTokenForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomTokenForm";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { appApi } from "@/services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
@@ -29,7 +29,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { getBaseURL } from "@/services/baseService";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { useLocation } from "react-router";
 import {
   hostnameToUrl,

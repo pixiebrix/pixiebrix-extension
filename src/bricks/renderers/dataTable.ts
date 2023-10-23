@@ -28,7 +28,7 @@ export interface Row {
 export interface ColumnDefinition<TRow extends Row> {
   property: string;
   label: string;
-  renderer?: (value: any, row: TRow) => string;
+  renderer?: (value: unknown, row: TRow) => string;
 }
 
 function renderValue<TRow extends Row>(

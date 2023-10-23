@@ -20,19 +20,19 @@ import { generatePackageId, getScopeAndId } from "@/utils/registryUtils";
 
 describe("generatePackageId", () => {
   test("no special chars", () => {
-    expect(generatePackageId("@test", "This Is a Test")).toEqual(
+    expect(generatePackageId("@test", "This Is a Test")).toBe(
       "@test/this-is-a-test"
     );
   });
 
   test("handle colon", () => {
-    expect(generatePackageId("@test", "This: Is a Test")).toEqual(
+    expect(generatePackageId("@test", "This: Is a Test")).toBe(
       "@test/this-is-a-test"
     );
   });
 
   test("collapse spaces", () => {
-    expect(generatePackageId("@test", "This   Is a Test")).toEqual(
+    expect(generatePackageId("@test", "This   Is a Test")).toBe(
       "@test/this-is-a-test"
     );
   });
@@ -62,5 +62,8 @@ describe("getScopeAndId", () => {
   test("scope without id", () => {
     const id = "@foo" as RegistryId;
     expect(getScopeAndId(id)).toStrictEqual(["@foo", undefined]);
+  });
+  test("id is nullish", () => {
+    expect(getScopeAndId(null)).toStrictEqual([undefined, undefined]);
   });
 });

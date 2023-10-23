@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: ".nvmrc"
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
           name: extension-test-coverage
@@ -51,7 +51,7 @@ jobs:
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: ".nvmrc"
@@ -81,8 +81,13 @@ jobs:
           if-no-files-found: error
 
       # The polyfill cannot be used outside the extension context
-      - run: "! grep 'loaded in a browser extension' dist/pageScript.js"
+      - run: "! grep 'loaded in a browser extension' dist/pageScript.js --quiet"
         name: Detect browser-polyfill in pageScript.js
+
+      # The messenger cannot be executed twice; only load it in contentScriptCore
+      # https://github.com/pixiebrix/webext-messenger/issues/88
+      - run: "! grep '__getTabData' dist/loadActivationEnhancements.js dist/contentScript.js --quiet"
+        name: Detect webext-messenger in loadActivationEnhancements.js and dist/contentScript.js
 
       - uses: actions/upload-artifact@v3
         name: Save report.html
@@ -105,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: ".nvmrc"
@@ -126,19 +131,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: ".nvmrc"
           cache: npm
       - run: npm ci
       - run: npm run build:typescript
+      # Prevent regressions in the files that have already been made strictNullCheck-compliant
+      - run: npm run build:strictNullChecks
 
   lint:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: ".nvmrc"
@@ -150,7 +157,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: ".nvmrc"
@@ -164,6 +171,6 @@ jobs:
   prettier:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
       - uses: pre-commit/action@v3.0.0

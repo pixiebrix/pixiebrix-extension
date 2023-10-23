@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import useMemoCompare from "@/hooks/useMemoCompare";
 import deepEquals from "fast-deep-equal";
 
@@ -23,32 +23,34 @@ describe("useMemoCompare", () => {
   it("returns same reference for deepEquals", async () => {
     const initial = { foo: 42 };
 
-    const wrapper = renderHook((props) => useMemoCompare(props, deepEquals), {
-      initialProps: initial,
-    });
+    const { result, rerender } = renderHook(
+      (props) => useMemoCompare(props, deepEquals),
+      {
+        initialProps: initial,
+      }
+    );
 
-    expect(wrapper.result.current).toBe(initial);
+    expect(result.current).toBe(initial);
 
-    await act(async () => {
-      wrapper.rerender({ foo: 42 });
-    });
+    rerender({ foo: 42 });
 
-    expect(wrapper.result.current).toBe(initial);
+    expect(result.current).toBe(initial);
   });
 
   it("returns different reference", async () => {
     const initial = { foo: 42 };
 
-    const wrapper = renderHook((props) => useMemoCompare(props, () => false), {
-      initialProps: initial,
-    });
+    const { result, rerender } = renderHook(
+      (props) => useMemoCompare(props, () => false),
+      {
+        initialProps: initial,
+      }
+    );
 
-    expect(wrapper.result.current).toBe(initial);
+    expect(result.current).toBe(initial);
 
-    await act(async () => {
-      wrapper.rerender({ foo: 42 });
-    });
+    rerender({ foo: 42 });
 
-    expect(wrapper.result.current).not.toBe(initial);
+    expect(result.current).not.toBe(initial);
   });
 });

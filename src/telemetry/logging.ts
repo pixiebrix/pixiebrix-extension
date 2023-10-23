@@ -32,6 +32,7 @@ import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
+import { flagOn } from "@/auth/token";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
@@ -301,7 +302,11 @@ const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
 const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number = null;
 
-async function reportToRollbar(
+/**
+ * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
+ * It's only exported for testing.
+ */
+export async function reportToRollbar(
   // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
   // (It treats POJO as the custom data)
   // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
@@ -310,7 +315,10 @@ async function reportToRollbar(
   message: string
 ): Promise<void> {
   // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
-  if (hasSpecificErrorCause(error, BusinessError)) {
+  if (
+    hasSpecificErrorCause(error, BusinessError) ||
+    (await flagOn("rollbar-disable-report"))
+  ) {
     return;
   }
 
@@ -355,6 +363,8 @@ export async function recordError(
   serializedError: SerializedError,
   context: MessageContext,
   data?: JsonObject
+  // NOTE: If this function signature is changed, also update it in sidebar/messenger/registration.ts
+  // If those types are removed from that file, then also remove this comment.
 ): Promise<void> {
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
   expectContext(
@@ -436,7 +446,7 @@ export type LoggingConfig = {
 const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
 
 export async function getLoggingConfig(): Promise<LoggingConfig> {
-  return readStorage(LOG_CONFIG_STORAGE_KEY, {
+  return readStorage<LoggingConfig>(LOG_CONFIG_STORAGE_KEY, {
     logValues: false,
   });
 }

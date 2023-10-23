@@ -26,20 +26,24 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { selectConfiguredServices } from "@/store/services/servicesSelectors";
+import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
-import servicesSlice from "@/store/services/servicesSlice";
-import { selectSettings } from "@/store/settingsSelectors";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
-import { collectIntegrationOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { collectIntegrationOriginPermissions } from "@/permissions/integrationPermissionsHelpers";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
+import {
+  type IntegrationConfig,
+  type SecretsConfig,
+} from "@/types/integrationTypes";
 
-const { updateServiceConfig } = servicesSlice.actions;
+const { upsertIntegrationConfig } = integrationsSlice.actions;
 
 const AA_STAGING_ENVIRONMENT = "staging";
 const AA_STAGING_AUTHCONFIG_ORIGIN =
@@ -70,7 +74,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const configuredServices = useSelector(selectConfiguredServices);
+  const integrationConfigs = useSelector(selectIntegrationConfigs);
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
   const searchParams = new URLSearchParams(location.search);
@@ -84,12 +88,13 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
     };
   }
 
-  const { authServiceId: authServiceIdOverride } = useSelector(selectSettings);
+  const { authIntegrationId: authIntegrationIdOverride } =
+    useSelector(selectSettings);
 
   // `authServiceIdOverride` can be null/empty, so defaulting in the settings destructuring doesn't work
-  const authServiceId = isEmpty(authServiceIdOverride)
+  const authIntegrationId = isEmpty(authIntegrationIdOverride)
     ? CONTROL_ROOM_OAUTH_INTEGRATION_ID
-    : authServiceIdOverride;
+    : authIntegrationIdOverride;
 
   const connect = useCallback(
     async (
@@ -97,27 +102,29 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
       helpers: FormikHelpers<ControlRoomConfiguration>
     ) => {
       try {
-        const configuredService = configuredServices.find(
-          (x) => x.serviceId === authServiceId
+        const existingIntegrationConfig = integrationConfigs.find(
+          (x) => x.integrationId === authIntegrationId
         );
-        let configurationId = configuredService?.id;
+        const configId = existingIntegrationConfig?.id;
+        const secretsConfig = {
+          controlRoomUrl: normalizeControlRoomUrl(values.controlRoomUrl),
+          authConfigOrigin: values.authConfigOrigin,
+          clientId: values.clientId,
+        } as unknown as SecretsConfig;
 
-        // Create the service configuration if it doesn't already exist
-        if (!configurationId) {
-          configurationId = uuidv4();
+        // Upsert the service configuration if it doesn't already exist or if the secrets config has changed
+        if (
+          !configId ||
+          !isEqual(existingIntegrationConfig?.config, secretsConfig)
+        ) {
+          const newIntegrationConfig = {
+            id: configId ?? uuidv4(),
+            integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            label: "Primary AARI Account",
+            config: secretsConfig,
+          } as IntegrationConfig;
 
-          dispatch(
-            updateServiceConfig({
-              id: configurationId,
-              serviceId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              label: "Primary AARI Account",
-              config: {
-                controlRoomUrl: normalizeControlRoomUrl(values.controlRoomUrl),
-                authConfigOrigin: values.authConfigOrigin,
-                clientId: values.clientId,
-              },
-            })
-          );
+          dispatch(upsertIntegrationConfig(newIntegrationConfig));
 
           // Ensure the service is available to background page (where launchAuthIntegration runs)
           await flushReduxPersistence();
@@ -125,15 +132,15 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
         // Ensure PixieBrix can call the Control Room and OAuth2 endpoints
         const requiredPermissions = await collectIntegrationOriginPermissions({
-          id: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-          config: configurationId,
+          integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+          configId,
         });
 
         console.debug("Required permissions", requiredPermissions);
 
         await ensurePermissionsFromUserGesture(requiredPermissions);
 
-        await launchAuthIntegration({ serviceId: authServiceId });
+        await launchAuthIntegration({ serviceId: authIntegrationId });
 
         // Redirect to blueprints screen. The SetupPage always shows a login screen for the "/start" URL
         history.push("/");
@@ -147,8 +154,8 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
       }
     },
     [
-      configuredServices,
-      authServiceId,
+      integrationConfigs,
+      authIntegrationId,
       history,
       dispatch,
       flushReduxPersistence,

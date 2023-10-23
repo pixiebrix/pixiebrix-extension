@@ -19,7 +19,7 @@ import { locator as serviceLocator } from "@/background/locator";
 import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { type RegistryId } from "@/types/registryTypes";
-import { launchOAuth2Flow, setCachedAuthData } from "@/background/auth";
+import { launchOAuth2Flow } from "@/background/auth/launchOAuth2Flow";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import serviceRegistry from "@/services/registry";
 import {
@@ -31,6 +31,8 @@ import { getBaseURL } from "@/services/baseService";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
 import { safeParseUrl } from "@/utils/urlUtils";
+import { setCachedAuthData } from "@/background/auth/authStorage";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
@@ -136,13 +138,14 @@ export async function launchAuthIntegration({
         },
       });
     } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 401) {
+      if (isAxiosError(error) && [401, 403].includes(error.response?.status)) {
         // Clear the token to allow the user re-login with the SAML/SSO provider
         // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
         await chromeP.identity.clearAllCachedAuthTokens();
 
         throw new Error(
-          "Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration."
+          `Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration.
+          Error: ${getErrorMessage(error)}`
         );
       }
 
@@ -232,12 +235,17 @@ export async function safeTokenRefresh(): Promise<void> {
   }
 }
 
+const TEN_HOURS = 1000 * 60 * 60 * 10;
+
 /**
- * The Automation Anywhere JWT has an absolute expiry of 30 days and an inactivity expiry of 15 days.
- * Refresh the JWT every week, so it doesn't expire after the inactivity period.
+ * The Automation Anywhere JWT access token expires every 24 hours
+ * The refresh token expires every 30 days, with an inactivity expiry of 15 days
+ * Refresh the JWT every 10 hours to ensure the token is always valid
+ * NOTE: this assumes the background script is always running
+ * TODO: re-architect to refresh the token in @/background/refreshToken.ts
  */
 export function initPartnerTokenRefresh(): void {
   setInterval(async () => {
     await safeTokenRefresh();
-  }, 1000 * 60 * 60 * 24 * 7); // 7 days
+  }, TEN_HOURS);
 }

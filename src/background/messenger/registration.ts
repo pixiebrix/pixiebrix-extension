@@ -39,8 +39,7 @@ import {
 import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
 import serviceRegistry from "@/services/registry";
-import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
-import { proxyService } from "@/background/requests";
+import { performConfiguredRequest } from "@/background/requests";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
@@ -78,11 +77,17 @@ import {
   getPartnerPrincipals,
   launchAuthIntegration,
 } from "@/background/partnerIntegrations";
+import {
+  deleteCachedAuthData,
+  getCachedAuthData,
+} from "@/background/auth/authStorage";
 
 expectContext("background");
 
 declare global {
   interface MessengerMethods {
+    GOOGLE_DRIVE_IS_LOGGED_IN: typeof sheets.isLoggedIn;
+
     GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: typeof sheets.getAllSpreadsheets;
     GOOGLE_SHEETS_GET_SPREADSHEET: typeof sheets.getSpreadsheet;
     GOOGLE_SHEETS_GET_TAB_NAMES: typeof sheets.getTabNames;
@@ -134,7 +139,7 @@ declare global {
 
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
-    PROXY: typeof proxyService;
+    CONFIGURED_REQUEST: typeof performConfiguredRequest;
     CLEAR_SERVICE_CACHE: VoidFunction;
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
@@ -164,6 +169,8 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
+    GOOGLE_DRIVE_IS_LOGGED_IN: sheets.isLoggedIn,
+
     GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: sheets.getAllSpreadsheets,
     GOOGLE_SHEETS_GET_SPREADSHEET: sheets.getSpreadsheet,
     GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,
@@ -217,7 +224,7 @@ export default function registerMessenger(): void {
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
-    PROXY: proxyService,
+    CONFIGURED_REQUEST: performConfiguredRequest,
 
     GET_DATA_STORE: getRecord,
     SET_DATA_STORE: setRecord,

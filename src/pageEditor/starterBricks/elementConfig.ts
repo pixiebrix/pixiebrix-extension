@@ -17,116 +17,16 @@
 
 import type React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import {
   type StarterBrickConfig,
   type StarterBrickType,
 } from "@/starterBricks/types";
-import {
-  type BrickPipeline,
-  type NormalizedAvailability,
-} from "@/bricks/types";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
-import type { Permissions } from "webextension-polyfill";
-import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
-import { type UUID } from "@/types/stringTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { type Target } from "@/types/messengerTypes";
-
-/**
- * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
- * @see ReaderConfig
- */
-export type SingleLayerReaderConfig =
-  | RegistryId
-  | RegistryId[]
-  | Record<string, RegistryId>;
-
-export type BaseExtensionPointState = {
-  metadata: Metadata;
-  definition: {
-    type: StarterBrickType;
-    // We're currently not allowing users to modify readers in the page editor
-    reader: SingleLayerReaderConfig;
-    isAvailable: NormalizedAvailability;
-  };
-};
-
-export interface BaseExtensionState {
-  blockPipeline: BrickPipeline;
-}
-
-export interface BaseFormState<
-  TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
-> {
-  /**
-   * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
-   * @see ApiVersion
-   */
-  readonly apiVersion: ApiVersion;
-
-  /**
-   * The extension uuid
-   */
-  readonly uuid: UUID;
-
-  /**
-   * The type of the extensionPoint
-   */
-  readonly type: StarterBrickType;
-
-  /**
-   * True if the extensionPoint exists in in the registry
-   */
-  installed?: boolean;
-
-  /**
-   * True if the extension should be allowed to auto-reload. In general, only extensions that require user
-   * interaction to trigger should be allowed to auto-reload. Otherwise, PixieBrix might end up spamming an API
-   */
-  autoReload?: boolean;
-
-  /**
-   * User-provided name to identify the extension
-   */
-  label: string;
-
-  /**
-   * The input options from the extension's blueprint
-   * @since 1.4.3
-   */
-  optionsArgs: OptionsArgs;
-
-  services: IntegrationDependency[];
-
-  /**
-   * The extra permissions required by the extension
-   * @since 1.7.0
-   */
-  permissions: Permissions.Permissions;
-
-  extensionPoint: TExtensionPoint;
-
-  extension: TExtension;
-
-  /**
-   * Information about the recipe (i.e., blueprint) used to install the extension, or `undefined` if the extension
-   * is not part of a recipe.
-   * @see ModComponentBase._recipe
-   */
-  recipe: ModComponentBase["_recipe"] | undefined;
-
-  /**
-   * Information about the recipe (i.e., blueprint) options,
-   * or `undefined` if the extension is not part of a recipe.
-   * @see ModDefinition.options
-   */
-  optionsDefinition?: ModOptionsDefinition;
-}
+import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
 
 /**
  * ExtensionPoint configuration for use with the Page Editor.

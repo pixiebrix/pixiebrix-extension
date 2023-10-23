@@ -29,7 +29,7 @@ describe("FoundationDataPanel", () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const extensionId = formState.uuid;
     const { instanceId } = formState.extension.blockPipeline[0];
-    const rendered = render(<FoundationDataPanel />, {
+    const { asFragment } = render(<FoundationDataPanel />, {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
@@ -45,6 +45,6 @@ describe("FoundationDataPanel", () => {
     });
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

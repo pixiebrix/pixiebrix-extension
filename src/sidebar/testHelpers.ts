@@ -18,8 +18,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import servicesSlice from "@/store/services/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
+import integrationsSlice from "@/store/integrations/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import {
   createRenderHookWithWrappers,
@@ -37,15 +37,13 @@ const configureStoreForTests = () =>
       options: extensionsSlice.reducer,
       sidebar: sidebarSlice.reducer,
       settings: settingsSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware()
         .concat(appApi.middleware)
         .concat(modDefinitionsMiddleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
   });
 

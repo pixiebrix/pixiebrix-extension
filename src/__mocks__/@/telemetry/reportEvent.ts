@@ -17,9 +17,8 @@
 
 import { JsonObject } from "type-fest";
 
-export default function reportEvent(
-  event: string,
-  data: JsonObject = {}
-): void {
-  console.debug(...arguments);
-}
+const reportEvent = jest.fn((event: string, data: JsonObject = {}) => {
+  console.debug({ event, data });
+});
+
+export default reportEvent;

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type React from "react";
 import { type Brick } from "@/types/brickTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
@@ -30,7 +31,7 @@ export type BlockOption = {
 
 export type BlockGridData = {
   blockOptions: BlockOption[];
-  invalidBlockMessages: Map<RegistryId, string>;
+  invalidBlockMessages: Map<RegistryId, React.ReactNode>;
   onSetDetailBlock: (block: Brick) => void;
   onSelectBlock: (block: Brick) => void;
 };

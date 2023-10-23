@@ -24,6 +24,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickArgsContext } from "@/types/runtimeTypes";
+import { isObject } from "@/utils/objectUtils";
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";
@@ -82,12 +83,6 @@ export class InputValidationError extends BusinessError {
   }
 }
 
-export function isInputValidationError(
-  error: unknown
-): error is InputValidationError {
-  return typeof error === "object" && "schema" in error && "errors" in error;
-}
-
 /**
  * Error indicating output elements of a block did not match the schema.
  *
@@ -105,6 +100,15 @@ export class OutputValidationError extends BusinessError {
   ) {
     super(message);
   }
+}
+
+export type SchemaValidationError =
+  | InputValidationError
+  | OutputValidationError;
+export function isSchemaValidationError(
+  error: unknown
+): error is SchemaValidationError {
+  return isObject(error) && "schema" in error && "errors" in error;
 }
 
 export class RemoteExecutionError extends BusinessError {

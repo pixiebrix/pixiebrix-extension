@@ -174,7 +174,7 @@ jest.mock("@/permissions/deploymentPermissionsHelpers", () => {
   };
 });
 
-jest.mock("@/permissions/servicePermissionsHelpers", () => {
+jest.mock("@/permissions/integrationPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
     "@/permissions/deploymentPermissionsHelpers"
   );

@@ -36,7 +36,7 @@ type IconValue = {
 };
 
 const IconWidget: CustomFieldWidget = (props) => {
-  const [field, meta, helpers] = useField<IconValue>(props);
+  const [field, meta, helpers] = useField<IconValue | null>(props);
 
   const handleSelect = async (option: IconOption | null) => {
     if (option) {

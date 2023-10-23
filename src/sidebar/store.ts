@@ -22,15 +22,16 @@ import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import sidebarSlice, { persistSidebarConfig } from "@/sidebar/sidebarSlice";
-import { persistSettingsConfig } from "@/store/settingsStorage";
-import settingsSlice from "@/store/settingsSlice";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import servicesSlice, {
-  persistServicesConfig,
-} from "@/store/services/servicesSlice";
+import integrationsSlice, {
+  persistIntegrationsConfig,
+} from "@/store/integrations/integrationsSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { boolean } from "@/utils/typeUtils";
+import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -50,19 +51,17 @@ const store = configureStore({
     ),
     sidebar: persistReducer(persistSidebarConfig, sidebarSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    // `services` slice is used to determine login state for partner installs
-    services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    // `integrations` slice is used to determine login state for partner installs
+    integrations: persistReducer(
+      persistIntegrationsConfig,
+      integrationsSlice.reducer
+    ),
     modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-    return getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
-      },
-    })
+    return getDefaultMiddleware(defaultMiddlewareConfig)
       .concat(appApi.middleware)
       .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */

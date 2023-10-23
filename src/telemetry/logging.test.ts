@@ -21,7 +21,11 @@ import {
   count,
   getLogEntries,
   sweepLogs,
+  reportToRollbar,
 } from "@/telemetry/logging";
+import type Rollbar from "rollbar";
+import { flagOn } from "@/auth/token";
+import { getRollbar } from "@/telemetry/initRollbar";
 import {
   logEntryFactory,
   messageContextFactory,
@@ -31,21 +35,38 @@ import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 jest.unmock("@/telemetry/logging");
 
+jest.mock("@/auth/token", () => ({
+  flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
+}));
+
+const flagOnMock = jest.mocked(flagOn);
+
+jest.mock("@/telemetry/initRollbar", () => ({
+  getRollbar: jest.fn(),
+}));
+
+const rollbarErrorMock = jest.fn();
+jest.mocked(getRollbar).mockResolvedValue({
+  error: rollbarErrorMock,
+} as unknown as Rollbar);
+
 afterEach(async () => {
   await clearLog();
+  flagOnMock.mockReset();
+  rollbarErrorMock.mockReset();
 });
 
 describe("logging", () => {
   test("appendEntry", async () => {
     await appendEntry(logEntryFactory());
-    await expect(count()).resolves.toStrictEqual(1);
+    await expect(count()).resolves.toBe(1);
   });
 
   test("clearLog as logs", async () => {
     await appendEntry(logEntryFactory());
-    await expect(count()).resolves.toStrictEqual(1);
+    await expect(count()).resolves.toBe(1);
     await clearLog();
-    await expect(count()).resolves.toStrictEqual(0);
+    await expect(count()).resolves.toBe(0);
   });
 
   test("clearLog by blueprint id", async () => {
@@ -61,7 +82,7 @@ describe("logging", () => {
 
     await clearLog({ blueprintId });
 
-    await expect(count()).resolves.toStrictEqual(1);
+    await expect(count()).resolves.toBe(1);
   });
 
   test("sweep", async () => {
@@ -73,7 +94,7 @@ describe("logging", () => {
 
     await sweepLogs();
 
-    await expect(count()).resolves.toStrictEqual(937);
+    await expect(count()).resolves.toBe(937);
   });
 
   test("getLogEntries by blueprintId", async () => {
@@ -92,5 +113,27 @@ describe("logging", () => {
         context: expect.objectContaining({ blueprintId }),
       }),
     ]);
+  });
+
+  test("allow rollbar reporting", async () => {
+    flagOnMock.mockResolvedValue(false);
+
+    await reportToRollbar(new Error("test"), null, null);
+
+    expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
+      "rollbar-disable-report"
+    );
+    expect(rollbarErrorMock).toHaveBeenCalledOnce();
+  });
+
+  test("disable rollbar reporting", async () => {
+    flagOnMock.mockResolvedValue(true);
+
+    await reportToRollbar(new Error("test"), null, null);
+
+    expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
+      "rollbar-disable-report"
+    );
+    expect(rollbarErrorMock).not.toHaveBeenCalled();
   });
 });

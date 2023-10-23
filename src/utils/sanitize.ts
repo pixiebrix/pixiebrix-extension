@@ -29,7 +29,7 @@ function sanitize(html: string, config?: Config): SafeHTML {
     DOMPurify = createDOMPurify(window);
   }
 
-  return DOMPurify.sanitize(html, config) as SafeHTML;
+  return DOMPurify.sanitize(html, config ?? {}) as SafeHTML;
 }
 
 export default sanitize;

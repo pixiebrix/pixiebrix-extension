@@ -19,5 +19,4 @@
 export {
   renderNunjucksTemplate,
   renderHandlebarsTemplate,
-  applyJq,
 } from "@/sandbox/messenger/executor";

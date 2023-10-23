@@ -30,7 +30,7 @@ import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { collectIntegrationOriginPermissions } from "@/permissions/servicePermissionsHelpers";
+import { collectIntegrationOriginPermissions } from "@/permissions/integrationPermissionsHelpers";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 

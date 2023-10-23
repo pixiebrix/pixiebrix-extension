@@ -15,39 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useState } from "react";
-import { useAsyncEffect } from "use-async-effect";
-import {
-  getLoggingConfig,
-  setLoggingConfig,
-  type LoggingConfig,
-} from "@/telemetry/logging";
+import { getLoggingConfig, setLoggingConfig } from "@/telemetry/logging";
+import useUpdatableAsyncState from "./useUpdatableAsyncState";
 
-export function useLoggingConfig(): [
-  LoggingConfig,
-  (config: LoggingConfig) => Promise<void>
-] {
-  const [config, setConfig] = useState<LoggingConfig>();
-
-  useAsyncEffect(
-    async (isMounted) => {
-      const config = await getLoggingConfig();
-      if (!isMounted()) {
-        return;
-      }
-
-      setConfig(config);
-    },
-    [setConfig]
-  );
-
-  const update = useCallback(
-    async (newConfig: LoggingConfig) => {
-      await setLoggingConfig(newConfig);
-      setConfig(newConfig);
-    },
-    [setConfig]
-  );
-
-  return [config, update];
+export function useLoggingConfig() {
+  return useUpdatableAsyncState(getLoggingConfig, setLoggingConfig);
 }

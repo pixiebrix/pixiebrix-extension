@@ -36,7 +36,7 @@ describe("PageStateTab", () => {
   });
 
   async function renderPageStateTab(formState: ModComponentFormState) {
-    const rendered = render(
+    const utils = render(
       <Tab.Container activeKey={DataPanelTabKey.PageState}>
         <PageStateTab />
       </Tab.Container>,
@@ -50,20 +50,20 @@ describe("PageStateTab", () => {
 
     await waitForEffect();
 
-    return rendered;
+    return utils;
   }
 
   test("it renders with orphan extension", async () => {
     const formState = formStateFactory();
-    const rendered = await renderPageStateTab(formState);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = await renderPageStateTab(formState);
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders with recipe extension", async () => {
     const formState = formStateFactory({
       recipe: modMetadataFactory(),
     });
-    const rendered = await renderPageStateTab(formState);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = await renderPageStateTab(formState);
+    expect(asFragment()).toMatchSnapshot();
   });
 });

@@ -26,7 +26,7 @@ import {
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { makeServiceContext } from "@/services/integrationUtils";
 import { isEmpty } from "lodash";
 import {
   type Analysis,
@@ -109,16 +109,16 @@ export enum KnownSources {
  * Set availability of variables based on the integrations used by the ModComponentBase
  * @see makeServiceContext
  */
-async function setServiceVars(
+async function setIntegrationDependencyVars(
   extension: ModComponentFormState,
   contextVars: VarMap
 ): Promise<void> {
-  // Loop through all the services so we can set the source each service variable properly
-  for (const service of extension.services ?? []) {
+  // Loop through all the integrations, so we can set the source for each dependency variable properly
+  for (const integrationDependency of extension.integrationDependencies ?? []) {
     // eslint-disable-next-line no-await-in-loop
-    const serviceContext = await makeServiceContext([service]);
+    const serviceContext = await makeServiceContext([integrationDependency]);
     contextVars.setExistenceFromValues({
-      source: `${KnownSources.SERVICE}:${service.id}`,
+      source: `${KnownSources.SERVICE}:${integrationDependency.integrationId}`,
       values: serviceContext,
     });
   }
@@ -657,7 +657,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     const contextVars = new VarMap();
     await setOptionsVars(extension, contextVars);
     await setModVariables(this.modVariables, this.modState, contextVars);
-    await setServiceVars(extension, contextVars);
+    await setIntegrationDependencyVars(extension, contextVars);
     await setInputVars(extension, contextVars);
 
     this.contextStack.push({
