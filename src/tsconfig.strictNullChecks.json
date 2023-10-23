@@ -154,7 +154,6 @@
     "./pageEditor/fields/CollapsibleFieldSection.tsx",
     "./pageEditor/fields/MultiSelectWidget.tsx",
     "./pageEditor/fields/TemplateWidget.tsx",
-    "./pageEditor/fields/creatableAutosuggest/CreatableAutosuggest.tsx",
     "./pageEditor/fields/selectorListItem/SelectorListItem.tsx",
     "./pageEditor/hooks/useEscapeHandler.ts",
     "./pageEditor/panes/BetaPane.tsx",
