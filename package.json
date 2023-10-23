@@ -244,7 +244,7 @@
     "css-minimizer-webpack-plugin": "^3.4.1",
     "dotenv": "^16.3.1",
     "eslint": "^8.51.0",
-    "eslint-config-pixiebrix": "github:pixiebrix/eslint-config-pixiebrix#extension-import",
+    "eslint-config-pixiebrix": "^0.29.1",
     "eslint-config-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
     "eslint-plugin-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
     "fake-indexeddb": "^5.0.0",

@@ -94,8 +94,8 @@ module.exports = {
   overrides: [
     {
       files: ["webpack.*.js", "*.config.js"],
-      // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/server.js
-      extends: ["pixiebrix/server"],
+      // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/development.js
+      extends: ["pixiebrix/development"],
       rules: {
         "import/no-restricted-paths": "off",
       },
@@ -110,7 +110,7 @@ module.exports = {
         "**/*.stories.tsx",
       ],
       // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/tests.js
-      extends: ["pixiebrix/server", "pixiebrix/tests"],
+      extends: ["pixiebrix/development", "pixiebrix/tests"],
       rules: {
         "unicorn/prefer-spread": "off",
       },
