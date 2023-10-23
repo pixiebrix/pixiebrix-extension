@@ -234,6 +234,9 @@
     "./types/integrationTypes.ts",
     "./types/loggerTypes.ts",
     "./types/registryTypes.ts",
-    "./types/runtimeTypes.ts"
+    "./types/runtimeTypes.ts",
+    "./bricks/errors.ts",
+    "./errors/businessErrors.ts",
+    "./errors/errorHelpers.ts"
   ]
 }
