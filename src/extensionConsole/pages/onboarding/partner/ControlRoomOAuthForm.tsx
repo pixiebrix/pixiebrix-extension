@@ -105,7 +105,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         const existingIntegrationConfig = integrationConfigs.find(
           (x) => x.integrationId === authIntegrationId
         );
-        const configId = existingIntegrationConfig?.id;
+        let configId = existingIntegrationConfig?.id;
         const secretsConfig = {
           controlRoomUrl: normalizeControlRoomUrl(values.controlRoomUrl),
           authConfigOrigin: values.authConfigOrigin,
@@ -117,8 +117,9 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
           !configId ||
           !isEqual(existingIntegrationConfig?.config, secretsConfig)
         ) {
+          configId = configId ?? uuidv4();
           const newIntegrationConfig = {
-            id: configId ?? uuidv4(),
+            id: configId,
             integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
             label: "Primary AARI Account",
             config: secretsConfig,
