@@ -92,9 +92,9 @@ export class IncompatibleServiceError extends SuspiciousOperationError {
 export class InvalidTypeError extends Error {
   override name = "InvalidTypeError";
 
-  public readonly context?: any;
+  public readonly context?: MessageContext;
 
-  constructor(message: string, context?: any) {
+  constructor(message: string, context?: MessageContext) {
     super(message);
     this.context = context;
   }
