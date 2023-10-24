@@ -34,7 +34,7 @@ export type EventNameAnalysisResult = {
   /**
    * Event names that are used by a trigger starter brick.
    * Kept separate to preserve warnings in the trigger starter brick when the event name is not emitted from another brick.
-   * Combined with knownEmittedNames to get all known event names when choosing an event to emit in the emit custom event brick.
+   * Combined with knownEmittedNames to get all known event names to set in redux.
    * @since 1.8.2
    */
   knownTriggerNames: string[];
