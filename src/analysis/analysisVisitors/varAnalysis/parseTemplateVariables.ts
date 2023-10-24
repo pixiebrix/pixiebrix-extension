@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Extensive usage of `any` */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *

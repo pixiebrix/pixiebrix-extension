@@ -31,7 +31,7 @@ export default {
   component: BrickDetail,
 } as ComponentMeta<typeof BrickDetail>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: unknown) {
   return configureStore({
     reducer: {
       [appApi.reducerPath]: appApi.reducer,

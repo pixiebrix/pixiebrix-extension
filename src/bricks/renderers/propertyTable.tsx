@@ -19,7 +19,6 @@ import React from "react";
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { sortBy, isPlainObject } from "lodash";
-import { type SafeHTML } from "@/types/stringTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { isValidUrl } from "@/utils/urlUtils";
 
@@ -90,7 +89,7 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
   return [
     {
       key: keyPrefix,
-      data: { name: null, value: inputs as any },
+      data: { name: null, value: inputs },
       children: [],
     },
   ];
@@ -115,7 +114,7 @@ export class PropertyTableRenderer extends RendererABC {
     []
   );
 
-  async render({ data }: BrickArgs, { ctxt }: BrickOptions): Promise<SafeHTML> {
+  async render({ data }: BrickArgs, { ctxt }: BrickOptions) {
     const PropertyTree = await import(
       /* webpackChunkName: "widgets" */
       "./PropertyTree"
@@ -126,6 +125,6 @@ export class PropertyTableRenderer extends RendererABC {
       props: {
         value: shapeData(data ?? ctxt),
       },
-    } as any;
+    };
   }
 }

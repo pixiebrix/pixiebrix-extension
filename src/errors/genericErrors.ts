@@ -88,3 +88,14 @@ export class PromiseCancelled extends Error {
 export class IncompatibleServiceError extends SuspiciousOperationError {
   override name = "IncompatibleServiceError";
 }
+
+export class InvalidTypeError extends Error {
+  override name = "InvalidTypeError";
+
+  public readonly context?: unknown;
+
+  constructor(message: string, context?: unknown) {
+    super(message);
+    this.context = context;
+  }
+}

@@ -23,11 +23,11 @@ export default async function getType<T extends Metadata>(
   // block types
   block: T
 ): Promise<BrickType | null> {
-  if ("inferType" in block) {
+  if ("inferType" in block && typeof block.inferType === "function") {
     // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.
     // The inferType method is provided ExternalBlock, which is the class used for YAML-based blocks (which have
     // kind: component) in their YAML
-    return (block as any).inferType();
+    return block.inferType();
   }
 
   if ("read" in block) {

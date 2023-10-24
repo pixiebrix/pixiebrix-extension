@@ -32,7 +32,7 @@ import integrationsSlice from "@/store/integrations/integrationsSlice";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
 import { collectIntegrationOriginPermissions } from "@/permissions/integrationPermissionsHelpers";
@@ -106,19 +106,23 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
           (x) => x.integrationId === authIntegrationId
         );
         let configId = existingIntegrationConfig?.id;
+        const secretsConfig = {
+          controlRoomUrl: normalizeControlRoomUrl(values.controlRoomUrl),
+          authConfigOrigin: values.authConfigOrigin,
+          clientId: values.clientId,
+        } as unknown as SecretsConfig;
 
-        // Create the service configuration if it doesn't already exist
-        if (!configId) {
-          configId = uuidv4();
+        // Upsert the service configuration if it doesn't already exist or if the secrets config has changed
+        if (
+          !configId ||
+          !isEqual(existingIntegrationConfig?.config, secretsConfig)
+        ) {
+          configId = configId ?? uuidv4();
           const newIntegrationConfig = {
             id: configId,
             integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
             label: "Primary AARI Account",
-            config: {
-              controlRoomUrl: normalizeControlRoomUrl(values.controlRoomUrl),
-              authConfigOrigin: values.authConfigOrigin,
-              clientId: values.clientId,
-            } as unknown as SecretsConfig,
+            config: secretsConfig,
           } as IntegrationConfig;
 
           dispatch(upsertIntegrationConfig(newIntegrationConfig));

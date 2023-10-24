@@ -16,18 +16,17 @@
  */
 
 import React from "react";
-import { type ComponentMeta, type ComponentStory } from "@storybook/react";
+import { type Meta, type StoryFn } from "@storybook/react";
 
-import type AsyncButton from "@/components/AsyncButton";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 
 export default {
   title: "Panels/RootErrorPanel",
   component: RootErrorPanel,
-} as ComponentMeta<typeof AsyncButton>;
+} as Meta<typeof RootErrorPanel>;
 
-const Template: ComponentStory<typeof RootErrorPanel> = (args) => (
+const Template: StoryFn<typeof RootErrorPanel> = (args) => (
   <div style={{ width: 400, height: 500, backgroundColor: "white" }}>
     <RootErrorPanel {...args} />
   </div>

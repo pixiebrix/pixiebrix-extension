@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type ComponentMeta, type Story } from "@storybook/react";
+import { type Meta, type StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import CssClassWidget from "./CssClassWidget";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -27,15 +27,9 @@ import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
 
-export default {
-  title: "Widgets/CssClassWidget",
-  component: CssClassWidget,
-} as ComponentMeta<typeof CssClassWidget>;
-
 const Preview: React.VFC = () => {
   const [{ value }] = useField("cssClass");
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const { classes, isVar, includesTemplate } = parseValue(value);
 
   if (isVar || includesTemplate) {
@@ -49,60 +43,76 @@ const Preview: React.VFC = () => {
   );
 };
 
-const Template: Story<
-  typeof CssClassWidget & { initialValues: { cssClass: string | Expression } }
-> = ({ initialValues }) => (
-  <Provider store={settingsStore()}>
-    <Formik initialValues={initialValues} onSubmit={action("submit")}>
-      <>
-        <div className="mb-4">
-          <Preview />
-        </div>
-
-        <div>
-          <CssClassWidget
-            inputModeOptions={getCssClassInputFieldOptions()}
-            schema={{
-              type: "string",
-            }}
-            name="cssClass"
-          />
-        </div>
-      </>
-    </Formik>
-  </Provider>
-);
-
-export const BlankLiteral = Template.bind({});
-BlankLiteral.args = {
-  initialValues: {
-    cssClass: "",
-  },
+type CssClassWidgetPropsAndCustomArgs = React.ComponentProps<
+  typeof CssClassWidget
+> & {
+  initialValues: { cssClass: string | Expression };
 };
 
-export const Omitted = Template.bind({});
-Omitted.args = {
-  initialValues: {
-    cssClass: null,
-  },
+const meta: Meta<CssClassWidgetPropsAndCustomArgs> = {
+  title: "Widgets/CssClassWidget",
+  component: CssClassWidget,
+  render: ({ initialValues }) => (
+    <Provider store={settingsStore()}>
+      <Formik initialValues={initialValues} onSubmit={action("submit")}>
+        <>
+          <div className="mb-4">
+            <Preview />
+          </div>
+
+          <div>
+            <CssClassWidget
+              inputModeOptions={getCssClassInputFieldOptions()}
+              schema={{
+                type: "string",
+              }}
+              name="cssClass"
+            />
+          </div>
+        </>
+      </Formik>
+    </Provider>
+  ),
 };
 
-export const BlankExpression = Template.bind({});
-BlankExpression.args = {
-  initialValues: {
-    cssClass: {
-      __type__: "nunjucks",
-      __value__: "",
+export default meta;
+
+type Story = StoryObj<CssClassWidgetPropsAndCustomArgs>;
+
+export const BlankLiteral: Story = {
+  args: {
+    initialValues: {
+      cssClass: "",
     },
   },
 };
 
-export const VariableExpression = Template.bind({});
-VariableExpression.args = {
-  initialValues: {
-    cssClass: {
-      __type__: "var",
-      __value__: "@cssClasses",
+export const Omitted: Story = {
+  args: {
+    initialValues: {
+      cssClass: null,
+    },
+  },
+};
+
+export const BlankExpression: Story = {
+  args: {
+    initialValues: {
+      cssClass: {
+        __type__: "nunjucks",
+        __value__: "",
+      },
+    },
+  },
+};
+
+export const VariableExpression: Story = {
+  args: {
+    initialValues: {
+      cssClass: {
+        __type__: "var",
+        __value__: "@cssClasses",
+      },
     },
   },
 };

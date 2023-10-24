@@ -43,7 +43,7 @@ type AnalysisEffect = ListenerEffect<
 
 type AnalysisListenerConfig =
   | {
-      actionCreator: TypedActionCreator<any>;
+      actionCreator: TypedActionCreator<string>;
     }
   | {
       matcher: MatchFunction<AnyAction>;

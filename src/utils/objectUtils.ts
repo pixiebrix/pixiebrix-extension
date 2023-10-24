@@ -157,3 +157,10 @@ export function excludeUndefined(obj: unknown): unknown {
 export function removeUndefined(obj: unknown): unknown {
   return deepPickBy(obj, (value: unknown) => value !== undefined);
 }
+
+export function mapObject<Input, Output>(
+  obj: Record<string, Input>,
+  fn: (value: Input, key: string) => Output
+): Record<string, Output> {
+  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
+}

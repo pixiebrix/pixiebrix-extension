@@ -15,22 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Middleware } from "@reduxjs/toolkit";
-import { type Action } from "redux";
+import JSDOMEnvironment from "jest-environment-jsdom";
 
-const actions: Action[] = [];
+// https://github.com/facebook/jest/blob/v29.4.3/website/versioned_docs/version-29.4/Configuration.md#testenvironment-string
+export default class FixJSDOMEnvironment extends JSDOMEnvironment {
+  constructor(...args) {
+    super(...args);
 
-const testMiddleware: Middleware = (store) => (next) => (action: Action) => {
-  actions.push(action);
-  next(action);
-};
-
-export function resetTestMiddleware(): void {
-  actions.length = 0;
+    // FIXME https://github.com/jsdom/jsdom/issues/3363
+    this.global.structuredClone = structuredClone;
+  }
 }
-
-export function actionTypes(): string[] {
-  return actions.map((x) => x.type);
-}
-
-export default testMiddleware;

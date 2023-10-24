@@ -16,7 +16,7 @@
  */
 
 import { propertiesToSchema } from "@/validators/generic";
-import { isEqual, isPlainObject, unary, uniq } from "lodash";
+import { isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
@@ -24,7 +24,6 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { type Schema } from "@/types/schemaTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
@@ -151,10 +150,7 @@ export const GOOGLE_SHEETS_APPEND_ID = validateRegistryId(
 );
 
 function isAuthError(error: unknown): boolean {
-  return (
-    isPlainObject(error) &&
-    ([404, 401, 403] as unknown[]).includes((error as UnknownObject).code)
-  );
+  return isObject(error) && [404, 401, 403].includes(error.code as number);
 }
 
 export function detectShape(rowValues: RowValues): KnownShape {

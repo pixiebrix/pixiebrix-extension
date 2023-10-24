@@ -305,6 +305,7 @@ export async function getSheetProperties(
     });
     const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
       // TODO: Find a better solution than casting to any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);
@@ -345,6 +346,7 @@ export async function getTabNames(spreadsheetId: string): Promise<string[]> {
     });
     const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
       // TODO: Find a better solution than casting to any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);

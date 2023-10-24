@@ -27,7 +27,7 @@ import {
 import { findElement } from "@/pageScript/frameworks/dom";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { getAllPropertyNames, isGetter } from "@/utils/objectUtils";
+import { getAllPropertyNames, isObject } from "@/utils/objectUtils";
 import { isPrimitive } from "@/utils/typeUtils";
 
 const EMBER_MAX_DEPTH = 5;
@@ -39,12 +39,14 @@ interface EmberObject {
   element: Node;
 }
 
-interface EmberApplication {
+type EmberApplication = {
+  prototype: CharacterData;
+  new (): CharacterData;
   __container__: {
     // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
     lookup: (container: string) => { [componentId: string]: EmberObject };
   };
-}
+};
 
 interface MutableCell {
   value: unknown;
@@ -57,9 +59,9 @@ declare global {
       VERSION: string;
       Application: EmberApplication;
       Namespace: {
-        NAMESPACES: any;
+        NAMESPACES: unknown;
       };
-      A: (namespaces: any) => unknown[];
+      A: (namespaces: unknown) => unknown[];
     };
   }
 }
@@ -77,7 +79,7 @@ function getEmberApplication(): EmberApplication {
     const namespaces = Ember.A(Ember.Namespace.NAMESPACES);
     // TODO: support multiple Ember applications on the page
     return namespaces.find(
-      (namespace) => namespace instanceof (Ember.Application as any)
+      (namespace) => namespace instanceof Ember.Application
     ) as EmberApplication;
   }
 
@@ -111,7 +113,7 @@ function isMutableCell(cell: unknown): cell is MutableCell {
 //         content: e.EmbeddedMegaMorphicModel[]
 //
 
-function getProp(value: any, prop: string | number): unknown {
+function getProp(value: unknown, prop: string | number): unknown {
   if (isPrimitive(value)) {
     return undefined;
   }
@@ -124,7 +126,7 @@ function getProp(value: any, prop: string | number): unknown {
     return value[prop];
   }
 
-  if (typeof value === "object") {
+  if (isObject(value)) {
     if (isMutableCell(value) && "value" in value) {
       return getProp(value.value, prop);
     }
@@ -137,11 +139,12 @@ function getProp(value: any, prop: string | number): unknown {
       return getProp(value.content, prop);
     }
 
-    if (typeof prop === "string" && isGetter(value as UnknownObject, prop)) {
-      return value[prop]();
+    const subValue = value[prop];
+    if (typeof subValue === "function") {
+      return subValue();
     }
 
-    return value[prop];
+    return subValue;
   }
 
   // ignore functions and symbols
@@ -167,7 +170,7 @@ function pickExternalProps(obj: UnknownObject): UnknownObject {
 }
 
 function readEmberValueFromCache(
-  value: any,
+  value: unknown,
   maxDepth = EMBER_MAX_DEPTH,
   depth = 0
 ): unknown {
@@ -192,7 +195,7 @@ function readEmberValueFromCache(
     return value.map((x) => traverse(x));
   }
 
-  if (typeof value === "object") {
+  if (isObject(value)) {
     if (isMutableCell(value) && "value" in value) {
       return traverse(value.value);
     }
@@ -203,7 +206,7 @@ function readEmberValueFromCache(
 
     if (Array.isArray(value.content)) {
       // Consider arrays a traverse because knowing the property name by itself isn't useful for anything
-      return value.content.map((x: any) => traverse(x));
+      return value.content.map((x: unknown) => traverse(x));
     }
 
     return mapValues(pickExternalProps(value as UnknownObject), recurse);
@@ -226,6 +229,7 @@ function isManaged(node: Node): boolean {
  * Returns the "target" of a (classic) component.
  * See: https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/libs/capture-render-tree.js
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Internal Ember types
 function targetForComponent(component: any): UnknownObject {
   return component._target || component._targetObject;
 }

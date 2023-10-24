@@ -21,7 +21,7 @@ import {
   type RendererOptions,
   type TemplateRenderer,
 } from "@/runtime/renderers";
-import { isPlainObject, mapValues, pickBy } from "lodash";
+import { mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
 import Mustache from "mustache";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -32,6 +32,7 @@ import {
   isVarExpression,
 } from "@/utils/expressionUtils";
 import { asyncMapValues } from "@/utils/promiseUtils";
+import { isObject } from "@/utils/objectUtils";
 
 export type Args = string | UnknownObject | UnknownObject[];
 
@@ -68,12 +69,9 @@ export async function renderExplicit(
     );
   }
 
-  if (isPlainObject(config)) {
-    const renderedEntries = await asyncMapValues(
-      // TODO: asyncMapValues takes generics. Find a better typing for the generics that works here.
-      config as Record<string, never>,
-      async (subConfig) =>
-        renderExplicit(subConfig as UnknownObject, ctxt, options)
+  if (isObject(config)) {
+    const renderedEntries = await asyncMapValues(config, async (subConfig) =>
+      renderExplicit(subConfig as UnknownObject, ctxt, options)
     );
 
     return pickBy(renderedEntries, (x) => x != null);
@@ -101,11 +99,12 @@ export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
     return config.map((x) => renderMustache(x, ctxt));
   }
 
-  if (isPlainObject(config) && typeof config === "object") {
+  if (isObject(config)) {
     return pickBy(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: The whole type of renderMustache is too loose
       mapValues(config, (subConfig) => renderMustache(subConfig as any, ctxt)),
       (x) => x != null
-    ) as any;
+    );
   }
 
   if (typeof config !== "string") {
@@ -126,7 +125,7 @@ export async function renderImplicit(
     );
   }
 
-  if (isPlainObject(config) && typeof config === "object") {
+  if (isObject(config)) {
     return pickBy(
       await asyncMapValues(config, async (subConfig) =>
         renderImplicit(subConfig as UnknownObject, ctxt, render)

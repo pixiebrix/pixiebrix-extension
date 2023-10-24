@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ComponentMeta, type Story } from "@storybook/react";
+import { type Meta, type StoryObj } from "@storybook/react";
 import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
 import type CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
-import { type Expression } from "@/types/runtimeTypes";
 import { Provider } from "react-redux";
 import { settingsStore } from "@/testUtils/storyUtils";
 // eslint-disable-next-line no-restricted-imports
@@ -27,16 +26,11 @@ import { action } from "@storybook/addon-actions";
 import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 import React from "react";
 import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
-
-export default {
-  title: "Widgets/CssSpacingWidget",
-  component: CssSpacingWidget,
-} as ComponentMeta<typeof CssSpacingWidget>;
+import { type Expression } from "@/types/runtimeTypes";
 
 const Preview: React.VFC = () => {
   const [{ value }] = useField("cssClass");
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const { classes, isVar, includesTemplate } = parseValue(value);
 
   if (isVar || includesTemplate) {
@@ -46,32 +40,45 @@ const Preview: React.VFC = () => {
   return <div>Classes preview: {classes.join(" ")}</div>;
 };
 
-const Template: Story<
-  typeof CssClassWidget & { initialValues: { cssClass: string | Expression } }
-> = ({ initialValues }) => (
-  <Provider store={settingsStore()}>
-    <Formik initialValues={initialValues} onSubmit={action("submit")}>
-      <>
-        <div className="mb-4">
-          <Preview />
-        </div>
-        <div>
-          <CssSpacingWidget
-            inputModeOptions={getCssClassInputFieldOptions()}
-            schema={{
-              type: "string",
-            }}
-            name="cssClass"
-          />
-        </div>
-      </>
-    </Formik>
-  </Provider>
-);
+type CssClassWidgetPropsAndCustomArgs = React.ComponentProps<
+  typeof CssClassWidget
+> & {
+  initialValues: { cssClass: string | Expression };
+};
 
-export const BlankLiteral = Template.bind({});
-BlankLiteral.args = {
-  initialValues: {
-    cssClass: "",
+const meta: Meta<CssClassWidgetPropsAndCustomArgs> = {
+  title: "Widgets/CssSpacingWidget",
+  component: CssSpacingWidget,
+  render: ({ initialValues }) => (
+    <Provider store={settingsStore()}>
+      <Formik initialValues={initialValues} onSubmit={action("submit")}>
+        <>
+          <div className="mb-4">
+            <Preview />
+          </div>
+          <div>
+            <CssSpacingWidget
+              inputModeOptions={getCssClassInputFieldOptions()}
+              schema={{
+                type: "string",
+              }}
+              name="cssClass"
+            />
+          </div>
+        </>
+      </Formik>
+    </Provider>
+  ),
+};
+
+export default meta;
+
+type Story = StoryObj<CssClassWidgetPropsAndCustomArgs>;
+
+export const BlankLiteral: Story = {
+  args: {
+    initialValues: {
+      cssClass: "",
+    },
   },
 };

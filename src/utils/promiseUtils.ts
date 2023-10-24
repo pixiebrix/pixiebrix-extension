@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty, negate, type ObjectIterator, unary, zip } from "lodash";
+import { isEmpty, negate, type ObjectIterator, unary } from "lodash";
 import pMemoize from "p-memoize";
 import { TimeoutError } from "p-timeout";
 import { sleep } from "@/utils/timeUtils";
@@ -28,17 +28,21 @@ export const foreverPendingPromise = new Promise(() => {});
 /**
  * Same as lodash mapValues but supports promises
  */
-export async function asyncMapValues<T, TResult>(
-  mapping: Record<string, T[keyof T]>,
-  fn: ObjectIterator<Record<string, T[keyof T]>, Promise<TResult>>
-): Promise<{ [K in keyof T]: TResult }> {
-  const entries = Object.entries(mapping);
-  const values = await Promise.all(
-    entries.map(async ([key, value]) => fn(value, key, mapping))
+export async function asyncMapValues<
+  InputObject extends Record<string, unknown>,
+  OutputValues
+>(mapping: InputObject, fn: ObjectIterator<InputObject, OutputValues>) {
+  const entries = Object.entries(mapping) as Array<
+    [string, InputObject[keyof InputObject]]
+  >;
+  const resolvedEntries = await Promise.all(
+    entries.map(async ([key, value]) =>
+      Promise.all([key, fn(value, key, mapping)])
+    )
   );
-  return Object.fromEntries(
-    zip(entries, values).map(([[key] = [], value]) => [key, value])
-  ) as any;
+  return Object.fromEntries(resolvedEntries) as {
+    [K in keyof InputObject]: Awaited<OutputValues>;
+  };
 }
 
 export async function allSettledValues<T = unknown>(

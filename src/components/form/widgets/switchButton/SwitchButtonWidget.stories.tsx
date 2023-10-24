@@ -16,10 +16,11 @@
  */
 
 import React from "react";
-import { type ComponentMeta, type ComponentStory } from "@storybook/react";
-import SwitchButtonWidget from "./SwitchButtonWidget";
+import { type StoryFn, type Meta } from "@storybook/react";
+import SwitchButtonWidget, { type CheckBoxLike } from "./SwitchButtonWidget";
+import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 
-const componentMeta: ComponentMeta<typeof SwitchButtonWidget> = {
+const componentMeta: Meta<typeof SwitchButtonWidget> = {
   title: "Fields/SwitchButtonWidget",
   component: SwitchButtonWidget,
   argTypes: {
@@ -30,8 +31,8 @@ const componentMeta: ComponentMeta<typeof SwitchButtonWidget> = {
   },
 };
 
-const SwitchButtonTemplate: ComponentStory<typeof SwitchButtonWidget> = (
-  args
+const SwitchButtonTemplate: StoryFn<typeof SwitchButtonWidget> = (
+  args: CustomFieldWidgetProps<boolean, CheckBoxLike>
 ) => <SwitchButtonWidget {...args} />;
 export const Default = SwitchButtonTemplate.bind({});
 Default.args = {

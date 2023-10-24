@@ -16,10 +16,11 @@
  */
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
-import { startCase, mapValues } from "lodash";
+import { startCase } from "lodash";
 import { withReadWindow } from "@/pageScript/messenger/api";
 import { type PathSpec } from "@/bricks/readers/window";
 import { type JsonObject } from "type-fest";
+import { mapObject } from "@/utils/objectUtils";
 
 export async function checkRoute(expectedRoute: string): Promise<boolean> {
   const { route } = await withReadWindow({
@@ -58,13 +59,13 @@ export class PipedriveReader extends ReaderABC {
   }
 
   async read(): Promise<JsonObject> {
-    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31265
+    const pathSpecObj =
+      typeof this.pathSpec === "string"
+        ? { value: this.pathSpec }
+        : this.pathSpec;
     return withReadWindow({
-      pathSpec: mapValues(
-        this.pathSpec,
-        (x: string) => `${this.ROOT_PATH}.${x}`
-      ) as any,
-    }) as unknown as JsonObject;
+      pathSpec: mapObject(pathSpecObj, (x: string) => `${this.ROOT_PATH}.${x}`),
+    });
   }
 }
 
