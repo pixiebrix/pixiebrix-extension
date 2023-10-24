@@ -18,9 +18,9 @@
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 
-if (typeof chrome.devtools.inspectedWindow.tabId === "number") {
-  reportEvent(Events.DEVTOOLS_OPEN);
+reportEvent(Events.DEVTOOLS_OPEN);
 
+if (typeof chrome.devtools.inspectedWindow.tabId === "number") {
   chrome.devtools.panels.create(
     "PixieBrix",
     "",
