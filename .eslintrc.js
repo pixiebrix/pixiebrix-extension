@@ -38,9 +38,11 @@ module.exports = {
   extends: [
     // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
-    "plugin:pixiebrix-extension/all",
   ],
+  plugins: ["local-rules"],
   rules: {
+    "local-rules/noInvalidDataTestId": "error",
+    "local-rules/notBothLabelAndLockableProps": "error",
     "import/no-restricted-paths": [
       "warn",
       {
