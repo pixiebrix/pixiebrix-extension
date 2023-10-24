@@ -33,6 +33,7 @@ import TourStep from "@/bricks/transformers/tourStep/tourStep";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 
 /**
  * Get a default block config for a block
@@ -43,158 +44,174 @@ export function getExampleBlockConfig(
   blockId: RegistryId,
   { parentBlockId }: { parentBlockId?: RegistryId } = {}
 ): UnknownObject | null {
-  if (blockId === COMPONENT_READER_ID) {
-    return {
-      selector: "",
-      optional: false,
-    };
-  }
+  switch (blockId) {
+    case COMPONENT_READER_ID: {
+      return {
+        selector: "",
+        optional: false,
+      };
+    }
 
-  if (blockId === "@pixiebrix/jquery-reader") {
-    return {
-      selectors: {
-        property: {
-          selector: "",
-          isMulti: false,
-        },
-      },
-    };
-  }
-
-  if (blockId === FormTransformer.BLOCK_ID) {
-    return {
-      schema: {
-        title: "Example Form",
-        type: "object",
-        properties: {
-          example: {
-            title: "Example Field",
-            type: "string",
-            description: "An example form field",
+    case "@pixiebrix/jquery-reader": {
+      return {
+        selectors: {
+          property: {
+            selector: "",
+            isMulti: false,
           },
         },
-      },
-      uiSchema: getMinimalUiSchema(),
-      cancelable: true,
-      submitCaption: "Submit",
-      location: "modal",
-    };
-  }
+      };
+    }
 
-  if (blockId === CustomFormRenderer.BLOCK_ID) {
-    return {
-      storage: {
-        type: "state",
-        namespace: "blueprint",
-      },
-      submitCaption: "Submit",
-      successMessage: "Successfully submitted form",
-      schema: {
-        title: "Example Form",
-        type: "object",
-        properties: {
+    case FormTransformer.BLOCK_ID: {
+      return {
+        schema: {
+          title: "Example Form",
+          type: "object",
+          properties: {
+            example: {
+              title: "Example Field",
+              type: "string",
+              description: "An example form field",
+            },
+          },
+        },
+        uiSchema: getMinimalUiSchema(),
+        cancelable: true,
+        submitCaption: "Submit",
+        location: "modal",
+      };
+    }
+
+    case CustomFormRenderer.BLOCK_ID: {
+      return {
+        storage: {
+          type: "state",
+          namespace: "blueprint",
+        },
+        submitCaption: "Submit",
+        successMessage: "Successfully submitted form",
+        schema: {
+          title: "Example Form",
+          type: "object",
+          properties: {
+            notes: {
+              title: "Example Notes Field",
+              type: "string",
+              description: "An example notes field",
+            },
+          },
+        },
+        uiSchema: {
           notes: {
-            title: "Example Notes Field",
-            type: "string",
-            description: "An example notes field",
+            "ui:widget": "textarea",
           },
         },
-      },
-      uiSchema: {
-        notes: {
-          "ui:widget": "textarea",
-        },
-      },
-    };
-  }
+      };
+    }
 
-  if (blockId === "@pixiebrix/document") {
-    if (parentBlockId === "@pixiebrix/tour/step") {
-      // Single row with text markdown
+    case "@pixiebrix/document": {
+      if (parentBlockId === "@pixiebrix/tour/step") {
+        // Single row with text markdown
+        const container = createNewElement("container");
+
+        // Adding text to the second row
+        const text = createNewElement("text");
+        text.config.text = "Example step content. **Markdown** is supported.";
+        container.children[0].children[0].children.push(text);
+
+        return {
+          body: [container],
+        };
+      }
+
+      // Creating container with 2 rows and 1 column in each row
       const container = createNewElement("container");
+      container.children.push(createNewElement("row"));
+
+      // Adding Header to the first row
+      const header = createNewElement("header");
+      header.config.title = "Example document";
+      container.children[0].children[0].children.push(header);
 
       // Adding text to the second row
       const text = createNewElement("text");
-      text.config.text = "Example step content. **Markdown** is supported.";
-      container.children[0].children[0].children.push(text);
+      text.config.text = "Example text element. **Markdown** is supported.";
+      container.children[1].children[0].children.push(text);
 
       return {
         body: [container],
       };
     }
 
-    // Creating container with 2 rows and 1 column in each row
-    const container = createNewElement("container");
-    container.children.push(createNewElement("row"));
+    case "@pixiebrix/forms/set": {
+      return {
+        isRootAware: true,
+        inputs: [{ selector: null, value: "" }],
+      };
+    }
 
-    // Adding Header to the first row
-    const header = createNewElement("header");
-    header.config.title = "Example document";
-    container.children[0].children[0].children.push(header);
+    case "@pixiebrix/state/set": {
+      return {
+        namespace: "blueprint",
+        mergeStrategy: "shallow",
+        data: {},
+      };
+    }
 
-    // Adding text to the second row
-    const text = createNewElement("text");
-    text.config.text = "Example text element. **Markdown** is supported.";
-    container.children[1].children[0].children.push(text);
+    case "@pixiebrix/state/get": {
+      return {
+        namespace: "blueprint",
+      };
+    }
 
-    return {
-      body: [container],
-    };
-  }
+    case "@pixiebrix/state/assign": {
+      return {
+        variableName: "",
+        value: makeTemplateExpression("nunjucks", ""),
+      };
+    }
 
-  if (blockId === "@pixiebrix/forms/set") {
-    return {
-      isRootAware: true,
-      inputs: [{ selector: null, value: "" }],
-    };
-  }
+    case DisplayTemporaryInfo.BLOCK_ID: {
+      return {
+        title: "Example Info",
+        location: "panel",
+        body: makePipelineExpression([
+          createNewBlock(DocumentRenderer.BLOCK_ID),
+        ]),
+        isRootAware: true,
+      };
+    }
 
-  if (blockId === "@pixiebrix/state/set") {
-    return {
-      namespace: "blueprint",
-      mergeStrategy: "shallow",
-      data: {},
-    };
-  }
-
-  if (blockId === "@pixiebrix/state/get") {
-    return {
-      namespace: "blueprint",
-    };
-  }
-
-  if (blockId === "@pixiebrix/state/assign") {
-    return {
-      variableName: "",
-      value: makeTemplateExpression("nunjucks", ""),
-    };
-  }
-
-  if (blockId === DisplayTemporaryInfo.BLOCK_ID) {
-    return {
-      title: "Example Info",
-      location: "panel",
-      body: makePipelineExpression([createNewBlock(DocumentRenderer.BLOCK_ID)]),
-      isRootAware: true,
-    };
-  }
-
-  if (blockId === TourStep.BLOCK_ID) {
-    return {
-      title: "Example Step",
-      body: "Step content. **Markdown** is supported.",
-      appearance: {
-        showOverlay: true,
-        scroll: {
-          behavior: "smooth",
+    case TourStep.BLOCK_ID: {
+      return {
+        title: "Example Step",
+        body: "Step content. **Markdown** is supported.",
+        appearance: {
+          showOverlay: true,
+          scroll: {
+            behavior: "smooth",
+          },
+          // Supply empty appearance configs to avoid errors when rendering
+          wait: {},
+          highlight: {},
+          popover: {},
+          controls: {},
         },
-        // Supply empty appearance configs to avoid errors when rendering
-        wait: {},
-        highlight: {},
-        popover: {},
-        controls: {},
-      },
-    };
+      };
+    }
+
+    case JavaScriptTransformer.BRICK_ID: {
+      return {
+        function: `function (...args) {
+  return 42;
+}`,
+      };
+    }
+
+    default: {
+      return null;
+    }
   }
 }
 
