@@ -21,7 +21,7 @@ import React from "react";
 import GridLoader from "react-spinners/GridLoader";
 
 const Loader: typeof GridLoader = (props) => (
-  <div className={styles.root} data-testId="loader">
+  <div className={styles.root} data-testid="loader">
     <GridLoader {...props} />
   </div>
 );
