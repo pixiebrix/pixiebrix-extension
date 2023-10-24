@@ -32,7 +32,7 @@ import {
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/types/integrationTypes";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import {
   starterBrickConfigFactory,
   metadataFactory,

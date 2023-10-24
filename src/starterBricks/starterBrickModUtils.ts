@@ -20,7 +20,7 @@ import {
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type StarterBrickDefinition } from "@/starterBricks/types";
-import { type StarterBrickType } from "./StarterBrickType";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import starterBrickRegistry from "@/starterBricks/registry";
 import { type RegistryId } from "@/types/registryTypes";
 import { compact, uniq } from "lodash";

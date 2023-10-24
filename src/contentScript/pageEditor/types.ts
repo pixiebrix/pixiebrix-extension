@@ -19,7 +19,7 @@ import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import {
   type PanelConfig,

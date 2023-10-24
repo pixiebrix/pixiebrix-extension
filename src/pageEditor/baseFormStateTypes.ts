@@ -23,7 +23,7 @@ import {
 } from "@/types/integrationTypes";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";

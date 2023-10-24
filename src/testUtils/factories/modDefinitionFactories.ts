@@ -40,7 +40,7 @@ import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
-import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/starterBricks/base";
 import { type SafeString } from "@/types/stringTypes";
 
