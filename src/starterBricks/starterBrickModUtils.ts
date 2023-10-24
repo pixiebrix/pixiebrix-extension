@@ -51,7 +51,7 @@ async function getStarterBrickType(
     modComponentDefinition.id as RegistryId
   );
 
-  return (extensionPointFromRegistry?.kind as StarterBrickType) ?? null;
+  return extensionPointFromRegistry?.kind ?? null;
 }
 
 export async function getContainedStarterBrickTypes(

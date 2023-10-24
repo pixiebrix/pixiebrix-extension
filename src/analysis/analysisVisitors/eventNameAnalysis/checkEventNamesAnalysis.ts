@@ -43,7 +43,14 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
   }
 
   get knownEventNames(): string[] {
-    return this.collectedEvents.knownNames;
+    return [
+      ...this.collectedEvents.knownNames,
+      ...this.collectedEvents.triggerNames,
+    ];
+  }
+
+  get knownTriggerEventNames(): string[] {
+    return this.collectedEvents.triggerNames;
   }
 
   override visitExtensionPoint(
@@ -102,6 +109,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
 
     this.collectedEvents = {
       knownNames: uniq(flatten(results.map((result) => result.knownNames))),
+      triggerNames: uniq(flatten(results.map((result) => result.triggerNames))),
       hasDynamicEventName: results.some((result) => result.hasDynamicEventName),
     };
 

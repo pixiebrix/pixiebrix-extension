@@ -21,13 +21,22 @@ import PipelineVisitor, {
 } from "@/bricks/PipelineVisitor";
 import CustomEventEffect from "@/bricks/effects/customEvent";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import {
+  isTriggerExtensionPoint,
+  type ModComponentFormState,
+} from "@/pageEditor/starterBricks/formStateTypes";
 
 export type EventNameAnalysisResult = {
   /**
    * Statically known event names in the FormState.
    */
   knownNames: string[];
+  /**
+   * Event names that are used by a trigger starter brick.
+   * Kept separate for analysis. Combined with knownNames for runtime.
+   * @since 1.8.2
+   */
+  triggerNames: string[];
   /**
    * True if the FormState uses a dynamic event name, e.g., variable or text template expression.
    */
@@ -40,13 +49,27 @@ export type EventNameAnalysisResult = {
  */
 class CollectNamesVisitor extends PipelineVisitor {
   readonly _eventNames = new Set<string>();
+  readonly _triggerNames = new Set<string>();
   private _hasDynamicEventName = false;
 
   public get result(): EventNameAnalysisResult {
     return {
       knownNames: [...this._eventNames],
+      triggerNames: [...this._triggerNames],
       hasDynamicEventName: this._hasDynamicEventName,
     };
+  }
+
+  private visitExtensionPoint(
+    extensionPoint: ModComponentFormState["extensionPoint"]
+  ) {
+    if (isTriggerExtensionPoint(extensionPoint)) {
+      const eventName = extensionPoint.definition.customEvent?.eventName;
+
+      if (eventName) {
+        this._triggerNames.add(eventName);
+      }
+    }
   }
 
   override visitBrick(
@@ -75,6 +98,7 @@ class CollectNamesVisitor extends PipelineVisitor {
     const visitor = new CollectNamesVisitor();
 
     visitor.visitRootPipeline(formState.extension.blockPipeline);
+    visitor.visitExtensionPoint(formState.extensionPoint);
 
     return visitor.result;
   }
