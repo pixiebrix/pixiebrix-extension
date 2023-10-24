@@ -56,14 +56,12 @@ describe("@pixiebrix/state/set", () => {
     });
 
     let result = await brick.transform(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: { foo: 42, bar: 42 } } as any,
       { logger } as BrickOptions
     );
     expect(result).toStrictEqual({ foo: 42, bar: 42 });
 
     result = await brick.transform(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: { foo: 1 }, mergeStrategy: "shallow" } as any,
       { logger } as BrickOptions
     );
@@ -87,14 +85,12 @@ describe("@pixiebrix/state/set", () => {
     };
 
     let result = await brick.transform(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: original } as any,
       { logger } as BrickOptions
     );
     expect(result).toStrictEqual(original);
 
     result = await brick.transform(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       {
         data: {
           primitiveArray: [1],
@@ -172,7 +168,6 @@ describe("set and get", () => {
     });
 
     await setState.transform(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: { foo: 42 } } as any,
       { logger } as BrickOptions
     );
@@ -207,7 +202,6 @@ describe("set and get", () => {
     });
 
     await setState.transform(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       { data: { foo: 42 } } as any,
       { logger } as BrickOptions
     );

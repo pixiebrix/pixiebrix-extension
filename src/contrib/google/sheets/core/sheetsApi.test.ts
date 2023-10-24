@@ -40,7 +40,6 @@ import {
 
 const axiosMock = new MockAdapter(axios);
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- known valid definition
 const googleIntegration = fromJS(googleDefinition as any);
 
 jest.mock("@/contrib/google/initGoogle", () => ({

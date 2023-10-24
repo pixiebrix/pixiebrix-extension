@@ -64,7 +64,6 @@ function testStore() {
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
       return getDefaultMiddleware().concat(appApi.middleware);
     },
     preloadedState: {},

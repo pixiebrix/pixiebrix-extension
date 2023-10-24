@@ -21,6 +21,7 @@ import { waitForEffect } from "./testHelpers";
 
 type RenderFn = (ui: React.ReactElement) => RenderResult;
 
+// eslint-disable-next-line jest/no-export -- TODO: Use expect.extend() instead of a helper function
 export type ItRendersOptions<TProps> = {
   Component: React.ComponentType<TProps>;
   props: TProps;
@@ -60,4 +61,5 @@ function testItRenders<TProps = unknown>(
   });
 }
 
+// eslint-disable-next-line jest/no-export -- TODO: Use expect.extend() instead of a helper function
 export default testItRenders;

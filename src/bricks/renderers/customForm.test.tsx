@@ -209,7 +209,6 @@ describe("CustomFormRenderer", () => {
     dataStoreGetMock.mockResolvedValue({});
 
     const { Component, props } = await brick.render(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       {
         storage: { type: "localStorage" },
         autoSave: true,

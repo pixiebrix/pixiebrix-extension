@@ -49,7 +49,6 @@ export default {
 
 const Template: Story<StoryType> = ({ fixture, ...args }) => {
   const service = fromJS(
-    // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
     loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as IntegrationDefinition
   );
 
