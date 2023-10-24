@@ -24,7 +24,16 @@ import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { type StarterBrickType } from "@/starterBricks/types";
+
+export type StarterBrickType =
+  | "panel"
+  | "menuItem"
+  | "trigger"
+  | "contextMenu"
+  | "actionPanel"
+  | "quickBar"
+  | "quickBarProvider"
+  | "tour";
 
 /**
  * A location where content (e.g., form, temporary panel) can be added to the page.

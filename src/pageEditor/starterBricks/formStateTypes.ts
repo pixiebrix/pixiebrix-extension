@@ -45,8 +45,8 @@ import {
 import {
   type CustomEventOptions,
   type DebounceOptions,
-  type StarterBrickType,
 } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
 import { type Except } from "type-fest";
 import { type Menus } from "webextension-polyfill";
 import {

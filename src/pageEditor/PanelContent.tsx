@@ -39,7 +39,7 @@ import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
-import type { StarterBrickType } from "@/starterBricks/types";
+import type { StarterBrickType } from "@/starterBricks/StarterBrickType";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [

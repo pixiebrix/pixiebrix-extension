@@ -28,15 +28,16 @@ import {
 
 export type EventNameAnalysisResult = {
   /**
-   * Statically known event names in the FormState.
+   * Statically known emitted event names in the FormState.
    */
-  knownNames: string[];
+  knownEmittedNames: string[];
   /**
    * Event names that are used by a trigger starter brick.
-   * Kept separate for analysis. Combined with knownNames for runtime.
+   * Kept separate to preserve warnings in the trigger starter brick when the event name is not emitted from another brick.
+   * Combined with knownEmittedNames to get all known event names when choosing an event to emit in the emit custom event brick.
    * @since 1.8.2
    */
-  triggerNames: string[];
+  knownTriggerNames: string[];
   /**
    * True if the FormState uses a dynamic event name, e.g., variable or text template expression.
    */
@@ -54,13 +55,13 @@ class CollectNamesVisitor extends PipelineVisitor {
 
   public get result(): EventNameAnalysisResult {
     return {
-      knownNames: [...this._eventNames],
-      triggerNames: [...this._triggerNames],
+      knownEmittedNames: [...this._eventNames],
+      knownTriggerNames: [...this._triggerNames],
       hasDynamicEventName: this._hasDynamicEventName,
     };
   }
 
-  private visitExtensionPoint(
+  private visitStarterBrick(
     extensionPoint: ModComponentFormState["extensionPoint"]
   ) {
     if (isTriggerExtensionPoint(extensionPoint)) {
@@ -98,7 +99,7 @@ class CollectNamesVisitor extends PipelineVisitor {
     const visitor = new CollectNamesVisitor();
 
     visitor.visitRootPipeline(formState.extension.blockPipeline);
-    visitor.visitExtensionPoint(formState.extensionPoint);
+    visitor.visitStarterBrick(formState.extensionPoint);
 
     return visitor.result;
   }

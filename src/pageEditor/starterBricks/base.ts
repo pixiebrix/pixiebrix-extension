@@ -25,8 +25,8 @@ import {
   assertStarterBrickConfig,
   type StarterBrickConfig,
   type StarterBrickDefinition,
-  type StarterBrickType,
 } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
 import { registry } from "@/background/messenger/api";
 import type React from "react";
 import { createSitePattern } from "@/permissions/patterns";

@@ -20,7 +20,7 @@ import {
   removeEmptyValues,
   selectIsAvailable,
 } from "./base";
-import { type StarterBrickType } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
 import { type ReaderConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";

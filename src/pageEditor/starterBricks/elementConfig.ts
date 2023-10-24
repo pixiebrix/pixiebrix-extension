@@ -19,10 +19,8 @@ import type React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Metadata } from "@/types/registryTypes";
 import { type FrameworkMeta } from "@/pageScript/messenger/constants";
-import {
-  type StarterBrickConfig,
-  type StarterBrickType,
-} from "@/starterBricks/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";

@@ -36,8 +36,8 @@ describe("collectEventNamesAnalysis", () => {
     const result = CollectNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
-      triggerNames: [],
-      knownNames: ["foo"],
+      knownTriggerNames: [],
+      knownEmittedNames: ["foo"],
       hasDynamicEventName: false,
     });
   });
@@ -54,8 +54,8 @@ describe("collectEventNamesAnalysis", () => {
     const result = CollectNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
-      triggerNames: [],
-      knownNames: ["foo"],
+      knownTriggerNames: [],
+      knownEmittedNames: ["foo"],
       hasDynamicEventName: false,
     });
   });
@@ -72,8 +72,8 @@ describe("collectEventNamesAnalysis", () => {
     const result = CollectNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
-      triggerNames: [],
-      knownNames: [],
+      knownTriggerNames: [],
+      knownEmittedNames: [],
       hasDynamicEventName: true,
     });
   });
@@ -88,8 +88,8 @@ describe("collectEventNamesAnalysis", () => {
     const result = CollectNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
-      triggerNames: ["foo"],
-      knownNames: [],
+      knownTriggerNames: ["foo"],
+      knownEmittedNames: [],
       hasDynamicEventName: false,
     });
   });

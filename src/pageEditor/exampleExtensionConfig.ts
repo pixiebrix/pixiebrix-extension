@@ -16,7 +16,7 @@
  */
 
 import { type BrickPipeline } from "@/bricks/types";
-import { type StarterBrickType } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/starterBricks/StarterBrickType";
 import { validateRegistryId } from "@/types/helpers";
 import {
   createNewBlock,
