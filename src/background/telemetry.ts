@@ -407,8 +407,6 @@ export async function recordEvent({
       },
     };
 
-    console.log("*** Recording event:", event);
-
     await addEvent(telemetryEvent);
     void debouncedFlush();
   }
