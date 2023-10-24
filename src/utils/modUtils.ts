@@ -33,6 +33,8 @@ import {
 } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import { InvalidTypeError } from "@/errors/genericErrors";
+import reportError from "@/telemetry/reportError";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -66,7 +68,7 @@ export function isModComponentFromRecipe(mod: Mod): boolean {
 export function isModDefinition(
   mod: Mod
 ): mod is ModDefinition | UnavailableMod {
-  return !isResolvedModComponent(mod);
+  return mod && "kind" in mod && mod.kind === "recipe" && "sharing" in mod;
 }
 
 /**
@@ -201,7 +203,7 @@ export function isRecipePendingPublish(
   return recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
 }
 
-export function getSharingType({
+export function getSharingSource({
   mod,
   organizations,
   scope,
@@ -214,6 +216,17 @@ export function getSharingType({
 }): SharingSource {
   let sharingType: SharingType = null;
   const organization = getOrganization(mod, organizations);
+
+  if (!isModDefinition(mod) && !isResolvedModComponent(mod)) {
+    const error = new InvalidTypeError(
+      "Mod is not a ModDefinition or ResolvedModComponent",
+      { mod, organization, scope, installedExtensions }
+    );
+
+    reportError(error);
+
+    throw error;
+  }
 
   if (isPersonal(mod, scope)) {
     sharingType = "Personal";
@@ -320,7 +333,7 @@ function getOrganization(
  * Select UnresolvedExtensions currently installed from the mod.
  */
 export const selectExtensionsFromMod = createSelector(
-  [selectExtensions, (state: unknown, mod: Mod) => mod],
+  [selectExtensions, (_state: unknown, mod: Mod) => mod],
   (installedExtensions, mod) =>
     isModDefinition(mod)
       ? installedExtensions.filter(
