@@ -245,7 +245,6 @@
     "dotenv": "^16.3.1",
     "eslint": "^8.51.0",
     "eslint-config-pixiebrix": "^0.29.1",
-    "eslint-config-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
     "eslint-plugin-pixiebrix-extension": "file:./eslint-plugin-pixiebrix-extension",
     "fake-indexeddb": "^5.0.0",
     "identity-obj-proxy": "^3.0.0",
