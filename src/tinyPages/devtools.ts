@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+
 if (typeof chrome.devtools.inspectedWindow.tabId === "number") {
+  reportEvent(Events.DEVTOOLS_OPEN);
+
   chrome.devtools.panels.create(
     "PixieBrix",
     "",
