@@ -38,7 +38,7 @@ class AsyncAnalysisQueue {
     setTimeout(async () => {
       const task = this.queue.shift();
       try {
-        await task();
+        await task?.();
       } catch (error) {
         this.onTaskError(error);
       }

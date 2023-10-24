@@ -22,7 +22,8 @@ import FormPreviewFieldTemplate, {
 } from "./FormPreviewFieldTemplate";
 import styles from "./FormPreviewBooleanField.module.scss";
 
-const RjsfBooleanField = RjsfTheme.fields.BooleanField;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We know it exists
+const RjsfBooleanField = RjsfTheme.fields!.BooleanField!;
 
 const FormPreviewBooleanField: React.FC<FormPreviewFieldProps> = (props) => (
   <FormPreviewFieldTemplate
