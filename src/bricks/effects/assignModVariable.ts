@@ -2,7 +2,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type JsonObject } from "type-fest";
+import { type JsonObject, type JsonPrimitive } from "type-fest";
 import { setPageState } from "@/contentScript/pageState";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";
@@ -87,7 +87,8 @@ class AssignModVariable extends EffectABC {
       value,
     }: BrickArgs<{
       variableName: string;
-      value: unknown;
+      // Input is validated, so we know value is a JsonPrimitive or JsonObject
+      value: JsonPrimitive | JsonObject;
     }>,
     { logger }: BrickOptions
   ): Promise<void> {
@@ -95,8 +96,7 @@ class AssignModVariable extends EffectABC {
 
     setPageState({
       namespace: "blueprint",
-      // Input is validated, so we know value is a JsonPrimitive or JsonObject
-      data: { [variableName]: value } as JsonObject,
+      data: { [variableName]: value },
       mergeStrategy: "shallow",
       extensionId,
       blueprintId,

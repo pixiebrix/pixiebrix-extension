@@ -50,7 +50,6 @@ import {
   isAxiosError,
   safeGuessStatusText,
 } from "@/errors/networkErrorHelpers";
-import safeJsonStringify from "json-stringify-safe";
 import { deserializeError, serializeError } from "serialize-error";
 import {
   type Integration,
@@ -61,7 +60,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
-import { isObject } from "@/utils/objectUtils";
+import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
@@ -85,9 +84,7 @@ function sanitizeResponse<T>(
   }
 
   const { data, status, statusText } = response;
-  return JSON.parse(
-    safeJsonStringify({ data, status, statusText })
-  ) as SanitizedResponse<T>;
+  return ensureJsonObject({ data, status, statusText }) as SanitizedResponse<T>;
 }
 
 /**

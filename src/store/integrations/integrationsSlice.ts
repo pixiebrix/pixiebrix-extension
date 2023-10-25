@@ -59,7 +59,7 @@ const integrationsSlice = createSlice({
       state,
       { payload: integrationConfig }: PayloadAction<IntegrationConfig>
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The ID is always provided in this operation
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The ID is always provided in this operation
       state.configured[integrationConfig.id!] = integrationConfig;
     },
   },

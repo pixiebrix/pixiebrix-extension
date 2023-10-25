@@ -22,7 +22,7 @@ import {
 } from "redux-persist/es/types";
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
-import { type JsonObject, type SetOptional } from "type-fest";
+import { type SetOptional } from "type-fest";
 import { isObject } from "./objectUtils";
 
 /**
@@ -147,7 +147,7 @@ export async function readReduxStorage<T extends object>(
 
   const parsedState = mapValues(serializedState, (value) =>
     JSON.parse(String(value))
-  ) as JsonObject;
+  );
   return migratePersistedState<T>(
     parsedState,
     migrations,
