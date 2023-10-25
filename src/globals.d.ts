@@ -113,7 +113,7 @@ declare module "page-metadata-parser" {
 }
 
 declare module "@/vendors/initialize" {
-  import { JsonValue, type Promisable } from "type-fest";
+  import { type JsonValue, type Promisable } from "type-fest";
 
   /** Attach a MutationObserver specifically for a selector */
   const initialize: (
