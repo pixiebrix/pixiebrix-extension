@@ -17,10 +17,8 @@
 
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { registry } from "@/background/messenger/api";
-import {
-  type StarterBrickConfig,
-  type StarterBrickType,
-} from "@/starterBricks/types";
+import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import menuItemExtension from "@/pageEditor/starterBricks/menuItem";
 import quickBarExtension from "@/pageEditor/starterBricks/quickBar";
 import triggerExtension from "@/pageEditor/starterBricks/trigger";

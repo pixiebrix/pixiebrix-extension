@@ -25,6 +25,16 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
+export type StarterBrickType =
+  | "panel"
+  | "menuItem"
+  | "trigger"
+  | "contextMenu"
+  | "actionPanel"
+  | "quickBar"
+  | "quickBarProvider"
+  | "tour";
+
 /**
  * A location where content (e.g., form, temporary panel) can be added to the page.
  */
@@ -39,7 +49,7 @@ export interface StarterBrick extends Metadata {
   /**
    * The kind of StarterBrick.
    */
-  kind: string;
+  kind: StarterBrickType;
 
   /**
    * The input schema for StarterBrick-specific configuration.

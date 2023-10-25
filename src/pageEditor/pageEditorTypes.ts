@@ -21,7 +21,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
-import { type StarterBrickType } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
 import { type BrickConfig } from "@/bricks/types";

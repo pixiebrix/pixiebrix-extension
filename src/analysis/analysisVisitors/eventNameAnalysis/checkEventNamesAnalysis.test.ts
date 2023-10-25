@@ -113,4 +113,32 @@ describe("checkEventNamesAnalysis", () => {
       }),
     ]);
   });
+
+  it("get knownEventNames() combines known and trigger names", async () => {
+    const triggerFormState = triggerFormStateFactory();
+    triggerFormState.extensionPoint.definition.trigger = "custom";
+    triggerFormState.extensionPoint.definition.customEvent = {
+      eventName: "myevent",
+    };
+
+    const otherFormState = formStateFactory({}, [
+      {
+        id: CustomEventEffect.BRICK_ID,
+        config: {
+          eventName: "myevent2",
+        },
+      },
+    ]);
+
+    const analysis = new CheckEventNamesAnalysis([
+      triggerFormState,
+      otherFormState,
+    ]);
+
+    await analysis.run(triggerFormState);
+
+    expect(analysis.knownEventNames).toEqual(
+      expect.arrayContaining(["myevent", "myevent2"])
+    );
+  });
 });

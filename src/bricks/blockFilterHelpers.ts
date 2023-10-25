@@ -17,7 +17,7 @@
 
 import { type TypedBrickPair } from "@/bricks/registry";
 import { validateRegistryId } from "@/types/helpers";
-import { type StarterBrickType } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
 import { DocumentRenderer } from "@/bricks/renderers/document";
