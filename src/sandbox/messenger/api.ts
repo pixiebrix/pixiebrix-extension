@@ -61,3 +61,16 @@ export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
     type: "RENDER_HANDLEBARS",
   });
 }
+
+export type JavaScriptPayload = {
+  code: string;
+  data: unknown;
+};
+
+export async function runUserJs(payload: JavaScriptPayload) {
+  return postMessage({
+    recipient: await loadSandbox(),
+    payload,
+    type: "RUN_USER_JS",
+  });
+}

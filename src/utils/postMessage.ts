@@ -32,14 +32,13 @@
 
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
-import { type JsonValue } from "type-fest";
 import { type SerializedError } from "@/types/messengerTypes";
 import { getMessengerLogging } from "@/development/messengerLogging";
 import { assert } from "./typeUtils";
 
 const TIMEOUT_MS = 3000;
 
-type Payload = JsonValue;
+type Payload = unknown;
 
 // Disable logging by default
 let log = (...args: unknown[]) => {};

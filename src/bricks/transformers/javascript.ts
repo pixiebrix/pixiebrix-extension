@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { runUserJs } from "@/sandbox/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -59,11 +60,14 @@ export class JavaScriptTransformer extends TransformerABC {
   override async transform(
     input: BrickArgs<{
       function: string;
-      arguments: UnknownObject | unknown[];
+      arguments: UnknownObject | unknown[] | unknown;
     }>,
     options: BrickOptions
   ): Promise<unknown> {
-    const userFunction = new Function(`return ${input.function}`)();
-    return userFunction(input.arguments);
+    const response = await runUserJs({
+      code: input.function,
+      data: input.arguments,
+    });
+    return response;
   }
 }

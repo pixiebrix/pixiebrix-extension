@@ -38,6 +38,7 @@ import { onUncaughtError } from "@/errors/errorHelpers";
 import initFloatingActions from "@/components/floatingActions/initFloatingActions";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
+import initSandbox from "@/sandbox/messenger/api";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -62,7 +63,7 @@ export async function init(): Promise<void> {
   initToaster();
 
   // #5676 -- enable sandbox when ready to be used
-  // void initSandbox();
+  void initSandbox();
 
   await handleNavigate();
 

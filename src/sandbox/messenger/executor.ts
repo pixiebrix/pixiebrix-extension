@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TemplateRenderPayload } from "./api";
+import { type JavaScriptPayload, type TemplateRenderPayload } from "./api";
 import { isErrorObject } from "@/errors/errorHelpers";
 import { InvalidTemplateError } from "@/errors/businessErrors";
 
@@ -55,4 +55,15 @@ export async function renderHandlebarsTemplate(
     noEscape: !autoescape,
   });
   return compiledTemplate(context);
+}
+
+export async function runUserJs({
+  code,
+  data,
+}: JavaScriptPayload): Promise<string> {
+  // TODO: Ensure that new Function() doesn't have access to the scope
+  // Returning the user-defined function allows for an anonymous function
+  // eslint-disable-next-line no-new-func -- We're in the sandbox
+  const userFunction = new Function(`return ${code}`)();
+  return userFunction(data);
 }
