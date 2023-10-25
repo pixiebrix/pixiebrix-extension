@@ -19,10 +19,8 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import {
-  type StarterBrickDefinition,
-  type StarterBrickType,
-} from "@/starterBricks/types";
+import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import starterBrickRegistry from "@/starterBricks/registry";
 import { type RegistryId } from "@/types/registryTypes";
 import { compact, uniq } from "lodash";
@@ -51,7 +49,7 @@ async function getStarterBrickType(
     modComponentDefinition.id as RegistryId
   );
 
-  return (extensionPointFromRegistry?.kind as StarterBrickType) ?? null;
+  return extensionPointFromRegistry?.kind ?? null;
 }
 
 export async function getContainedStarterBrickTypes(

@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  formStateFactory,
+  triggerFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
 import CustomEventEffect from "@/bricks/effects/customEvent";
 import CollectNamesVisitor from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
@@ -33,7 +36,8 @@ describe("collectEventNamesAnalysis", () => {
     const result = CollectNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
-      knownNames: ["foo"],
+      knownTriggerNames: [],
+      knownEmittedNames: ["foo"],
       hasDynamicEventName: false,
     });
   });
@@ -50,7 +54,8 @@ describe("collectEventNamesAnalysis", () => {
     const result = CollectNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
-      knownNames: ["foo"],
+      knownTriggerNames: [],
+      knownEmittedNames: ["foo"],
       hasDynamicEventName: false,
     });
   });
@@ -67,8 +72,25 @@ describe("collectEventNamesAnalysis", () => {
     const result = CollectNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
-      knownNames: [],
+      knownTriggerNames: [],
+      knownEmittedNames: [],
       hasDynamicEventName: true,
+    });
+  });
+
+  it("collects custom trigger names from trigger starter bricks", () => {
+    const formState = triggerFormStateFactory();
+    formState.extensionPoint.definition.trigger = "custom";
+    formState.extensionPoint.definition.customEvent = {
+      eventName: "foo",
+    };
+
+    const result = CollectNamesVisitor.collectNames(formState);
+
+    expect(result).toEqual({
+      knownTriggerNames: ["foo"],
+      knownEmittedNames: [],
+      hasDynamicEventName: false,
     });
   });
 });
