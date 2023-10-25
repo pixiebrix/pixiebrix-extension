@@ -19,7 +19,7 @@ import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import axios from "axios";
 import { type JsonObject } from "type-fest";
-import { ensureJsonObject } from "@/utils/objectUtils.js";
+import { ensureJsonObject } from "@/utils/objectUtils";
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
