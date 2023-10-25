@@ -68,7 +68,7 @@
     "downloadjs": "^1.4.7",
     "escape-string-regexp": "^5.0.0",
     "eslint-plugin-unicorn": "^48.0.1",
-    "exifreader": "^4.13.2",
+    "exifreader": "^4.14.1",
     "export-to-csv": "^1.2.0",
     "filenamify": "^6.0.0",
     "fit-textarea": "^3.0.0",
