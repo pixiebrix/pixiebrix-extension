@@ -191,7 +191,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.5.1",
     "@types/chrome": "^0.0.216",
-    "@types/dompurify": "^3.0.3",
+    "@types/dompurify": "^3.0.4",
     "@types/downloadjs": "^1.4.4",
     "@types/gapi": "0.0.45",
     "@types/gapi.client.oauth2": "^2.0.3",
