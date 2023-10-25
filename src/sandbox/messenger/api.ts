@@ -64,7 +64,8 @@ export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
 
 export type JavaScriptPayload = {
   code: string;
-  data: unknown;
+  data?: JsonObject;
+  blockId: string;
 };
 
 export async function runUserJs(payload: JavaScriptPayload) {

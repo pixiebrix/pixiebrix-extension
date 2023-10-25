@@ -203,9 +203,11 @@ export function getExampleBlockConfig(
 
     case JavaScriptTransformer.BRICK_ID: {
       return {
-        function: `function (...args) {
-  return 42;
+        function: `function (args) {
+  const { x } = args;
+  return x;
 }`,
+        arguments: { x: "Hello from PixieBrix!" },
       };
     }
 

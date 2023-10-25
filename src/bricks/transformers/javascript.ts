@@ -18,10 +18,10 @@
 import { runUserJs } from "@/sandbox/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type JSONSchema7 } from "json-schema";
+import { type JsonObject } from "type-fest";
 
 export class JavaScriptTransformer extends TransformerABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/javascript");
@@ -51,6 +51,7 @@ export class JavaScriptTransformer extends TransformerABC {
       },
       arguments: {
         title: "Arguments",
+        type: "object",
         description: "The arguments to pass to the function",
       },
     },
@@ -60,7 +61,7 @@ export class JavaScriptTransformer extends TransformerABC {
   override async transform(
     input: BrickArgs<{
       function: string;
-      arguments: UnknownObject | unknown[] | unknown;
+      arguments?: JsonObject;
     }>,
     options: BrickOptions
   ): Promise<unknown> {

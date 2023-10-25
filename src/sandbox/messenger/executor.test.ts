@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderNunjucksTemplate } from "@/sandbox/messenger/executor";
-import { InvalidTemplateError } from "@/errors/businessErrors";
+import {
+  renderNunjucksTemplate,
+  runUserJs,
+} from "@/sandbox/messenger/executor";
+import { InvalidTemplateError, PropError } from "@/errors/businessErrors";
 
 describe("renderNunjucksTemplate", () => {
   it("handles template", async () => {
@@ -55,5 +58,34 @@ describe("renderNunjucksTemplate", () => {
     ).rejects.toThrow(Error);
 
     jest.resetAllMocks();
+  });
+});
+
+describe("runUserJs", () => {
+  it("executes the user-defined code and returns the result", async () => {
+    await expect(
+      runUserJs({
+        code: "function () { return 1 + 1; };",
+        blockId: "test",
+      })
+    ).resolves.toBe(2);
+  });
+
+  it("executes the user-defined code with the data and returns the result", async () => {
+    await expect(
+      runUserJs({
+        code: "function (data) { return data.hello + ' world'; };",
+        data: { hello: "hello" },
+        blockId: "test",
+      })
+    ).resolves.toBe("hello world");
+  });
+
+  it("throws a PropError if the Function Constructor throws an error", async () => {
+    const malformedCode = "func() { return 1 + 1; };";
+
+    await expect(async () =>
+      runUserJs({ code: malformedCode, data: {}, blockId: "test" })
+    ).rejects.toThrow(PropError);
   });
 });

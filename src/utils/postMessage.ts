@@ -34,10 +34,11 @@ import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type SerializedError } from "@/types/messengerTypes";
 import { assert } from "./typeUtils";
+import { type JsonValue } from "type-fest";
 
 const TIMEOUT_MS = 3000;
 
-type Payload = unknown;
+type Payload = JsonValue;
 
 // Temporarily disabling until a fix for the error thrown by the sandbox is found
 // Disable logging by default

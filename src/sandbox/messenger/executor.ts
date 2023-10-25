@@ -17,7 +17,7 @@
 
 import { type JavaScriptPayload, type TemplateRenderPayload } from "./api";
 import { isErrorObject } from "@/errors/errorHelpers";
-import { InvalidTemplateError } from "@/errors/businessErrors";
+import { InvalidTemplateError, PropError } from "@/errors/businessErrors";
 
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload
@@ -60,10 +60,22 @@ export async function renderHandlebarsTemplate(
 export async function runUserJs({
   code,
   data,
+  blockId,
 }: JavaScriptPayload): Promise<string> {
-  // TODO: Ensure that new Function() doesn't have access to the scope
-  // Returning the user-defined function allows for an anonymous function
-  // eslint-disable-next-line no-new-func -- We're in the sandbox
-  const userFunction = new Function(`return ${code}`)();
+  let userFunction;
+  try {
+    // TODO: Ensure that new Function() doesn't have access to the scope
+    // Returning the user-defined function allows for an anonymous function
+    // eslint-disable-next-line no-new-func -- We're in the sandbox
+    userFunction = new Function(`return ${code}`)();
+  } catch {
+    throw new PropError(
+      "Invalid JavaScript function",
+      blockId,
+      "function",
+      code
+    );
+  }
+
   return userFunction(data);
 }
