@@ -18,7 +18,7 @@
 import { type UnknownObject } from "@/types/objectTypes";
 import { type JsonObject } from "type-fest";
 import safeJsonStringify from "json-stringify-safe";
-import { isPlainObject, mapValues, partial, pickBy } from "lodash";
+import { mapValues, partial, pickBy } from "lodash";
 
 export function isGetter(obj: Record<string, unknown>, prop: string): boolean {
   return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
@@ -144,7 +144,7 @@ export function cleanValue(
 }
 
 export function excludeUndefined(obj: unknown): unknown {
-  if (isPlainObject(obj) && typeof obj === "object") {
+  if (isObject(obj)) {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
       excludeUndefined
@@ -163,4 +163,9 @@ export function mapObject<Input, Output>(
   fn: (value: Input, key: string) => Output
 ): Record<string, Output> {
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
+}
+
+/** Loose type guard for "tables" accepted by `dataTable` and `exportCsv` */
+export function isUnknownObjectArray(value: unknown): value is UnknownObject[] {
+  return Array.isArray(value) && value.every((element) => isObject(element));
 }

@@ -22,6 +22,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { sortBy } from "lodash";
+import { type JsonValue } from "type-fest";
 
 function extractJsonString(content: string): string {
   // https://regex101.com/library/sjOfeq?orderBy=MOST_POINTS&page=3&search=json
@@ -45,7 +46,7 @@ function extractJsonString(content: string): string {
 }
 
 function lenientParserFactory(rootParse: typeof JSON.parse): typeof JSON.parse {
-  function parse(content: string): unknown {
+  function parse(content: string): JsonValue {
     try {
       return rootParse(content);
     } catch (error) {

@@ -401,7 +401,7 @@ async function setData(
   values: UnknownObject,
   { blueprintId, extensionId }: Context
 ): Promise<void> {
-  const cleanValues: JsonObject = JSON.parse(safeJsonStringify(values));
+  const cleanValues = JSON.parse(safeJsonStringify(values)) as JsonObject;
 
   switch (storage.type) {
     case "localStorage": {

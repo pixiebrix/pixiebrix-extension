@@ -78,7 +78,9 @@ export class ImageExifReader extends ReaderABC {
     if (element?.tagName === "IMG") {
       const buffer = await getData(element);
       // Ensure serializable output
-      return JSON.parse(safeJsonStringify(ExifReader.load(buffer)));
+      return JSON.parse(
+        safeJsonStringify(ExifReader.load(buffer))
+      ) as JsonObject;
     }
 
     throw new Error(

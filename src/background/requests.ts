@@ -85,7 +85,9 @@ function sanitizeResponse<T>(
   }
 
   const { data, status, statusText } = response;
-  return JSON.parse(safeJsonStringify({ data, status, statusText }));
+  return JSON.parse(
+    safeJsonStringify({ data, status, statusText })
+  ) as SanitizedResponse<T>;
 }
 
 /**

@@ -655,9 +655,9 @@ export async function blockReducer(
 
   // Match the override behavior in v1, where the output from previous brick would override anything in the context
   const contextWithPreviousOutput =
-    explicitDataFlow || !isPlainObject(previousOutput)
+    explicitDataFlow || !isObject(previousOutput)
       ? context
-      : { ...context, ...(previousOutput as UnknownObject) };
+      : { ...context, ...previousOutput };
 
   const resolvedConfig = await resolveBlockConfig(blockConfig);
 

@@ -43,12 +43,14 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
-type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
+type MeGroup = NonNullable<
+  components["schemas"]["Me"]["group_memberships"]
+>[number] & {
   id: UUID;
 };
 
 type MeMembershipOrganization = Except<
-  components["schemas"]["Me"]["organization_memberships"][number],
+  NonNullable<components["schemas"]["Me"]["organization_memberships"]>[number],
   "is_deployment_manager"
 > & {
   organization: UUID;
@@ -161,15 +163,17 @@ export type Deployment = Except<
 > & {
   id: UUID;
   options_config: OptionsArgs;
-  package: Except<
-    components["schemas"]["DeploymentDetail"]["package"],
-    // Patch types for the following properties which our automatic schema generation generated the wrong types for
-    "config" | "id" | "package_id"
-  > & {
-    id: UUID;
-    package_id: RegistryId;
-    config: ModDefinition;
-  };
+  package:
+    | (Except<
+        NonNullable<components["schemas"]["DeploymentDetail"]["package"]>,
+        // Patch types for the following properties which our automatic schema generation generated the wrong types for
+        "config" | "id" | "package_id"
+      > & {
+        id: UUID;
+        package_id: RegistryId;
+        config: ModDefinition;
+      })
+    | undefined;
 };
 
 /**

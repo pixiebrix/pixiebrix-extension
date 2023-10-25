@@ -15,11 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+eslint-disable @typescript-eslint/consistent-type-imports --
+Import statements turn `globals.d.ts` in a "module definition" file instead of an ambient file.
+https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-1666667362
+*/
+
 // We only use this package for its types. URLPattern is Chrome 95+
 /// <reference types="urlpattern-polyfill" />
 
-// This cannot be a regular import because it turns `globals.d.ts` in a "module definition", which it isn't
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+// Improve standard type library https://www.totaltypescript.com/ts-reset
+/// <reference types="@total-typescript/ts-reset" />
+
 type Browser = import("webextension-polyfill").Browser;
 
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
@@ -106,7 +113,7 @@ declare module "page-metadata-parser" {
 }
 
 declare module "@/vendors/initialize" {
-  import { type Promisable } from "type-fest";
+  import { JsonValue, type Promisable } from "type-fest";
 
   /** Attach a MutationObserver specifically for a selector */
   const initialize: (
@@ -188,6 +195,21 @@ interface Error {
 interface ErrorConstructor {
   new (message?: string, options?: ErrorOptions): Error;
   (message?: string, options?: ErrorOptions): Error;
+}
+
+// This override the return value from `any` to `JsonValue`.
+// "total-typescript" casts it to `unknown` but `JsonValue` is more useful and accurate.
+interface JSON {
+  /**
+   * Converts a JavaScript Object Notation (JSON) string into an object.
+   * @param text A valid JSON string.
+   * @param reviver A function that transforms the results. This function is called for each member of the object.
+   * If a member contains nested objects, the nested objects are transformed before the parent object is.
+   */
+  parse(
+    text: string,
+    reviver?: (this: unknown, key: string, value: unknown) => unknown
+  ): import("type-fest").JsonValue;
 }
 
 // TODO: This overrides Firefox’ types. It's possible that the return types are different between Firefox and Chrome

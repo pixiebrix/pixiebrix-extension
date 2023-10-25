@@ -22,7 +22,7 @@ import {
 } from "redux-persist/es/types";
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
-import { type SetOptional } from "type-fest";
+import { type JsonObject, type SetOptional } from "type-fest";
 
 /**
  * A storage key managed manually (i.e., not using redux-persist).
@@ -136,7 +136,7 @@ export async function readReduxStorage<T extends object>(
   // object itself also stringified as the value for the storage key.
   const serializedState = JSON.parse(storageValue);
 
-  if (typeof serializedState !== "object") {
+  if (!serializedState || typeof serializedState !== "object") {
     console.warn("Expected 'jsonified object' for key %s", storageKey, {
       storageValue,
     });
@@ -146,7 +146,7 @@ export async function readReduxStorage<T extends object>(
 
   const parsedState = mapValues(serializedState, (value) =>
     JSON.parse(String(value))
-  );
+  ) as JsonObject;
   return migratePersistedState<T>(
     parsedState,
     migrations,

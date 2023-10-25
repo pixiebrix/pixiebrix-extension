@@ -4,6 +4,14 @@
     "strictNullChecks": true
   },
   "files": [
+    "./types/contract.ts",
+    "./types/brickTypes.ts",
+    "./utils/expressionUtils.ts",
+    "./utils/domUtils.ts",
+
+    "./telemetry/deployments.ts",
+    "./telemetry/trace.ts",
+
     "./__mocks__/@/components/DelayedRender.tsx",
     "./__mocks__/@/components/MarkdownInlineLazy.tsx",
     "./__mocks__/@/components/MarkdownLazy.tsx",

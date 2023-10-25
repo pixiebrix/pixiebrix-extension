@@ -28,14 +28,14 @@ const CollapsibleFieldSection: React.FC<{
   expanded?: boolean;
   bodyRef?: React.MutableRefObject<HTMLDivElement>;
 }> = ({ title, toggleExpanded, expanded, children, bodyRef }) => {
-  const headerRef = useRef(null);
+  const headerRef = useRef<HTMLDivElement | null>(null);
 
   const onToggle = (event: React.MouseEvent | React.KeyboardEvent) => {
     // Prevent toggle on titles that include other clickable elements, e.g., inputs/buttons when the title is passed
     // as a ReactNode
     if (
       event.target === headerRef.current ||
-      !["BUTTON", "INPUT"].includes((event.target as HTMLElement).tagName)
+      !["BUTTON", "INPUT"].includes(event.currentTarget.tagName)
     ) {
       toggleExpanded();
     }
