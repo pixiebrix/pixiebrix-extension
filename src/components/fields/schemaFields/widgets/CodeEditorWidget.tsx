@@ -17,9 +17,23 @@
 
 import React from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import AceEditor from "@/vendors/AceEditor";
 
-const CodeEditorWidget: React.VFC<SchemaFieldProps> = () => {
-  return <div>Code Editor Widget</div>;
+const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
+  console.log("schema", schema);
+
+  const onChange = (newValue: string) => {
+    console.log("change", newValue);
+  };
+
+  return (
+    <AceEditor
+      name={name}
+      mode="javascript"
+      onChange={onChange}
+      theme="chrome"
+    />
+  );
 };
 
 export default CodeEditorWidget;
