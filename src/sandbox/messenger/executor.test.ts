@@ -19,7 +19,11 @@ import {
   renderNunjucksTemplate,
   runUserJs,
 } from "@/sandbox/messenger/executor";
-import { InvalidTemplateError, PropError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  InvalidTemplateError,
+  PropError,
+} from "@/errors/businessErrors";
 
 describe("renderNunjucksTemplate", () => {
   it("handles template", async () => {
@@ -81,11 +85,29 @@ describe("runUserJs", () => {
     ).resolves.toBe("hello world");
   });
 
+  it("executes the user-defined code with the data and awaits the result if the code is an async function", async () => {
+    await expect(
+      runUserJs({
+        code: "async function (data) { return data.hello + ' world'; };",
+        data: { hello: "hello" },
+        blockId: "test",
+      })
+    ).resolves.toBe("hello world");
+  });
+
   it("throws a PropError if the Function Constructor throws an error", async () => {
     const malformedCode = "func() { return 1 + 1; };";
 
     await expect(async () =>
       runUserJs({ code: malformedCode, data: {}, blockId: "test" })
     ).rejects.toThrow(PropError);
+  });
+
+  it("throws a Business error if the user-defined function throws an error", async () => {
+    const malformedCode = "function () { throw new Error('test'); };";
+
+    await expect(async () =>
+      runUserJs({ code: malformedCode, data: {}, blockId: "test" })
+    ).rejects.toThrow(BusinessError);
   });
 });

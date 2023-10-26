@@ -17,7 +17,11 @@
 
 import { type JavaScriptPayload, type TemplateRenderPayload } from "./api";
 import { isErrorObject } from "@/errors/errorHelpers";
-import { InvalidTemplateError, PropError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  InvalidTemplateError,
+  PropError,
+} from "@/errors/businessErrors";
 
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload
@@ -70,12 +74,16 @@ export async function runUserJs({
     userFunction = new Function(`return ${code}`)();
   } catch {
     throw new PropError(
-      "Invalid JavaScript function",
+      "Failed to construct JavaScript function",
       blockId,
       "function",
       code
     );
   }
 
-  return userFunction(data);
+  try {
+    return userFunction(data);
+  } catch {
+    throw new BusinessError("Error running user-defined JavaScript");
+  }
 }

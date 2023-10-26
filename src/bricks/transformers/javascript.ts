@@ -68,6 +68,7 @@ export class JavaScriptTransformer extends TransformerABC {
     const response = await runUserJs({
       code: input.function,
       data: input.arguments,
+      blockId: this.id,
     });
     return response;
   }
