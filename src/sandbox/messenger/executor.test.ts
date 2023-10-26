@@ -104,10 +104,10 @@ describe("runUserJs", () => {
   });
 
   it("throws a Business error if the user-defined function throws an error", async () => {
-    const malformedCode = "function () { throw new Error('test'); };";
+    const errorCode = "function () { throw new Error('test'); };";
 
     await expect(async () =>
-      runUserJs({ code: malformedCode, data: {}, blockId: "test" })
+      runUserJs({ code: errorCode, data: {}, blockId: "test" })
     ).rejects.toThrow(BusinessError);
   });
 });
