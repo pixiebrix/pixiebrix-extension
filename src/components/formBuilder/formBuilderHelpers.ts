@@ -17,8 +17,7 @@
 
 import { type RJSFSchema } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
-import { produce } from "immer";
-import { type WritableDraft } from "immer/dist/types/types-external";
+import { produce, type Draft } from "immer";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { isEmpty } from "lodash";
@@ -304,7 +303,7 @@ export const produceSchemaOnUiTypeChange = (
  * Normalizes the schema property of the RJSF schema.
  * @param rjsfSchemaDraft The mutable draft of the RJSF schema
  */
-export const normalizeSchema = (rjsfSchemaDraft: WritableDraft<RJSFSchema>) => {
+export const normalizeSchema = (rjsfSchemaDraft: Draft<RJSFSchema>) => {
   if (isEmpty(rjsfSchemaDraft.schema)) {
     rjsfSchemaDraft.schema = getMinimalSchema();
   }

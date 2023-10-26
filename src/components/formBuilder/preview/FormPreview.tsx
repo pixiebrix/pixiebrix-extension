@@ -38,7 +38,7 @@ import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
-import { type WritableDraft } from "immer/dist/internal";
+import { type Draft } from "immer";
 import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
 import FormPreviewArrayField from "@/components/formBuilder/preview/FormPreviewArrayField";
 
@@ -82,7 +82,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           ).filter(
             (value) =>
               typeof value === "object" && value.$ref === databaseSchema.$id
-          ) as Array<WritableDraft<Schema>>;
+          ) as Array<Draft<Schema>>;
 
           for (const property of databaseProperties) {
             property.type = "string";
@@ -103,7 +103,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           ).filter(
             (value) =>
               typeof value === "object" && value.$ref === googleSheetSchema.$id
-          ) as Array<WritableDraft<Schema>>;
+          ) as Array<Draft<Schema>>;
 
           for (const property of googleSheetProperties) {
             property.type = "string";

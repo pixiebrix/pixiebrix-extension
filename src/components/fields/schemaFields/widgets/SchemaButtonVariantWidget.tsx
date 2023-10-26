@@ -22,11 +22,11 @@ import { type Option } from "@/components/form/widgets/SelectWidget";
 import Select, {
   type OptionProps,
   type ValueContainerProps,
+  type SingleValueProps,
 } from "react-select";
 import { Button } from "react-bootstrap";
 import styles from "./SchemaButtonVariantWidget.module.scss";
 import cx from "classnames";
-import { type SingleValueProps } from "react-select/dist/declarations/src/components/SingleValue";
 import { type StringOption } from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 

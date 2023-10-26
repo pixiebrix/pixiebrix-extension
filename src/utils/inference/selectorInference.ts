@@ -24,7 +24,7 @@ import {
   uniq,
 } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import { type CssSelectorType } from "css-selector-generator/types/types";
+import { type CssSelectorType } from "css-selector-generator/types/types.js";
 import {
   CONTENT_SCRIPT_READY_ATTRIBUTE,
   EXTENSION_POINT_DATA_ATTR,

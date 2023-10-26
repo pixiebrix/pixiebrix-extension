@@ -20,7 +20,7 @@ import {
   readStorage,
   setStorage,
 } from "@/utils/storageUtils";
-import { toggleLogging } from "webext-messenger";
+import { toggleLogging } from "webext-messenger/shared.js";
 
 const MESSENGER_LOGGING_KEY = "MESSENGER_LOGGING" as ManualStorageKey;
 

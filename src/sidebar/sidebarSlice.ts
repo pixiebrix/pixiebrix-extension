@@ -37,8 +37,7 @@ import {
 import { partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/bricks/errors";
-import { type WritableDraft } from "immer/dist/types/types-external";
-import { castDraft } from "immer";
+import { castDraft, type Draft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
@@ -159,7 +158,7 @@ async function resolvePanel(
 }
 
 export function fixActiveTabOnRemove(
-  state: WritableDraft<SidebarState>,
+  state: Draft<SidebarState>,
   removedEntry: SidebarEntry | null
 ) {
   // Only update the active panel if the panel needs to change
