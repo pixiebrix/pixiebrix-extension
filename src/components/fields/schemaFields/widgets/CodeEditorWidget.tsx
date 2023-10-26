@@ -18,20 +18,26 @@
 import React from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import AceEditor from "@/vendors/AceEditor";
+import { useField } from "formik";
 
 const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
-  console.log("schema", schema);
+  const [{ value }, , { setValue }] = useField(name);
 
-  const onChange = (newValue: string) => {
-    console.log("change", newValue);
+  const onChange = async (newValue: string) => {
+    await setValue(newValue);
   };
 
   return (
     <AceEditor
       name={name}
       mode="javascript"
-      onChange={onChange}
       theme="chrome"
+      value={value}
+      onChange={onChange}
+      setOptions={{
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+      }}
     />
   );
 };

@@ -22,6 +22,7 @@ import "ace-builds/src-noconflict/theme-chrome";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-chrome";
 import "ace-builds/src-noconflict/ext-searchbox";
+import "ace-builds/src-noconflict/ext-language_tools";
 
 /**
  * Bundles AceEditor. Use "./AceEditor.tsx" for dynamic import.
