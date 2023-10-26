@@ -244,3 +244,10 @@ export function getBlockAnnotations(
     return !restPath.includes(".__value__.");
   });
 }
+
+export function selectPageEditorDimensions() {
+  return {
+    pageEditorWidth: window.innerWidth,
+    pageEditorHeight: window.innerHeight,
+  };
+}

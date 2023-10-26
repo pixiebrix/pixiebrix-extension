@@ -43,6 +43,7 @@ import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import Alert from "@/components/Alert";
 import styles from "./EditorContent.module.scss";
+import { selectPageEditorDimensions } from "@/pageEditor/utils";
 
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
@@ -88,11 +89,13 @@ const EditorContent: React.FC = () => {
   useEffect(() => {
     reportEvent(Events.PAGE_EDITOR_SESSION_START, {
       sessionId,
+      ...selectPageEditorDimensions(),
     });
 
     return () => {
       reportEvent(Events.PAGE_EDITOR_SESSION_END, {
         sessionId,
+        ...selectPageEditorDimensions(),
       });
     };
   }, [sessionId]);
