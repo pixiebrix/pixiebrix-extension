@@ -23,6 +23,10 @@ import { Events } from "@/telemetry/events";
 if (typeof chrome.devtools.inspectedWindow.tabId === "number") {
   reportEvent(Events.DEVTOOLS_OPEN);
 
+  window.addEventListener("beforeunload", () => {
+    reportEvent(Events.DEVTOOLS_CLOSE);
+  });
+
   chrome.devtools.panels.create(
     "PixieBrix",
     "",
