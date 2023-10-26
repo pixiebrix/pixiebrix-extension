@@ -197,8 +197,8 @@ interface ErrorConstructor {
   (message?: string, options?: ErrorOptions): Error;
 }
 
-// This override the return value from `any` to `JsonValue`.
-// "total-typescript" casts it to `unknown` but `JsonValue` is more useful and accurate.
+// This changes the return value from `any` to `JsonValue`.
+// "total-typescript" sets it to `unknown` but `JsonValue` is more useful and accurate.
 interface JSON {
   /**
    * Converts a JavaScript Object Notation (JSON) string into an object.
