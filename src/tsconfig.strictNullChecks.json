@@ -298,7 +298,6 @@
     "./themes/light.ts",
     "./themes/themeTypes.ts",
     "./themes/themeUtils.ts",
-    "./tinyPages/devtools.ts",
     "./tours/tourRunDatabase.ts",
     "./types/annotationTypes.ts",
     "./types/browserTypes.ts",
