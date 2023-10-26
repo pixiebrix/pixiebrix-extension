@@ -36,8 +36,8 @@ export type ResolvedBrickConfig = {
  *
  * For use in tests and JavaScript bricks that manually create a call to an individual brick.
  */
-export function unsafeAssumeValidArg(value: unknown): BrickArgs {
-  return value as BrickArgs;
+export function unsafeAssumeValidArg<T>(value: unknown): BrickArgs<T> {
+  return value as BrickArgs<T>;
 }
 
 const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;
