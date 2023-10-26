@@ -27,6 +27,8 @@ export class JavaScriptTransformer extends TransformerABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/javascript");
 
   override async isPure(): Promise<boolean> {
+    // It's not actually "pure", because the user could call a method like Math.random() or Date.now()
+    // We're marking it as pure because it's safe for the Page Editor to run the preview on
     return true;
   }
 
@@ -65,11 +67,10 @@ export class JavaScriptTransformer extends TransformerABC {
     }>,
     options: BrickOptions
   ): Promise<unknown> {
-    const response = await runUserJs({
+    return runUserJs({
       code: input.function,
       data: input.arguments,
       blockId: this.id,
     });
-    return response;
   }
 }

@@ -24,6 +24,7 @@ import {
   InvalidTemplateError,
   PropError,
 } from "@/errors/businessErrors";
+import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 
 describe("renderNunjucksTemplate", () => {
   it("handles template", async () => {
@@ -70,7 +71,7 @@ describe("runUserJs", () => {
     await expect(
       runUserJs({
         code: "function () { return 1 + 1; };",
-        blockId: "test",
+        blockId: JavaScriptTransformer.BRICK_ID,
       })
     ).resolves.toBe(2);
   });
@@ -80,7 +81,7 @@ describe("runUserJs", () => {
       runUserJs({
         code: "function (data) { return data.hello + ' world'; };",
         data: { hello: "hello" },
-        blockId: "test",
+        blockId: JavaScriptTransformer.BRICK_ID,
       })
     ).resolves.toBe("hello world");
   });
@@ -90,7 +91,7 @@ describe("runUserJs", () => {
       runUserJs({
         code: "async function (data) { return data.hello + ' world'; };",
         data: { hello: "hello" },
-        blockId: "test",
+        blockId: JavaScriptTransformer.BRICK_ID,
       })
     ).resolves.toBe("hello world");
   });
@@ -99,7 +100,11 @@ describe("runUserJs", () => {
     const malformedCode = "func() { return 1 + 1; };";
 
     await expect(async () =>
-      runUserJs({ code: malformedCode, data: {}, blockId: "test" })
+      runUserJs({
+        code: malformedCode,
+        data: {},
+        blockId: JavaScriptTransformer.BRICK_ID,
+      })
     ).rejects.toThrow(PropError);
   });
 
@@ -107,7 +112,11 @@ describe("runUserJs", () => {
     const errorCode = "function () { throw new Error('test'); };";
 
     await expect(async () =>
-      runUserJs({ code: errorCode, data: {}, blockId: "test" })
+      runUserJs({
+        code: errorCode,
+        data: {},
+        blockId: JavaScriptTransformer.BRICK_ID,
+      })
     ).rejects.toThrow(BusinessError);
   });
 });
