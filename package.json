@@ -157,7 +157,7 @@
     "url-join": "^5.0.0",
     "urlpattern-polyfill": "^5.0.3",
     "use-async-effect": "^2.2.7",
-    "use-debounce": "^9.0.3",
+    "use-debounce": "^9.0.4",
     "use-sync-external-store": "^1.2.0",
     "uuid": "^9.0.1",
     "webext-additional-permissions": "^2.4.0",
