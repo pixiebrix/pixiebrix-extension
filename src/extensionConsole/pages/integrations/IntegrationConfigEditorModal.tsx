@@ -85,25 +85,6 @@ const FORM_RUNTIME_CONTEXT: RuntimeContext = {
   allowExpressions: false,
 };
 
-// const handleGoogleDrivePKCECreate = useCallback(
-//   async (integration: Integration, config: IntegrationConfig) => {
-//     const googleAccount: SanitizedIntegrationConfig = {
-//       _sanitizedIntegrationConfigBrand: null,
-//       id: config.id,
-//       serviceId: config.integrationId,
-//       config: {} as SanitizedConfig, // Google PKCE integration uses OAuth2 login, doesn't store a secret token directly
-//       proxy: false, // Google PKCE integration does not use a proxy
-//     };
-//     const userEmail = await sheets.getUserEmail(googleAccount);
-//     const newConfig: IntegrationConfig = {
-//       ...config,
-//       label: userEmail,
-//     };
-//     await handleSave(newConfig);
-//   },
-//   [handleSave]
-// );
-
 const IntegrationConfigEditorModal: React.FunctionComponent<
   IntegrationConfigEditorModalProps
 > = ({ integration, initialValues, onSave, onClose, onDelete }) => {
