@@ -23,7 +23,7 @@ import {
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import { type BrickConfig } from "@/bricks/types";
-import { type StarterBrickType } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import {
   type AddBlockLocation,
   type EditorRootState,

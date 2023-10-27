@@ -21,7 +21,7 @@ import "@/utils/layout.scss";
 import "./options.scss";
 
 import "@/extensionContext";
-import "@/development/darkMode";
+import "@/development/darkMode.js";
 
 import { render } from "react-dom";
 import React from "react";

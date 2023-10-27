@@ -19,8 +19,8 @@ export function selectEventData(
       extensionId: modComponent.id,
       deploymentId: modComponent._deployment?.id,
       extensionPointId: modComponent.extensionPointId,
-      blueprintId: modComponent._recipe?.id,
-      blueprintVersion: modComponent._recipe?.version,
+      blueprintId: modComponent._recipe?.id ?? null,
+      blueprintVersion: modComponent._recipe?.version ?? null,
     };
   }
 
@@ -29,7 +29,7 @@ export function selectEventData(
       label: modComponent.label,
       extensionId: modComponent.id,
       blueprintId: modComponent._recipe?.id,
-      blueprintVersion: modComponent._recipe?.version,
+      blueprintVersion: modComponent._recipe?.version ?? null,
     };
   }
 

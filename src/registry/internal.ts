@@ -17,14 +17,7 @@
 
 import { produce } from "immer";
 import objectHash from "object-hash";
-import {
-  cloneDeep,
-  isEmpty,
-  isPlainObject,
-  mapValues,
-  pick,
-  pickBy,
-} from "lodash";
+import { cloneDeep, isEmpty, mapValues, pick, pickBy } from "lodash";
 import extensionPointRegistry from "@/starterBricks/registry";
 import blockRegistry from "@/bricks/registry";
 import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
@@ -48,6 +41,7 @@ import {
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Brick } from "@/types/brickTypes";
 import { resolveObj } from "@/utils/promiseUtils";
+import { isObject } from "@/utils/objectUtils";
 
 type InnerExtensionPoint = Pick<StarterBrickConfig, "definition" | "kind">;
 type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
@@ -129,11 +123,9 @@ async function resolveReaderDefinition(
     );
   }
 
-  if (isPlainObject(reader)) {
+  if (isObject(reader)) {
     return resolveObj(
-      mapValues(reader as Record<string, unknown>, async (x) =>
-        resolveReaderDefinition(definitions, x)
-      )
+      mapValues(reader, async (x) => resolveReaderDefinition(definitions, x))
     );
   }
 

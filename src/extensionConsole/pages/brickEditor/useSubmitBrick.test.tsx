@@ -68,13 +68,9 @@ function testStore(initialState?: {
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      return (
-        getDefaultMiddleware()
-          // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
-          .concat(appApi.middleware)
-          // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
-          .concat(testMiddleware)
-      );
+      return getDefaultMiddleware()
+        .concat(appApi.middleware)
+        .concat(testMiddleware);
     },
     preloadedState: initialState,
   });
@@ -109,14 +105,13 @@ describe("useSubmitBrick", () => {
       // `pipedriveYaml` actually comes through as an object. Jest is ignoring loadAsText
       await result.current.submit(
         {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           config: brickToYaml(pipedriveYaml as any),
           reactivate: false,
           public: true,
           organizations: [],
           id: uuidv4(),
         },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
         {
           resetForm,
           setErrors,
@@ -160,14 +155,13 @@ describe("useSubmitBrick", () => {
       // `pipedriveYaml` actually comes through as an object. Jest is ignoring loadAsText
       await result.current.submit(
         {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           config: brickToYaml(pipedriveYaml as any),
           reactivate: false,
           public: true,
           organizations: [],
           id: uuidv4(),
         },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
         {
           resetForm,
           setErrors,

@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeUndefined, mapObject } from "@/utils/objectUtils";
+import {
+  removeUndefined,
+  mapObject,
+  isUnknownObjectArray,
+} from "@/utils/objectUtils";
 
 describe("removeUndefined", () => {
   test("remove top-level undefined", () => {
@@ -53,5 +57,32 @@ describe("mapObject", () => {
       foo: 98,
       baz: 113,
     });
+  });
+});
+
+describe("isUnknownObjectArray", () => {
+  test("empty array", () => {
+    expect(isUnknownObjectArray([])).toBe(true);
+  });
+
+  test("array of objects", () => {
+    expect(isUnknownObjectArray([{ foo: "bar" }])).toBe(true);
+  });
+
+  test("array of arrays", () => {
+    expect(
+      isUnknownObjectArray([
+        [1, 2, 3],
+        [4, 5, 6],
+      ])
+    ).toBe(true);
+  });
+
+  test("array of non-objects", () => {
+    expect(isUnknownObjectArray([1, 2, 3])).toBe(false);
+  });
+
+  test("non-array", () => {
+    expect(isUnknownObjectArray({ foo: "bar" })).toBe(false);
   });
 });

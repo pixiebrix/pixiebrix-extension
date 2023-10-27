@@ -75,11 +75,11 @@ export function deepPickBy(
  * Returns true if value is non-null and has a typeof "object". Also returns true for arrays.
  * @param value the value.
  */
-export function isObject(value: unknown): value is Record<string, unknown> {
+export function isObject(value: unknown): value is UnknownObject {
   return Boolean(value) && typeof value === "object";
 }
 
-export function ensureJsonObject(value: Record<string, unknown>): JsonObject {
+export function ensureJsonObject(value: UnknownObject): JsonObject {
   if (!isObject(value)) {
     throw new TypeError("expected object");
   }
@@ -144,6 +144,7 @@ export function cleanValue(
 }
 
 export function excludeUndefined(obj: unknown): unknown {
+  // This must specifically be `isPlainObject` or else it fails in many situations
   if (isPlainObject(obj) && typeof obj === "object") {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
@@ -163,4 +164,9 @@ export function mapObject<Input, Output>(
   fn: (value: Input, key: string) => Output
 ): Record<string, Output> {
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
+}
+
+/** Loose type guard for "tables" accepted by `dataTable` and `exportCsv` */
+export function isUnknownObjectArray(value: unknown): value is UnknownObject[] {
+  return Array.isArray(value) && value.every((element) => isObject(element));
 }

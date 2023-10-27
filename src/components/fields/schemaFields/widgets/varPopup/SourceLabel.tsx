@@ -25,7 +25,7 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
       KnownSources.OPTIONS,
       KnownSources.SERVICE,
       KnownSources.MOD,
-    ].includes(kind as KnownSources)
+    ].includes(kind)
   ) {
     switch (kind) {
       case KnownSources.INPUT: {

@@ -1,23 +1,23 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
-User Story
----
+## User Story
+
 As a [archetype], I [want to], [so that]
 
-Motivation
----
+## Motivation
+
 Any other context on why we want this feature
 
-Acceptance Criteria
----
+## Acceptance Criteria
+
 Scenario: eat 5 out of 12
-* Given there are 12 cucumbers
-* When I eat 5 cucumbers
-* Then I should have 7 cucumbers
+
+- Given there are 12 cucumbers
+- When I eat 5 cucumbers
+- Then I should have 7 cucumbers

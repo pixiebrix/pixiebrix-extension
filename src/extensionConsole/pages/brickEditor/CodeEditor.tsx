@@ -21,6 +21,7 @@ import React, { useRef, Suspense, useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 
 import AceEditor from "@/vendors/AceEditor";
+import { type Ace } from "ace-builds";
 
 interface OwnProps {
   name: string;
@@ -28,6 +29,14 @@ interface OwnProps {
   showTemplates?: boolean;
   openDefinition?: (id: string) => void;
   openEditor?: (id: string) => void;
+}
+
+function getCurrentTokenId(editor: Ace.Editor) {
+  const { row, column } = editor.getCursorPosition();
+  const token = editor.session.getTokenAt(row, column);
+  if (token) {
+    return trim(token.value, "'\" \t");
+  }
 }
 
 const CodeEditor: React.FunctionComponent<OwnProps> = ({
@@ -76,11 +85,7 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
               name: "openEditor",
               bindKey: { win: "Ctrl-O", mac: "Command-O" },
               exec(editor) {
-                const { row, column } = editor.getCursorPosition();
-                const id = trim(
-                  editor.session.getTokenAt(row, column).value,
-                  "'\" \t"
-                );
+                const id = getCurrentTokenId(editor);
                 if (!isEmpty(id)) {
                   openEditorRef.current(id);
                 }
@@ -90,11 +95,7 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
               name: "openDefinition",
               bindKey: { win: "Ctrl-B", mac: "Command-B" },
               exec(editor) {
-                const { row, column } = editor.getCursorPosition();
-                const id = trim(
-                  editor.session.getTokenAt(row, column).value,
-                  "'\" \t"
-                );
+                const id = getCurrentTokenId(editor);
                 if (!isEmpty(id)) {
                   openDefinitionRef.current(id);
                 }

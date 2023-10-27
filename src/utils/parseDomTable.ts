@@ -90,8 +90,7 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It was just created
           flattened[row]![col] = {
             type: tagName === "TH" ? "header" : "value",
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Bad DOM types
-            value: textContent!.trim(),
+            value: textContent.trim(),
           };
         }
       }

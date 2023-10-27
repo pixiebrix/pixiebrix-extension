@@ -73,7 +73,7 @@ export function findSingleElement<Element extends HTMLElement>(
  */
 export function assertSingleElement<Element extends HTMLElement>(
   $elements: JQuery<HTMLElement | Document>,
-  selector?: string
+  selector: string
 ): Element {
   if ($elements.length === 0) {
     throw new NoElementsFoundError(selector);

@@ -26,7 +26,7 @@ import { Button, Modal } from "react-bootstrap";
  */
 const ConfirmNavigationModal: React.FunctionComponent = () => {
   const history = useHistory();
-  const [nextLocation, setNextLocation] = useState<Location>(null);
+  const [nextLocation, setNextLocation] = useState<Location | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const { dirty } = useFormikContext<FormikValues>();
 

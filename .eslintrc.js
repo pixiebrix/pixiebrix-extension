@@ -38,9 +38,11 @@ module.exports = {
   extends: [
     // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
-    "plugin:pixiebrix-extension/all",
   ],
+  plugins: ["local-rules"],
   rules: {
+    "local-rules/noInvalidDataTestId": "error",
+    "local-rules/notBothLabelAndLockableProps": "error",
     "import/no-restricted-paths": [
       "warn",
       {
@@ -93,45 +95,26 @@ module.exports = {
   },
   overrides: [
     {
-      files: [
-        "webpack.*.js",
-        "*.config.js",
-        "**/testUtils/testEnv.js",
-        "**/__mocks__/**",
-        "*.test.js",
-        "*.test.ts",
-        "*.test.tsx",
-      ],
-      env: {
-        node: true,
-        jest: true,
-      },
-      // Overridden rules: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/server.js
-      extends: ["pixiebrix/server"],
+      files: ["webpack.*.js", "*.config.js"],
+      // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/development.js
+      extends: ["pixiebrix/development"],
       rules: {
         "import/no-restricted-paths": "off",
-        "@typescript-eslint/no-non-null-assertion": "off", // TODO: Move to shared config
-        "@typescript-eslint/no-explicit-any": "off", // TODO: Move to shared config
-      },
-    },
-    {
-      files: ["**/*.js"],
-      rules: {
-        "@typescript-eslint/no-unsafe-argument": "off",
       },
     },
     {
       files: [
-        "**/testEnv.js",
+        "**/__mocks__/**",
+        "**/testUtils/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
         "**/testHelpers.*",
-        "**/testUtils/*",
         "**/*.stories.tsx",
       ],
+      // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/tests.js
+      extends: ["pixiebrix/development", "pixiebrix/tests"],
       rules: {
         "unicorn/prefer-spread": "off",
-        "@typescript-eslint/no-explicit-any": "off",
-        "jest/no-export": "off",
-        "testing-library/render-result-naming-convention": "off",
       },
     },
     {

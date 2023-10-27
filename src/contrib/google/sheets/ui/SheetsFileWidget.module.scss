@@ -19,3 +19,6 @@
 :global(.picker-dialog-bg) {
   z-index: 2000 !important; // Above the service modal, which sits at 1050
 }
+:global(.input-group-append .btn) {
+  z-index: 0; // Default z-index interferes with the Google Account dropdown
+}

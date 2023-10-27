@@ -30,7 +30,6 @@ import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWid
 const Preview: React.VFC = () => {
   const [{ value }] = useField("cssClass");
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const { classes, isVar, includesTemplate } = parseValue(value);
 
   if (isVar || includesTemplate) {

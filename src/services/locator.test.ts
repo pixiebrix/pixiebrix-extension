@@ -22,7 +22,6 @@ import controlRoomTokenService from "@contrib/integrations/automation-anywhere.y
 import { fromJS } from "@/services/factory";
 import serviceRegistry from "@/services/registry";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- test file
 const integration = fromJS(controlRoomTokenService as any);
 const locator = new LazyLocatorFactory();
 

@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useTabEventListener } from "@/hooks/events";
 import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { persistor } from "@/pageEditor/store";
@@ -40,7 +39,7 @@ import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
-import type { StarterBrickType } from "@/starterBricks/types";
+import type { StarterBrickType } from "@/types/starterBrickTypes";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
@@ -67,14 +66,21 @@ const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
   const activeElement = useSelector(selectActiveElement);
 
-  useTabEventListener(thisTab.tabId, navigationEvent, () => {
+  const onNavigation = useCallback(() => {
     dispatch(tabStateActions.connectToContentScript());
 
     if (activeElement != null && shouldAutoRun(activeElement)) {
       const dynamicElement = formStateToDynamicElement(activeElement);
       void updateDynamicElement(thisTab, dynamicElement);
     }
-  });
+  }, [dispatch, activeElement]);
+
+  useEffect(() => {
+    navigationEvent.add(onNavigation);
+    return () => {
+      navigationEvent.remove(onNavigation);
+    };
+  }, [navigationEvent, onNavigation]);
 
   useEffect(() => {
     // Automatically connect on load

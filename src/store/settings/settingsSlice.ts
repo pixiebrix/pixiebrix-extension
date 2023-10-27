@@ -96,7 +96,7 @@ const settingsSlice = createSlice({
       { payload: { authMethod } }: { payload: { authMethod: string } }
     ) {
       // Ignore invalid values
-      if (AUTH_METHODS.includes(authMethod as SettingsState["authMethod"])) {
+      if (AUTH_METHODS.includes(authMethod)) {
         state.authMethod = authMethod as SettingsState["authMethod"];
       } else {
         state.authMethod = null;

@@ -20,7 +20,10 @@ import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion, type RunArgs } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  type StarterBrick,
+} from "@/types/starterBrickTypes";
 import { type BrickIcon } from "@/types/iconTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -29,16 +32,6 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-
-export type StarterBrickType =
-  | "panel"
-  | "menuItem"
-  | "trigger"
-  | "contextMenu"
-  | "actionPanel"
-  | "quickBar"
-  | "quickBarProvider"
-  | "tour";
 
 /**
  * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce

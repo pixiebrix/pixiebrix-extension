@@ -326,8 +326,8 @@ export async function getLatestRunByExtensionId(
     (x) => -new Date(x.timestamp).getTime()
   );
 
-  if (sorted.length > 0) {
-    const { runId } = sorted[0];
+  const runId = sorted[0]?.runId;
+  if (runId) {
     return sorted.filter((x) => x.runId === runId);
   }
 
