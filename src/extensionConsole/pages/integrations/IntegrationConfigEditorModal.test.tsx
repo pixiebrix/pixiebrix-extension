@@ -32,8 +32,6 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-jest.setTimeout(10_000); // This test is flaky with the default timeout of 5000 ms
-
 describe("IntegrationConfigEditorModal", () => {
   test("Can render Pipedrive configuration modal without existing configuration", async () => {
     const service = fromJS(pipedriveYaml as any);
