@@ -32,6 +32,8 @@ export const Events = {
   DEPLOYMENT_REJECT_VERSION: "DeploymentRejectVersion",
   DEPLOYMENT_REJECT_PERMISSIONS: "DeploymentRejectPermissions",
 
+  DEVTOOLS_OPEN: "DevToolsOpen",
+
   EXTENSION_CLOUD_DELETE: "ExtensionCloudDelete",
 
   FACTORY_RESET: "FactoryReset",

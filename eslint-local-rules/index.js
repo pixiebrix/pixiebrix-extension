@@ -19,30 +19,16 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const projectName = "pixiebrix-extension";
-
 const ruleFiles = fs
-  .readdirSync("eslint-plugin-pixiebrix-extension/rules")
-  .filter((file) => !file.endsWith("test.js"));
-
-const configs = {
-  all: {
-    plugins: [projectName],
-    rules: Object.fromEntries(
-      ruleFiles.map((file) => [
-        `${projectName}/${path.basename(file, ".js")}`,
-        "error",
-      ])
-    ),
-  },
-};
+  .readdirSync(__dirname)
+  .filter((file) => !file.endsWith("test.js") && !file.endsWith("index.js"));
 
 const rules = Object.fromEntries(
   ruleFiles.map((file) => [
     path.basename(file, ".js"),
     // eslint-disable-next-line security/detect-non-literal-require
-    require("./rules/" + file),
+    require("./" + file),
   ])
 );
 
-module.exports = { configs, rules };
+module.exports = rules;
