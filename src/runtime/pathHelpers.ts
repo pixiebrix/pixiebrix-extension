@@ -32,7 +32,8 @@ export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
     return false;
   }
 
-  const [head] = maybePath.split(".", 1) as [string]; // .split always returns at least one item
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The regex above ensures that `maybePath` is not empty
+  const head = maybePath.split(".", 1)[0]!;
   const path = head.endsWith("?") ? head.slice(0, -1) : head;
   return ctxt ? Object.hasOwn(ctxt, path) : false;
 }
