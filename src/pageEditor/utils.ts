@@ -249,5 +249,7 @@ export function selectPageEditorDimensions() {
   return {
     pageEditorWidth: window.innerWidth,
     pageEditorHeight: window.innerHeight,
+    pageEditorOrientation:
+      window.innerWidth > window.innerHeight ? "landscape" : "portrait",
   };
 }
