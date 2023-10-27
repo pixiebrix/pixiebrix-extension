@@ -41,6 +41,7 @@ import {
   type FileList,
   type Spreadsheet,
   type SpreadsheetProperties,
+  type UserInfo,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
 import pTimeout from "p-timeout";
@@ -189,9 +190,8 @@ export async function getGoogleUserEmail(
     method: "get",
   };
 
-  const result = await executeRequest<FileList>(requestConfig, googleAccount);
-
-  return "testEmail";
+  const userInfo = await executeRequest<UserInfo>(requestConfig, googleAccount);
+  return userInfo.email;
 }
 
 async function batchUpdateSpreadsheet(

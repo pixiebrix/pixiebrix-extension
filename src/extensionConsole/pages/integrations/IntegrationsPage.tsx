@@ -53,8 +53,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
 import { GOOGLE_OAUTH2_PKCE_INTEGRATION_ID } from "@/contrib/google/sheets/core/schemas";
 import { freshIdentifier } from "@/utils/variableUtils";
-import { PermissionsError } from "@/contrib/google/auth";
-import { isSpecificError } from "@/errors/errorHelpers";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
@@ -243,30 +241,19 @@ const autoConfigurations: Record<RegistryId, AutoConfigureIntegrationConfig> = {
       config.integrationId,
       config.id
     );
-    async function getUserEmail(retried?: boolean): Promise<string> {
-      try {
-        return await sheets.getUserEmail(googleAccount);
-      } catch (error) {
-        // Retry once on permissions errors, user will have logged in
-        if (isSpecificError(error, PermissionsError) && !retried) {
-          return getUserEmail(true);
-        }
-
-        console.warn(
-          "Failed to get user email for Google PKCE integration config",
-          error
-        );
-        return null;
-      }
+    try {
+      const userEmail = await sheets.getUserEmail(googleAccount);
+      return {
+        ...config,
+        label: userEmail,
+      };
+    } catch (error) {
+      console.warn(
+        "Failed to get user email for Google PKCE integration config",
+        error
+      );
+      return null;
     }
-
-    const email = await getUserEmail();
-    return email
-      ? {
-          ...config,
-          label: email,
-        }
-      : null;
   },
 };
 
