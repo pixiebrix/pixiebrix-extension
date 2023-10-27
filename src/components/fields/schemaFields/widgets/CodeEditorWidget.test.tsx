@@ -76,31 +76,36 @@ describe("CodeEditorWidget", () => {
     );
   });
 
-  // test("user can update the function", async () => {
-  //   const { container } = render(
-  //     <CodeEditorWidget name={"function"} schema={schema} />,
-  //     {
-  //       initialValues: {
-  //         function: "function() {}",
-  //       },
-  //       onSubmit: onSubmitMock,
-  //     }
-  //   );
+  test("user can update the function", async () => {
+    window.focus = jest.fn(); // Silencing error from clicking a non-interactive div
 
-  //   expect(await screen.findByRole("textbox")).toBeInTheDocument();
-  //   const editorInputField = container.querySelector(
-  //     '[class="ace_content"]'
-  //   ) as Element;
-  //   expect(editorInputField).toHaveClass("ace_content");
-  //   await userEvent.click(editorInputField);
-  //   await userEvent.paste("abc");
-  //   await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+    const { container } = render(
+      <CodeEditorWidget name={"function"} schema={schema} />,
+      {
+        initialValues: {
+          function: "function() {}",
+        },
+        onSubmit: onSubmitMock,
+      }
+    );
 
-  //   // We can't assert on the value of the AceEditor because it is not rendered in the DOM
-  //   // So we're checking the value stored in formik
-  //   expect(onSubmitMock).toHaveBeenCalledWith(
-  //     { function: "function() {}abc" },
-  //     expect.anything()
-  //   );
-  // });
+    expect(await screen.findByRole("textbox")).toBeInTheDocument();
+    // The element that holds the value is not the input itself, but a div
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const editorInputField = container.querySelector('[class="ace_content"]');
+    expect(editorInputField).toHaveClass("ace_content");
+
+    // Workaround to test modifying the AceEditor value
+    // See: https://stackoverflow.com/a/73642625
+    await userEvent.click(editorInputField);
+    await userEvent.paste("abc");
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    // We can't assert on the value of the AceEditor because it is not rendered in the DOM
+    // So we're checking the value stored in formik
+    expect(onSubmitMock).toHaveBeenCalledWith(
+      { function: "abcfunction() {}" },
+      expect.anything()
+    );
+  });
 });
