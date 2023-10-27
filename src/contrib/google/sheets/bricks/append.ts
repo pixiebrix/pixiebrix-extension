@@ -55,7 +55,7 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
       title: "Google Account",
       oneOf: [
         {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}/${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
         },
       ],
     },

@@ -176,29 +176,29 @@ const AuthWidget: React.FunctionComponent<{
     [onClickNew]
   );
 
-  const initialConfiguration: IntegrationConfig = useMemo(
+  const initialConfiguration = useMemo<IntegrationConfig | null>(
     () =>
-      ({
-        integrationId,
-        label: "New Configuration",
-        config: {},
-      } as IntegrationConfig),
-    [integrationId]
+      showServiceEditorModal
+        ? ({
+            integrationId,
+            label: "New Configuration",
+            config: {},
+          } as IntegrationConfig)
+        : null,
+    [integrationId, showServiceEditorModal]
   );
 
   return (
     <>
-      {showServiceEditorModal && (
-        <IntegrationConfigEditorModal
-          initialValues={initialConfiguration}
-          integration={serviceDefinition}
-          onClose={() => {
-            setShowServiceEditorModal(false);
-            reportEvent(Events.AUTH_WIDGET_HIDE_ADD_NEW);
-          }}
-          onSave={save}
-        />
-      )}
+      <IntegrationConfigEditorModal
+        initialValues={initialConfiguration}
+        integration={serviceDefinition}
+        onClose={() => {
+          setShowServiceEditorModal(false);
+          reportEvent(Events.AUTH_WIDGET_HIDE_ADD_NEW);
+        }}
+        onSave={save}
+      />
 
       <div className="d-inline-flex justify-content-end">
         {options.length > 0 ? (
