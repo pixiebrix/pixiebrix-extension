@@ -33,7 +33,6 @@ import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
-import safeJsonStringify from "json-stringify-safe";
 import { isEmpty, set } from "lodash";
 import { Stylesheets } from "@/components/Stylesheets";
 import { getTopLevelFrame } from "webext-messenger";
@@ -52,7 +51,7 @@ import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
 import cx from "classnames";
 import { namespaceOptions } from "@/bricks/effects/pageState";
-import { isObject } from "@/utils/objectUtils";
+import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 
 const fields = {
   DescriptionField,
@@ -401,7 +400,7 @@ async function setData(
   values: UnknownObject,
   { blueprintId, extensionId }: Context
 ): Promise<void> {
-  const cleanValues: JsonObject = JSON.parse(safeJsonStringify(values));
+  const cleanValues = ensureJsonObject(values);
 
   switch (storage.type) {
     case "localStorage": {

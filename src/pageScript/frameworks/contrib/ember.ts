@@ -209,7 +209,7 @@ function readEmberValueFromCache(
       return value.content.map((x: unknown) => traverse(x));
     }
 
-    return mapValues(pickExternalProps(value as UnknownObject), recurse);
+    return mapValues(pickExternalProps(value), recurse);
   }
 
   // ignore functions and symbols

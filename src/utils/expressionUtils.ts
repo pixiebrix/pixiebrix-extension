@@ -23,7 +23,7 @@ import {
   type TemplateEngine,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import { isPlainObject } from "lodash";
+import { isObject } from "./objectUtils";
 
 const templateTypes: TemplateEngine[] = [
   "mustache",
@@ -53,10 +53,7 @@ export type PipelineClosureExpression = PipelineExpression & {
 export function isTemplateExpression(
   value: unknown
 ): value is Expression<string, TemplateEngine> {
-  return (
-    isExpression(value) &&
-    templateTypes.includes((value as Expression).__type__ as TemplateEngine)
-  );
+  return isExpression(value) && templateTypes.includes(value.__type__);
 }
 
 /**
@@ -102,12 +99,8 @@ export function isDeferExpression<TValue = UnknownObject>(
  * @see isTemplateExpression
  */
 export function isExpression(value: unknown): value is Expression<unknown> {
-  if (
-    isPlainObject(value) &&
-    typeof value === "object" &&
-    "__type__" in value
-  ) {
-    return expressionTypes.includes((value as Expression).__type__);
+  if (isObject(value) && typeof value.__type__ === "string") {
+    return expressionTypes.includes(value.__type__);
   }
 
   return false;

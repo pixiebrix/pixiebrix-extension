@@ -20,7 +20,7 @@ import "@/vendors/overrides.scss";
 import "@/utils/layout.scss";
 
 import "@/extensionContext";
-import "@/development/darkMode";
+import "@/development/darkMode.js";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/pageEditor/messenger/registration";

@@ -170,7 +170,9 @@ class QuickBarRegistry {
    */
   addGenerator(generator: ActionGenerator, rootActionId: string | null): void {
     this.actionGenerators.push(generator);
-    this.generatorRootIdMap.set(generator, rootActionId);
+    if (rootActionId) {
+      this.generatorRootIdMap.set(generator, rootActionId);
+    }
   }
 
   /**
@@ -195,10 +197,9 @@ class QuickBarRegistry {
 
     // Run all generators in parallel
     this.generatorAbortController = new AbortController();
+    const abortSignal = this.generatorAbortController.signal;
     await Promise.allSettled(
-      this.actionGenerators.map(async (x) =>
-        x({ ...args, abortSignal: this.generatorAbortController.signal })
-      )
+      this.actionGenerators.map(async (x) => x({ ...args, abortSignal }))
     );
   }
 }
