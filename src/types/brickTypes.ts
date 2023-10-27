@@ -136,9 +136,9 @@ export abstract class BrickABC implements Brick {
 
   readonly name: string;
 
-  readonly description: string;
+  readonly description?: string;
 
-  readonly icon: BrickIcon;
+  readonly icon?: BrickIcon;
 
   abstract readonly inputSchema: Schema;
 

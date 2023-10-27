@@ -324,9 +324,7 @@ function getOrganization(
 
   // If more than one sharing organization, use the first.
   // This is an uncommon scenario.
-  return organizations.find((org) =>
-    sharing.organizations.includes(org.id as UUID)
-  );
+  return organizations.find((org) => sharing.organizations.includes(org.id));
 }
 
 /**
