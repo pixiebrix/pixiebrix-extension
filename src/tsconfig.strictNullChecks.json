@@ -170,7 +170,7 @@
     "./extensionConsole/pages/useRecipeIdParam.ts",
     "./globals.d.ts",
     "./hooks/common.ts",
-    "./hooks/title.ts",
+    "./hooks/useSetDocumentTitle.ts",
     "./hooks/useAsyncState.ts",
     "./hooks/useAuthorizationGrantFlow.ts",
     "./hooks/useAutoFocusConfiguration.ts",

@@ -27,11 +27,15 @@ import { writeTextToClipboard } from "@/utils/clipboardUtils";
 import { useGetZapierKeyQuery } from "@/services/api";
 
 interface OwnProps {
+  show: boolean;
   onClose: () => void;
 }
 
-const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
-  const { data } = useGetZapierKeyQuery();
+const ZapierIntegrationModal: React.FunctionComponent<OwnProps> = ({
+  show,
+  onClose,
+}) => {
+  const { data } = useGetZapierKeyQuery(undefined, { skip: !show });
 
   const handleCopy = useCallback(async () => {
     await writeTextToClipboard(String(data?.api_key));
@@ -40,7 +44,7 @@ const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
   }, [data?.api_key]);
 
   return (
-    <Modal show onHide={onClose} backdrop="static" keyboard={false}>
+    <Modal show={show} onHide={onClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>Zapier</Modal.Title>
       </Modal.Header>
@@ -64,4 +68,4 @@ const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
   );
 };
 
-export default ZapierModal;
+export default ZapierIntegrationModal;

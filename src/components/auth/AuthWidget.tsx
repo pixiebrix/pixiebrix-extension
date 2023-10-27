@@ -25,7 +25,7 @@ import registry from "@/services/registry";
 import { uuidv4 } from "@/types/helpers";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
-import IntegrationEditorModal from "@/extensionConsole/pages/integrations/IntegrationEditorModal";
+import IntegrationConfigEditorModal from "@/extensionConsole/pages/integrations/IntegrationConfigEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
 import integrationsSlice from "@/store/integrations/integrationsSlice";
@@ -189,8 +189,8 @@ const AuthWidget: React.FunctionComponent<{
   return (
     <>
       {showServiceEditorModal && (
-        <IntegrationEditorModal
-          integrationConfig={initialConfiguration}
+        <IntegrationConfigEditorModal
+          initialValues={initialConfiguration}
           integration={serviceDefinition}
           onClose={() => {
             setShowServiceEditorModal(false);

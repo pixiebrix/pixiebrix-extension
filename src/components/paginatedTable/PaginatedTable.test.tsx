@@ -54,7 +54,7 @@ describe("initialRecord", () => {
           initialPageSize={1}
           data={data}
           columns={columns}
-          initialRecord={data[1]}
+          forceShowRecord={data[1]}
           showSearchFilter={false}
         />
       </MemoryRouter>

@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { useTitle } from "@/hooks/title";
+import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
 import Loader from "@/components/Loader";
 import { ErrorDisplay } from "./ErrorDisplay";
 
@@ -67,7 +67,7 @@ const Page: React.FunctionComponent<{
   description = null,
   children,
 }) => {
-  useTitle(title);
+  useSetDocumentTitle(title);
 
   const body = useMemo(() => {
     if (isPending) {

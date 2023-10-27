@@ -17,7 +17,7 @@
 
 import React from "react";
 import { fromJS } from "@/services/factory";
-import IntegrationEditorModal from "@/extensionConsole/pages/integrations/IntegrationEditorModal";
+import IntegrationConfigEditorModal from "@/extensionConsole/pages/integrations/IntegrationConfigEditorModal";
 import { render, screen } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
@@ -32,13 +32,23 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("ServiceEditorModal", () => {
+jest.setTimeout(10_000); // This test is flaky with the default timeout of 5000 ms
+
+describe("IntegrationConfigEditorModal", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   test("Can render Pipedrive configuration modal without existing configuration", async () => {
     const service = fromJS(pipedriveYaml as any);
 
     render(
-      <IntegrationEditorModal
-        integrationConfig={{ label: "" } as IntegrationConfig}
+      <IntegrationConfigEditorModal
+        initialValues={{ label: "" } as IntegrationConfig}
         onDelete={jest.fn()}
         onSave={jest.fn()}
         onClose={jest.fn()}
@@ -63,8 +73,8 @@ describe("ServiceEditorModal", () => {
     const user = userEvent.setup();
 
     render(
-      <IntegrationEditorModal
-        integrationConfig={{ label: "" } as IntegrationConfig}
+      <IntegrationConfigEditorModal
+        initialValues={{ label: "" } as IntegrationConfig}
         onDelete={jest.fn()}
         onSave={jest.fn()}
         onClose={jest.fn()}

@@ -22,7 +22,10 @@ import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/core/schemas";
+import {
+  GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
+  SHEET_SERVICE_SCHEMA,
+} from "@/contrib/google/sheets/core/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
@@ -30,6 +33,7 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/services/integrationUtils";
 
 type CellValue = string | number | null;
 
@@ -51,7 +55,7 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
       title: "Google Account",
       oneOf: [
         {
-          $ref: "https://app.pixiebrix.com/schemas/services/google/oauth2-pkce",
+          $ref: `${SERVICES_BASE_SCHEMA_URL}/${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
         },
       ],
     },
