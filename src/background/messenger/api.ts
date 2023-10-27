@@ -54,6 +54,7 @@ export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
 export const sheets = {
   isLoggedIn: getMethod("GOOGLE_DRIVE_IS_LOGGED_IN", bg),
+  getUserEmail: getMethod("GOOGLE_DRIVE_GET_USER_EMAIL", bg),
   getAllSpreadsheets: getMethod("GOOGLE_SHEETS_GET_ALL_SPREADSHEETS", bg),
   getSpreadsheet: getMethod("GOOGLE_SHEETS_GET_SPREADSHEET", bg),
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),

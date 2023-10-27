@@ -79,7 +79,7 @@ export async function ensureGoogleToken(
   );
 }
 
-class PermissionsError extends Error {
+export class PermissionsError extends Error {
   override name = "PermissionsError";
 
   public readonly status: number;

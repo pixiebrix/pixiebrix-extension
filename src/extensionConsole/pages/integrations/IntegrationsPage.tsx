@@ -27,7 +27,7 @@ import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
 import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { services } from "@/background/messenger/api";
+import { services, sheets } from "@/background/messenger/api";
 import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
 import notify from "@/utils/notify";
 import { useParams } from "react-router";
@@ -41,7 +41,7 @@ import {
   type Integration,
   type IntegrationConfig,
 } from "@/types/integrationTypes";
-import { type UUID } from "@/types/stringTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import registry from "@/services/registry";
@@ -51,6 +51,10 @@ import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelec
 import useAsyncEffect from "use-async-effect";
 import { type RegistryId } from "@/types/registryTypes";
 import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
+import { GOOGLE_OAUTH2_PKCE_INTEGRATION_ID } from "@/contrib/google/sheets/core/schemas";
+import { freshIdentifier } from "@/utils/variableUtils";
+import { PermissionsError } from "@/contrib/google/auth";
+import { isSpecificError } from "@/errors/errorHelpers";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
@@ -128,6 +132,7 @@ const componentState = createSlice({
         }
 
         state.editingIntegrationConfig = integrationConfig;
+        state.createdIntegrationConfigId = null;
 
         if (state.isLoadingIntegrations || isEmpty(state.integrations)) {
           return;
@@ -158,6 +163,7 @@ const componentState = createSlice({
           config: {},
         } as IntegrationConfig;
         state.isCreateNew = true;
+        state.createdIntegrationConfigId = null;
       } else {
         state.editingIntegrationConfig = null;
         state.selectedIntegration = null;
@@ -213,8 +219,92 @@ const componentState = createSlice({
       state.selectedIntegration = null;
       state.createdIntegrationConfigId = null;
     },
+    onAutoConfigureIntegrationConfig(
+      state,
+      action: PayloadAction<IntegrationConfig>
+    ) {
+      state.createdIntegrationConfigId = action.payload.id;
+      state.editingIntegrationConfig = null;
+      state.selectedIntegration = null;
+    },
   },
 });
+
+/**
+ * A function to automatically configure an integration config. If null is returned, the config will be deleted instead.
+ */
+type AutoConfigureIntegrationConfig = (
+  config: IntegrationConfig
+) => Promise<IntegrationConfig | null>;
+
+const autoConfigurations: Record<RegistryId, AutoConfigureIntegrationConfig> = {
+  async [GOOGLE_OAUTH2_PKCE_INTEGRATION_ID](config: IntegrationConfig) {
+    const googleAccount = await services.locate(
+      config.integrationId,
+      config.id
+    );
+    async function getUserEmail(retried?: boolean): Promise<string> {
+      try {
+        return await sheets.getUserEmail(googleAccount);
+      } catch (error) {
+        // Retry once on permissions errors, user will have logged in
+        if (isSpecificError(error, PermissionsError) && !retried) {
+          return getUserEmail(true);
+        }
+
+        console.warn(
+          "Failed to get user email for Google PKCE integration config",
+          error
+        );
+        return null;
+      }
+    }
+
+    const email = await getUserEmail();
+    return email
+      ? {
+          ...config,
+          label: email,
+        }
+      : null;
+  },
+};
+
+async function autoConfigureIntegration(
+  integration: Integration,
+  temporaryLabel: string,
+  {
+    upsertIntegrationConfig,
+    deleteIntegrationConfig,
+    syncIntegrations,
+  }: {
+    upsertIntegrationConfig: (config: IntegrationConfig) => void;
+    deleteIntegrationConfig: (id: UUID) => void;
+    syncIntegrations: () => Promise<void>;
+  }
+): Promise<void> {
+  const newIntegrationConfig = {
+    id: uuidv4(),
+    label: temporaryLabel,
+    integrationId: integration.id,
+    config: {},
+  } as IntegrationConfig;
+  upsertIntegrationConfig(newIntegrationConfig);
+  await syncIntegrations();
+  const transform = autoConfigurations[integration.id];
+  if (!transform) {
+    throw new Error(`No auto configuration for ${integration.id}`);
+  }
+
+  const transformed = await transform(newIntegrationConfig);
+  if (transformed) {
+    upsertIntegrationConfig(transformed);
+  } else {
+    deleteIntegrationConfig(newIntegrationConfig.id);
+  }
+
+  await syncIntegrations();
+}
 
 const IntegrationsPage: React.VFC = () => {
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
@@ -263,26 +353,6 @@ const IntegrationsPage: React.VFC = () => {
     isEqual
   );
 
-  const onSelectIntegrationForNewConfig = useCallback(
-    (integration: Integration) => {
-      // TODO: This is possibly being reported in the wrong place? Should this be when a new config is SAVED instead?
-      reportEvent(Events.INTEGRATION_ADD, {
-        serviceId: integration.id,
-      });
-
-      if (integration.isAuthorizationGrant) {
-        void launchAuthorizationGrantFlow(integration, { target: "_self" });
-        return;
-      }
-
-      localDispatch(
-        componentState.actions.selectIntegrationById(integration.id)
-      );
-      navigate("/services/new");
-    },
-    [launchAuthorizationGrantFlow, navigate]
-  );
-
   const syncIntegrations = useCallback(async () => {
     await flushReduxPersistence();
     try {
@@ -295,6 +365,53 @@ const IntegrationsPage: React.VFC = () => {
       });
     }
   }, [flushReduxPersistence]);
+
+  const onSelectIntegrationForNewConfig = useCallback(
+    (integration: Integration) => {
+      // TODO: This is possibly being reported in the wrong place? Should this be when a new config is SAVED instead?
+      reportEvent(Events.INTEGRATION_ADD, {
+        serviceId: integration.id,
+      });
+
+      if (integration.isAuthorizationGrant) {
+        void launchAuthorizationGrantFlow(integration, { target: "_self" });
+        return;
+      }
+
+      if (integration.id in autoConfigurations) {
+        const label = freshIdentifier(
+          `${integration.name} Config` as SafeString,
+          integrationConfigs.map(({ label }) => label)
+        );
+        void autoConfigureIntegration(integration, label, {
+          upsertIntegrationConfig(config: IntegrationConfig) {
+            reduxDispatch(upsertIntegrationConfig(config));
+            localDispatch(
+              componentState.actions.onAutoConfigureIntegrationConfig(config)
+            );
+          },
+          deleteIntegrationConfig(id: UUID) {
+            reduxDispatch(deleteIntegrationConfig({ id }));
+            localDispatch(componentState.actions.onDeleteIntegrationConfig());
+          },
+          syncIntegrations,
+        });
+        return;
+      }
+
+      localDispatch(
+        componentState.actions.selectIntegrationById(integration.id)
+      );
+      navigate("/services/new");
+    },
+    [
+      integrationConfigs,
+      launchAuthorizationGrantFlow,
+      navigate,
+      reduxDispatch,
+      syncIntegrations,
+    ]
+  );
 
   const onSaveIntegrationConfig = useCallback(
     async (newIntegrationConfig: IntegrationConfig) => {

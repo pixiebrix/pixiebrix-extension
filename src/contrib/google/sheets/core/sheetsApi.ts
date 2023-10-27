@@ -181,6 +181,19 @@ export async function getAllSpreadsheets(
   return executeRequest<FileList>(requestConfig, googleAccount);
 }
 
+export async function getGoogleUserEmail(
+  googleAccount: SanitizedIntegrationConfig
+): Promise<string> {
+  const requestConfig: AxiosRequestConfig<never> = {
+    url: "https://www.googleapis.com/oauth2/v1/userinfo",
+    method: "get",
+  };
+
+  const result = await executeRequest<FileList>(requestConfig, googleAccount);
+
+  return "testEmail";
+}
+
 async function batchUpdateSpreadsheet(
   { googleAccount, spreadsheetId }: SpreadsheetTarget,
   request: BatchUpdateSpreadsheetRequest
