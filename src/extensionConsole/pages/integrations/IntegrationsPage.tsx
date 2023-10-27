@@ -422,13 +422,13 @@ const IntegrationsPage: React.VFC = () => {
 
   const onDeleteIntegrationConfig = useCallback(
     async (id: UUID) => {
+      navigate("/services/");
       reduxDispatch(deleteIntegrationConfig({ id }));
       localDispatch(componentState.actions.onDeleteIntegrationConfig());
       notify.success(
         `Deleted private configuration for ${localState.selectedIntegration?.name}`
       );
       await syncIntegrations();
-      navigate("/services/");
     },
     [
       localState.selectedIntegration?.name,
