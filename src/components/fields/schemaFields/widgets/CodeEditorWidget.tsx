@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { Suspense } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import AceEditor from "@/vendors/AceEditor";
 import { useField } from "formik";
@@ -28,17 +28,19 @@ const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
   };
 
   return (
-    <AceEditor
-      name={name}
-      mode="javascript"
-      theme="chrome"
-      value={value}
-      onChange={onChange}
-      setOptions={{
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: true,
-      }}
-    />
+    <Suspense fallback={<div className="text-muted">Loading...</div>}>
+      <AceEditor
+        name={name}
+        mode="javascript"
+        theme="chrome"
+        value={value}
+        onChange={onChange}
+        setOptions={{
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+        }}
+      />
+    </Suspense>
   );
 };
 
