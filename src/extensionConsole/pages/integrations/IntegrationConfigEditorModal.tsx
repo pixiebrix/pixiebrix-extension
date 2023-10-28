@@ -141,11 +141,9 @@ const ModalContent: React.FC<ContentProps> = ({
       },
     });
 
-    let validationSchema = Yup.object();
-
     try {
       // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
-      validationSchema = buildYup(cloneDeep(schema), {
+      return buildYup(cloneDeep(schema), {
         errMessages: getValidationErrMessages(
           schema.properties?.config as Schema
         ),
@@ -156,9 +154,8 @@ const ModalContent: React.FC<ContentProps> = ({
           cause: error,
         })
       );
+      return Yup.object();
     }
-
-    return validationSchema;
   }, [integration.schema]);
 
   const renderBody: RenderBody = () => (
