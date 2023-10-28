@@ -24,7 +24,7 @@ import {
   uniq,
 } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import { type CssSelectorType } from "css-selector-generator/types/types";
+import { type CssSelectorType } from "css-selector-generator/types/types.js";
 import {
   CONTENT_SCRIPT_READY_ATTRIBUTE,
   EXTENSION_POINT_DATA_ATTR,
@@ -209,7 +209,7 @@ export function getSelectorPreference(selector: string): number {
   return 1;
 }
 
-const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
+const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
   "id",
   "tag",
   "class",
@@ -219,7 +219,7 @@ const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
 ];
 
 interface SafeCssSelectorOptions {
-  selectors?: Array<keyof typeof CssSelectorType>;
+  selectors?: CssSelectorType[];
   root?: Element;
   excludeRandomClasses?: boolean;
   allowMultiSelection?: boolean;
@@ -588,7 +588,7 @@ export function inferSelectors(
   root?: Element,
   excludeRandomClasses?: boolean
 ): string[] {
-  const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
+  const makeSelector = (allowed?: CssSelectorType[]) => {
     try {
       return safeCssSelector([element], {
         selectors: allowed,

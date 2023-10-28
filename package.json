@@ -62,7 +62,7 @@
     "connected-react-router": "^6.9.1",
     "copy-text-to-clipboard": "^3.2.0",
     "csharp-helpers": "^0.9.3",
-    "css-selector-generator": "^3.6.0",
+    "css-selector-generator": "^3.6.5",
     "date-fns": "^2.30.0",
     "dompurify": "^3.0.6",
     "downloadjs": "^1.4.7",
