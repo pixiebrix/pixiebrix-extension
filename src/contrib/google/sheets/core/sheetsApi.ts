@@ -173,7 +173,7 @@ export async function getAllSpreadsheets(
   googleAccount: SanitizedIntegrationConfig | null
 ): Promise<FileList> {
   const requestConfig: AxiosRequestConfig<never> = {
-    url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'`,
+    url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'&includeItemsFromAllDrives=true&supportsAllDrives=true`,
     method: "get",
     params: {
       orderBy: "modifiedTime desc,name",
