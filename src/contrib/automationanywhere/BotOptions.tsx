@@ -51,7 +51,6 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import { joinName } from "@/utils/formUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
 const WORKSPACE_OPTIONS = [
