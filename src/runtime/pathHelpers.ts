@@ -32,7 +32,8 @@ export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
     return false;
   }
 
-  const [head] = maybePath.split(".");
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The regex above ensures that `maybePath` is not empty
+  const head = maybePath.split(".", 1)[0]!;
   const path = head.endsWith("?") ? head.slice(0, -1) : head;
   return ctxt ? Object.hasOwn(ctxt, path) : false;
 }
@@ -89,11 +90,7 @@ export class InvalidPathError extends Error {
 export function getPropByPath(
   obj: UnknownObject,
   path: string,
-  {
-    args = {},
-    proxy = noopProxy,
-    maxDepth = null,
-  }: GetPropOptions | undefined = {}
+  { args = {}, proxy = noopProxy, maxDepth }: GetPropOptions | undefined = {}
 ): unknown {
   // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
 
@@ -152,7 +149,8 @@ export function getFieldNamesFromPathString(
   name: string
 ): [parentFieldName: string | undefined, fieldName: string] {
   const path = toPath(name);
-  const fieldName = path.pop();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The path always has at least one item
+  const fieldName = path.pop()!;
   const parentFieldName = path.length > 0 ? joinName(null, ...path) : undefined;
   return [parentFieldName, fieldName];
 }

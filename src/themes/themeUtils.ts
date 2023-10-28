@@ -22,7 +22,7 @@ import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
 
 export const isValidTheme = (theme: string): theme is Theme =>
-  THEMES.includes(theme as Theme);
+  THEMES.includes(theme);
 
 export type ThemeLogo = {
   regular: string;

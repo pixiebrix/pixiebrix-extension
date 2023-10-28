@@ -19,7 +19,7 @@ import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import axios from "axios";
 import { type JsonObject } from "type-fest";
-import safeJsonStringify from "json-stringify-safe";
+import { ensureJsonObject } from "@/utils/objectUtils";
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
@@ -78,7 +78,7 @@ export class ImageExifReader extends ReaderABC {
     if (element?.tagName === "IMG") {
       const buffer = await getData(element);
       // Ensure serializable output
-      return JSON.parse(safeJsonStringify(ExifReader.load(buffer)));
+      return ensureJsonObject(ExifReader.load(buffer));
     }
 
     throw new Error(

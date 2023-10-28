@@ -37,8 +37,13 @@ class AsyncAnalysisQueue {
   private processNextTask(): void {
     setTimeout(async () => {
       const task = this.queue.shift();
+      if (!task) {
+        // This should never actually be undefined because this function is only called when the array isn't empty.
+        return;
+      }
+
       try {
-        await task?.();
+        await task();
       } catch (error) {
         this.onTaskError(error);
       }

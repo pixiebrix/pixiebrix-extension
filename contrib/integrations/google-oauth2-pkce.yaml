@@ -16,7 +16,7 @@ authentication:
     authorizeUrl: https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent
     tokenUrl: https://oauth2.googleapis.com/token
     code_challenge_method: S256
-    scope: https://www.googleapis.com/auth/drive
+    scope: https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.email
     client_id: 676864882630-n33qt0a585mcaf2vithipddia0l8blmc.apps.googleusercontent.com
     client_secret: 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
   headers:
