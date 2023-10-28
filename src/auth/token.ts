@@ -25,30 +25,37 @@ import {
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
-import { isEmpty, omit, remove } from "lodash";
+import { isEmpty, omit } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
 
 // `chrome.storage.local` keys
-const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
-const STORAGE_PARTNER_TOKEN = "partnerToken" as ManualStorageKey;
+const extensionKeyStorage = new StorageItem<Partial<TokenAuthData>>(
+  "extensionKey",
+  { defaultValue: {} }
+);
+const partnerTokenStorage = new StorageItem("partnerToken", {
+  defaultValue: {},
+});
 
 type AuthListener = (auth: Partial<TokenAuthData>) => void;
 
-const listeners: AuthListener[] = [];
+const listeners = new Set<AuthListener>();
 
 // Use listeners to allow inversion of control and avoid circular dependency with rollbar.
 export function addListener(handler: AuthListener): void {
-  listeners.push(handler);
+  listeners.add(handler);
 }
 
 export function removeListener(handler: AuthListener): void {
-  remove(listeners, (x) => x === handler);
+  listeners.delete(handler);
+}
+
+function triggerListeners(auth: Partial<TokenAuthData>): void {
+  for (const listener of listeners) {
+    listener(auth);
+  }
 }
 
 /**
@@ -57,7 +64,7 @@ export function removeListener(handler: AuthListener): void {
 export async function readAuthData(): Promise<
   TokenAuthData | Partial<TokenAuthData>
 > {
-  return readStorage(STORAGE_EXTENSION_KEY, {});
+  return extensionKeyStorage.get();
 }
 
 /**
@@ -78,7 +85,7 @@ export async function getExtensionToken(): Promise<string | undefined> {
 }
 
 export async function readPartnerAuthData(): Promise<Partial<PartnerAuthData>> {
-  return readStorage(STORAGE_PARTNER_TOKEN, {});
+  return partnerTokenStorage.get();
 }
 
 /**
@@ -92,7 +99,7 @@ export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
     throw new Error("Received null/blank token for partner integration");
   }
 
-  return setStorage(STORAGE_PARTNER_TOKEN, data);
+  return partnerTokenStorage.set(data);
 }
 
 /**
@@ -101,7 +108,7 @@ export async function setPartnerAuth(data: PartnerAuthData): Promise<void> {
  * @see setPartnerAuth
  */
 export async function clearPartnerAuth(): Promise<void> {
-  return setStorage(STORAGE_PARTNER_TOKEN, {});
+  return partnerTokenStorage.set({});
 }
 
 /**
@@ -177,8 +184,8 @@ export async function getExtensionAuth(): Promise<
 export async function clearCachedAuthSecrets(): Promise<void> {
   console.debug("Clearing extension auth");
   await Promise.all([
-    browser.storage.local.remove(STORAGE_EXTENSION_KEY),
-    browser.storage.local.remove(STORAGE_PARTNER_TOKEN),
+    extensionKeyStorage.remove(),
+    partnerTokenStorage.remove(),
   ]);
   Cookies.remove("csrftoken");
   Cookies.remove("sessionid");
@@ -203,7 +210,7 @@ export async function updateUserData(update: UserDataUpdate): Promise<void> {
     (result[key] as any) = update[key] as any;
   }
 
-  await setStorage(STORAGE_EXTENSION_KEY, result);
+  await extensionKeyStorage.set(result);
 }
 
 /**
@@ -227,7 +234,7 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
     auth.user !== previous.user || auth.hostname !== previous.hostname;
 
   console.debug(`Setting extension auth for ${auth.email}`, auth);
-  await setStorage(STORAGE_EXTENSION_KEY, auth);
+  await extensionKeyStorage.set(auth);
 
   if (previous.user && auth.user && previous.user !== auth.user) {
     // The linked account changed, so their access to packages may have changed
@@ -238,17 +245,6 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 }
 
 if (isExtensionContext()) {
-  browser.storage.onChanged.addListener((changes, storage) => {
-    if (storage === "local") {
-      const change =
-        // eslint-disable-next-line security/detect-object-injection -- compile time constants
-        changes[STORAGE_EXTENSION_KEY] ?? changes[STORAGE_PARTNER_TOKEN];
-
-      if (change) {
-        for (const listener of listeners) {
-          listener(change.newValue as Partial<TokenAuthData>);
-        }
-      }
-    }
-  });
+  extensionKeyStorage.onChange(triggerListeners);
+  extensionKeyStorage.onChange(triggerListeners);
 }

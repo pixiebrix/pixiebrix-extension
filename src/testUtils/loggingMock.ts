@@ -17,8 +17,10 @@
 
 export const logValues = true;
 
-export async function getLoggingConfig(): Promise<unknown> {
-  return {
-    logValues,
-  };
-}
+export const loggingConfig = {
+  get() {
+    return {
+      logValues,
+    };
+  },
+};

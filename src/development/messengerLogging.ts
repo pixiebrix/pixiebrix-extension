@@ -15,33 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
 import { toggleLogging } from "webext-messenger/logging.js";
+import { StorageItem } from "webext-storage";
 
-const MESSENGER_LOGGING_KEY = "MESSENGER_LOGGING" as ManualStorageKey;
-
-export async function getMessengerLogging(): Promise<boolean> {
-  return readStorage(MESSENGER_LOGGING_KEY, false);
-}
+export const messengerLogging = new StorageItem("MESSENGER_LOGGING", {
+  defaultValue: false,
+});
 
 export async function setMessengerLogging(config: boolean): Promise<void> {
-  await setStorage(MESSENGER_LOGGING_KEY, config);
+  await messengerLogging.set(config);
 }
 
 export async function initMessengerLogging(): Promise<void> {
-  if (await getMessengerLogging()) {
+  if (await messengerLogging.get()) {
     toggleLogging(true);
   }
 
-  browser.storage.onChanged.addListener(async (changes) => {
-    // eslint-disable-next-line security/detect-object-injection -- Constant key
-    const change = changes[MESSENGER_LOGGING_KEY];
-    if (change) {
-      toggleLogging(change.newValue as boolean);
-    }
+  messengerLogging.onChange((newValue) => {
+    toggleLogging(newValue);
   });
 }

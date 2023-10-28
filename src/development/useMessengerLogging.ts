@@ -16,11 +16,14 @@
  */
 
 import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
-import { getMessengerLogging, setMessengerLogging } from "./messengerLogging";
+import { messengerLogging } from "./messengerLogging";
 
 export default function useMessengerLogging(): [
   boolean | undefined,
   (value: boolean) => void
 ] {
-  return useUpdatableAsyncState(getMessengerLogging, setMessengerLogging);
+  return useUpdatableAsyncState(
+    async () => messengerLogging.get(),
+    async (value) => messengerLogging.set(value)
+  );
 }

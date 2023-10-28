@@ -34,7 +34,7 @@ import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type JsonValue } from "type-fest";
 import { type SerializedError } from "@/types/messengerTypes";
-import { getMessengerLogging } from "@/development/messengerLogging";
+import { messengerLogging } from "@/development/messengerLogging";
 import { assert } from "./typeUtils";
 
 const TIMEOUT_MS = 3000;
@@ -43,8 +43,8 @@ type Payload = JsonValue;
 
 // Disable logging by default
 let log = (...args: unknown[]) => {};
-void getMessengerLogging().then((setting) => {
-  log = console.debug;
+void messengerLogging.get().then((setting) => {
+  log = setting ? console.debug : () => {};
 });
 
 export type RequestPacket = {

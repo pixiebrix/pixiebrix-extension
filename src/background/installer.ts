@@ -20,7 +20,7 @@ import { type Runtime } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { initTelemetry } from "@/background/telemetry";
 import { getUID } from "@/background/messenger/api";
-import { allowsTrack, DNT_STORAGE_KEY } from "@/telemetry/dnt";
+import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
@@ -262,10 +262,8 @@ function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
   browser.runtime.onInstalled.addListener(install);
   browser.runtime.onStartup.addListener(initTelemetry);
-  browser.storage.onChanged.addListener((changes) => {
-    if (DNT_STORAGE_KEY in changes) {
-      void setUninstallURL();
-    }
+  dntConfig.onChange(() => {
+    void setUninstallURL();
   });
 
   void setUninstallURL();

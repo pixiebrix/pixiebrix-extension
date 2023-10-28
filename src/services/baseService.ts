@@ -18,16 +18,12 @@
 import { isExtensionContext } from "webext-detect-page";
 import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
 import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
-const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
-
 type ConfiguredHost = string;
+
+const serviceStorage = new StorageItem<ConfiguredHost>("service-url");
 
 export function withoutTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -42,7 +38,7 @@ export function withoutTrailingSlash(url: string): string {
  */
 export async function getBaseURL(): Promise<string> {
   if (isExtensionContext()) {
-    const configured = await readStorage<ConfiguredHost>(SERVICE_STORAGE_KEY);
+    const configured = await serviceStorage.get();
     if (configured) {
       return withoutTrailingSlash(configured);
     }
@@ -67,8 +63,7 @@ type ConfiguredHostResult = [
  */
 export function useConfiguredHost(): ConfiguredHostResult {
   return useUpdatableAsyncState(
-    async () => readStorage<ConfiguredHost>(SERVICE_STORAGE_KEY),
-    async (serviceURL: string) =>
-      setStorage<ConfiguredHost>(SERVICE_STORAGE_KEY, serviceURL)
+    async () => serviceStorage.get(),
+    async (serviceURL: string) => serviceStorage.set(serviceURL)
   );
 }

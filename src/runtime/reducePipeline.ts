@@ -61,7 +61,7 @@ import {
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/types/sidebarTypes";
-import { getLoggingConfig } from "@/telemetry/logging";
+import { loggingConfig } from "@/telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickArgs,
@@ -451,7 +451,7 @@ async function renderBlockArg(
 ): Promise<RenderedArgs> {
   const { config, type } = resolvedConfig;
 
-  const globalLoggingConfig = await getLoggingConfig();
+  const globalLoggingConfig = await loggingConfig.get();
 
   const {
     // If logValues not provided explicitly, default to the global setting
@@ -619,7 +619,7 @@ async function applyReduceDefaults({
   logger: providedLogger,
   ...overrides
 }: Partial<ReduceOptions>): Promise<ReduceOptions> {
-  const globalLoggingConfig = await getLoggingConfig();
+  const globalLoggingConfig = await loggingConfig.get();
   const logger = providedLogger ?? new ConsoleLogger();
 
   return {

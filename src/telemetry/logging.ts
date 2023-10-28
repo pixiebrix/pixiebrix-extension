@@ -42,11 +42,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type UUID } from "@/types/stringTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -443,17 +439,11 @@ export type LoggingConfig = {
   logValues: boolean;
 };
 
-const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
-
-export async function getLoggingConfig(): Promise<LoggingConfig> {
-  return readStorage<LoggingConfig>(LOG_CONFIG_STORAGE_KEY, {
+export const loggingConfig = new StorageItem<LoggingConfig>("LOG_OPTIONS", {
+  defaultValue: {
     logValues: false,
-  });
-}
-
-export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
-  await setStorage(LOG_CONFIG_STORAGE_KEY, config);
-}
+  },
+});
 
 /**
  * Clear all debug and trace level logs for the given extension.
