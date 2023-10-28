@@ -31,7 +31,7 @@ describe("useSetDocumentTitle", () => {
     document.title = originalTitle;
   });
 
-  it("works without show param", () => {
+  it("updates the document title properly", () => {
     renderHook(() => {
       useSetDocumentTitle(TEST_TITLE);
     });
@@ -39,27 +39,13 @@ describe("useSetDocumentTitle", () => {
     expect(document.title).toStartWith(TEST_TITLE);
   });
 
-  it("handles the show param properly", () => {
-    const { rerender } = renderHook(
-      (props) => {
-        useSetDocumentTitle(props.title, props.show);
-      },
-      {
-        initialProps: {
-          title: TEST_TITLE,
-          show: false,
-        },
-      }
-    );
-
-    expect(document.title).toEqual(originalTitle);
-
-    rerender({ title: TEST_TITLE, show: true });
-
+  it("cleans up the title when unmounted", () => {
+    const { unmount } = renderHook(() => {
+      useSetDocumentTitle(TEST_TITLE);
+    });
+    // The hook adds a suffix to the title, so we assert with toStartWith()
     expect(document.title).toStartWith(TEST_TITLE);
-
-    rerender({ title: TEST_TITLE, show: false });
-
+    unmount();
     expect(document.title).toEqual(originalTitle);
   });
 });

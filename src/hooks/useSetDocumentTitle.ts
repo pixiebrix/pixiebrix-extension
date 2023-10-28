@@ -22,19 +22,14 @@ export const SUFFIX = " | PixieBrix";
 /**
  * Set title of the document, restoring the original title when component is unmounted.
  */
-export function useSetDocumentTitle(title: string, show?: boolean): void {
+export function useSetDocumentTitle(title: string): void {
   const originalTitle = useMemo(() => document.title, []);
 
   useEffect(() => {
-    // Keep previous behavior when show is undefined, for backwards compatibility with other call-sites
-    if (show === undefined || show) {
-      document.title = `${title}${SUFFIX}`;
-    } else {
-      document.title = originalTitle;
-    }
+    document.title = `${title}${SUFFIX}`;
 
     return () => {
       document.title = originalTitle;
     };
-  }, [originalTitle, show, title]);
+  }, [originalTitle, title]);
 }
