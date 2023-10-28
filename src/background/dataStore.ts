@@ -26,7 +26,7 @@ const KEY_PREFIX = "@@";
 
 export async function getRecord(primaryKey: string): Promise<unknown> {
   const data = await localDataStore.get();
-  return data[`${KEY_PREFIX}${primaryKey}`];
+  return data[`${KEY_PREFIX}${primaryKey}`] ?? {};
 }
 
 export async function setRecord(

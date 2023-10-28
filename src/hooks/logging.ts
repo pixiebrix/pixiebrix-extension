@@ -19,8 +19,5 @@ import { loggingConfig } from "@/telemetry/logging";
 import useUpdatableAsyncState from "./useUpdatableAsyncState";
 
 export function useLoggingConfig() {
-  return useUpdatableAsyncState(
-    async () => loggingConfig.get(),
-    async (value) => loggingConfig.set(value)
-  );
+  return useUpdatableAsyncState(loggingConfig);
 }

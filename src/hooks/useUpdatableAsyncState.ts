@@ -19,16 +19,21 @@ import { type SetStateAction, useCallback, useState } from "react";
 import { type Promisable } from "type-fest";
 import useAsyncEffect from "use-async-effect";
 
-export default function useUpdatableAsyncState<S = undefined>(
-  getter: () => Promise<S>,
-  setter: (value: S) => Promisable<void>
-  // TODO: Accept dependencies
-): [S | undefined, (value: SetStateAction<S | undefined>) => Promise<void>] {
+type Callbacks<S> = {
+  get: () => Promise<S>;
+  set: (value: S) => Promisable<void>;
+};
+
+export default function useUpdatableAsyncState<S = undefined>({
+  get,
+  set,
+}: Callbacks<S>): // TODO: Accept dependencies
+[S | undefined, (value: SetStateAction<S | undefined>) => Promise<void>] {
   const [value, setValue] = useState<S>();
 
   useAsyncEffect(
     async (isMounted) => {
-      const value = await getter();
+      const value = await get();
       if (isMounted()) {
         setValue(value);
       }
@@ -38,10 +43,10 @@ export default function useUpdatableAsyncState<S = undefined>(
 
   const update = useCallback(
     async (newValue: S) => {
-      await setter(newValue);
+      await set(newValue);
       setValue(newValue);
     },
-    [setValue, setter]
+    [setValue, set]
   );
 
   return [value, update];

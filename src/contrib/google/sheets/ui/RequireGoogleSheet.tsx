@@ -73,9 +73,7 @@ const RequireGoogleSheet: React.FC<{
   // Clean up the listener on unmount if it hasn't fired yet
   useEffect(
     () => () => {
-      if (loginController) {
-        loginController.abort();
-      }
+      loginController?.abort();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount/unmount
     []
