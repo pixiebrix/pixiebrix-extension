@@ -439,10 +439,10 @@ export type LoggingConfig = {
   logValues: boolean;
 };
 
-export const loggingConfig = new StorageItem<LoggingConfig>("LOG_OPTIONS", {
+export const loggingConfig = new StorageItem("LOG_OPTIONS", {
   defaultValue: {
     logValues: false,
-  },
+  } as LoggingConfig,
 });
 
 /**

@@ -36,6 +36,6 @@ export const anonAuth: AuthState = Object.freeze({
 });
 
 export type AuthStorage = Record<UUID, AuthData>;
-export const oauth2Storage = new StorageItem<AuthStorage>("OAUTH2", {
-  defaultValue: {},
+export const oauth2Storage = new StorageItem("OAUTH2", {
+  defaultValue: {} as AuthStorage,
 });

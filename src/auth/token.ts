@@ -30,13 +30,11 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
 
-// `chrome.storage.local` keys
-const extensionKeyStorage = new StorageItem<Partial<TokenAuthData>>(
-  "extensionKey",
-  { defaultValue: {} }
-);
+const extensionKeyStorage = new StorageItem("extensionKey", {
+  defaultValue: {} as Partial<TokenAuthData>,
+});
 const partnerTokenStorage = new StorageItem("partnerToken", {
-  defaultValue: {},
+  defaultValue: {} as Partial<PartnerAuthData>,
 });
 
 type AuthListener = (auth: Partial<TokenAuthData>) => void;
