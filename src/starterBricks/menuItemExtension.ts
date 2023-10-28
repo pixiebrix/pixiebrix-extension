@@ -85,7 +85,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/utils/domUtils";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

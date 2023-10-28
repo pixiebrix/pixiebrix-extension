@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IntegrationDependency } from "@/integrations/integrationTypes";
-import { ServiceContext } from "@/types/runtimeTypes";
-import { locateSanitizedIntegrationConfigWithRetry } from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { type ServiceContext } from "@/types/runtimeTypes";
+import locateSanitizedIntegrationConfigWithRetry from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
 import { pickBy } from "lodash";
 import { resolveObj } from "@/utils/promiseUtils";
 
@@ -25,7 +25,7 @@ export const SERVICES_BASE_SCHEMA_URL =
   "https://app.pixiebrix.com/schemas/services/";
 
 /** Build the service context by locating the dependencies */
-export async function makeServiceContextFromDependencies(
+export default async function makeServiceContextFromDependencies(
   // `ModComponentBase.integrationDependencies` is an optional field. Since we don't have strict-nullness checking on, calls to this method
   // are error-prone. So just be defensive in the signature
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3262

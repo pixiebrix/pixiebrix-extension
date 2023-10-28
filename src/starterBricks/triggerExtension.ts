@@ -79,7 +79,7 @@ import {
 } from "@/errors/contextInvalidated";
 import { sleep } from "@/utils/timeUtils";
 import { $safeFind, waitAnimationFrame } from "@/utils/domUtils";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;

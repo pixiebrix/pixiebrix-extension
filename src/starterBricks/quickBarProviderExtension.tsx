@@ -62,7 +62,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type QuickBarProviderConfig = {
   /**

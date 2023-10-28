@@ -33,7 +33,6 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
-
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 type CellValue = string | number | null;

@@ -20,7 +20,7 @@ import serviceRegistry from "@/integrations/registry";
 import { expectContext } from "@/utils/expectContext";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import { locateSanitizedIntegrationConfigWithRetry } from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
+import locateSanitizedIntegrationConfigWithRetry from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
 
 /**
  * Return origin permissions required to use an integration with the given configuration.

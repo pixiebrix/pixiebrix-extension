@@ -61,7 +61,7 @@ import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type PanelConfig = {
   heading?: string;

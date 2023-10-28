@@ -66,7 +66,7 @@ import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type SidebarConfig = {
   heading: string;

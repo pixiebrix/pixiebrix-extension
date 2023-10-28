@@ -53,9 +53,11 @@ async function _locateWithRetry(
 // trying to locate the same integration. Might also consider full
 // memoization/caching, but would have to be careful about invalidating the
 // cache on integration configuration changes
-export const locateSanitizedIntegrationConfigWithRetry = memoizeUntilSettled(
+const locateSanitizedIntegrationConfigWithRetry = memoizeUntilSettled(
   _locateWithRetry,
   {
     cacheKey: JSON.stringify,
   }
 );
+
+export default locateSanitizedIntegrationConfigWithRetry;

@@ -34,8 +34,7 @@ import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { joinName } from "@/utils/formUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-
-import { getModDefinitionIntegrationIds } from "@/integrations/util/getModDefinitionIntegrationIds";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 interface OwnProps {
   blueprint: ModDefinition;

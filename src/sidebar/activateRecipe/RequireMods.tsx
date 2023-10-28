@@ -29,7 +29,7 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import { getUnconfiguredComponentIntegrations } from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 export type RequiredModDefinition = {
   /**

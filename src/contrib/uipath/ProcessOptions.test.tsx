@@ -37,7 +37,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 setContext("devToolsPage");
 
-jest.mock("@/services/useSanitizedIntegrationConfigFormikAdapter", () => ({
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
   __esModule: true,
   default: jest.fn(),
 }));

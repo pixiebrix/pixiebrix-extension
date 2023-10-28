@@ -36,7 +36,7 @@ import {
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 beforeEach(() => {
   blockRegistry.clear();

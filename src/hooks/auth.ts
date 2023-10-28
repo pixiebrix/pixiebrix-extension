@@ -26,7 +26,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { useGetIntegrationAuthsQuery } from "@/services/api";
-import { getModDefinitionIntegrationIds } from "@/integrations/util/getModDefinitionIntegrationIds";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();

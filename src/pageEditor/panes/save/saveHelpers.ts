@@ -54,7 +54,6 @@ import {
   type ModDependencyAPIVersion,
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
-
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 /**

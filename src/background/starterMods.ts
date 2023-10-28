@@ -32,8 +32,7 @@ import { type RemoteIntegrationConfig } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-
-import { getUnconfiguredComponentIntegrations } from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 const { reducer, actions } = extensionsSlice;
 

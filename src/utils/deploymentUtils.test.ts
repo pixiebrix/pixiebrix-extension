@@ -44,7 +44,7 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_ID,
 } from "@/integrations/constants";
-import { getModDefinitionIntegrationIds } from "@/integrations/util/getModDefinitionIntegrationIds";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(

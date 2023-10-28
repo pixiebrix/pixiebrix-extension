@@ -36,7 +36,7 @@ import { useAsyncState } from "@/hooks/common";
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 type Location = "modal" | "panel";
 

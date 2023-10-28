@@ -36,7 +36,7 @@ import {
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
-jest.mock("@/services/useSanitizedIntegrationConfigFormikAdapter", () => ({
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
   __esModule: true,
   default: jest.fn(),
 }));

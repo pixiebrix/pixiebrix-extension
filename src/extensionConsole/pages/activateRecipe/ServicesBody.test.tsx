@@ -30,7 +30,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
-import { getModDefinitionIntegrationIds } from "@/integrations/util/getModDefinitionIntegrationIds";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -38,8 +38,9 @@ jest.mock("@/hooks/auth", () => ({
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
-jest.mock("@/utils/modDefinitionUtils", () => ({
-  getIntegrationIds: jest.fn(),
+jest.mock("@/integrations/util/getModDefinitionIntegrationIds", () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
 
 const getIntegrationIdsMock = jest.mocked(getModDefinitionIntegrationIds);

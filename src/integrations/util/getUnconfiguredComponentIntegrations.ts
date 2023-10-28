@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ModDefinition } from "@/types/modDefinitionTypes";
-import { IntegrationDependency } from "@/integrations/integrationTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { groupBy, isEmpty } from "lodash";
 import { isSchemaServicesFormat } from "@/modDefinitions/util/isSchemaServicesFormat";
-import { Schema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { OutputKey } from "@/types/runtimeTypes";
-import { RegistryId } from "@/types/registryTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
   return Object.entries(services.properties).flatMap(([key, schema]) => {
@@ -57,7 +57,7 @@ function getIntegrationsFromRecord(
  * @param extensionPoints the mod component definitions from which to extract integrations
  * @see selectExtensionPointConfig in saveHelpers.ts for the reverse logic
  */
-export function getUnconfiguredComponentIntegrations({
+export default function getUnconfiguredComponentIntegrations({
   extensionPoints: modComponentDefinitions = [],
 }: Pick<ModDefinition, "extensionPoints">): IntegrationDependency[] {
   const integrationDependencies = modComponentDefinitions.flatMap(

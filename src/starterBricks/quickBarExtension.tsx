@@ -61,7 +61,7 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 

@@ -29,7 +29,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
  * @param excludePixieBrix whether to exclude the PixieBrix integration
  * @param requiredOnly whether to only include required integrations
  */
-export function getModDefinitionIntegrationIds(
+export default function getModDefinitionIntegrationIds(
   {
     extensionPoints: modComponentDefinitions = [],
   }: Pick<ModDefinition, "extensionPoints">,

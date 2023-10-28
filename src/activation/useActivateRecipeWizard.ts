@@ -44,7 +44,7 @@ import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import { getUnconfiguredComponentIntegrations } from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: ServicesBody },

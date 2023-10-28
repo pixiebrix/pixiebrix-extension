@@ -46,7 +46,7 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { initialState } from "@/store/extensionsSliceInitialState";
 import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
-import { getModDefinitionIntegrationIds } from "@/integrations/util/getModDefinitionIntegrationIds";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 type ActivateModComponentParam = {
   modComponentDefinition: ModComponentDefinition;

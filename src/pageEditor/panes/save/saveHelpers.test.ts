@@ -68,7 +68,6 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
-
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 jest.mock("@/background/contextMenus");

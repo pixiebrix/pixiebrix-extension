@@ -28,7 +28,7 @@ import {
 import { validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import { getUnconfiguredComponentIntegrations } from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)

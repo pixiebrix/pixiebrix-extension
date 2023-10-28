@@ -47,7 +47,7 @@ import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
-import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 /**
  * Bricks to preview even if there's no trace.
