@@ -85,13 +85,26 @@ const FORM_RUNTIME_CONTEXT: RuntimeContext = {
   allowExpressions: false,
 };
 
-const IntegrationConfigEditorModal: React.FunctionComponent<
-  IntegrationConfigEditorModalProps
-> = ({ integration, initialValues, onSave, onClose, onDelete }) => {
-  const show = Boolean(initialValues);
+/**
+ * The modal content assumes integration and initialValues are not null
+ */
+type ContentProps = {
+  integration: Integration;
+  initialValues: IntegrationConfig;
+  onSave: (config: IntegrationConfig) => Promise<void>;
+  onClose: () => void;
+  onDelete?: (id: UUID) => void;
+};
+
+const ModalContent: React.FC<ContentProps> = ({
+  integration,
+  initialValues,
+  onSave,
+  onClose,
+  onDelete,
+}) => {
   useSetDocumentTitle(
-    `Configure ${truncate(integration?.name ?? "", { length: 15 })}`,
-    show
+    `Configure ${truncate(integration.name, { length: 15 })}`
   );
 
   const onSubmit = useCallback<OnSubmit<IntegrationConfig>>(
@@ -102,11 +115,7 @@ const IntegrationConfigEditorModal: React.FunctionComponent<
     [onSave, onClose]
   );
 
-  const Editor = useMemo<React.FC<BlockOptionProps> | null>(() => {
-    if (!integration) {
-      return null;
-    }
-
+  const Editor = useMemo<React.FC<BlockOptionProps>>(() => {
     if (optionsRegistry.has(integration.id)) {
       return optionsRegistry.get(integration.id);
     }
@@ -115,12 +124,6 @@ const IntegrationConfigEditorModal: React.FunctionComponent<
   }, [integration]);
 
   const validationSchemaState = useAsyncState<Yup.AnyObjectSchema>(async () => {
-    let validationSchema = Yup.object();
-
-    if (!integration) {
-      return validationSchema;
-    }
-
     const schema = await dereference({
       type: "object",
       properties: {
@@ -138,6 +141,8 @@ const IntegrationConfigEditorModal: React.FunctionComponent<
       },
     });
 
+    let validationSchema = Yup.object();
+
     try {
       // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
       validationSchema = buildYup(cloneDeep(schema), {
@@ -154,7 +159,7 @@ const IntegrationConfigEditorModal: React.FunctionComponent<
     }
 
     return validationSchema;
-  }, [integration?.schema]);
+  }, [integration.schema]);
 
   const renderBody: RenderBody = () => (
     <Modal.Body>
@@ -171,7 +176,7 @@ const IntegrationConfigEditorModal: React.FunctionComponent<
           type="text"
           plaintext
           readOnly
-          value={integration?.id}
+          value={integration.id}
         />
         {Editor && <Editor name="config" />}
       </FieldRuntimeContext.Provider>
@@ -210,16 +215,10 @@ const IntegrationConfigEditorModal: React.FunctionComponent<
   );
 
   return (
-    <Modal
-      show={show}
-      dialogClassName={styles.dialog}
-      onHide={onClose}
-      backdrop="static"
-      keyboard={false}
-    >
+    <>
       <Modal.Header closeButton>
         <Modal.Title>
-          Configure Private Integration: {integration?.name}
+          Configure Private Integration: {integration.name}
         </Modal.Title>
       </Modal.Header>
 
@@ -234,6 +233,32 @@ const IntegrationConfigEditorModal: React.FunctionComponent<
           />
         )}
       </AsyncStateGate>
+    </>
+  );
+};
+
+const IntegrationConfigEditorModal: React.FunctionComponent<
+  IntegrationConfigEditorModalProps
+> = ({ integration, initialValues, onSave, onClose, onDelete }) => {
+  const show = Boolean(initialValues) && Boolean(integration);
+
+  return (
+    <Modal
+      show={show}
+      dialogClassName={styles.dialog}
+      onHide={onClose}
+      backdrop="static"
+      keyboard={false}
+    >
+      {show && (
+        <ModalContent
+          integration={integration}
+          initialValues={initialValues}
+          onSave={onSave}
+          onClose={onClose}
+          onDelete={onDelete}
+        />
+      )}
     </Modal>
   );
 };
