@@ -47,7 +47,6 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { makeServiceContext } from "@/services/integrationUtils";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
@@ -62,6 +61,7 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -223,7 +223,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
 
         try {
           const reader = await this.getBaseReader();
-          const serviceContext = await makeServiceContext(
+          const serviceContext = await makeServiceContextFromDependencies(
             extension.integrationDependencies
           );
 

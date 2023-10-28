@@ -18,7 +18,7 @@
 import { appApi } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
-import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -27,15 +27,15 @@ import {
   removeListener as removeAuthListener,
 } from "@/auth/token";
 import { useEffect } from "react";
-import {
-  AUTOMATION_ANYWHERE_PARTNER_KEY,
-  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "@/services/constants";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type RegistryId } from "@/types/registryTypes";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 /**
  * Map from partner keys to partner service IDs

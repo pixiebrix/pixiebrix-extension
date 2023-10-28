@@ -28,7 +28,7 @@ import initGoogle, {
   isGoogleInitialized,
   markGoogleInvalidated,
 } from "@/contrib/google/initGoogle";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
 import {
   getCachedAuthData,

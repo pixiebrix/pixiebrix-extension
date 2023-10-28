@@ -25,14 +25,14 @@ import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import * as auth from "@/hooks/auth";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 
 setContext("devToolsPage");
 

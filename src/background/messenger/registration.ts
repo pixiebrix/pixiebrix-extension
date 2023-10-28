@@ -38,7 +38,7 @@ import {
 } from "@/background/executor";
 import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
-import serviceRegistry from "@/services/registry";
+import serviceRegistry from "@/integrations/registry";
 import { performConfiguredRequest } from "@/background/requests";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";

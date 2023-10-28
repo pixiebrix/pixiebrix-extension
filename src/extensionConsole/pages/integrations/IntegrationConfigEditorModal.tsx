@@ -44,7 +44,7 @@ import { getValidationErrMessages } from "@/components/fields/fieldUtils";
 import {
   type Integration,
   type IntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";

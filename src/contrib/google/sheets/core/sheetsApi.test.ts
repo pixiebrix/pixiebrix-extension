@@ -29,8 +29,8 @@ import { integrationConfigFactory } from "@/testUtils/factories/integrationFacto
 import { locator } from "@/background/locator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "@/services/factory";
-import { readRawConfigurations } from "@/services/registry";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { readRawConfigurations } from "@/integrations/registry";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 
 import {
   deleteCachedAuthData,
@@ -94,8 +94,8 @@ describe("ensureSheetsReady", () => {
   });
 });
 
-jest.mock("@/services/registry", () => {
-  const actual = jest.requireActual("@/services/registry");
+jest.mock("@/integrations/registry", () => {
+  const actual = jest.requireActual("@/integrations/registry");
 
   return {
     ...actual,

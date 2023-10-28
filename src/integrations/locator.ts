@@ -17,10 +17,11 @@
 
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { isEmpty, sortBy } from "lodash";
-import servicesRegistry, { readRawConfigurations } from "@/services/registry";
+import servicesRegistry, {
+  readRawConfigurations,
+} from "@/integrations/registry";
 import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 import {
@@ -34,10 +35,11 @@ import {
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { sanitizeIntegrationConfig } from "@/services/sanitizeIntegrationConfig";
+import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 enum Visibility {
   Private = 0,

@@ -16,11 +16,11 @@
  */
 
 import { type Permissions } from "webextension-polyfill";
-import serviceRegistry from "@/services/registry";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
-import { locateWithRetry } from "@/services/integrationUtils";
+import serviceRegistry from "@/integrations/registry";
 import { expectContext } from "@/utils/expectContext";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { locateSanitizedIntegrationConfigWithRetry } from "@/integrations/util/locateSanitizedIntegrationConfigWithRetry";
 
 /**
  * Return origin permissions required to use an integration with the given configuration.
@@ -39,9 +39,13 @@ export async function collectIntegrationOriginPermissions({
     return { origins: [] };
   }
 
-  const localConfig = await locateWithRetry(integrationId, configId, {
-    retry: true,
-  });
+  const localConfig = await locateSanitizedIntegrationConfigWithRetry(
+    integrationId,
+    configId,
+    {
+      retry: true,
+    }
+  );
 
   if (localConfig.proxy) {
     // Don't need permissions to access the pixiebrix API proxy server because they're already granted on

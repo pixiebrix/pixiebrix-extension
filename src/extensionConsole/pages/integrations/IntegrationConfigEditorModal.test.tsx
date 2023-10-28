@@ -26,7 +26,7 @@ import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml?loadAsText";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();

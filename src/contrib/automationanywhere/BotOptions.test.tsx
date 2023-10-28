@@ -20,13 +20,12 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
-import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type SanitizedConfig } from "@/types/integrationTypes";
+import { type SanitizedConfig } from "@/integrations/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -35,6 +34,7 @@ import {
   sanitizedIntegrationConfigFactory,
 } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
 jest.mock("@/services/useSanitizedIntegrationConfigFormikAdapter", () => ({
   __esModule: true,

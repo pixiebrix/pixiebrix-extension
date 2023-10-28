@@ -21,7 +21,7 @@ import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
 import { action } from "@storybook/addon-actions";
 import { fromJS } from "@/services/factory";
 import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
-import { type IntegrationDefinition } from "@/types/integrationTypes";
+import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 
 import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml?loadAsText";

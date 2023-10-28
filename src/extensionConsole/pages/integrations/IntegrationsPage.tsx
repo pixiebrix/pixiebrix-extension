@@ -19,7 +19,7 @@ import styles from "@/extensionConsole/pages/integrations/PrivateIntegrationsCar
 
 import React, { useCallback, useContext, useReducer } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import integrationsSlice from "@/store/integrations/integrationsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import Page from "@/layout/Page";
 import { Card, Col, Row } from "react-bootstrap";
 import { push } from "connected-react-router";
@@ -27,7 +27,7 @@ import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
 import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { services, sheets } from "@/background/messenger/api";
+import { services } from "@/background/messenger/api";
 import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
 import notify from "@/utils/notify";
 import { useParams } from "react-router";
@@ -40,19 +40,22 @@ import { Events } from "@/telemetry/events";
 import {
   type Integration,
   type IntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import registry from "@/services/registry";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
+import registry from "@/integrations/registry";
 import { isEmpty, isEqual, sortBy } from "lodash";
-import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 import useAsyncEffect from "use-async-effect";
 import { type RegistryId } from "@/types/registryTypes";
 import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
-import { GOOGLE_OAUTH2_PKCE_INTEGRATION_ID } from "@/contrib/google/sheets/core/schemas";
 import { freshIdentifier } from "@/utils/variableUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import {
+  autoConfigurations,
+  autoConfigureIntegration,
+} from "@/integrations/autoConfigure";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
@@ -227,71 +230,6 @@ const componentState = createSlice({
     },
   },
 });
-
-/**
- * A function to automatically configure an integration config. If null is returned, the config will be deleted instead.
- */
-type AutoConfigureIntegrationConfig = (
-  config: IntegrationConfig
-) => Promise<IntegrationConfig | null>;
-
-const autoConfigurations: Record<RegistryId, AutoConfigureIntegrationConfig> = {
-  async [GOOGLE_OAUTH2_PKCE_INTEGRATION_ID](config: IntegrationConfig) {
-    const googleAccount = await services.locate(
-      config.integrationId,
-      config.id
-    );
-    try {
-      const userEmail = await sheets.getUserEmail(googleAccount);
-      return {
-        ...config,
-        label: userEmail,
-      };
-    } catch (error) {
-      console.warn(
-        "Failed to get user email for Google PKCE integration config",
-        error
-      );
-      return null;
-    }
-  },
-};
-
-async function autoConfigureIntegration(
-  integration: Integration,
-  temporaryLabel: string,
-  {
-    upsertIntegrationConfig,
-    deleteIntegrationConfig,
-    syncIntegrations,
-  }: {
-    upsertIntegrationConfig: (config: IntegrationConfig) => void;
-    deleteIntegrationConfig: (id: UUID) => void;
-    syncIntegrations: () => Promise<void>;
-  }
-): Promise<void> {
-  const newIntegrationConfig = {
-    id: uuidv4(),
-    label: temporaryLabel,
-    integrationId: integration.id,
-    config: {},
-  } as IntegrationConfig;
-  upsertIntegrationConfig(newIntegrationConfig);
-  await syncIntegrations();
-  const transform = autoConfigurations[integration.id];
-  if (!transform) {
-    throw new Error(`No auto configuration for ${integration.id}`);
-  }
-
-  const transformed = await transform(newIntegrationConfig);
-  if (transformed) {
-    upsertIntegrationConfig(transformed);
-  } else {
-    deleteIntegrationConfig(newIntegrationConfig.id);
-  }
-
-  await syncIntegrations();
-}
 
 const IntegrationsPage: React.VFC = () => {
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);

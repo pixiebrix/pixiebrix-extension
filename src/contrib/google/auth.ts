@@ -25,7 +25,7 @@ import chromeP from "webext-polyfill-kinda";
 import { isGoogleInitialized } from "@/contrib/google/initGoogle";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { deleteCachedAuthData } from "@/background/messenger/api";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { isObject } from "@/utils/objectUtils";
 
 /**

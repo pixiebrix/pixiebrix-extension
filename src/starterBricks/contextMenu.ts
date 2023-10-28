@@ -54,7 +54,6 @@ import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { makeServiceContext } from "@/services/integrationUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {
   ContextMenuReader,
@@ -68,6 +67,7 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
+import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -340,7 +340,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
       try {
         const reader = await this.getBaseReader();
-        const serviceContext = await makeServiceContext(
+        const serviceContext = await makeServiceContextFromDependencies(
           extension.integrationDependencies
         );
 

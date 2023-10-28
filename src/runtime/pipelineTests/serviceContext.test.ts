@@ -24,19 +24,19 @@ import {
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
-import { makeServiceContext } from "@/services/integrationUtils";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { pixiebrixConfigurationFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import {
   type SanitizedIntegrationConfig,
   type IntegrationDependency,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -65,7 +65,9 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         },
         {
           ...simpleInput({}),
-          serviceContext: await makeServiceContext(dependencies),
+          serviceContext: await makeServiceContextFromDependencies(
+            dependencies
+          ),
         },
         testOptions(apiVersion)
       );
@@ -102,7 +104,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContext(dependencies),
+        serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
       testOptions(apiVersion)
     );
@@ -138,7 +140,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContext(dependencies),
+        serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
       testOptions(apiVersion)
     );
@@ -173,7 +175,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContext(dependencies),
+        serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
       testOptions(apiVersion)
     );
@@ -214,7 +216,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContext(dependencies),
+        serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
       testOptions(apiVersion)
     );
@@ -261,7 +263,9 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         },
         {
           ...simpleInput({}),
-          serviceContext: await makeServiceContext(dependencies),
+          serviceContext: await makeServiceContextFromDependencies(
+            dependencies
+          ),
         },
         testOptions(apiVersion)
       );

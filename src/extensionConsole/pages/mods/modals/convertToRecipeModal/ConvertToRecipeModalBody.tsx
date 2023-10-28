@@ -50,7 +50,8 @@ import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
-import { pickModDefinitionMetadata } from "@/utils/modDefinitionUtils";
+
+import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
 
 type ConvertModFormState = {
   blueprintId: RegistryId;

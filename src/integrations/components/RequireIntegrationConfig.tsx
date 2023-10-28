@@ -17,10 +17,10 @@
 
 import React from "react";
 import IntegrationDependencyField from "@/components/fields/schemaFields/integrations/IntegrationDependencyField";
-import { extractIntegrationIds } from "@/services/integrationUtils";
 import { type Schema } from "@/types/schemaTypes";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
-import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
+import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 
 type ConfigProps = {
   integrationsSchema: Schema;
@@ -43,7 +43,7 @@ const RequireIntegrationConfig: React.FC<ConfigProps> = ({
   integrationsFieldName,
   children,
 }) => {
-  const integrationIds = extractIntegrationIds(integrationsSchema);
+  const integrationIds = extractIntegrationIdsFromSchema(integrationsSchema);
   const { data: sanitizedConfig } =
     useSanitizedIntegrationConfigFormikAdapter(integrationIds);
 

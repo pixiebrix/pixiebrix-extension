@@ -42,7 +42,6 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
-import { makeServiceContext } from "@/services/integrationUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import initialize from "@/vendors/initialize";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -80,6 +79,7 @@ import {
 } from "@/errors/contextInvalidated";
 import { sleep } from "@/utils/timeUtils";
 import { $safeFind, waitAnimationFrame } from "@/utils/domUtils";
+import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;
@@ -360,7 +360,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const initialValues: InitialValues = {
       input: ctxt,
       root,
-      serviceContext: await makeServiceContext(
+      serviceContext: await makeServiceContextFromDependencies(
         extension.integrationDependencies
       ),
       optionsArgs: extension.optionsArgs,

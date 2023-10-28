@@ -48,7 +48,6 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
-import { makeServiceContext } from "@/services/integrationUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -62,6 +61,7 @@ import { type JsonObject } from "type-fest";
 import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
+import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type PanelConfig = {
   heading?: string;
@@ -300,7 +300,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       this.collapsedExtensions.set(extension.id, true);
     }
 
-    const serviceContext = await makeServiceContext(
+    const serviceContext = await makeServiceContextFromDependencies(
       extension.integrationDependencies
     );
     const extensionContext = { ...readerOutput, ...serviceContext };

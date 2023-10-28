@@ -31,9 +31,9 @@ import BrickIcon from "@/components/BrickIcon";
 import {
   type Integration,
   type IntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
-import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 
 type TableData = {
   integration: Integration;

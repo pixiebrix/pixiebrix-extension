@@ -19,7 +19,7 @@ import {
   type Integration,
   type IntegrationConfigArgs,
   type SanitizedConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { inputProperties } from "@/utils/schemaUtils";
 
 const REF_SECRETS = [

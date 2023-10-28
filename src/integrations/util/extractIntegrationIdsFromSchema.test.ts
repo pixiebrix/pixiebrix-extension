@@ -15,32 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { extractIntegrationIds } from "@/services/integrationUtils";
 import {
-  SHEET_SERVICE_SCHEMA,
   BASE_SHEET_SCHEMA,
+  SHEET_SERVICE_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
 import { inputProperties as httpInputProperties } from "@/bricks/transformers/remoteMethod";
+import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 
-describe("extractIntegrationIds", () => {
+describe("extractIntegrationIdsFromSchema", () => {
   it("errors by default if not found", () => {
-    expect(() => extractIntegrationIds({})).toThrow();
+    expect(() => extractIntegrationIdsFromSchema({})).toThrow();
   });
 
   it("can suppress error", () => {
-    expect(extractIntegrationIds({}, { suppressNotFoundError: true })).toEqual(
-      []
-    );
+    expect(
+      extractIntegrationIdsFromSchema({}, { suppressNotFoundError: true })
+    ).toEqual([]);
   });
 
   it("can extract from ref", () => {
-    expect(extractIntegrationIds(SHEET_SERVICE_SCHEMA)).toEqual([
+    expect(extractIntegrationIdsFromSchema(SHEET_SERVICE_SCHEMA)).toEqual([
       "google/sheet",
     ]);
   });
 
   it("ignores non-service ref", () => {
-    expect(extractIntegrationIds({ $ref: "tacos" })).toEqual([]);
+    expect(extractIntegrationIdsFromSchema({ $ref: "tacos" })).toEqual([]);
   });
 
   it("does not error if value is not found in sub-schema", () => {
@@ -48,12 +48,14 @@ describe("extractIntegrationIds", () => {
       oneOf: [SHEET_SERVICE_SCHEMA, BASE_SHEET_SCHEMA],
     };
 
-    expect(extractIntegrationIds(schema)).toEqual(["google/sheet"]);
+    expect(extractIntegrationIdsFromSchema(schema)).toEqual(["google/sheet"]);
   });
 
   it("returns empty for HTTP brick", () => {
     // Returns empty because the $ref is https://app.pixiebrix.com/schemas/service#/definitions/configuredService
     // which is not a specific service schema.
-    expect(extractIntegrationIds(httpInputProperties.service)).toEqual([]);
+    expect(
+      extractIntegrationIdsFromSchema(httpInputProperties.service)
+    ).toEqual([]);
   });
 });

@@ -20,15 +20,15 @@ import { fromJS } from "@/services/factory";
 import {
   type IntegrationConfig,
   type IntegrationABC,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   readReduxStorage,
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
-import { migrations } from "@/store/integrations/integrationsMigrations";
-import { initialState } from "@/store/integrations/integrationsSlice";
-import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
+import { migrations } from "@/integrations/store/integrationsMigrations";
+import { initialState } from "@/integrations/store/integrationsSlice";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 
 // @See persistIntegrationsConfig in integrationsSlice.ts
 const INTEGRATIONS_STORAGE_KEY = validateReduxStorageKey(

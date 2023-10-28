@@ -49,7 +49,6 @@ import { cloneDeep, debounce, remove, stubTrue } from "lodash";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
-import { makeServiceContext } from "@/services/integrationUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
@@ -67,6 +66,7 @@ import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export type SidebarConfig = {
   heading: string;
@@ -174,7 +174,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       selectExtensionContext(extension)
     );
 
-    const serviceContext = await makeServiceContext(
+    const serviceContext = await makeServiceContextFromDependencies(
       extension.integrationDependencies
     );
     const extensionContext = { ...readerContext, ...serviceContext };

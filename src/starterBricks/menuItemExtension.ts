@@ -56,7 +56,6 @@ import apiVersionOptions, {
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
 import { selectAllBlocks } from "@/bricks/util";
-import { makeServiceContext } from "@/services/integrationUtils";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
@@ -86,6 +85,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/utils/domUtils";
+import { makeServiceContextFromDependencies } from "@/integrations/util/makeServiceContextFromDependencies";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -616,7 +616,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if (extension.config.if) {
       // Read the latest state at the time of the action
       const input = await ctxtPromise;
-      const serviceContext = await makeServiceContext(
+      const serviceContext = await makeServiceContextFromDependencies(
         extension.integrationDependencies
       );
 
@@ -657,7 +657,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
-      const serviceContext = await makeServiceContext(
+      const serviceContext = await makeServiceContextFromDependencies(
         extension.integrationDependencies
       );
 
@@ -714,7 +714,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
                 $buttonElement: $menuItem,
               })
             ),
-            serviceContext: await makeServiceContext(
+            serviceContext: await makeServiceContextFromDependencies(
               extension.integrationDependencies
             ),
             optionsArgs: extension.optionsArgs,

@@ -28,11 +28,7 @@ import {
   validateSemVerString,
   validateTimestamp,
 } from "@/types/helpers";
-import {
-  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-  PIXIEBRIX_INTEGRATION_ID,
-} from "@/services/constants";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
@@ -44,7 +40,11 @@ import {
   deploymentFactory,
   deploymentPackageFactory,
 } from "@/testUtils/factories/deploymentFactories";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
+import { getModDefinitionIntegrationIds } from "@/integrations/util/getModDefinitionIntegrationIds";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
@@ -213,9 +213,9 @@ describe("getIntegrationIds", () => {
       }),
     });
 
-    expect(getIntegrationIds(deployment.package.config)).toStrictEqual([
-      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-    ]);
+    expect(
+      getModDefinitionIntegrationIds(deployment.package.config)
+    ).toStrictEqual([CONTROL_ROOM_OAUTH_INTEGRATION_ID]);
   });
 });
 

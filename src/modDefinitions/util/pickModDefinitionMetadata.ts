@@ -15,17 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IntegrationsState } from "@/store/integrations/integrationsSlice";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { pick } from "lodash";
 
-export const selectIntegrationConfigs = ({
-  integrations,
-}: {
-  integrations: IntegrationsState;
-}): IntegrationConfig[] => Object.values(integrations.configured);
+/**
+ * Select information about the ModDefinition used to install an ModComponentBase
+ * @see ModComponentBase._recipe
+ */
+export function pickModDefinitionMetadata(
+  modDefinition: ModDefinition
+): ModComponentBase["_recipe"] {
+  if (modDefinition.metadata?.id == null) {
+    throw new TypeError("ModDefinition metadata id is required");
+  }
 
-export const selectIntegrationConfigMap = ({
-  integrations,
-}: {
-  integrations: IntegrationsState;
-}): Record<string, IntegrationConfig> => integrations.configured;
+  return {
+    ...pick(modDefinition.metadata, ["id", "version", "name", "description"]),
+    ...pick(modDefinition, ["sharing", "updated_at"]),
+  };
+}

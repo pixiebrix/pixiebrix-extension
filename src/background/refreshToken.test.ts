@@ -18,9 +18,8 @@
 import refreshPKCEToken from "@/background/refreshToken";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
-import { type IntegrationConfig } from "@/types/integrationTypes";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
-import { readRawConfigurations } from "@/services/registry";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
+import { readRawConfigurations } from "@/integrations/registry";
 import { fromJS } from "@/services/factory";
 import { locator } from "@/background/locator";
 import aaDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
@@ -31,6 +30,7 @@ import {
   getCachedAuthData,
   setCachedAuthData,
 } from "@/background/auth/authStorage";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 
 const aaIntegration = fromJS(aaDefinition as any);
 const googleIntegration = fromJS(googleDefinition as any);
@@ -42,8 +42,8 @@ jest.mock("@/background/auth/authStorage", () => ({
   setCachedAuthData: jest.fn(),
 }));
 
-jest.mock("@/services/registry", () => {
-  const actual = jest.requireActual("@/services/registry");
+jest.mock("@/integrations/registry", () => {
+  const actual = jest.requireActual("@/integrations/registry");
   return {
     ...actual,
     readRawConfigurations: jest.fn(),

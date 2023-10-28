@@ -15,13 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import serviceRegistry from "@/services/registry";
+import serviceRegistry from "@/integrations/registry";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { performConfiguredRequest } from "./requests";
 import * as token from "@/auth/token";
-import * as locator from "@/services/locator";
+import * as locator from "@/integrations/locator";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { ContextError } from "@/errors/genericErrors";
@@ -30,10 +29,11 @@ import {
   type IntegrationABC,
   type IntegrationConfig,
   type SecretsConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { setContext } from "@/testUtils/detectPageMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { getToken } from "@/background/auth/getToken";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 jest.unmock("@/services/apiClient");
 setContext("background");
@@ -52,7 +52,7 @@ jest.mock("@/background/auth/getToken", () => ({
   getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
 }));
 jest.mock("@/auth/token");
-jest.mock("@/services/locator");
+jest.mock("@/integrations/locator");
 
 enrichAxiosErrors();
 
@@ -67,8 +67,9 @@ afterEach(() => {
 (token.getExtensionToken as jest.Mock).mockResolvedValue("abc123");
 
 // Use real version of pixiebrixConfigurationFactory
-const { pixiebrixConfigurationFactory } =
-  jest.requireActual("@/services/locator");
+const { pixiebrixConfigurationFactory } = jest.requireActual(
+  "@/integrations/locator"
+);
 (locator.pixiebrixConfigurationFactory as jest.Mock) =
   pixiebrixConfigurationFactory;
 

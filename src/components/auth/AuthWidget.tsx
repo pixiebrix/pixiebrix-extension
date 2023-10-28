@@ -16,33 +16,40 @@
  */
 
 import React, { useCallback, useContext, useMemo, useState } from "react";
-import ServiceAuthSelector from "@/components/ServiceAuthSelector";
+import IntegrationAuthSelector from "@/integrations/components/IntegrationAuthSelector";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
-import registry from "@/services/registry";
+import registry from "@/integrations/registry";
 import { uuidv4 } from "@/types/helpers";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import IntegrationConfigEditorModal from "@/extensionConsole/pages/integrations/IntegrationConfigEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
-import integrationsSlice from "@/store/integrations/integrationsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import notify from "@/utils/notify";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import styles from "./AuthWidget.module.scss";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { type RegistryId } from "@/types/registryTypes";
-import { type UUID } from "@/types/stringTypes";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { sanitizeIntegrationConfig } from "@/services/sanitizeIntegrationConfig";
+import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
 import { curry } from "lodash";
+import {
+  autoConfigurations,
+  autoConfigureIntegration,
+} from "@/integrations/autoConfigure";
+import { freshIdentifier } from "@/utils/variableUtils";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 
-const { upsertIntegrationConfig } = integrationsSlice.actions;
+const { upsertIntegrationConfig, deleteIntegrationConfig } =
+  integrationsSlice.actions;
 
 const RefreshButton: React.VFC<{
   buttonText: string;
@@ -107,6 +114,23 @@ const AuthWidget: React.FunctionComponent<{
 
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
 
+  const syncIntegrations = useCallback(async () => {
+    // Need to write the current Redux options to storage so the locator can read them during checks
+    await flushReduxPersistence();
+    try {
+      // Also refresh the service locator on the background so the new auth works immediately
+      await services.refresh({ remote: false, local: true });
+    } catch (error) {
+      notify.error({
+        message:
+          "Error refreshing integration configurations, restart the PixieBrix extension",
+        error,
+      });
+    }
+
+    onRefresh();
+  }, [flushReduxPersistence, onRefresh]);
+
   const save = useCallback(
     async (values: IntegrationConfig) => {
       const id = uuidv4();
@@ -119,13 +143,7 @@ const AuthWidget: React.FunctionComponent<{
         })
       );
 
-      // Need to write the current Redux options to storage so the locator can read them during checks
-      await flushReduxPersistence();
-
-      // Also refresh the service locator on the background so the new auth works immediately
-      await services.refresh({ remote: false, local: true });
-
-      onRefresh();
+      await syncIntegrations();
 
       notify.success("Added configuration for integration");
 
@@ -147,17 +165,11 @@ const AuthWidget: React.FunctionComponent<{
       // The IntegrationEditorModal will call the onClose function after
       // calling onSave, so we don't need to close anything manually here.
     },
-    [
-      dispatch,
-      integrationId,
-      flushReduxPersistence,
-      onRefresh,
-      helpers,
-      sanitizeConfigArgs,
-    ]
+    [dispatch, integrationId, syncIntegrations, helpers, sanitizeConfigArgs]
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
+  const integrationConfigs = useSelector(selectIntegrationConfigs);
 
   const onClickNew = useCallback(() => {
     if (serviceDefinition.isAuthorizationGrant) {
@@ -167,9 +179,45 @@ const AuthWidget: React.FunctionComponent<{
       return;
     }
 
+    if (integrationId in autoConfigurations) {
+      const label = freshIdentifier(
+        `${serviceDefinition.name} Config` as SafeString,
+        integrationConfigs.map(({ label }) => label)
+      );
+      void autoConfigureIntegration(serviceDefinition, label, {
+        upsertIntegrationConfig(config: IntegrationConfig) {
+          dispatch(upsertIntegrationConfig(config));
+          void helpers.setValue(config.id);
+          reportEvent(Events.AUTH_WIDGET_SELECT, {
+            integration_id: config.integrationId,
+            is_user_action: true,
+            is_create: true,
+            auth_label: config.label,
+            auth_sharing_type: "private",
+            auth_is_local: true,
+            ...sanitizeConfigArgs(config.config),
+          });
+        },
+        deleteIntegrationConfig(id: UUID) {
+          dispatch(deleteIntegrationConfig({ id }));
+        },
+        syncIntegrations,
+      });
+      return;
+    }
+
     setShowServiceEditorModal(true);
     reportEvent(Events.AUTH_WIDGET_SHOW_ADD_NEW);
-  }, [launchAuthorizationGrantFlow, serviceDefinition]);
+  }, [
+    dispatch,
+    helpers,
+    integrationConfigs,
+    integrationId,
+    launchAuthorizationGrantFlow,
+    sanitizeConfigArgs,
+    serviceDefinition,
+    syncIntegrations,
+  ]);
 
   const CustomMenuList = useMemo(
     () => createMenuListWithAddButton(onClickNew),
@@ -204,7 +252,7 @@ const AuthWidget: React.FunctionComponent<{
         {options.length > 0 ? (
           <>
             <div className={styles.selector}>
-              <ServiceAuthSelector
+              <IntegrationAuthSelector
                 name={name}
                 serviceId={integrationId}
                 authOptions={options}

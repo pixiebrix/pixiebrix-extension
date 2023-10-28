@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useAuthOptions } from "@/hooks/auth";
-import { type IntegrationDefinition } from "@/types/integrationTypes";
+import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -29,8 +29,8 @@ import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { getModDefinitionIntegrationIds } from "@/integrations/util/getModDefinitionIntegrationIds";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -42,7 +42,7 @@ jest.mock("@/utils/modDefinitionUtils", () => ({
   getIntegrationIds: jest.fn(),
 }));
 
-const getIntegrationIdsMock = jest.mocked(getIntegrationIds);
+const getIntegrationIdsMock = jest.mocked(getModDefinitionIntegrationIds);
 
 const serviceId1 = validateRegistryId("test/service1");
 const serviceId2 = validateRegistryId("test/service2");
