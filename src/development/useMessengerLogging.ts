@@ -22,5 +22,5 @@ export default function useMessengerLogging(): [
   boolean | undefined,
   (value: boolean) => void
 ] {
-  return useUpdatableAsyncState(messengerLogging);
+  return useUpdatableAsyncState(messengerLogging.get, messengerLogging.set);
 }

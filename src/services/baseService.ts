@@ -62,5 +62,5 @@ type ConfiguredHostResult = [
  * Hook for retrieving/setting the manually configured host.
  */
 export function useConfiguredHost(): ConfiguredHostResult {
-  return useUpdatableAsyncState(serviceStorage);
+  return useUpdatableAsyncState(serviceStorage.get, serviceStorage.set);
 }
