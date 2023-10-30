@@ -23,6 +23,10 @@ import {
   type SerializedError,
 } from "@/types/messengerTypes";
 import { cleanValue } from "@/utils/objectUtils";
+import { once } from "lodash";
+import { logPromiseDuration } from "@/utils/promiseUtils";
+import injectScriptTag from "@/utils/injectScriptTag";
+import { expectContext } from "@/utils/expectContext";
 
 /** @file The first messenger before webext-messenger. Deprecated, see https://github.com/pixiebrix/webext-messenger/issues/5 */
 
@@ -46,6 +50,16 @@ function assertCustomEvent(
     );
   }
 }
+
+const injectPageScriptOnce = once(async (): Promise<void> => {
+  expectContext("contentScript");
+  console.debug("Injecting page script");
+  const script = await logPromiseDuration(
+    "injectPageScript",
+    injectScriptTag(browser.runtime.getURL("pageScript.js"))
+  );
+  script.remove();
+});
 
 export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   messageType: string
@@ -91,6 +105,10 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   listen(`${messageType}_REJECTED`, rejectionCallbacks, "error");
 
   return async (payload: TPayload) => {
+    // Since 1.8.2: load the pageScript on demand, because it's only used by the Page Editor and a limited number of
+    // bricks. Previously it was loaded in the page lifecycle, which also impacted mod readiness
+    await injectPageScriptOnce();
+
     const id = messageSeq++;
     const promise = new Promise((resolve, reject) => {
       fulfillmentCallbacks.set(id, resolve);
