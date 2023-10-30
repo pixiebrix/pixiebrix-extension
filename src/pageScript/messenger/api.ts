@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "@/pageScript/messenger/pigeon";
+import { createSendScriptMessage } from "@/pageScript/messenger/sender";
 import {
   type Framework,
   GET_COMPONENT_DATA,

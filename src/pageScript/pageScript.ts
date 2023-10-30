@@ -54,12 +54,13 @@ import {
   type ReadProxy,
 } from "@/runtime/pathHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
-import { initialize, type SerializableResponse } from "./messenger/pigeon";
+import { initialize } from "./messenger/receiver";
 import { TimeoutError } from "p-timeout";
 import { setCKEditorData } from "@/contrib/ckeditor";
 import { awaitValue } from "@/utils/promiseUtils";
 import { findSingleElement } from "@/utils/domUtils";
 import { uuidv4 } from "@/types/helpers";
+import { SerializableResponse } from "@/types/messengerTypes";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
