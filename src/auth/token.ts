@@ -244,5 +244,5 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 
 if (isExtensionContext()) {
   extensionKeyStorage.onChange(triggerListeners);
-  extensionKeyStorage.onChange(triggerListeners);
+  partnerTokenStorage.onChange(triggerListeners);
 }
