@@ -19,7 +19,7 @@ import {
   type ModDefinition,
   type ResolvedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
 import {
   ensurePermissionsFromUserGesture,
@@ -30,7 +30,7 @@ import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { collectIntegrationOriginPermissions } from "@/permissions/integrationPermissionsHelpers";
+import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 

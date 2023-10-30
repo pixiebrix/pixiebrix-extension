@@ -27,7 +27,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { validateRegistryId } from "@/types/helpers";
 import { render, screen } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {

@@ -52,9 +52,9 @@ import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type IntegrationDependency,
   type ModDependencyAPIVersion,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { SERVICES_BASE_SCHEMA_URL } from "@/services/integrationUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

@@ -24,7 +24,7 @@ import { Row, Col, Button, Form } from "react-bootstrap";
 import { Formik } from "formik";
 import Editor, { type EditorValues } from "./Editor";
 import useSubmitBrick from "./useSubmitBrick";
-import { useTitle } from "@/hooks/title";
+import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
 
 const initialValue: EditorValues = {
   config: "",
@@ -33,7 +33,7 @@ const initialValue: EditorValues = {
 };
 
 const CreatePage: React.FunctionComponent = () => {
-  useTitle("Create Brick");
+  useSetDocumentTitle("Create Brick");
 
   const { submit, validate } = useSubmitBrick({
     create: true,

@@ -17,16 +17,17 @@
 
 import { useEffect, useMemo } from "react";
 
-const SUFFIX = " | PixieBrix";
+export const SUFFIX = " | PixieBrix";
 
 /**
  * Set title of the document, restoring the original title when component is unmounted.
  */
-export function useTitle(title: string): void {
+export function useSetDocumentTitle(title: string): void {
   const originalTitle = useMemo(() => document.title, []);
 
   useEffect(() => {
     document.title = `${title}${SUFFIX}`;
+
     return () => {
       document.title = originalTitle;
     };

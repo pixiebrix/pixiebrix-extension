@@ -21,18 +21,14 @@ import axios, {
   type AxiosResponse,
   type Method,
 } from "axios";
-import { pixiebrixConfigurationFactory } from "@/services/locator";
-import serviceRegistry from "@/services/registry";
+import { pixiebrixConfigurationFactory } from "@/integrations/locator";
+import serviceRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { isEmpty } from "lodash";
 import { launchOAuth2Flow } from "@/background/auth/launchOAuth2Flow";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
-import {
-  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-  PIXIEBRIX_INTEGRATION_ID,
-} from "@/services/constants";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   selectRemoteResponseErrorMessage,
@@ -55,7 +51,7 @@ import {
   type Integration,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
@@ -66,6 +62,10 @@ import {
   getCachedAuthData,
 } from "@/background/auth/authStorage";
 import { getToken } from "@/background/auth/getToken";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)

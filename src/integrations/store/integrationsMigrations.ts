@@ -22,7 +22,7 @@ import {
 import {
   type IntegrationConfigV1,
   type IntegrationConfigV2,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 
 type IntegrationsStateV1 = {
   configured: Record<string, IntegrationConfigV1>;

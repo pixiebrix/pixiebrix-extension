@@ -15,17 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getIntegrationIds,
-  getUnconfiguredComponentIntegrations,
-} from "./modDefinitionUtils";
-import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import extensionPointRegistry from "@/starterBricks/registry";
-import { validateOutputKey } from "@/runtime/runtimeTypes";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import { validateRegistryId } from "@/types/helpers";
-import { SERVICES_BASE_SCHEMA_URL } from "@/services/integrationUtils";
-
-extensionPointRegistry.lookup = jest.fn();
+import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 describe("getUnconfiguredComponentIntegrations", () => {
   it("returns empty if no integrations", () => {
@@ -178,109 +172,5 @@ describe("getUnconfiguredComponentIntegrations", () => {
         },
       ])
     );
-  });
-});
-
-describe("getIntegrationIds", () => {
-  it("works with record services formats", () => {
-    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
-    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
-    const modComponentDefinition1 = modComponentDefinitionFactory();
-    const modComponentDefinition2 = modComponentDefinitionFactory({
-      services: {
-        [validateOutputKey("service1")]: serviceId1,
-        [validateOutputKey("service2")]: serviceId2,
-      },
-    });
-    const modComponentDefinition3 = modComponentDefinitionFactory({
-      services: {
-        [validateOutputKey("service1")]: serviceId1,
-      },
-    });
-    expect(
-      getIntegrationIds({
-        extensionPoints: [
-          modComponentDefinition1,
-          modComponentDefinition2,
-          modComponentDefinition3,
-        ],
-      })
-    ).toEqual([serviceId1, serviceId2]);
-  });
-
-  it("works with schema services formats", () => {
-    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
-    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
-    const modComponentDefinition1 = modComponentDefinitionFactory({
-      services: {
-        properties: {
-          service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
-          },
-          service2: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
-          },
-        },
-        required: ["service1", "service2"],
-      },
-    });
-    const modComponentDefinition2 = modComponentDefinitionFactory({
-      services: {
-        properties: {
-          service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
-          },
-        },
-        required: ["service1"],
-      },
-    });
-    expect(
-      getIntegrationIds({
-        extensionPoints: [modComponentDefinition1, modComponentDefinition2],
-      })
-    ).toEqual([serviceId1, serviceId2]);
-  });
-
-  it("works with both formats together", () => {
-    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
-    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
-    const modComponentDefinition1 = modComponentDefinitionFactory({
-      services: {
-        properties: {
-          service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
-          },
-          service2: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
-          },
-        },
-        required: ["service1", "service2"],
-      },
-    });
-    const modComponentDefinition2 = modComponentDefinitionFactory({
-      services: {
-        properties: {
-          service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
-          },
-        },
-        required: ["service1"],
-      },
-    });
-    const modComponentDefinition3 = modComponentDefinitionFactory({
-      services: {
-        [validateOutputKey("service1")]: serviceId1,
-        [validateOutputKey("service2")]: serviceId2,
-      },
-    });
-    expect(
-      getIntegrationIds({
-        extensionPoints: [
-          modComponentDefinition1,
-          modComponentDefinition2,
-          modComponentDefinition3,
-        ],
-      })
-    ).toEqual([serviceId1, serviceId2]);
   });
 });

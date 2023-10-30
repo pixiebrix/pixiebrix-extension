@@ -18,17 +18,17 @@
 import { type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, uniqBy } from "lodash";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
-} from "@/types/integrationTypes";
-import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
+} from "@/integrations/integrationTypes";
 import { validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)

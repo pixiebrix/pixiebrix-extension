@@ -19,10 +19,10 @@ import { localStorage } from "redux-persist-webextension-storage";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { revertAll } from "@/store/commonActions";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { createMigrate } from "redux-persist";
-import { migrations } from "@/store/integrations/integrationsMigrations";
+import { migrations } from "@/integrations/store/integrationsMigrations";
 
 export interface IntegrationsState {
   /**

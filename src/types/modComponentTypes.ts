@@ -34,7 +34,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 
 /**
  * ModMetadata that includes sharing information.

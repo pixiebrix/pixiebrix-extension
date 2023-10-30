@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
@@ -27,7 +27,7 @@ import {
   type ODataResponseData,
   type Release,
 } from "@/contrib/uipath/uipathContract";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import cachePromise from "@/utils/cachePromise";
 

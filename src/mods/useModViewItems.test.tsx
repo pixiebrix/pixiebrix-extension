@@ -32,7 +32,8 @@ import {
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { pickModDefinitionMetadata } from "@/utils/modDefinitionUtils";
+
+import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
 
 const axiosMock = new MockAdapter(axios);
 

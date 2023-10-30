@@ -17,11 +17,11 @@
 
 import React, { type ComponentProps } from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
-import IntegrationEditorModal from "./IntegrationEditorModal";
+import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
 import { action } from "@storybook/addon-actions";
 import { fromJS } from "@/services/factory";
 import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
-import { type IntegrationDefinition } from "@/types/integrationTypes";
+import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 
 import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml?loadAsText";
@@ -34,18 +34,18 @@ const FIXTURES = {
   automationAnywhere: automationAnywhereYaml,
 };
 
-type StoryType = ComponentProps<typeof IntegrationEditorModal> & {
+type StoryType = ComponentProps<typeof IntegrationConfigEditorModal> & {
   fixture: keyof typeof FIXTURES;
 };
 
 export default {
   title: "Options/ServiceEditorModal",
-  component: IntegrationEditorModal,
+  component: IntegrationConfigEditorModal,
   // Modals are not compatible with Storyshots
   parameters: {
     storyshots: false,
   },
-} as ComponentMeta<typeof IntegrationEditorModal>;
+} as ComponentMeta<typeof IntegrationConfigEditorModal>;
 
 const Template: Story<StoryType> = ({ fixture, ...args }) => {
   const service = fromJS(
@@ -57,7 +57,7 @@ const Template: Story<StoryType> = ({ fixture, ...args }) => {
 
   return (
     <Provider store={settingsStore()}>
-      <IntegrationEditorModal {...args} integration={service} />
+      <IntegrationConfigEditorModal {...args} integration={service} />
     </Provider>
   );
 };

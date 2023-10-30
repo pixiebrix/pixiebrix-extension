@@ -32,11 +32,11 @@ import { type UUID } from "@/types/stringTypes";
 import { Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faMagic } from "@fortawesome/free-solid-svg-icons";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import AsyncButton from "@/components/AsyncButton";
 import Form, { type RenderBody } from "@/components/form/Form";
 import { object } from "yup";
 import * as Yup from "yup";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 const { actions } = extensionsSlice;
 

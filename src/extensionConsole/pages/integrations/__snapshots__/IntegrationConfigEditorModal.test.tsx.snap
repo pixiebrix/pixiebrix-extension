@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ServiceEditorModal Can render Pipedrive configuration modal without existing configuration 1`] = `
+exports[`IntegrationConfigEditorModal Can render Pipedrive configuration modal without existing configuration 1`] = `
 <div
   aria-modal="true"
   class="fade modal show"

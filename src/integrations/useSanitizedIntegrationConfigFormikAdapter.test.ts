@@ -16,13 +16,13 @@
  */
 
 import { renderHook } from "@/pageEditor/testHelpers";
-import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import serviceRegistry from "@/services/registry";
+import serviceRegistry from "@/integrations/registry";
 import {
   type IntegrationABC,
   type SanitizedIntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
 import * as backgroundApi from "@/background/messenger/api";
 import {
@@ -40,8 +40,8 @@ jest
   .mocked(backgroundApi.services.locate)
   .mockResolvedValue(sanitizedIntegrationConfig);
 
-jest.mock("@/services/registry", () => {
-  const actual = jest.requireActual("@/services/registry");
+jest.mock("@/integrations/registry", () => {
+  const actual = jest.requireActual("@/integrations/registry");
   return {
     // Include __esModule so default export works
     __esModule: true,

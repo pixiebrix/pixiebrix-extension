@@ -19,7 +19,7 @@ import {
   type AuthData,
   type IntegrationConfig,
   type OAuth2Context,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import {
   computeChallenge,
   generateVerifier,

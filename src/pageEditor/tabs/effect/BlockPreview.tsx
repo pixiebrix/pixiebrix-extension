@@ -37,7 +37,6 @@ import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useField, useFormikContext } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { makeServiceContext } from "@/services/integrationUtils";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -45,9 +44,10 @@ import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -170,7 +170,10 @@ const BlockPreview: React.FunctionComponent<{
             ...removeEmptyValues(blockConfig),
             if: undefined,
           },
-          context: { ...context, ...(await makeServiceContext(services)) },
+          context: {
+            ...context,
+            ...(await makeServiceContextFromDependencies(services)),
+          },
           rootSelector: undefined,
           blueprintId: values.recipe?.id,
         });

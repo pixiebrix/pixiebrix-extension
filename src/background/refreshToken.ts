@@ -20,13 +20,13 @@ import { expectContext } from "@/utils/expectContext";
 import {
   type Integration,
   type SanitizedIntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { locator as serviceLocator } from "@/background/locator";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import {
   getCachedAuthData,
   setCachedAuthData,
 } from "@/background/auth/authStorage";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.

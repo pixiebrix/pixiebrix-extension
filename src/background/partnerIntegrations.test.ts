@@ -19,19 +19,15 @@ import {
   _refreshPartnerToken,
   getPartnerPrincipals,
 } from "@/background/partnerIntegrations";
-import { readRawConfigurations } from "@/services/registry";
+import { readRawConfigurations } from "@/integrations/registry";
 import tokenIntegrationDefinition from "@contrib/integrations/automation-anywhere.yaml";
 import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { locator as serviceLocator } from "@/background/locator";
-import {
-  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "@/services/constants";
 import { uuidv4 } from "@/types/helpers";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import {
   integrationConfigFactory,
   secretsConfigFactory,
@@ -39,6 +35,10 @@ import {
 import { appApiMock } from "@/testUtils/appApiMock";
 import { registry } from "@/background/messenger/api";
 import { setCachedAuthData } from "@/background/auth/authStorage";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 const integrationDefinitionMap = new Map([
   [CONTROL_ROOM_TOKEN_INTEGRATION_ID, tokenIntegrationDefinition],
@@ -50,8 +50,8 @@ jest.mock("@/auth/token", () => ({
   setPartnerAuth: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock("@/services/registry", () => {
-  const actual = jest.requireActual("@/services/registry");
+jest.mock("@/integrations/registry", () => {
+  const actual = jest.requireActual("@/integrations/registry");
   return {
     // Include __esModule so default export works
     __esModule: true,

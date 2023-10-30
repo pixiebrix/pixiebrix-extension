@@ -29,7 +29,7 @@ import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type SanitizedConfig,
   type SecretsConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import {
   type RegistryId,
   type SemVerString,

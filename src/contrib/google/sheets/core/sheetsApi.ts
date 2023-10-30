@@ -28,7 +28,7 @@ import initGoogle, {
   isGoogleInitialized,
   markGoogleInvalidated,
 } from "@/contrib/google/initGoogle";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
 import {
   getCachedAuthData,
@@ -41,6 +41,7 @@ import {
   type FileList,
   type Spreadsheet,
   type SpreadsheetProperties,
+  type UserInfo,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
 import pTimeout from "p-timeout";
@@ -179,6 +180,18 @@ export async function getAllSpreadsheets(
     },
   };
   return executeRequest<FileList>(requestConfig, googleAccount);
+}
+
+export async function getGoogleUserEmail(
+  googleAccount: SanitizedIntegrationConfig
+): Promise<string> {
+  const requestConfig: AxiosRequestConfig<never> = {
+    url: "https://www.googleapis.com/oauth2/v1/userinfo",
+    method: "get",
+  };
+
+  const userInfo = await executeRequest<UserInfo>(requestConfig, googleAccount);
+  return userInfo.email;
 }
 
 async function batchUpdateSpreadsheet(

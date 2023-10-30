@@ -52,3 +52,11 @@ export type FileList = {
   files: File[];
   nextPageToken?: string;
 };
+
+export type UserInfo = {
+  id: number;
+  email: string;
+  verified_email: boolean;
+  picture: string;
+  hd: string;
+};

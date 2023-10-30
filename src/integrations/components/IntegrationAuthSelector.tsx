@@ -25,7 +25,6 @@ import Select, {
   type StylesConfig,
 } from "react-select";
 
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type AuthOption } from "@/auth/authTypes";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
@@ -33,11 +32,12 @@ import { Events } from "@/telemetry/events";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { useSelector } from "react-redux";
-import { selectIntegrationConfigMap } from "@/store/integrations/integrationsSelectors";
+import { selectIntegrationConfigMap } from "@/integrations/store/integrationsSelectors";
 import {
   type IntegrationConfigArgs,
   type SanitizedConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 // CustomStyles.js
 const colors = {
@@ -63,7 +63,7 @@ const customStyles: StylesConfig<AuthOption> = {
   },
 };
 
-const ServiceAuthSelector: React.FunctionComponent<{
+const IntegrationAuthSelector: React.FunctionComponent<{
   name: string;
   serviceId: RegistryId;
   authOptions: AuthOption[];
@@ -158,4 +158,4 @@ const ServiceAuthSelector: React.FunctionComponent<{
   );
 };
 
-export default ServiceAuthSelector;
+export default IntegrationAuthSelector;

@@ -19,7 +19,7 @@ import { useFormikContext } from "formik";
 import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { services } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";

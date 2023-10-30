@@ -17,7 +17,7 @@
 
 import React from "react";
 import { fromJS } from "@/services/factory";
-import IntegrationEditorModal from "@/extensionConsole/pages/integrations/IntegrationEditorModal";
+import IntegrationConfigEditorModal from "@/extensionConsole/pages/integrations/IntegrationConfigEditorModal";
 import { render, screen } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
@@ -26,19 +26,19 @@ import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
 import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml?loadAsText";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("ServiceEditorModal", () => {
+describe("IntegrationConfigEditorModal", () => {
   test("Can render Pipedrive configuration modal without existing configuration", async () => {
     const service = fromJS(pipedriveYaml as any);
 
     render(
-      <IntegrationEditorModal
-        integrationConfig={{ label: "" } as IntegrationConfig}
+      <IntegrationConfigEditorModal
+        initialValues={{ label: "" } as IntegrationConfig}
         onDelete={jest.fn()}
         onSave={jest.fn()}
         onClose={jest.fn()}
@@ -57,14 +57,13 @@ describe("ServiceEditorModal", () => {
     expect(dialogRoot).toMatchSnapshot();
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests -- FIXME: for some reason, userEvent.type (the alternative approach of using fireEvent) is not modifying the value of the textarea
-  test.skip("displays user-friendly pattern validation message", async () => {
+  test("displays user-friendly pattern validation message", async () => {
     const service = fromJS(automationAnywhereYaml as any);
     const user = userEvent.setup();
 
     render(
-      <IntegrationEditorModal
-        integrationConfig={{ label: "" } as IntegrationConfig}
+      <IntegrationConfigEditorModal
+        initialValues={{ label: "" } as IntegrationConfig}
         onDelete={jest.fn()}
         onSave={jest.fn()}
         onClose={jest.fn()}
@@ -74,14 +73,19 @@ describe("ServiceEditorModal", () => {
 
     await waitForEffect();
 
-    const controlRoomUrlInput = screen.getByRole("textbox", {
-      name: "controlRoomUrl",
-    });
-
-    await user.click(controlRoomUrlInput);
-    await user.type(controlRoomUrlInput, "https://invalid.control.room/");
+    await user.click(
+      screen.getByRole("textbox", {
+        name: "controlRoomUrl",
+      })
+    );
+    await user.type(
+      screen.getByRole("textbox", {
+        name: "controlRoomUrl",
+      }),
+      "https://invalid.control.room/"
+    );
     await user.click(screen.getByRole("textbox", { name: "username" }));
 
-    expect(screen.getByText("Invalid controlRoomUrl format")).not.toBeNull();
+    expect(screen.getByText("Invalid controlRoomUrl format")).toBeVisible();
   });
 });

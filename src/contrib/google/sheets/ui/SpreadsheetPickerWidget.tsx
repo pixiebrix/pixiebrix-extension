@@ -44,7 +44,7 @@ import chromeP from "webext-polyfill-kinda";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { isEmpty } from "lodash";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import {

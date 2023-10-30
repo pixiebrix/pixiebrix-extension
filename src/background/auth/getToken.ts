@@ -19,7 +19,7 @@ import {
   type AuthData,
   type Integration,
   type IntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { expectContext } from "@/utils/expectContext";
 import axios from "axios";
 import { setCachedAuthData } from "@/background/auth/authStorage";

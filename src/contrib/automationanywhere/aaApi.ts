@@ -46,7 +46,7 @@ import {
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
 import { type AxiosRequestConfig } from "axios";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { sleep } from "@/utils/timeUtils";
