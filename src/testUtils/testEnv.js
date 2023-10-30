@@ -26,8 +26,26 @@ process.env.MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
-global.ResizeObserver = class ResizeObserver {
-  observe() {}
+
+// Use MutationObserver to detect when the element has been removed from the document
+// This is the only usage in the extension at the moment. YMMV.
+global.ResizeObserver = class ResizeObserver extends MutationObserver {
+  constructor(callback) {
+    super(() => {
+      callback([{ target: this.element }]);
+    });
+  }
+
+  observe(element) {
+    if (this.element) {
+      throw new Error(
+        "This ResizeObserver implementation can only observe one element"
+      );
+    }
+
+    this.element = element;
+    super.observe(element.ownerDocument, { childList: true, subtree: true });
+  }
 };
 global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
   constructor(type, init) {

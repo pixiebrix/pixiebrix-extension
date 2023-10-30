@@ -24,7 +24,7 @@ import {
 } from "@/types/modComponentTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { $safeFind } from "@/utils/domUtils";
-import onAbort from "@/utils/promiseUtils.js";
+import onAbort from "@/utils/promiseUtils";
 
 /**
  * Attach a callback to be called when a node is removed from the DOM
@@ -40,7 +40,7 @@ export function onNodeRemoved(
     return;
   }
 
-  const observer = new ResizeObserver(([entry], observer) => {
+  const observer = new ResizeObserver(([entry]) => {
     if (!entry?.target.isConnected) {
       observer.disconnect();
       callback();
