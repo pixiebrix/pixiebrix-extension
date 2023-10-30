@@ -44,6 +44,7 @@ export async function getOptionsValidationSchema(
   const dereferencedSchema = await dereference(
     cloneDeep(optionsDefinitionSchema)
   );
+
   const yupSchema = buildYup(dereferencedSchema);
   // Yup will produce an ugly "null is not type of x" validation error instead of an
   // "this field is required" error unless we allow null values for required fields
