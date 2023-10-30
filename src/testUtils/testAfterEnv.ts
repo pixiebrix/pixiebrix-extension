@@ -28,6 +28,8 @@ import * as apiClientMock from "./apiClientMock";
 import * as detectPageMock from "./detectPageMock";
 import * as loggingMock from "./loggingMock";
 import * as reportErrorMock from "./reportErrorMock";
+import brickRegistry from "@/bricks/registry";
+import { initRuntime } from "@/runtime/reducePipeline";
 
 // @ts-expect-error For testing only
 global.$ = $;
@@ -55,3 +57,6 @@ jest.setMock("webext-detect-page", detectPageMock);
 jest.setMock("@/services/apiClient", apiClientMock);
 jest.setMock("@/telemetry/logging", loggingMock);
 jest.setMock("@/telemetry/reportError", reportErrorMock);
+
+// Since 1.8.2, the runtime is decoupled from the brick registry.
+initRuntime(brickRegistry);
