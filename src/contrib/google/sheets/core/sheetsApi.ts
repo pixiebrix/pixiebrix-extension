@@ -173,9 +173,18 @@ export async function getAllSpreadsheets(
   googleAccount: SanitizedIntegrationConfig | null
 ): Promise<FileList> {
   const requestConfig: AxiosRequestConfig<never> = {
-    url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'`,
+    url: DRIVE_BASE_URL,
     method: "get",
     params: {
+      q: "mimeType='application/vnd.google-apps.spreadsheet'",
+      // Tell the api that this application supports shared items as well as MyDrive items
+      supportsAllDrives: true,
+      // Include shared items in the results
+      includeItemsFromAllDrives: true,
+      // Search the 'user' corpus for shared drives
+      // See: https://developers.google.com/drive/api/guides/enable-shareddrives#search_for_content_on_a_shared_drive
+      corpora: "user",
+      // Sort by last modified first, then by name
       orderBy: "modifiedTime desc,name",
     },
   };
