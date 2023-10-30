@@ -5,7 +5,7 @@
   "compilerOptions": {
     "sourceMap": true,
     "module": "ES2020",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "baseUrl": ".",
 
@@ -23,9 +23,6 @@
       "@microsoft/applicationinsights-web/*": [
         "src/contrib/uipath/quietLogger/*"
       ],
-
-      // Silently improve tree-shakeability and AMD-related errors like #943
-      "lodash": ["node_modules/lodash-es"],
 
       // Help Madge resolve this dependency
       "marked": ["node_modules/marked/lib/marked.esm.js"]

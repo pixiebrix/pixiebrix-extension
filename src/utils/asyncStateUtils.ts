@@ -24,9 +24,8 @@ import {
   type UseCachedQueryResult,
 } from "@/types/sliceTypes";
 import { noop } from "lodash";
-import { type WritableDraft } from "immer/dist/types/types-external";
 import { serializeError } from "serialize-error";
-import { castDraft } from "immer";
+import { castDraft, type Draft } from "immer";
 
 /**
  * Merge multiple async states into a single async state using a synchronous merge function.
@@ -297,9 +296,9 @@ export function checkAsyncStateInvariants(state: AsyncState): void {
 }
 
 export function setValueOnState<T>(
-  state: WritableDraft<AsyncState<T>>,
+  state: Draft<AsyncState<T>>,
   value: T
-): WritableDraft<AsyncState<T>> {
+): Draft<AsyncState<T>> {
   state.data = castDraft(value);
   state.currentData = castDraft(value);
   state.isUninitialized = false;
@@ -315,9 +314,9 @@ export function setValueOnState<T>(
 }
 
 export function setErrorOnState<T>(
-  state: WritableDraft<AsyncState<T>>,
+  state: Draft<AsyncState<T>>,
   error: unknown
-): WritableDraft<AsyncState<T>> {
+): Draft<AsyncState<T>> {
   state.data = undefined;
   state.currentData = undefined;
   state.isUninitialized = false;

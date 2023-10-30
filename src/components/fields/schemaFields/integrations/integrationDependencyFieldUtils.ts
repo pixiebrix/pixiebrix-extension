@@ -16,7 +16,7 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { produce } from "immer";
+import { produce, type Draft } from "immer";
 import {
   type Expression,
   type OutputKey,
@@ -28,7 +28,6 @@ import {
   isPipelineExpression,
   isVarExpression,
 } from "@/utils/expressionUtils";
-import { type WritableDraft } from "immer/dist/types/types-external";
 import { isEmpty } from "lodash";
 
 export type IntegrationsFormSlice = Pick<
@@ -98,9 +97,7 @@ export function keyToFieldValue(key: OutputKey): Expression<ServiceVarRef> {
 /**
  * Filter the unused dependencies from a draft in-place
  */
-export function removeUnusedDependencies(
-  draft: WritableDraft<IntegrationsFormSlice>
-) {
+export function removeUnusedDependencies(draft: Draft<IntegrationsFormSlice>) {
   if (isEmpty(draft.integrationDependencies)) {
     return;
   }
