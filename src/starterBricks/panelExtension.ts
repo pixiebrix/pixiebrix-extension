@@ -62,6 +62,7 @@ import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import onAbort from "@/utils/promiseUtils";
 
 export type PanelConfig = {
   heading?: string;
@@ -103,7 +104,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
   private readonly collapsedExtensions: Map<UUID, boolean>;
 
-  private readonly cancelPending: Set<() => void>;
+  private cancelController = new AbortController();
 
   private uninstalled = false;
 
@@ -119,7 +120,6 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     super(metadata, logger);
     this.$container = null;
     this.collapsedExtensions = new Map();
-    this.cancelPending = new Set();
     this.cancelRemovalMonitor = new Map();
     this.renderTimestamps = new Map();
   }
@@ -195,11 +195,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     this.$container = null;
 
-    for (const cancel of this.cancelPending) {
-      cancel();
-    }
-
-    this.cancelPending.clear();
+    this.cancelController.abort();
+    this.cancelController = new AbortController();
   }
 
   async install(): Promise<boolean> {
@@ -217,7 +214,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     );
 
     const [containerPromise, cancelInstall] = awaitElementOnce(selector);
-    this.cancelPending.add(cancelInstall);
+    onAbort(this.cancelController, cancelInstall);
 
     this.$container = (await containerPromise) as JQuery;
 
@@ -238,15 +235,17 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     const acquired = acquireElement(container, this.id);
 
     if (acquired) {
-      this.cancelPending.add(
-        onNodeRemoved(container, () => {
+      onNodeRemoved(
+        container,
+        () => {
           console.debug(
             `Container removed from DOM for ${this.id}: ${JSON.stringify(
               selector
             )}`
           );
           this.$container = undefined;
-        })
+        },
+        this.cancelController.signal
       );
     }
 
@@ -327,7 +326,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       console.debug(`Cancelling removal monitor for ${extension.id}`);
       cancelCurrent();
       this.cancelRemovalMonitor.delete(extension.id);
-      this.cancelPending.delete(cancelCurrent);
+      onAbort(this.cancelController, cancelCurrent);
     } else {
       console.debug(`No current removal monitor for ${extension.id}`);
     }

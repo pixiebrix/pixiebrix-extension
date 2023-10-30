@@ -7,7 +7,7 @@ import { uuidv4, validateUUID } from "@/types/helpers";
 import { setTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 import { getThisFrame } from "webext-messenger";
 
-import { setAnimationFrameInterval } from "@/utils/domUtils";
+import { html, setAnimationFrameInterval } from "@/utils/domUtils";
 
 /**
  * Attaches a tooltip container to the DOM.
@@ -62,47 +62,62 @@ const resizerMap = new WeakMap<HTMLElement, IFrameComponent>();
 function popoverFactory(initialUrl: URL): HTMLElement {
   const $container = $(ensureTooltipsContainer());
 
-  if (popoverPool.length === 0) {
-    const decoratedUrl = new URL(initialUrl);
-    const frameNonce = uuidv4();
-    console.debug("No available popovers, creating popover %s", frameNonce);
-
-    // Pass to the EphemeralPanel for useTemporaryPanelDefinition
-    decoratedUrl.searchParams.set("frameNonce", frameNonce);
-
-    const $tooltip = $(
-      `<div role="tooltip" data-popover-id="${frameNonce}" style="display: none;"><iframe src="${decoratedUrl.href}" title="Popover content" scrolling="no" style="border: 0; color-scheme: normal;"></iframe><div data-popper-arrow></div></div>`
-    );
-
-    $container.append($tooltip);
-    const tooltip = $tooltip.get(0);
-
-    popoverPool.push(tooltip);
-
-    const [resizer] = iframeResizer(
-      {
-        id: frameNonce,
-        // NOTE: autoResize doesn't work very well because BodyContainer has a Shadow DOM. So the mutation
-        // observer used by iframeResizer can't see it
-        autoResize: false,
-        sizeWidth: true,
-        sizeHeight: true,
-        checkOrigin: [trimEnd(chrome.runtime.getURL(""), "/")],
-        // Looks for data-iframe-height in PopoverLayout
-        heightCalculationMethod: "taggedElement",
-        resizedCallback() {
-          void popperMap.get(tooltip)?.update();
-        },
-      },
-      tooltip.querySelector("iframe")
-    );
-
-    resizerMap.set(tooltip, resizer);
-  } else {
+  const existingPopover = popoverPool.pop();
+  if (existingPopover) {
     console.debug("Using existing frame from frame pool");
+    return existingPopover;
   }
 
-  return popoverPool.pop();
+  const decoratedUrl = new URL(initialUrl);
+  const frameNonce = uuidv4();
+  console.debug("No available popovers, creating popover %s", frameNonce);
+
+  // Pass to the EphemeralPanel for useTemporaryPanelDefinition
+  decoratedUrl.searchParams.set("frameNonce", frameNonce);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's being created here, it can't be missing
+  const tooltip = $(
+    html`
+      <div
+        role="tooltip"
+        data-popover-id="${frameNonce}"
+        style="display: none;"
+      >
+        <iframe
+          src="${decoratedUrl.href}"
+          title="Popover content"
+          scrolling="no"
+          style="border: 0; color-scheme: normal;"
+        ></iframe>
+        <div data-popper-arrow></div>
+      </div>
+    `
+  ).get(0)!;
+
+  $container.append(tooltip);
+
+  const [resizer] = iframeResizer(
+    {
+      id: frameNonce,
+      // NOTE: autoResize doesn't work very well because BodyContainer has a Shadow DOM. So the mutation
+      // observer used by iframeResizer can't see it
+      autoResize: false,
+      sizeWidth: true,
+      sizeHeight: true,
+      checkOrigin: [trimEnd(chrome.runtime.getURL(""), "/")],
+      // Looks for data-iframe-height in PopoverLayout
+      heightCalculationMethod: "taggedElement",
+      resizedCallback() {
+        void popperMap.get(tooltip)?.update();
+      },
+    },
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's being created here, it can't be missing
+    tooltip.querySelector("iframe")!
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- It's being created here, it can't be missing
+  resizerMap.set(tooltip, resizer!);
+  return tooltip;
 }
 
 /**
@@ -138,15 +153,17 @@ function reclaimTooltip(tooltip: HTMLElement): void {
 
   // Set popper to null before destroying to avoid deleting the tooltip
   const popper = popperMap.get(tooltip);
-  // https://github.com/floating-ui/floating-ui/issues/538
-  popper.state.elements.popper = null;
-  popper.destroy();
-  popperMap.delete(tooltip);
+  if (popper) {
+    // https://github.com/floating-ui/floating-ui/issues/538
+    popper.state.elements.popper = null as unknown as HTMLElement;
+    popper.destroy();
+    popperMap.delete(tooltip);
+  }
 
   // Clear content from the panel
   setTemporaryOverlayPanel({
     frameNonce: validateUUID(tooltip.dataset.popoverId),
-    panelNonce: null,
+    panelNonce: validateUUID(null),
   });
 
   // Mark as available in the popover pool

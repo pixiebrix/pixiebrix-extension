@@ -207,3 +207,35 @@ export function groupPromisesByStatus<T>(
 
   return { fulfilled, rejected };
 }
+
+type Handle =
+  | { disconnect: VoidFunction }
+  | { abort: VoidFunction }
+  | VoidFunction;
+
+export function callHandle(handle: Handle): void {
+  if ("disconnect" in handle) {
+    // Browser observers
+    handle.disconnect();
+  } else if ("abort" in handle) {
+    handle.abort();
+  } else if (typeof handle === "function") {
+    handle();
+  }
+}
+
+export default function onAbort(
+  abort: AbortController | AbortSignal,
+  ...callbacks: Handle[]
+): void {
+  const signal = abort instanceof AbortController ? abort.signal : abort;
+  signal.addEventListener(
+    "abort",
+    () => {
+      for (const callback of callbacks) {
+        callHandle(callback);
+      }
+    },
+    { once: true }
+  );
+}

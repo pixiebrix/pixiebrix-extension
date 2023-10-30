@@ -86,6 +86,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import onAbort from "@/utils/promiseUtils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -196,7 +197,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
    * Set of methods to call to cancel any DOM watchers associated with this extension point
    * @private
    */
-  private readonly cancelListeners: Set<() => void>;
+  private cancelController: AbortController;
 
   /**
    * Map from extension id to callback to cancel observers for its dependencies.
@@ -247,7 +248,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     super(metadata, logger);
     this.menus = new Map<UUID, HTMLElement>();
     this.removed = new Set<UUID>();
-    this.cancelListeners = new Set();
+    this.cancelController = new AbortController();
     this.cancelDependencyObservers = new Map<UUID, () => void>();
   }
 
@@ -293,24 +294,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   );
 
   private cancelAllPending(): void {
-    console.debug(
-      `Cancelling ${this.cancelListeners.size} menuItemExtension observers`
-    );
-
-    for (const cancelObserver of this.cancelListeners) {
-      try {
-        // `cancelObserver` should always be defined given its type. But check just in case since we don't have
-        // strictNullChecks on
-        if (cancelObserver) {
-          cancelObserver();
-        }
-      } catch (error) {
-        // Try to proceed as normal
-        reportError(error, { context: this.logger.context });
-      }
-    }
-
-    this.cancelListeners.clear();
+    console.debug("Cancelling menuItemExtension observers");
+    this.cancelController.abort();
+    this.cancelController = new AbortController();
   }
 
   clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
@@ -453,7 +439,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   private attachMenus($menuContainers: JQuery): void {
     const existingMenuContainers = new Set(this.menus.values());
 
-    const cleanupCallbacks = [];
     for (const element of $menuContainers) {
       // Only acquire new menu items, otherwise we end up with duplicate entries in this.menus which causes
       // repeat evaluation of menus in this.run
@@ -466,15 +451,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         if (acquired && this.attachMode === "once") {
           // Only re-acquire in "once" attachMode. In "watch" the menu will automatically be re-acquired when the
           // element is re-initialized on the page
-          cleanupCallbacks.push(
-            onNodeRemoved(element, async () => this.reacquire(menuNonce))
+          onNodeRemoved(
+            element,
+            async () => this.reacquire(menuNonce),
+            this.cancelController.signal
           );
         }
       }
-    }
-
-    for (const cleanupCallback of cleanupCallbacks) {
-      this.cancelListeners.add(cleanupCallback);
     }
   }
 
@@ -503,9 +486,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       { target: document }
     );
 
-    this.cancelListeners.add(() => {
-      mutationObserver.disconnect();
-    });
+    onAbort(this.cancelController, mutationObserver);
   }
 
   /**
@@ -533,7 +514,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     );
 
     const [menuPromise, cancelWait] = awaitElementOnce(containerSelector);
-    this.cancelListeners.add(cancelWait);
+    onAbort(this.cancelController, cancelWait);
 
     let $menuContainers;
 
@@ -773,11 +754,16 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     this.watchDependencies(extension);
 
     if (process.env.DEBUG) {
-      const cancelObserver = onNodeRemoved($menuItem.get(0), () => {
-        // Don't re-install here. We're reinstalling the entire menu
-        console.debug(`Menu item for ${extension.id} was removed from the DOM`);
-      });
-      this.cancelListeners.add(cancelObserver);
+      onNodeRemoved(
+        $menuItem.get(0),
+        () => {
+          // Don't re-install here. We're reinstalling the entire menu
+          console.debug(
+            `Menu item for ${extension.id} was removed from the DOM`
+          );
+        },
+        this.cancelController.signal
+      );
     }
   }
 

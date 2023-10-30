@@ -26,6 +26,9 @@ process.env.MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+};
 global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
   constructor(type, init) {
     super(type);

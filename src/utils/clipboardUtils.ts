@@ -44,32 +44,6 @@ function isPermissionError(error: unknown): boolean {
   return getErrorMessage(error).toLowerCase().includes("has been blocked");
 }
 
-// Parse instead of using fetch to avoid potential CSP issues with data: URIs
-// https://stackoverflow.com/a/12300351
-export function dataURItoBlob(dataURI: string): Blob {
-  // Convert base64 to raw binary data held in a string doesn't handle URLEncoded DataURIs - see SO answer #6850276 for
-  // code that does this
-  const byteString = atob(dataURI.split(",")[1]);
-
-  // Separate out the mime component
-  const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
-
-  // Write the bytes of the string to an ArrayBuffer
-  const ab = new ArrayBuffer(byteString.length);
-
-  // Create a view into the buffer
-  const ia = new Uint8Array(ab);
-
-  // Set the bytes of the buffer to the correct values
-  for (let i = 0; i < byteString.length; i++) {
-    // eslint-disable-next-line unicorn/prefer-code-point,security/detect-object-injection -- is a number; copied SO
-    ia[i] = byteString.charCodeAt(i);
-  }
-
-  // Write the ArrayBuffer to a blob, and you're done
-  return new Blob([ab], { type: mimeString });
-}
-
 /**
  * Copy to clipboard, and prompt user to interact with page if the browser blocks the clipboard write due to focus
  * @param clipboardFn function to copy to the clipboard

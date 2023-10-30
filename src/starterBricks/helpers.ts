@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray, noop, once } from "lodash";
+import { castArray, noop } from "lodash";
 import initialize from "@/vendors/initialize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
 import {
@@ -24,76 +24,34 @@ import {
 } from "@/types/modComponentTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { $safeFind } from "@/utils/domUtils";
-
-function getAncestors(node: Node): Node[] {
-  const ancestors = [node];
-  let currentNode: Node = node;
-  while (currentNode && currentNode !== document) {
-    ancestors.push(currentNode);
-    currentNode = currentNode.parentNode;
-  }
-
-  return ancestors;
-}
+import onAbort from "@/utils/promiseUtils.js";
 
 /**
  * Attach a callback to be called when a node is removed from the DOM
  * @param node the DOM node to observe
  * @param callback callback to call when the node is removed
- * @return method to disconnect stop observing for node removal
  */
-// TODO: replace callback with having caller pass AbortSignal
-export function onNodeRemoved(node: Node, callback: () => void): () => void {
-  const ancestors = getAncestors(node);
-
-  const nodes = new WeakSet<Node>(ancestors);
-  const observers = new Set<MutationObserver>();
-
-  // Make sure we're only calling once
-  const wrappedCallback = once(callback);
-
-  // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual
-  // nodes instead of the subtree on the document for efficiency on wide trees
-  for (const ancestor of ancestors) {
-    if (!ancestor?.parentNode) {
-      continue;
-    }
-
-    // https://stackoverflow.com/a/50397148/
-    const removalObserver = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const removedNode of mutation.removedNodes) {
-          if (!nodes.has(removedNode)) {
-            continue;
-          }
-
-          for (const observer of observers) {
-            try {
-              observer.disconnect();
-            } catch (error) {
-              console.warn("Error disconnecting mutation observer", error);
-            }
-          }
-
-          wrappedCallback();
-          break;
-        }
-      }
-    });
-    removalObserver.observe(ancestor.parentNode, { childList: true });
+export function onNodeRemoved(
+  element: Element,
+  callback: () => void,
+  signal?: AbortSignal
+): void {
+  if (signal?.aborted) {
+    return;
   }
 
-  return () => {
-    for (const observer of observers) {
-      try {
-        observer.disconnect();
-      } catch (error) {
-        console.warn("Error disconnecting mutation observer", error);
-      }
+  const observer = new ResizeObserver(([entry], observer) => {
+    if (!entry?.target.isConnected) {
+      observer.disconnect();
+      callback();
     }
+  });
 
-    observers.clear();
-  };
+  if (signal) {
+    onAbort(signal, observer);
+  }
+
+  observer.observe(element);
 }
 
 function mutationSelector(
@@ -121,26 +79,23 @@ function mutationSelector(
 /**
  * Recursively await an element using one or more jQuery selectors.
  * @param selector selector, or an array of selectors to
- * @param $rootElement the root element, defaults to `document`
+ * @param $root the root element, defaults to `document`
  * @returns [promise, cancel] the element promise and a callback for cancelling the promise
  */
 export function awaitElementOnce(
   selector: string | string[],
-  $rootElement?: JQuery<HTMLElement | Document>
+  $root: JQuery<HTMLElement | Document> = $(document)
 ): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
   }
 
   const selectors = castArray(selector);
-  // Safe to pass rootElement to $ constructor since it's already a jQuery object
-  const $root = $rootElement ? $($rootElement) : $(document);
+  const nextSelector = selectors.shift();
 
-  if (selectors.length === 0) {
+  if (!nextSelector) {
     return [Promise.resolve($root), noop];
   }
-
-  const [nextSelector, ...rest] = selectors;
 
   // Find immediately, or wait for it to be initialized
   const $elements: JQuery<HTMLElement | Document> = $safeFind(
@@ -161,7 +116,7 @@ export function awaitElementOnce(
     return [
       // eslint-disable-next-line promise/prefer-await-to-then -- We can return it before it resolves
       nextElementPromise.then(async ($nextElement) => {
-        const [innerPromise, inner] = awaitElementOnce(rest, $nextElement);
+        const [innerPromise, inner] = awaitElementOnce(selectors, $nextElement);
         innerCancel = inner;
 
         console.debug(`awaitElementOnce: found selector: ${nextSelector}`);
@@ -178,11 +133,11 @@ export function awaitElementOnce(
     ];
   }
 
-  if (rest.length === 0) {
+  if (selectors.length === 0) {
     return [Promise.resolve($elements), noop];
   }
 
-  return awaitElementOnce(rest, $elements);
+  return awaitElementOnce(selectors, $elements);
 }
 
 /**
@@ -222,8 +177,8 @@ export function selectExtensionContext(
 ): MessageContext {
   return {
     // The step label will be re-assigned later in reducePipeline
-    label: extension.label,
-    extensionLabel: extension.label,
+    label: extension.label ?? undefined,
+    extensionLabel: extension.label ?? undefined,
     extensionId: extension.id,
     extensionPointId: extension.extensionPointId,
     deploymentId: extension._deployment?.id,
