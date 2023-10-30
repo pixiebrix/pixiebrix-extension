@@ -19,6 +19,7 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
+import { isUnknownObjectArray } from "@/utils/objectUtils";
 
 export class ExportCsv extends EffectABC {
   constructor() {
@@ -75,6 +76,16 @@ export class ExportCsv extends EffectABC {
       // Don't pass `value` because it may be a large amount of data
       throw new PropError(
         `Expected array for data, got ${typeof rows}`,
+        this.id,
+        "data",
+        null
+      );
+    }
+
+    if (!isUnknownObjectArray(rows)) {
+      // Don't pass `value` because it may be a large amount of data
+      throw new PropError(
+        `Expected array of array for data, got ${typeof rows[0]}`,
         this.id,
         "data",
         null

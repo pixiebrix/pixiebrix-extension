@@ -100,7 +100,7 @@ export type JsonTreeProps = JsonTreeOrigProps & {
 };
 
 function normalize(value: Primitive): string {
-  return value.toString().toLowerCase();
+  return String(value).toLowerCase();
 }
 
 /**

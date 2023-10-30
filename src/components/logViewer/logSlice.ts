@@ -26,8 +26,7 @@ import {
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
 import { type LogRootState, type LogState } from "./logViewerTypes";
-import { castDraft } from "immer";
-import { type WritableDraft } from "immer/dist/types/types-external";
+import { castDraft, type Draft } from "immer";
 
 const REFRESH_INTERVAL = 750;
 
@@ -74,9 +73,9 @@ const pollLogs = createAsyncThunk<
 export const logSlice: Slice<
   LogState,
   {
-    refreshEntries(state: WritableDraft<LogState>): void;
+    refreshEntries(state: Draft<LogState>): void;
     setContext(
-      state: WritableDraft<LogState>,
+      state: Draft<LogState>,
       action: PayloadAction<MessageContext>
     ): void;
   },

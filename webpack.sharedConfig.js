@@ -40,6 +40,9 @@ const shared = {
       // https://github.com/webpack/webpack/pull/12693#issuecomment-914079083
       filenamify: "filenamify/browser",
 
+      // Silently improve tree-shakeability and AMD-related errors like #943
+      lodash: "lodash-es",
+
       // Lighter jQuery version
       jquery: "jquery/dist/jquery.slim.min.js",
     },

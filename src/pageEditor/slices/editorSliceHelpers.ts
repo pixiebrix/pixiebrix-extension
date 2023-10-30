@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type WritableDraft } from "immer/dist/types/types-external";
+import { type Draft } from "immer";
 import {
   type EditorState,
   type ModMetadataFormState,
@@ -36,7 +36,7 @@ import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
 export function ensureElementUIState(
-  state: WritableDraft<EditorState>,
+  state: Draft<EditorState>,
   elementId: UUID
 ) {
   if (!state.elementUIStates[elementId]) {
@@ -47,17 +47,14 @@ export function ensureElementUIState(
   }
 }
 
-export function ensureNodeUIState(
-  state: WritableDraft<ElementUIState>,
-  nodeId: UUID
-) {
+export function ensureNodeUIState(state: Draft<ElementUIState>, nodeId: UUID) {
   if (!state.nodeUIStates[nodeId]) {
     state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
   }
 }
 
 export function syncElementNodeUIStates(
-  state: WritableDraft<EditorState>,
+  state: Draft<EditorState>,
   element: ModComponentFormState
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
@@ -85,10 +82,7 @@ export function syncElementNodeUIStates(
   }
 }
 
-export function setActiveNodeId(
-  state: WritableDraft<EditorState>,
-  nodeId: UUID
-) {
+export function setActiveNodeId(state: Draft<EditorState>, nodeId: UUID) {
   const elementUIState = state.elementUIStates[state.activeElementId];
   ensureNodeUIState(elementUIState, nodeId);
   elementUIState.activeNodeId = nodeId;
@@ -99,7 +93,7 @@ export function setActiveNodeId(
  * @param state The redux state (slice)
  * @param uuid The id for the dynamic element to remove
  */
-export function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
+export function removeElement(state: Draft<EditorState>, uuid: UUID) {
   if (state.activeElementId === uuid) {
     state.activeElementId = null;
   }
@@ -135,7 +129,7 @@ export function removeElement(state: WritableDraft<EditorState>, uuid: UUID) {
  * @param recipeId The id of the recipe to remove
  */
 export function removeRecipeData(
-  state: WritableDraft<EditorState>,
+  state: Draft<EditorState>,
   recipeId: RegistryId
 ) {
   if (state.activeRecipeId === recipeId) {
@@ -152,7 +146,7 @@ export function removeRecipeData(
 }
 
 export function selectRecipeId(
-  state: WritableDraft<EditorState>,
+  state: Draft<EditorState>,
   recipeId: RegistryId
 ) {
   state.error = null;
@@ -174,7 +168,7 @@ export function selectRecipeId(
 }
 
 export function editRecipeMetadata(
-  state: WritableDraft<EditorState>,
+  state: Draft<EditorState>,
   metadata: ModMetadataFormState
 ) {
   const recipeId = state.activeRecipeId;
@@ -186,7 +180,7 @@ export function editRecipeMetadata(
 }
 
 export function editRecipeOptionsDefinitions(
-  state: WritableDraft<EditorState>,
+  state: Draft<EditorState>,
   options: ModOptionsDefinition
 ) {
   const recipeId = state.activeRecipeId;
@@ -198,7 +192,7 @@ export function editRecipeOptionsDefinitions(
 }
 
 export function activateElement(
-  state: WritableDraft<EditorState>,
+  state: Draft<EditorState>,
   element: ModComponentFormState
 ) {
   state.error = null;

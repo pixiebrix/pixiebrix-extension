@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type CssSelectorMatch } from "css-selector-generator/types/types";
+import { type CssSelectorMatch } from "css-selector-generator/types/types.js";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInference";
 
 /**
