@@ -15,6 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file Test utilities for injecting registries into the runtime.
+ * @since 1.8.2 used to de-couple the brick registry from the runtime
+ */
+
 import brickRegistry from "@/bricks/registry";
 import { initRuntime } from "@/runtime/reducePipeline";
 

@@ -80,7 +80,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 
-// Introduce a layer of indirection to avoid cycles.
+// Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 let brickRegistry: RegistryProtocol<RegistryId, Brick> = {
   async lookup(): Promise<Brick> {
     throw new Error(
@@ -98,7 +98,6 @@ export function initRuntime(
   registry: RegistryProtocol<RegistryId, Brick>
 ): void {
   brickRegistry = registry;
-  console.debug("Initialized runtime");
 }
 
 /**
