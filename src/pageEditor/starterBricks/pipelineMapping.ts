@@ -21,8 +21,7 @@ import {
   type BrickPipeline,
   type BrickPosition,
 } from "@/bricks/types";
-import { produce } from "immer";
-import { type WritableDraft } from "immer/dist/types/types-external";
+import { produce, type Draft } from "immer";
 import PipelineVisitor, {
   ROOT_POSITION,
   type VisitResolvedBlockExtra,
@@ -85,7 +84,7 @@ export async function normalizePipelineForEditor(
   pipeline: BrickPipeline
 ): Promise<BrickPipeline> {
   const blockMap = await blockRegistry.allTyped();
-  return produce(pipeline, (pipeline: WritableDraft<BrickPipeline>) => {
+  return produce(pipeline, (pipeline: Draft<BrickPipeline>) => {
     new NormalizePipelineVisitor(blockMap).visitPipeline(
       ROOT_POSITION,
       pipeline,
@@ -113,7 +112,7 @@ class OmitEditorMetadataVisitor extends PipelineVisitor {
  * Remove the automatically generated tracing ids.
  */
 export function omitEditorMetadata(pipeline: BrickPipeline): BrickPipeline {
-  return produce(pipeline, (pipeline: WritableDraft<BrickPipeline>) => {
+  return produce(pipeline, (pipeline: Draft<BrickPipeline>) => {
     new OmitEditorMetadataVisitor().visitPipeline(ROOT_POSITION, pipeline, {
       flavor: PipelineFlavor.AllBlocks,
     });
