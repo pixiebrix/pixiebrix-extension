@@ -233,7 +233,7 @@
     "@types/uuid": "^9.0.6",
     "@types/webextension-polyfill": "^0.10.5",
     "@types/webpack": "^5.28.3",
-    "@types/webpack-env": "^1.18.2",
+    "@types/webpack-env": "^1.18.3",
     "@types/whatwg-mimetype": "^3.0.1",
     "axios-mock-adapter": "^1.22.0",
     "compass-mixins": "^0.12.10",
