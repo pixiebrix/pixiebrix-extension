@@ -215,7 +215,7 @@
     "@types/mustache": "^4.2.3",
     "@types/nunjucks": "^3.2.5",
     "@types/object-hash": "^2.1.1",
-    "@types/papaparse": "^5.3.9",
+    "@types/papaparse": "^5.3.10",
     "@types/psl": "^1.1.2",
     "@types/react-autosuggest": "^10.1.8",
     "@types/react-dom": "^17.0.9",
