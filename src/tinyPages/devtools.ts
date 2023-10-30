@@ -18,10 +18,14 @@
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 
-// Only add the Page Editor to the devtools it's being used to inspect a modifiable web page,
+// Only add the Page Editor to the devtools if it's being used to inspect a modifiable web page,
 // i.e. the Page Editor is not relevant when inspecting a background page or the devtools itself.
 if (typeof chrome.devtools.inspectedWindow.tabId === "number") {
   reportEvent(Events.DEVTOOLS_OPEN);
+
+  window.addEventListener("beforeunload", () => {
+    reportEvent(Events.DEVTOOLS_CLOSE);
+  });
 
   chrome.devtools.panels.create(
     "PixieBrix",

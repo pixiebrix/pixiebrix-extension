@@ -2,7 +2,7 @@
 // https://github.com/johnmichel/Library-Detector-for-Chrome/blob/4c77e4e26197763ce87ea878be047c9c1d6f7017/content_scripts/lib_detect.js
 
 // @ts-ignore
-import libraryTests from "./libraries";
+import libraryTests from "./libraries.js";
 import { zip } from "lodash";
 
 export interface Library {

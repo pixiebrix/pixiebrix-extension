@@ -22,10 +22,10 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { isEmpty } from "lodash";
-import { type JsonObject } from "type-fest";
+import { type JsonValue } from "type-fest";
 import { joinPathParts } from "@/utils/formUtils";
 
-function tryParse(value: unknown): JsonObject | null {
+function tryParse(value: unknown): JsonValue {
   if (typeof value === "string") {
     try {
       // If payload is JSON, parse it for easier reading

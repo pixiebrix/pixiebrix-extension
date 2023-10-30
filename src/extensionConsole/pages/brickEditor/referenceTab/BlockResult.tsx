@@ -31,7 +31,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "@/registry/packageRegistry";
 import { useAsyncState } from "@/hooks/common";
 import { type Organization } from "@/types/contract";
-import { type UUID } from "@/types/stringTypes";
 import { type Metadata, type Sharing } from "@/types/registryTypes";
 
 type SharingTagProps<T extends Metadata> = {
@@ -62,9 +61,7 @@ const SharingTag = <T extends Metadata>({
     }
 
     // If more than one sharing organization, use the first
-    return organizations.find((org) =>
-      sharing.organizations.includes(org.id as UUID)
-    );
+    return organizations.find((org) => sharing.organizations.includes(org.id));
   }, [organizations, sharing]);
 
   const label = useMemo(() => {

@@ -21,7 +21,6 @@ import {
   timestampFactory,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
-import { type JsonObject } from "type-fest";
 import { type MessageContext } from "@/types/loggerTypes";
 
 export const messageContextFactory = define<MessageContext>({
@@ -33,6 +32,6 @@ export const logEntryFactory = define<LogEntry>({
   timestamp: timestampFactory,
   message: (n: number) => `Log entry ${n}`,
   level: "debug",
-  data: () => ({} as JsonObject),
+  data: () => ({}),
   context: messageContextFactory,
 });

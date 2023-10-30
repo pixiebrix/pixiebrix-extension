@@ -33,6 +33,7 @@ export const Events = {
   DEPLOYMENT_REJECT_PERMISSIONS: "DeploymentRejectPermissions",
 
   DEVTOOLS_OPEN: "DevToolsOpen",
+  DEVTOOLS_CLOSE: "DevToolsClose",
 
   EXTENSION_CLOUD_DELETE: "ExtensionCloudDelete",
 
