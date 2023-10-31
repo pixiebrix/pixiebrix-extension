@@ -21,12 +21,11 @@ import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { $safeFind } from "@/utils/domUtils";
 import escapeStringRegexp from "escape-string-regexp";
-import Mark from "mark.js";
 
 /**
  * Recursively wrap text in an element and its children. Operates on text nodes. Does not work on text with inline HTML tags.
  */
-function wrapText({
+async function wrapText({
   nodes,
   pattern,
   color,
@@ -36,7 +35,12 @@ function wrapText({
   pattern: string | RegExp;
   color: string;
   isAcrossElements: boolean;
-}) {
+}): Promise<void> {
+  const { default: Mark } = await import(
+    /* webpackChunkName: "mark.js" */
+    "mark.js"
+  );
+
   const instance = new Mark(nodes);
 
   const options = {
