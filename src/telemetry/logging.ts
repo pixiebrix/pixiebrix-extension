@@ -16,7 +16,6 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { getRollbar } from "@/telemetry/initRollbar";
 import { type Except, type JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
@@ -351,6 +350,11 @@ export async function reportToRollbar(
   // to determine log level also handle serialized/deserialized errors.
   // See https://github.com/sindresorhus/serialize-error/issues/48
 
+  const { getRollbar } = await import(
+    /* webpackChunkName: "rollbar" */
+    "@/telemetry/initRollbar"
+  );
+
   const rollbar = await getRollbar();
   const details = await selectExtraContext(error);
 
@@ -418,6 +422,11 @@ export async function recordWarning(
     warnAboutDisabledDNT();
     return;
   }
+
+  const { getRollbar } = await import(
+    /* webpackChunkName: "rollbar" */
+    "@/telemetry/initRollbar"
+  );
 
   const rollbar = await getRollbar();
   rollbar.warning(message, data);

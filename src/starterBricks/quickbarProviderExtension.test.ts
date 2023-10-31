@@ -33,7 +33,10 @@ import {
 import blockRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
+import {
+  initQuickBarApp,
+  toggleQuickBar,
+} from "@/components/quickBar/QuickBarApp";
 import defaultActions from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
@@ -78,6 +81,9 @@ const rootReader = new RootReader();
 beforeAll(() => {
   const html = getDocument("<div></div>").body.innerHTML;
   document.body.innerHTML = html;
+
+  // Ensure default actions are registered
+  initQuickBarApp();
 });
 const NUM_DEFAULT_QUICKBAR_ACTIONS = defaultActions.length;
 
