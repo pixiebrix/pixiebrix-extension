@@ -24,11 +24,11 @@ import {
 } from "@/contrib/automationanywhere/RunBot";
 import { type Schema } from "@/types/schemaTypes";
 import { useField } from "formik";
-import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
-import RequireIntegrationConfig from "@/contrib/RequireIntegrationConfig";
+import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
 import {
   cachedFetchBotFile,
   cachedSearchBots,
@@ -51,7 +51,8 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import { joinName } from "@/utils/formUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
+
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
 const WORKSPACE_OPTIONS = [
   { value: "public", label: "Public" },

@@ -31,7 +31,8 @@ import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
 
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
+
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.

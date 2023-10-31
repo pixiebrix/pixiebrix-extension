@@ -30,7 +30,7 @@ import settingsSlice from "@/store/settings/settingsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import integrationsSlice, {
   persistIntegrationsConfig,
-} from "@/store/integrations/integrationsSlice";
+} from "@/integrations/store/integrationsSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";

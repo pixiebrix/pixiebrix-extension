@@ -23,7 +23,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { sheets } from "@/background/messenger/api";
 import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 

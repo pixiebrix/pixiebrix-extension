@@ -26,7 +26,7 @@ import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
 } from "@/testUtils/factories/integrationFactories";
-import IntegrationsSliceModIntegrationsContextAdapter from "@/store/integrations/IntegrationsSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);

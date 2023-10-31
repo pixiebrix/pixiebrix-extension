@@ -32,7 +32,7 @@ import { sortBy } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 import BrickReference from "@/extensionConsole/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
-import serviceRegistry from "@/services/registry";
+import serviceRegistry from "@/integrations/registry";
 import blockRegistry from "@/bricks/registry";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { fetch } from "@/hooks/fetch";

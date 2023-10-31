@@ -17,7 +17,7 @@
 
 import nytimes from "@contrib/bricks/nytimes-org.yaml";
 import trelloReader from "@contrib/readers/trello-card-reader.yaml";
-import { fromJS } from "@/bricks/transformers/brickFactory";
+import { fromJS as nativeFromJS } from "@/bricks/transformers/brickFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { isUserDefinedBrick } from "@/types/brickTypes";
 import { MappingTransformer } from "./mapping";
@@ -30,13 +30,15 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
-import { cloneDeep } from "lodash";
+import { cloneDeep, partial } from "lodash";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { setContext } from "@/testUtils/detectPageMock";
 import { validateRegistryId } from "@/types/helpers";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 
 setContext("contentScript");
+
+const fromJS = partial(nativeFromJS, blockRegistry);
 
 beforeEach(() => {
   blockRegistry.clear();

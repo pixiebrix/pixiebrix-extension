@@ -21,11 +21,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type RegistryId } from "@/types/registryTypes";
 import { launchOAuth2Flow } from "@/background/auth/launchOAuth2Flow";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
-import serviceRegistry from "@/services/registry";
-import {
-  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "@/services/constants";
+import serviceRegistry from "@/integrations/registry";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
@@ -33,6 +29,10 @@ import chromeP from "webext-polyfill-kinda";
 import { safeParseUrl } from "@/utils/urlUtils";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.

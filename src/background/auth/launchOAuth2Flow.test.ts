@@ -21,7 +21,7 @@ import {
   type IntegrationABC,
   type OAuth2Context,
   type SecretsConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { launchOAuth2Flow } from "@/background/auth/launchOAuth2Flow";

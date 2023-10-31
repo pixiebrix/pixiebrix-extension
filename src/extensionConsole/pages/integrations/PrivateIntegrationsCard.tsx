@@ -31,9 +31,9 @@ import BrickIcon from "@/components/BrickIcon";
 import {
   type Integration,
   type IntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
-import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 
 type TableData = {
   integration: Integration;
@@ -41,9 +41,19 @@ type TableData = {
 type TableColumn = Column<TableData>;
 
 type OwnProps = {
+  /**
+   * The integrations to display
+   */
   integrations: Integration[];
+  /**
+   * Navigate to a URL path
+   * @param url The URL path, should be one of /services/, /services/zapier/, or /services/${integrationConfigId}
+   */
   navigate: (url: string) => void;
-  initialIntegration?: Integration;
+  /**
+   * Force page to show integration config with id
+   */
+  forceShowIntegrationConfigId?: UUID;
 };
 
 const Actions: React.VoidFunctionComponent<{
@@ -190,7 +200,7 @@ const dataFactory = ({
 const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
   integrations,
   navigate,
-  initialIntegration,
+  forceShowIntegrationConfigId,
 }) => {
   const integrationConfigs = useSelector<RootState, IntegrationConfig[]>(
     selectIntegrationConfigs,
@@ -214,12 +224,12 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
     [integrationConfigs, integrations]
   );
 
-  const initialRecord: (x: unknown) => boolean = useMemo(
+  const forceShowRecord: (config: IntegrationConfig) => boolean = useMemo(
     () =>
-      initialIntegration
-        ? (x: Integration) => x.id === initialIntegration.id
+      forceShowIntegrationConfigId
+        ? ({ id }) => id === forceShowIntegrationConfigId
         : null,
-    [initialIntegration]
+    [forceShowIntegrationConfigId]
   );
 
   return (
@@ -228,7 +238,7 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
         columns={columns}
         data={data}
         showSearchFilter
-        initialRecord={initialRecord}
+        forceShowRecord={forceShowRecord}
       />
     </>
   );

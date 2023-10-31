@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import LazyLocatorFactory from "@/services/locator";
+import LazyLocatorFactory from "@/integrations/locator";
 import { expectContext } from "@/utils/expectContext";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 

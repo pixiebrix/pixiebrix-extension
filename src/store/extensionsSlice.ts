@@ -42,13 +42,11 @@ import {
 } from "@/types/modDefinitionTypes";
 import { type InnerDefinitions, type RegistryId } from "@/types/registryTypes";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type UnknownObject } from "@/types/objectTypes";
-import {
-  getIntegrationIds,
-  pickModDefinitionMetadata,
-} from "@/utils/modDefinitionUtils";
 import { initialState } from "@/store/extensionsSliceInitialState";
+import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 type ActivateModComponentParam = {
   modComponentDefinition: ModComponentDefinition;
@@ -104,7 +102,7 @@ function getActivatedModComponentFromDefinition<
   // here makes testing harder because we then have to account for the normalized value in assertions.
 
   if (modComponentDefinition.services) {
-    const modIntegrationIds = getIntegrationIds({
+    const modIntegrationIds = getModDefinitionIntegrationIds({
       extensionPoints: [modComponentDefinition],
     });
     activatedModComponent.integrationDependencies =

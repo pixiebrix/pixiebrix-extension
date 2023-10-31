@@ -16,11 +16,11 @@
  */
 
 import { flatten, groupBy, uniqBy } from "lodash";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe

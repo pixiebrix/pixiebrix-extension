@@ -28,6 +28,7 @@ export interface ElementInfo {
   parent?: ElementInfo;
   isMulti?: boolean;
 }
+
 export async function elementInfo(
   element: HTMLElement,
   componentFramework?: Framework,

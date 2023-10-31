@@ -37,7 +37,7 @@ import {
   type IntegrationDefinition,
   type TokenAuthenticationDefinition,
   type TokenContext,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";

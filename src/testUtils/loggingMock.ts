@@ -24,3 +24,5 @@ export const loggingConfig = {
     };
   },
 };
+
+export const count = jest.fn().mockResolvedValue(0);
