@@ -36,6 +36,7 @@ import {
 } from "@/errors/businessErrors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { $safeFind, findSingleElement } from "@/utils/domUtils";
+import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 
 /**
