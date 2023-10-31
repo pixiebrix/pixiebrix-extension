@@ -19,7 +19,7 @@ import { getCachedAuthData } from "@/background/auth/authStorage";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { authDataFactory } from "@/testUtils/factories/authFactories";
 import { getOAuth2AuthData } from "@/background/requests";
-import { Integration } from "@/integrations/integrationTypes";
+import { type Integration } from "@/integrations/integrationTypes";
 import {
   integrationConfigFactory,
   sanitizedIntegrationConfigFactory,

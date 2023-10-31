@@ -23,7 +23,7 @@ import {
 } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type Me, type Milestone, UserRole } from "@/types/contract";
-import { AuthData } from "@/integrations/integrationTypes";
+import { type AuthData } from "@/integrations/integrationTypes";
 
 /**
  * @see userOrganizationFactory
