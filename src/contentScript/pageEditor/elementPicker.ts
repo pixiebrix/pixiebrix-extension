@@ -20,7 +20,6 @@ import Overlay from "@/vendors/Overlay";
 import {
   expandedCssSelector,
   findContainer,
-  inferSingleElementSelector,
   inferMultiElementSelector,
 } from "@/utils/inference/selectorInference";
 import { type Framework } from "@/pageScript/messenger/constants";
@@ -38,6 +37,7 @@ import {
 } from "@/errors/businessErrors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { $safeFind, findSingleElement } from "@/utils/domUtils";
+import inferSingleElementSelector from "@/contentScript/pageEditor/inferSingleElementSelector";
 
 /**
  * Primary overlay that moved with the user's mouse/selection.

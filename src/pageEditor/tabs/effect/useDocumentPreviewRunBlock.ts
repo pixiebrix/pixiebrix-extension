@@ -25,7 +25,7 @@ import {
   selectParentBlockInfo,
 } from "@/pageEditor/slices/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
+import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBlock } from "@/contentScript/messenger/api";
