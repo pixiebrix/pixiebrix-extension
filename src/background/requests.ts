@@ -26,7 +26,7 @@ import serviceRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { isEmpty } from "lodash";
-import { launchOAuth2Flow } from "@/background/auth/launchOAuth2Flow";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
@@ -136,12 +136,15 @@ export async function serializableAxiosRequest<T>(
  * Get cached auth data for OAuth2, or login if no data found. Memoize so that multiple logins
  * are not kicked off at once.
  */
-const getOAuth2AuthData = memoizeUntilSettled(
+export const getOAuth2AuthData = memoizeUntilSettled(
   async (
     integration: Integration,
     localConfig: IntegrationConfig,
     sanitizedIntegrationConfig: SanitizedIntegrationConfig
   ): Promise<AuthData> => {
+    // We wrap both the cache data lookup and the login request in the memoization here
+    // instead of only around the login call, in order to avoid a race condition between
+    // writing the new auth token and a second request reading from cached auth storage.
     let data = await getCachedAuthData(sanitizedIntegrationConfig.id);
     if (isEmpty(data)) {
       data = await launchOAuth2Flow(integration, localConfig);
