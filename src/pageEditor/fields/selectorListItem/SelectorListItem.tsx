@@ -21,20 +21,14 @@ import { Badge } from "react-bootstrap";
 
 export interface Props {
   value: string;
-  hasData: boolean;
   tag: string | null;
 }
 
-const SelectorListItem: React.FC<Props> = ({ value, hasData, tag }) => (
+const SelectorListItem: React.FC<Props> = ({ value, tag }) => (
   <div className={styles.container}>
     {tag && (
       <Badge variant="dark" className={styles.badge}>
         {tag}
-      </Badge>
-    )}
-    {hasData && (
-      <Badge variant="info" className={styles.badge}>
-        DATA
       </Badge>
     )}
     {value}

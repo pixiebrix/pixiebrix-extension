@@ -18,7 +18,6 @@
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { pull, remove } from "lodash";
-import defaultActions from "@/components/quickBar/defaultActions";
 import {
   type ActionGenerator,
   type ActionsChangeHandler,
@@ -33,7 +32,7 @@ class QuickBarRegistry {
    * @see addAction
    * @private
    */
-  private readonly actions: CustomAction[] = [...defaultActions];
+  private readonly actions: CustomAction[] = [];
 
   /**
    * Registry of action listeners, called when the set of actions changes.

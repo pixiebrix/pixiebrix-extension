@@ -28,7 +28,7 @@ import initGoogle, {
   isGoogleInitialized,
   markGoogleInvalidated,
 } from "@/contrib/google/initGoogle";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
 import {
   getCachedAuthData,
@@ -41,6 +41,7 @@ import {
   type FileList,
   type Spreadsheet,
   type SpreadsheetProperties,
+  type UserInfo,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
 import pTimeout from "p-timeout";
@@ -172,13 +173,34 @@ export async function getAllSpreadsheets(
   googleAccount: SanitizedIntegrationConfig | null
 ): Promise<FileList> {
   const requestConfig: AxiosRequestConfig<never> = {
-    url: `${DRIVE_BASE_URL}?q=mimeType='application/vnd.google-apps.spreadsheet'`,
+    url: DRIVE_BASE_URL,
     method: "get",
     params: {
+      q: "mimeType='application/vnd.google-apps.spreadsheet'",
+      // Tell the api that this application supports shared items as well as MyDrive items
+      supportsAllDrives: true,
+      // Include shared items in the results
+      includeItemsFromAllDrives: true,
+      // Search the 'user' corpus for shared drives
+      // See: https://developers.google.com/drive/api/guides/enable-shareddrives#search_for_content_on_a_shared_drive
+      corpora: "user",
+      // Sort by last modified first, then by name
       orderBy: "modifiedTime desc,name",
     },
   };
   return executeRequest<FileList>(requestConfig, googleAccount);
+}
+
+export async function getGoogleUserEmail(
+  googleAccount: SanitizedIntegrationConfig
+): Promise<string> {
+  const requestConfig: AxiosRequestConfig<never> = {
+    url: "https://www.googleapis.com/oauth2/v1/userinfo",
+    method: "get",
+  };
+
+  const userInfo = await executeRequest<UserInfo>(requestConfig, googleAccount);
+  return userInfo.email;
 }
 
 async function batchUpdateSpreadsheet(

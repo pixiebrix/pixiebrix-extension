@@ -25,9 +25,9 @@ import { validateRegistryId } from "@/types/helpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
-import useSanitizedIntegrationConfigFormikAdapter from "@/services/useSanitizedIntegrationConfigFormikAdapter";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";
@@ -37,7 +37,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 setContext("devToolsPage");
 
-jest.mock("@/services/useSanitizedIntegrationConfigFormikAdapter", () => ({
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
   __esModule: true,
   default: jest.fn(),
 }));

@@ -22,7 +22,7 @@ import extensionPointRegistry from "@/starterBricks/registry";
 import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { collectIntegrationOriginPermissions } from "@/permissions/integrationPermissionsHelpers";
+import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
 import { containsPermissions } from "@/background/messenger/api";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 

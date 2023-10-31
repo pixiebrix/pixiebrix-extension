@@ -16,17 +16,17 @@
  */
 
 import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
-import { readRawConfigurations } from "@/services/registry";
+import { readRawConfigurations } from "@/integrations/registry";
 import { sortBy } from "lodash";
 import { type RemoteIntegrationConfig } from "@/types/contract";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { useGetIntegrationAuthsQuery } from "@/services/api";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
@@ -122,7 +122,7 @@ export function getDefaultAuthOptionsForMod(
   modDefinition: ModDefinition,
   authOptions: AuthOption[]
 ): Record<RegistryId, AuthOption | null> {
-  const requiredIntegrationIds = getIntegrationIds(modDefinition, {
+  const requiredIntegrationIds = getModDefinitionIntegrationIds(modDefinition, {
     // The PixieBrix service gets automatically configured, so no need to include it
     excludePixieBrix: true,
   });

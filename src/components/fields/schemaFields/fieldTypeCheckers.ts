@@ -22,11 +22,6 @@ import {
   type Schema,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
-import {
-  SERVICES_BASE_SCHEMA_URL,
-  INTEGRATION_DEPENDENCY_FIELD_REFS,
-} from "@/services/integrationUtils";
 import { get, isEmpty } from "lodash";
 import keySchema from "@schemas/key.json";
 import iconSchema from "@schemas/icon.json";
@@ -34,6 +29,11 @@ import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
 
 import { isVarExpression } from "@/utils/expressionUtils";
+import {
+  INTEGRATION_DEPENDENCY_FIELD_REFS,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export const isAppServiceField = createTypePredicate(
   (schema) =>

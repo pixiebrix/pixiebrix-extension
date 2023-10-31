@@ -21,6 +21,12 @@ import useActions from "@/components/quickBar/useActions";
 import { KBarProvider, useKBar } from "kbar";
 import defaultActions from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
+
+beforeAll(() => {
+  // Ensure default actions are registered
+  initQuickBarApp();
+});
 
 describe("useActions", () => {
   test("should return the default actions", () => {

@@ -19,7 +19,7 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export class AddOrganization extends EffectABC {

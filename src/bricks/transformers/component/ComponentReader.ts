@@ -33,7 +33,7 @@ export class ComponentReader extends TransformerABC {
   constructor() {
     super(
       COMPONENT_READER_ID,
-      "[Experimental] Component Reader",
+      "[Deprecated] Component Reader",
       "Extract data from a front-end component (e.g., React, Vue, Ember, etc.)"
     );
   }

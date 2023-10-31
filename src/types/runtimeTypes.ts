@@ -18,7 +18,7 @@
 import { type ComponentType } from "react";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type SafeHTML, type UUID } from "@/types/stringTypes";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Primitive } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/bricks/types";

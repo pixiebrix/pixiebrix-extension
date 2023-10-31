@@ -66,9 +66,9 @@ import {
   starterBrickConfigFactory,
   versionedModDefinitionWithResolvedModComponents,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
-import { SERVICES_BASE_SCHEMA_URL } from "@/services/integrationUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 jest.mock("@/background/contextMenus");
 

@@ -28,16 +28,16 @@ import {
   type EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import {
-  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "@/services/constants";
 import { cloneDeep } from "lodash";
 import { getCachedAuthData, getUserData } from "@/background/messenger/api";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"

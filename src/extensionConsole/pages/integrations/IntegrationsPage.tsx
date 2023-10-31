@@ -17,171 +17,362 @@
 
 import styles from "@/extensionConsole/pages/integrations/PrivateIntegrationsCard.module.scss";
 
-import React, { useCallback, useContext, useState } from "react";
-import { connect } from "react-redux";
-import integrationsSlice from "@/store/integrations/integrationsSlice";
+import React, { useCallback, useContext, useReducer } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import Page from "@/layout/Page";
 import { Card, Col, Row } from "react-bootstrap";
 import { push } from "connected-react-router";
-import IntegrationEditorModal from "./IntegrationEditorModal";
+import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
 import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
-import useIntegrationDefinitions from "./useIntegrationDefinitions";
 import { services } from "@/background/messenger/api";
-import ZapierModal from "@/extensionConsole/pages/integrations/ZapierModal";
+import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
 import notify from "@/utils/notify";
 import { useParams } from "react-router";
 import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { uuidv4 } from "@/types/helpers";
+import { isUUID, uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
   type Integration,
   type IntegrationConfig,
-} from "@/types/integrationTypes";
-import { type UUID } from "@/types/stringTypes";
+} from "@/integrations/integrationTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import registry from "@/integrations/registry";
+import { isEmpty, isEqual, sortBy } from "lodash";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import useAsyncEffect from "use-async-effect";
+import { type RegistryId } from "@/types/registryTypes";
+import { useOnChangeEffect } from "@/contrib/google/sheets/core/useOnChangeEffect";
+import { freshIdentifier } from "@/utils/variableUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import {
+  autoConfigurations,
+  autoConfigureIntegration,
+} from "@/integrations/autoConfigure";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
 
-type OwnProps = {
-  upsertIntegrationConfig: typeof upsertIntegrationConfig;
-  deleteIntegrationConfig: typeof deleteIntegrationConfig;
-  navigate: typeof push;
+type State = {
+  /**
+   * The form state value for the IntegrationConfigEditorModal, if a config is currently being edited
+   */
+  editingIntegrationConfig: IntegrationConfig | null;
+  /**
+   * Whether we are showing the Zapier integration key info modal
+   */
+  showZapier: boolean;
+  /**
+   * Whether we are loading integrations from the registry
+   */
+  isLoadingIntegrations: boolean;
+  /**
+   * Integrations loaded from the registry
+   */
+  integrations: Integration[];
+  /**
+   * The selected integration for the config being edited in the IntegrationConfigEditorModal
+   */
+  selectedIntegration: Integration | null;
+  /**
+   * Whether the IntegrationConfigEditorModal is creating a new integration or editing an existing one
+   */
+  isCreateNew: boolean;
+  /**
+   * The id of the integration config that was just created. This is used to guide the paginated
+   * table to ensure this item is showing.
+   */
+  createdIntegrationConfigId: UUID | null;
 };
 
-const IntegrationsPage: React.FunctionComponent<OwnProps> = ({
-  upsertIntegrationConfig,
-  deleteIntegrationConfig,
-  navigate,
-}) => {
-  const { id: configurationId } = useParams<{ id: UUID }>();
-  // Newly created integration (to ensure it's visible in the table)
-  const [createdIntegration, setCreatedIntegration] =
-    useState<Integration | null>(null);
-  const [integrationToCreate, setIntegrationToCreate] =
-    useState<Integration | null>(null);
-  const [newIntegrationConfig, setNewIntegrationConfig] =
-    useState<IntegrationConfig | null>(null);
-  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
+const initialState: State = {
+  editingIntegrationConfig: null,
+  showZapier: false,
+  isLoadingIntegrations: true,
+  integrations: [],
+  selectedIntegration: null,
+  isCreateNew: false,
+  createdIntegrationConfigId: null,
+};
 
-  const {
-    activeConfiguration,
-    integrations,
-    activeIntegration,
-    showZapier,
-    isPending: servicesPending,
-  } = useIntegrationDefinitions();
+type URLParamValue = UUID | "zapier" | "new" | undefined;
 
-  const isConfiguring = Boolean(
-    configurationId &&
-      ((integrationToCreate && newIntegrationConfig) ||
-        (activeIntegration && activeConfiguration))
-  );
+const componentState = createSlice({
+  name: "integrationsPageState",
+  initialState,
+  reducers: {
+    urlParamOrConfigsChanged(
+      state,
+      action: PayloadAction<{
+        urlParam: URLParamValue;
+        integrationConfigs: IntegrationConfig[];
+      }>
+    ) {
+      const { urlParam, integrationConfigs } = action.payload;
 
-  const handleSave = useCallback(
-    async (config: IntegrationConfig) => {
-      upsertIntegrationConfig(config);
-      notify.success(
-        `${
-          integrationToCreate ? "Created" : "Updated"
-        } private configuration for ${
-          (activeIntegration ?? integrationToCreate)?.name
-        }.`
-      );
-
-      setNewIntegrationConfig(null);
-      setIntegrationToCreate(null);
-      setCreatedIntegration(integrationToCreate);
-      await flushReduxPersistence();
-
-      try {
-        await services.refresh();
-      } catch (error) {
-        notify.error({
-          message:
-            "Error refreshing integration configurations, restart the PixieBrix extension",
-          error,
-        });
+      if (urlParam === "zapier") {
+        state.showZapier = true;
+        return;
       }
 
-      navigate("/services");
-    },
-    [
-      upsertIntegrationConfig,
-      integrationToCreate,
-      activeIntegration,
-      flushReduxPersistence,
-      navigate,
-    ]
-  );
+      const integrationConfigId = isUUID(urlParam) ? urlParam : null;
 
+      if (integrationConfigId) {
+        const integrationConfig = integrationConfigs.find(
+          ({ id }) => id === integrationConfigId
+        );
+        if (!integrationConfig) {
+          throw new Error(`Unknown integration config ${integrationConfigId}`);
+        }
+
+        state.editingIntegrationConfig = integrationConfig;
+        state.createdIntegrationConfigId = null;
+
+        if (state.isLoadingIntegrations || isEmpty(state.integrations)) {
+          return;
+        }
+
+        const selectedIntegration = state.integrations.find(
+          ({ id }) => id === integrationConfig.integrationId
+        );
+        if (!selectedIntegration) {
+          throw new Error(
+            `Unknown integration on config ${integrationConfig.integrationId}`
+          );
+        }
+
+        state.selectedIntegration = selectedIntegration;
+      } else if (urlParam === "new") {
+        const { selectedIntegration } = state;
+        if (!selectedIntegration) {
+          throw new Error(
+            "Cannot create a new config without a selected integration"
+          );
+        }
+
+        state.editingIntegrationConfig = {
+          id: uuidv4(),
+          label: undefined,
+          integrationId: selectedIntegration.id,
+          config: {},
+        } as IntegrationConfig;
+        state.isCreateNew = true;
+        state.createdIntegrationConfigId = null;
+      } else {
+        state.editingIntegrationConfig = null;
+        state.selectedIntegration = null;
+        state.isCreateNew = false;
+      }
+    },
+    integrationsLoaded(state, action: PayloadAction<Integration[]>) {
+      state.isLoadingIntegrations = false;
+      const integrations = action.payload;
+      if (state.editingIntegrationConfig && isEmpty(state.integrations)) {
+        const selectedIntegration = integrations.find(
+          ({ id }) => id === state.editingIntegrationConfig.integrationId
+        );
+        if (!selectedIntegration) {
+          throw new Error(
+            `Unknown integration ${state.editingIntegrationConfig.integrationId}`
+          );
+        }
+
+        state.selectedIntegration = selectedIntegration;
+      }
+
+      state.integrations = integrations;
+    },
+    selectIntegrationById(state, action: PayloadAction<RegistryId>) {
+      if (state.isLoadingIntegrations || isEmpty(state.integrations)) {
+        return;
+      }
+
+      const integrationId = action.payload;
+      const selectedIntegration = state.integrations.find(
+        ({ id }) => id === integrationId
+      );
+      if (!selectedIntegration) {
+        throw new Error(`Unknown integration ${integrationId}`);
+      }
+
+      state.selectedIntegration = selectedIntegration;
+    },
+    saveIntegrationConfig(state, action: PayloadAction<IntegrationConfig>) {
+      if (state.isCreateNew) {
+        state.createdIntegrationConfigId = action.payload.id;
+      } else {
+        state.createdIntegrationConfigId = null;
+      }
+
+      state.editingIntegrationConfig = null;
+      state.selectedIntegration = null;
+      state.isCreateNew = false;
+    },
+    onDeleteIntegrationConfig(state) {
+      state.editingIntegrationConfig = null;
+      state.selectedIntegration = null;
+      state.createdIntegrationConfigId = null;
+    },
+    onAutoConfigureIntegrationConfig(
+      state,
+      action: PayloadAction<IntegrationConfig>
+    ) {
+      state.createdIntegrationConfigId = action.payload.id;
+      state.editingIntegrationConfig = null;
+      state.selectedIntegration = null;
+    },
+  },
+});
+
+const IntegrationsPage: React.VFC = () => {
+  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
 
-  const handleCreate = useCallback(
-    async (integration: Integration) => {
+  const reduxDispatch = useDispatch();
+  const navigate = useCallback(
+    (route: string) => {
+      reduxDispatch(push(route));
+    },
+    [reduxDispatch]
+  );
+
+  const [localState, localDispatch] = useReducer(
+    componentState.reducer,
+    initialState
+  );
+
+  // Load integration definitions from the registry on mount
+  useAsyncEffect(async (isMounted) => {
+    const fetched = await registry.all();
+    const integrations = sortBy(
+      fetched.filter(({ id }) => id !== PIXIEBRIX_INTEGRATION_ID),
+      "id"
+    );
+
+    if (!isMounted()) {
+      return;
+    }
+
+    localDispatch(componentState.actions.integrationsLoaded(integrations));
+  }, []);
+
+  const integrationConfigs = useSelector(selectIntegrationConfigs);
+  const { id: urlParam } = useParams<{ id: URLParamValue }>();
+  useOnChangeEffect(
+    { urlParam, integrationConfigs },
+    ({ urlParam, integrationConfigs }) => {
+      localDispatch(
+        componentState.actions.urlParamOrConfigsChanged({
+          urlParam,
+          integrationConfigs,
+        })
+      );
+    },
+    isEqual
+  );
+
+  const syncIntegrations = useCallback(async () => {
+    await flushReduxPersistence();
+    try {
+      await services.refresh();
+    } catch (error) {
+      notify.error({
+        message:
+          "Error refreshing integration configurations, restart the PixieBrix extension",
+        error,
+      });
+    }
+  }, [flushReduxPersistence]);
+
+  const onSelectIntegrationForNewConfig = useCallback(
+    (integration: Integration) => {
+      // TODO: This is possibly being reported in the wrong place? Should this be when a new config is SAVED instead?
       reportEvent(Events.INTEGRATION_ADD, {
         serviceId: integration.id,
       });
 
-      const definition = (integrations ?? []).find(
-        (x) => x.id === integration.id
-      );
-
-      if (definition.isAuthorizationGrant) {
+      if (integration.isAuthorizationGrant) {
         void launchAuthorizationGrantFlow(integration, { target: "_self" });
         return;
       }
 
-      const config = {
-        id: uuidv4(),
-        label: undefined,
-        integrationId: integration.id,
-        config: {},
-      } as IntegrationConfig;
+      if (integration.id in autoConfigurations) {
+        const label = freshIdentifier(
+          `${integration.name} Config` as SafeString,
+          integrationConfigs.map(({ label }) => label)
+        );
+        void autoConfigureIntegration(integration, label, {
+          upsertIntegrationConfig(config: IntegrationConfig) {
+            reduxDispatch(upsertIntegrationConfig(config));
+            localDispatch(
+              componentState.actions.onAutoConfigureIntegrationConfig(config)
+            );
+          },
+          deleteIntegrationConfig(id: UUID) {
+            reduxDispatch(deleteIntegrationConfig({ id }));
+            localDispatch(componentState.actions.onDeleteIntegrationConfig());
+          },
+          syncIntegrations,
+        });
+        return;
+      }
 
-      setNewIntegrationConfig(config);
-      setIntegrationToCreate(definition);
-      navigate(`/services/${encodeURIComponent(config.id)}`);
+      localDispatch(
+        componentState.actions.selectIntegrationById(integration.id)
+      );
+      navigate("/services/new");
     },
     [
-      navigate,
+      integrationConfigs,
       launchAuthorizationGrantFlow,
-      integrations,
-      setNewIntegrationConfig,
-      setIntegrationToCreate,
+      navigate,
+      reduxDispatch,
+      syncIntegrations,
     ]
   );
 
-  const handleDelete = useCallback(
-    async (id) => {
-      deleteIntegrationConfig({ id });
-      notify.success(
-        `Deleted private configuration for ${activeIntegration?.name}`
+  const onSaveIntegrationConfig = useCallback(
+    async (newIntegrationConfig: IntegrationConfig) => {
+      reduxDispatch(upsertIntegrationConfig(newIntegrationConfig));
+      localDispatch(
+        componentState.actions.saveIntegrationConfig(newIntegrationConfig)
       );
-      navigate("/services/");
-
-      await flushReduxPersistence();
-
-      try {
-        await services.refresh();
-      } catch (error) {
-        notify.error({
-          message:
-            "Error refreshing service configurations, restart the PixieBrix extension",
-          error,
-        });
-      }
+      const verbed = localState.isCreateNew ? "Created" : "Updated";
+      notify.success(
+        `${verbed} private configuration for ${localState.selectedIntegration?.name}.`
+      );
+      await syncIntegrations();
     },
     [
-      deleteIntegrationConfig,
-      activeIntegration?.name,
+      localState.isCreateNew,
+      localState.selectedIntegration?.name,
+      reduxDispatch,
+      syncIntegrations,
+    ]
+  );
+
+  const onDeleteIntegrationConfig = useCallback(
+    async (id: UUID) => {
+      navigate("/services/");
+      reduxDispatch(deleteIntegrationConfig({ id }));
+      localDispatch(componentState.actions.onDeleteIntegrationConfig());
+      notify.success(
+        `Deleted private configuration for ${localState.selectedIntegration?.name}`
+      );
+      await syncIntegrations();
+    },
+    [
+      localState.selectedIntegration?.name,
       navigate,
-      flushReduxPersistence,
+      reduxDispatch,
+      syncIntegrations,
     ]
   );
 
@@ -191,11 +382,11 @@ const IntegrationsPage: React.FunctionComponent<OwnProps> = ({
       title="Integrations"
       description="Configure external accounts, resources, and APIs. Personal integrations are
           stored in your browser; they are never transmitted to the PixieBrix servers or shared with your team"
-      isPending={servicesPending}
+      isPending={localState.isLoadingIntegrations}
       toolbar={
         <BrickModal
-          onSelect={handleCreate}
-          bricks={integrations}
+          onSelect={onSelectIntegrationForNewConfig}
+          bricks={localState.integrations}
           modalClassName={styles.ModalOverride}
           selectCaption={
             <span>
@@ -211,24 +402,23 @@ const IntegrationsPage: React.FunctionComponent<OwnProps> = ({
         />
       }
     >
-      {showZapier && (
-        <ZapierModal
-          onClose={() => {
-            navigate("/services");
-          }}
-        />
-      )}
-      {isConfiguring && (
-        <IntegrationEditorModal
-          integrationConfig={activeConfiguration ?? newIntegrationConfig}
-          integration={activeIntegration ?? integrationToCreate}
-          onDelete={activeConfiguration && handleDelete}
-          onClose={() => {
-            navigate("/services");
-          }}
-          onSave={handleSave}
-        />
-      )}
+      <ZapierIntegrationModal
+        show={localState.showZapier}
+        onClose={() => {
+          navigate("/services");
+        }}
+      />
+      <IntegrationConfigEditorModal
+        integration={localState.selectedIntegration}
+        initialValues={localState.editingIntegrationConfig}
+        onSave={onSaveIntegrationConfig}
+        onClose={() => {
+          navigate("/services");
+        }}
+        onDelete={
+          localState.isCreateNew ? undefined : onDeleteIntegrationConfig
+        }
+      />
       <Row>
         <Col>
           <ConnectExtensionCard />
@@ -240,8 +430,10 @@ const IntegrationsPage: React.FunctionComponent<OwnProps> = ({
             <Card.Header>Personal Integrations</Card.Header>
             <PrivateIntegrationsCard
               navigate={navigate}
-              integrations={integrations}
-              initialIntegration={createdIntegration}
+              integrations={localState.integrations}
+              forceShowIntegrationConfigId={
+                localState.createdIntegrationConfigId
+              }
             />
           </Card>
         </Col>
@@ -250,8 +442,4 @@ const IntegrationsPage: React.FunctionComponent<OwnProps> = ({
   );
 };
 
-export default connect(null, {
-  upsertIntegrationConfig,
-  deleteIntegrationConfig,
-  navigate: push,
-})(IntegrationsPage);
+export default IntegrationsPage;

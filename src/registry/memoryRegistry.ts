@@ -85,12 +85,24 @@ export const clearPackages = async () => {
 };
 
 /**
+ * Protocol to avoid circular imports.
+ * @since 1.8.2
+ */
+export interface RegistryProtocol<
+  Id extends RegistryId = RegistryId,
+  Item extends RegistryItem<Id> = RegistryItem<Id>
+> {
+  lookup: (id: Id) => Promise<Item>;
+}
+
+/**
  * Brick registry, with remote bricks backed by IDB.
  */
 export class MemoryRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>
-> {
+> implements RegistryProtocol<Id, Item>
+{
   /**
    * Registered built-in items. Used to keep track of built-ins across cache clears.
    * @private
@@ -118,11 +130,11 @@ export class MemoryRegistry<
 
   public readonly kinds: Set<Kind>;
 
-  private readonly deserialize: (raw: unknown) => Item;
+  private deserialize: (raw: unknown) => Item;
 
   private listeners: RegistryChangeListener[] = [];
 
-  constructor(kinds: Kind[], deserialize: (raw: unknown) => Item) {
+  constructor(kinds: Kind[], deserialize: ((raw: unknown) => Item) | null) {
     this.kinds = new Set(kinds);
     this.deserialize = deserialize;
 
@@ -132,6 +144,18 @@ export class MemoryRegistry<
         this.clear();
       },
     });
+  }
+
+  /**
+   * Set the deserialize method for the registry. Where possible, pass via the constructor.
+   * @param deserialize the deserialize method
+   */
+  setDeserialize(deserialize: (raw: unknown) => Item): void {
+    if (this.deserialize) {
+      throw new Error("Cannot set deserializer more than once");
+    }
+
+    this.deserialize = deserialize;
   }
 
   /**
@@ -322,6 +346,10 @@ export class MemoryRegistry<
   }
 
   private parse(raw: unknown): Item | undefined {
+    if (!this.deserialize) {
+      throw new Error("Internal error: deserializer not set");
+    }
+
     try {
       return this.deserialize(raw);
     } catch (error) {

@@ -27,7 +27,7 @@ import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import {
   type AuthData,
   type SanitizedIntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { sheets } from "@/background/messenger/api";
 import { type AsyncState } from "@/types/sliceTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";

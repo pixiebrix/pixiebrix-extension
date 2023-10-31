@@ -17,7 +17,6 @@
 
 import type React from "react";
 import { useField, useFormikContext } from "formik";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { produce } from "immer";
 import { isEqual, set } from "lodash";
 import {
@@ -30,6 +29,7 @@ import {
   type ServiceVarRef,
 } from "@/types/runtimeTypes";
 import useAsyncEffect from "use-async-effect";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 

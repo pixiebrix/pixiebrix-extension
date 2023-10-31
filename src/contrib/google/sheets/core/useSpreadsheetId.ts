@@ -23,7 +23,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
 import { type Expression, type OptionsArgs } from "@/types/runtimeTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import hash from "object-hash";
 import { type FetchableAsyncState } from "@/types/sliceTypes";

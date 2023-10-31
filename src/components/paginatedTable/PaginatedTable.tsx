@@ -47,9 +47,10 @@ interface TableProps<
   showSearchFilter: boolean;
 
   /**
-   * The initial record to show ensure is showing.
+   * Force the table to show a specific record. This can be a function that returns true for the record to show, or
+   * the record itself.
    */
-  initialRecord?: Row | ((x: Row) => boolean);
+  forceShowRecord?: Row | ((x: Row) => boolean);
 
   /**
    * Track pagination in the URL `page` query parameter. WARNING: opt-in, because if there are multiple multi-page
@@ -154,7 +155,7 @@ function PaginatedTable<
   syncURL = false,
   rowProps,
   showSearchFilter,
-  initialRecord,
+  forceShowRecord,
 }: TableProps<Row, Actions>): React.ReactElement {
   const history = useHistory();
   const location = useLocation();
@@ -204,26 +205,24 @@ function PaginatedTable<
         page: String(pageIndex + 1),
       });
     }
-  }, [pageIndex, history, location, pageCount, gotoPage, urlPageIndex]);
+  }, [
+    pageIndex,
+    history,
+    location,
+    pageCount,
+    gotoPage,
+    urlPageIndex,
+    syncURL,
+  ]);
 
-  useEffect(
-    () => {
-      if (initialRecord && rows) {
-        const index = findPageIndex({ record: initialRecord, pageSize, rows });
-        console.debug("Setting table page to show record", {
-          initialRecord,
-          rows,
-          pageSize,
-          index,
-        });
-        if (index != null) {
-          gotoPage(index);
-        }
+  useEffect(() => {
+    if (forceShowRecord && rows) {
+      const index = findPageIndex({ record: forceShowRecord, pageSize, rows });
+      if (index != null) {
+        gotoPage(index);
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only change when initial value changes
-    [initialRecord]
-  );
+    }
+  }, [forceShowRecord, gotoPage, pageSize, rows]);
 
   return (
     <>

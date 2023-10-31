@@ -60,3 +60,6 @@ export interface Message<
   payload?: unknown;
   meta?: TMeta;
 }
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- Line can be dropped once fully migrated to webext-messenger
+export type SerializableResponse = boolean | string | number | object | void;

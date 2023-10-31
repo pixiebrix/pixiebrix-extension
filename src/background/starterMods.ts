@@ -31,8 +31,8 @@ import { refreshRegistries } from "./refreshRegistries";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { getSharingType } from "@/hooks/auth";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import { type IntegrationDependency } from "@/types/integrationTypes";
-import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 const { reducer, actions } = extensionsSlice;
 

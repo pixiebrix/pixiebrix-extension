@@ -24,15 +24,15 @@ import { deserializeError } from "serialize-error";
 
 import {
   type HandlerEntry,
-  type SerializableResponse,
   type HandlerOptions,
   isNotification,
   toErrorResponse,
   isErrorResponse,
   type RemoteProcedureCallRequest,
-} from "@/pageScript/messenger/pigeon";
+} from "@/utils/legacyMessengerUtils";
 import { RuntimeNotFoundError } from "@/utils/extensionUtils";
 import { getChromeExtensionId } from "@/store/browserExtensionIdStorage";
+import { type SerializableResponse } from "@/types/messengerTypes";
 
 type ChromeMessageSender = chrome.runtime.MessageSender;
 

@@ -20,8 +20,7 @@ import styles from "@/extensionConsole/pages/activateRecipe/ServicesBody.module.
 import React from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
-import { type IntegrationDependency } from "@/types/integrationTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { Card, Col, Row } from "react-bootstrap";
 import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
 import AuthWidget from "@/components/auth/AuthWidget";
@@ -30,6 +29,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import { useGetIntegrationsQuery } from "@/services/api";
 import { joinName } from "@/utils/formUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 const ServicesRow: React.FunctionComponent<{
   authOptions: AuthOption[];

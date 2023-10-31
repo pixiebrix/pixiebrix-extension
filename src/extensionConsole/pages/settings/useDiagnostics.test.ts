@@ -24,10 +24,6 @@ jest.mock("downloadjs", () => ({
   default: jest.fn(),
 }));
 
-jest.mock("@/telemetry/logging", () => ({
-  count: jest.fn().mockResolvedValue(0),
-}));
-
 Object.defineProperty(navigator, "storage", {
   value: {
     estimate: jest.fn().mockResolvedValue({}),

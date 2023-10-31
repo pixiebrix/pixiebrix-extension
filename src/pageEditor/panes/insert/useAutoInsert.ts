@@ -36,8 +36,8 @@ export function useAutoInsert(type: StarterBrickType): void {
       const formState = config.fromNativeElement(
         url,
         metadata,
-        undefined,
-        []
+        // eslint-disable-next-line unicorn/no-useless-undefined -- typescript expects the argument
+        undefined
       ) as ModComponentFormState;
 
       formState.extension.blockPipeline = getExampleBlockPipeline(

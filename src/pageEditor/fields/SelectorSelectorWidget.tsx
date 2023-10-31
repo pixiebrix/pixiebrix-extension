@@ -37,7 +37,6 @@ import {
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
-import { type ElementInfo } from "@/pageScript/frameworks";
 import { useSelector } from "react-redux";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import { sortBySelector } from "@/utils/inference/selectorInference";
@@ -49,6 +48,7 @@ import {
   isTextLiteralOrNull,
 } from "@/utils/expressionUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -142,7 +142,6 @@ function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
   return (
     <SelectorListItem
       value={suggestion.value}
-      hasData={suggestion.elementInfo.hasData}
       tag={suggestion.elementInfo.tagName}
     />
   );
@@ -151,10 +150,8 @@ function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
 const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   name,
   initialElement,
-  framework,
   selectMode = "element",
   isMulti = false,
-  traverseUp = 0,
   isClearable = false,
   root,
   disabled = false,
@@ -225,9 +222,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
     setSelecting(true);
     try {
       const selected = await selectElement(thisTab, {
-        framework,
         mode: selectMode,
-        traverseUp,
         root,
         excludeRandomClasses,
         isMulti,

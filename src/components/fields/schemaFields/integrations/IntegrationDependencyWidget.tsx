@@ -27,7 +27,6 @@ import {
 import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
-import { extractIntegrationIds } from "@/services/integrationUtils";
 import { isEmpty, isEqual, unset } from "lodash";
 import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidget";
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
@@ -38,12 +37,13 @@ import {
 } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */
@@ -203,7 +203,7 @@ const IntegrationDependencyWidget: React.FC<
 
   const { validDefaultIntegrationIds, options } = useMemo(() => {
     // Registry ids specified by the schema, or returns empty if any allowed
-    const schemaServiceIds = extractIntegrationIds(schema);
+    const schemaServiceIds = extractIntegrationIdsFromSchema(schema);
 
     return {
       validDefaultIntegrationIds: schemaServiceIds,

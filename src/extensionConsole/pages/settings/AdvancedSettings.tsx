@@ -32,13 +32,13 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pTimeout from "p-timeout";
 import chromeP from "webext-polyfill-kinda";
 import useUserAction from "@/hooks/useUserAction";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/services/api";
 import useDiagnostics from "@/extensionConsole/pages/settings/useDiagnostics";
 import AsyncButton from "@/components/AsyncButton";
 import { reloadIfNewVersionIsReady } from "@/utils/extensionUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;

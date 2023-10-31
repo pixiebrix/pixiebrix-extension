@@ -20,7 +20,7 @@ import {
   type IntegrationDependency,
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
