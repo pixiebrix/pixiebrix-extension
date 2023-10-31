@@ -25,10 +25,7 @@ import {
 import { compact, difference, uniq } from "lodash";
 import * as pageScript from "@/pageScript/messenger/api";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
-import {
-  type SelectionHandlerType,
-  showSelectionToolPopover,
-} from "@/components/selectionToolPopover/SelectionToolPopover";
+import type { SelectionHandlerType } from "@/components/selectionToolPopover/SelectionToolPopover";
 import {
   BusinessError,
   CancelError,
@@ -36,7 +33,6 @@ import {
 } from "@/errors/businessErrors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { $safeFind, findSingleElement } from "@/utils/domUtils";
-import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 
 /**
@@ -102,6 +98,12 @@ export async function userSelectElement({
   isMulti: boolean;
   shouldSelectSimilar: boolean;
 }> {
+  // Dynamically import to avoid bloating the default content script for end-users
+  const { showSelectionToolPopover } = await import(
+    /* webpackChunkName: "selectionToolPopover" */
+    "@/components/selectionToolPopover/SelectionToolPopover"
+  );
+
   return new Promise<{
     elements: HTMLElement[];
     isMulti: boolean;
