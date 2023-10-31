@@ -157,14 +157,15 @@ export async function handleGoogleRequestRejection(
 
   const { status } = rootCause.response;
 
-  if (status === 404) {
-    return new PermissionsError(
-      "Cannot locate the Google drive resource. Have you been granted access?",
-      status
-    );
+  if ([403, 404].includes(status)) {
+    const message =
+      status === 403
+        ? "You do not have permission to access the Google Drive resource. Have you been granted access? If this resource is public, you need to open it in a separate browser tab before it will appear here."
+        : "Cannot locate the Google Drive resource. Have you been granted access?";
+    return new PermissionsError(message, status);
   }
 
-  if ([403, 401].includes(status)) {
+  if (status === 401) {
     if (legacyClientToken) {
       await chromeP.identity.removeCachedAuthToken({
         token: legacyClientToken,

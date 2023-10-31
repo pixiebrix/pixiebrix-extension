@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactElement, useEffect, useState } from "react";
+import React, {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { type Schema } from "@/types/schemaTypes";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
@@ -37,6 +42,9 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type UUID } from "@/types/stringTypes";
 import { isEmpty } from "lodash";
 import { OAUTH2_STORAGE_KEY } from "@/auth/authConstants";
+import { AnnotationType } from "@/types/annotationTypes";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
@@ -57,6 +65,16 @@ const RequireGoogleSheet: React.FC<{
 }> = ({ blockConfigPath, children }) => {
   const googleAccountAsyncState = useGoogleAccount();
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
+  const [spreadsheetError, setSpreadsheetError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const retry = useCallback(async () => {
+    if (isRetrying) {
+      return;
+    }
+
+    setIsRetrying(true);
+    googleAccountAsyncState.refetch();
+  }, [googleAccountAsyncState, isRetrying]);
   const baseSchemaAsyncState = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
     [],
@@ -112,6 +130,7 @@ const RequireGoogleSheet: React.FC<{
       spreadsheetId: string | null,
       baseSchema: Schema
     ) => {
+      setSpreadsheetError(null);
       if (!spreadsheetId) {
         return {
           googleAccount,
@@ -121,15 +140,27 @@ const RequireGoogleSheet: React.FC<{
       }
 
       if (!googleAccount || (await sheets.isLoggedIn(googleAccount))) {
-        return {
-          googleAccount,
+        try {
           // Sheets API will handle legacy authentication when googleAccount is null
-          spreadsheet: await sheets.getSpreadsheet({
+          const spreadsheet = await sheets.getSpreadsheet({
             googleAccount,
             spreadsheetId,
-          }),
-          spreadsheetFieldSchema: baseSchema,
-        };
+          });
+          return {
+            googleAccount,
+            spreadsheet,
+            spreadsheetFieldSchema: baseSchema,
+          };
+        } catch (error) {
+          setSpreadsheetError(getErrorMessage(error));
+          return {
+            googleAccount,
+            spreadsheet: null,
+            spreadsheetFieldSchema: baseSchema,
+          };
+        } finally {
+          setIsRetrying(false);
+        }
       }
 
       listenForLogin(googleAccount);
@@ -146,6 +177,18 @@ const RequireGoogleSheet: React.FC<{
     <AsyncStateGate state={resultAsyncState}>
       {({ data: { spreadsheetFieldSchema, ...others } }) => (
         <>
+          {spreadsheetError && (
+            <FieldAnnotationAlert
+              message={spreadsheetError}
+              type={AnnotationType.Error}
+              actions={[
+                {
+                  caption: isRetrying ? "Retrying..." : "Try Again",
+                  action: isRetrying ? async () => {} : retry,
+                },
+              ]}
+            />
+          )}
           <SchemaField
             name={joinName(blockConfigPath, "spreadsheetId")}
             schema={spreadsheetFieldSchema}
