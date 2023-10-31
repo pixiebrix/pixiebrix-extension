@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, type MouseEvent } from "react";
+import React, { useEffect, type MouseEvent, Suspense, lazy } from "react";
 import {
   type PanelEntry,
   type SidebarEntry,
@@ -41,7 +41,6 @@ import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
-import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectExtensionFromEventKey,
@@ -56,12 +55,27 @@ import {
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
-import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { getTopLevelFrame } from "webext-messenger";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
+
+const ActivateModPanel = lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "ActivatePanels" */
+      "@/sidebar/activateRecipe/ActivateModPanel"
+    )
+);
+
+const ActivateMultipleModsPanel = lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "ActivatePanels" */
+      "@/sidebar/activateRecipe/ActivateMultipleModsPanel"
+    )
+);
 
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
@@ -332,25 +346,30 @@ const Tabs: React.FC = () => {
               key={eventKeyForEntry(modActivationPanel)}
               eventKey={eventKeyForEntry(modActivationPanel)}
             >
-              <ErrorBoundary
-                onError={() => {
-                  reportEvent(Events.VIEW_ERROR, {
-                    panelType: "activate",
-                    // For backward compatability, provide a single modId to the recipeToActivate property
-                    recipeToActivate: modActivationPanel.modIds[0],
-                    modCount: modActivationPanel.modIds.length,
-                    modIds: modActivationPanel.modIds,
-                  });
-                }}
+              <Suspense
+                // Just show blank to avoid a flash, because the module loading should be near instant
+                fallback={<div></div>}
               >
-                {modActivationPanel.modIds.length === 1 ? (
-                  <ActivateModPanel modId={modActivationPanel.modIds[0]} />
-                ) : (
-                  <ActivateMultipleModsPanel
-                    modIds={modActivationPanel.modIds}
-                  />
-                )}
-              </ErrorBoundary>
+                <ErrorBoundary
+                  onError={() => {
+                    reportEvent(Events.VIEW_ERROR, {
+                      panelType: "activate",
+                      // For backward compatability, provide a single modId to the recipeToActivate property
+                      recipeToActivate: modActivationPanel.modIds[0],
+                      modCount: modActivationPanel.modIds.length,
+                      modIds: modActivationPanel.modIds,
+                    });
+                  }}
+                >
+                  {modActivationPanel.modIds.length === 1 ? (
+                    <ActivateModPanel modId={modActivationPanel.modIds[0]} />
+                  ) : (
+                    <ActivateMultipleModsPanel
+                      modIds={modActivationPanel.modIds}
+                    />
+                  )}
+                </ErrorBoundary>
+              </Suspense>
             </Tab.Pane>
           )}
 
@@ -360,15 +379,20 @@ const Tabs: React.FC = () => {
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >
-              <ErrorBoundary
-                onError={() => {
-                  reportEvent(Events.VIEW_ERROR, {
-                    panelType: staticPanel.type,
-                  });
-                }}
+              <Suspense
+                // Just show blank to avoid a flash, because the module loading should be near instant
+                fallback={<div></div>}
               >
-                {getBodyForStaticPanel(staticPanel.key)}
-              </ErrorBoundary>
+                <ErrorBoundary
+                  onError={() => {
+                    reportEvent(Events.VIEW_ERROR, {
+                      panelType: staticPanel.type,
+                    });
+                  }}
+                >
+                  {getBodyForStaticPanel(staticPanel.key)}
+                </ErrorBoundary>
+              </Suspense>
             </Tab.Pane>
           ))}
         </Tab.Content>
