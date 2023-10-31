@@ -31,7 +31,6 @@ interface Item {
   children: Item[];
 }
 
-// FIXME: does this need to get extracted to a different file to avoid the react import?
 function richValue(value: unknown): unknown {
   if (typeof value === "string" && isValidUrl(value)) {
     return (
