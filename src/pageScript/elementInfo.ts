@@ -15,23 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Framework } from "@/pageScript/messenger/constants";
-import adapters from "@/pageScript/frameworks/adapters";
-import { isEmpty, uniq } from "lodash";
+import { uniq } from "lodash";
 import { inferSelectorsIncludingStableAncestors } from "@/utils/inference/selectorInference";
-
-export interface ElementInfo {
-  selectors: string[];
-  framework: Framework;
-  tagName: string;
-  hasData: boolean;
-  parent?: ElementInfo;
-  isMulti?: boolean;
-}
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 
 export async function elementInfo(
   element: HTMLElement,
-  componentFramework?: Framework,
   selectors: string[] = [],
   traverseUp = 0
 ): Promise<ElementInfo> {
@@ -53,46 +42,9 @@ export async function elementInfo(
     inferredSelectors,
   });
 
-  for (const [framework, adapter] of adapters.entries()) {
-    if (componentFramework && framework !== componentFramework) {
-      console.debug(
-        `Skipping other framework ${framework} (expected ${componentFramework})`
-      );
-      continue;
-    }
-
-    let component;
-
-    try {
-      component = adapter.getComponent(element);
-    } catch (error) {
-      console.debug("Could not get component information", { error });
-    }
-
-    if (component) {
-      return {
-        selectors: inferredSelectors,
-        framework,
-        tagName: element.tagName,
-        hasData: !isEmpty(adapter.getData(component)),
-        // eslint-disable-next-line no-await-in-loop -- It's only awaited once per loop
-        parent: await elementInfo(
-          element.parentElement,
-          framework,
-          [],
-          traverseUp - 1
-        ),
-      };
-    }
-
-    console.debug(`No component found for ${framework}`);
-  }
-
   return {
     selectors: inferredSelectors,
-    framework: null,
-    hasData: false,
     tagName: element.tagName,
-    parent: await elementInfo(element.parentElement, null, [], traverseUp - 1),
+    parent: await elementInfo(element.parentElement, [], traverseUp - 1),
   };
 }

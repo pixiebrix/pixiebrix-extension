@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as pageScript from "@/pageScript/messenger/api";
 import { mapValues, uniq } from "lodash";
 import { $safeFind } from "@/utils/domUtils";
 import {
@@ -28,30 +27,13 @@ import {
   getSiteSelectorHint,
   type SelectorTemplate,
 } from "@/utils/inference/siteSelectorHints";
-import {
-  type ElementInfo,
-  type Framework,
-} from "@/utils/inference/selectorTypes";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { renderString } from "nunjucks";
-
-/**
- * @deprecated framework-based (e.g., React/Vue/etc.) traversal is deprecated
- */
-type FrameworkSelectorArgs = {
-  /**
-   * The front-end framework to assume for component traversal.
-   */
-  framework?: Framework;
-  /**
-   * Number of non-DOM components to traverse up.
-   */
-  traverseUp: number;
-};
 
 function getMatchingRequiredSelectors(
   element: HTMLElement,
   requiredSelectors: string[]
-) {
+): string {
   return requiredSelectors.find((selector) => element.matches(selector));
 }
 
@@ -171,31 +153,9 @@ async function inferSingleElementSelector({
   element,
   root,
   excludeRandomClasses,
-  framework,
-  traverseUp,
-}: InferSelectorArgs &
-  FrameworkSelectorArgs & {
-    element: HTMLElement;
-  }): Promise<ElementInfo> {
-  if (framework) {
-    // We're using pageScript getElementInfo only when specific framework is used.
-    // On Salesforce we were running into an issue where certain selectors weren't finding any elements when
-    // run from the pageScript. It might have something to do with the custom web components Salesforce uses?
-    // In any case, the pageScript is not necessary if framework is not specified, because selectElement
-    // only needs to return the selector alternatives.
-    const selector = safeCssSelector([element], {
-      excludeRandomClasses,
-    });
-
-    // XXX: pageScript.getElementInfo doesn't support `root` because we can't pass an element across the pageScript
-    // boundary.
-    return pageScript.getElementInfo({
-      selector,
-      framework,
-      traverseUp,
-    });
-  }
-
+}: InferSelectorArgs & {
+  element: HTMLElement;
+}): Promise<ElementInfo> {
   // Ancestors in order from root to element
   const ancestorSelectorOverrides = mapSelectorOverrideToAncestors(
     element,
@@ -243,8 +203,6 @@ async function inferSingleElementSelector({
 
   return {
     selectors: validatedSelectors,
-    framework: null,
-    hasData: false,
     tagName: element.tagName,
     parent: null,
   };

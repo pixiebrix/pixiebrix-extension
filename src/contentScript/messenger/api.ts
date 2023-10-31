@@ -50,7 +50,6 @@ export const insertButton = getMethod("INSERT_BUTTON");
 
 export const initRobot = getMethod("UIPATH_INIT");
 export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
-export const detectFrameworks = getMethod("DETECT_FRAMEWORKS");
 
 export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
 

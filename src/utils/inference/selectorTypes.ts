@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;
-export const KNOWN_READERS = [...KNOWN_ADAPTERS, "jquery"] as const;
-
-export type FrameworkAdapter = typeof KNOWN_ADAPTERS[number];
-
-export type Framework = typeof KNOWN_READERS[number];
-
 export interface ElementInfo {
+  /**
+   * Inferred selectors for the element.
+   */
   selectors: string[];
-  framework: Framework;
+  /**
+   * The HTML tag for the element.
+   */
   tagName: string;
-  hasData: boolean;
   parent?: ElementInfo;
   isMulti?: boolean;
 }
