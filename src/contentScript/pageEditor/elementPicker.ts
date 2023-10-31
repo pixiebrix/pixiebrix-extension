@@ -20,10 +20,8 @@ import Overlay from "@/vendors/Overlay";
 import {
   expandedCssSelector,
   findContainer,
-  inferSingleElementSelector,
   inferMultiElementSelector,
 } from "@/utils/inference/selectorInference";
-import { type Framework } from "@/pageScript/messenger/constants";
 import { compact, difference, uniq } from "lodash";
 import * as pageScript from "@/pageScript/messenger/api";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
@@ -38,6 +36,8 @@ import {
 } from "@/errors/businessErrors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { $safeFind, findSingleElement } from "@/utils/domUtils";
+import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 
 /**
  * Primary overlay that moved with the user's mouse/selection.
@@ -434,20 +434,16 @@ export async function cancelSelect() {
 }
 
 export async function selectElement({
-  traverseUp = 0,
   mode = "element",
-  framework,
   root,
   isMulti: initialIsMulti = false,
   excludeRandomClasses,
 }: {
-  traverseUp: number;
-  framework?: Framework;
   mode: SelectMode;
   isMulti?: boolean;
   root?: string;
   excludeRandomClasses?: boolean;
-}) {
+}): Promise<ElementInfo> {
   const rootElements = $safeFind(root).get();
 
   if (root && rootElements.length === 0) {
@@ -473,8 +469,6 @@ export async function selectElement({
 
       return pageScript.getElementInfo({
         selector: selectors[0],
-        framework,
-        traverseUp,
       });
     }
 
@@ -508,11 +502,9 @@ export async function selectElement({
       );
 
       return inferSingleElementSelector({
-        traverseUp,
         root: activeRoot,
         element,
         excludeRandomClasses,
-        framework,
       });
     }
 

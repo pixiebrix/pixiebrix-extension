@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
 import { remove, reverse } from "lodash";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMapSigns } from "@fortawesome/free-solid-svg-icons";
 import { recordEnd, recordStart } from "@/tours/tourRunDatabase";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -248,7 +245,7 @@ export function unregisterTours(extensionIds: UUID[]): void {
  * @param allowUserRun whether the user can manually run the tour
  * @param run method to execute the tour content
  */
-export function registerTour({
+export async function registerTour({
   blueprintId,
   extension,
   allowUserRun,
@@ -258,7 +255,7 @@ export function registerTour({
   extension: ResolvedModComponent;
   allowUserRun?: boolean;
   run: () => { promise: Promise<void>; abortController: AbortController };
-}): RegisteredTour {
+}): Promise<RegisteredTour> {
   if (!blueprintTourRegistry.has(blueprintId)) {
     blueprintTourRegistry.set(blueprintId, new Map());
   }
@@ -297,12 +294,17 @@ export function registerTour({
   blueprintTours.set(extension.label, tour);
 
   if (allowUserRun) {
+    const { default: icon } = await import(
+      /* webpackChunkName: "fontAwesome" */
+      "./tourActionIcon"
+    );
+
     // Register a quick bar action to run the tour if the user is allowed to manually run the tour
     quickBarRegistry.addAction({
       id: `tour-${extension.id}`,
       extensionId: extension.id,
       name: `Run Tour ${extension.label}`,
-      icon: <FontAwesomeIcon icon={faMapSigns} />,
+      icon,
       perform() {
         tour.run();
       },

@@ -15,40 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SimpleErrorObject } from "@/errors/errorHelpers";
-
-export interface FrameConnectionState {
-  frameId: number;
-
+export interface ElementInfo {
   /**
-   * UUID for the navigation result
+   * Inferred selectors for the element.
    */
-  navSequence: string | undefined;
-
+  selectors: string[];
   /**
-   * True if the devtools have permission to access the current tab
+   * The HTML tag for the element.
    */
-  hasPermissions: boolean;
+  tagName: string;
+  parent?: ElementInfo;
+  isMulti?: boolean;
 }
-
-export type TabState = {
-  /**
-   * Are we connecting to the content script?
-   */
-  isConnecting: boolean;
-
-  /**
-   * The frame connection state, or defaultFrameState if there was an error
-   */
-  frameState: FrameConnectionState;
-
-  /**
-   * The error connecting to the content script, or null.
-   * @see connectToContentScript
-   */
-  error: SimpleErrorObject | null;
-};
-
-export type TabStateRootState = {
-  tabState: TabState;
-};

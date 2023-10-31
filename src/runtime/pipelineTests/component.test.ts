@@ -36,7 +36,7 @@ beforeEach(() => {
   blockRegistry.register([echoBrick, contextBrick]);
 });
 
-const componentBlock = fromJS({
+const componentBlock = fromJS(blockRegistry, {
   apiVersion: "v1",
   kind: "component",
   metadata: {

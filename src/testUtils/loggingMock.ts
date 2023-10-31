@@ -22,3 +22,5 @@ export async function getLoggingConfig(): Promise<unknown> {
     logValues,
   };
 }
+
+export const count = jest.fn().mockResolvedValue(0);

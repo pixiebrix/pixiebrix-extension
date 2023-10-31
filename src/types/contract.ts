@@ -21,10 +21,7 @@
 import { type components } from "@/types/swagger";
 import { type Except, type JsonObject } from "type-fest";
 import { type AxiosResponse } from "axios";
-import {
-  type IconName,
-  type IconPrefix,
-} from "@fortawesome/free-solid-svg-icons";
+import type { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type SanitizedConfig,

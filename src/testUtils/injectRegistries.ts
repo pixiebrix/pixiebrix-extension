@@ -15,29 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { type ComponentMeta, type ComponentStory } from "@storybook/react";
-import SelectorListItem from "./SelectorListItem";
+/**
+ * @file Test utilities for injecting registries into the runtime.
+ * @since 1.8.2 used to de-couple the brick registry from the runtime
+ */
 
-export default {
-  title: "Components/SelectorListItem",
-  component: SelectorListItem,
-} as ComponentMeta<typeof SelectorListItem>;
+import brickRegistry from "@/bricks/registry";
+import { initRuntime } from "@/runtime/reducePipeline";
 
-const Story: ComponentStory<typeof SelectorListItem> = (args) => (
-  <SelectorListItem {...args} />
-);
-
-const selector = ".main-content .container .foo.bar";
-
-export const Plain = Story.bind({});
-Plain.args = {
-  value: selector,
-  tag: null,
-};
-
-export const Tag = Story.bind({});
-Tag.args = {
-  value: selector,
-  tag: "H1",
-};
+// Since 1.8.2, the runtime is decoupled from the brick registry.
+initRuntime(brickRegistry);

@@ -46,6 +46,7 @@ const config = {
   ],
   setupFilesAfterEnv: [
     "<rootDir>/src/testUtils/testAfterEnv.ts",
+    "<rootDir>/src/testUtils/injectRegistries.ts",
     "jest-extended/all",
   ],
   coverageReporters: ["json"],

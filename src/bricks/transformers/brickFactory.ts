@@ -25,7 +25,6 @@ import { castArray, cloneDeep, compact, pickBy } from "lodash";
 import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
-import blockRegistry from "@/bricks/registry";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
@@ -42,7 +41,11 @@ import {
   type SchemaDefinition,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { type Metadata, type SemVerString } from "@/types/registryTypes";
+import {
+  type Metadata,
+  type RegistryId,
+  type SemVerString,
+} from "@/types/registryTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
@@ -56,6 +59,10 @@ import {
   inputProperties,
   unionSchemaDefinitionTypes,
 } from "@/utils/schemaUtils";
+import type BaseRegistry from "@/registry/memoryRegistry";
+
+// Interface to avoid circular dependency with the implementation
+type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;
 
 type BrickDefinition = {
   /**
@@ -138,7 +145,10 @@ class UserDefinedBrick extends BrickABC {
 
   readonly version: SemVerString;
 
-  constructor(public readonly component: BrickDefinition) {
+  constructor(
+    private readonly registry: BrickRegistryProtocol,
+    public readonly component: BrickDefinition
+  ) {
     const { id, name, description, icon, version } = component.metadata;
     super(id, name, description, icon);
     // Fall back to v1 for backward compatability
@@ -168,7 +178,7 @@ class UserDefinedBrick extends BrickABC {
 
     const purity = await Promise.all(
       pipeline.map(async (blockConfig) => {
-        const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
+        const resolvedBlock = await this.registry.lookup(blockConfig.id);
         return resolvedBlock.isPure();
       })
     );
@@ -182,7 +192,7 @@ class UserDefinedBrick extends BrickABC {
 
     const awareness = await Promise.all(
       pipeline.map(async (blockConfig) => {
-        const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
+        const resolvedBlock = await this.registry.lookup(blockConfig.id);
         return resolvedBlock.isRootAware();
       })
     );
@@ -195,7 +205,7 @@ class UserDefinedBrick extends BrickABC {
 
     const awareness = await Promise.all(
       pipeline.map(async (blockConfig) => {
-        const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
+        const resolvedBlock = await this.registry.lookup(blockConfig.id);
         return resolvedBlock.isPageStateAware();
       })
     );
@@ -210,7 +220,7 @@ class UserDefinedBrick extends BrickABC {
 
     const schemas = await Promise.all(
       pipeline.map(async (blockConfig) => {
-        const block = await blockRegistry.lookup(blockConfig.id);
+        const block = await this.registry.lookup(blockConfig.id);
         return block.getModVariableSchema?.(blockConfig);
       })
     );
@@ -241,7 +251,7 @@ class UserDefinedBrick extends BrickABC {
     const last = pipeline.at(-1);
 
     try {
-      const block = await blockRegistry.lookup(last.id);
+      const block = await this.registry.lookup(last.id);
       return await getType(block);
     } catch {
       return null;
@@ -350,7 +360,7 @@ class UserDefinedBrick extends BrickABC {
     } catch (error) {
       if (isSpecificError(error, HeadlessModeError)) {
         const continuation = error;
-        const renderer = await blockRegistry.lookup(continuation.blockId);
+        const renderer = await this.registry.lookup(continuation.blockId);
         return renderer.run(continuation.args, {
           ...options,
           ctxt: continuation.ctxt,
@@ -363,7 +373,11 @@ class UserDefinedBrick extends BrickABC {
   }
 }
 
-export function fromJS(component: UnknownObject): Brick {
+// Put registry first for easier partial application
+export function fromJS(
+  registry: BrickRegistryProtocol,
+  component: UnknownObject
+): Brick {
   if (component.kind == null) {
     throw new InvalidDefinitionError(
       "Component definition is missing a 'kind' property",
@@ -376,5 +390,5 @@ export function fromJS(component: UnknownObject): Brick {
   }
 
   validateBrickDefinition(component);
-  return new UserDefinedBrick(component);
+  return new UserDefinedBrick(registry, component);
 }

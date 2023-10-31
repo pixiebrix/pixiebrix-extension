@@ -19,9 +19,9 @@ import { produce } from "immer";
 import objectHash from "object-hash";
 import { cloneDeep, isEmpty, mapValues, pick, pickBy } from "lodash";
 import extensionPointRegistry from "@/starterBricks/registry";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
-import { fromJS as blockFactory } from "@/bricks/transformers/brickFactory";
+import { fromJS as brickFactory } from "@/bricks/transformers/brickFactory";
 import {
   type ModDefinition,
   type ResolvedModComponentDefinition,
@@ -70,12 +70,12 @@ async function resolveBrickDefinition(
   const registryId = makeInternalId(obj);
 
   try {
-    return await blockRegistry.lookup(registryId);
+    return await brickRegistry.lookup(registryId);
   } catch {
     // Not in registry yet, so add it
   }
 
-  const item = blockFactory({
+  const item = brickFactory(brickRegistry, {
     ...obj,
     metadata: {
       id: registryId,
@@ -83,7 +83,7 @@ async function resolveBrickDefinition(
     },
   });
 
-  blockRegistry.register([item], { source: "internal", notify: false });
+  brickRegistry.register([item], { source: "internal", notify: false });
 
   return item;
 }
