@@ -17,7 +17,7 @@
 
 import * as Yup from "yup";
 import React, { useContext } from "react";
-import integrationsSlice from "@/store/integrations/integrationsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { uuidv4 } from "@/types/helpers";
 import notify from "@/utils/notify";
@@ -28,17 +28,17 @@ import Form, {
 } from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
 import { useHistory } from "react-router";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
-import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { isEmpty } from "lodash";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import {
   type IntegrationConfig,
   type SecretsConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;

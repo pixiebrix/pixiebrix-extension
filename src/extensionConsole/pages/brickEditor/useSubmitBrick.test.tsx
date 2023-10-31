@@ -22,7 +22,7 @@ import { Provider } from "react-redux";
 import { type AuthState } from "@/auth/authTypes";
 import integrationsSlice, {
   type IntegrationsState,
-} from "@/store/integrations/integrationsSlice";
+} from "@/integrations/store/integrationsSlice";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";

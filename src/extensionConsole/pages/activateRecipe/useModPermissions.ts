@@ -24,7 +24,7 @@ import { type AsyncState } from "@/types/sliceTypes";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 type RecipePermissionsState = AsyncState<PermissionsStatus> & {
   /**

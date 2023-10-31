@@ -31,23 +31,13 @@ import {
   type SchemaValidationError,
 } from "@/bricks/errors";
 import { type SetRequired } from "type-fest";
-
-// From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
-// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
-const errorTargetClosedEarly =
-  "The target was closed before receiving a response";
-const errorTabDoesntExist = "The tab doesn't exist";
+import {
+  CONTEXT_INVALIDATED_ERROR,
+  ERROR_TAB_DOES_NOT_EXIST,
+  ERROR_TARGET_CLOSED_EARLY,
+} from "@/errors/knownErrorMessages";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
-
-export const JQUERY_INVALID_SELECTOR_ERROR =
-  "Syntax error, unrecognized expression: ";
-
-/**
- * Some APIs like runtime.sendMessage() and storage.get() will throw this error
- * when the background page has been reloaded
- */
-export const CONTEXT_INVALIDATED_ERROR = "Extension context invalidated.";
 
 /**
  * Errors to ignore unless they've caused extension point install or brick execution to fail.
@@ -72,8 +62,8 @@ const IGNORED_ERROR_PATTERNS = [
   /No frame with id \d+ in tab \d+/,
   /^No tab with id/,
   "The tab was closed.",
-  errorTabDoesntExist,
-  errorTargetClosedEarly,
+  ERROR_TAB_DOES_NOT_EXIST,
+  ERROR_TARGET_CLOSED_EARLY,
   CONTEXT_INVALIDATED_ERROR,
 ];
 

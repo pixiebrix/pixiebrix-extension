@@ -26,22 +26,22 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { selectIntegrationConfigs } from "@/store/integrations/integrationsSelectors";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
-import integrationsSlice from "@/store/integrations/integrationsSlice";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isEmpty, isEqual } from "lodash";
 import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
-import { collectIntegrationOriginPermissions } from "@/permissions/integrationPermissionsHelpers";
+import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import {
   type IntegrationConfig,
   type SecretsConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 
 const { upsertIntegrationConfig } = integrationsSlice.actions;
 

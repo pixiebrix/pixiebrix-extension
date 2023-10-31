@@ -2883,24 +2883,6 @@ exports[`Storyshots Components/SchemaTree String Formats 1`] = `
 </table>
 `;
 
-exports[`Storyshots Components/SelectorListItem Data 1`] = `
-<div
-  className="container"
->
-  <span
-    className="badge badge badge-dark"
-  >
-    DIV
-  </span>
-  <span
-    className="badge badge badge-info"
-  >
-    DATA
-  </span>
-  .main-content .container .foo.bar
-</div>
-`;
-
 exports[`Storyshots Components/SelectorListItem Plain 1`] = `
 <div
   className="container"

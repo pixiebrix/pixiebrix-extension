@@ -25,16 +25,16 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import integrationsSlice, {
   type IntegrationsState,
-} from "@/store/integrations/integrationsSlice";
+} from "@/integrations/store/integrationsSlice";
 import { type AuthState } from "@/auth/authTypes";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import { type Me } from "@/types/contract";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
-import { type IntegrationConfig } from "@/types/integrationTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 
 jest.mock("@/store/enterprise/useManagedStorageState", () => ({
   __esModule: true,

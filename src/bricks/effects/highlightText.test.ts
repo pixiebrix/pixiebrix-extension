@@ -248,7 +248,7 @@ describe("ReplaceTextEffect", () => {
       { logger, root: document } as BrickOptions
     );
 
-    expect(document.head.innerHTML).toBe("<title>Support page</title>");
+    expect(document.title).toBe("Support page");
     expect(document.body.innerHTML).toBe(
       '<h1><mark style="background-color: yellow;">Sup</mark>erlatives Abound</h1>'
     );

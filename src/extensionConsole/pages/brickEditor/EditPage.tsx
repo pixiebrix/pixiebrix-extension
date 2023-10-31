@@ -29,7 +29,7 @@ import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { useTitle } from "@/hooks/title";
+import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
 import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";
 import useLogContext from "@/extensionConsole/pages/brickEditor/useLogContext";
@@ -132,7 +132,9 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
   useLogContext(data.config);
 
   const name = rawConfig.metadata?.name;
-  useTitle(name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick");
+  useSetDocumentTitle(
+    name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick"
+  );
 
   return (
     <HotKeys keyMap={keyMap}>

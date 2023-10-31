@@ -23,7 +23,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { type AxiosRequestConfig } from "axios";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 export const inputProperties: Record<string, Schema> = {
   url: {

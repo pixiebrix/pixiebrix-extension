@@ -28,7 +28,7 @@ import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { appApi } from "@/services/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
-import integrationsSlice from "@/store/integrations/integrationsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import workshopSlice from "@/store/workshopSlice";
 
 const configureStoreForTests = () =>

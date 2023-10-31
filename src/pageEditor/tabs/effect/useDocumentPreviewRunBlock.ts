@@ -25,18 +25,18 @@ import {
   selectParentBlockInfo,
 } from "@/pageEditor/slices/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
+import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
-import { makeServiceContext } from "@/services/integrationUtils";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 type Location = "modal" | "panel";
 
@@ -138,7 +138,7 @@ export default function useDocumentPreviewRunBlock(
     selectActiveElementTraceForBlock(blockInstanceId)
   );
   const [serviceContext, isLoadingServiceContext] = useAsyncState(
-    makeServiceContext(integrationDependencies),
+    makeServiceContextFromDependencies(integrationDependencies),
     [integrationDependencies]
   );
   const context = {

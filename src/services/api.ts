@@ -40,7 +40,7 @@ import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { type IntegrationDefinition } from "@/types/integrationTypes";
+import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import {
   type ModDefinition,
   type UnsavedModDefinition,

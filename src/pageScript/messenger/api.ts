@@ -15,18 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "@/pageScript/messenger/pigeon";
+import { createSendScriptMessage } from "@/pageScript/messenger/sender";
 import {
   type Framework,
   GET_COMPONENT_DATA,
-  GET_COMPONENT_INFO,
+  GET_ELEMENT_INFO,
   SET_COMPONENT_DATA,
-  DETECT_FRAMEWORK_VERSIONS,
-  type FrameworkMeta,
   READ_WINDOW,
   CKEDITOR_SET_VALUE,
 } from "@/pageScript/messenger/constants";
-import { type ElementInfo } from "@/pageScript/frameworks";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type JsonObject, type JsonValue } from "type-fest";
 
 export type PathSpec =
@@ -58,6 +56,9 @@ export const setComponentData = createSendScriptMessage<void, WritePayload>(
   SET_COMPONENT_DATA
 );
 
+/**
+ * Returns front-end framework component data for the given selector and framework.
+ */
 export const getComponentData = createSendScriptMessage<
   JsonObject,
   ReadPayload
@@ -65,8 +66,8 @@ export const getComponentData = createSendScriptMessage<
 
 export const getElementInfo = createSendScriptMessage<
   ElementInfo,
-  { selector: string; framework?: Framework; traverseUp?: number }
->(GET_COMPONENT_INFO);
+  { selector: string }
+>(GET_ELEMENT_INFO);
 
 type ReadSpec = <T extends Record<string, string>>(arg: {
   pathSpec: T;
@@ -74,10 +75,6 @@ type ReadSpec = <T extends Record<string, string>>(arg: {
 }) => Promise<Record<keyof T, JsonValue>>;
 
 export const withReadWindow: ReadSpec = createSendScriptMessage(READ_WINDOW);
-
-export const withDetectFrameworkVersions = createSendScriptMessage<
-  FrameworkMeta[]
->(DETECT_FRAMEWORK_VERSIONS);
 
 export const setCKEditorData = createSendScriptMessage<
   void,

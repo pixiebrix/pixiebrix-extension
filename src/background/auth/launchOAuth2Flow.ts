@@ -21,7 +21,7 @@ import {
   type AuthData,
   type Integration,
   type IntegrationConfig,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import implicitGrantFlow from "@/background/auth/implicitGrantFlow";

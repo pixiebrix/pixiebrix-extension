@@ -33,8 +33,8 @@ import { type AuthOption } from "@/auth/authTypes";
 import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { joinName } from "@/utils/formUtils";
-import { type IntegrationDependency } from "@/types/integrationTypes";
-import { getIntegrationIds } from "@/utils/modDefinitionUtils";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 interface OwnProps {
   blueprint: ModDefinition;
@@ -66,7 +66,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
 
   const requiredServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so no need to include it
-    () => getIntegrationIds(blueprint, { excludePixieBrix: true }),
+    () => getModDefinitionIntegrationIds(blueprint, { excludePixieBrix: true }),
     [blueprint]
   );
 

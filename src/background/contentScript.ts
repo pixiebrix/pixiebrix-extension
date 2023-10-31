@@ -16,7 +16,7 @@
  */
 
 import pDefer, { type DeferredPromise } from "p-defer";
-import { isRemoteProcedureCallRequest } from "@/pageScript/messenger/pigeon";
+import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types/messengerTypes";
