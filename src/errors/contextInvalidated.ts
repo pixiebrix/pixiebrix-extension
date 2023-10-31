@@ -17,11 +17,8 @@
 
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import {
-  CONTEXT_INVALIDATED_ERROR,
-  getErrorMessage,
-  getRootCause,
-} from "./errorHelpers";
+import { getErrorMessage, getRootCause } from "./errorHelpers";
+import { CONTEXT_INVALIDATED_ERROR } from "@/errors/knownErrorMessages";
 
 /**
  * Notification id to avoid displaying the same notification multiple times.

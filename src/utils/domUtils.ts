@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getErrorMessage,
-  JQUERY_INVALID_SELECTOR_ERROR,
-} from "@/errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   BusinessError,
   InvalidSelectorError,
@@ -26,6 +23,7 @@ import {
   NoElementsFoundError,
 } from "@/errors/businessErrors";
 import { sleep } from "@/utils/timeUtils";
+import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
 
 /**
  * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element if it's
