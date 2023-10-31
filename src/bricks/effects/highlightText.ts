@@ -160,7 +160,7 @@ class HighlightText extends EffectABC {
       flags
     );
 
-    wrapText({
+    await wrapText({
       nodes: $elements.get(),
       pattern: convertedPattern,
       isAcrossElements,
