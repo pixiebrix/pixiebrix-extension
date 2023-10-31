@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const logValues = true;
+/**
+ * @file Test utilities for injecting registries into the runtime.
+ * @since 1.8.2 used to de-couple the brick registry from the runtime
+ */
 
-export async function getLoggingConfig(): Promise<unknown> {
-  return {
-    logValues,
-  };
-}
+import brickRegistry from "@/bricks/registry";
+import { initRuntime } from "@/runtime/reducePipeline";
 
-export const count = jest.fn().mockResolvedValue(0);
+// Since 1.8.2, the runtime is decoupled from the brick registry.
+initRuntime(brickRegistry);

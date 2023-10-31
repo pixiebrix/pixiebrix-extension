@@ -25,6 +25,7 @@ import registerExternalMessenger from "@/background/messenger/external/registrat
 import registerMessenger from "@/contentScript/messenger/registration";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
+import brickRegistry from "@/bricks/registry";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
@@ -38,6 +39,7 @@ import { onUncaughtError } from "@/errors/errorHelpers";
 import initFloatingActions from "@/components/floatingActions/initFloatingActions";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
+import { initRuntime } from "@/runtime/reducePipeline";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -57,6 +59,8 @@ export async function init(): Promise<void> {
   registerExternalMessenger();
   registerBuiltinBlocks();
   registerContribBlocks();
+  // Since 1.8.2, the brick registry was de-coupled from the runtime to avoid circular dependencies
+  initRuntime(brickRegistry);
 
   initTelemetry();
   initToaster();

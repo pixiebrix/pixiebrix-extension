@@ -19,17 +19,21 @@ import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/bricks/renderers/table";
-import { fromJS } from "@/bricks/transformers/brickFactory";
+import { fromJS as nativeFromJS } from "@/bricks/transformers/brickFactory";
 import amazonSearch from "@contrib/bricks/amazon-search.yaml";
 import { brickToYaml } from "@/utils/objToYaml";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/services/api";
+import brickRegistry from "@/bricks/registry";
+import { partial } from "lodash";
 
 export default {
   title: "Components/BrickDetail",
   component: BrickDetail,
 } as ComponentMeta<typeof BrickDetail>;
+
+const fromJS = partial(nativeFromJS, brickRegistry);
 
 function optionsStore(initialState?: unknown) {
   return configureStore({
