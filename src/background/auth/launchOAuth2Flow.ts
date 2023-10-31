@@ -27,7 +27,7 @@ import { Events } from "@/telemetry/events";
 import implicitGrantFlow from "@/background/auth/implicitGrantFlow";
 import codeGrantFlow from "@/background/auth/codeGrantFlow";
 
-export async function launchOAuth2Flow(
+async function launchOAuth2Flow(
   service: Integration,
   auth: IntegrationConfig
 ): Promise<AuthData> {
@@ -83,3 +83,5 @@ export async function launchOAuth2Flow(
     throw error;
   }
 }
+
+export default launchOAuth2Flow;
