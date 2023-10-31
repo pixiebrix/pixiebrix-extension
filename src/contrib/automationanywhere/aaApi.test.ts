@@ -22,8 +22,9 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import {
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
-} from "@/types/integrationTypes";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/services/constants";
+} from "@/integrations/integrationTypes";
+
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
 jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn(),

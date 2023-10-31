@@ -16,7 +16,7 @@
  */
 
 import { type NormalizedAvailability } from "@/bricks/types";
-import { type ElementInfo } from "@/pageScript/frameworks";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import {
   type ContextMenuConfig,
   type ContextMenuTargetMode,

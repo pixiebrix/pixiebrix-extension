@@ -21,7 +21,7 @@ import {
   Validator,
 } from "@cfworker/json-schema";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
-import serviceRegistry from "@/services/registry";
+import serviceRegistry from "@/integrations/registry";
 import { isEmpty, pickBy } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
 import urljoin from "url-join";

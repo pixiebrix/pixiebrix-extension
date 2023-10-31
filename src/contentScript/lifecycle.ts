@@ -22,12 +22,11 @@ import * as sidebar from "@/contentScript/sidebarController";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
-import { compact, groupBy, intersection, once, uniq } from "lodash";
+import { compact, groupBy, intersection, uniq } from "lodash";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
-import injectScriptTag from "@/utils/injectScriptTag";
 import { type FrameTarget, getThisFrame } from "webext-messenger";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -88,15 +87,6 @@ const _frameHref = new Map<number, string>();
 const _navigationListeners = new Set<() => void>();
 
 const WAIT_LOADED_INTERVAL_MS = 25;
-
-const injectPageScriptOnce = once(async (): Promise<void> => {
-  console.debug("Injecting page script");
-  const script = await logPromiseDuration(
-    "injectPageScript",
-    injectScriptTag(browser.runtime.getURL("pageScript.js"))
-  );
-  script.remove();
-});
 
 /**
  * Run an extension point and specified ModComponentBases.
@@ -598,15 +588,9 @@ export async function handleNavigate({
   updateNavigationId();
   notifyNavigationListeners();
 
-  const [extensionPoints] = await Promise.all([
-    loadPersistedExtensionsOnce(),
-    // Must always inject Page Script, so it's available to the Page Editor. Alternatively, we would inject it on
-    // demand when the Page Editor loads.
-    injectPageScriptOnce(),
-  ]);
-
   const abortSignal = createNavigationAbortSignal();
 
+  const extensionPoints = await loadPersistedExtensionsOnce();
   if (extensionPoints.length > 0) {
     // Wait for document to load, to ensure any selector-based availability rules are ready to be applied.
     await logPromiseDuration(

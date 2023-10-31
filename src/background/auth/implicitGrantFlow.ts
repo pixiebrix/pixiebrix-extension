@@ -20,7 +20,7 @@ import {
   type AuthData,
   type IntegrationConfig,
   type OAuth2Context,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { getRandomString } from "@/vendors/pkce";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 

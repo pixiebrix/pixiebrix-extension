@@ -38,7 +38,7 @@ import {
 } from "@/background/executor";
 import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
-import serviceRegistry from "@/services/registry";
+import serviceRegistry from "@/integrations/registry";
 import { performConfiguredRequest } from "@/background/requests";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
@@ -87,6 +87,7 @@ expectContext("background");
 declare global {
   interface MessengerMethods {
     GOOGLE_DRIVE_IS_LOGGED_IN: typeof sheets.isLoggedIn;
+    GOOGLE_DRIVE_GET_USER_EMAIL: typeof sheets.getGoogleUserEmail;
 
     GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: typeof sheets.getAllSpreadsheets;
     GOOGLE_SHEETS_GET_SPREADSHEET: typeof sheets.getSpreadsheet;
@@ -170,6 +171,7 @@ declare global {
 export default function registerMessenger(): void {
   registerMethods({
     GOOGLE_DRIVE_IS_LOGGED_IN: sheets.isLoggedIn,
+    GOOGLE_DRIVE_GET_USER_EMAIL: sheets.getGoogleUserEmail,
 
     GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: sheets.getAllSpreadsheets,
     GOOGLE_SHEETS_GET_SPREADSHEET: sheets.getSpreadsheet,

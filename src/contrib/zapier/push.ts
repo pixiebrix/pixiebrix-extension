@@ -16,7 +16,7 @@
  */
 
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
-import { pixiebrixConfigurationFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
 import { type Webhook } from "@/contrib/zapier/contract";

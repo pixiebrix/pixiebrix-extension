@@ -20,7 +20,7 @@ import styles from "./ActivateRecipeCard.module.scss";
 import React, { useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { truncate } from "lodash";
-import { useTitle } from "@/hooks/title";
+import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
 import useActivateRecipeWizard from "@/activation/useActivateRecipeWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import { useDispatch, useSelector } from "react-redux";
@@ -63,7 +63,7 @@ const ActivateRecipeCard: React.FC = () => {
   const [createMilestone] = useCreateMilestoneMutation();
   const { hasMilestone } = useMilestones();
 
-  useTitle(
+  useSetDocumentTitle(
     `${isReactivate ? "Reactivate" : "Activate"} ${truncate(
       recipe.metadata.name,
       { length: 15 }

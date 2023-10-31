@@ -29,7 +29,7 @@ import {
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 
 /**
  * @deprecated - Do not use versioned state types directly, exported for testing

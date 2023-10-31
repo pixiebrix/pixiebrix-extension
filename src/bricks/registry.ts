@@ -16,16 +16,13 @@
  */
 
 // eslint-disable-next-line no-restricted-imports
-import BaseRegistry from "../registry/memoryRegistry";
+import MemoryRegistry from "../registry/memoryRegistry";
 import { fromJS } from "@/bricks/transformers/brickFactory";
-import {
-  type BrickType,
-  type ResolvedBrickConfig,
-} from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
-import { type BrickConfig } from "@/bricks/types";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
+import { partial } from "lodash";
 
 /**
  * A brick along with inferred/calculated information
@@ -37,9 +34,14 @@ export type TypedBrickPair = {
 
 export type TypedBlockMap = Map<RegistryId, TypedBrickPair>;
 
-class BricksRegistry extends BaseRegistry<RegistryId, Brick> {
+/**
+ * In-memory registry of bricks. Includes both user-defined and built-in bricks.
+ */
+class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
   constructor() {
-    super(["block", "component", "effect", "reader"], fromJS);
+    super(["block", "component", "effect", "reader"], null);
+    // Can't reference "this" before the call to "super"
+    this.setDeserialize(partial(fromJS, this));
 
     this.addListener({
       onCacheChanged: () => {
@@ -100,17 +102,10 @@ class BricksRegistry extends BaseRegistry<RegistryId, Brick> {
   }
 }
 
-const registry = new BricksRegistry();
+/**
+ * The singleton brick registry instance
+ * @see initRuntime
+ */
+const registry = new BrickRegistry();
 
 export default registry;
-
-export async function resolveBlockConfig(
-  config: BrickConfig
-): Promise<ResolvedBrickConfig> {
-  const block = await registry.lookup(config.id);
-  return {
-    config,
-    block,
-    type: await getType(block),
-  };
-}

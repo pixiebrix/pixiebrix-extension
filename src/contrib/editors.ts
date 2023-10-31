@@ -35,8 +35,6 @@ import FormModalOptions, {
 import FormRendererOptions, {
   FORM_RENDERER_ID,
 } from "@/pageEditor/fields/FormRendererOptions";
-import { COMPONENT_READER_ID } from "@/bricks/transformers/component/ComponentReader";
-import ComponentReaderOptions from "@/bricks/transformers/component/ComponentReaderOptions";
 import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/bricks/lookup";
 import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import DatabaseGetOptions, {
@@ -79,7 +77,6 @@ export default function registerEditors() {
   optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
   optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
   optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);
-  optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);
   optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
   optionsRegistry.set(TourStepTransformer.BLOCK_ID, TourStepOptions);
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);

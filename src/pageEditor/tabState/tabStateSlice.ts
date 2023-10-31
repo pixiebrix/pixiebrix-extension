@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pTimeout from "p-timeout";
-import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
-import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -39,7 +36,6 @@ import reportError from "@/telemetry/reportError";
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,
   hasPermissions: false,
-  meta: undefined,
   frameId: 0,
 };
 
@@ -82,18 +78,6 @@ const connectToContentScript = createAsyncThunk<
   console.debug("connectToContentScript: ensuring contentScript");
   await ensureContentScript(thisTab, 4500);
 
-  let frameworks: FrameworkMeta[] = [];
-  try {
-    console.debug("connectToContentScript: detecting frameworks");
-    frameworks = await pTimeout(detectFrameworks(thisTab, null), {
-      milliseconds: 500,
-    });
-  } catch (error) {
-    console.debug("connectToContentScript: error detecting frameworks", {
-      error,
-    });
-  }
-
   void thunkAPI.dispatch(awaitContextInvalidated());
   void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
   void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
@@ -102,7 +86,6 @@ const connectToContentScript = createAsyncThunk<
   return {
     ...common,
     hasPermissions: true,
-    meta: { frameworks },
   };
 });
 

@@ -18,7 +18,7 @@
 import { readStorage, setStorage } from "@/utils/storageUtils";
 import { type UUID } from "@/types/stringTypes";
 import { expectContext } from "@/utils/expectContext";
-import { type AuthData } from "@/types/integrationTypes";
+import { type AuthData } from "@/integrations/integrationTypes";
 import { OAUTH2_STORAGE_KEY } from "@/auth/authConstants";
 
 export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(

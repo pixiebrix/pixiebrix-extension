@@ -21,7 +21,7 @@ import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "@/contrib/zapier/contract";
-import { pixiebrixConfigurationFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import {

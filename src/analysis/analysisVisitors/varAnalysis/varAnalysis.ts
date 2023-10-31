@@ -26,7 +26,6 @@ import {
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
-import { makeServiceContext } from "@/services/integrationUtils";
 import { isEmpty } from "lodash";
 import {
   type Analysis,
@@ -52,6 +51,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -107,7 +107,7 @@ export enum KnownSources {
 
 /**
  * Set availability of variables based on the integrations used by the ModComponentBase
- * @see makeServiceContext
+ * @see makeServiceContextFromDependencies
  */
 async function setIntegrationDependencyVars(
   extension: ModComponentFormState,
@@ -116,7 +116,9 @@ async function setIntegrationDependencyVars(
   // Loop through all the integrations, so we can set the source for each dependency variable properly
   for (const integrationDependency of extension.integrationDependencies ?? []) {
     // eslint-disable-next-line no-await-in-loop
-    const serviceContext = await makeServiceContext([integrationDependency]);
+    const serviceContext = await makeServiceContextFromDependencies([
+      integrationDependency,
+    ]);
     contextVars.setExistenceFromValues({
       source: `${KnownSources.SERVICE}:${integrationDependency.integrationId}`,
       values: serviceContext,

@@ -84,7 +84,6 @@ describe("selectElement", () => {
 
     const selectPromise = selectElement({
       mode: "element",
-      traverseUp: 0,
     });
 
     // React testing userEvent library doesn't seem to work here
@@ -93,8 +92,6 @@ describe("selectElement", () => {
     );
 
     await expect(selectPromise).resolves.toEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       selectors: ["span"],
       tagName: "SPAN",
@@ -109,7 +106,6 @@ describe("selectElement", () => {
     const selectPromise = selectElement({
       mode: "element",
       root: "#root",
-      traverseUp: 0,
     });
 
     // React testing userEvent library doesn't seem to work here
@@ -118,8 +114,6 @@ describe("selectElement", () => {
     );
 
     await expect(selectPromise).resolves.toEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       // Can infer span because it's the only one under the root
       selectors: ["span"],
@@ -138,7 +132,6 @@ describe("selectElement", () => {
       const selectPromise = selectElement({
         mode: "element",
         root,
-        traverseUp: 0,
       });
 
       // React testing userEvent library doesn't seem to work here
@@ -147,8 +140,6 @@ describe("selectElement", () => {
       );
 
       await expect(selectPromise).resolves.toEqual({
-        framework: null,
-        hasData: false,
         parent: null,
         // Can infer span because it's the only one under the root
         selectors: ["span"],
@@ -165,7 +156,6 @@ describe("selectElement", () => {
       mode: "element",
       root: "div",
       isMulti: true,
-      traverseUp: 0,
     });
 
     const args = showSelectionToolPopoverMock.mock.calls[0][0];
@@ -191,8 +181,6 @@ describe("selectElement", () => {
     args.handleDone();
 
     await expect(selectPromise).resolves.toEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       isMulti: true,
       // Can infer span because it's the only one under the root
@@ -209,7 +197,6 @@ describe("selectElement", () => {
     const selectPromise = selectElement({
       mode: "element",
       isMulti: true,
-      traverseUp: 0,
     });
 
     const args = showSelectionToolPopoverMock.mock.calls[0][0];
@@ -238,8 +225,6 @@ describe("selectElement", () => {
     args.handleDone();
 
     await expect(selectPromise).resolves.toEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       isMulti: true,
       selectors: ["#root span"],

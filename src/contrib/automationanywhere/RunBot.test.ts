@@ -20,18 +20,18 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import {
-  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "@/services/constants";
-import {
   performConfiguredRequestInBackground,
   getCachedAuthData,
   getUserData,
 } from "@/background/messenger/api";
 import { type BrickOptions } from "@/types/runtimeTypes";
-import { type AuthData } from "@/types/integrationTypes";
+import { type AuthData } from "@/integrations/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({

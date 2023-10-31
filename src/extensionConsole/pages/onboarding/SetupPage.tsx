@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { useTitle } from "@/hooks/title";
+import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
 import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/services/baseService";
 import { useSelector } from "react-redux";
@@ -45,7 +45,7 @@ const Layout: React.FunctionComponent = ({ children }) => (
  * @see SettingsPage
  */
 const SetupPage: React.FunctionComponent = () => {
-  useTitle("Setup");
+  useSetDocumentTitle("Setup");
   // Must use useLocation because we're checking the path in the hash route.
   const location = useLocation();
   const isStartUrl = location.pathname.startsWith("/start");

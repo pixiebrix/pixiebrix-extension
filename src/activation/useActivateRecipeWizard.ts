@@ -20,7 +20,6 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import type React from "react";
 import { isEmpty, mapValues } from "lodash";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/services/constants";
 import OptionsBody from "@/extensionConsole/pages/activateRecipe/OptionsBody";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 import PermissionsBody from "@/extensionConsole/pages/activateRecipe/PermissionsBody";
@@ -44,7 +43,8 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
-import { getUnconfiguredComponentIntegrations } from "@/utils/modDefinitionUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: ServicesBody },

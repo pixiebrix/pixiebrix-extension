@@ -19,14 +19,18 @@ import { validateRegistryId } from "@/types/helpers";
 import { sheets } from "@/background/messenger/api";
 import { zip } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { SHEET_SERVICE_SCHEMA } from "@/contrib/google/sheets/core/schemas";
+import {
+  GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
+  SHEET_SERVICE_SCHEMA,
+} from "@/contrib/google/sheets/core/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup"
@@ -40,7 +44,7 @@ export const LOOKUP_SCHEMA: Schema = {
       title: "Google Account",
       oneOf: [
         {
-          $ref: "https://app.pixiebrix.com/schemas/services/google/oauth2-pkce",
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
         },
       ],
     },

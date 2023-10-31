@@ -16,6 +16,7 @@
  */
 
 import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 export const SPREADSHEET_FIELD_TITLE = "Google Sheet";
 export const SPREADSHEET_FIELD_DESCRIPTION =
@@ -30,3 +31,6 @@ export const SHEET_SERVICE_SCHEMA: Schema = {
   title: SPREADSHEET_FIELD_TITLE,
   description: SPREADSHEET_FIELD_DESCRIPTION,
 };
+
+export const GOOGLE_OAUTH2_PKCE_INTEGRATION_ID =
+  validateRegistryId("google/oauth2-pkce");

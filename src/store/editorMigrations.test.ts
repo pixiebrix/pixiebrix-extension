@@ -26,7 +26,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
-} from "@/types/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";

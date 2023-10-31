@@ -19,7 +19,6 @@ import React from "react";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import { act, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/services/constants";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import userEvent from "@testing-library/user-event";
@@ -33,6 +32,7 @@ import settingsSlice from "@/store/settings/settingsSlice";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 import notify from "@/utils/notify";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 
 // Mock notify to assert success/failure because I was having issues writing assertions over the history.
 jest.mock("@/utils/notify", () => ({

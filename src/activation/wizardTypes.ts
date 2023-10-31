@@ -18,7 +18,7 @@
 import { type Primitive } from "type-fest";
 import type React from "react";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type IntegrationDependency } from "@/types/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 export type WizardStep = {
   key: string;
