@@ -52,7 +52,7 @@ import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/Deploy
 // Dynamically fetch the non-essential pages
 
 const IntegrationsPage = lazy(
-  () =>
+  async () =>
     import(
       /* @webpackChunkName "IntegrationsPage" */
       "@/extensionConsole/pages/integrations/IntegrationsPage"
@@ -60,7 +60,7 @@ const IntegrationsPage = lazy(
 );
 
 const ActivateModPage = lazy(
-  () =>
+  async () =>
     import(
       /* @webpackChunkName "ActivatePage" */
       "@/extensionConsole/pages/activateRecipe/ActivateRecipePage"
@@ -68,7 +68,7 @@ const ActivateModPage = lazy(
 );
 
 const ActivateModComponentPage = lazy(
-  () =>
+  async () =>
     import(
       /* @webpackChunkName "ActivatePage" */
       "@/extensionConsole/pages/activateExtension/ActivateExtensionPage"
@@ -76,7 +76,7 @@ const ActivateModComponentPage = lazy(
 );
 
 const BrickCreatePage = lazy(
-  () =>
+  async () =>
     import(
       /* @webpackChunkName "WorkshopPage" */
       "@/extensionConsole/pages/brickEditor/CreatePage"
@@ -84,7 +84,7 @@ const BrickCreatePage = lazy(
 );
 
 const BrickEditPage = lazy(
-  () =>
+  async () =>
     import(
       /* @webpackChunkName "WorkshopPage" */
       "@/extensionConsole/pages/brickEditor/EditPage"
@@ -92,7 +92,7 @@ const BrickEditPage = lazy(
 );
 
 const WorkshopPage = lazy(
-  () =>
+  async () =>
     import(
       /* @webpackChunkName "WorkshopPage" */
       "./pages/workshop/WorkshopPage"
@@ -100,7 +100,7 @@ const WorkshopPage = lazy(
 );
 
 const SettingsPage = lazy(
-  () =>
+  async () =>
     import(
       /* @webpackChunkName "SettingsPage" */
       "@/extensionConsole/pages/settings/SettingsPage"
