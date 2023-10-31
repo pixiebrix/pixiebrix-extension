@@ -18,7 +18,6 @@
 import type React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Metadata } from "@/types/registryTypes";
-import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
@@ -83,15 +82,13 @@ export interface ElementConfig<
    * @param url the URL of the current page
    * @param metadata the initial metadata for the new element
    * @param element the result of the `insert` method
-   * @param frameworks the frameworks that PixieBrix has detected on the host page
    *
    * @see fromExtensionPoint
    */
   readonly fromNativeElement: (
     url: string,
     metadata: Metadata,
-    element: TResult,
-    frameworks?: FrameworkMeta[]
+    element: TResult
   ) => TState;
 
   /**

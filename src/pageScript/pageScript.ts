@@ -25,17 +25,14 @@
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
-  DETECT_FRAMEWORK_VERSIONS,
-  type Framework,
   GET_COMPONENT_DATA,
-  GET_COMPONENT_INFO,
+  GET_ELEMENT_INFO,
   READ_WINDOW,
   SCRIPT_LOADED,
   SET_COMPONENT_DATA,
   type FrameworkAdapter,
   CKEDITOR_SET_VALUE,
 } from "@/pageScript/messenger/constants";
-import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/pageScript/frameworks/adapters";
 import {
   type ReadPayload,
@@ -47,7 +44,7 @@ import {
   type ReadableComponentAdapter,
   traverse,
 } from "@/pageScript/frameworks/component";
-import { elementInfo } from "@/pageScript/frameworks";
+import { elementInfo } from "@/pageScript/elementInfo";
 import {
   getPropByPath,
   noopProxy,
@@ -61,6 +58,7 @@ import { awaitValue } from "@/utils/promiseUtils";
 import { findSingleElement } from "@/utils/domUtils";
 import { uuidv4 } from "@/types/helpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
+import { ElementInfo } from "@/utils/inference/selectorTypes";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
@@ -87,8 +85,6 @@ window[PAGESCRIPT_SYMBOL] = uuidv4();
 const MAX_READ_DEPTH = 5;
 
 const attachListener = initialize();
-
-attachListener(DETECT_FRAMEWORK_VERSIONS, async () => detectLibraries());
 
 function readPathSpec(
   // eslint-disable-next-line @typescript-eslint/ban-types -- object because we need to pass in window
@@ -264,23 +260,10 @@ attachListener(
 );
 
 attachListener(
-  GET_COMPONENT_INFO,
-  async ({
-    selector,
-    framework,
-    traverseUp = 0,
-  }: {
-    selector: string;
-    framework?: Framework;
-
-    /**
-     * TraverseUp controls how many ancestor elements to also return
-     */
-    traverseUp: number;
-  }) => {
-    console.debug("GET_COMPONENT_INFO", { selector, framework, traverseUp });
+  GET_ELEMENT_INFO,
+  async ({ selector }: { selector: string }): Promise<ElementInfo> => {
     const element = findSingleElement(selector);
-    const info = await elementInfo(element, framework, [selector], traverseUp);
+    const info = await elementInfo(element, [selector], 0);
     console.debug("Element info", { element, selector, info });
     return info;
   }

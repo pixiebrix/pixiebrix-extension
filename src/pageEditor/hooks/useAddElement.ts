@@ -27,7 +27,6 @@ import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
@@ -36,7 +35,6 @@ type AddElement = (config: ElementConfig) => void;
 
 function useAddElement(): AddElement {
   const dispatch = useDispatch();
-  const { meta } = useSelector(selectFrameState);
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements
@@ -65,12 +63,7 @@ function useAddElement(): AddElement {
 
         const metadata = internalStarterBrickMetaFactory();
 
-        const initialState = config.fromNativeElement(
-          url,
-          metadata,
-          element,
-          meta?.frameworks ?? []
-        );
+        const initialState = config.fromNativeElement(url, metadata, element);
 
         await updateDynamicElement(
           thisTab,
@@ -96,7 +89,7 @@ function useAddElement(): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, meta?.frameworks, flagOff, suggestElements]
+    [dispatch, flagOff, suggestElements]
   );
 }
 

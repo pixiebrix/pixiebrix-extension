@@ -530,8 +530,6 @@ export function inferMultiElementSelector({
 
   return {
     selectors: inferredSelectors,
-    framework: null,
-    hasData: false,
     tagName: elements[0].tagName, // Will first element tag be enough/same for all elements?
     parent: null,
     isMulti: true,

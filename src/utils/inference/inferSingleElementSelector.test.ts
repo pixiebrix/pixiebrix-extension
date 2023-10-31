@@ -18,7 +18,7 @@
 import { SELECTOR_HINTS } from "@/utils/inference/siteSelectorHints";
 import { $safeFind, html } from "@/utils/domUtils";
 import { siteSelectorHintFactory } from "@/testUtils/factories/selectorFactories";
-import inferSingleElementSelector from "@/contentScript/pageEditor/inferSingleElementSelector";
+import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
 
 describe("inferElementSelector", () => {
   beforeEach(() => {
@@ -58,11 +58,8 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-        traverseUp: 0,
       })
     ).toStrictEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       // Site hint doesn't match, so requiredSelectors has not effect
       selectors: [
@@ -92,11 +89,8 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-        traverseUp: 0,
       })
     ).toStrictEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       selectors: [".grandparent>.parent #test", ".grandparent>.parent div"],
       tagName: "DIV",
@@ -119,11 +113,8 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-        traverseUp: 0,
       })
     ).toStrictEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       selectors: [
         '.container:has(.testLabel:contains("test label")) div',
@@ -158,11 +149,8 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-        traverseUp: 0,
       })
     ).toStrictEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       // Doesn't return the instantiated template, because it would match both field.
       // These selectors are not very robust. We'll fix those in future improvements to general selector generation.
@@ -204,11 +192,8 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-        traverseUp: 0,
       })
     ).toStrictEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       selectors: [
         '.active .container:has(.testLabel:contains("label")) div',
@@ -250,11 +235,8 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-        traverseUp: 0,
       })
     ).toStrictEqual({
-      framework: null,
-      hasData: false,
       parent: null,
       selectors: [".container div", ".container .testValue"],
       tagName: "DIV",
