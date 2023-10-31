@@ -51,7 +51,6 @@ import {
   unregisterTours,
 } from "@/starterBricks/tourController";
 import { getAll } from "@/tours/tourRunDatabase";
-import { initPopoverPool } from "@/bricks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -106,6 +105,11 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
 
   async install(): Promise<boolean> {
     if (await this.isAvailable()) {
+      const { initPopoverPool } = await import(
+        /* webpackChunkName: "popoverUtils" */
+        "@/bricks/transformers/temporaryInfo/popoverUtils"
+      );
+
       await initPopoverPool();
       return true;
     }
