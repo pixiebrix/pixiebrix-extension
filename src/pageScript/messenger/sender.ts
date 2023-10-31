@@ -47,6 +47,8 @@ const injectPageScriptOnce = once(async (): Promise<void> => {
   console.debug("Injecting page script");
   const script = await logPromiseDuration(
     "injectPageScript",
+    // Must use chrome namespace instead for browser namespace because there are bricks that call into this method,
+    // and the bricks are statically imported into other contexts. For example,
     injectScriptTag(browser.runtime.getURL("pageScript.js"))
   );
   script.remove();

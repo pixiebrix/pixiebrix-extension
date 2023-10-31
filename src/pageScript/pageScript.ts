@@ -60,7 +60,7 @@ import { setCKEditorData } from "@/contrib/ckeditor";
 import { awaitValue } from "@/utils/promiseUtils";
 import { findSingleElement } from "@/utils/domUtils";
 import { uuidv4 } from "@/types/helpers";
-import { SerializableResponse } from "@/types/messengerTypes";
+import { type SerializableResponse } from "@/types/messengerTypes";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");

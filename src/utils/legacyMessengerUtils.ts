@@ -21,10 +21,15 @@ import {
   type Message,
   type Meta,
   type SerializedError,
-  type Handler,
+  type SerializableResponse,
 } from "@/types/messengerTypes";
 
-/** @file The first messenger before webext-messenger. Deprecated, see https://github.com/pixiebrix/webext-messenger/issues/5 */
+/**
+ * @file The first messenger before webext-messenger. Deprecated, see https://github.com/pixiebrix/webext-messenger/issues/5
+ * @deprecated use webext-messenger where possible
+ */
+
+export type Handler = (...args: unknown[]) => Promise<SerializableResponse>;
 
 export interface RemoteProcedureCallRequest<TMeta extends Meta = Meta>
   extends Message<ActionType, TMeta> {

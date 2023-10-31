@@ -63,9 +63,3 @@ export interface Message<
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- Line can be dropped once fully migrated to webext-messenger
 export type SerializableResponse = boolean | string | number | object | void;
-
-/**
- * A handler for a message. (From the old messenger framework before we started using webext-messenger.)
- * @deprecated prefer webext-messenger library where possible
- */
-export type Handler = (...args: unknown[]) => Promise<SerializableResponse>;

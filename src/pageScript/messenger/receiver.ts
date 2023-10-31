@@ -16,7 +16,7 @@
  */
 
 import { cleanValue } from "@/utils/objectUtils";
-import { type Handler } from "@/types/messengerTypes";
+import { type Handler } from "@/utils/legacyMessengerUtils";
 
 type AttachHandler = (type: string, handler: Handler) => void;
 
