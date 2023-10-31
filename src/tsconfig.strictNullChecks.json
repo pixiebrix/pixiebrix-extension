@@ -172,6 +172,7 @@
     "./errors/errorHelpers.ts",
     "./errors/genericErrors.ts",
     "./errors/networkErrorHelpers.ts",
+    "./errors/knownErrorMessages.ts",
     "./errors/rejectOnCancelled.ts",
     "./extensionConsole/components/ServiceFieldError.tsx",
     "./extensionConsole/messenger/api.ts",
