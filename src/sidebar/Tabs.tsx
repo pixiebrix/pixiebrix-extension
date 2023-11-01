@@ -81,6 +81,10 @@ const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
+/**
+ * A tab that's conditionally rendered based on tab open/closed state.
+ * @see selectClosedTabs
+ */
 const TabWithDivider = ({
   children,
   active,
@@ -291,8 +295,12 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
-              // Avoid memory overhead until panel is opened
-              mountOnEnter
+              // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/6801
+              // PERFORMANCE: for memory footprint, ideally we'd not mount the mod panels unless the 1) tab is open
+              // for the panel, and 2) the user has opened the panel. However, that currently breaks the lifecycle
+              // of some panels and also the label that appears in the Mod Launcher (Because the header for the panel
+              // might be null.)
+              mountOnEnter={false}
               // Keep tab state, otherwise use will lose local state when a temporary panel/form is added
               unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
