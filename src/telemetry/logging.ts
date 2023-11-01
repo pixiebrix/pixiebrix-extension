@@ -549,7 +549,7 @@ async function _sweepLogs(): Promise<void> {
  */
 export const sweepLogs = memoizeUntilSettled(_sweepLogs);
 
-export function initLogSweep() {
+export function initLogSweep(): void {
   expectContext(
     "background",
     "Log sweep should only be initialized in the background page"
