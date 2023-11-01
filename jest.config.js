@@ -22,14 +22,7 @@ const config = {
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   testPathIgnorePatterns: ["<rootDir>/selenium/"],
   transform: {
-    "^.+\\.[jt]sx?$": [
-      "@swc/jest",
-      {
-        jsc: {
-          target: "es2022",
-        },
-      },
-    ],
+    "^.+\\.[jt]sx?$": "@swc/jest",
     "^.+\\.ya?ml$": "yaml-jest-transform",
     "^.+\\.ya?ml\\?loadAsText$":
       "<rootDir>/src/testUtils/rawJestTransformer.mjs",
