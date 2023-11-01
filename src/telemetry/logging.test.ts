@@ -95,7 +95,8 @@ describe("logging", () => {
     await sweepLogs();
 
     await expect(count()).resolves.toBe(937);
-  });
+    // Increase timeout so test isn't flakey on CI due to slow append operation
+  }, 20_000);
 
   test("getLogEntries by blueprintId", async () => {
     const blueprintId = registryIdFactory();

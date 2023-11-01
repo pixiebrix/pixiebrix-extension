@@ -26,6 +26,7 @@ import IntegrationDependencyWidget, {
 } from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 export const IntegrationDependencyFieldDescription: React.FC<{
   schema: Schema;
@@ -40,7 +41,7 @@ export const IntegrationDependencyFieldDescription: React.FC<{
     <span>
       Select an integration configuration.{" "}
       <a
-        href={`${browser.runtime.getURL("options.html")}#/services`}
+        href={getExtensionConsoleUrl("services")}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => {

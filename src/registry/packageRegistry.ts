@@ -70,7 +70,7 @@ interface RegistryDB extends DBSchema {
   };
 }
 
-async function getRegistryDB() {
+async function openRegistryDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<RegistryDB> | null = null;
@@ -123,25 +123,33 @@ function latestVersion(versions: PackageVersion[]): PackageVersion | null {
  * @param kinds kinds of bricks
  */
 export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
-  const db = await getRegistryDB();
+  const db = await openRegistryDB();
 
-  const bricks = flatten(
-    await Promise.all(
-      kinds.map(async (kind) => db.getAllFromIndex(BRICK_STORE, "kind", kind))
-    )
-  );
+  try {
+    const bricks = flatten(
+      await Promise.all(
+        kinds.map(async (kind) => db.getAllFromIndex(BRICK_STORE, "kind", kind))
+      )
+    );
 
-  return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
-    latestVersion(versions)
-  );
+    return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
+      latestVersion(versions)
+    );
+  } finally {
+    db.close();
+  }
 }
 
 /**
  * Clear the brick definition registry
  */
 export async function clear(): Promise<void> {
-  const db = await getRegistryDB();
-  await db.clear(BRICK_STORE);
+  const db = await openRegistryDB();
+  try {
+    await db.clear(BRICK_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -173,7 +181,7 @@ export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME);
 
   // Open the database to recreate it
-  await getRegistryDB();
+  await openRegistryDB();
 
   // Re-populate the packages from the remote registry
   await syncPackages();
@@ -183,8 +191,12 @@ export async function recreateDB(): Promise<void> {
  * Return the number of records in the registry.
  */
 export async function count(): Promise<number> {
-  const db = await getRegistryDB();
-  return db.count(BRICK_STORE);
+  const db = await openRegistryDB();
+  try {
+    return await db.count(BRICK_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -192,13 +204,18 @@ export async function count(): Promise<number> {
  * @param packages the packages to put in the database
  */
 async function replaceAll(packages: PackageVersion[]): Promise<void> {
-  const db = await getRegistryDB();
-  const tx = db.transaction(BRICK_STORE, "readwrite");
+  const db = await openRegistryDB();
 
-  await tx.store.clear();
-  await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
+  try {
+    const tx = db.transaction(BRICK_STORE, "readwrite");
 
-  await tx.done;
+    await tx.store.clear();
+    await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
+
+    await tx.done;
+  } finally {
+    db.close();
+  }
 }
 
 export function parsePackage(
@@ -235,7 +252,12 @@ export async function find(id: string): Promise<PackageVersion | null> {
     throw new Error("invalid brick id");
   }
 
-  const db = await getRegistryDB();
-  const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
-  return latestVersion(versions);
+  const db = await openRegistryDB();
+
+  try {
+    const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+    return latestVersion(versions);
+  } finally {
+    db.close();
+  }
 }
