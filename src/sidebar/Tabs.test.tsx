@@ -216,6 +216,8 @@ describe("Tabs", () => {
         screen.queryByRole("tab", { name: /panel test 1/i })
       ).not.toBeInTheDocument();
 
+      await waitForEffect();
+
       screen.getByRole("heading", { name: /panel test 1/i }).click();
 
       expect(
