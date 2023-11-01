@@ -295,10 +295,26 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
           return baseSchema;
         }
 
-        const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
-          const: file.id,
-          title: file.name,
-        }));
+        const spreadsheetSchemaEnum: Schema[] = spreadsheetFileList.files.map(
+          (file) => ({
+            const: file.id,
+            title: file.name,
+          })
+        );
+        if (!isEmpty(baseSchema.oneOf)) {
+          // Currently there would only be one item here, the loop makes type narrowing easier
+          for (const item of baseSchema.oneOf) {
+            if (
+              typeof item === "boolean" ||
+              spreadsheetSchemaEnum.some(({ const: id }) => id === item.const)
+            ) {
+              continue;
+            }
+
+            spreadsheetSchemaEnum.unshift(item);
+          }
+        }
+
         return {
           type: "string",
           title: SPREADSHEET_FIELD_TITLE,

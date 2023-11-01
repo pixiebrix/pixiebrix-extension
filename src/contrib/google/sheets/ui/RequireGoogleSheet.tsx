@@ -149,7 +149,15 @@ const RequireGoogleSheet: React.FC<{
           return {
             googleAccount,
             spreadsheet,
-            spreadsheetFieldSchema: baseSchema,
+            spreadsheetFieldSchema: {
+              ...baseSchema,
+              oneOf: [
+                {
+                  const: spreadsheetId,
+                  title: spreadsheet.properties.title,
+                },
+              ],
+            },
           };
         } catch (error) {
           setSpreadsheetError(getErrorMessage(error));
