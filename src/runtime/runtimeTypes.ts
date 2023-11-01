@@ -36,7 +36,7 @@ export type ResolvedBrickConfig = {
  *
  * For use in tests and JavaScript bricks that manually create a call to an individual brick.
  */
-export function unsafeAssumeValidArg<T>(value: unknown): BrickArgs<T> {
+export function unsafeAssumeValidArg<T extends Record<string, unknown>>(value: unknown): BrickArgs<T> {
   return value as BrickArgs<T>;
 }
 
