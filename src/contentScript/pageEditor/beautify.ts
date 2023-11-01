@@ -15,14 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const logValues = true;
+/**
+ * @file indirection for the js-beautify library. When dynamically imported directly, the module exports were undefined.
+ */
 
-export const loggingConfig = {
-  get() {
-    return {
-      logValues,
-    };
-  },
-};
-
-export const count = jest.fn().mockResolvedValue(0);
+export { html as beautifyHTML } from "js-beautify";
