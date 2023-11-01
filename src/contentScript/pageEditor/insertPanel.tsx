@@ -21,17 +21,22 @@ import { uuidv4 } from "@/types/helpers";
 import { userSelectElement } from "./elementPicker";
 import * as pageScript from "@/pageScript/messenger/api";
 import { findContainer } from "@/utils/inference/selectorInference";
-import { html as beautifyHTML } from "js-beautify";
 import { type PanelSelectionResult } from "@/contentScript/pageEditor/types";
 import { inferPanelHTML } from "@/utils/inference/markupInference";
 
 const DEFAULT_PANEL_HEADING = "PixieBrix Panel";
 
 export async function insertPanel(): Promise<PanelSelectionResult> {
+  // Dynamically import because it's a large package (130kb minified) that's only used by Page Editor
+  const { html: beautifyHTML } = await import(
+    /* webpackChunkName: "js-beautify" */
+    "js-beautify"
+  );
+
   const { elements: selected } = await userSelectElement();
   const { container, selectors } = findContainer(selected);
 
-  const element: PanelSelectionResult = {
+  return {
     uuid: uuidv4(),
     panel: {
       heading: DEFAULT_PANEL_HEADING,
@@ -49,6 +54,4 @@ export async function insertPanel(): Promise<PanelSelectionResult> {
     },
     containerInfo: await pageScript.getElementInfo({ selector: selectors[0] }),
   };
-
-  return element;
 }
