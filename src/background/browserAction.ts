@@ -86,6 +86,7 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const url = String(tab.url);
+
   const optionsPage = getExtensionConsoleUrl();
 
   if (url.startsWith(optionsPage)) {
