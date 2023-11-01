@@ -54,7 +54,7 @@ import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/Deploy
 const IntegrationsPage = lazy(
   async () =>
     import(
-      /* webpackChunkName "IntegrationsPage" */
+      /* webpackChunkName: "IntegrationsPage" */
       "@/extensionConsole/pages/integrations/IntegrationsPage"
     )
 );
@@ -62,7 +62,7 @@ const IntegrationsPage = lazy(
 const ActivateModPage = lazy(
   async () =>
     import(
-      /* webpackChunkName "ActivatePage" */
+      /* webpackChunkName: "ActivatePage" */
       "@/extensionConsole/pages/activateRecipe/ActivateRecipePage"
     )
 );
@@ -70,7 +70,7 @@ const ActivateModPage = lazy(
 const ActivateModComponentPage = lazy(
   async () =>
     import(
-      /* webpackChunkName "ActivatePage" */
+      /* webpackChunkName: "ActivatePage" */
       "@/extensionConsole/pages/activateExtension/ActivateExtensionPage"
     )
 );
@@ -78,7 +78,7 @@ const ActivateModComponentPage = lazy(
 const BrickCreatePage = lazy(
   async () =>
     import(
-      /* webpackChunkName "WorkshopPage" */
+      /* webpackChunkName: "WorkshopPage" */
       "@/extensionConsole/pages/brickEditor/CreatePage"
     )
 );
@@ -86,7 +86,7 @@ const BrickCreatePage = lazy(
 const BrickEditPage = lazy(
   async () =>
     import(
-      /* webpackChunkName "WorkshopPage" */
+      /* webpackChunkName: "WorkshopPage" */
       "@/extensionConsole/pages/brickEditor/EditPage"
     )
 );
@@ -94,7 +94,7 @@ const BrickEditPage = lazy(
 const WorkshopPage = lazy(
   async () =>
     import(
-      /* webpackChunkName "WorkshopPage" */
+      /* webpackChunkName: "WorkshopPage" */
       "./pages/workshop/WorkshopPage"
     )
 );
@@ -102,7 +102,7 @@ const WorkshopPage = lazy(
 const SettingsPage = lazy(
   async () =>
     import(
-      /* webpackChunkName "SettingsPage" */
+      /* webpackChunkName: "SettingsPage" */
       "@/extensionConsole/pages/settings/SettingsPage"
     )
 );
