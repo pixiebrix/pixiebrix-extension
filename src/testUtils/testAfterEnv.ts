@@ -25,8 +25,6 @@ import "jest-location-mock";
 // eslint-disable-next-line import/no-unassigned-import -- mocking permissions API
 import "./permissionsMock";
 import * as apiClientMock from "./apiClientMock";
-import * as detectPageMock from "./detectPageMock";
-import * as loggingMock from "./loggingMock";
 import * as reportErrorMock from "./reportErrorMock";
 
 // @ts-expect-error For testing only
@@ -51,7 +49,5 @@ browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
 //   getRandomValues: (array) => crypto.randomBytes(array.length),
 // };
 
-jest.setMock("webext-detect-page", detectPageMock);
 jest.setMock("@/services/apiClient", apiClientMock);
-jest.setMock("@/telemetry/logging", loggingMock);
 jest.setMock("@/telemetry/reportError", reportErrorMock);

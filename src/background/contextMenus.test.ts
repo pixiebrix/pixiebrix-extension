@@ -29,7 +29,7 @@ import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
-import { setContext } from "@/testUtils/detectPageMock";
+import { setContext } from "@/__mocks__/webext-detect-page";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 

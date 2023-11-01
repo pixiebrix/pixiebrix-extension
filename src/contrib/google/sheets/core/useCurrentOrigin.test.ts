@@ -19,7 +19,7 @@ import useCurrentOrigin from "@/contrib/google/sheets/core/useCurrentOrigin";
 import { renderHook } from "@/sidebar/testHelpers";
 import Tab = chrome.tabs.Tab;
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { setContext } from "@/testUtils/detectPageMock";
+import { setContext } from "@/__mocks__/webext-detect-page";
 
 const originalRuntime = browser.runtime;
 browser.runtime = {

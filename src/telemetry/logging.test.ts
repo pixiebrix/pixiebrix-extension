@@ -33,7 +33,8 @@ import {
 import { array } from "cooky-cutter";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
-jest.unmock("@/telemetry/logging");
+// Disable automatic __mocks__ resolution
+jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
 
 jest.mock("@/auth/token", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),

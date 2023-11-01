@@ -30,7 +30,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
-import { setContext } from "@/testUtils/detectPageMock";
+import { setContext } from "@/__mocks__/webext-detect-page";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";

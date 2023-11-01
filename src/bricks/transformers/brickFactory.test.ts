@@ -32,7 +32,7 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import { cloneDeep, partial } from "lodash";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
-import { setContext } from "@/testUtils/detectPageMock";
+import { setContext } from "@/__mocks__/webext-detect-page";
 import { validateRegistryId } from "@/types/helpers";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 

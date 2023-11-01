@@ -45,7 +45,7 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Timestamp } from "@/types/stringTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { setContext } from "@/testUtils/detectPageMock";
+import { setContext } from "@/__mocks__/webext-detect-page";
 import {
   modComponentFactory,
   modMetadataFactory,
@@ -72,8 +72,6 @@ jest.mock("@/utils/extensionUtils", () => ({
   forEachTab: jest.fn().mockResolvedValue(undefined),
   getExtensionVersion: () => browser.runtime.getManifest().version,
 }));
-
-jest.mock("webext-messenger");
 
 // Override manual mock to support `expect` assertions
 jest.mock("@/telemetry/reportEvent");
