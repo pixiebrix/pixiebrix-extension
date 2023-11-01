@@ -35,14 +35,10 @@ import { syncFlagOn } from "@/store/syncFlags";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
 import { getTabsWithAccess } from "@/utils/extensionUtils";
 
-const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
+const uidStorage = new StorageItem<UUID>("USER_UUID");
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 const TELEMETRY_DB_NAME = "telemetrydb";
@@ -264,14 +260,14 @@ export async function clear(): Promise<void> {
  * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
  */
 export const uid = once(async (): Promise<UUID> => {
-  const uid = await readStorage<UUID>(UID_STORAGE_KEY);
+  const uid = await uidStorage.get();
   if (uid) {
     return uid;
   }
 
   const uuid = uuidv4();
   console.debug("Generating UID for browser", { uuid });
-  await setStorage(UID_STORAGE_KEY, uuid);
+  await uidStorage.set(uuid);
   return uuid;
 });
 
