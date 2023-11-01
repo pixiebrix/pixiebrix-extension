@@ -51,7 +51,6 @@ import {
   unregisterTours,
 } from "@/starterBricks/tourController";
 import { getAll } from "@/tours/tourRunDatabase";
-import { initPopoverPool } from "@/bricks/transformers/temporaryInfo/popoverUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -106,6 +105,11 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
 
   async install(): Promise<boolean> {
     if (await this.isAvailable()) {
+      const { initPopoverPool } = await import(
+        /* webpackChunkName: "popoverUtils" */
+        "@/bricks/transformers/temporaryInfo/popoverUtils"
+      );
+
       await initPopoverPool();
       return true;
     }
@@ -170,8 +174,10 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
    * @param extension the tour extension
    * @private
    */
-  private registerTour(extension: ResolvedModComponent<TourConfig>): void {
-    const tour = registerTour({
+  private async registerTour(
+    extension: ResolvedModComponent<TourConfig>
+  ): Promise<void> {
+    const tour = await registerTour({
       blueprintId: extension._recipe?.id,
       extension,
       allowUserRun: this.allowUserRun,
@@ -245,9 +251,11 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     }
 
     // Always ensure all tours are registered
-    for (const extension of this.modComponents) {
-      this.registerTour(extension);
-    }
+    await Promise.all(
+      this.modComponents.map(async (modComponent) => {
+        await this.registerTour(modComponent);
+      })
+    );
 
     // User requested the tour run from the Page Editor. Ignore RunReason.MANUAL here, since we don't want
     // tours re-running on Page Editor close/open or "Reactivate All" unless they have a matching autoRunSchedule

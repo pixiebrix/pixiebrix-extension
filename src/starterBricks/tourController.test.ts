@@ -68,7 +68,7 @@ describe("tourController", () => {
 
     const tourPromise = pDefer<void>();
 
-    registerTour({
+    await registerTour({
       blueprintId,
       extension: {
         id: uuidv4(),

@@ -33,20 +33,11 @@ const selector = ".main-content .container .foo.bar";
 export const Plain = Story.bind({});
 Plain.args = {
   value: selector,
-  hasData: false,
   tag: null,
 };
 
 export const Tag = Story.bind({});
 Tag.args = {
   value: selector,
-  hasData: false,
   tag: "H1",
-};
-
-export const Data = Story.bind({});
-Data.args = {
-  value: selector,
-  hasData: true,
-  tag: "DIV",
 };

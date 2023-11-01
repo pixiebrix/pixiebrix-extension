@@ -35,7 +35,10 @@ import {
 import { type Menus } from "webextension-polyfill";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
+import {
+  initQuickBarApp,
+  toggleQuickBar,
+} from "@/components/quickBar/QuickBarApp";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
@@ -99,6 +102,9 @@ describe("quickBarExtension", () => {
     const user = userEvent.setup();
 
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
+
+    // Ensure default actions are registered
+    initQuickBarApp();
 
     const starterBrick = fromJS(starterBrickFactory()());
 

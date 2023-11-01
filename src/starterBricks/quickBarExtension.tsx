@@ -47,7 +47,6 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
@@ -138,6 +137,11 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   }
 
   async install(): Promise<boolean> {
+    const { initQuickBarApp } = await import(
+      /* webpackChunkName: "quickBarApp" */
+      "@/components/quickBar/QuickBarApp"
+    );
+
     initQuickBarApp();
     // Like for context menus, the match patterns for quick bar control which pages the extension point requires early
     // access to (so PixieBrix will ask for permissions). Whether a quick bar item actually appears is controlled by the
