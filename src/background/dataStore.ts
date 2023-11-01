@@ -16,17 +16,16 @@
  */
 
 import { type JsonObject } from "type-fest";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
+import { type UnknownObject } from "@/types/objectTypes";
 
-const LOCAL_DATA_STORE = "LOCAL_DATA_STORE" as ManualStorageKey;
+const localDataStore = new StorageItem<UnknownObject>("LOCAL_DATA_STORE", {
+  defaultValue: {},
+});
 const KEY_PREFIX = "@@";
 
 export async function getRecord(primaryKey: string): Promise<unknown> {
-  const data = await readStorage<Record<string, unknown>>(LOCAL_DATA_STORE, {});
+  const data = await localDataStore.get();
   return data[`${KEY_PREFIX}${primaryKey}`] ?? {};
 }
 
@@ -34,7 +33,7 @@ export async function setRecord(
   primaryKey: string,
   value: JsonObject
 ): Promise<void> {
-  const data = await readStorage<Record<string, unknown>>(LOCAL_DATA_STORE, {});
+  const data = await localDataStore.get();
   data[`${KEY_PREFIX}${primaryKey}`] = value;
-  await setStorage(LOCAL_DATA_STORE, data);
+  await localDataStore.set(data);
 }

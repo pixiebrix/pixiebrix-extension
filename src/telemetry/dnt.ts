@@ -18,22 +18,17 @@
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { boolean } from "@/utils/typeUtils";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
 
-export const DNT_STORAGE_KEY = "DNT" as ManualStorageKey;
+export const dntConfig = new StorageItem<boolean>("DNT");
 
 export async function setDNT(enable: boolean): Promise<void> {
-  await setStorage(DNT_STORAGE_KEY, enable);
+  await dntConfig.set(enable);
 }
 
 export async function getDNT(): Promise<boolean> {
-  return boolean(
-    (await readStorage<boolean | string>(DNT_STORAGE_KEY)) ?? process.env.DEBUG
-  );
+  // The DNT setting was stored as a string at some point, so we need to handle that too
+  return boolean((await dntConfig.get()) ?? process.env.DEBUG);
 }
 
 export async function allowsTrack(): Promise<boolean> {
