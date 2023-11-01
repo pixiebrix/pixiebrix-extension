@@ -56,7 +56,6 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import useAsyncEffect from "use-async-effect";
-import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 import { AnnotationType } from "@/types/annotationTypes";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { type AsyncStateArray } from "@/types/sliceTypes";
@@ -263,8 +262,7 @@ const LegacySpreadsheetPickerWidget: React.FC<SchemaFieldProps> = ({
 
 const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
   const { schema: baseSchema } = props;
-  const [errorAnnotation, setErrorAnnotation] =
-    useState<FieldAnnotation | null>(null);
+  const [isSchemaError, setIsSchemaError] = useState(false);
   // Need to lift this into an AsyncState to force the useDeriveAsyncState() call below to
   // recalculate when baseSchema changes
   const baseSchemaAsyncState = valueToAsyncState(baseSchema);
@@ -297,10 +295,26 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
           return baseSchema;
         }
 
-        const spreadsheetSchemaEnum = spreadsheetFileList.files.map((file) => ({
-          const: file.id,
-          title: file.name,
-        }));
+        const spreadsheetSchemaEnum: Schema[] = spreadsheetFileList.files.map(
+          (file) => ({
+            const: file.id,
+            title: file.name,
+          })
+        );
+        if (!isEmpty(baseSchema.oneOf)) {
+          // Currently there would only be one item here, the loop makes type narrowing easier
+          for (const item of baseSchema.oneOf) {
+            if (
+              typeof item === "boolean" ||
+              spreadsheetSchemaEnum.some(({ const: id }) => id === item.const)
+            ) {
+              continue;
+            }
+
+            spreadsheetSchemaEnum.unshift(item);
+          }
+        }
+
         return {
           type: "string",
           title: SPREADSHEET_FIELD_TITLE,
@@ -311,30 +325,11 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
 
       try {
         const schemaResult = await getSchema();
-        setErrorAnnotation(null);
+        setIsSchemaError(false);
         return schemaResult;
       } catch (error: unknown) {
         console.error(error);
-        setErrorAnnotation({
-          message: (
-            <>
-              <p>
-                <strong>Unable to complete Google Authentication</strong>
-              </p>
-              <p>
-                PixieBrix needs to connect to your Google account to use Google
-                Sheets.
-              </p>
-            </>
-          ),
-          type: AnnotationType.Error,
-          actions: [
-            {
-              caption: "Connect Google Account",
-              action: retry,
-            },
-          ],
-        });
+        setIsSchemaError(true);
         return {
           type: "string",
           title: SPREADSHEET_FIELD_TITLE,
@@ -352,7 +347,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
       {({ data: schema }) =>
         schema === baseSchema ? (
           <LegacySpreadsheetPickerWidget {...props} />
-        ) : errorAnnotation ? (
+        ) : isSchemaError ? (
           <FieldTemplate
             name={props.name}
             disabled

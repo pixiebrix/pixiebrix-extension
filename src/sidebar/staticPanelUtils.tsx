@@ -1,5 +1,12 @@
-import React, { type ReactNode } from "react";
-import ModLauncher from "@/sidebar/modLauncher/ModLauncher";
+import React, { lazy, type ReactNode } from "react";
+
+const ModLauncher = lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "ModLauncher" */
+      "@/sidebar/modLauncher/ModLauncher"
+    )
+);
 
 export const STATIC_PANEL_BODY_MAP: Record<string, ReactNode> = {
   modLauncher: <ModLauncher />,

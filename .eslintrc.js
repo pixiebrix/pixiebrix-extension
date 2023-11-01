@@ -42,6 +42,7 @@ module.exports = {
   plugins: ["local-rules"],
   rules: {
     "local-rules/noInvalidDataTestId": "error",
+    "local-rules/noBrowserRuntimeGetUrl": "error",
     "local-rules/notBothLabelAndLockableProps": "error",
     "import/no-restricted-paths": [
       "warn",

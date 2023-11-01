@@ -200,15 +200,24 @@ async function openTelemetryDB() {
 
 async function addEvent(event: UserTelemetryEvent): Promise<void> {
   const db = await openTelemetryDB();
-  await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
+
+  try {
+    await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
+  } finally {
+    db.close();
+  }
 }
 
 export async function flushEvents(): Promise<UserTelemetryEvent[]> {
   const db = await openTelemetryDB();
-  const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
-  const allEvents = await tx.store.getAll();
-  await tx.store.clear();
-  return allEvents;
+  try {
+    const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
+    const allEvents = await tx.store.getAll();
+    await tx.store.clear();
+    return allEvents;
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -218,7 +227,8 @@ export async function recreateDB(): Promise<void> {
   await deleteDatabase(TELEMETRY_DB_NAME);
 
   // Open the database to recreate it
-  await openTelemetryDB();
+  const db = await openTelemetryDB();
+  db.close();
 }
 
 /**
@@ -226,7 +236,11 @@ export async function recreateDB(): Promise<void> {
  */
 export async function count(): Promise<number> {
   const db = await openTelemetryDB();
-  return db.count(TELEMETRY_EVENT_OBJECT_STORE);
+  try {
+    return await db.count(TELEMETRY_EVENT_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -234,7 +248,11 @@ export async function count(): Promise<number> {
  */
 export async function clear(): Promise<void> {
   const db = await openTelemetryDB();
-  await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
+  try {
+    await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**

@@ -29,6 +29,7 @@ import { castArray } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
 import { StorageItem } from "webext-storage";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
@@ -81,9 +82,7 @@ type OpenMarketplaceOptions = {
 export async function openMarketplace({
   newTab = true,
 }: OpenMarketplaceOptions): Promise<boolean> {
-  const baseUrl = browser.runtime.getURL("options.html");
-
-  const url = `${baseUrl}#/marketplace`;
+  const url = getExtensionConsoleUrl("marketplace");
 
   if (newTab) {
     await browser.tabs.create({ url, active: true });
@@ -176,12 +175,12 @@ export async function openActivateModPage({
     );
   }
 
-  const baseConsoleUrl = browser.runtime.getURL("options.html");
-
   const url =
     redirectUrl ??
     // For extension console activation, only support a single mod id
-    `${baseConsoleUrl}#/marketplace/activate/${encodeURIComponent(modIds[0])}`;
+    getExtensionConsoleUrl(
+      `marketplace/activate/${encodeURIComponent(modIds[0])}`
+    );
 
   if (newTab) {
     await browser.tabs.create({ url });
