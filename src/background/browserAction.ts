@@ -23,6 +23,7 @@ import { browserAction, type Tab } from "@/mv3/api";
 import { isScriptableUrl } from "@/permissions/permissionsUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { isMac } from "@/utils/browserUtils";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -85,7 +86,7 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const url = String(tab.url);
-  const optionsPage = browser.runtime.getURL("options.html");
+  const optionsPage = getExtensionConsoleUrl();
 
   if (url.startsWith(optionsPage)) {
     notify.info(

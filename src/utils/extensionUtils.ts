@@ -41,6 +41,18 @@ export async function openShortcutsTab({
   });
 }
 
+export function getExtensionConsoleUrl(page?: string): string {
+  const raw = browser.runtime.getURL("options.html");
+  if (!page || ["", "/"].includes(page)) {
+    return raw;
+  }
+
+  // Use URL() to escape the URL correctly
+  const url = new URL(raw);
+  url.hash = page.startsWith("/") ? page : `/${page}`;
+  return url.href;
+}
+
 export function getExtensionVersion(): string {
   return browser.runtime.getManifest().version;
 }
