@@ -21,7 +21,6 @@ import { uuidv4 } from "@/types/helpers";
 import { userSelectElement } from "./elementPicker";
 import * as pageScript from "@/pageScript/messenger/api";
 import { findContainer } from "@/utils/inference/selectorInference";
-import { html as beautifyHTML } from "js-beautify";
 import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/domConstants";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import { inferButtonHTML } from "@/utils/inference/markupInference";
@@ -31,6 +30,12 @@ const DEFAULT_ACTION_CAPTION = "Action";
 export async function insertButton(
   useNewFilter = false
 ): Promise<ButtonSelectionResult> {
+  // Dynamically import because it's a large package (130kb minified) that's only used by Page Editor
+  const { html: beautifyHTML } = await import(
+    /* webpackChunkName: "js-beautify" */
+    "js-beautify"
+  );
+
   let selected;
   if (useNewFilter) {
     const { elements } = await userSelectElement({
