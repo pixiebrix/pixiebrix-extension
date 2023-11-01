@@ -27,7 +27,7 @@ import {
 
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { validateSemVerString } from "@/types/helpers";
-import { setContext } from "@/__mocks__/webext-detect-page";
+import { setContext } from "@/testUtils/detectPageMock";
 
 setContext("contentScript");
 

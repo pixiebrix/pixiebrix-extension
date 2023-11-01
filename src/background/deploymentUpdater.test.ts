@@ -45,7 +45,7 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Timestamp } from "@/types/stringTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { setContext } from "@/__mocks__/webext-detect-page";
+import { setContext } from "@/testUtils/detectPageMock";
 import {
   modComponentFactory,
   modMetadataFactory,

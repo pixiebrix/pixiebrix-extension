@@ -30,7 +30,7 @@ import {
   type IntegrationConfig,
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
-import { setContext } from "@/__mocks__/webext-detect-page";
+import { setContext } from "@/testUtils/detectPageMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { getToken } from "@/background/auth/getToken";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";

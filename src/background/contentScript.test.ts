@@ -27,7 +27,7 @@ import {
 import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import pDefer from "p-defer";
-import { setContext } from "@/__mocks__/webext-detect-page";
+import { setContext } from "@/testUtils/detectPageMock";
 
 setContext("background");
 
