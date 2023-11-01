@@ -102,6 +102,9 @@ describe("Tabs", () => {
         },
       });
 
+      // Wait for effect because module is lazily loaded
+      await waitForEffect();
+
       expect(asFragment()).toMatchSnapshot();
     });
 
