@@ -179,6 +179,7 @@ const RequireGoogleSheet: React.FC<{
         <>
           {spreadsheetError && (
             <FieldAnnotationAlert
+              className="mb-2"
               message={spreadsheetError}
               type={AnnotationType.Error}
               actions={[
