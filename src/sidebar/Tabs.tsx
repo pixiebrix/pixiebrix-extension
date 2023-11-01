@@ -95,7 +95,7 @@ const TabWithDivider = ({
   return isPanelHidden ? null : (
     <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
       {/* added `target="_self"` due to stopPropogation on onCloseStaticPanel
-       * without it, the default behavior of the ancher tag (Nav.Link) is triggered
+       * without it, the default behavior of the anchor tag (Nav.Link) is triggered
        * and a new tab is opened
        */}
       <Nav.Link
@@ -177,6 +177,7 @@ const Tabs: React.FC = () => {
       });
     },
     // Only run on initial mount, other views are handled by onSelect
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see comment above
     []
   );
 
@@ -289,6 +290,10 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
+              // Avoid memory overhead until panel is opened
+              mountOnEnter
+              // Keep tab state, otherwise use will lose local state when a temporary panel/form is added
+              unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
               key={panel.extensionId}
               eventKey={eventKeyForEntry(panel)}
@@ -342,6 +347,9 @@ const Tabs: React.FC = () => {
 
           {modActivationPanel && (
             <Tab.Pane
+              mountOnEnter
+              // Don't lose any state when switching away from the panel
+              unmountOnExit={false}
               className={cx("h-100", styles.paneOverrides)}
               key={eventKeyForEntry(modActivationPanel)}
               eventKey={eventKeyForEntry(modActivationPanel)}
@@ -375,6 +383,11 @@ const Tabs: React.FC = () => {
 
           {staticPanels.map((staticPanel) => (
             <Tab.Pane
+              // Avoid loading mod definitions into memory / fetching from marketplace until the tab is opened.
+              // They can be quite large  for users with access to many mods
+              mountOnEnter
+              // Allow the user to quickly switch back to the panel
+              unmountOnExit={false}
               className={cx("h-100", styles.paneOverrides)}
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
