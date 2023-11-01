@@ -230,7 +230,7 @@ export async function addTraceEntry(record: TraceEntryData): Promise<void> {
     return;
   }
 
-  const db = await getDB();
+  const {db} = await using getDB();
   const callId = objectHash(record.branches);
   await db.add(ENTRY_OBJECT_STORE, { ...record, callId });
 }
@@ -248,7 +248,7 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
 
   const callId = objectHash(record.branches);
 
-  const db = await getDB();
+  const {db} = await using getDB();
 
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
@@ -275,7 +275,7 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
  * Clear all trace records.
  */
 export async function clearTraces(): Promise<void> {
-  const db = await getDB();
+  const {db} = await using getDB();
   await db.clear(ENTRY_OBJECT_STORE);
 }
 
@@ -283,7 +283,7 @@ export async function clearTraces(): Promise<void> {
  * Returns the number of trace records in the database.
  */
 export async function count(): Promise<number> {
-  const db = await getDB();
+  const {db} = await using getDB();
   return db.count(ENTRY_OBJECT_STORE);
 }
 
@@ -299,7 +299,7 @@ export async function recreateDB(): Promise<void> {
 export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
   let cnt = 0;
 
-  const db = await getDB();
+  const {db} = await using getDB();
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   const index = tx.store.index("extensionId");
   for await (const cursor of index.iterate(extensionId)) {
@@ -313,7 +313,7 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
 export async function getLatestRunByExtensionId(
   extensionId: UUID
 ): Promise<TraceRecord[]> {
-  const db = await getDB();
+  const {db} = await using getDB();
   const matches = await db
     .transaction(ENTRY_OBJECT_STORE, "readonly")
     .objectStore(ENTRY_OBJECT_STORE)

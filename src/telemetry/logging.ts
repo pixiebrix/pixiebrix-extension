@@ -161,7 +161,7 @@ async function getDB() {
     database = null;
   });
 
-  return database;
+  return {db: database, [Symbol.asyncDispose]() { database?.close(); }};
 }
 
 /**
@@ -169,7 +169,7 @@ async function getDB() {
  * @param entry the log entry to add
  */
 export async function appendEntry(entry: LogEntry): Promise<void> {
-  const db = await getDB();
+  const {db} = await using getDB();
   await db.add(ENTRY_OBJECT_STORE, entry);
 }
 
@@ -189,7 +189,7 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  const db = await getDB();
+  const {db} = await using getDB();
   return db.count(ENTRY_OBJECT_STORE);
 }
 
@@ -207,7 +207,7 @@ export async function recreateDB(): Promise<void> {
  * Clears all log entries from the database.
  */
 export async function clearLogs(): Promise<void> {
-  const db = await getDB();
+  const {db} = await using getDB();
   await db.clear(ENTRY_OBJECT_STORE);
 }
 
@@ -216,7 +216,7 @@ export async function clearLogs(): Promise<void> {
  * @param context the query context to clear.
  */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  const db = await getDB();
+  const {db} = await using getDB();
 
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
@@ -240,7 +240,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLogEntries(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
-  const db = await getDB();
+  const {db} = await using getDB();
   const objectStore = db
     .transaction(ENTRY_OBJECT_STORE, "readonly")
     .objectStore(ENTRY_OBJECT_STORE);
@@ -470,7 +470,7 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
 export async function clearExtensionDebugLogs(
   extensionId: UUID
 ): Promise<void> {
-  const db = await getDB();
+  const {db} = await using getDB();
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   const index = tx.store.index("extensionId");
   for await (const cursor of index.iterate(extensionId)) {
@@ -494,7 +494,7 @@ async function _sweepLogs(): Promise<void> {
       numToDelete,
     });
 
-    const db = await getDB();
+    const {db} = await using getDB();
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
     let deletedCount = 0;
