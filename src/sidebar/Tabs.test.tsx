@@ -27,6 +27,9 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import * as messengerApi from "@/contentScript/messenger/api";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
+
+mockAllApiEndpoints();
 
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
