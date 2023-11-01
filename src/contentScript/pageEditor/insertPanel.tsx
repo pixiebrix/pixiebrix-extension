@@ -28,9 +28,9 @@ const DEFAULT_PANEL_HEADING = "PixieBrix Panel";
 
 export async function insertPanel(): Promise<PanelSelectionResult> {
   // Dynamically import because it's a large package (130kb minified) that's only used by Page Editor
-  const { html: beautifyHTML } = await import(
+  const { beautifyHTML } = await import(
     /* webpackChunkName: "js-beautify" */
-    "js-beautify"
+    "./beautify"
   );
 
   const { elements: selected } = await userSelectElement();
