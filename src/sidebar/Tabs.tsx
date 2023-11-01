@@ -94,13 +94,12 @@ const TabWithDivider = ({
 
   return isPanelHidden ? null : (
     <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
-      {/* added `target="_self"` due to stopPropogation on onCloseStaticPanel
-       * without it, the default behavior of the anchor tag (Nav.Link) is triggered
-       * and a new tab is opened
-       */}
       <Nav.Link
         {...props}
         className={styles.tabHeader}
+        // Added `target="_self"` due to stopPropagation on onCloseStaticPanel
+        // without it, the default behavior of the anchor tag (Nav.Link) is triggered
+        // and a new tab is opened
         target="_self"
         eventKey={eventKey}
       >
@@ -154,6 +153,8 @@ const Tabs: React.FC = () => {
     event: MouseEvent<HTMLButtonElement>,
     panel: SidebarEntry
   ) => {
+    // Default is to navigate to `#` hash which causes an error in the background page
+    event.preventDefault();
     // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
     event.stopPropagation();
     reportEvent(Events.SIDEBAR_TAB_CLOSE, { panel: JSON.stringify(panel) });
