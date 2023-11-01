@@ -61,11 +61,8 @@ const shared = {
       // CSS/SCSS is missing from this configuration because it conflicts with Storybook’s config, etc
       {
         test: /\.tsx?$/,
-        loader: "ts-loader",
+        loader: "swc-loader",
         exclude: /node_modules\/(?!@pixiebrix)/,
-        options: {
-          transpileOnly: true,
-        },
       },
       {
         test: /\.svg$/,
