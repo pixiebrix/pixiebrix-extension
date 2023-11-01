@@ -24,7 +24,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { type SanitizedIntegrationConfig } from "@/types/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { sheets } from "@/background/messenger/api";
 import { type AsyncState } from "@/types/sliceTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
@@ -61,7 +61,7 @@ const RequireGoogleSheet: React.FC<{
 
   function listenForLogin(googleAccount: SanitizedIntegrationConfig) {
     const loginController = new AbortController();
-    oauth2Storage.onChange((newValue) => {
+    oauth2Storage.onChanged((newValue) => {
       if (!isEmpty(newValue[googleAccount.id])) {
         googleAccountAsyncState.refetch();
         loginController.abort();

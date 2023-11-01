@@ -31,7 +31,7 @@ export async function initMessengerLogging(): Promise<void> {
     toggleLogging(true);
   }
 
-  messengerLogging.onChange((newValue) => {
+  messengerLogging.onChanged((newValue) => {
     toggleLogging(newValue);
   });
 }

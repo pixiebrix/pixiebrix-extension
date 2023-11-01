@@ -263,7 +263,7 @@ function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
   browser.runtime.onInstalled.addListener(install);
   browser.runtime.onStartup.addListener(initTelemetry);
-  dntConfig.onChange(() => {
+  dntConfig.onChanged(() => {
     void setUninstallURL();
   });
 

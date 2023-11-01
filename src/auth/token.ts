@@ -50,7 +50,9 @@ export function removeListener(handler: AuthListener): void {
   listeners.delete(handler);
 }
 
-function triggerListeners(auth: Partial<TokenAuthData>): void {
+function triggerListeners(
+  auth: Partial<TokenAuthData | PartnerAuthData>
+): void {
   for (const listener of listeners) {
     listener(auth);
   }
@@ -243,6 +245,6 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 }
 
 if (isExtensionContext()) {
-  extensionKeyStorage.onChange(triggerListeners);
-  partnerTokenStorage.onChange(triggerListeners);
+  extensionKeyStorage.onChanged(triggerListeners);
+  partnerTokenStorage.onChanged(triggerListeners);
 }
