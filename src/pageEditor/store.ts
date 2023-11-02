@@ -49,6 +49,7 @@ import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesL
 import { createStateSyncMiddleware } from "redux-state-sync";
 import { boolean } from "@/utils/typeUtils";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import { defaultCreateStateSyncMiddlewareConfig } from "@/store/defaultMiddlewareConfig";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -106,6 +107,7 @@ const store = configureStore({
       .concat(sessionChangesMiddleware)
       .concat(
         createStateSyncMiddleware({
+          ...defaultCreateStateSyncMiddlewareConfig,
           // In the future: concat whitelisted sync action lists here
           whitelist: sessionChangesStateSyncActions,
         })

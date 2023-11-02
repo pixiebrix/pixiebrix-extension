@@ -31,7 +31,9 @@ import integrationsSlice, {
 } from "@/integrations/store/integrationsSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { boolean } from "@/utils/typeUtils";
-import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
+import defaultMiddlewareConfig, {
+  defaultCreateStateSyncMiddlewareConfig,
+} from "@/store/defaultMiddlewareConfig";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
 import {
@@ -80,6 +82,7 @@ const store = configureStore({
       .concat(sessionChangesMiddleware)
       .concat(
         createStateSyncMiddleware({
+          ...defaultCreateStateSyncMiddlewareConfig,
           whitelist: sessionChangesStateSyncActions,
         })
       );
