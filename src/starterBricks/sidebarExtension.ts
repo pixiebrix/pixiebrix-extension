@@ -316,7 +316,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
           let debounced = this.debouncedRefreshPanel.get(modComponent.id);
 
-          if (!debounced) {
+          if (debounced) {
+            await debounced(modComponent);
+          } else {
             // ModComponents are debounced on separate schedules because some ModComponents may ignore certain events
             // for performance (e.g., ModComponents ignore state change events from other mods.)
             debounced = debounce(
@@ -326,9 +328,11 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
               options
             );
             this.debouncedRefreshPanel.set(modComponent.id, debounced);
-          }
 
-          await debounced(modComponent);
+            // On the first run, run immediately so that the panel doesn't show a loading indicator during the
+            // debounce interval
+            await this.refreshComponentPanel(modComponent);
+          }
         } else {
           await this.refreshComponentPanel(modComponent);
         }

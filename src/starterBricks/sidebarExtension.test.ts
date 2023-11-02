@@ -252,10 +252,9 @@ describe("sidebarExtension", () => {
     $(document.body).append(`<div id="${PANEL_FRAME_ID}"></div>`);
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 
-    await sleep(debounceMillis);
     await tick();
 
-    // Runs because statechange mods also run on manual
+    // Runs immediately because it's the first run
     expect(rootReader.readCount).toBe(1);
 
     for (let i = 0; i < 10; i++) {
