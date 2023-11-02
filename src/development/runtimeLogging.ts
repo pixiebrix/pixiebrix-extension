@@ -26,12 +26,16 @@ declare global {
 // This file can be imported in the same VM from multiple content scripts: contentScript and loadActivationEnhancements.
 const alreadyImported = Boolean(globalThis.realConsole);
 
-// Stow away the original console, so that we can use it where necessary. Need to be careful not to assign the proxy
-// on subsequent loads of the module
+// Stow away the original console, so that we can use it where necessary.
 if (!alreadyImported) {
+  // Warning: be be careful not to assign on subsequent loads of the module, otherwise the proxy will be assigned
   globalThis.realConsole = console;
 }
 
+/**
+ * The real console, before it was proxied. Use to enable bricks to write to the console.
+ * @see LogEffect
+ */
 export const realConsole = alreadyImported
   ? globalThis.realConsole
   : { ...globalThis.console };
@@ -56,6 +60,9 @@ globalThis.setRuntimeLogging = (config: boolean) => {
   void setRuntimeLogging(config);
 };
 
+/**
+ * Initialize runtime logging controlled by a flag.
+ */
 export async function initRuntimeLogging(): Promise<void> {
   enableRuntimeLogging = await runtimeLogging.get();
 
@@ -66,7 +73,7 @@ export async function initRuntimeLogging(): Promise<void> {
   if (!alreadyImported) {
     if (!enableRuntimeLogging) {
       console.debug(
-        "PixieBrix: runtime logging is disabled. Enable it with `window.setRuntimeLogging(true)`."
+        "PixieBrix: runtime logging is disabled. Enable it by calling `window.setRuntimeLogging(true)` in an extension context."
       );
     }
 
