@@ -23,7 +23,6 @@ import $ from "jquery";
 // https://github.com/evelynhathaway/jest-location-mock
 import "jest-location-mock";
 import "./permissionsMock";
-import * as apiClientMock from "./apiClientMock";
 import * as detectPageMock from "./detectPageMock";
 
 // @ts-expect-error For testing only
@@ -49,4 +48,3 @@ browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
 // };
 
 jest.setMock("webext-detect-page", detectPageMock);
-jest.setMock("@/services/apiClient", apiClientMock);
