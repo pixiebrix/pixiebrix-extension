@@ -108,8 +108,8 @@ async function getDB(): Promise<IDBPDatabase<TourDB>> {
  * @param run the tour run
  */
 export async function recordStart(run: TourMetadata): Promise<void> {
-  const {db} = await using getDB();
-  await db.add(ENTRY_OBJECT_STORE, {
+  using res = await getDB();
+  await res.db.add(ENTRY_OBJECT_STORE, {
     ...run,
     updatedAt: new Date().toISOString(),
     completed: false,
@@ -127,8 +127,8 @@ export async function recordEnd(
   nonce: UUID,
   update: TourStatus
 ): Promise<void> {
-  const {db} = await using getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  using res = await getDB();
+  const tx = res.db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   const value = await tx.store.get(nonce);
 
   if (value) {
@@ -146,6 +146,6 @@ export async function recordEnd(
  * Retrieve all tour runs.
  */
 export async function getAll(): Promise<TourEntry[]> {
-  const {db} = await using getDB();
-  return db.getAll(ENTRY_OBJECT_STORE);
+  using res = await getDB();
+  return res.db.getAll(ENTRY_OBJECT_STORE);
 }

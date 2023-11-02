@@ -199,17 +199,17 @@ async function openTelemetryDB() {
     database = null;
   });
 
-  return database;
+  return {db: database, [Symbol.asyncDispose]() { database?.close(); }, [Symbol.dispose]() { database?.close(); }};;
 }
 
 async function addEvent(event: UserTelemetryEvent): Promise<void> {
-  const db = await openTelemetryDB();
-  await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
+  using res = await openTelemetryDB();
+  await res.db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
 }
 
 export async function flushEvents(): Promise<UserTelemetryEvent[]> {
-  const db = await openTelemetryDB();
-  const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
+  using res = await openTelemetryDB();
+  const tx = res.db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
   const allEvents = await tx.store.getAll();
   await tx.store.clear();
   return allEvents;
@@ -229,16 +229,16 @@ export async function recreateDB(): Promise<void> {
  * Returns the number of telemetry entries in the database.
  */
 export async function count(): Promise<number> {
-  const db = await openTelemetryDB();
-  return db.count(TELEMETRY_EVENT_OBJECT_STORE);
+  using res = await openTelemetryDB();
+  return res.db.count(TELEMETRY_EVENT_OBJECT_STORE);
 }
 
 /**
  * Clears all event entries from the database.
  */
 export async function clear(): Promise<void> {
-  const db = await openTelemetryDB();
-  await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
+  using res = await openTelemetryDB();
+  await res.db.clear(TELEMETRY_EVENT_OBJECT_STORE);
 }
 
 /**

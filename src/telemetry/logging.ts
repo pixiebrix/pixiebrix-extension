@@ -125,7 +125,7 @@ async function getDB() {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
         // cases for looking at historic local logs
-        db.deleteObjectStore(ENTRY_OBJECT_STORE);
+        res.db.deleteObjectStore(ENTRY_OBJECT_STORE);
         console.warn(
           "Deleting object store %s for upgrade",
           ENTRY_OBJECT_STORE
@@ -135,7 +135,7 @@ async function getDB() {
       }
 
       // Create a store of objects
-      const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
+      const store = res.db.createObjectStore(ENTRY_OBJECT_STORE, {
         keyPath: "uuid",
       });
 
@@ -161,7 +161,8 @@ async function getDB() {
     database = null;
   });
 
-  return {db: database, [Symbol.asyncDispose]() { database?.close(); }};
+  return {db: database, [Symbol.asyncDispose]() { database?.close(); }, [Symbol.dispose]() { database?.close(); }};;
+
 }
 
 /**
@@ -169,8 +170,8 @@ async function getDB() {
  * @param entry the log entry to add
  */
 export async function appendEntry(entry: LogEntry): Promise<void> {
-  const {db} = await using getDB();
-  await db.add(ENTRY_OBJECT_STORE, entry);
+  using res = await getDB();
+  await res.db.add(ENTRY_OBJECT_STORE, entry);
 }
 
 function makeMatchEntry(
@@ -189,8 +190,8 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  const {db} = await using getDB();
-  return db.count(ENTRY_OBJECT_STORE);
+  using res = await getDB();
+  return res.db.count(ENTRY_OBJECT_STORE);
 }
 
 /**
@@ -207,8 +208,8 @@ export async function recreateDB(): Promise<void> {
  * Clears all log entries from the database.
  */
 export async function clearLogs(): Promise<void> {
-  const {db} = await using getDB();
-  await db.clear(ENTRY_OBJECT_STORE);
+  using res = await getDB();
+  await res.db.clear(ENTRY_OBJECT_STORE);
 }
 
 /**
@@ -216,9 +217,9 @@ export async function clearLogs(): Promise<void> {
  * @param context the query context to clear.
  */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  const {db} = await using getDB();
+  using res = await getDB();
 
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  const tx = res.db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
   if (isEmpty(context)) {
     await tx.store.clear();
@@ -240,7 +241,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLogEntries(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
-  const {db} = await using getDB();
+  using res = await getDB();
   const objectStore = db
     .transaction(ENTRY_OBJECT_STORE, "readonly")
     .objectStore(ENTRY_OBJECT_STORE);
@@ -470,8 +471,8 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
 export async function clearExtensionDebugLogs(
   extensionId: UUID
 ): Promise<void> {
-  const {db} = await using getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  using res = await getDB();
+  const tx = res.db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   const index = tx.store.index("extensionId");
   for await (const cursor of index.iterate(extensionId)) {
     if (cursor.value.level === "debug" || cursor.value.level === "trace") {
@@ -494,8 +495,8 @@ async function _sweepLogs(): Promise<void> {
       numToDelete,
     });
 
-    const {db} = await using getDB();
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    using res = await getDB();
+    const tx = res.db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
     let deletedCount = 0;
 

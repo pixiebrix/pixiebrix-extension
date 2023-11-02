@@ -78,7 +78,7 @@ async function getRegistryDB() {
   database = await openDB<RegistryDB>(DATABASE_NAME, VERSION, {
     upgrade(db) {
       // Create a store of objects
-      const store = db.createObjectStore(BRICK_STORE, {
+      const store = res.db.createObjectStore(BRICK_STORE, {
         keyPath: ["id", "version.major", "version.minor", "version.patch"],
       });
       store.createIndex("id", "id", {
@@ -127,7 +127,9 @@ export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
 
   const bricks = flatten(
     await Promise.all(
-      kinds.map(async (kind) => db.getAllFromIndex(BRICK_STORE, "kind", kind))
+      kinds.map(async (kind) =>
+        res.db.getAllFromIndex(BRICK_STORE, "kind", kind)
+      )
     )
   );
 
@@ -141,7 +143,7 @@ export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
  */
 export async function clear(): Promise<void> {
   const db = await getRegistryDB();
-  await db.clear(BRICK_STORE);
+  await res.db.clear(BRICK_STORE);
 }
 
 /**
@@ -184,7 +186,7 @@ export async function recreateDB(): Promise<void> {
  */
 export async function count(): Promise<number> {
   const db = await getRegistryDB();
-  return db.count(BRICK_STORE);
+  return res.db.count(BRICK_STORE);
 }
 
 /**
@@ -193,7 +195,7 @@ export async function count(): Promise<number> {
  */
 async function replaceAll(packages: PackageVersion[]): Promise<void> {
   const db = await getRegistryDB();
-  const tx = db.transaction(BRICK_STORE, "readwrite");
+  const tx = res.db.transaction(BRICK_STORE, "readwrite");
 
   await tx.store.clear();
   await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
@@ -236,6 +238,6 @@ export async function find(id: string): Promise<PackageVersion | null> {
   }
 
   const db = await getRegistryDB();
-  const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+  const versions = await res.db.getAllFromIndex(BRICK_STORE, "id", id);
   return latestVersion(versions);
 }
