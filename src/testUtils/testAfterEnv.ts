@@ -25,7 +25,6 @@ import "jest-location-mock";
 import "./permissionsMock";
 import * as apiClientMock from "./apiClientMock";
 import * as detectPageMock from "./detectPageMock";
-import * as reportErrorMock from "./reportErrorMock";
 
 // @ts-expect-error For testing only
 global.$ = $;
@@ -51,4 +50,3 @@ browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
 
 jest.setMock("webext-detect-page", detectPageMock);
 jest.setMock("@/services/apiClient", apiClientMock);
-jest.setMock("@/telemetry/reportError", reportErrorMock);
