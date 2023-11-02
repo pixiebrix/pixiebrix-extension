@@ -23,6 +23,7 @@ import { realConsole } from "@/development/runtimeLogging";
 
 type Level = "debug" | "info" | "warn" | "error";
 
+// Be sure to use the real `console` methods, not the proxy that's used to mute runtime logging
 const LEVEL_MAP = new Map<Level, typeof realConsole.debug>([
   ["debug", realConsole.debug],
   ["warn", realConsole.warn],

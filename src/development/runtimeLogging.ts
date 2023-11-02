@@ -17,10 +17,16 @@
 
 import { StorageItem } from "webext-storage";
 
+declare global {
+  // eslint-disable-next-line no-var -- required for typescript globals
+  var enableRuntimeLogging: boolean;
+}
+
 // Stow away the original console, so that we can use it where necessary
 export const realConsole = globalThis.console;
 
-let enableRuntimeLogging = false;
+// Attach to window to allow developers to enable from the console
+globalThis.enableRuntimeLogging = false;
 
 const noop = () => {
   /* */
@@ -36,6 +42,12 @@ export async function setRuntimeLogging(config: boolean): Promise<void> {
 
 export async function initRuntimeLogging(): Promise<void> {
   enableRuntimeLogging = await runtimeLogging.get();
+
+  if (!enableRuntimeLogging) {
+    console.debug(
+      "PixieBrix: runtime logging is disabled. Enable it with `window.enableRuntimeLogging = true`."
+    );
+  }
 
   globalThis.console = new Proxy(realConsole, {
     get(target: typeof realConsole, prop: string | symbol) {
