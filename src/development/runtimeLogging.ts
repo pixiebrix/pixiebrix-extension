@@ -23,7 +23,7 @@ declare global {
 }
 
 // Stow away the original console, so that we can use it where necessary
-export const realConsole = globalThis.console;
+export const realConsole = { ...globalThis.console };
 
 // Attach to window to allow developers to enable from the console
 globalThis.enableRuntimeLogging = false;
@@ -49,8 +49,8 @@ export async function initRuntimeLogging(): Promise<void> {
     );
   }
 
-  globalThis.console = new Proxy(realConsole, {
-    get(target: typeof realConsole, prop: string | symbol) {
+  globalThis.console = new Proxy(globalThis.console, {
+    get(target: typeof globalThis.console, prop: string | symbol) {
       // @ts-expect-error -- proxy
       if (!enableRuntimeLogging && typeof target[prop] === "function") {
         return noop;

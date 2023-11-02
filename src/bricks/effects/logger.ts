@@ -69,7 +69,7 @@ export class LogEffect extends EffectABC {
     }: BrickArgs<{ message: string; level: Level; data: unknown }>,
     { ctxt }: BrickOptions
   ): Promise<void> {
-    const logMethod = LEVEL_MAP.get(level) ?? console.info;
+    const logMethod = LEVEL_MAP.get(level) ?? realConsole.info;
     logMethod(message, data ?? ctxt);
   }
 }

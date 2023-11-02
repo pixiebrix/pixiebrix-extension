@@ -52,7 +52,7 @@ console.debug("contentScript: module load");
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
-  initRuntimeLogging();
+  void initRuntimeLogging();
 
   const context = top === self ? "" : `in frame ${location.href}`;
   const uuid = uuidv4();
