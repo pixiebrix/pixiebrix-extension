@@ -96,13 +96,6 @@ module.exports = {
       ],
     });
 
-    mergedConfig.resolve.alias = {
-      // For some reason, during the merge this alias gets placed toward the bottom of the object keys
-      // so wasn't taking effect vs. the "@" alias
-      "@/services/apiClient": path.resolve(rootDir, "__mocks__/apiClient.mjs"),
-      ...mergedConfig.resolve.alias,
-    };
-
     // Storybook has a default rule that matches all static resources, so we need to block that
     // to avoid conflicts that appear at runtime.
     // https://stackoverflow.com/a/61706308/288906
