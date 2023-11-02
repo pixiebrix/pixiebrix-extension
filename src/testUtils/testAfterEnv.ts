@@ -40,11 +40,4 @@ browser.runtime.getManifest = jest.fn().mockReturnValue({
 
 browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
 
-// This is no longer needed since we're using uuid library for uuid generation. But keep here since the trick
-// might be hard to find in the future if we need it
-// https://stackoverflow.com/q/52612122/288906
-// globalThis.crypto = {
-//   getRandomValues: (array) => crypto.randomBytes(array.length),
-// };
-
 jest.setMock("webext-detect-page", detectPageMock);
