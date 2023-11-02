@@ -329,9 +329,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
           }
 
           await debounced(modComponent);
+        } else {
+          await this.refreshComponentPanel(modComponent);
         }
-
-        await this.refreshComponentPanel(modComponent);
       })
     );
   }
