@@ -23,9 +23,15 @@ declare global {
   function setRuntimeLogging(config: boolean): void;
 }
 
+// This file can be imported in the same VM from multiple content scripts: contentScript and loadActivationEnhancements.
 const alreadyImported = Boolean(globalThis.realConsole);
 
-// Stow away the original console, so that we can use it where necessary
+// Stow away the original console, so that we can use it where necessary. Need to be careful not to assign the proxy
+// on subsequent loads of the module
+if (!alreadyImported) {
+  globalThis.realConsole = console;
+}
+
 export const realConsole = alreadyImported
   ? globalThis.realConsole
   : { ...globalThis.console };
