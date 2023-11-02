@@ -17,6 +17,7 @@ Since these imports work via module resolution, they're not actually treated as 
 To do that, use `jest.mock` and `jest.requireActual` to change the resolution, for example:
 
 ```js
+// Disable automatic __mocks__ resolution #6799
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
 ```
 
