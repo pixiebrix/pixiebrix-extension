@@ -295,13 +295,13 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
-              // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/6801
-              // PERFORMANCE: for memory footprint, ideally we'd not mount the mod panels unless the 1) tab is open
-              // for the panel, and 2) the user has opened the panel. However, that currently breaks the lifecycle
-              // of some panels and also the label that appears in the Mod Launcher (Because the header for the panel
-              // might be null.)
-              mountOnEnter={false}
-              // Keep tab state, otherwise use will lose local state when a temporary panel/form is added
+              // For memory performance, only mount the panel when the tab is 1) visible for the panel, the 2) the user
+              // has opened the panel. The panel's header/payload will still be calculated in the sidebar starter brick,
+              // but we'll save on memory footprint from any embedded content.
+              // For context, see https://github.com/pixiebrix/pixiebrix-extension/issues/6801
+              mountOnEnter={true}
+              // Keep tab state, otherwise use will lose local state when a temporary panel/form is added, e.g.,
+              // un-submitted form state/scroll position
               unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
               key={panel.extensionId}
