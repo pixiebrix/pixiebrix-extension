@@ -32,12 +32,14 @@ import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { initToaster } from "@/utils/notify";
 import initGoogle from "@/contrib/google/initGoogle";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
 
 function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
 }
 
 void initMessengerLogging();
+void initRuntimeLogging();
 registerMessenger();
 void initGoogle();
 registerContribBlocks();
