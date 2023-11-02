@@ -44,7 +44,10 @@ type Payload = JsonValue;
 // Disable logging by default
 let log = (...args: unknown[]) => {};
 void messengerLogging.get().then((setting) => {
-  log = setting ? console.debug : () => {};
+  // CAUTION: We need to account for console.* to possibly be stripped out
+  if (console.debug) {
+    log = setting ? console.debug : () => {};
+  }
 });
 
 export type RequestPacket = {

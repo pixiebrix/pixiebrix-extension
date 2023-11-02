@@ -26,8 +26,15 @@ import {
 } from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type Runtime } from "webextension-polyfill";
+import { noop } from "lodash";
 
-const debug = console.debug.bind(console, "ensureContentScript:");
+// CAUTION: We need to account for console.* to possibly be stripped out
+// const debug = console.debug ? console.debug.bind(console, "ensureContentScript:") : noop;
+function debug(...args: any[]) {
+  const log = console.debug ?? noop;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  log("ensureContentScript:", ...args);
+}
 
 /**
  * @see makeSenderKey

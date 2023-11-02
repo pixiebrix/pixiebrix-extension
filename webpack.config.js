@@ -330,6 +330,9 @@ module.exports = (env, options) =>
         new TerserPlugin({
           parallel: true,
           terserOptions: {
+            compress: {
+              drop_console: true,
+            },
             // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
             // Keep error classnames because we perform name comparison (see selectSpecificError)
             // We use Action for SubmitPanelAction, AbortPanelAction, etc.
