@@ -26,8 +26,11 @@ import { isRegistryId } from "@/types/helpers";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
+
+initRuntimeLogging();
 
 let enhancementsLoaded = false;
 

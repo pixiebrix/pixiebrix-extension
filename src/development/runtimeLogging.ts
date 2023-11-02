@@ -25,6 +25,10 @@ declare global {
 // Stow away the original console, so that we can use it where necessary
 export const realConsole = { ...globalThis.console };
 
+if ("enableRuntimeLogging" in globalThis) {
+  throw new Error("runtimeLogging.ts cannot be imported 2x");
+}
+
 // Attach to window to allow developers to enable from the console
 globalThis.enableRuntimeLogging = false;
 
