@@ -18,25 +18,26 @@
 import { StorageItem } from "webext-storage";
 
 declare global {
-  // eslint-disable-next-line no-var -- required for typescript globals
-  var enableRuntimeLogging: boolean;
+  // eslint-disable-next-line no-var -- required for typescript
+  var realConsole: typeof console;
+  function setRuntimeLogging(config: boolean): void;
 }
+
+const alreadyImported = Boolean(globalThis.realConsole);
 
 // Stow away the original console, so that we can use it where necessary
-export const realConsole = { ...globalThis.console };
+export const realConsole = alreadyImported
+  ? globalThis.realConsole
+  : { ...globalThis.console };
 
-if ("enableRuntimeLogging" in globalThis) {
-  throw new Error("runtimeLogging.ts cannot be imported 2x");
-}
-
-// Attach to window to allow developers to enable from the console
-globalThis.enableRuntimeLogging = false;
+// Store in memory to avoid re-fetching from storage on every call
+let enableRuntimeLogging = false;
 
 const noop = () => {
   /* */
 };
 
-export const runtimeLogging = new StorageItem("RUNTIME_LOGGING", {
+const runtimeLogging = new StorageItem("RUNTIME_LOGGING", {
   defaultValue: enableRuntimeLogging,
 });
 
@@ -44,28 +45,35 @@ export async function setRuntimeLogging(config: boolean): Promise<void> {
   await runtimeLogging.set(config);
 }
 
+// Attach to window to allow developers to enable/disable runtime logging from the console
+globalThis.setRuntimeLogging = (config: boolean) => {
+  void setRuntimeLogging(config);
+};
+
 export async function initRuntimeLogging(): Promise<void> {
   enableRuntimeLogging = await runtimeLogging.get();
 
-  if (!enableRuntimeLogging) {
-    console.debug(
-      "PixieBrix: runtime logging is disabled. Enable it with `window.enableRuntimeLogging = true`."
-    );
-  }
-
-  globalThis.console = new Proxy(globalThis.console, {
-    get(target: typeof globalThis.console, prop: string | symbol) {
-      // @ts-expect-error -- proxy
-      if (!enableRuntimeLogging && typeof target[prop] === "function") {
-        return noop;
-      }
-
-      // @ts-expect-error -- proxy
-      return target[prop];
-    },
-  });
-
-  runtimeLogging.onChanged((newValue: true) => {
+  runtimeLogging.onChanged((newValue: boolean) => {
     enableRuntimeLogging = newValue;
   });
+
+  if (!alreadyImported) {
+    if (!enableRuntimeLogging) {
+      console.debug(
+        "PixieBrix: runtime logging is disabled. Enable it with `window.setRuntimeLogging(true)`."
+      );
+    }
+
+    globalThis.console = new Proxy(globalThis.console, {
+      get(target: typeof globalThis.console, prop: string | symbol) {
+        // @ts-expect-error -- proxy
+        if (!enableRuntimeLogging && typeof target[prop] === "function") {
+          return noop;
+        }
+
+        // @ts-expect-error -- proxy
+        return target[prop];
+      },
+    });
+  }
 }

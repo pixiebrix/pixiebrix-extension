@@ -75,7 +75,7 @@ import {
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
 } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancements";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 
 expectContext("contentScript");
