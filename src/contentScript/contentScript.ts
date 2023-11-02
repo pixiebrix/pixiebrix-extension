@@ -30,6 +30,7 @@ import {
 } from "@/contentScript/ready";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { logPromiseDuration } from "@/utils/promiseUtils";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -51,6 +52,8 @@ console.debug("contentScript: module load");
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
+  initRuntimeLogging();
+
   const context = top === self ? "" : `in frame ${location.href}`;
   const uuid = uuidv4();
 
