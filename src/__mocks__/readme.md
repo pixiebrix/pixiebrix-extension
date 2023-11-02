@@ -9,6 +9,7 @@ Any file in this folder is picked up automatically by both Jest and Storybook.
 
 - Jest: https://github.com/pixiebrix/pixiebrix-extension/blob/d834064d9e18d0b799cc890110dc35eea8be6daa/jest.config.js#L66
 - Storybook: https://github.com/pixiebrix/pixiebrix-extension/blob/d834064d9e18d0b799cc890110dc35eea8be6daa/.storybook/main.js#L50-L63
+- headers.ts: https://github.com/pixiebrix/pixiebrix-extension/blob/d834064d9e18d0b799cc890110dc35eea8be6daa/scripts/webpack.scripts.js#L43
 
 ### jest.unmock()
 
