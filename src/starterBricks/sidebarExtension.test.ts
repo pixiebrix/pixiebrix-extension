@@ -20,7 +20,11 @@ import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  autoUUIDSequence,
+  registryIdFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { type BrickPipeline } from "@/bricks/types";
 import {
   fromJS,
@@ -28,8 +32,16 @@ import {
   type SidebarDefinition,
 } from "@/starterBricks/sidebarExtension";
 import { RunReason } from "@/types/runtimeTypes";
-import { RootReader } from "@/starterBricks/starterBrickTestUtils";
-import { getReservedPanelEntries } from "@/contentScript/sidebarController";
+import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
+import {
+  getReservedPanelEntries,
+  sidebarShowEvents,
+} from "@/contentScript/sidebarController";
+import { setPageState } from "@/contentScript/pageState";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { PANEL_FRAME_ID } from "@/domConstants";
+import brickRegistry from "@/bricks/registry";
+import { sleep } from "@/utils/timeUtils";
 
 const rootReader = new RootReader();
 
@@ -67,6 +79,12 @@ const extensionFactory = define<ResolvedModComponent<SidebarConfig>>({
 });
 
 describe("sidebarExtension", () => {
+  beforeEach(() => {
+    brickRegistry.clear();
+    brickRegistry.register([rootReader]);
+    rootReader.readCount = 0;
+  });
+
   it("reserves panel on load", async () => {
     const extensionPoint = fromJS(starterBrickFactory()());
 
@@ -136,6 +154,123 @@ describe("sidebarExtension", () => {
 
     // Synchronize removes the panel
     expect(getReservedPanelEntries().panels).toHaveLength(0);
+
+    extensionPoint.uninstall();
+  });
+
+  it("runs non-debounced state change trigger", async () => {
+    const extensionPoint = fromJS(
+      starterBrickFactory({
+        trigger: "statechange",
+      })()
+    );
+
+    const extension = extensionFactory({
+      extensionPointId: extensionPoint.id,
+      _recipe: modMetadataFactory(),
+    });
+
+    extensionPoint.registerModComponent(extension);
+
+    await extensionPoint.install();
+
+    expect(rootReader.readCount).toBe(0);
+
+    setPageState({
+      namespace: "blueprint",
+      data: {},
+      mergeStrategy: "replace",
+      extensionId: extension.id,
+      blueprintId: extension._recipe.id,
+    });
+
+    // Doesn't run because sidebar is not visible
+    expect(rootReader.readCount).toBe(0);
+
+    // Fake the sidebar being added to the page
+    $(document.body).append(`<div id="${PANEL_FRAME_ID}"></div>`);
+    sidebarShowEvents.emit({ reason: RunReason.MANUAL });
+
+    await tick();
+
+    // Runs because statechange mods also run on manual
+    expect(rootReader.readCount).toBe(1);
+
+    setPageState({
+      namespace: "blueprint",
+      // Data needs to be different than previous to trigger a state change event
+      data: { foo: 42 },
+      mergeStrategy: "replace",
+      extensionId: extension.id,
+      blueprintId: extension._recipe.id,
+    });
+
+    await tick();
+
+    expect(rootReader.readCount).toBe(2);
+
+    // Should ignore state change from other mod
+    setPageState({
+      namespace: "blueprint",
+      data: {},
+      mergeStrategy: "replace",
+      extensionId: autoUUIDSequence(),
+      blueprintId: registryIdFactory(),
+    });
+
+    await tick();
+
+    expect(rootReader.readCount).toBe(2);
+
+    extensionPoint.uninstall();
+  });
+
+  it("debounces the statechange trigger", async () => {
+    // :shrug: would be better to use fake timers here
+    const debounceMillis = 100;
+
+    const extensionPoint = fromJS(
+      starterBrickFactory({
+        trigger: "statechange",
+        debounce: {
+          waitMillis: debounceMillis,
+          trailing: true,
+        },
+      })()
+    );
+
+    const extension = extensionFactory({
+      extensionPointId: extensionPoint.id,
+      _recipe: modMetadataFactory(),
+    });
+
+    extensionPoint.registerModComponent(extension);
+
+    await extensionPoint.install();
+
+    // Fake the sidebar being added to the page
+    $(document.body).append(`<div id="${PANEL_FRAME_ID}"></div>`);
+    sidebarShowEvents.emit({ reason: RunReason.MANUAL });
+
+    await tick();
+
+    // Runs immediately because it's the first run
+    expect(rootReader.readCount).toBe(1);
+
+    for (let i = 0; i < 10; i++) {
+      setPageState({
+        namespace: "blueprint",
+        data: { foo: i },
+        mergeStrategy: "replace",
+        extensionId: extension.id,
+        blueprintId: extension._recipe.id,
+      });
+    }
+
+    await sleep(debounceMillis);
+    await tick();
+
+    expect(rootReader.readCount).toBe(2);
 
     extensionPoint.uninstall();
   });

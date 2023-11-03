@@ -40,6 +40,8 @@ import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
 import FocusLock from "react-focus-lock";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import defaultActions from "@/components/quickBar/defaultActions";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -182,6 +184,10 @@ export const initQuickBarApp = once(() => {
   if (isLoadedInIframe()) {
     console.warn("initQuickBarApp called in iframe");
     return;
+  }
+
+  for (const action of defaultActions) {
+    quickBarRegistry.addAction(action);
   }
 
   const container = document.createElement("div");

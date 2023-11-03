@@ -49,6 +49,9 @@ import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
 import { screen } from "@testing-library/react";
 
+// Avoid errors being interpreted as context invalidated error
+browser.runtime.id = "abcxyz";
+
 jest.mock("@/errors/contextInvalidated", () => {
   const actual = jest.requireActual("@/errors/contextInvalidated");
   return {

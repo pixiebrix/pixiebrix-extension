@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const logValues = true;
+export const getMethod = jest.fn(() => jest.fn());
+export const getNotifier = jest.fn(() => jest.fn());
+export const backgroundTarget = { page: "background" };
 
-export async function getLoggingConfig(): Promise<unknown> {
-  return {
-    logValues,
-  };
-}
+export const getTopLevelFrame = async () => ({ tabId: 1, frameId: 0 });
+export const getThisFrame = getTopLevelFrame;

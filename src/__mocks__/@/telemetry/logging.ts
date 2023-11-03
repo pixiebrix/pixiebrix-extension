@@ -15,4 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default jest.fn();
+export const logValues = true;
+
+export const loggingConfig = {
+  get() {
+    return {
+      logValues,
+    };
+  },
+};
+
+export const count = jest.fn().mockResolvedValue(0);

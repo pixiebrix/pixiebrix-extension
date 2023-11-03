@@ -24,6 +24,7 @@ import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 const DefaultLogin: React.FunctionComponent = () => (
   <Col className="text-center">
@@ -42,26 +43,23 @@ const DefaultLogin: React.FunctionComponent = () => (
   </Col>
 );
 
-const PartnerAuth: React.FunctionComponent = () => {
-  const extensionUrl = new URL(browser.runtime.getURL("options.html")).href;
-  return (
-    <Col className="text-center">
-      <h4 className="display-6">Connect your AARI account</h4>
-      <p>
-        Authenticate with Automation Anywhere to continue using your team&apos;s
-        AARI extensions
-      </p>
-      <Button
-        className="mt-4"
-        href={extensionUrl}
-        target="_blank"
-        variant="primary"
-      >
-        <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
-      </Button>
-    </Col>
-  );
-};
+const PartnerAuth: React.FunctionComponent = () => (
+  <Col className="text-center">
+    <h4 className="display-6">Connect your AARI account</h4>
+    <p>
+      Authenticate with Automation Anywhere to continue using your team&apos;s
+      AARI extensions
+    </p>
+    <Button
+      className="mt-4"
+      href={getExtensionConsoleUrl()}
+      target="_blank"
+      variant="primary"
+    >
+      <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
+    </Button>
+  </Col>
+);
 
 const LoginPanel: React.FunctionComponent = () => {
   const { authMethod } = useSelector(selectSettings);

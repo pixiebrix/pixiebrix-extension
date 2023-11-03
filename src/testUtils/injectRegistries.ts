@@ -15,19 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+/**
+ * @file Test utilities for injecting registries into the runtime.
+ * @since 1.8.2 used to de-couple the brick registry from the runtime
+ */
 
-// Re-export utility methods directly
-export const { absoluteApiUrl } = jest.requireActual("@/services/apiClient");
+import brickRegistry from "@/bricks/registry";
+import { initRuntime } from "@/runtime/reducePipeline";
 
-export async function getLinkedApiClient() {
-  return axios.create();
-}
-
-export async function getApiClient() {
-  return axios.create();
-}
-
-export async function maybeGetLinkedApiClient() {
-  return axios.create();
-}
+// Since 1.8.2, the runtime is decoupled from the brick registry.
+initRuntime(brickRegistry);

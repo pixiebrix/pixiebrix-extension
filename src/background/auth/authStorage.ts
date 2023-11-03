@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readStorage, setStorage } from "@/utils/storageUtils";
 import { type UUID } from "@/types/stringTypes";
 import { expectContext } from "@/utils/expectContext";
 import { type AuthData } from "@/integrations/integrationTypes";
-import { OAUTH2_STORAGE_KEY } from "@/auth/authConstants";
+import { oauth2Storage } from "@/auth/authConstants";
 
 export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   serviceAuthId: UUID,
@@ -30,11 +29,8 @@ export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorage<Record<UUID, TAuthData>>(
-    OAUTH2_STORAGE_KEY,
-    {}
-  );
-  await setStorage(OAUTH2_STORAGE_KEY, {
+  const current = await oauth2Storage.get();
+  await oauth2Storage.set({
     ...current,
     [serviceAuthId]: data,
   });
@@ -48,10 +44,7 @@ export async function getCachedAuthData(
     "Only the background page can access token and oauth2 data"
   );
 
-  const current = await readStorage<Record<UUID, AuthData>>(
-    OAUTH2_STORAGE_KEY,
-    {}
-  );
+  const current = await oauth2Storage.get();
   if (Object.hasOwn(current, serviceAuthId)) {
     // eslint-disable-next-line security/detect-object-injection -- just checked with `hasOwn`
     return current[serviceAuthId];
@@ -64,10 +57,7 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorage<Record<UUID, AuthData>>(
-    OAUTH2_STORAGE_KEY,
-    {}
-  );
+  const current = await oauth2Storage.get();
   if (Object.hasOwn(current, serviceAuthId)) {
     console.debug(
       `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
@@ -75,7 +65,8 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     // OK because we're guarding with hasOwn
     // eslint-disable-next-line security/detect-object-injection
     delete current[serviceAuthId];
-    await setStorage(OAUTH2_STORAGE_KEY, current);
+
+    await oauth2Storage.set(current);
   } else {
     console.warn(
       "deleteCachedAuthData: No cached auth data exists for key: %s",

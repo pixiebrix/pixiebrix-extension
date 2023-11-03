@@ -53,7 +53,6 @@ import {
   unsafeAssumeValidArg,
 } from "@/runtime/runtimeTypes";
 import { type RunBrick } from "@/contentScript/messenger/runBrickTypes";
-import { resolveBlockConfig } from "@/bricks/registry";
 import {
   BusinessError,
   CancelError,
@@ -61,7 +60,7 @@ import {
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/types/sidebarTypes";
-import { getLoggingConfig } from "@/telemetry/logging";
+import { loggingConfig } from "@/telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickArgs,
@@ -76,6 +75,30 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { isObject } from "@/utils/objectUtils";
+import { type RegistryProtocol } from "@/registry/memoryRegistry";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Brick } from "@/types/brickTypes";
+import getType from "@/runtime/getType";
+
+// Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
+let brickRegistry: RegistryProtocol<RegistryId, Brick> = {
+  async lookup(): Promise<Brick> {
+    throw new Error(
+      "Runtime was not initialized. Call initRuntime before running mods."
+    );
+  },
+};
+
+/**
+ * Initialize the runtime with the given brick registry.
+ * @param registry brick registry to use for looking up bricks
+ * @since 1.8.2 introduced to eliminate circular dependency between runtime and registry
+ */
+export function initRuntime(
+  registry: RegistryProtocol<RegistryId, Brick>
+): void {
+  brickRegistry = registry;
+}
 
 /**
  * CommonOptions for running pipelines and blocks
@@ -299,6 +322,17 @@ function getPipelineLexicalEnvironment({
   };
 }
 
+export async function resolveBlockConfig(
+  config: BrickConfig
+): Promise<ResolvedBrickConfig> {
+  const block = await brickRegistry.lookup(config.id);
+  return {
+    config,
+    block,
+    type: await getType(block),
+  };
+}
+
 /**
  * Execute/run the resolved brick in the target (self, etc.) with the validated args.
  */
@@ -451,7 +485,7 @@ async function renderBlockArg(
 ): Promise<RenderedArgs> {
   const { config, type } = resolvedConfig;
 
-  const globalLoggingConfig = await getLoggingConfig();
+  const globalLoggingConfig = await loggingConfig.get();
 
   const {
     // If logValues not provided explicitly, default to the global setting
@@ -619,7 +653,7 @@ async function applyReduceDefaults({
   logger: providedLogger,
   ...overrides
 }: Partial<ReduceOptions>): Promise<ReduceOptions> {
-  const globalLoggingConfig = await getLoggingConfig();
+  const globalLoggingConfig = await loggingConfig.get();
   const logger = providedLogger ?? new ConsoleLogger();
 
   return {

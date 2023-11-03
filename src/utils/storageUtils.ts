@@ -62,6 +62,7 @@ export type StorageKey = ManualStorageKey | ReduxStorageKey;
  * @param defaultValue default value to return if the key is not defined in storage. To distinguish between a missing
  * key and a value of `undefined`, pass a Symbol as the default value.
  * @param area the storage area
+ * @deprecated Prefer: `import { StorageItem } from "webext-storage";`
  * @see readManagedStorage
  */
 // The overload ensures that the return value is `undefined` when no `defaultValue` is specified
@@ -91,6 +92,7 @@ async function readStorage(
 
 export { readStorage };
 
+/** @deprecated Prefer: `import { StorageItem } from "webext-storage";` */
 export async function setStorage<T>(
   storageKey: ManualStorageKey,
   value: T,

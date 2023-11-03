@@ -45,10 +45,7 @@ import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/bricks/rootModeHelpers";
-import {
-  type Placement,
-  showPopover,
-} from "@/bricks/transformers/temporaryInfo/popoverUtils";
+import type { Placement } from "@/bricks/transformers/temporaryInfo/popoverUtils";
 import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 import { once } from "lodash";
 import { AbortPanelAction, ClosePanelAction } from "@/bricks/errors";
@@ -224,6 +221,11 @@ export async function displayTemporaryInfo({
       if (target === document) {
         throw new BusinessError("Target must be an element for popover");
       }
+
+      const { showPopover } = await import(
+        /* webpackChunkName: "popoverUtils" */
+        "@/bricks/transformers/temporaryInfo/popoverUtils"
+      );
 
       const popover = showPopover({
         url: frameSource,

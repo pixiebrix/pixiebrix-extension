@@ -26,7 +26,7 @@ import serviceRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { isEmpty } from "lodash";
-import { launchOAuth2Flow } from "@/background/auth/launchOAuth2Flow";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
@@ -48,7 +48,9 @@ import {
 } from "@/errors/networkErrorHelpers";
 import { deserializeError, serializeError } from "serialize-error";
 import {
+  type AuthData,
   type Integration,
+  type IntegrationConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
@@ -66,6 +68,7 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_ID,
 } from "@/integrations/constants";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
@@ -129,6 +132,28 @@ export async function serializableAxiosRequest<T>(
   return sanitizeResponse(response);
 }
 
+/**
+ * Get cached auth data for OAuth2, or login if no data found. Memoize so that multiple logins
+ * are not kicked off at once.
+ */
+export const getOAuth2AuthData = memoizeUntilSettled(
+  async (
+    integration: Integration,
+    localConfig: IntegrationConfig,
+    sanitizedIntegrationConfig: SanitizedIntegrationConfig
+  ): Promise<AuthData> => {
+    // We wrap both the cache data lookup and the login request in the memoization here
+    // instead of only around the login call, in order to avoid a race condition between
+    // writing the new auth token and a second request reading from cached auth storage.
+    let data = await getCachedAuthData(sanitizedIntegrationConfig.id);
+    if (isEmpty(data)) {
+      data = await launchOAuth2Flow(integration, localConfig);
+    }
+
+    return data;
+  }
+);
+
 async function authenticate(
   config: SanitizedIntegrationConfig,
   request: AxiosRequestConfig
@@ -171,11 +196,7 @@ async function authenticate(
   }
 
   if (integration.isOAuth2) {
-    let data = await getCachedAuthData(config.id);
-    if (isEmpty(data)) {
-      data = await launchOAuth2Flow(integration, localConfig);
-    }
-
+    const data = await getOAuth2AuthData(integration, localConfig, config);
     return integration.authenticateRequest(localConfig.config, request, data);
   }
 

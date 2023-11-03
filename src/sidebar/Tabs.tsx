@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, type MouseEvent } from "react";
+import React, { useEffect, type MouseEvent, Suspense, lazy } from "react";
 import {
   type PanelEntry,
   type SidebarEntry,
@@ -41,7 +41,6 @@ import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
-import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectExtensionFromEventKey,
@@ -56,17 +55,36 @@ import {
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/ErrorBoundary";
-import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { getTopLevelFrame } from "webext-messenger";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 
+const ActivateModPanel = lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "ActivatePanels" */
+      "@/sidebar/activateRecipe/ActivateModPanel"
+    )
+);
+
+const ActivateMultipleModsPanel = lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "ActivatePanels" */
+      "@/sidebar/activateRecipe/ActivateMultipleModsPanel"
+    )
+);
+
 const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
+/**
+ * A tab that's conditionally rendered based on tab open/closed state.
+ * @see selectClosedTabs
+ */
 const TabWithDivider = ({
   children,
   active,
@@ -80,13 +98,12 @@ const TabWithDivider = ({
 
   return isPanelHidden ? null : (
     <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
-      {/* added `target="_self"` due to stopPropogation on onCloseStaticPanel
-       * without it, the default behavior of the ancher tag (Nav.Link) is triggered
-       * and a new tab is opened
-       */}
       <Nav.Link
         {...props}
         className={styles.tabHeader}
+        // Added `target="_self"` due to stopPropagation on onCloseStaticPanel
+        // without it, the default behavior of the anchor tag (Nav.Link) is triggered
+        // and a new tab is opened
         target="_self"
         eventKey={eventKey}
       >
@@ -140,6 +157,8 @@ const Tabs: React.FC = () => {
     event: MouseEvent<HTMLButtonElement>,
     panel: SidebarEntry
   ) => {
+    // Default is to navigate to `#` hash which causes an error in the background page
+    event.preventDefault();
     // Without stopPropagation, the onSelect handler will be called and the panel will be reopened
     event.stopPropagation();
     reportEvent(Events.SIDEBAR_TAB_CLOSE, { panel: JSON.stringify(panel) });
@@ -163,6 +182,7 @@ const Tabs: React.FC = () => {
       });
     },
     // Only run on initial mount, other views are handled by onSelect
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see comment above
     []
   );
 
@@ -275,6 +295,14 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
+              // For memory performance, only mount the panel when the tab is 1) visible for the panel, the 2) the user
+              // has opened the panel. The panel's header/payload will still be calculated in the sidebar starter brick,
+              // but we'll save on memory footprint from any embedded content.
+              // For context, see https://github.com/pixiebrix/pixiebrix-extension/issues/6801
+              mountOnEnter={true}
+              // Keep tab state, otherwise use will lose local state when a temporary panel/form is added, e.g.,
+              // un-submitted form state/scroll position
+              unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
               key={panel.extensionId}
               eventKey={eventKeyForEntry(panel)}
@@ -328,47 +356,65 @@ const Tabs: React.FC = () => {
 
           {modActivationPanel && (
             <Tab.Pane
+              mountOnEnter
+              // Don't lose any state when switching away from the panel
+              unmountOnExit={false}
               className={cx("h-100", styles.paneOverrides)}
               key={eventKeyForEntry(modActivationPanel)}
               eventKey={eventKeyForEntry(modActivationPanel)}
             >
-              <ErrorBoundary
-                onError={() => {
-                  reportEvent(Events.VIEW_ERROR, {
-                    panelType: "activate",
-                    // For backward compatability, provide a single modId to the recipeToActivate property
-                    recipeToActivate: modActivationPanel.modIds[0],
-                    modCount: modActivationPanel.modIds.length,
-                    modIds: modActivationPanel.modIds,
-                  });
-                }}
+              <Suspense
+                // Just show blank to avoid a flash, because the module loading should be near instant
+                fallback={<div></div>}
               >
-                {modActivationPanel.modIds.length === 1 ? (
-                  <ActivateModPanel modId={modActivationPanel.modIds[0]} />
-                ) : (
-                  <ActivateMultipleModsPanel
-                    modIds={modActivationPanel.modIds}
-                  />
-                )}
-              </ErrorBoundary>
+                <ErrorBoundary
+                  onError={() => {
+                    reportEvent(Events.VIEW_ERROR, {
+                      panelType: "activate",
+                      // For backward compatability, provide a single modId to the recipeToActivate property
+                      recipeToActivate: modActivationPanel.modIds[0],
+                      modCount: modActivationPanel.modIds.length,
+                      modIds: modActivationPanel.modIds,
+                    });
+                  }}
+                >
+                  {modActivationPanel.modIds.length === 1 ? (
+                    <ActivateModPanel modId={modActivationPanel.modIds[0]} />
+                  ) : (
+                    <ActivateMultipleModsPanel
+                      modIds={modActivationPanel.modIds}
+                    />
+                  )}
+                </ErrorBoundary>
+              </Suspense>
             </Tab.Pane>
           )}
 
           {staticPanels.map((staticPanel) => (
             <Tab.Pane
+              // Avoid loading mod definitions into memory / fetching from marketplace until the tab is opened.
+              // They can be quite large  for users with access to many mods
+              mountOnEnter
+              // Allow the user to quickly switch back to the panel
+              unmountOnExit={false}
               className={cx("h-100", styles.paneOverrides)}
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >
-              <ErrorBoundary
-                onError={() => {
-                  reportEvent(Events.VIEW_ERROR, {
-                    panelType: staticPanel.type,
-                  });
-                }}
+              <Suspense
+                // Just show blank to avoid a flash, because the module loading should be near instant
+                fallback={<div></div>}
               >
-                {getBodyForStaticPanel(staticPanel.key)}
-              </ErrorBoundary>
+                <ErrorBoundary
+                  onError={() => {
+                    reportEvent(Events.VIEW_ERROR, {
+                      panelType: staticPanel.type,
+                    });
+                  }}
+                >
+                  {getBodyForStaticPanel(staticPanel.key)}
+                </ErrorBoundary>
+              </Suspense>
             </Tab.Pane>
           ))}
         </Tab.Content>

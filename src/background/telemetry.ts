@@ -35,14 +35,10 @@ import { syncFlagOn } from "@/store/syncFlags";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
 import { getTabsWithAccess } from "@/utils/extensionUtils";
 
-const UID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
+const uidStorage = new StorageItem<UUID>("USER_UUID");
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 const TELEMETRY_DB_NAME = "telemetrydb";
@@ -204,15 +200,24 @@ async function openTelemetryDB() {
 
 async function addEvent(event: UserTelemetryEvent): Promise<void> {
   const db = await openTelemetryDB();
-  await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
+
+  try {
+    await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
+  } finally {
+    db.close();
+  }
 }
 
 export async function flushEvents(): Promise<UserTelemetryEvent[]> {
   const db = await openTelemetryDB();
-  const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
-  const allEvents = await tx.store.getAll();
-  await tx.store.clear();
-  return allEvents;
+  try {
+    const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
+    const allEvents = await tx.store.getAll();
+    await tx.store.clear();
+    return allEvents;
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -222,7 +227,8 @@ export async function recreateDB(): Promise<void> {
   await deleteDatabase(TELEMETRY_DB_NAME);
 
   // Open the database to recreate it
-  await openTelemetryDB();
+  const db = await openTelemetryDB();
+  db.close();
 }
 
 /**
@@ -230,7 +236,11 @@ export async function recreateDB(): Promise<void> {
  */
 export async function count(): Promise<number> {
   const db = await openTelemetryDB();
-  return db.count(TELEMETRY_EVENT_OBJECT_STORE);
+  try {
+    return await db.count(TELEMETRY_EVENT_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -238,7 +248,11 @@ export async function count(): Promise<number> {
  */
 export async function clear(): Promise<void> {
   const db = await openTelemetryDB();
-  await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
+  try {
+    await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -246,14 +260,14 @@ export async function clear(): Promise<void> {
  * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
  */
 export const uid = once(async (): Promise<UUID> => {
-  const uid = await readStorage<UUID>(UID_STORAGE_KEY);
+  const uid = await uidStorage.get();
   if (uid) {
     return uid;
   }
 
   const uuid = uuidv4();
   console.debug("Generating UID for browser", { uuid });
-  await setStorage(UID_STORAGE_KEY, uuid);
+  await uidStorage.set(uuid);
   return uuid;
 });
 

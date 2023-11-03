@@ -15,26 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { type JsonObject } from "type-fest";
 import {
   dataStore,
   performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
 import notify from "@/utils/notify";
-import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
-import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
-import DescriptionField from "@/components/formBuilder/DescriptionField";
-import FieldTemplate from "@/components/formBuilder/FieldTemplate";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import { validateRegistryId } from "@/types/helpers";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import { isEmpty, set } from "lodash";
-import { Stylesheets } from "@/components/Stylesheets";
 import { getTopLevelFrame } from "webext-messenger";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -47,19 +37,8 @@ import {
   type ComponentRef,
 } from "@/types/runtimeTypes";
 import { RendererABC } from "@/types/bricks/rendererTypes";
-import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
-import { type ISubmitEvent, type IChangeEvent } from "@rjsf/core";
-import cx from "classnames";
 import { namespaceOptions } from "@/bricks/effects/pageState";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
-
-const fields = {
-  DescriptionField,
-};
-const uiWidgets = {
-  imageCrop: ImageCropWidget,
-  SelectWidget: RjsfSelectWidget,
-};
 
 interface DatabaseResult {
   success: boolean;
@@ -79,63 +58,6 @@ export type Storage =
       service: SanitizedIntegrationConfig;
     }
   | StateStorage;
-
-const CustomFormComponent: React.FunctionComponent<{
-  schema: Schema;
-  uiSchema: UiSchema;
-  submitCaption: string;
-  formData: JsonObject;
-  autoSave: boolean;
-  onSubmit: (values: JsonObject) => Promise<void>;
-  className?: string;
-}> = ({
-  schema,
-  uiSchema,
-  submitCaption,
-  formData,
-  autoSave,
-  className,
-  onSubmit,
-}) => (
-  <div
-    className={cx("CustomForm", className, {
-      // Since 1.7.33, support a className prop to allow for adjusting margin/padding. To maintain the legacy
-      // behavior, apply the default only if the className prop is not provided.
-      "p-3": className === undefined,
-    })}
-  >
-    <ErrorBoundary>
-      <Stylesheets href={[bootstrap, bootstrapOverrides, custom]}>
-        <JsonSchemaForm
-          schema={schema}
-          uiSchema={uiSchema}
-          formData={formData}
-          fields={fields}
-          widgets={uiWidgets}
-          FieldTemplate={FieldTemplate}
-          onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
-            if (autoSave) {
-              await onSubmit(formData);
-            }
-          }}
-          onSubmit={async ({ formData }: ISubmitEvent<JsonObject>) => {
-            await onSubmit(formData);
-          }}
-        >
-          {autoSave ? (
-            <div />
-          ) : (
-            <div>
-              <button className="btn btn-primary" type="submit">
-                {submitCaption}
-              </button>
-            </div>
-          )}
-        </JsonSchemaForm>
-      </Stylesheets>
-    </ErrorBoundary>
-  </div>
-);
 
 function assertObject(value: unknown): asserts value is UnknownObject {
   if (!isObject(value)) {
@@ -307,6 +229,11 @@ export class CustomFormRenderer extends RendererABC {
       initialData,
       normalizedData,
     });
+
+    const { default: CustomFormComponent } = await import(
+      /* webpackChunkName: "CustomFormComponent" */
+      "./CustomFormComponent"
+    );
 
     return {
       Component: CustomFormComponent,

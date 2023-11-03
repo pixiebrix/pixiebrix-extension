@@ -35,6 +35,7 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 
 const rootReader = new RootReader();
 
@@ -101,6 +102,8 @@ describe("tourExtension", () => {
   });
 
   test("register tour with quick bar", async () => {
+    initQuickBarApp();
+
     const extensionPoint = fromJS(
       starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })()
     );

@@ -50,7 +50,6 @@ import {
   updateDynamicElement,
 } from "@/contentScript/pageEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
-import { withDetectFrameworkVersions } from "@/pageScript/messenger/api";
 import {
   runBlockPreview,
   resetTab,
@@ -76,7 +75,7 @@ import {
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
 } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancements";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 
 expectContext("contentScript");
@@ -111,7 +110,6 @@ declare global {
     UIPATH_INIT: typeof initRobot;
     UIPATH_GET_PROCESSES: typeof getProcesses;
 
-    DETECT_FRAMEWORKS: typeof withDetectFrameworkVersions;
     GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
@@ -175,7 +173,6 @@ export default function registerMessenger(): void {
     UIPATH_INIT: initRobot,
     UIPATH_GET_PROCESSES: getProcesses,
 
-    DETECT_FRAMEWORKS: withDetectFrameworkVersions,
     GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
     RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,

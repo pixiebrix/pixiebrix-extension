@@ -20,9 +20,9 @@ import {
   type HandlerEntry,
   type HandlerOptions,
   isErrorResponse,
-  type SerializableResponse,
   toErrorResponse,
-} from "@/pageScript/messenger/pigeon";
+} from "@/utils/legacyMessengerUtils";
+import { type SerializableResponse } from "@/types/messengerTypes";
 import pTimeout from "p-timeout";
 import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
