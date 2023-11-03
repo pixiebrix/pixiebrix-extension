@@ -42,7 +42,6 @@ module.exports = {
   plugins: ["local-rules"],
   rules: {
     "local-rules/noInvalidDataTestId": "error",
-    "local-rules/noBrowserRuntimeGetUrl": "error",
     "local-rules/notBothLabelAndLockableProps": "error",
     "import/no-restricted-paths": [
       "warn",
@@ -81,8 +80,15 @@ module.exports = {
     "no-restricted-syntax": [
       "error",
       {
-        message: "Don't use randomUUID. It's not available in http: contexts",
+        message:
+          "Use the `uuid` module instead because crypto.randomUUID is not available in http: contexts",
         selector: 'MemberExpression > Identifier[name="randomUUID"]',
+      },
+      {
+        message:
+          'Use `getExtensionConsoleUrl` instead of `browser.runtime.getURL("options.html")` because it automatically handles paths/routes',
+        selector:
+          "CallExpression[callee.object.property.name='runtime'][callee.property.name='getURL'][arguments.0.value='options.html']",
       },
     ],
 
