@@ -40,18 +40,34 @@ export function onNodeRemoved(
     return;
   }
 
-  const observer = new ResizeObserver(([entry]) => {
-    if (!entry?.target.isConnected) {
+  if (!element.parentElement) {
+    callback();
+    return;
+  }
+
+  // Ensure it's only ever called once
+  let called = false;
+
+  const observer = new MutationObserver(() => {
+    if (!element.isConnected) {
       observer.disconnect();
-      callback();
+      if (!called) {
+        called = true;
+        callback();
+      }
     }
   });
+
+  // Observe all the parents
+  let cursor = element;
+  while (cursor.parentElement) {
+    cursor = cursor.parentElement;
+    observer.observe(cursor, { childList: true });
+  }
 
   if (signal) {
     onAbort(signal, observer);
   }
-
-  observer.observe(element);
 }
 
 function mutationSelector(
