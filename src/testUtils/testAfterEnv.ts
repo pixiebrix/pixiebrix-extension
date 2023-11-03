@@ -18,6 +18,7 @@
 /* eslint-disable import/no-unassigned-import -- Self-registering scripts */
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
+import "blob-polyfill";
 import $ from "jquery";
 // Mock `window.location` with Jest spies and extend expect
 // https://github.com/evelynhathaway/jest-location-mock
