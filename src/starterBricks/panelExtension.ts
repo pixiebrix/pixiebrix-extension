@@ -62,7 +62,7 @@ import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import onAbort from "@/utils/promiseUtils";
+import { onAbort } from "@/utils/promiseUtils";
 
 export type PanelConfig = {
   heading?: string;
