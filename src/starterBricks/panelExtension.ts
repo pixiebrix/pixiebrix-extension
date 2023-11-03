@@ -108,6 +108,9 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
   private uninstalled = false;
 
+  // TODO: Rewrite this logic to use AbortController and to possibly unify the logic with the
+  // global cancelController. The `onAbort` utility might be useful to link multiple controllers
+  // together, but it's probably best to skip the duplicate `cancelController`.
   private readonly cancelRemovalMonitor: Map<string, () => void>;
 
   private readonly renderTimestamps: Map<string, Date[]>;
@@ -326,7 +329,6 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       console.debug(`Cancelling removal monitor for ${extension.id}`);
       cancelCurrent();
       this.cancelRemovalMonitor.delete(extension.id);
-      onAbort(this.cancelController, cancelCurrent);
     } else {
       console.debug(`No current removal monitor for ${extension.id}`);
     }
@@ -345,7 +347,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
 
     // FIXME: required sites that remove the panel, e.g., Pipedrive. Currently causing infinite loop on Salesforce
-    //  when switching between cases
+    //  when switching between cases. Also refer to the `cancelRemovalMonitor` TODO above.
     // const cancelNodeRemoved = onNodeRemoved($panel.get(0), () => {
     //   console.debug(
     //     `Panel for ${extension.id} was removed from the DOM (render: ${cnt}); re-running`
