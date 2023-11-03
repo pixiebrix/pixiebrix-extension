@@ -67,6 +67,7 @@
     "./bricks/transformers/temporaryInfo/messenger/registration.ts",
     "./bricks/transformers/temporaryInfo/popoverUtils.ts",
     "./bricks/transformers/temporaryInfo/receiverProtocol.ts",
+    "./bricks/transformers/temporaryInfo/temporaryPanelProtocol.ts",
     "./bricks/transformers/tourStep/overlay.ts",
     "./bricks/transformers/url.ts",
     "./bricks/types.ts",
