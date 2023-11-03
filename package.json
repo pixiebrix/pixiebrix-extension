@@ -59,6 +59,7 @@
     "canvas-confetti": "^1.9.0",
     "chrono-node": "^2.7.0",
     "classnames": "^2.3.1",
+    "code-tag": "^1.1.0",
     "connected-react-router": "^6.9.1",
     "copy-text-to-clipboard": "^3.2.0",
     "csharp-helpers": "^0.9.3",
