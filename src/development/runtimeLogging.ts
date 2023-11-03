@@ -23,6 +23,9 @@ declare global {
   function setRuntimeLogging(config: boolean): void;
 }
 
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
+
 // This file can be imported in the same VM from multiple content scripts: contentScript and loadActivationEnhancements.
 const alreadyImported = Boolean(globalThis.realConsole);
 
@@ -41,14 +44,14 @@ export const realConsole = alreadyImported
   : { ...globalThis.console };
 
 // Store in memory to avoid re-fetching from storage on every call
-let enableRuntimeLogging = false;
+let enableRuntimeLogging = Boolean(DEBUG);
 
 const noop = () => {
   /* */
 };
 
 const runtimeLogging = new StorageItem("RUNTIME_LOGGING", {
-  defaultValue: enableRuntimeLogging,
+  defaultValue: Boolean(DEBUG),
 });
 
 export async function setRuntimeLogging(config: boolean): Promise<void> {
