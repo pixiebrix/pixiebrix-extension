@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { SidebarBody } from "@/sidebar/SidebarApp";
+import SidebarBody from "@/sidebar/SidebarBody";
 import { render } from "@/sidebar/testHelpers";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 
@@ -34,7 +34,7 @@ jest.mock("@/contentScript/messenger/api", () => ({
   }),
 }));
 
-describe("SidebarApp", () => {
+describe("SidebarBody", () => {
   test("it renders", () => {
     const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();

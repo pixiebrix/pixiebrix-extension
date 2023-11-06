@@ -31,17 +31,7 @@ import integrationsSlice, {
 } from "@/integrations/store/integrationsSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { boolean } from "@/utils/typeUtils";
-import defaultMiddlewareConfig, {
-  defaultCreateStateSyncMiddlewareConfig,
-} from "@/store/defaultMiddlewareConfig";
-import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
-import { createStateSyncMiddleware } from "redux-state-sync";
-import {
-  persistSessionChangesConfig,
-  sessionChangesSlice,
-  sessionChangesStateSyncActions,
-} from "@/store/sessionChanges/sessionChangesSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -66,11 +56,6 @@ const store = configureStore({
       persistIntegrationsConfig,
       integrationsSlice.reducer
     ),
-    session: sessionSlice.reducer,
-    sessionChanges: persistReducer(
-      persistSessionChangesConfig,
-      sessionChangesSlice.reducer
-    ),
     modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
@@ -78,14 +63,7 @@ const store = configureStore({
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
     return getDefaultMiddleware(defaultMiddlewareConfig)
       .concat(appApi.middleware)
-      .concat(conditionalMiddleware)
-      .concat(sessionChangesMiddleware)
-      .concat(
-        createStateSyncMiddleware({
-          ...defaultCreateStateSyncMiddlewareConfig,
-          whitelist: sessionChangesStateSyncActions,
-        })
-      );
+      .concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,
