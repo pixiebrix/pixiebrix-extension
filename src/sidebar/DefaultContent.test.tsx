@@ -17,27 +17,12 @@
 
 import React from "react";
 import { render, screen } from "@/sidebar/testHelpers";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
 import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
-
-function optionsStore(initialState?: {
-  extensions: ActivatedModComponent[];
-  auth: AuthState;
-}) {
-  return configureStore({
-    reducer: {
-      options: extensionsSlice.reducer,
-      auth: authSlice.reducer,
-    },
-    preloadedState: initialState ?? undefined,
-  });
-}
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
