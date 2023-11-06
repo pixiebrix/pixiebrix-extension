@@ -27,6 +27,9 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import * as messengerApi from "@/contentScript/messenger/api";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
+
+mockAllApiEndpoints();
 
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
@@ -101,6 +104,9 @@ describe("Tabs", () => {
           staticPanels: [MOD_LAUNCHER],
         },
       });
+
+      // Wait for effect because module is lazily loaded
+      await waitForEffect();
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -215,6 +221,8 @@ describe("Tabs", () => {
       expect(
         screen.queryByRole("tab", { name: /panel test 1/i })
       ).not.toBeInTheDocument();
+
+      await waitForEffect();
 
       screen.getByRole("heading", { name: /panel test 1/i }).click();
 

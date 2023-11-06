@@ -41,6 +41,31 @@ export async function openShortcutsTab({
   });
 }
 
+/**
+ * Returns an absolute URL for a page in the Extension Console.
+ *
+ * Use as an alternative to `browser.runtime.getURL("options.html")`
+ *
+ * The Extension Console uses a hash router, e.g.:
+ *
+ *   chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/workshop
+ *
+ * @param page an optional route to include in the link
+ */
+export function getExtensionConsoleUrl(page?: string): string {
+  // eslint-disable-next-line no-restricted-syntax -- The rule points to this function
+  const raw = browser.runtime.getURL("options.html");
+
+  if (!page || ["", "/"].includes(page)) {
+    return raw;
+  }
+
+  // Use URL() to escape the hash part of the URL correctly
+  const url = new URL(raw);
+  url.hash = page.startsWith("/") ? page : `/${page}`;
+  return url.href;
+}
+
 export function getExtensionVersion(): string {
   return browser.runtime.getManifest().version;
 }

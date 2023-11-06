@@ -18,7 +18,6 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
 class ToggleQuickbarEffect extends EffectABC {
   constructor() {
@@ -37,6 +36,11 @@ class ToggleQuickbarEffect extends EffectABC {
   inputSchema: Schema = propertiesToSchema({}, []);
 
   async effect(): Promise<void> {
+    const { toggleQuickBar } = await import(
+      /* webpackChunkName: "quickBarApp" */
+      "@/components/quickBar/QuickBarApp"
+    );
+
     toggleQuickBar();
   }
 }

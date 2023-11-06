@@ -25,11 +25,9 @@ import AsyncButton from "@/components/AsyncButton";
 import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
-const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
-  message,
-  type,
-  actions,
-}) => {
+const FieldAnnotationAlert: React.FunctionComponent<
+  FieldAnnotation & { className?: string }
+> = ({ message, type, actions, className }) => {
   let Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   switch (type) {
     case AnnotationType.Error: {
@@ -54,7 +52,7 @@ const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
 
   return (
     // eslint-disable-next-line security/detect-object-injection -- annotation type, not user input
-    <div className={cx(styles.root, styles[type])}>
+    <div className={cx(styles.root, styles[type], className)}>
       <div className={styles.alert}>
         {Icon && <Icon className={styles.icon} />}
         <div className={styles.message}>
