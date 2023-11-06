@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLoggingConfig, setLoggingConfig } from "@/telemetry/logging";
+import { loggingConfig } from "@/telemetry/logging";
 import useUpdatableAsyncState from "./useUpdatableAsyncState";
 
 export function useLoggingConfig() {
-  return useUpdatableAsyncState(getLoggingConfig, setLoggingConfig);
+  return useUpdatableAsyncState(loggingConfig.get, loggingConfig.set);
 }

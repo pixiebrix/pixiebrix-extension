@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const getMethod = jest.fn(() => jest.fn());
-export const getNotifier = jest.fn(() => jest.fn());
+/**
+ * @file indirection for the js-beautify library. When dynamically imported directly, the module exports were undefined.
+ */
 
-export const getTopLevelFrame = async () => ({ tabId: 1, frameId: 0 });
-export const getThisFrame = getTopLevelFrame;
+export { html as beautifyHTML } from "js-beautify";

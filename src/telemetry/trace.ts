@@ -169,7 +169,7 @@ interface TraceDB extends DBSchema {
   };
 }
 
-async function getDB() {
+async function openTraceDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<TraceDB> | null = null;
@@ -230,9 +230,13 @@ export async function addTraceEntry(record: TraceEntryData): Promise<void> {
     return;
   }
 
-  const db = await getDB();
-  const callId = objectHash(record.branches);
-  await db.add(ENTRY_OBJECT_STORE, { ...record, callId });
+  const db = await openTraceDB();
+  try {
+    const callId = objectHash(record.branches);
+    await db.add(ENTRY_OBJECT_STORE, { ...record, callId });
+  } finally {
+    db.close();
+  }
 }
 
 export async function addTraceExit(record: TraceExitData): Promise<void> {
@@ -248,26 +252,30 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
 
   const callId = objectHash(record.branches);
 
-  const db = await getDB();
+  const db = await openTraceDB();
 
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  try {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
-  const data = await tx.store.get(
-    IDBKeyRange.only([record.runId, record.blockInstanceId, callId])
-  );
+    const data = await tx.store.get(
+      IDBKeyRange.only([record.runId, record.blockInstanceId, callId])
+    );
 
-  if (data) {
-    await tx.store.put({
-      ...data,
-      ...record,
-      callId,
-    });
-  } else {
-    console.warn("Trace entry record not found", {
-      runId: record.runId,
-      blockInstanceId: record.blockInstanceId,
-      callId,
-    });
+    if (data) {
+      await tx.store.put({
+        ...data,
+        ...record,
+        callId,
+      });
+    } else {
+      console.warn("Trace entry record not found", {
+        runId: record.runId,
+        blockInstanceId: record.blockInstanceId,
+        callId,
+      });
+    }
+  } finally {
+    db.close();
   }
 }
 
@@ -275,16 +283,24 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
  * Clear all trace records.
  */
 export async function clearTraces(): Promise<void> {
-  const db = await getDB();
-  await db.clear(ENTRY_OBJECT_STORE);
+  const db = await openTraceDB();
+  try {
+    await db.clear(ENTRY_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
  * Returns the number of trace records in the database.
  */
 export async function count(): Promise<number> {
-  const db = await getDB();
-  return db.count(ENTRY_OBJECT_STORE);
+  const db = await openTraceDB();
+  try {
+    return await db.count(ENTRY_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -293,43 +309,58 @@ export async function count(): Promise<number> {
 export async function recreateDB(): Promise<void> {
   // Delete the database and open the database to recreate it
   await deleteDatabase(DATABASE_NAME);
-  await getDB();
+  const db = await openTraceDB();
+  db.close();
 }
 
 export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
   let cnt = 0;
 
-  const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-  const index = tx.store.index("extensionId");
-  for await (const cursor of index.iterate(extensionId)) {
-    cnt++;
-    await cursor.delete();
-  }
+  const db = await openTraceDB();
 
-  console.debug("Cleared %d trace entries for extension %s", cnt, extensionId);
+  try {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const index = tx.store.index("extensionId");
+    for await (const cursor of index.iterate(extensionId)) {
+      cnt++;
+      await cursor.delete();
+    }
+
+    console.debug(
+      "Cleared %d trace entries for extension %s",
+      cnt,
+      extensionId
+    );
+  } finally {
+    db.close();
+  }
 }
 
 export async function getLatestRunByExtensionId(
   extensionId: UUID
 ): Promise<TraceRecord[]> {
-  const db = await getDB();
-  const matches = await db
-    .transaction(ENTRY_OBJECT_STORE, "readonly")
-    .objectStore(ENTRY_OBJECT_STORE)
-    .index("extensionId")
-    .getAll(extensionId);
+  const db = await openTraceDB();
 
-  // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-  const sorted = sortBy(
-    matches.reverse(),
-    (x) => -new Date(x.timestamp).getTime()
-  );
+  try {
+    const matches = await db
+      .transaction(ENTRY_OBJECT_STORE, "readonly")
+      .objectStore(ENTRY_OBJECT_STORE)
+      .index("extensionId")
+      .getAll(extensionId);
 
-  const runId = sorted[0]?.runId;
-  if (runId) {
-    return sorted.filter((x) => x.runId === runId);
+    // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+    const sorted = sortBy(
+      matches.reverse(),
+      (x) => -new Date(x.timestamp).getTime()
+    );
+
+    const runId = sorted[0]?.runId;
+    if (runId) {
+      return sorted.filter((x) => x.runId === runId);
+    }
+
+    return [];
+  } finally {
+    db.close();
   }
-
-  return [];
 }

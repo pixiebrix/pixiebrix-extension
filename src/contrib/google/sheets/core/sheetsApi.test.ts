@@ -149,7 +149,7 @@ describe("error handling", () => {
     });
 
     await expect(getAllSpreadsheets(config)).rejects.toThrow(
-      "Cannot locate the Google drive resource. Have you been granted access?"
+      "Cannot locate the Google Drive resource. Have you been granted access?"
     );
 
     // Don't clear the token, because the token is valid the user just might not have access
@@ -177,9 +177,20 @@ describe("error handling", () => {
     expect(deleteCachedAuthDataMock).not.toHaveBeenCalledOnce();
   });
 
-  it.each([401, 403])(
-    "Returns permissions error on %s if no refresh token",
-    async (status: number) => {
+  it.each([
+    {
+      status: 401,
+      message:
+        "Permission denied, re-authenticate with Google and try again. Details: Unauthorized",
+    },
+    {
+      status: 403,
+      message:
+        "You do not have permission to access the Google Drive resource. Have you been granted access? If this resource is public, you need to open it in a separate browser tab before it will appear here.",
+    },
+  ])(
+    "Returns permissions error on $status if no refresh token",
+    async ({ status, message }: { status: number; message: string }) => {
       // Google Request
       axiosMock.onGet().reply(status);
 
@@ -192,9 +203,7 @@ describe("error handling", () => {
         access_token: "NOTAREALTOKEN",
       });
 
-      await expect(getAllSpreadsheets(config)).rejects.toThrow(
-        "Permission denied, re-authenticate with Google and try again."
-      );
+      await expect(getAllSpreadsheets(config)).rejects.toThrow(message);
 
       expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
         access_token: "NOTAREALTOKEN",
@@ -208,9 +217,20 @@ describe("error handling", () => {
     }
   );
 
-  it.each([401, 403])(
-    "Returns permissions error on %s if token refresh fails",
-    async (status: number) => {
+  it.each([
+    {
+      status: 401,
+      message:
+        "Permission denied, re-authenticate with Google and try again. Details: Unauthorized",
+    },
+    {
+      status: 403,
+      message:
+        "You do not have permission to access the Google Drive resource. Have you been granted access? If this resource is public, you need to open it in a separate browser tab before it will appear here.",
+    },
+  ])(
+    "Returns permissions error on $status if token refresh fails",
+    async ({ status, message }: { status: number; message: string }) => {
       // Google Requests
       axiosMock.onGet().reply(status);
       axiosMock.onPost().reply(401);
@@ -225,9 +245,7 @@ describe("error handling", () => {
         refresh_token: "NOTAREALREFRESHTOKEN",
       });
 
-      await expect(getAllSpreadsheets(config)).rejects.toThrow(
-        "Permission denied, re-authenticate with Google and try again."
-      );
+      await expect(getAllSpreadsheets(config)).rejects.toThrow(message);
 
       expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
         access_token: "NOTAREALTOKEN",

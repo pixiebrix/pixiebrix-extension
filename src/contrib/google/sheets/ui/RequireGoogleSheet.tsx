@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactElement, useEffect, useState } from "react";
+import React, {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { type Schema } from "@/types/schemaTypes";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
@@ -24,30 +29,24 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import {
-  type AuthData,
-  type SanitizedIntegrationConfig,
-} from "@/integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { sheets } from "@/background/messenger/api";
 import { type AsyncState } from "@/types/sliceTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { type Except } from "type-fest";
 import { joinName } from "@/utils/formUtils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type UUID } from "@/types/stringTypes";
 import { isEmpty } from "lodash";
-import { OAUTH2_STORAGE_KEY } from "@/auth/authConstants";
+import { oauth2Storage } from "@/auth/authConstants";
+import { AnnotationType } from "@/types/annotationTypes";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
   spreadsheet: Spreadsheet | null;
   spreadsheetFieldSchema: Schema;
 };
-
-type LoginListener = (
-  changes: Record<string, chrome.storage.StorageChange>,
-  areaName: string
-) => void;
 
 const RequireGoogleSheet: React.FC<{
   blockConfigPath: string;
@@ -57,6 +56,16 @@ const RequireGoogleSheet: React.FC<{
 }> = ({ blockConfigPath, children }) => {
   const googleAccountAsyncState = useGoogleAccount();
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
+  const [spreadsheetError, setSpreadsheetError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const retry = useCallback(async () => {
+    if (isRetrying) {
+      return;
+    }
+
+    setIsRetrying(true);
+    googleAccountAsyncState.refetch();
+  }, [googleAccountAsyncState, isRetrying]);
   const baseSchemaAsyncState = useAsyncState(
     dereference(BASE_SHEET_SCHEMA),
     [],
@@ -65,39 +74,24 @@ const RequireGoogleSheet: React.FC<{
     }
   );
 
-  const [loginListener, setLoginListener] = useState<LoginListener | null>(
-    null
-  );
+  const [loginController, setLoginController] =
+    useState<AbortController | null>(null);
 
   function listenForLogin(googleAccount: SanitizedIntegrationConfig) {
-    const listener: LoginListener = (changes, areaName) => {
-      if (areaName !== "local") {
-        return;
+    const loginController = new AbortController();
+    oauth2Storage.onChanged((newValue) => {
+      if (!isEmpty(newValue[googleAccount.id])) {
+        googleAccountAsyncState.refetch();
+        loginController.abort();
       }
-
-      if (OAUTH2_STORAGE_KEY in changes) {
-        // eslint-disable-next-line security/detect-object-injection -- UUID, not user input
-        const newValue = changes[OAUTH2_STORAGE_KEY].newValue as Record<
-          UUID,
-          AuthData
-        >;
-        if (!isEmpty(newValue[googleAccount.id])) {
-          googleAccountAsyncState.refetch();
-          browser.storage.onChanged.removeListener(listener);
-        }
-      }
-    };
-
-    browser.storage.onChanged.addListener(listener);
-    setLoginListener(listener);
+    }, loginController.signal);
+    setLoginController(loginController);
   }
 
   // Clean up the listener on unmount if it hasn't fired yet
   useEffect(
     () => () => {
-      if (loginListener) {
-        browser.storage.onChanged.removeListener(loginListener);
-      }
+      loginController?.abort();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount/unmount
     []
@@ -112,6 +106,7 @@ const RequireGoogleSheet: React.FC<{
       spreadsheetId: string | null,
       baseSchema: Schema
     ) => {
+      setSpreadsheetError(null);
       if (!spreadsheetId) {
         return {
           googleAccount,
@@ -121,15 +116,35 @@ const RequireGoogleSheet: React.FC<{
       }
 
       if (!googleAccount || (await sheets.isLoggedIn(googleAccount))) {
-        return {
-          googleAccount,
+        try {
           // Sheets API will handle legacy authentication when googleAccount is null
-          spreadsheet: await sheets.getSpreadsheet({
+          const spreadsheet = await sheets.getSpreadsheet({
             googleAccount,
             spreadsheetId,
-          }),
-          spreadsheetFieldSchema: baseSchema,
-        };
+          });
+          return {
+            googleAccount,
+            spreadsheet,
+            spreadsheetFieldSchema: {
+              ...baseSchema,
+              oneOf: [
+                {
+                  const: spreadsheetId,
+                  title: spreadsheet.properties.title,
+                },
+              ],
+            },
+          };
+        } catch (error) {
+          setSpreadsheetError(getErrorMessage(error));
+          return {
+            googleAccount,
+            spreadsheet: null,
+            spreadsheetFieldSchema: baseSchema,
+          };
+        } finally {
+          setIsRetrying(false);
+        }
       }
 
       listenForLogin(googleAccount);
@@ -146,6 +161,19 @@ const RequireGoogleSheet: React.FC<{
     <AsyncStateGate state={resultAsyncState}>
       {({ data: { spreadsheetFieldSchema, ...others } }) => (
         <>
+          {spreadsheetError && (
+            <FieldAnnotationAlert
+              className="mb-2"
+              message={spreadsheetError}
+              type={AnnotationType.Error}
+              actions={[
+                {
+                  caption: isRetrying ? "Retrying..." : "Try Again",
+                  action: isRetrying ? async () => {} : retry,
+                },
+              ]}
+            />
+          )}
           <SchemaField
             name={joinName(blockConfigPath, "spreadsheetId")}
             schema={spreadsheetFieldSchema}

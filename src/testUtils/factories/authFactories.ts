@@ -23,6 +23,7 @@ import {
 } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type Me, type Milestone, UserRole } from "@/types/contract";
+import { type AuthData } from "@/integrations/integrationTypes";
 
 /**
  * @see userOrganizationFactory
@@ -128,4 +129,10 @@ export const partnerUserFactory = extend<Me, Me>(userFactory, {
     name: "Automation Anywhere",
     theme: "automation-anywhere",
   }),
+});
+
+export const authDataFactory = define<AuthData>({
+  _oauthBrand: null,
+  username: "test_user",
+  password: "test_pwd",
 });

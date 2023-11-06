@@ -41,11 +41,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type UUID } from "@/types/stringTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -115,7 +111,7 @@ const indexKeys: IndexKey[] = [
   "authId",
 ];
 
-async function getDB() {
+async function openLoggingDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<LogDB> | null = null;
@@ -169,8 +165,12 @@ async function getDB() {
  * @param entry the log entry to add
  */
 export async function appendEntry(entry: LogEntry): Promise<void> {
-  const db = await getDB();
-  await db.add(ENTRY_OBJECT_STORE, entry);
+  const db = await openLoggingDB();
+  try {
+    await db.add(ENTRY_OBJECT_STORE, entry);
+  } finally {
+    db.close();
+  }
 }
 
 function makeMatchEntry(
@@ -189,8 +189,12 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  const db = await getDB();
-  return db.count(ENTRY_OBJECT_STORE);
+  const db = await openLoggingDB();
+  try {
+    return await db.count(ENTRY_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -200,15 +204,20 @@ export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME);
 
   // Open the database to recreate it
-  await getDB();
+  const db = await openLoggingDB();
+  db.close();
 }
 
 /**
  * Clears all log entries from the database.
  */
 export async function clearLogs(): Promise<void> {
-  const db = await getDB();
-  await db.clear(ENTRY_OBJECT_STORE);
+  const db = await openLoggingDB();
+  try {
+    await db.clear(ENTRY_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -216,20 +225,24 @@ export async function clearLogs(): Promise<void> {
  * @param context the query context to clear.
  */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  const db = await getDB();
+  const db = await openLoggingDB();
 
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  try {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
-  if (isEmpty(context)) {
-    await tx.store.clear();
-    return;
-  }
-
-  const match = makeMatchEntry(context);
-  for await (const cursor of tx.store) {
-    if (match(cursor.value)) {
-      await cursor.delete();
+    if (isEmpty(context)) {
+      await tx.store.clear();
+      return;
     }
+
+    const match = makeMatchEntry(context);
+    for await (const cursor of tx.store) {
+      if (match(cursor.value)) {
+        await cursor.delete();
+      }
+    }
+  } finally {
+    db.close();
   }
 }
 
@@ -240,35 +253,40 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLogEntries(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
-  const db = await getDB();
-  const objectStore = db
-    .transaction(ENTRY_OBJECT_STORE, "readonly")
-    .objectStore(ENTRY_OBJECT_STORE);
+  const db = await openLoggingDB();
 
-  let indexKey: IndexKey;
-  for (const key of indexKeys) {
-    // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-    if (context[key] != null) {
-      indexKey = key;
-      break;
+  try {
+    const objectStore = db
+      .transaction(ENTRY_OBJECT_STORE, "readonly")
+      .objectStore(ENTRY_OBJECT_STORE);
+
+    let indexKey: IndexKey;
+    for (const key of indexKeys) {
+      // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+      if (context[key] != null) {
+        indexKey = key;
+        break;
+      }
     }
+
+    if (!indexKey) {
+      throw new Error(
+        "At least one of the known index keys must be set in the context to get logs"
+      );
+    }
+
+    // Use the index to do an initial filter on IDB, and then makeMatchEntry to apply the full filter in JS.
+    // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+    const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
+
+    const match = makeMatchEntry(context);
+    const matches = entries.filter((entry) => match(entry));
+
+    // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+    return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
+  } finally {
+    db.close();
   }
-
-  if (!indexKey) {
-    throw new Error(
-      "At least one of the known index keys must be set in the context to get logs"
-    );
-  }
-
-  // Use the index to do an initial filter on IDB, and then makeMatchEntry to apply the full filter in JS.
-  // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-  const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
-
-  const match = makeMatchEntry(context);
-  const matches = entries.filter((entry) => match(entry));
-
-  // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-  return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
 /**
@@ -452,17 +470,11 @@ export type LoggingConfig = {
   logValues: boolean;
 };
 
-const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
-
-export async function getLoggingConfig(): Promise<LoggingConfig> {
-  return readStorage<LoggingConfig>(LOG_CONFIG_STORAGE_KEY, {
+export const loggingConfig = new StorageItem<LoggingConfig>("LOG_OPTIONS", {
+  defaultValue: {
     logValues: false,
-  });
-}
-
-export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
-  await setStorage(LOG_CONFIG_STORAGE_KEY, config);
-}
+  },
+});
 
 /**
  * Clear all debug and trace level logs for the given extension.
@@ -470,13 +482,18 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
 export async function clearExtensionDebugLogs(
   extensionId: UUID
 ): Promise<void> {
-  const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-  const index = tx.store.index("extensionId");
-  for await (const cursor of index.iterate(extensionId)) {
-    if (cursor.value.level === "debug" || cursor.value.level === "trace") {
-      await cursor.delete();
+  const db = await openLoggingDB();
+
+  try {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const index = tx.store.index("extensionId");
+    for await (const cursor of index.iterate(extensionId)) {
+      if (cursor.value.level === "debug" || cursor.value.level === "trace") {
+        await cursor.delete();
+      }
     }
+  } finally {
+    db.close();
   }
 }
 
@@ -494,20 +511,25 @@ async function _sweepLogs(): Promise<void> {
       numToDelete,
     });
 
-    const db = await getDB();
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const db = await openLoggingDB();
 
-    let deletedCount = 0;
+    try {
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
-    // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
-    // This might mostly "just work" if the cursor happens to iterate in insertion order
-    for await (const cursor of tx.store) {
-      await cursor.delete();
-      deletedCount++;
+      let deletedCount = 0;
 
-      if (deletedCount > numToDelete) {
-        return;
+      // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+      // This might mostly "just work" if the cursor happens to iterate in insertion order
+      for await (const cursor of tx.store) {
+        await cursor.delete();
+        deletedCount++;
+
+        if (deletedCount > numToDelete) {
+          return;
+        }
       }
+    } finally {
+      db.close();
     }
   }
 }
@@ -517,7 +539,7 @@ async function _sweepLogs(): Promise<void> {
  */
 export const sweepLogs = memoizeUntilSettled(_sweepLogs);
 
-export function initLogSweep() {
+export function initLogSweep(): void {
   expectContext(
     "background",
     "Log sweep should only be initialized in the background page"

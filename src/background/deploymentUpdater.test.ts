@@ -73,8 +73,6 @@ jest.mock("@/utils/extensionUtils", () => ({
   getExtensionVersion: () => browser.runtime.getManifest().version,
 }));
 
-jest.mock("webext-messenger");
-
 // Override manual mock to support `expect` assertions
 jest.mock("@/telemetry/reportEvent");
 

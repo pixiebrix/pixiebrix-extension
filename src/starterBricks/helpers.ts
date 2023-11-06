@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray, noop, once, stubFalse } from "lodash";
+import { castArray, noop, once } from "lodash";
 import initialize from "@/vendors/initialize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
 import {
@@ -232,18 +232,23 @@ export function selectExtensionContext(
   };
 }
 
-export function makeShouldRunExtensionForStateChange(
+/**
+ * Returns true if the ModComponent should run for the given state change event.
+ */
+export function shouldModComponentRunForStateChange(
+  modComponent: ModComponentBase,
   event: Event
-): (extension: ModComponentBase) => boolean {
+): boolean {
   if (event instanceof CustomEvent) {
     const { detail } = event;
 
     // Ignore state changes from shared state and unrelated extensions/blueprints
-    return (extension: ModComponentBase) =>
-      detail?.extensionId === extension.id ||
-      (extension._recipe?.id != null &&
-        extension._recipe?.id === detail?.blueprintId);
+    return (
+      detail?.extensionId === modComponent.id ||
+      (modComponent._recipe?.id != null &&
+        modComponent._recipe?.id === detail?.blueprintId)
+    );
   }
 
-  return stubFalse;
+  return false;
 }

@@ -24,7 +24,7 @@ import {
 } from "@/integrations/integrationTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { launchOAuth2Flow } from "@/background/auth/launchOAuth2Flow";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import codeGrantFlow from "@/background/auth/codeGrantFlow";
 
 jest.mock("@/background/auth/codeGrantFlow", () => ({

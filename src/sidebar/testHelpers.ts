@@ -28,14 +28,20 @@ import {
 import { appApi } from "@/services/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
+import { createStateSyncMiddleware } from "redux-state-sync";
+import { sessionChangesStateSyncActions } from "@/store/sessionChanges/sessionChangesSlice";
+import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import { defaultCreateStateSyncMiddlewareConfig } from "@/store/defaultMiddlewareConfig";
 
-const configureStoreForTests = () =>
+export const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
       modDefinitions: modDefinitionsSlice.reducer,
       options: extensionsSlice.reducer,
       sidebar: sidebarSlice.reducer,
+      session: sessionSlice.reducer,
       settings: settingsSlice.reducer,
       integrations: integrationsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
@@ -43,7 +49,14 @@ const configureStoreForTests = () =>
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware()
         .concat(appApi.middleware)
-        .concat(modDefinitionsMiddleware);
+        .concat(modDefinitionsMiddleware)
+        .concat(sessionChangesMiddleware)
+        .concat(
+          createStateSyncMiddleware({
+            ...defaultCreateStateSyncMiddlewareConfig,
+            whitelist: sessionChangesStateSyncActions,
+          })
+        );
     },
   });
 

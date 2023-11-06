@@ -86,7 +86,7 @@ interface TourDB extends DBSchema {
 
 const indexKeys = ["tourName", "packageId", "extensionId"] as const;
 
-async function getDB(): Promise<IDBPDatabase<TourDB>> {
+async function openTourDB(): Promise<IDBPDatabase<TourDB>> {
   return openDB<TourDB>(STORAGE_KEY, DB_VERSION_NUMBER, {
     upgrade(db) {
       // Create a store of objects
@@ -108,14 +108,19 @@ async function getDB(): Promise<IDBPDatabase<TourDB>> {
  * @param run the tour run
  */
 export async function recordStart(run: TourMetadata): Promise<void> {
-  const db = await getDB();
-  await db.add(ENTRY_OBJECT_STORE, {
-    ...run,
-    updatedAt: new Date().toISOString(),
-    completed: false,
-    skipped: false,
-    errored: false,
-  });
+  const db = await openTourDB();
+
+  try {
+    await db.add(ENTRY_OBJECT_STORE, {
+      ...run,
+      updatedAt: new Date().toISOString(),
+      completed: false,
+      skipped: false,
+      errored: false,
+    });
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -127,25 +132,34 @@ export async function recordEnd(
   nonce: UUID,
   update: TourStatus
 ): Promise<void> {
-  const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-  const value = await tx.store.get(nonce);
+  const db = await openTourDB();
 
-  if (value) {
-    await tx.store.put({
-      ...value,
-      ...update,
-      updatedAt: new Date().toISOString(),
-    });
+  try {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const value = await tx.store.get(nonce);
+
+    if (value) {
+      await tx.store.put({
+        ...value,
+        ...update,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
+    await tx.done;
+  } finally {
+    db.close();
   }
-
-  await tx.done;
 }
 
 /**
  * Retrieve all tour runs.
  */
 export async function getAll(): Promise<TourEntry[]> {
-  const db = await getDB();
-  return db.getAll(ENTRY_OBJECT_STORE);
+  const db = await openTourDB();
+  try {
+    return await db.getAll(ENTRY_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }

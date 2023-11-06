@@ -19,14 +19,16 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
+import { realConsole } from "@/development/runtimeLogging";
 
 type Level = "debug" | "info" | "warn" | "error";
 
-const LEVEL_MAP = new Map<Level, typeof console.debug>([
-  ["debug", console.debug],
-  ["warn", console.warn],
-  ["info", console.info],
-  ["error", console.error],
+// Be sure to use the real `console` methods, not the proxy that's used to mute runtime logging
+const LEVEL_MAP = new Map<Level, typeof realConsole.debug>([
+  ["debug", realConsole.debug],
+  ["warn", realConsole.warn],
+  ["info", realConsole.info],
+  ["error", realConsole.error],
 ]);
 
 export class LogEffect extends EffectABC {
@@ -67,7 +69,7 @@ export class LogEffect extends EffectABC {
     }: BrickArgs<{ message: string; level: Level; data: unknown }>,
     { ctxt }: BrickOptions
   ): Promise<void> {
-    const logMethod = LEVEL_MAP.get(level) ?? console.info;
+    const logMethod = LEVEL_MAP.get(level) ?? realConsole.info;
     logMethod(message, data ?? ctxt);
   }
 }

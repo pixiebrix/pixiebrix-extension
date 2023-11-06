@@ -35,7 +35,10 @@ import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integra
 import { getToken } from "@/background/auth/getToken";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
-jest.unmock("@/services/apiClient");
+// Disable automatic __mocks__ resolution #6799
+jest.mock("@/services/apiClient", () =>
+  jest.requireActual("../services/apiClient.ts")
+);
 setContext("background");
 
 const axiosMock = new MockAdapter(axios);

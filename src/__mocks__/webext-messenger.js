@@ -15,19 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+export const getMethod = jest.fn(() => jest.fn());
+export const getNotifier = jest.fn(() => jest.fn());
+export const backgroundTarget = { page: "background" };
 
-// A mock of @/services/apiClient that doesn't use the local browser state. For use with msw in Storybook.
-// See .storybook/preview.js for more information
-
-export async function getLinkedApiClient() {
-  return axios;
-}
-
-export async function getApiClient() {
-  return axios;
-}
-
-export async function maybeGetApiClient() {
-  return axios;
-}
+export const getTopLevelFrame = async () => ({ tabId: 1, frameId: 0 });
+export const getThisFrame = getTopLevelFrame;
