@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen } from "@/sidebar/testHelpers";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import DefaultPanel from "./DefaultPanel";
@@ -41,31 +41,28 @@ function optionsStore(initialState?: {
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
-    const state = {
-      extensions: [modComponentFactory() as ActivatedModComponent],
-      auth: { flags: [] } as AuthState,
-    };
-
-    render(
-      <Provider store={optionsStore(state)}>
-        <DefaultPanel />
-      </Provider>
-    );
+    render(<DefaultPanel />);
 
     expect(screen.getByText("Get started with PixieBrix")).not.toBeNull();
   });
 
   it("renders restricted user content", () => {
-    const state = {
-      extensions: [modComponentFactory() as ActivatedModComponent],
-      auth: { flags: ["restricted-marketplace"] } as AuthState,
-    };
+    render(<DefaultPanel />, {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.saveExtension({
+            extension: modComponentFactory() as ActivatedModComponent,
+            pushToCloud: false,
+          })
+        );
 
-    render(
-      <Provider store={optionsStore(state)}>
-        <DefaultPanel />
-      </Provider>
-    );
+        dispatch(
+          authSlice.actions.setAuth({
+            flags: ["restricted-marketplace"],
+          } as AuthState)
+        );
+      },
+    });
 
     expect(screen.getByText("No panels activated for the page")).not.toBeNull();
   });

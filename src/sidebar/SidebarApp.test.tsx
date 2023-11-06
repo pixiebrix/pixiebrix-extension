@@ -17,7 +17,7 @@
 
 import React from "react";
 import SidebarApp from "@/sidebar/SidebarApp";
-import { render } from "@testing-library/react";
+import { render } from "@/sidebar/testHelpers";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 
 jest.mock("@/hooks/useContextInvalidated", () => ({
