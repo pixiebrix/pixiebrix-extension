@@ -9,7 +9,8 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    # The tests currently take ~16 minutes to run. Anything longer is probably due to a flaky test.
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
