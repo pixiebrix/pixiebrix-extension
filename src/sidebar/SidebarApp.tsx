@@ -20,14 +20,12 @@ import store, { persistor } from "@/sidebar/store";
 import { Provider } from "react-redux";
 import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
-import ConnectedSidebar from "./ConnectedSidebar";
-import Header from "./Header";
-import ErrorBanner from "./ErrorBanner";
 import { MemoryRouter } from "react-router";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
+import SidebarBody from "@/sidebar/SidebarBody";
 
 registerDefaultWidgets();
 
@@ -36,16 +34,6 @@ const authPersistenceContext: ReduxPersistenceContextType = {
     await persistor.flush();
   },
 };
-
-// Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
-// navigation in the SidebarApp
-export const SidebarBody: React.FunctionComponent = () => (
-  <>
-    <ErrorBanner />
-    <Header />
-    <ConnectedSidebar />
-  </>
-);
 
 const SidebarApp: React.FunctionComponent = () => (
   <Provider store={store}>
