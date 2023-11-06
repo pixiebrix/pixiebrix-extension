@@ -28,6 +28,7 @@ import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/bricks/transformers/temporaryInfo/messenger/registration";
 import "iframe-resizer/js/iframeResizer.contentWindow";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
 
 function init(): void {
   console.debug("Initializing ephemeral panel", { location: window.location });
@@ -35,6 +36,7 @@ function init(): void {
 }
 
 void initMessengerLogging();
+void initRuntimeLogging();
 registerMessenger();
 registerContribBlocks();
 registerBuiltinBlocks();

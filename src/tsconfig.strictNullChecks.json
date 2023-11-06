@@ -182,6 +182,7 @@
     "./contrib/zapier/contract.ts",
     "./development/errorsBadge.ts",
     "./development/messengerLogging.ts",
+    "./development/runtimeLogging.ts",
     "./development/useMessengerLogging.ts",
     "./development/visualInjection.ts",
     "./domConstants.ts",

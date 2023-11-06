@@ -44,9 +44,11 @@ import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
 import { initContentScriptReadyListener } from "@/background/contentScript";
 import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
 
 void initLocator();
 void initMessengerLogging();
+void initRuntimeLogging();
 registerMessenger();
 registerExternalMessenger();
 initBrowserAction();
