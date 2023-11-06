@@ -155,7 +155,7 @@ function reclaimTooltip(tooltip: HTMLElement): void {
   const popper = popperMap.get(tooltip);
   if (popper) {
     // https://github.com/floating-ui/floating-ui/issues/538
-    popper.state.elements.popper = null as unknown as HTMLElement;
+    popper.state.elements.popper = document.documentElement;
     popper.destroy();
     popperMap.delete(tooltip);
   }
