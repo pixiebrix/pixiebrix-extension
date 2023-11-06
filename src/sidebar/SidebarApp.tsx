@@ -39,14 +39,20 @@ const authPersistenceContext: ReduxPersistenceContextType = {
 
 // Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
 // navigation in the SidebarApp
+export const SidebarBody: React.FunctionComponent = () => (
+  <>
+    <ErrorBanner />
+    <Header />
+    <ConnectedSidebar />
+  </>
+);
+
 const SidebarApp: React.FunctionComponent = () => (
   <Provider store={store}>
     <PersistGate loading={<Loader />} persistor={persistor}>
       <ReduxPersistenceContext.Provider value={authPersistenceContext}>
         <MemoryRouter>
-          <ErrorBanner />
-          <Header />
-          <ConnectedSidebar />
+          <SidebarBody />
         </MemoryRouter>
       </ReduxPersistenceContext.Provider>
     </PersistGate>
