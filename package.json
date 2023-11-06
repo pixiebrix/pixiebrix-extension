@@ -69,7 +69,7 @@
     "escape-string-regexp": "^5.0.0",
     "eslint-plugin-unicorn": "^48.0.1",
     "exifreader": "^4.16.0",
-    "export-to-csv": "^1.2.0",
+    "export-to-csv": "^1.2.1",
     "filenamify": "^6.0.0",
     "fit-textarea": "^3.0.0",
     "formik": "^2.4.5",
