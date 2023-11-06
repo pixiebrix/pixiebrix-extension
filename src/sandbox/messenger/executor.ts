@@ -68,7 +68,6 @@ export async function runUserJs({
 }: JavaScriptPayload): Promise<string> {
   let userFunction;
   try {
-    // TODO: Ensure that new Function() doesn't have access to the scope
     // Returning the user-defined function allows for an anonymous function
     // eslint-disable-next-line no-new-func -- We're in the sandbox
     userFunction = new Function(`return ${code}`)();
@@ -81,8 +80,15 @@ export async function runUserJs({
     );
   }
 
+  // See https://stackoverflow.com/a/67102501/288906
+  const context = data
+    ? new Proxy(data, {
+        has: () => true,
+      })
+    : undefined;
+
   try {
-    return userFunction(data);
+    return userFunction(context);
   } catch {
     throw new BusinessError("Error running user-defined JavaScript");
   }
