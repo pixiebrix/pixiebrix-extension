@@ -32,10 +32,12 @@ import { watchNavigation } from "@/pageEditor/protocol";
 import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
 import { markAppStart } from "@/utils/performance";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
 
 markAppStart();
 
 void initMessengerLogging();
+void initRuntimeLogging();
 registerMessenger();
 void initGoogle();
 watchNavigation();

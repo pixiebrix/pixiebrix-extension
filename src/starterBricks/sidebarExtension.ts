@@ -29,7 +29,6 @@ import {
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/bricks/available";
-import notify from "@/utils/notify";
 import {
   removeExtensionPoint,
   removeExtensions,
@@ -42,10 +41,10 @@ import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { HeadlessModeError } from "@/bricks/errors";
 import {
-  makeShouldRunExtensionForStateChange,
   selectExtensionContext,
+  shouldModComponentRunForStateChange,
 } from "@/starterBricks/helpers";
-import { cloneDeep, debounce, remove, stubTrue } from "lodash";
+import { cloneDeep, debounce, remove } from "lodash";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { selectAllBlocks } from "@/bricks/util";
@@ -55,10 +54,7 @@ import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
 import { type Schema } from "@/types/schemaTypes";
-import {
-  type ModComponentBase,
-  type ResolvedModComponent,
-} from "@/types/modComponentTypes";
+import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
@@ -88,9 +84,28 @@ export type Trigger =
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
 
+  /**
+   * Options for the `custom` trigger, if applicable.
+   */
+  abstract get customTriggerOptions(): CustomEventOptions;
+
+  /**
+   * Debounce options for the trigger.
+   *
+   * Since 1.8.2, debounce is applied per Mod Component to account for page state change events only applying to a
+   * subset of the ModComponents.
+   */
   abstract get debounceOptions(): DebounceOptions;
 
-  abstract get customTriggerOptions(): CustomEventOptions;
+  /**
+   * Map from ModComponent to debounce refresh function, so each ModComponent can be debounced independently.
+   * @private
+   */
+  // Include ModComponent in the body so the method doesn't retain a reference to the ModComponent in the closure
+  private readonly debouncedRefreshPanel = new Map<
+    UUID,
+    (modComponent: ResolvedModComponent<SidebarConfig>) => Promise<void>
+  >();
 
   readonly permissions: Permissions.Permissions = {};
 
@@ -100,6 +115,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    */
   private abortController = new AbortController();
 
+  /**
+   * True if the starter brick has already installed event listeners for the trigger event, if applicable
+   * @private
+   */
   private installedListeners = false;
 
   inputSchema: Schema = propertiesToSchema(
@@ -122,7 +141,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   );
 
   // Historical context: in the browser API, the toolbar icon is bound to an action. This is a panel that's shown
-  // when the user toggles the toolbar icon. Hence: actionPanel
+  // when the user toggles the toolbar icon. Hence: actionPanel.
+  // See https://developer.chrome.com/docs/extensions/reference/browserAction/
   public get kind(): "actionPanel" {
     return "actionPanel";
   }
@@ -163,31 +183,31 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     sidebarShowEvents.remove(this.runModComponents);
   }
 
-  private async runExtension(
+  private async runModComponent(
     readerContext: JsonObject,
-    extension: ResolvedModComponent<SidebarConfig>
-  ) {
+    modComponent: ResolvedModComponent<SidebarConfig>
+  ): Promise<void> {
     // Generate our own run id so that we know it (to pass to upsertPanel)
     const runId = uuidv4();
 
-    const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension)
+    const componentLogger = this.logger.childLogger(
+      selectExtensionContext(modComponent)
     );
 
     const serviceContext = await makeServiceContextFromDependencies(
-      extension.integrationDependencies
+      modComponent.integrationDependencies
     );
     const extensionContext = { ...readerContext, ...serviceContext };
 
-    const { heading: rawHeading, body } = extension.config;
+    const { heading: rawHeading, body } = modComponent.config;
 
     const heading = Mustache.render(rawHeading, extensionContext);
 
-    updateHeading(extension.id, heading);
+    updateHeading(modComponent.id, heading);
 
     const initialValues: InitialValues = {
       input: readerContext,
-      optionsArgs: extension.optionsArgs,
+      optionsArgs: modComponent.optionsArgs,
       root: document,
       serviceContext,
     };
@@ -202,8 +222,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     try {
       await reduceExtensionPipeline(body, initialValues, {
         headless: true,
-        logger: extensionLogger,
-        ...apiVersionOptions(extension.apiVersion),
+        logger: componentLogger,
+        ...apiVersionOptions(modComponent.apiVersion),
         runId,
       });
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
@@ -211,14 +231,14 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       throw new NoRendererError();
     } catch (error) {
       const ref = {
-        extensionId: extension.id,
+        extensionId: modComponent.id,
         extensionPointId: this.id,
-        blueprintId: extension._recipe?.id,
+        blueprintId: modComponent._recipe?.id,
       };
 
       const meta = {
         runId,
-        extensionId: extension.id,
+        extensionId: modComponent.id,
       };
 
       if (error instanceof HeadlessModeError) {
@@ -230,7 +250,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
           ...meta,
         });
       } else {
-        extensionLogger.error(error);
+        componentLogger.error(error);
         upsertPanel(ref, heading, {
           key: uuidv4(),
           error: serializeError(error),
@@ -239,57 +259,6 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       }
     }
   }
-
-  /**
-   * DO NOT CALL DIRECTLY - call debouncedRefreshPanels
-   */
-  private readonly refreshPanels = async ({
-    shouldRunExtension = stubTrue,
-  }: {
-    shouldRunExtension?: (extension: ModComponentBase) => boolean;
-  }): Promise<void> => {
-    const extensionsToRefresh = this.modComponents.filter((extension) =>
-      shouldRunExtension(extension)
-    );
-
-    if (extensionsToRefresh.length === 0) {
-      // Skip overhead of calling reader if no extensions should run
-      return;
-    }
-
-    const reader = await this.defaultReader();
-
-    const readerContext = await reader.read(document);
-
-    const errors: unknown[] = [];
-
-    // OK to run in parallel because we've fixed the order the panels appear in reservePanels
-    await Promise.all(
-      extensionsToRefresh.map(async (extension) => {
-        try {
-          await this.runExtension(readerContext, extension);
-        } catch (error) {
-          errors.push(error);
-          this.logger
-            .childLogger({
-              deploymentId: extension._deployment?.id,
-              extensionId: extension.id,
-            })
-            .error(error);
-        }
-      })
-    );
-
-    if (errors.length > 0) {
-      notify.error(`An error occurred adding ${errors.length} panels(s)`);
-    }
-  };
-
-  /**
-   * Refresh all panels for the StarterBrick
-   * @private
-   */
-  private debouncedRefreshPanels = this.refreshPanels; // Default to un-debounced
 
   addCancelHandler(callback: () => void): void {
     this.abortController.signal.addEventListener("abort", callback);
@@ -306,17 +275,97 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   /**
-   * Shared event handler for DOM event triggers
+   * Calculate/refresh the content for a single panel.
+   * DO NOT CALL DIRECTLY
+   * @see debouncedRefreshPanels
+   * @private
+   */
+  private async refreshComponentPanel(
+    modComponent: ResolvedModComponent<SidebarConfig>
+  ): Promise<void> {
+    // Read per-panel, because panels might be debounced on different schedules.
+    const reader = await this.defaultReader();
+    const readerContext = await reader.read(document);
+
+    try {
+      await this.runModComponent(readerContext, modComponent);
+    } catch (error) {
+      this.logger
+        .childLogger({
+          deploymentId: modComponent._deployment?.id,
+          blueprintId: modComponent._recipe?.id,
+          extensionId: modComponent.id,
+        })
+        .error(error);
+    }
+  }
+
+  /**
+   * Run/refresh the specified mod components, debouncing if applicable.
+   * @param componentsToRun the mod components to run
+   * @private
+   */
+  private async debouncedRefreshPanels(
+    componentsToRun: Array<ResolvedModComponent<SidebarConfig>>
+  ): Promise<void> {
+    // Order doesn't matter because panel positions are already reserved
+    await Promise.all(
+      componentsToRun.map(async (modComponent) => {
+        if (this.debounceOptions?.waitMillis) {
+          const { waitMillis, ...options } = this.debounceOptions;
+
+          let debounced = this.debouncedRefreshPanel.get(modComponent.id);
+
+          if (debounced) {
+            await debounced(modComponent);
+          } else {
+            // ModComponents are debounced on separate schedules because some ModComponents may ignore certain events
+            // for performance (e.g., ModComponents ignore state change events from other mods.)
+            debounced = debounce(
+              async (x: ResolvedModComponent<SidebarConfig>) =>
+                this.refreshComponentPanel(x),
+              waitMillis,
+              options
+            );
+            this.debouncedRefreshPanel.set(modComponent.id, debounced);
+
+            // On the first run, run immediately so that the panel doesn't show a loading indicator during the
+            // debounce interval
+            await this.refreshComponentPanel(modComponent);
+          }
+        } else {
+          await this.refreshComponentPanel(modComponent);
+        }
+      })
+    );
+  }
+
+  /**
+   * Shared event handler for DOM event triggers.
    */
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
     event
-  ) => {
-    await this.debouncedRefreshPanels({
-      shouldRunExtension:
-        this.trigger === "statechange"
-          ? makeShouldRunExtensionForStateChange(event.originalEvent)
-          : stubTrue,
-    });
+  ): Promise<void> => {
+    let relevantModComponents;
+
+    switch (this.trigger) {
+      case "statechange": {
+        // For performance, only run mod components that could be impacted by the state change.
+        // Perform the check _before_ debounce, so that the debounce timer is not impacted by state from other mods.
+        // See https://github.com/pixiebrix/pixiebrix-extension/issues/6804 for more details/considerations.
+        relevantModComponents = this.modComponents.filter((modComponent) =>
+          shouldModComponentRunForStateChange(modComponent, event.originalEvent)
+        );
+        break;
+      }
+
+      default: {
+        relevantModComponents = this.modComponents;
+        break;
+      }
+    }
+
+    await this.debouncedRefreshPanels(relevantModComponents);
   };
 
   private attachEventTrigger(eventName: string): void {
@@ -381,9 +430,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         RunReason.PAGE_EDITOR,
       ].includes(reason)
     ) {
-      void this.debouncedRefreshPanels({
-        shouldRunExtension: stubTrue,
-      });
+      void this.debouncedRefreshPanels(this.modComponents);
     }
 
     if (!this.installedListeners) {
@@ -430,15 +477,6 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       sidebarShowEvents.add(this.runModComponents);
     } else {
       removeExtensionPoint(this.id);
-    }
-
-    if (this.debounceOptions?.waitMillis) {
-      const { waitMillis, ...options } = this.debounceOptions;
-      this.debouncedRefreshPanels = debounce(
-        this.refreshPanels,
-        waitMillis,
-        options
-      );
     }
 
     return available;

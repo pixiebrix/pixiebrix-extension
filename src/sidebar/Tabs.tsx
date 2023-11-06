@@ -81,6 +81,10 @@ const permanentSidebarPanelAction = () => {
   throw new BusinessError("Action not supported for permanent sidebar panels");
 };
 
+/**
+ * A tab that's conditionally rendered based on tab open/closed state.
+ * @see selectClosedTabs
+ */
 const TabWithDivider = ({
   children,
   active,
@@ -291,9 +295,13 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel: PanelEntry) => (
             <Tab.Pane
-              // Avoid memory overhead until panel is opened
-              mountOnEnter
-              // Keep tab state, otherwise use will lose local state when a temporary panel/form is added
+              // For memory performance, only mount the panel when the tab is 1) visible for the panel, the 2) the user
+              // has opened the panel. The panel's header/payload will still be calculated in the sidebar starter brick,
+              // but we'll save on memory footprint from any embedded content.
+              // For context, see https://github.com/pixiebrix/pixiebrix-extension/issues/6801
+              mountOnEnter={true}
+              // Keep tab state, otherwise use will lose local state when a temporary panel/form is added, e.g.,
+              // un-submitted form state/scroll position
               unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
               key={panel.extensionId}

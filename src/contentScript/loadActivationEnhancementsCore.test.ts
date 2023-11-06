@@ -30,7 +30,7 @@ import {
 import {
   loadActivationEnhancements,
   TEST_unloadActivationEnhancements,
-} from "@/contentScript/loadActivationEnhancements";
+} from "@/contentScript/loadActivationEnhancementsCore";
 import { isReadyInThisDocument } from "@/contentScript/ready";
 import { isLinked } from "@/auth/token";
 import { array } from "cooky-cutter";

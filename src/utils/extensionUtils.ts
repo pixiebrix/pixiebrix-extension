@@ -53,7 +53,7 @@ export async function openShortcutsTab({
  * @param page an optional route to include in the link
  */
 export function getExtensionConsoleUrl(page?: string): string {
-  // eslint-disable-next-line local-rules/noBrowserRuntimeGetUrl -- this method is the wrapper around it
+  // eslint-disable-next-line no-restricted-syntax -- The rule points to this function
   const raw = browser.runtime.getURL("options.html");
 
   if (!page || ["", "/"].includes(page)) {

@@ -31,19 +31,15 @@ module.exports = mergeWithShared({
   },
   externals: {
     // Exclude some troublesome/unnecessary dependencies
-    "webextension-polyfill": "{}",
-    rollbar: "{init(){}}",
-    "@/vendors/hoverintent/hoverintent": "{}",
     nunjucks: "{}",
+    rollbar: "{init(){}}",
+    "webextension-polyfill": "{}",
+    "@/vendors/hoverintent/hoverintent": "{}",
   },
   resolve: {
-    // Mock any modules that appear in __mocks__
-    // e.g. src/__mocks__/webextension-polyfill.js
+    // Auto-mocks. See documentation in ../src/__mocks__/readme.md
     modules: [path.resolve("src/__mocks__"), "node_modules"],
-
     alias: {
-      // Mock any LOCAL modules that appear in __mocks__
-      // e.g. src/__mocks__/@/telemetry/reportErrors.ts
       "@": [path.resolve("src/__mocks__/@"), path.resolve("src")],
     },
   },

@@ -16,18 +16,24 @@
  */
 
 import axios from "axios";
+// Re-export utility methods directly, skip automatic __mocks__ resolution #6799
+export { absoluteApiUrl } from "../../../services/apiClient";
 
-// Re-export utility methods directly
-export const { absoluteApiUrl } = jest.requireActual("@/services/apiClient");
+// A mock of @/services/apiClient that doesn't use the local browser state. For use with msw in Storybook.
+// See .storybook/preview.js for more information
 
 export async function getLinkedApiClient() {
-  return axios.create();
+  return axios;
 }
 
 export async function getApiClient() {
-  return axios.create();
+  return axios;
+}
+
+export async function maybeGetApiClient() {
+  return axios;
 }
 
 export async function maybeGetLinkedApiClient() {
-  return axios.create();
+  return axios;
 }
