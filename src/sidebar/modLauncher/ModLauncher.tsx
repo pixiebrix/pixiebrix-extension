@@ -19,9 +19,11 @@ import { Container, Navbar } from "react-bootstrap";
 import useMods from "@/mods/useMods";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsList";
+import useFlags from "@/hooks/useFlags";
 
 const ModLauncher: React.FunctionComponent = () => {
   const { mods, error } = useMods();
+  const { restrict } = useFlags();
 
   return (
     <div className="d-flex flex-column h-100">
@@ -34,12 +36,14 @@ const ModLauncher: React.FunctionComponent = () => {
           )}
         </Container>
       </div>
-      <Navbar>
-        <a href="https://pixiebrix.com/developers-welcome">
-          Learn: Open the Page Editor
-        </a>{" "}
-        | <a href="https://docs.pixiebrix.com/">Documentation</a>
-      </Navbar>
+      {!restrict("page-editor") && (
+        <Navbar>
+          <a href="https://pixiebrix.com/developers-welcome">
+            Learn: Open the Page Editor
+          </a>{" "}
+          | <a href="https://docs.pixiebrix.com/">Documentation</a>
+        </Navbar>
+      )}
     </div>
   );
 };
