@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { recordEvent } from "@/background/messenger/api";
+import { backgroundTarget as bg, messenger } from "webext-messenger";
 import { type Event } from "@/telemetry/events";
 import { type JsonObject } from "type-fest";
 
@@ -26,5 +26,12 @@ import { type JsonObject } from "type-fest";
 export default function reportEvent(event: Event, data: JsonObject = {}): void {
   // eslint-disable-next-line prefer-rest-params -- Needs `arguments` to avoid printing the default
   console.debug(...arguments);
-  recordEvent({ event, data });
+
+  messenger(
+    // Low-level direct API call to avoid calls outside reportEvent
+    "RECORD_EVENT",
+    { isNotification: true },
+    bg,
+    { event, data }
+  );
 }

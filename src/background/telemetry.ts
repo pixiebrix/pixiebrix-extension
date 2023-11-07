@@ -400,6 +400,7 @@ export async function recordBrickRun({
   await debouncedFlush();
 }
 
+/** @deprecated Use instead: `import reportEvent from "@/telemetry/reportEvent"` */
 export async function recordEvent({
   event,
   data = {},

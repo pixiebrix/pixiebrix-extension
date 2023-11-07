@@ -350,6 +350,7 @@
     "./telemetry/dnt.ts",
     "./telemetry/events.ts",
     "./telemetry/reportError.ts",
+    "./telemetry/reportEvent.ts",
     "./telemetry/reportUncaughtErrors.ts",
     "./telemetry/trace.ts",
     "./testUtils/appApiMock.ts",
