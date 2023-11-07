@@ -30,7 +30,7 @@ import {
   modModalsSlice,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
-import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
+import { setupListeners } from "@reduxjs/toolkit/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import workshopSlice, {

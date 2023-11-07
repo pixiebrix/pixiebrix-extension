@@ -17,6 +17,7 @@
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
+import { type RegistryId } from "@/types/registryTypes";
 import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 import postMessage from "@/utils/postMessage";
 import pMemoize from "p-memoize";
@@ -59,5 +60,19 @@ export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
     recipient: await loadSandbox(),
     payload,
     type: "RENDER_HANDLEBARS",
+  });
+}
+
+export type JavaScriptPayload = {
+  code: string;
+  data?: JsonObject;
+  blockId: RegistryId;
+};
+
+export async function runUserJs(payload: JavaScriptPayload) {
+  return postMessage({
+    recipient: await loadSandbox(),
+    payload,
+    type: "RUN_USER_JS",
   });
 }
