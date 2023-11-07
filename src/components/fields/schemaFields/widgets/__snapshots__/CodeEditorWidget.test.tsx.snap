@@ -6,7 +6,7 @@ exports[`CodeEditorWidget renders the AceEditor 1`] = `
     action="#"
   >
     <div
-      class=" ace_editor ace_hidpi ace-chrome"
+      class=" ace_editor ace_hidpi ace-chrome border"
       id="function"
       style="width: auto; height: 250px; font-size: 12px;"
     >

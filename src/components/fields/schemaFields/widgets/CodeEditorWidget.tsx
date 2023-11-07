@@ -20,9 +20,8 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import AceEditor from "@/vendors/AceEditor";
 import { useField } from "formik";
 
-const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, ...props }) => {
+const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name }) => {
   const [{ value }, , { setValue }] = useField<string | undefined>(name);
-  console.log("CodeEditorWidget", { name, props, value });
 
   const onChange = async (newValue: string) => {
     await setValue(newValue);
