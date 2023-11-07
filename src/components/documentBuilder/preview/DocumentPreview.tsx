@@ -117,7 +117,7 @@ const DocumentPreview = ({
           <hr />
         </>
       )}
-      {/* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- TODO */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- TODO */}
       <div
         onClick={onClick}
         className={cx(
@@ -129,6 +129,7 @@ const DocumentPreview = ({
             [styles.empty]: body.length === 0,
           }
         )}
+        /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events -- TODO */
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
       >

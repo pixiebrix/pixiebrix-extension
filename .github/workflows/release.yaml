@@ -81,7 +81,7 @@ jobs:
           name: build-production
           directory: dist
           exclusions: "*.map"
-          retention-days: 5
+          retention-days: 30
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:

@@ -287,8 +287,7 @@ module.exports = (env, options) =>
         "pageEditor/pageEditor",
         "extensionConsole/options",
         "sidebar/sidebar",
-        // #5676 -- enable sandbox when ready to be used
-        // "sandbox/sandbox",
+        "sandbox/sandbox",
 
         "tinyPages/ephemeralForm",
         "tinyPages/ephemeralPanel",

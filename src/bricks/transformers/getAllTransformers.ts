@@ -57,9 +57,11 @@ import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import ConvertDocument from "@/bricks/transformers/convertDocument";
 import { SearchText } from "@/bricks/transformers/searchText";
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
+import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 
 function getAllTransformers(): Brick[] {
   return [
+    new JavaScriptTransformer(),
     new JQTransformer(),
     new ParseJson(),
     new JSONPathTransformer(),
