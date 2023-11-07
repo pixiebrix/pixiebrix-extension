@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import SidebarApp from "@/sidebar/SidebarApp";
-import { render } from "@testing-library/react";
+import SidebarBody from "@/sidebar/SidebarBody";
+import { render } from "@/sidebar/testHelpers";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 
 jest.mock("@/hooks/useContextInvalidated", () => ({
@@ -34,15 +34,15 @@ jest.mock("@/contentScript/messenger/api", () => ({
   }),
 }));
 
-describe("SidebarApp", () => {
+describe("SidebarBody", () => {
   test("it renders", () => {
-    const { asFragment } = render(<SidebarApp />);
+    const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders error when context is invalidated", () => {
     (useContextInvalidated as jest.Mock).mockReturnValue(true);
-    const { asFragment } = render(<SidebarApp />);
+    const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });
 });
