@@ -65,9 +65,12 @@ export const Empty: Story = {};
 
 export const DefaultFunction: Story = {
   args: {
-    exampleValue: `function (args) {
+    exampleValue: {
+      __type__: "nunjucks",
+      __value__: `function (args) {
   const { x } = args;
   return x;
 }`,
+    },
   },
 };

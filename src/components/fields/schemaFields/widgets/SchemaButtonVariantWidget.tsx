@@ -78,7 +78,7 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
   schema,
 }) => {
-  const [{ value }, , { setValue }] = useField(name);
+  const [{ value }, , { setValue }] = useField<string>(name);
   const { options } = useMemo(
     () => mapSchemaToOptions({ schema, value }),
     [schema, value]

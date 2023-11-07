@@ -100,7 +100,9 @@ const EditorPane: React.VFC = () => {
         validateOnChange={false}
         validateOnBlur={true}
       >
-        {({ values: element }) => <EditorPaneContent element={element} />}
+        {({ values: element }) =>
+          console.log({ element }) || <EditorPaneContent element={element} />
+        }
       </Formik>
     </ErrorBoundary>
   );

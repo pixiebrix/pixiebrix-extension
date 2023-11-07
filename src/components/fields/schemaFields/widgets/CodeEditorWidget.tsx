@@ -19,12 +19,13 @@ import React, { Suspense } from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import AceEditor from "@/vendors/AceEditor";
 import { useField } from "formik";
+import { type Expression } from "@/types/runtimeTypes";
 
-const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
-  const [{ value }, , { setValue }] = useField(name);
+const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name }) => {
+  const [{ value }, , { setValue }] = useField<Expression | undefined>(name);
 
   const onChange = async (newValue: string) => {
-    await setValue(newValue);
+    await setValue({ ...value, __value__: newValue });
   };
 
   return (
@@ -33,7 +34,7 @@ const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
         name={name}
         mode="javascript"
         theme="chrome"
-        value={value}
+        value={value?.__value__ ?? ""}
         onChange={onChange}
         setOptions={{
           enableBasicAutocompletion: true,
@@ -44,4 +45,4 @@ const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
   );
 };
 
-export default CodeEditorWidget;
+export default React.memo(CodeEditorWidget);
