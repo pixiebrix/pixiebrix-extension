@@ -68,7 +68,6 @@
     "dompurify": "^3.0.6",
     "downloadjs": "^1.4.7",
     "escape-string-regexp": "^5.0.0",
-    "eslint-plugin-unicorn": "^48.0.1",
     "exifreader": "^4.16.0",
     "export-to-csv": "^1.2.1",
     "filenamify": "^6.0.0",

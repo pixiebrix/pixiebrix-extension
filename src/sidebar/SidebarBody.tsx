@@ -16,16 +16,18 @@
  */
 
 import React from "react";
+import ConnectedSidebar from "./ConnectedSidebar";
+import Header from "./Header";
+import ErrorBanner from "./ErrorBanner";
 
-import { render } from "@/sidebar/testHelpers";
-import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
-import { CancelError } from "@/errors/businessErrors";
+// Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
+// navigation in the SidebarApp
+const SidebarBody: React.FunctionComponent = () => (
+  <>
+    <ErrorBanner />
+    <Header />
+    <ConnectedSidebar />
+  </>
+);
 
-describe("RootCancelledPanel", () => {
-  it("should render", () => {
-    const { asFragment } = render(
-      <RootCancelledPanel error={new CancelError()} />
-    );
-    expect(asFragment()).toMatchSnapshot();
-  });
-});
+export default SidebarBody;
