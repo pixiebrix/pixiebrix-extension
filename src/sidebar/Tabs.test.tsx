@@ -17,11 +17,10 @@
 
 import React from "react";
 import Tabs from "@/sidebar/Tabs";
-import { render } from "@/sidebar/testHelpers";
+import { render, screen, within } from "@/sidebar/testHelpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
-import { screen, within } from "@testing-library/react";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
