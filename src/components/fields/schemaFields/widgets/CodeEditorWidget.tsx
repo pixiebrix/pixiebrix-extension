@@ -32,6 +32,7 @@ const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, ...props }) => {
     <Suspense fallback={<div className="text-muted">Loading...</div>}>
       <AceEditor
         name={name}
+        className="border"
         mode="javascript"
         theme="chrome"
         value={value}
