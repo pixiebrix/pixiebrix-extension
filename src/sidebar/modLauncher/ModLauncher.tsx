@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { Container } from "react-bootstrap";
+import { Container, Navbar } from "react-bootstrap";
 import useMods from "@/mods/useMods";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsList";
@@ -24,14 +24,22 @@ const ModLauncher: React.FunctionComponent = () => {
   const { mods, error } = useMods();
 
   return (
-    <div className="full-height h-100">
-      <Container className="scrollable-area">
-        {error ? (
-          <ErrorDisplay error={error} />
-        ) : (
-          <ActiveSidebarModsList mods={mods} />
-        )}
-      </Container>
+    <div className="d-flex flex-column h-100">
+      <div className="full-height flex-grow">
+        <Container className="scrollable-area">
+          {error ? (
+            <ErrorDisplay error={error} />
+          ) : (
+            <ActiveSidebarModsList mods={mods} />
+          )}
+        </Container>
+      </div>
+      <Navbar>
+        <a href="https://pixiebrix.com/developers-welcome">
+          Learn: Open the Page Editor
+        </a>{" "}
+        | <a href="https://docs.pixiebrix.com/">Documentation</a>
+      </Navbar>
     </div>
   );
 };
