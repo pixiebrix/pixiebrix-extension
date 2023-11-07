@@ -186,7 +186,6 @@
     "./extensionConsole/pages/mods/labels/SharingLabel.tsx",
     "./extensionConsole/pages/mods/listView/ListGroupHeader.tsx",
     "./extensionConsole/pages/onboarding/partner/partnerOnboardingUtils.ts",
-    "./extensionConsole/pages/settings/PrivacySettings.tsx",
     "./extensionConsole/pages/useRecipeIdParam.ts",
     "./extensionConsole/pages/workshop/workshopTypes.ts",
     "./extensionConsole/pages/workshop/workshopUtils.ts",

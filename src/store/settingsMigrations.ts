@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MigrationManifest } from "redux-persist/es/types";
+import { type MigrationManifest } from "redux-persist";
 
 /**
  * Migrations for the settings state based on the version found in the config.
