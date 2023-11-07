@@ -128,14 +128,19 @@ exports[`Tabs Mod Launcher renders with mod launcher 1`] = `
             </div>
           </div>
           <nav
-            class="navbar navbar-expand navbar-light"
+            class="justify-content-center navbar navbar-expand navbar-light"
           >
             <a
               href="https://pixiebrix.com/developers-welcome"
             >
               Learn: Open the Page Editor
             </a>
-             | 
+            <span
+              class="mx-2"
+            >
+              •
+            </span>
+             
             <a
               href="https://docs.pixiebrix.com/"
             >

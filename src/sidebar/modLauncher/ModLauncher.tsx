@@ -37,11 +37,12 @@ const ModLauncher: React.FunctionComponent = () => {
         </Container>
       </div>
       {!restrict("page-editor") && (
-        <Navbar>
+        <Navbar className="justify-content-center">
           <a href="https://pixiebrix.com/developers-welcome">
             Learn: Open the Page Editor
-          </a>{" "}
-          | <a href="https://docs.pixiebrix.com/">Documentation</a>
+          </a>
+          <span className="mx-2">•</span>{" "}
+          <a href="https://docs.pixiebrix.com/">Documentation</a>
         </Navbar>
       )}
     </div>
