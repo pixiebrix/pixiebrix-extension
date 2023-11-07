@@ -86,13 +86,15 @@ const AuthWidget: React.FunctionComponent<{
 
   integrationId: RegistryId;
 
+  isOptional?: boolean;
+
   authOptions: AuthOption[];
 
   /**
    * Callback to refresh the authOptions.
    */
   onRefresh: () => void;
-}> = ({ name, integrationId, authOptions, onRefresh }) => {
+}> = ({ name, integrationId, isOptional, authOptions, onRefresh }) => {
   const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
 
@@ -255,6 +257,7 @@ const AuthWidget: React.FunctionComponent<{
               <IntegrationAuthSelector
                 name={name}
                 serviceId={integrationId}
+                isOptional={isOptional}
                 authOptions={options}
                 CustomMenuList={CustomMenuList}
                 sanitizeConfigArgs={sanitizeConfigArgs}
