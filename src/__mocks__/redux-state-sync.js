@@ -15,17 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-
-import { render } from "@/sidebar/testHelpers";
-import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
-import { CancelError } from "@/errors/businessErrors";
-
-describe("RootCancelledPanel", () => {
-  it("should render", () => {
-    const { asFragment } = render(
-      <RootCancelledPanel error={new CancelError()} />
-    );
-    expect(asFragment()).toMatchSnapshot();
-  });
-});
+export const createStateSyncMiddleware = () => () => (next) => (action) =>
+  next(action);
