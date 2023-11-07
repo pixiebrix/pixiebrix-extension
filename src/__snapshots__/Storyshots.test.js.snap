@@ -9467,24 +9467,6 @@ exports[`Storyshots Widgets/CodeEditorWidget Default Function 1`] = `
 </form>
 `;
 
-exports[`Storyshots Widgets/CodeEditorWidget Empty 1`] = `
-<form
-  className=""
-  noValidate={true}
-  onSubmit={[Function]}
->
-  <div
-    id="example"
-    style={
-      {
-        "height": "250px",
-        "width": "auto",
-      }
-    }
-  />
-</form>
-`;
-
 exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
 [
   <div
