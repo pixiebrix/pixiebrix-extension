@@ -9477,8 +9477,8 @@ exports[`Storyshots Widgets/CodeEditorWidget Empty 1`] = `
     id="example"
     style={
       {
-        "height": "500px",
-        "width": "500px",
+        "height": "250px",
+        "width": "auto",
       }
     }
   />

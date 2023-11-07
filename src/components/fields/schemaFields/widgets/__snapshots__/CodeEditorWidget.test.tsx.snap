@@ -8,7 +8,7 @@ exports[`CodeEditorWidget renders the AceEditor 1`] = `
     <div
       class=" ace_editor ace_hidpi ace-chrome"
       id="function"
-      style="width: 500px; height: 500px; font-size: 12px;"
+      style="width: auto; height: 250px; font-size: 12px;"
     >
       <textarea
         aria-autocomplete="both"
@@ -42,7 +42,7 @@ exports[`CodeEditorWidget renders the AceEditor 1`] = `
           >
             <div
               class="ace_print-margin"
-              style="left: 4px; visibility: visible;"
+              style="left: 4px; visibility: hidden;"
             />
           </div>
           <div
