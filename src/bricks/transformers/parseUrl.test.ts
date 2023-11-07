@@ -25,7 +25,6 @@ describe("parseUrl", () => {
 
     // Use `toMatchInlineSnapshot` since we can't spread the URL instance to get its properties
     await expect(
-      // @ts-expect-error test data
       new UrlParser().transform(unsafeAssumeValidArg({ url: url.href }))
     ).resolves.toMatchInlineSnapshot(`
       {
@@ -49,7 +48,6 @@ describe("parseUrl", () => {
     // Use `toMatchInlineSnapshot` since we can't spread the URL instance to get its properties
     await expect(
       new UrlParser().transform(
-        // @ts-expect-error test data
         unsafeAssumeValidArg({
           url: "/api/foo/?bar=42",
           base: "https://www.example.com",
@@ -77,7 +75,6 @@ describe("parseUrl", () => {
 
   it("throws BusinessError for malformed URL", async () => {
     const promise = new UrlParser().transform(
-      // @ts-expect-error test data
       unsafeAssumeValidArg({ url: "42" })
     );
     await expect(promise).rejects.toThrow(BusinessError);
