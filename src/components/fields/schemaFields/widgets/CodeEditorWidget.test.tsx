@@ -21,6 +21,7 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from "@/pageEditor/testHelpers";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { userEvent } from "@testing-library/user-event";
 import { type JSONSchema7 } from "json-schema";
 import React from "react";
@@ -60,7 +61,7 @@ describe("CodeEditorWidget", () => {
   test("renders the AceEditor with default value", async () => {
     render(<CodeEditorWidget name={"function"} schema={schema} />, {
       initialValues: {
-        function: "function() {}",
+        function: makeTemplateExpression("nunjucks", "function() {}"),
       },
       onSubmit: onSubmitMock,
     });
@@ -71,7 +72,7 @@ describe("CodeEditorWidget", () => {
     // We can't assert on the value of the AceEditor because it is not rendered in the DOM
     // So we're checking the value stored in formik
     expect(onSubmitMock).toHaveBeenCalledWith(
-      { function: "function() {}" },
+      { function: makeTemplateExpression("nunjucks", "function() {}") },
       expect.anything()
     );
   });
@@ -83,7 +84,7 @@ describe("CodeEditorWidget", () => {
       <CodeEditorWidget name={"function"} schema={schema} />,
       {
         initialValues: {
-          function: "function() {}",
+          function: makeTemplateExpression("nunjucks", "function() {}"),
         },
         onSubmit: onSubmitMock,
       }
@@ -104,7 +105,7 @@ describe("CodeEditorWidget", () => {
     // We can't assert on the value of the AceEditor because it is not rendered in the DOM
     // So we're checking the value stored in formik
     expect(onSubmitMock).toHaveBeenCalledWith(
-      { function: "abcfunction() {}" },
+      { function: makeTemplateExpression("nunjucks", "abcfunction() {}") },
       expect.anything()
     );
   });
