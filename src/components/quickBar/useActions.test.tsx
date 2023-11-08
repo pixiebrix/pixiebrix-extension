@@ -23,9 +23,9 @@ import defaultActions from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 
-beforeAll(() => {
+beforeAll(async () => {
   // Ensure default actions are registered
-  initQuickBarApp();
+  await initQuickBarApp();
 });
 
 describe("useActions", () => {

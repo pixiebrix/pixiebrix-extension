@@ -102,7 +102,7 @@ describe("tourExtension", () => {
   });
 
   test("register tour with quick bar", async () => {
-    initQuickBarApp();
+    await initQuickBarApp();
 
     const extensionPoint = fromJS(
       starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })()

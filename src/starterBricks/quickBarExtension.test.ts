@@ -104,7 +104,7 @@ describe("quickBarExtension", () => {
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
 
     // Ensure default actions are registered
-    initQuickBarApp();
+    await initQuickBarApp();
 
     const starterBrick = fromJS(starterBrickFactory()());
 
