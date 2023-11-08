@@ -48,6 +48,14 @@ import { starterBrickConfigFactory as genericExtensionPointFactory } from "@/tes
 const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
+jest.mock("@/auth/token", () => ({
+  __esModule: true,
+  ...jest.requireActual("@/auth/token"),
+  readAuthData: jest.fn().mockResolvedValue({
+    flags: [],
+  }),
+}));
+
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   genericExtensionPointFactory({
     definition: define<QuickBarProviderDefinition>({
@@ -78,12 +86,12 @@ const extensionFactory = define<ResolvedModComponent<QuickBarProviderConfig>>({
 
 const rootReader = new RootReader();
 
-beforeAll(() => {
+beforeAll(async () => {
   const html = getDocument("<div></div>").body.innerHTML;
   document.body.innerHTML = html;
 
   // Ensure default actions are registered
-  initQuickBarApp();
+  await initQuickBarApp();
 });
 const NUM_DEFAULT_QUICKBAR_ACTIONS = defaultActions.length;
 

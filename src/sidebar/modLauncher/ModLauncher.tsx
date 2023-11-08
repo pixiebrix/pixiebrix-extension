@@ -23,7 +23,7 @@ import useFlags from "@/hooks/useFlags";
 
 const ModLauncher: React.FunctionComponent = () => {
   const { mods, error } = useMods();
-  const { restrict } = useFlags();
+  const { permit } = useFlags();
 
   return (
     <div className="d-flex flex-column h-100">
@@ -36,7 +36,7 @@ const ModLauncher: React.FunctionComponent = () => {
           )}
         </Container>
       </div>
-      {!restrict("page-editor") && (
+      {permit("page-editor") && (
         <Navbar className="justify-content-center">
           <a href="https://pixiebrix.com/developers-welcome">
             Learn: Open the Page Editor

@@ -40,8 +40,11 @@ import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
 import FocusLock from "react-focus-lock";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import defaultActions from "@/components/quickBar/defaultActions";
+import defaultActions, {
+  pageEditorAction,
+} from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import { flagOn } from "@/auth/token";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -177,7 +180,7 @@ export const QuickBarApp: React.FC = () => (
   </KBarProvider>
 );
 
-export const initQuickBarApp = once(() => {
+export const initQuickBarApp = once(async () => {
   expectContext("contentScript");
 
   // The QuickBarApp only lives in the top-level frame
@@ -188,6 +191,10 @@ export const initQuickBarApp = once(() => {
 
   for (const action of defaultActions) {
     quickBarRegistry.addAction(action);
+  }
+
+  if (!(await flagOn("page-editor"))) {
+    quickBarRegistry.addAction(pageEditorAction);
   }
 
   const container = document.createElement("div");
