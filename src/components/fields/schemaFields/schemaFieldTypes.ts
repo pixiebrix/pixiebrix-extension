@@ -28,6 +28,7 @@ export type CustomFieldToggleMode = {
 export type CustomWidgetRegistry = {
   SchemaButtonVariantWidget: React.VFC<SchemaFieldProps>;
   SchemaCustomEventWidget: React.VFC<SchemaFieldProps>;
+  CodeEditorWidget: React.VFC<SchemaFieldProps>;
 };
 
 export type CustomFieldDefinitions = {

@@ -22,10 +22,12 @@ import {
 } from "@/components/fields/schemaFields/schemaFieldTypes";
 import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
 import { SchemaCustomEventWidget } from "@/components/fields/schemaFields/widgets/SchemaCustomEventWidget";
+import CodeEditorWidget from "@/components/fields/schemaFields/widgets/CodeEditorWidget";
 
 export const customWidgets: CustomWidgetRegistry = {
   SchemaButtonVariantWidget,
   SchemaCustomEventWidget,
+  CodeEditorWidget,
 } as const;
 
 /**
