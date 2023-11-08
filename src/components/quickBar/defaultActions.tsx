@@ -20,7 +20,7 @@ import { type Action, Priority } from "kbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAppleAlt,
-  faEdit,
+  faBook,
   faInfoCircle,
   faStore,
   faUsers,
@@ -94,7 +94,7 @@ export const pageEditorAction: Action = {
   keywords: "mod, edit, page, page editor, editor, how to, open, learn",
   section: PIXIEBRIX_SECTION,
   priority: Priority.LOW,
-  icon: <FontAwesomeIcon icon={faEdit} fixedWidth />,
+  icon: <FontAwesomeIcon icon={faBook} fixedWidth />,
   perform() {
     window.location.href = "https://pixiebrix.com/developers-welcome";
   },
