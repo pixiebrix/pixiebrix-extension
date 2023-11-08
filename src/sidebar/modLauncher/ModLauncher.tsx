@@ -22,6 +22,8 @@ import useMods from "@/mods/useMods";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsList";
 import useFlags from "@/hooks/useFlags";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 const ModLauncher: React.FunctionComponent = () => {
   const { mods, error } = useMods();
@@ -40,7 +42,14 @@ const ModLauncher: React.FunctionComponent = () => {
       </div>
       {permit("page-editor") && (
         <Navbar className={styles.footer}>
-          <a href="https://pixiebrix.com/developers-welcome">
+          <a
+            href="https://pixiebrix.com/developers-welcome"
+            onClick={() => {
+              reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_LINK_CLICK, {
+                source: "ModLauncher",
+              });
+            }}
+          >
             Learn: Open the Page Editor
           </a>
           <span className="mx-2">•</span>{" "}

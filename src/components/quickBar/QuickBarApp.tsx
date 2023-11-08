@@ -208,12 +208,12 @@ export const initQuickBarApp = once(async () => {
 /**
  * Show the quick bar.
  */
-export const toggleQuickBar = () => {
+export const toggleQuickBar = async () => {
   // There's a race between when this method will run and when initQuickBarApp will be run from the quickbar
   // extension point. So, use autoShow to handle case where we call initQuickBarApp first, and dispatchEvent
   // for the case where QuickBarApp is already on the page
   autoShow = true;
-  initQuickBarApp();
+  await initQuickBarApp();
 
   window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
 };

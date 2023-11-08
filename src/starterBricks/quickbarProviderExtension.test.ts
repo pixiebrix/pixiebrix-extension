@@ -133,7 +133,7 @@ describe("quickBarProviderExtension", () => {
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
     await user.keyboard("[Ctrl] k");
-    toggleQuickBar();
+    await toggleQuickBar();
 
     await tick();
 
@@ -147,7 +147,7 @@ describe("quickBarProviderExtension", () => {
     );
 
     // Toggle off the quickbar
-    toggleQuickBar();
+    await toggleQuickBar();
     await waitForEffect();
   });
 
@@ -183,7 +183,7 @@ describe("quickBarProviderExtension", () => {
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
     await user.keyboard("[Ctrl] k");
-    toggleQuickBar();
+    await toggleQuickBar();
 
     await tick();
 
@@ -208,7 +208,7 @@ describe("quickBarProviderExtension", () => {
       NUM_DEFAULT_QUICKBAR_ACTIONS
     );
 
-    toggleQuickBar();
+    await toggleQuickBar();
     await tick();
   });
 
