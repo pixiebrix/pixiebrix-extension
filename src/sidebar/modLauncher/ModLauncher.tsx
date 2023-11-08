@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import styles from "./ModLauncher.module.scss";
+
 import React from "react";
 import { Container, Navbar } from "react-bootstrap";
 import useMods from "@/mods/useMods";
@@ -37,7 +39,7 @@ const ModLauncher: React.FunctionComponent = () => {
         </Container>
       </div>
       {permit("page-editor") && (
-        <Navbar className="justify-content-center">
+        <Navbar className={styles.footer}>
           <a href="https://pixiebrix.com/developers-welcome">
             Learn: Open the Page Editor
           </a>
