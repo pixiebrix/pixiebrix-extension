@@ -24,7 +24,7 @@ import {
 } from "@/types/sidebarTypes";
 import { ClosePanelAction } from "@/bricks/errors";
 import { CancelError } from "@/errors/businessErrors";
-import { type Except } from "type-fest";
+import { type Except, type SetOptional } from "type-fest";
 import { type Location } from "@/types/starterBrickTypes";
 import { isObject } from "@/utils/objectUtils";
 
@@ -47,10 +47,12 @@ export type RegisteredPanel = {
   /**
    * The panel entry, or undefined for placeholder panels
    */
-  entry?: Except<TemporaryPanelEntry, "type">;
+  entry: Except<TemporaryPanelEntry, "type">;
 };
 
-const panels = new Map<UUID, RegisteredPanel>();
+export type PlaceholderPanel = SetOptional<RegisteredPanel, "entry">;
+
+const panels = new Map<UUID, RegisteredPanel | PlaceholderPanel>();
 
 // Mapping from extensionId to active panel nonces
 const extensionNonces = new Map<UUID, Set<UUID>>();
@@ -61,12 +63,13 @@ const extensionNonces = new Map<UUID, Set<UUID>>();
 export function getTemporaryPanelSidebarEntries(): TemporaryPanelEntry[] {
   expectContext("contentScript");
 
-  return [...panels.entries()]
-    .filter(([, panel]) => panel.location === "panel")
-    .map(([nonce, panel]) => ({
+  return [...panels.values()]
+    .filter(
+      (panel): panel is RegisteredPanel =>
+        Boolean(panel.entry) && panel.location === "panel"
+    )
+    .map((panel) => ({
       type: "temporaryPanel",
-      extensionId: panel.extensionId,
-      nonce,
       ...panel.entry,
     }));
 }
@@ -84,6 +87,10 @@ export async function getPanelDefinition(
 
   if (!panel) {
     throw new Error("Panel definition not found");
+  }
+
+  if (!panel.entry) {
+    throw new Error("The panel is an empty placeholder");
   }
 
   return { type: "temporaryPanel", ...panel.entry };
@@ -147,11 +154,9 @@ export function registerEmptyTemporaryPanel({
     location,
   });
 
-  if (!extensionNonces.has(extensionId)) {
-    extensionNonces.set(extensionId, new Set());
-  }
-
-  extensionNonces.get(extensionId).add(nonce);
+  const set = extensionNonces.get(extensionId) ?? new Set();
+  extensionNonces.set(extensionId, set);
+  set.add(nonce);
 }
 
 /**
@@ -193,11 +198,9 @@ export async function waitForTemporaryPanel({
     registration,
   });
 
-  if (!extensionNonces.has(entry.extensionId)) {
-    extensionNonces.set(entry.extensionId, new Set());
-  }
-
-  extensionNonces.get(entry.extensionId).add(nonce);
+  const set = extensionNonces.get(extensionId) ?? new Set();
+  extensionNonces.set(extensionId, set);
+  set.add(nonce);
 
   onRegister?.();
 
@@ -210,9 +213,8 @@ export async function waitForTemporaryPanel({
  */
 function removePanelEntry(panelNonce: UUID): void {
   const panel = panels.get(panelNonce);
-  if (panel) {
-    const { extensionId } = panel.entry;
-    extensionNonces.get(extensionId).delete(panelNonce);
+  if (panel?.entry) {
+    extensionNonces.get(panel.entry.extensionId)?.delete(panelNonce);
   }
 
   panels.delete(panelNonce);

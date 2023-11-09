@@ -69,14 +69,11 @@ module.exports = {
         ],
       },
     ],
-    // TODO: Move to shared config
-    "@typescript-eslint/no-explicit-any": [
-      "error",
-      {
-        fixToUnknown: true,
-        ignoreRestArgs: true,
-      },
-    ],
+    // TODO: Gradually fix and then drop https://github.com/pixiebrix/eslint-config-pixiebrix/pull/150
+    "@typescript-eslint/no-unsafe-assignment": "warn",
+    "@typescript-eslint/no-unsafe-member-access": "warn",
+    "@typescript-eslint/no-unsafe-return": "warn",
+    "@typescript-eslint/no-unsafe-call": "warn",
     "no-restricted-syntax": [
       "error",
       {
@@ -94,7 +91,6 @@ module.exports = {
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/restrict-template-expressions": "warn",
-    "@typescript-eslint/no-non-null-assertion": "error", // TODO: Move to shared config
 
     // Enabled for the IDE, but it's disabled in the `lint` script
     "import/no-cycle": "warn",

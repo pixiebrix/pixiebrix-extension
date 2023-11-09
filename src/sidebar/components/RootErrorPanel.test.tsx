@@ -17,7 +17,7 @@
 
 import React from "react";
 
-import { render, screen } from "@testing-library/react";
+import { render, screen } from "@/sidebar/testHelpers";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 

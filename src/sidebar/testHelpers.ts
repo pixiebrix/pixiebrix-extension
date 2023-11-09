@@ -29,10 +29,7 @@ import { appApi } from "@/services/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
-import { createStateSyncMiddleware } from "redux-state-sync";
-import { sessionChangesStateSyncActions } from "@/store/sessionChanges/sessionChangesSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { defaultCreateStateSyncMiddlewareConfig } from "@/store/defaultMiddlewareConfig";
 
 export const configureStoreForTests = () =>
   configureStore({
@@ -50,13 +47,7 @@ export const configureStoreForTests = () =>
       return getDefaultMiddleware()
         .concat(appApi.middleware)
         .concat(modDefinitionsMiddleware)
-        .concat(sessionChangesMiddleware)
-        .concat(
-          createStateSyncMiddleware({
-            ...defaultCreateStateSyncMiddlewareConfig,
-            whitelist: sessionChangesStateSyncActions,
-          })
-        );
+        .concat(sessionChangesMiddleware);
     },
   });
 

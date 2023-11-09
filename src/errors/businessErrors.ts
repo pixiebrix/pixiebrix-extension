@@ -17,6 +17,7 @@
 
 import { truncate } from "lodash";
 import { type AxiosResponse } from "axios";
+import { type RegistryId } from "@/types/registryTypes";
 import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
 
 /**
@@ -116,13 +117,18 @@ export class InvalidSelectorError extends BusinessError {
 export class PropError extends BusinessError {
   override name = "PropError";
 
-  public readonly blockId: string;
+  public readonly blockId: RegistryId;
 
   public readonly prop: string;
 
   public readonly value: unknown;
 
-  constructor(message: string, blockId: string, prop: string, value: unknown) {
+  constructor(
+    message: string,
+    blockId: RegistryId,
+    prop: string,
+    value: unknown
+  ) {
     super(message);
     this.blockId = blockId;
     this.prop = prop;

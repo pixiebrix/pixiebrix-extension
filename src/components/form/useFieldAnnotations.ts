@@ -28,7 +28,7 @@ import {
   AnalysisAnnotationActionType,
 } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type FormikContextType } from "formik/dist/types";
+import { type FormikContextType } from "formik";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";

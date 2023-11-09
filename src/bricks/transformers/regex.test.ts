@@ -27,7 +27,6 @@ const transformer = new RegexTransformer();
 
 test("unmatched returns empty dict", async () => {
   const result = await transformer.transform(
-    // @ts-expect-error test data
     unsafeAssumeValidArg({
       regex: "(?<name>ABC)",
       input: "XYZ",
@@ -38,7 +37,6 @@ test("unmatched returns empty dict", async () => {
 
 test("matches name", async () => {
   const result = await transformer.transform(
-    // @ts-expect-error test data
     unsafeAssumeValidArg({
       regex: "(?<name>ABC)",
       input: "ABC",
@@ -49,7 +47,6 @@ test("matches name", async () => {
 
 test("ignore case", async () => {
   const result = await transformer.transform(
-    // @ts-expect-error test data
     unsafeAssumeValidArg({
       regex: "ab",
       input: "ABC",
@@ -61,7 +58,6 @@ test("ignore case", async () => {
 
 test("default case-sensitive", async () => {
   const result = await transformer.transform(
-    // @ts-expect-error test data
     unsafeAssumeValidArg({
       regex: "ab",
       input: "ABC",
@@ -72,7 +68,6 @@ test("default case-sensitive", async () => {
 
 test("handle multiple", async () => {
   const result = await transformer.transform(
-    // @ts-expect-error test data
     unsafeAssumeValidArg({
       regex: "(?<name>ABC)",
       input: ["ABC", "XYZ"],
@@ -85,7 +80,6 @@ test("invalid regex is business error", async () => {
   // https://stackoverflow.com/a/61232874/402560
 
   const promise = transformer.transform(
-    // @ts-expect-error test data
     unsafeAssumeValidArg({
       regex: "BOOM\\",
     })
@@ -101,7 +95,6 @@ test("invalid regex is business error", async () => {
 
 test("unnamed match group", async () => {
   const result = await transformer.transform(
-    // @ts-expect-error - test data
     unsafeAssumeValidArg({
       regex: "AB",
       input: "ABC",
@@ -115,7 +108,6 @@ test("unnamed match group", async () => {
 
 test("unmatched optional named match group", async () => {
   const result = await transformer.transform(
-    // @ts-expect-error - test data
     unsafeAssumeValidArg({
       regex: "(?<foo>AZ)?BC",
       input: "ABC",
@@ -130,7 +122,6 @@ test("unmatched optional named match group", async () => {
 
 test("matched optional named match group", async () => {
   const result = await transformer.transform(
-    // @ts-expect-error - test data
     unsafeAssumeValidArg({
       regex: "(?<foo>AZ)?BC",
       input: "AZBC",

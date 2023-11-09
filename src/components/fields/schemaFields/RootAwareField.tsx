@@ -22,7 +22,7 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { connect, getIn } from "formik";
 import { type FieldProps } from "@/components/form/FieldTemplate";
-import { type FormikContextType } from "formik/dist/types";
+import { type FormikContextType } from "formik";
 
 /**
  * Field used for backward compatible upgrade of DOM bricks to be root aware.

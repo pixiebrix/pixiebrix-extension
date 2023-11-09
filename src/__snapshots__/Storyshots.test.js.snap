@@ -683,10 +683,14 @@ exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
       className="py-2"
     >
       <div
-        className="text-muted"
-      >
-        Loading...
-      </div>
+        id="ace-editor"
+        style={
+          {
+            "height": "500px",
+            "width": "100%",
+          }
+        }
+      />
     </div>
   </div>
 </div>
@@ -9447,6 +9451,20 @@ exports[`Storyshots Sidebar/SaveButton Default 1`] = `
     />
   </svg>
 </button>
+`;
+
+exports[`Storyshots Widgets/CodeEditorWidget Default Function 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <div
+    className="text-muted"
+  >
+    Loading...
+  </div>
+</form>
 `;
 
 exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `

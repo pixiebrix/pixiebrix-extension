@@ -22,11 +22,11 @@ import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   type ContentType,
-  dataURItoBlob,
   detectContentType,
   writeTextToClipboard,
   writeToClipboard,
 } from "@/utils/clipboardUtils";
+import { convertDataUrl } from "@/utils/parseDataUrl";
 
 export class CopyToClipboard extends EffectABC {
   constructor() {
@@ -86,7 +86,7 @@ export class CopyToClipboard extends EffectABC {
         }
 
         try {
-          blob = dataURItoBlob(text);
+          blob = convertDataUrl(text, "Blob");
         } catch (error) {
           throw new BusinessError("Invalid image content", { cause: error });
         }

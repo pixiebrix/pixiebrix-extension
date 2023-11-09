@@ -65,9 +65,6 @@ export async function init(): Promise<void> {
   initTelemetry();
   initToaster();
 
-  // #5676 -- enable sandbox when ready to be used
-  // void initSandbox();
-
   await handleNavigate();
 
   void initSidebarActivation();

@@ -15,8 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderNunjucksTemplate } from "@/sandbox/messenger/executor";
-import { InvalidTemplateError } from "@/errors/businessErrors";
+import {
+  renderNunjucksTemplate,
+  runUserJs,
+} from "@/sandbox/messenger/executor";
+import {
+  BusinessError,
+  InvalidTemplateError,
+  PropError,
+} from "@/errors/businessErrors";
+import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 
 describe("renderNunjucksTemplate", () => {
   it("handles template", async () => {
@@ -55,5 +63,60 @@ describe("renderNunjucksTemplate", () => {
     ).rejects.toThrow(Error);
 
     jest.resetAllMocks();
+  });
+});
+
+describe("runUserJs", () => {
+  it("executes the user-defined code and returns the result", async () => {
+    await expect(
+      runUserJs({
+        code: "function () { return 1 + 1; };",
+        blockId: JavaScriptTransformer.BRICK_ID,
+      })
+    ).resolves.toBe(2);
+  });
+
+  it("executes the user-defined code with the data and returns the result", async () => {
+    await expect(
+      runUserJs({
+        code: "function (data) { return data.hello + ' world'; };",
+        data: { hello: "hello" },
+        blockId: JavaScriptTransformer.BRICK_ID,
+      })
+    ).resolves.toBe("hello world");
+  });
+
+  it("executes the user-defined code with the data and awaits the result if the code is an async function", async () => {
+    await expect(
+      runUserJs({
+        code: "async function (data) { return data.hello + ' world'; };",
+        data: { hello: "hello" },
+        blockId: JavaScriptTransformer.BRICK_ID,
+      })
+    ).resolves.toBe("hello world");
+  });
+
+  it("throws a PropError if the Function Constructor throws an error", async () => {
+    const malformedCode = "func() { return 1 + 1; };";
+
+    await expect(async () =>
+      runUserJs({
+        code: malformedCode,
+        data: {},
+        blockId: JavaScriptTransformer.BRICK_ID,
+      })
+    ).rejects.toThrow(PropError);
+  });
+
+  it("throws a Business error if the user-defined function throws an error", async () => {
+    const errorCode = "function () { throw new Error('test'); };";
+
+    await expect(async () =>
+      runUserJs({
+        code: errorCode,
+        data: {},
+        blockId: JavaScriptTransformer.BRICK_ID,
+      })
+    ).rejects.toThrow(BusinessError);
   });
 });
