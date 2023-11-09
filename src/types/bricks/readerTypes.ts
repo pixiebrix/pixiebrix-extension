@@ -36,7 +36,7 @@ export interface Reader extends Brick {
 export abstract class ReaderABC extends BrickABC implements Reader {
   readonly inputSchema: Schema = {};
 
-  override outputSchema: Schema = undefined;
+  override outputSchema: Schema | undefined = undefined;
 
   override async isRootAware(): Promise<boolean> {
     // Most readers use the root, so have them opt-out if they don't
