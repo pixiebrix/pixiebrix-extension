@@ -15,18 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
-
-import { addPostMessageListener } from "@/utils/postMessage";
-import {
-  renderHandlebarsTemplate,
-  renderNunjucksTemplate,
-  runUserJs,
-} from "./executor";
-
-export default function registerMessenger(): void {
-  addPostMessageListener("RENDER_NUNJUCKS", renderNunjucksTemplate);
-  addPostMessageListener("RENDER_HANDLEBARS", renderHandlebarsTemplate);
-  addPostMessageListener("RUN_USER_JS", runUserJs);
-  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
-}
+export const createStateSyncMiddleware = () => () => (next) => (action) =>
+  next(action);

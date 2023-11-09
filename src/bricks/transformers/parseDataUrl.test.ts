@@ -56,8 +56,7 @@ describe("parseDataUrl", () => {
 
     expect(result).toStrictEqual({
       mimeType: "image/png",
-      // FIXME: why is the encoding reported as "windows-1252"
-      encoding: "windows-1252",
+      encoding: "windows-1252", // `windows-1252` is ASCII, the default for data URLs
       body: base64,
     });
   });

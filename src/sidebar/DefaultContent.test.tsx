@@ -16,9 +16,7 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
+import { render, screen } from "@/sidebar/testHelpers";
 import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 import { authSlice } from "@/auth/authSlice";
@@ -26,46 +24,30 @@ import { type AuthState } from "@/auth/authTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
-function optionsStore(initialState?: {
-  extensions: ActivatedModComponent[];
-  auth: AuthState;
-}) {
-  return configureStore({
-    reducer: {
-      options: extensionsSlice.reducer,
-      auth: authSlice.reducer,
-    },
-    preloadedState: initialState ?? undefined,
-  });
-}
-
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
-    const state = {
-      extensions: [modComponentFactory() as ActivatedModComponent],
-      auth: { flags: [] } as AuthState,
-    };
-
-    render(
-      <Provider store={optionsStore(state)}>
-        <DefaultPanel />
-      </Provider>
-    );
+    render(<DefaultPanel />);
 
     expect(screen.getByText("Get started with PixieBrix")).not.toBeNull();
   });
 
   it("renders restricted user content", () => {
-    const state = {
-      extensions: [modComponentFactory() as ActivatedModComponent],
-      auth: { flags: ["restricted-marketplace"] } as AuthState,
-    };
+    render(<DefaultPanel />, {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.saveExtension({
+            extension: modComponentFactory() as ActivatedModComponent,
+            pushToCloud: false,
+          })
+        );
 
-    render(
-      <Provider store={optionsStore(state)}>
-        <DefaultPanel />
-      </Provider>
-    );
+        dispatch(
+          authSlice.actions.setAuth({
+            flags: ["restricted-marketplace"],
+          } as AuthState)
+        );
+      },
+    });
 
     expect(screen.getByText("No panels activated for the page")).not.toBeNull();
   });

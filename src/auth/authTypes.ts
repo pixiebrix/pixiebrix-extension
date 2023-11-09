@@ -158,7 +158,7 @@ export type OrganizationAuthState = {
   /**
    * The Automation Anywhere Control Room information
    */
-  readonly control_room?: Me["organization"]["control_room"];
+  readonly control_room?: NonNullable<Me["organization"]>["control_room"];
 };
 
 export type AuthUserOrganization = {

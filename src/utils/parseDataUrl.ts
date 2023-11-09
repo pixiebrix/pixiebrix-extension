@@ -16,6 +16,7 @@
  */
 
 import MIMEType from "whatwg-mimetype";
+import { base64ToString, base64ToUint8Array } from "uint8array-extras";
 
 import { safeParseUrl } from "@/utils/urlUtils";
 
@@ -52,9 +53,14 @@ interface ParsedDataURL {
    * @default "windows-1252"
    */
   charset: string;
+
+  /**
+   * Whether the body is base64-encoded
+   */
+  isBase64: boolean;
 }
 
-export default function parseDataUrl(url: string): ParsedDataURL | void {
+export default function parseDataUrl(url: string): ParsedDataURL | undefined {
   // Following https://fetch.spec.whatwg.org/#data-urls
   const { protocol, pathname } = safeParseUrl(url); // Step 2, 3, 4
   if (protocol !== "data:") {
@@ -80,7 +86,7 @@ export default function parseDataUrl(url: string): ParsedDataURL | void {
   let body = decodeURIComponent(encodedBody); // Step 10
   if (isBase64) {
     try {
-      body = atob(body); // Step 11.2
+      body = base64ToString(body); // Step 11.2
     } catch {
       return; // Step 11.3
     }
@@ -91,8 +97,36 @@ export default function parseDataUrl(url: string): ParsedDataURL | void {
   return {
     body,
     encodedBody,
+    isBase64,
     mimeType: String(parsedMimeType),
     mimeTypeEssence: parsedMimeType.essence,
     charset: parsedMimeType.parameters.get("charset") ?? "US-ASCII", // Step 14
   };
 }
+
+// Parse instead of using fetch to avoid potential CSP issues with data: URIs
+// https://stackoverflow.com/a/12300351
+function convertDataUrl(url: string, type: "Blob"): Blob;
+function convertDataUrl(url: string, type: "ArrayBuffer"): ArrayBuffer;
+function convertDataUrl(url: string, type: "ArrayBuffer" | "Blob"): unknown {
+  const parsed = parseDataUrl(url);
+  if (!parsed) {
+    throw new TypeError("Invalid data URI");
+  }
+
+  const { isBase64, mimeTypeEssence, encodedBody } = parsed;
+
+  if (!isBase64) {
+    throw new TypeError("Only base64 data URIs are supported");
+  }
+
+  const ia = base64ToUint8Array(encodedBody);
+
+  if (type === "ArrayBuffer") {
+    return ia.buffer;
+  }
+
+  return new Blob([ia], { type: mimeTypeEssence });
+}
+
+export { convertDataUrl };

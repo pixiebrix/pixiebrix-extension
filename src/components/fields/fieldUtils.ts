@@ -25,7 +25,8 @@ import { type Schema, type SchemaDefinition } from "@/types/schemaTypes";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 
 export function fieldLabel(name: string): string {
-  return name.split(".").at(-1);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Presumably the name is never empty, so there's always a "last item"
+  return name.split(".").at(-1)!;
 }
 
 type TypePredicate = (fieldDefinition: Schema) => boolean;
@@ -116,11 +117,11 @@ export const getValidationErrMessages = (
 ): Record<string, Record<string, string>> => {
   const errMessages: Record<string, Record<string, string>> = {};
 
-  if (!schema) {
+  if (!schema?.properties) {
     return errMessages;
   }
 
-  for (const [key, definition] of Object.entries(schema?.properties)) {
+  for (const [key, definition] of Object.entries(schema.properties)) {
     if (typeof definition === "boolean") {
       continue;
     }
