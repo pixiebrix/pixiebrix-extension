@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { zip } from "lodash";
 import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 
@@ -24,7 +23,7 @@ class ArrayCompositeReader extends ReaderABC {
 
   constructor(readers: Reader[]) {
     super(
-      undefined,
+      "virtual:composite-reader",
       "Array Composite Reader",
       "Combination of multiple readers"
     );
@@ -41,7 +40,7 @@ class ArrayCompositeReader extends ReaderABC {
 
     const properties = {};
     for (const reader of this._readers) {
-      Object.assign(properties, reader.outputSchema.properties);
+      Object.assign(properties, reader.outputSchema?.properties);
     }
 
     this.outputSchema = {
@@ -60,29 +59,35 @@ class ArrayCompositeReader extends ReaderABC {
 
   override async isPure(): Promise<boolean> {
     const availability = await Promise.all(
-      this._readers.map(async (x) => x.isPure())
+      this._readers.map(async (x) => x.isPure?.())
     );
     return availability.every(Boolean);
   }
 
   override async isRootAware(): Promise<boolean> {
     const awareness = await Promise.all(
-      this._readers.map(async (x) => x.isRootAware())
+      this._readers.map(async (x) => x.isRootAware?.())
     );
     return awareness.some(Boolean);
   }
 
   async read(root: HTMLElement | Document): Promise<JsonObject> {
-    let result = {};
-    const readResults = await Promise.all(
-      this._readers.map(async (x) => x.read(root))
-    );
-    for (const [reader, readerResult] of zip(this._readers, readResults)) {
-      console.debug(`ArrayCompositeReader:${reader.name}`, readerResult);
-      result = { ...result, ...readerResult };
-    }
+    const readResults = this._readers.map(async (reader) => {
+      const result = await reader.read(root);
+      console.debug(`ArrayCompositeReader:${reader.name}`, result);
+      return result;
+    });
 
-    return result;
+    return Object.assign({}, ...(await Promise.all(readResults)));
+
+    // TODO: Delete before PR merge. This is a version that preserves the order of the console
+    // const readResults = await Promise.all(
+    //   this._readers.map(async (reader) => [reader, await reader.read(root)] as const)
+    // );
+    // for (const [reader, readerResult] of readResults) {
+    //   console.debug(`ArrayCompositeReader:${reader.name}`, readerResult);
+    //   Object.assign(result, readerResult);
+    // }
   }
 }
 

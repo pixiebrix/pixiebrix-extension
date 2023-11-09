@@ -120,7 +120,7 @@ export type ModComponentBaseV1<Config extends UnknownObject = UnknownObject> = {
   /**
    * A human-readable label for the ModComponent.
    */
-  label: string | null;
+  label: string;
 
   /**
    * Default template engine when running the ModComponent.

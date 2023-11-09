@@ -4,6 +4,8 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/readers/ArrayCompositeReader.ts",
+    "./starterBricks/tourController.ts",
     "./__mocks__/@/components/DelayedRender.tsx",
     "./__mocks__/@/components/MarkdownInlineLazy.tsx",
     "./__mocks__/@/components/MarkdownLazy.tsx",
@@ -43,6 +45,7 @@
     "./bricks/effects/error.ts",
     "./bricks/effects/exportCsv.ts",
     "./bricks/effects/submitPanel.ts",
+    "./bricks/effects/telemetry.ts",
     "./bricks/effects/vue.ts",
     "./bricks/errors.ts",
     "./bricks/readers/BlankReader.ts",
@@ -230,6 +233,7 @@
     "./hooks/useTimeoutState.ts",
     "./hooks/useUndo.ts",
     "./hooks/useUpdatableAsyncState.ts",
+    "./hooks/useUserAction.ts",
     "./icons/Icon.tsx",
     "./icons/IconSelector.tsx",
     "./icons/getSvgIcon.ts",
@@ -364,6 +368,7 @@
     "./themes/light.ts",
     "./themes/themeTypes.ts",
     "./themes/themeUtils.ts",
+    "./tinyPages/devtools.ts",
     "./tours/tourRunDatabase.ts",
     "./types/annotationTypes.ts",
     "./types/brickTypes.ts",

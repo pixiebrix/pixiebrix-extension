@@ -23,7 +23,11 @@ class CompositeReader extends ReaderABC {
   private readonly _readers: Record<string, Reader>;
 
   constructor(readers: Record<string, Reader>) {
-    super(undefined, "Composite Reader", "Combination of multiple readers");
+    super(
+      "virtua:composite-reader",
+      "Composite Reader",
+      "Combination of multiple readers"
+    );
     this._readers = readers;
     this.outputSchema = {
       $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -45,7 +49,9 @@ class CompositeReader extends ReaderABC {
   override async isPure(): Promise<boolean> {
     const readerArray = Object.values(this._readers);
     // PERFORMANCE: could return quicker if any came back false using Promise.any
-    const purity = await Promise.all(readerArray.map(async (x) => x.isPure()));
+    const purity = await Promise.all(
+      readerArray.map(async (x) => x.isPure?.())
+    );
     return purity.every(Boolean);
   }
 
@@ -53,7 +59,7 @@ class CompositeReader extends ReaderABC {
     const readerArray = Object.values(this._readers);
     // PERFORMANCE: could return quicker if any came back true using Promise.any
     const awareness = await Promise.all(
-      readerArray.map(async (x) => x.isRootAware())
+      readerArray.map(async (x) => x.isRootAware?.())
     );
     return awareness.some(Boolean);
   }
