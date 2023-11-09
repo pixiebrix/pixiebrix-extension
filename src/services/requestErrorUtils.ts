@@ -26,6 +26,7 @@ import {
 } from "@/errors/networkErrorHelpers";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { assert } from "@/utils/typeUtils.js";
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
@@ -35,6 +36,9 @@ export function selectAbsoluteUrl({
   url,
   baseURL,
 }: AxiosRequestConfig): string {
+  assert(url, "axios: The URL was not provided");
+  assert(baseURL, "axios: The base URL was not provided");
+
   // Using AxiosRequestConfig since the actual request object doesn't seem to be available in all the places we
   // use this method
   return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
