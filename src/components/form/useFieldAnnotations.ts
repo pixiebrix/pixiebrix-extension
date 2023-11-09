@@ -90,7 +90,7 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
         .filter((x) => !ignoreAnalysisIds.includes(x.analysisId))
         // Annotations from redux can get out of sync with the current state of the field
         // Check that the value from redux matches the current formik value before showing
-        // See: TODO: add link to the PR that added this
+        // See: https://github.com/pixiebrix/pixiebrix-extension/pull/6846
         .filter((x) => {
           if (typeof x.detail === "object" && "expression" in x.detail) {
             return x.detail.expression === value;
