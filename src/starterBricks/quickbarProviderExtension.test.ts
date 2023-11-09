@@ -37,7 +37,9 @@ import {
   initQuickBarApp,
   toggleQuickBar,
 } from "@/components/quickBar/QuickBarApp";
-import defaultActions from "@/components/quickBar/defaultActions";
+import defaultActions, {
+  pageEditorAction,
+} from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
@@ -93,7 +95,8 @@ beforeAll(async () => {
   // Ensure default actions are registered
   await initQuickBarApp();
 });
-const NUM_DEFAULT_QUICKBAR_ACTIONS = defaultActions.length;
+const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
+  .length;
 
 describe("quickBarProviderExtension", () => {
   beforeEach(() => {

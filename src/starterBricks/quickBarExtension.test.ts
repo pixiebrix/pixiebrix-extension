@@ -44,10 +44,21 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import defaultActions, {
+  pageEditorAction,
+} from "@/components/quickBar/defaultActions";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
+
+jest.mock("@/auth/token", () => ({
+  __esModule: true,
+  ...jest.requireActual("@/auth/token"),
+  readAuthData: jest.fn().mockResolvedValue({
+    flags: [],
+  }),
+}));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<QuickBarDefinition>>({
@@ -95,7 +106,8 @@ beforeEach(() => {
   rootReader.ref = undefined;
 });
 
-const NUM_DEFAULT_QUICKBAR_ACTIONS = 5;
+const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
+  .length;
 
 describe("quickBarExtension", () => {
   it("quick bar smoke test", async () => {

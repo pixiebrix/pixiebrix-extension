@@ -30,7 +30,9 @@ import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
 import blockRegistry from "@/bricks/registry";
 import { isTourInProgress } from "@/starterBricks/tourController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import defaultActions from "@/components/quickBar/defaultActions";
+import defaultActions, {
+  pageEditorAction,
+} from "@/components/quickBar/defaultActions";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
@@ -38,6 +40,14 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 
 const rootReader = new RootReader();
+
+jest.mock("@/auth/token", () => ({
+  __esModule: true,
+  ...jest.requireActual("@/auth/token"),
+  readAuthData: jest.fn().mockResolvedValue({
+    flags: [],
+  }),
+}));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<TourDefinition>>({
@@ -79,6 +89,9 @@ beforeEach(() => {
   rootReader.readCount = 0;
   rootReader.ref = undefined;
 });
+
+const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
+  .length;
 
 describe("tourExtension", () => {
   test("install tour via Page Editor", async () => {
@@ -124,9 +137,11 @@ describe("tourExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      defaultActions.length + 1
+      NUM_DEFAULT_QUICKBAR_ACTIONS + 1
     );
     extensionPoint.uninstall();
-    expect(quickBarRegistry.currentActions).toHaveLength(defaultActions.length);
+    expect(quickBarRegistry.currentActions).toHaveLength(
+      NUM_DEFAULT_QUICKBAR_ACTIONS
+    );
   });
 });

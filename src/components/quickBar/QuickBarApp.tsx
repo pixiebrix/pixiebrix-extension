@@ -44,7 +44,7 @@ import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import { flagOn } from "@/auth/token";
+import { flagOn } from "@/auth/authUtils";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the

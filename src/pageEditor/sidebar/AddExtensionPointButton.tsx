@@ -18,7 +18,6 @@
 import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
-import { flagOn } from "@/auth/token";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
@@ -26,6 +25,7 @@ import useAddElement from "@/pageEditor/hooks/useAddElement";
 import { useSelector } from "react-redux";
 import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors";
 import { useAsyncState } from "@/hooks/common";
+import { flagOn } from "@/auth/authUtils";
 
 const sortedExtensionPoints = sortBy(
   [...ADAPTERS.values()],
