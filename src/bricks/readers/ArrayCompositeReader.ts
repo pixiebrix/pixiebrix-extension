@@ -79,15 +79,6 @@ class ArrayCompositeReader extends ReaderABC {
     });
 
     return Object.assign({}, ...(await Promise.all(readResults)));
-
-    // TODO: Delete before PR merge. This is a version that preserves the order of the console
-    // const readResults = await Promise.all(
-    //   this._readers.map(async (reader) => [reader, await reader.read(root)] as const)
-    // );
-    // for (const [reader, readerResult] of readResults) {
-    //   console.debug(`ArrayCompositeReader:${reader.name}`, readerResult);
-    //   Object.assign(result, readerResult);
-    // }
   }
 }
 

@@ -26,7 +26,7 @@ import {
 } from "@/errors/networkErrorHelpers";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import { assert } from "@/utils/typeUtils.js";
+import { assert } from "@/utils/typeUtils";
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
