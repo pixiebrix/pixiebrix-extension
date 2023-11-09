@@ -24,7 +24,7 @@ import pMemoize from "p-memoize";
 import { type JsonObject } from "type-fest";
 
 // Uses pMemoize to allow retries after a failure
-const loadSandbox = pMemoize(async () => {
+const loadSandbox = pMemoize(async (): Promise<Window> => {
   const iframe = await injectIframe(
     chrome.runtime.getURL("sandbox.html"),
     hiddenIframeStyle

@@ -21,10 +21,11 @@ import { type Schema } from "@/types/schemaTypes";
 export function isSchemaServicesFormat(
   services: ModComponentDefinition["services"]
 ): services is Schema {
-  return (
-    "properties" in services &&
-    typeof services.properties === "object" &&
-    "required" in services &&
-    Array.isArray(services.required)
+  return Boolean(
+    services &&
+      "properties" in services &&
+      typeof services.properties === "object" &&
+      "required" in services &&
+      Array.isArray(services.required)
   );
 }

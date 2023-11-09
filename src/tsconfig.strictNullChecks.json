@@ -18,6 +18,12 @@
     "./__mocks__/@/utils/injectScriptTag.ts",
     "./__mocks__/@/utils/injectStylesheet.ts",
     "./__mocks__/@uipath/robot.ts",
+    "./bricks/rootModeHelpers.ts",
+    "./modDefinitions/util/isSchemaServicesFormat.ts",
+    "./contentScript/pageState.ts",
+    "./store/settings/settingsSlice.ts",
+    "./sandbox/messenger/api.ts",
+
     "./activation/ActivationLink.tsx",
     "./activation/WizardValuesModIntegrationsContextAdapter.tsx",
     "./activation/wizardTypes.ts",
