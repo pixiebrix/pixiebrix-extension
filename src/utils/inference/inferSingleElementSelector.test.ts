@@ -16,7 +16,8 @@
  */
 
 import { SELECTOR_HINTS } from "@/utils/inference/siteSelectorHints";
-import { $safeFind, html } from "@/utils/domUtils";
+import { html } from "code-tag";
+import { $safeFind } from "@/utils/domUtils";
 import { siteSelectorHintFactory } from "@/testUtils/factories/selectorFactories";
 import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
 

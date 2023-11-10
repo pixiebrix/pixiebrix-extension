@@ -20,27 +20,14 @@ import { type Schema } from "@/types/schemaTypes";
 import axios from "axios";
 import { type JsonObject } from "type-fest";
 import { ensureJsonObject } from "@/utils/objectUtils";
+import { convertDataUrl } from "@/utils/parseDataUrl";
 
-function base64ToArrayBuffer(base64: string): ArrayBuffer {
-  // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
-  base64 = base64.replace(/^data:([^;]+);base64,/im, "");
-  const binary = atob(base64);
-  const length_ = binary.length;
-  const buffer = new ArrayBuffer(length_);
-  const view = new Uint8Array(buffer);
-  for (let i = 0; i < length_; i++) {
-    // eslint-disable-next-line security/detect-object-injection, unicorn/prefer-code-point -- is a numeric loop variable
-    view[i] = binary.charCodeAt(i);
-  }
-
-  return buffer;
-}
-
+// TODO: I think axios alone can handle all of this, or FileReader can handle both data and blob in a CSP-safe way
 async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
   // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L384
   if (/^data:/i.test(img.src)) {
     // Data URI
-    return base64ToArrayBuffer(img.src);
+    return convertDataUrl(img.src, "ArrayBuffer");
   }
 
   if (/^blob:/i.test(img.src)) {

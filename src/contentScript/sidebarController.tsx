@@ -371,7 +371,7 @@ export function reservePanels(refs: ModComponentRef[]): void {
         extensionId,
         extensionPointId,
         blueprintId,
-        heading: null,
+        heading: "",
         payload: null,
       };
 

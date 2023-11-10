@@ -30,7 +30,7 @@ import {
 import { JSDOM } from "jsdom";
 import { uniq } from "lodash";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/domConstants";
-import { html } from "@/utils/domUtils";
+import { html } from "code-tag";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- It's a global namespace
