@@ -17,6 +17,8 @@
 
 // extensionContext needs to be imported before webpack-target-webextension to
 // ensure the webpack path is correct
+// eslint-disable-next-line import/no-unassigned-import -- Automatic registration
+import "webext-inject-on-install";
 import "@/extensionContext";
 import "@/development/autoreload";
 import "@/development/errorsBadge";
