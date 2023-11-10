@@ -219,7 +219,7 @@ describe("ActivateRecipePanel", () => {
 
   it("activates recipe with optional integration dependency automatically and renders well-done page", async () => {
     const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
-    const { asFragment } = setupMocksAndRender({
+    setupMocksAndRender({
       extensionPoints: [
         modComponentDefinitionFactory({
           services: {
@@ -236,13 +236,14 @@ describe("ActivateRecipePanel", () => {
 
     await waitForEffect();
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByText("Well done", { exact: false })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
   });
 
   it("does not activate recipe automatically when one integration is required and one is not", async () => {
     const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
     const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
-    const { asFragment } = setupMocksAndRender({
+    setupMocksAndRender({
       extensionPoints: [
         modComponentDefinitionFactory({
           services: {
@@ -262,7 +263,15 @@ describe("ActivateRecipePanel", () => {
 
     await waitForEffect();
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(
+      screen.getByText(
+        "We're almost there. This mod has a few settings to configure before using.",
+        { exact: false }
+      )
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Finish Activating" })
+    ).toBeVisible();
   });
 
   it("renders well-done page for quick bar mod shortcut not configured", async () => {
