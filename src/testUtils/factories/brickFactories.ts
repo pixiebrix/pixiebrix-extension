@@ -29,6 +29,8 @@ export const brickFactory = define<Brick>({
   inputSchema: null as Schema,
   permissions: emptyPermissionsFactory(),
   run: jest.fn(),
+  isPure: jest.fn(),
+  isRootAware: jest.fn(),
 });
 
 export const brickConfigFactory = define<BrickConfig>({

@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { backgroundTarget as bg, messenger } from "webext-messenger";
+import { backgroundTarget as bg, getNotifier } from "webext-messenger";
 import { type Event } from "@/telemetry/events";
 import { type JsonObject } from "type-fest";
+
+// Local method to avoid calls outside reportEvent
+const _record = getNotifier("RECORD_EVENT", bg);
 
 /**
  * Report an event to the PixieBrix telemetry service, if the user doesn't have DNT set.
@@ -26,12 +29,5 @@ import { type JsonObject } from "type-fest";
 export default function reportEvent(event: Event, data: JsonObject = {}): void {
   // eslint-disable-next-line prefer-rest-params -- Needs `arguments` to avoid printing the default
   console.debug(...arguments);
-
-  messenger(
-    // Low-level direct API call to avoid calls outside reportEvent
-    "RECORD_EVENT",
-    { isNotification: true },
-    bg,
-    { event, data }
-  );
+  _record({ event, data });
 }

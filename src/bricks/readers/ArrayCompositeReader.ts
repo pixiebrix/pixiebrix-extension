@@ -23,7 +23,7 @@ class ArrayCompositeReader extends ReaderABC {
 
   constructor(readers: Reader[]) {
     super(
-      "virtual:composite-reader",
+      "@pixiebrix/array-composite-reader",
       "Array Composite Reader",
       "Combination of multiple readers"
     );
@@ -59,14 +59,14 @@ class ArrayCompositeReader extends ReaderABC {
 
   override async isPure(): Promise<boolean> {
     const availability = await Promise.all(
-      this._readers.map(async (x) => x.isPure?.())
+      this._readers.map(async (x) => x.isPure())
     );
     return availability.every(Boolean);
   }
 
   override async isRootAware(): Promise<boolean> {
     const awareness = await Promise.all(
-      this._readers.map(async (x) => x.isRootAware?.())
+      this._readers.map(async (x) => x.isRootAware())
     );
     return awareness.some(Boolean);
   }

@@ -33,6 +33,7 @@ import { noop } from "lodash";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
+import { type Event } from "@/telemetry/events";
 
 expectContext("sidebar");
 
@@ -78,7 +79,7 @@ declare global {
     ) => Promise<void>;
 
     RECORD_EVENT: (event: {
-      event: string;
+      event: Event;
       data: JsonObject | undefined;
     }) => Promise<void>;
   }

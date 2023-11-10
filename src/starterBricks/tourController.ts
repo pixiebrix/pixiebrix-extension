@@ -149,7 +149,7 @@ export function markTourStart(
     id: nonce,
     extensionId: extension.id,
     tourName: extension.label,
-    packageId: extension._recipe?.id,
+    packageId: extension._recipe?.id ?? null,
   });
 
   reportEvent(Events.TOUR_START, {
@@ -256,7 +256,8 @@ export async function registerTour({
   allowUserRun?: boolean;
   run: () => { promise: Promise<void>; abortController: AbortController };
 }): Promise<RegisteredTour> {
-  const blueprintTours = blueprintTourRegistry.get(blueprintId) ?? new Map();
+  const blueprintTours =
+    blueprintTourRegistry.get(blueprintId) ?? new Map<string, RegisteredTour>();
   blueprintTourRegistry.set(blueprintId, blueprintTours); // Insert if just created
 
   const context = selectEventData(extension);

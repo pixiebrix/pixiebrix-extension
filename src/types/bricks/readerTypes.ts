@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SetRequired, type JsonObject } from "type-fest";
+import { type SetRequired, type JsonObject } from "type-fest";
 import { BrickABC, type Brick } from "@/types/brickTypes";
 import { type BrickArgs, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";

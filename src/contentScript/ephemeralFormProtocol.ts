@@ -98,11 +98,16 @@ function unregisterForm(formNonce: UUID) {
 }
 
 export async function getFormDefinition(
-  nonce: UUID
-): Promise<FormDefinition | undefined> {
+  formNonce: UUID
+): Promise<FormDefinition> {
   expectContext("contentScript");
 
-  return forms.get(nonce)?.definition;
+  const form = forms.get(formNonce);
+  if (!form) {
+    throw new Error(`Form not registered: ${formNonce}`);
+  }
+
+  return form.definition;
 }
 
 export async function resolveForm(

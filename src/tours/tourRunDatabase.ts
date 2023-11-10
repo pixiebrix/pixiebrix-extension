@@ -37,7 +37,7 @@ type TourMetadata = {
   /**
    * The blueprint id containing the tour. Used to disambiguate tour names across browsers
    */
-  packageId?: RegistryId;
+  packageId: RegistryId | null;
   /**
    * The tour name.
    * - For tour extensions, the name of the extension

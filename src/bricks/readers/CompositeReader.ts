@@ -24,7 +24,7 @@ class CompositeReader extends ReaderABC {
 
   constructor(readers: Record<string, Reader>) {
     super(
-      "virtual:composite-reader",
+      "@pixiebrix/composite-reader",
       "Composite Reader",
       "Combination of multiple readers"
     );
