@@ -53,10 +53,14 @@ export default async function makeServiceContextFromDependencies(
 
   return resolveObj(
     Object.fromEntries(
-      dependencies.map((dependency) => [
-        `@${dependency.outputKey}`,
-        dependencyContext(dependency),
-      ])
+      dependencies.map((dependency) => {
+        const context =
+          dependency.configId || !dependency.isOptional
+            ? dependencyContext(dependency)
+            : null;
+
+        return [`@${dependency.outputKey}`, context];
+      })
     )
   );
 }
