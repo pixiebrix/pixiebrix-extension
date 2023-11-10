@@ -37,7 +37,9 @@ import {
   initQuickBarApp,
   toggleQuickBar,
 } from "@/components/quickBar/QuickBarApp";
-import defaultActions from "@/components/quickBar/defaultActions";
+import defaultActions, {
+  pageEditorAction,
+} from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
@@ -48,6 +50,14 @@ import { starterBrickConfigFactory as genericExtensionPointFactory } from "@/tes
 const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
+jest.mock("@/auth/token", () => ({
+  __esModule: true,
+  ...jest.requireActual("@/auth/token"),
+  readAuthData: jest.fn().mockResolvedValue({
+    flags: [],
+  }),
+}));
+
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   genericExtensionPointFactory({
     definition: define<QuickBarProviderDefinition>({
@@ -78,14 +88,15 @@ const extensionFactory = define<ResolvedModComponent<QuickBarProviderConfig>>({
 
 const rootReader = new RootReader();
 
-beforeAll(() => {
+beforeAll(async () => {
   const html = getDocument("<div></div>").body.innerHTML;
   document.body.innerHTML = html;
 
   // Ensure default actions are registered
-  initQuickBarApp();
+  await initQuickBarApp();
 });
-const NUM_DEFAULT_QUICKBAR_ACTIONS = defaultActions.length;
+const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
+  .length;
 
 describe("quickBarProviderExtension", () => {
   beforeEach(() => {
@@ -125,7 +136,7 @@ describe("quickBarProviderExtension", () => {
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
     await user.keyboard("[Ctrl] k");
-    toggleQuickBar();
+    await toggleQuickBar();
 
     await tick();
 
@@ -139,7 +150,7 @@ describe("quickBarProviderExtension", () => {
     );
 
     // Toggle off the quickbar
-    toggleQuickBar();
+    await toggleQuickBar();
     await waitForEffect();
   });
 
@@ -175,7 +186,7 @@ describe("quickBarProviderExtension", () => {
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
     await user.keyboard("[Ctrl] k");
-    toggleQuickBar();
+    await toggleQuickBar();
 
     await tick();
 
@@ -200,7 +211,7 @@ describe("quickBarProviderExtension", () => {
       NUM_DEFAULT_QUICKBAR_ACTIONS
     );
 
-    toggleQuickBar();
+    await toggleQuickBar();
     await tick();
   });
 
