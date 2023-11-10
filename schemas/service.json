@@ -185,7 +185,7 @@
                 },
                 "grantType": {
                   "type": "string",
-                  "const": "client_credentials"
+                  "enum": ["client_credentials"]
                 }
               },
               "additionalProperties": {
