@@ -18,7 +18,7 @@
 import pTimeout from "p-timeout";
 import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
-import { isScriptableUrl } from "webext-content-scripts";
+import { injectContentScript, isScriptableUrl } from "webext-content-scripts";
 
 type TabId = number;
 
