@@ -27,7 +27,7 @@ expectContext(
   "reportError requires access background messenger API"
 );
 
-// Local method to avoid calls outside reportError
+// Private method. Do not move to api.ts
 const _record = getNotifier("RECORD_ERROR", bg);
 
 interface ErrorReportOptions {

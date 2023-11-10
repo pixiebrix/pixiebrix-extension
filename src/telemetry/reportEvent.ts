@@ -19,7 +19,7 @@ import { backgroundTarget as bg, getNotifier } from "webext-messenger";
 import { type Event } from "@/telemetry/events";
 import { type JsonObject } from "type-fest";
 
-// Local method to avoid calls outside reportEvent
+// Private method. Do not move to api.ts
 const _record = getNotifier("RECORD_EVENT", bg);
 
 /**

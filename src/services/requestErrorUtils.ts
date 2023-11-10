@@ -35,13 +35,16 @@ import { assert } from "@/utils/typeUtils";
 export function selectAbsoluteUrl({
   url,
   baseURL,
-}: AxiosRequestConfig): string {
+}: // Using AxiosRequestConfig since the actual request object doesn't seem
+// to be available in all the places we use this method
+AxiosRequestConfig): string {
   assert(url, "axios: The URL was not provided");
-  assert(baseURL, "axios: The base URL was not provided");
+  if (isAbsoluteUrl(url)) {
+    return url;
+  }
 
-  // Using AxiosRequestConfig since the actual request object doesn't seem to be available in all the places we
-  // use this method
-  return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
+  assert(baseURL, "axios: The base URL was not provided");
+  return urljoin(baseURL, url);
 }
 
 export async function isAppUrl(url: string): Promise<boolean> {
