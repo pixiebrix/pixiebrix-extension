@@ -91,9 +91,6 @@ module.exports = {
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/restrict-template-expressions": "warn",
-
-    // Enabled on CI and in the IDE, but it's disabled in the local `lint` script because it's excessively slow
-    "import/no-cycle": "error",
   },
   overrides: [
     {
