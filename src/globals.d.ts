@@ -88,10 +88,6 @@ declare module "generate-schema" {
   const json: (title: string, obj: unknown) => UnknownObject;
 }
 
-// The package breaks Madge, so we have to include a patch in tsconfig, which breaks the @types package.
-// In the end, the types aren't even used.
-declare module "marked";
-
 // No types available
 declare module "@pixiebrix/jq-web";
 declare module "canvas-confetti";

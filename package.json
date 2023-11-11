@@ -5,7 +5,8 @@
   "scripts": {
     "test": "TZ=UTC jest",
     "test:watch": "TZ=UTC jest --watchAll",
-    "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives --rule '{\"import/no-cycle\": \"off\"}'",
+    "lint": "npm run lint:full -- --rule '{\"import/no-cycle\": \"off\"}'",
+    "lint:full": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
     "fix": "npm run lint -- --fix",
     "watch": "concurrently npm:watch:webpack 'npm:watch:*(!webpack) -- --preserveWatchOutput' -r",
     "watch:webpack": "ENV_FILE='.env.development' webpack --mode development --watch",
@@ -18,8 +19,7 @@
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "storybook dev -p 6006 -s public",
-    "build-storybook": "storybook build",
-    "madge:circular": "madge --extensions js,ts,tsx --circular src/** --ts-config tsconfig.json"
+    "build-storybook": "storybook build"
   },
   "engine-strict": true,
   "engines": {
@@ -214,6 +214,7 @@
     "@types/json-stringify-safe": "^5.0.2",
     "@types/lodash": "^4.14.200",
     "@types/mark.js": "^8.11.10",
+    "@types/marked": "^6.0.0",
     "@types/mustache": "^4.2.4",
     "@types/nunjucks": "^3.2.5",
     "@types/object-hash": "^2.1.1",

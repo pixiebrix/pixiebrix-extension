@@ -93,7 +93,7 @@ module.exports = {
     "@typescript-eslint/restrict-template-expressions": "warn",
 
     // Enabled for the IDE, but it's disabled in the `lint` script
-    "import/no-cycle": "warn",
+    "import/no-cycle": "error",
   },
   overrides: [
     {
