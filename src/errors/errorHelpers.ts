@@ -39,10 +39,6 @@ import {
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
-export function logTest() {
-  console.log("test", isSchemaValidationError);
-}
-
 /**
  * Errors to ignore unless they've caused extension point install or brick execution to fail.
  *
