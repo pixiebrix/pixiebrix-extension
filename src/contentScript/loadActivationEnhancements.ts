@@ -23,10 +23,6 @@
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { loadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 
-import { getMethod } from "webext-messenger";
-
-console.log({ contentScript: getMethod });
-
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
 
