@@ -25,6 +25,9 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickArgsContext } from "@/types/runtimeTypes";
 import { isObject } from "@/utils/objectUtils";
+import { logTest } from "@/errors/errorHelpers";
+
+setTimeout(logTest, 100);
 
 export class PipelineConfigurationError extends BusinessError {
   override name = "PipelineConfigurationError";
