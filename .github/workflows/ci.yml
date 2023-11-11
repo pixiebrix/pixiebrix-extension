@@ -82,13 +82,15 @@ jobs:
           if-no-files-found: error
 
       # The polyfill cannot be used outside the extension context
-      - run: "! grep 'loaded in a browser extension' dist/pageScript.js --quiet"
+      - run: "! grep 'loaded in a browser extension' dist/pageScript.js --files-with-matches"
         name: Detect browser-polyfill in pageScript.js
 
       # The messenger cannot be executed twice; only load it in contentScriptCore
       # https://github.com/pixiebrix/webext-messenger/issues/88
-      - run: "! grep '__getTabData' dist/loadActivationEnhancements.js dist/contentScript.js --quiet"
-        name: Detect webext-messenger in loadActivationEnhancements.js and dist/contentScript.js
+      # - contentScript.js can't have it because the file could be injected multiple times, guarding contentScriptCore
+      # - loadActivationEnhancements.js can't have it because it's always loaded alongside contentScript.js
+      - run: "! grep '__getTabData' dist/loadActivationEnhancements.js dist/contentScript.js --files-with-matches"
+        name: Detect webext-messenger unwanted bundles
 
       - uses: actions/upload-artifact@v3
         name: Save report.html
