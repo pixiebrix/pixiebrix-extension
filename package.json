@@ -199,7 +199,7 @@
     "@types/gapi": "0.0.46",
     "@types/gapi.client.oauth2": "^2.0.3",
     "@types/gapi.client.sheets-v4": "^0.0.3",
-    "@types/google.picker": "0.0.41",
+    "@types/google.picker": "0.0.42",
     "@types/holderjs": "^2.9.3",
     "@types/html-to-text": "^9.0.3",
     "@types/iframe-resizer": "^3.5.11",
