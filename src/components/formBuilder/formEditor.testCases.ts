@@ -258,6 +258,9 @@ export const initRenamingCases = () => {
         uiSchema: {
           "ui:order": [newFieldName, "*"],
           [newFieldName]: {
+            "ui:options": {
+              submitOnEnter: false,
+            },
             "ui:widget": "textarea",
           },
         },
