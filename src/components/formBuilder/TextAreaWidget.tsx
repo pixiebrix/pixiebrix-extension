@@ -23,7 +23,7 @@ import React, {
 } from "react";
 import { type WidgetProps } from "@rjsf/core";
 import { isNumber } from "lodash";
-import { RjsfSubmitContext } from "@/bricks/renderers/CustomFormComponent";
+import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,

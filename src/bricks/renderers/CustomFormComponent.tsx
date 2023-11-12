@@ -31,6 +31,7 @@ import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
+import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 
 const fields = {
   DescriptionField,
@@ -41,12 +42,6 @@ const uiWidgets = {
   SelectWidget: RjsfSelectWidget,
   TextareaWidget: TextAreaWidget,
 };
-
-export const RjsfSubmitContext = React.createContext<{
-  submitForm: () => Promise<void>;
-}>({
-  async submitForm() {},
-});
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
