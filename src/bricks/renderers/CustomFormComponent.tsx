@@ -82,7 +82,6 @@ const CustomFormComponent: React.FunctionComponent<{
           }}
         >
           <JsonSchemaForm
-            action={""}
             schema={schema}
             uiSchema={uiSchema}
             formData={formData}
