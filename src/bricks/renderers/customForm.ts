@@ -199,6 +199,8 @@ export class CustomFormRenderer extends RendererABC {
     }>,
     { logger }: BrickOptions
   ): Promise<ComponentRef> {
+    console.log("*** customForm render()", { uiSchema });
+
     if (logger.context.extensionId == null) {
       throw new Error("extensionId is required");
     }

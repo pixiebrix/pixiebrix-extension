@@ -349,6 +349,15 @@ const FieldEditor: React.FC<{
         />
       )}
 
+      {uiType.uiWidget === "textarea" && (
+        <SchemaField
+          name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
+          schema={{ type: "boolean" }}
+          label="Submit on Enter? (Shift+Enter for new line)"
+          isRequired
+        />
+      )}
+
       <FieldTemplate
         name={`${name}.schema.required`}
         label="Required Field?"
