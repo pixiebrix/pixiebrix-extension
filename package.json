@@ -208,7 +208,7 @@
     "@types/jquery": "^3.5.25",
     "@types/js-beautify": "^1.14.3",
     "@types/js-cookie": "^3.0.5",
-    "@types/js-yaml": "^4.0.8",
+    "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^21.1.4",
     "@types/json-schema": "^7.0.15",
     "@types/json-stringify-safe": "^5.0.2",
