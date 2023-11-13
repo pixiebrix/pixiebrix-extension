@@ -90,10 +90,12 @@ const FormRendererOptions: React.FC<{
   );
 
   const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
-  const [{ value: hideSubmitButton }] = useField<boolean>(
-    makeName("hideSubmitButton")
+  const hideSubmitButtonName = makeName(
+    "uiSchema",
+    "ui:submitButtonOptions",
+    "norender"
   );
-
+  const [{ value: hideSubmitButton }] = useField<boolean>(hideSubmitButtonName);
   const [{ value: storage }, , { setValue: setStorageValue }] =
     useField<Storage>(makeName("storage"));
   const storageType = storage?.type;
@@ -189,10 +191,14 @@ const FormRendererOptions: React.FC<{
       {!autoSave && (
         <>
           <SchemaField
-            name={makeName("hideSubmitButton")}
-            schema={
-              customFormRendererSchema.properties.hideSubmitButton as Schema
-            }
+            name={hideSubmitButtonName}
+            schema={{
+              type: "boolean",
+              title: "Hide Submit Button?",
+              description:
+                "Toggle on to hide the submit button. Caution: when using this option, you must also enable either autoSave or submit-on-enter so that the form can still be submitted.",
+              default: false,
+            }}
           />
 
           {!hideSubmitButton && (

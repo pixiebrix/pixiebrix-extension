@@ -128,13 +128,6 @@ export const customFormRendererSchema = {
         "Toggle on to automatically save/submit the form on change. If enabled, form will not display a submit button.",
       default: false,
     },
-    hideSubmitButton: {
-      type: "boolean",
-      title: "Hide Submit Button?",
-      description:
-        "Toggle on to hide the submit button. Caution: when using this option, you must also enable either autoSave or submit-on-enter so that the form can still be submitted.",
-      default: false,
-    },
     submitCaption: {
       type: "string",
       description: "The submit button caption (default='Submit')",
@@ -192,7 +185,6 @@ export class CustomFormRenderer extends RendererABC {
       uiSchema,
       autoSave = false,
       successMessage,
-      hideSubmitButton = false,
       submitCaption = "Submit",
       className,
     }: BrickArgs<{
@@ -200,7 +192,6 @@ export class CustomFormRenderer extends RendererABC {
       successMessage?: string;
       recordId?: string | null;
       autoSave?: boolean;
-      hideSubmitButton?: boolean;
       submitCaption?: string;
       schema: Schema;
       uiSchema?: UiSchema;
@@ -252,7 +243,6 @@ export class CustomFormRenderer extends RendererABC {
         schema,
         uiSchema,
         autoSave,
-        hideSubmitButton,
         submitCaption,
         className,
         async onSubmit(values: JsonObject) {
