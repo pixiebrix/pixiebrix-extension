@@ -46,6 +46,7 @@ const uiWidgets = {
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
   uiSchema: UiSchema;
+  hideSubmitButton: boolean;
   submitCaption: string;
   formData: JsonObject;
   autoSave: boolean;
@@ -54,6 +55,7 @@ const CustomFormComponent: React.FunctionComponent<{
 }> = ({
   schema,
   uiSchema,
+  hideSubmitButton,
   submitCaption,
   formData,
   autoSave,
@@ -92,7 +94,7 @@ const CustomFormComponent: React.FunctionComponent<{
               await onSubmit(formData);
             }}
           >
-            {autoSave ? (
+            {autoSave || hideSubmitButton ? (
               <div />
             ) : (
               <div>

@@ -90,6 +90,9 @@ const FormRendererOptions: React.FC<{
   );
 
   const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
+  const [{ value: hideSubmitButton }] = useField<boolean>(
+    makeName("hideSubmitButton")
+  );
 
   const [{ value: storage }, , { setValue: setStorageValue }] =
     useField<Storage>(makeName("storage"));
@@ -184,11 +187,24 @@ const FormRendererOptions: React.FC<{
       />
 
       {!autoSave && (
-        <SchemaField
-          name={makeName("submitCaption")}
-          label="Submit Caption"
-          schema={customFormRendererSchema.properties.submitCaption as Schema}
-        />
+        <>
+          <SchemaField
+            name={makeName("hideSubmitButton")}
+            schema={
+              customFormRendererSchema.properties.hideSubmitButton as Schema
+            }
+          />
+
+          {!hideSubmitButton && (
+            <SchemaField
+              name={makeName("submitCaption")}
+              label="Submit Caption"
+              schema={
+                customFormRendererSchema.properties.submitCaption as Schema
+              }
+            />
+          )}
+        </>
       )}
 
       <SchemaField
