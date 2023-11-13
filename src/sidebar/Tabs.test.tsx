@@ -84,6 +84,7 @@ jest.mock("@/contentScript/messenger/api", () => ({
 
 describe("Tabs", () => {
   const panel = sidebarEntryFactory("panel");
+  const panel2 = sidebarEntryFactory("panel");
 
   test("renders", () => {
     const { asFragment } = render(<Tabs />);
@@ -106,7 +107,7 @@ describe("Tabs", () => {
       })
     );
 
-    test("renders with mod launcher", async () => {
+    test("renders with mod launcher visible if there are no other visible mods", async () => {
       const { asFragment } = await setupPanelsAndRender({
         sidebarEntries: {
           staticPanels: [MOD_LAUNCHER],
@@ -132,6 +133,14 @@ describe("Tabs", () => {
       ).toBeInTheDocument();
     });
 
+    test("mod launcher is closed by default if there are other open panels", async () => {
+      await setupPanelsAndRender({
+        sidebarEntries: { staticPanels: [MOD_LAUNCHER], panels: [panel] },
+      });
+
+      expect(screen.queryByText("Mods")).not.toBeInTheDocument();
+    });
+
     test("can close the mod launcher", async () => {
       await setupPanelsAndRender({
         sidebarEntries: {
@@ -139,6 +148,10 @@ describe("Tabs", () => {
           staticPanels: [MOD_LAUNCHER],
         },
       });
+
+      await userEvent.click(
+        screen.getByRole("button", { name: "open mod launcher" })
+      );
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
@@ -159,15 +172,9 @@ describe("Tabs", () => {
         },
       });
 
-      expect(screen.getByText("Mods")).toBeInTheDocument();
-
-      within(screen.getByRole("tab", { name: /mods/i }))
-        .getByRole("button", { name: "Close" })
-        .click();
-
-      expect(screen.queryByText("Mods")).not.toBeInTheDocument();
-
-      screen.getByRole("button", { name: "open mod launcher" }).click();
+      await userEvent.click(
+        screen.getByRole("button", { name: "open mod launcher" })
+      );
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
     });
@@ -193,6 +200,11 @@ describe("Tabs", () => {
           staticPanels: [MOD_LAUNCHER],
         },
       });
+
+      await userEvent.click(
+        screen.getByRole("button", { name: "open mod launcher" })
+      );
+
       await userEvent.click(
         within(screen.getByRole("tab", { name: /panel test 1/i })).getByRole(
           "button",
@@ -240,7 +252,7 @@ describe("Tabs", () => {
     test("can open a closed panel when mod launcher is available", async () => {
       await setupPanelsAndRender({
         sidebarEntries: {
-          panels: [panel],
+          panels: [panel, panel2],
           staticPanels: [MOD_LAUNCHER],
         },
       });
@@ -256,7 +268,9 @@ describe("Tabs", () => {
         screen.queryByRole("tab", { name: /panel test 1/i })
       ).not.toBeInTheDocument();
 
-      await waitForEffect();
+      await userEvent.click(
+        screen.getByRole("button", { name: "open mod launcher" })
+      );
 
       await userEvent.click(
         await screen.findByRole("heading", { name: /panel test 1/i })
@@ -411,27 +425,6 @@ describe("Tabs", () => {
 
   describe("Activation Panels", () => {
     const activatePanel = sidebarEntryFactory("activateMods");
-
-    test("close the activation panel and make mod launcher active", async () => {
-      await setupPanelsAndRender({
-        sidebarEntries: {
-          staticPanels: [MOD_LAUNCHER],
-          modActivationPanel: activatePanel,
-        },
-      });
-
-      within(screen.getByRole("tab", { name: /activate mods test 1/i }))
-        .getByRole("button", { name: "Close" })
-        .click();
-
-      expect(
-        screen.queryByRole("tab", { name: /activate mods test 1/i })
-      ).not.toBeInTheDocument();
-
-      expect(screen.queryByRole("tab", { name: /mods/i })).toHaveClass(
-        "active"
-      );
-    });
 
     test("closing the activation panel hides sidebar if it's the only open panel", async () => {
       hideSidebarSpy.mockReset();
