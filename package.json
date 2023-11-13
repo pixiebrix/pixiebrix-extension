@@ -200,7 +200,7 @@
     "@types/gapi.client.oauth2": "^2.0.3",
     "@types/gapi.client.sheets-v4": "^0.0.3",
     "@types/google.picker": "0.0.42",
-    "@types/holderjs": "^2.9.3",
+    "@types/holderjs": "^2.9.4",
     "@types/html-to-text": "^9.0.3",
     "@types/iframe-resizer": "^3.5.11",
     "@types/intro.js": "^5.1.4",
