@@ -232,7 +232,7 @@
     "@types/redux-state-sync": "^3.1.9",
     "@types/semver": "^7.5.4",
     "@types/sinonjs__fake-timers": "^8.1.5",
-    "@types/uuid": "^9.0.6",
+    "@types/uuid": "^9.0.7",
     "@types/webextension-polyfill": "^0.10.6",
     "@types/webpack": "^5.28.5",
     "@types/webpack-env": "^1.18.3",
