@@ -17,7 +17,7 @@
 
 import React from "react";
 import Tabs from "@/sidebar/Tabs";
-import { render, screen, waitFor, within } from "@/sidebar/testHelpers";
+import { render, screen, within } from "@/sidebar/testHelpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
