@@ -117,6 +117,10 @@ describe("runUserJs", () => {
         data: {},
         blockId: JavaScriptTransformer.BRICK_ID,
       })
-    ).rejects.toThrow(BusinessError);
+    ).rejects.toThrow(
+      new BusinessError("Error running user-defined JavaScript", {
+        cause: new Error("test"),
+      })
+    );
   });
 });

@@ -18,6 +18,7 @@
 import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
 import { type UUID } from "@/types/stringTypes";
+import { readAuthData } from "@/auth/token";
 
 // Used by the app
 export function selectOrganizations(
@@ -108,4 +109,13 @@ export function selectExtensionAuthState({
     partner,
     enforceUpdateMillis,
   };
+}
+
+/**
+ * Returns true if the specified flag is on for the current user.
+ * @param flag the feature flag to check
+ */
+export async function flagOn(flag: string): Promise<boolean> {
+  const authData = await readAuthData();
+  return authData.flags?.includes(flag);
 }

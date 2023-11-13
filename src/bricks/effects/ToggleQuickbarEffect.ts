@@ -41,7 +41,7 @@ class ToggleQuickbarEffect extends EffectABC {
       "@/components/quickBar/QuickBarApp"
     );
 
-    toggleQuickBar();
+    await toggleQuickBar();
   }
 }
 

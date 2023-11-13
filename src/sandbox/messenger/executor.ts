@@ -89,7 +89,9 @@ export async function runUserJs({
 
   try {
     return userFunction(context);
-  } catch {
-    throw new BusinessError("Error running user-defined JavaScript");
+  } catch (error) {
+    throw new BusinessError("Error running user-defined JavaScript", {
+      cause: error,
+    });
   }
 }

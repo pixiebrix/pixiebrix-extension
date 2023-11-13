@@ -147,7 +147,6 @@
     "./components/formBuilder/schemaFieldNames.ts",
     "./components/pagination/Pagination.tsx",
     "./components/quickBar/QuickBarResults.tsx",
-    "./components/quickBar/defaultActions.tsx",
     "./components/quickBar/quickBarRegistry.ts",
     "./components/quickBar/quickBarTheme.tsx",
     "./components/quickBar/quickbarTypes.ts",
