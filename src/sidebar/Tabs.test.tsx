@@ -17,7 +17,7 @@
 
 import React from "react";
 import Tabs from "@/sidebar/Tabs";
-import { render, screen, within } from "@/sidebar/testHelpers";
+import { render, screen, waitFor, within } from "@/sidebar/testHelpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
@@ -97,6 +97,15 @@ describe("Tabs", () => {
   });
 
   describe("Mod Launcher", () => {
+    (messengerApi.getReservedSidebarEntries as jest.Mock).mockImplementation(
+      () => ({
+        panels: [],
+        temporaryPanels: [],
+        forms: [],
+        modActivationPanel: null,
+      })
+    );
+
     test("renders with mod launcher", async () => {
       const { asFragment } = await setupPanelsAndRender({
         sidebarEntries: {
@@ -176,6 +185,29 @@ describe("Tabs", () => {
 
       expect(screen.getAllByText("Mods")).toHaveLength(1);
     });
+
+    test("opening a panel from the mod launcher closes the mod launcher", async () => {
+      await setupPanelsAndRender({
+        sidebarEntries: {
+          panels: [panel],
+          staticPanels: [MOD_LAUNCHER],
+        },
+      });
+      await userEvent.click(
+        within(screen.getByRole("tab", { name: /panel test 1/i })).getByRole(
+          "button",
+          { name: "Close" }
+        )
+      );
+
+      expect(screen.getByText("Mods")).toBeInTheDocument();
+
+      await userEvent.click(
+        await screen.findByRole("heading", { name: /panel test 1/i })
+      );
+
+      expect(screen.queryByText("Mods")).not.toBeInTheDocument();
+    });
   });
 
   describe("Persistent Panels", () => {
@@ -213,9 +245,12 @@ describe("Tabs", () => {
         },
       });
 
-      within(screen.getByRole("tab", { name: /panel test 1/i }))
-        .getByRole("button", { name: "Close" })
-        .click();
+      await userEvent.click(
+        within(screen.getByRole("tab", { name: /panel test 1/i })).getByRole(
+          "button",
+          { name: "Close" }
+        )
+      );
 
       expect(
         screen.queryByRole("tab", { name: /panel test 1/i })
@@ -223,7 +258,9 @@ describe("Tabs", () => {
 
       await waitForEffect();
 
-      screen.getByRole("heading", { name: /panel test 1/i }).click();
+      await userEvent.click(
+        await screen.findByRole("heading", { name: /panel test 1/i })
+      );
 
       expect(
         screen.getByRole("tab", { name: /panel test 1/i })
