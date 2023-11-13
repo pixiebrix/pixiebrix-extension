@@ -16,6 +16,7 @@
  */
 
 import React, {
+  type ChangeEventHandler,
   type FocusEventHandler,
   type KeyboardEventHandler,
   useCallback,
@@ -64,6 +65,13 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
     [id, onBlur]
   );
 
+  const onChangeHandler = useCallback<ChangeEventHandler<HTMLTextAreaElement>>(
+    (event) => {
+      onChange(event.target.value);
+    },
+    [onChange]
+  );
+
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
   return (
     <textarea
@@ -76,9 +84,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
       readOnly={readonly}
       rows={isNumber(options.rows) ? options.rows : undefined}
       onKeyPress={onKeyPress}
-      onChange={(event) => {
-        onChange(event.target.value);
-      }}
+      onChange={onChangeHandler}
       onFocus={onFocusHandler}
       onBlur={onBlurHandler}
     />
