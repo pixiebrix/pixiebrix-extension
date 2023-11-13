@@ -19,7 +19,8 @@ import { datadogRum } from "@datadog/browser-rum";
 import { getDNT } from "@/telemetry/dnt";
 import { getBaseURL } from "@/services/baseService";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { flagOn, getUserData } from "@/auth/token";
+import { getUserData } from "@/auth/token";
+import { flagOn } from "@/auth/authUtils";
 
 const environment = process.env.ENVIRONMENT;
 const applicationId = process.env.DATADOG_APPLICATION_ID;

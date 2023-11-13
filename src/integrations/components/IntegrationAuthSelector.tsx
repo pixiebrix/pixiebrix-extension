@@ -66,6 +66,7 @@ const customStyles: StylesConfig<AuthOption> = {
 const IntegrationAuthSelector: React.FunctionComponent<{
   name: string;
   serviceId: RegistryId;
+  isOptional?: boolean;
   authOptions: AuthOption[];
   CustomMenuList?: ComponentType<
     MenuListProps<AuthOption, boolean, GroupBase<AuthOption>>
@@ -74,11 +75,12 @@ const IntegrationAuthSelector: React.FunctionComponent<{
 }> = ({
   authOptions,
   serviceId,
+  isOptional,
   CustomMenuList,
   sanitizeConfigArgs,
   ...props
 }) => {
-  const [field, , helpers] = useField<UUID>(props);
+  const [field, , helpers] = useField<UUID | null>(props);
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
     [authOptions, serviceId]
@@ -91,6 +93,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
     isUserAction: boolean
   ) => {
     const { value, label, sharingType, local } = option;
+
     let eventPayload = {
       integration_id: serviceId,
       is_user_action: isUserAction,
@@ -117,17 +120,19 @@ const IntegrationAuthSelector: React.FunctionComponent<{
     [CustomMenuList]
   );
 
-  // Automatically default the field value if there's only one option available
   useAsyncEffect(async () => {
-    if (authOptions.length === 1 && field.value == null) {
-      const option = authOptions[0];
-      await helpers.setValue(option.value);
-      void reportSelectEvent(option, false);
+    if (field.value != null || authOptions.length > 1 || isOptional) {
+      return;
     }
+
+    // Automatically default the field value if there's only one option available
+    const option = authOptions[0];
+    await helpers.setValue(option.value);
+    void reportSelectEvent(option, false);
   }, [helpers, authOptions, field.value]);
 
   const value = useMemo(
-    () => authOptions.filter((x) => x.value === field.value),
+    () => authOptions.find((x) => x.value === field.value) ?? null,
     [field.value, authOptions]
   );
 
@@ -146,9 +151,15 @@ const IntegrationAuthSelector: React.FunctionComponent<{
         name={field.name}
         options={options}
         value={value}
+        isClearable={isOptional}
         placeholder={"Select configuration..."}
         components={components}
         onChange={async (option: AuthOption) => {
+          if (option == null) {
+            await helpers.setValue(null);
+            return;
+          }
+
           console.debug(`Selected option ${option.value} (${option.label})`);
           await helpers.setValue(option.value);
           void reportSelectEvent(option, true);

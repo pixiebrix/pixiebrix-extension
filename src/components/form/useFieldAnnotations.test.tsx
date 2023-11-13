@@ -109,6 +109,7 @@ describe("useFieldAnnotations", () => {
       position: {
         path,
       },
+      detail: "test value",
     };
 
     const preloadedState: EditorRootState & AnalysisRootState = {
@@ -146,4 +147,77 @@ describe("useFieldAnnotations", () => {
     expect(annotations[0].type).toEqual(AnnotationType.Error);
     expect(annotations[0].message).toBe("test error annotation");
   });
+
+  test.each([
+    {
+      detail: { expression: { __type__: "var", __value__: "@mod.foo" } },
+    },
+    { detail: { __type__: "nunjucks", __value__: "@mod.bar" } },
+  ])(
+    "does not show analysis error annotation when the annotation detail ($detail) is for a stale field value",
+    ({ detail }) => {
+      useFormErrorSettingsMock.mockReturnValue({
+        shouldUseAnalysis: true,
+        showUntouchedErrors: true, // Show untouched errors, so we don't have to mark the field touched for a test
+        showFieldActions: true,
+      });
+
+      const element = formStateFactory(
+        undefined,
+        pipelineFactory(
+          brickConfigFactory({
+            config: {
+              testField: { __type__: "var", __value__: "@mod." },
+            },
+          })
+        )
+      );
+
+      const path = "extension.blockPipeline[0].config.testField";
+
+      const analysisAnnotation: AnalysisAnnotation = {
+        analysisId: uuidv4(),
+        type: AnnotationType.Error,
+        message: "test error annotation",
+        position: {
+          path,
+        },
+        detail,
+      };
+
+      const preloadedState: EditorRootState & AnalysisRootState = {
+        editor: editorInitialState,
+        analysis: {
+          extensionAnnotations: {
+            [element.uuid]: [analysisAnnotation],
+          },
+          knownVars: {},
+          knownEventNames: {},
+        },
+      };
+
+      const store = configureStore({
+        reducer: {
+          editor: editorSlice.reducer,
+          analysis: analysisSlice.reducer,
+        },
+        preloadedState,
+      });
+
+      store.dispatch(actions.selectInstalled(element));
+
+      const wrapper: WrapperComponent<any> = ({ children }) => (
+        <Provider store={store}>
+          <Formik initialValues={element} onSubmit={jest.fn()}>
+            {children}
+          </Formik>
+        </Provider>
+      );
+
+      const annotations = renderHook(() => useFieldAnnotations(path), {
+        wrapper,
+      }).result.current;
+      expect(annotations).toHaveLength(0);
+    }
+  );
 });
