@@ -42,7 +42,7 @@ import { type MarketplaceListing } from "@/types/contract";
 import BlockDetail from "@/components/addBlockModal/BlockDetail";
 import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { Draft, produce } from "immer";
+import { type Draft, produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";

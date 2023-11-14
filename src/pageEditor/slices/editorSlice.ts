@@ -68,7 +68,7 @@ import {
   setActiveNodeId,
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
-import { Draft, produce } from "immer";
+import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
