@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray, cloneDeep, noop } from "lodash";
+import { castArray, noop } from "lodash";
 import initialize from "@/vendors/initialize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
 import {
@@ -106,7 +106,8 @@ export function awaitElementOnce(
     throw new Error("awaitElementOnce expected selector");
   }
 
-  const selectors = cloneDeep(castArray(selector));
+  // Clone the array so we don't mutate the original if selector is already an array
+  const selectors = [...castArray(selector)];
 
   const nextSelector = selectors.shift();
 
