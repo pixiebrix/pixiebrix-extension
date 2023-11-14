@@ -91,9 +91,6 @@ module.exports = {
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/restrict-template-expressions": "warn",
-
-    // Enabled for the IDE, but it's disabled in the `lint` script
-    "import/no-cycle": "warn",
   },
   overrides: [
     {
@@ -129,3 +126,12 @@ module.exports = {
     },
   ],
 };
+
+// `npm run lint:fast` will skip the (slow) import/* rules
+// Useful if you're trying to iterate fixes over other rules
+if (process.env.ESLINT_NO_IMPORTS) {
+  const importRules = Object.keys(require("eslint-plugin-import").rules);
+  for (const ruleName of importRules) {
+    module.exports.rules[`import/${ruleName}`] = "off";
+  }
+}
