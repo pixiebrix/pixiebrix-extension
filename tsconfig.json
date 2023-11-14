@@ -22,10 +22,7 @@
       "@schemas/*": ["schemas/*"],
       "@microsoft/applicationinsights-web/*": [
         "src/contrib/uipath/quietLogger/*"
-      ],
-
-      // Help Madge resolve this dependency
-      "marked": ["node_modules/marked/lib/marked.esm.js"]
+      ]
     },
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },

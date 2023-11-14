@@ -137,6 +137,7 @@
     "./components/formBuilder/FieldTemplate.tsx",
     "./components/formBuilder/ImageCropWidget.tsx",
     "./components/formBuilder/RjsfSelectWidget.tsx",
+    "./components/formBuilder/TextAreaWidget.tsx",
     "./components/formBuilder/formBuilderTypes.ts",
     "./components/formBuilder/preview/FormPreviewArrayField.tsx",
     "./components/formBuilder/preview/FormPreviewBooleanField.tsx",
