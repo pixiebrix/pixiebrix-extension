@@ -219,6 +219,9 @@ const sidebarSlice = createSlice({
       });
       if (visiblePanelCount === 0) {
         state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
+      } else if (visiblePanelCount > 1) {
+        // If there are other visible panels, hide the mod launcher
+        state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
       }
 
       state.staticPanels = castDraft(action.payload.staticPanels);

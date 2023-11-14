@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Tabs Mod Launcher renders with mod launcher 1`] = `
+exports[`Tabs Mod Launcher renders with mod launcher visible if there are no other visible mods 1`] = `
 <DocumentFragment>
   <div
     class="full-height"
