@@ -25,6 +25,7 @@ import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
+import validator from "@rjsf/validator-ajv6";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import { type IChangeEvent } from "@rjsf/core";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
@@ -72,7 +73,8 @@ const CustomFormComponent: React.FunctionComponent<{
           formData={formData}
           fields={fields}
           widgets={uiWidgets}
-          FieldTemplate={FieldTemplate}
+          validator={validator}
+          templates={{ FieldTemplate }}
           onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
             if (autoSave) {
               await onSubmit(formData);

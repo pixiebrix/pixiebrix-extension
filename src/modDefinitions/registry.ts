@@ -72,9 +72,9 @@ function normalizeModOptions(
 }
 
 function fromJS(rawModDefinition: UnnormalizedModDefinition) {
-  return produce(rawModDefinition, (draft) => {
+  return produce(rawModDefinition, (draft: RegistryModDefinition) => {
     draft.options = normalizeModOptions(rawModDefinition.options);
-    (draft as RegistryModDefinition).id = rawModDefinition.metadata.id;
+    draft.id = rawModDefinition.metadata.id;
   }) as RegistryModDefinition;
 }
 

@@ -158,7 +158,7 @@ async function resolvePanel(
 }
 
 export function fixActiveTabOnRemove(
-  state: Draft<SidebarState>,
+  state: SidebarState,
   removedEntry: SidebarEntry | null
 ) {
   // Only update the active panel if the panel needs to change
@@ -246,7 +246,7 @@ const sidebarSlice = createSlice({
       state.pendingActivePanel = null;
     },
     addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
-      const { form } = action.payload;
+      const { form } = action.payload as Draft<typeof action.payload>;
 
       if (state.forms.some((x) => x.nonce === form.nonce)) {
         // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder
