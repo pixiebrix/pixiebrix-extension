@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
       - run: npm run test -- --coverage
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
       - run: npm run build:webpack
@@ -116,7 +116,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
       - run: npm run build:scripts
@@ -137,7 +137,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
       - run: npm run build:typescript
@@ -151,24 +151,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
-      - run: npm run lint -- --quiet
-
-  circular-deps:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: npm
-      # Fixed version to avoid random breaks. Not in package.json due to #1084
-      - run: npm install --global madge@5.0.1
-      - run: npm run madge:circular
-        name: Detect circular dependencies
+      - run: npm run lint:full
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
