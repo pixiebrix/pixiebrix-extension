@@ -18,7 +18,7 @@
 import { getFormDefinition } from "@/contentScript/messenger/api";
 import { render } from "@testing-library/react";
 import React from "react";
-import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
+import EphemeralForm from "./EphemeralForm";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/contentScript/messenger/api", () => ({
@@ -44,6 +44,7 @@ describe("EphemeralForm", () => {
       uiSchema: {},
       cancelable: false,
       submitCaption: "Submit",
+      location: "modal",
     });
 
     const result = render(<EphemeralForm />);
@@ -71,6 +72,7 @@ describe("EphemeralForm", () => {
       uiSchema: {},
       cancelable: false,
       submitCaption: "Submit",
+      location: "modal",
     });
 
     const result = render(<EphemeralForm />);
@@ -93,6 +95,7 @@ describe("EphemeralForm", () => {
       uiSchema: {},
       cancelable: false,
       submitCaption: "Submit",
+      location: "modal",
     });
 
     const result = render(<EphemeralForm />);

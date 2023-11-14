@@ -52,6 +52,12 @@ exports[`FormPreview it renders markdown in description 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_firstName"
+              >
+                First name
+              </label>
               <div
                 class="root root isActive"
                 role="group"
@@ -138,6 +144,12 @@ exports[`FormPreview it renders simple schema 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_firstName"
+              >
+                First name
+              </label>
               <div
                 class="root root isActive"
                 role="group"
@@ -166,6 +178,12 @@ exports[`FormPreview it renders simple schema 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_age"
+              >
+                Age
+              </label>
               <div
                 class="root root"
                 role="group"
@@ -195,6 +213,12 @@ exports[`FormPreview it renders simple schema 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_telephone"
+              >
+                Telephone
+              </label>
               <div
                 class="root root"
                 role="group"

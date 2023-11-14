@@ -26,7 +26,7 @@ import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.s
 import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
-import { type IChangeEvent, type ISubmitEvent } from "@rjsf/core";
+import { type IChangeEvent } from "@rjsf/core";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
@@ -78,7 +78,7 @@ const CustomFormComponent: React.FunctionComponent<{
               await onSubmit(formData);
             }
           }}
-          onSubmit={async ({ formData }: ISubmitEvent<JsonObject>) => {
+          onSubmit={async ({ formData }: IChangeEvent<JsonObject>) => {
             await onSubmit(formData);
           }}
         >

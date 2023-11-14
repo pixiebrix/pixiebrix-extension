@@ -22,6 +22,12 @@ exports[`form data normalization renders normalized data 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_name"
+              >
+                name
+              </label>
               <input
                 aria-describedby="root_name__error root_name__description root_name__help"
                 class="form-control"
@@ -45,6 +51,12 @@ exports[`form data normalization renders normalized data 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_age"
+              >
+                age
+              </label>
               <input
                 aria-describedby="root_age__error root_age__description root_age__help"
                 class="form-control"
@@ -105,6 +117,12 @@ exports[`form data normalization renders normalized data 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_rating"
+              >
+                rating
+              </label>
               <input
                 aria-describedby="root_rating__error root_rating__description root_rating__help"
                 class="form-control"

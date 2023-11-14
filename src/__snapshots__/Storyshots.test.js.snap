@@ -6424,6 +6424,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         >
           <div
             className="my-1"
+            id="root__title"
           >
             <h5>
               A form
@@ -6437,18 +6438,13 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
               }
             />
           </div>
-          <div
-            className="field-description"
-            id="root-description"
-          >
+          <div>
             <div
-              dangerouslySetInnerHTML={
-                {
-                  "__html": "<p>A form example with <em>(you can use markdown)</em></p>
-",
-                }
-              }
-            />
+              className="mb-3"
+              id="root__description"
+            >
+              A form example with _(you can use markdown)_
+            </div>
           </div>
           <div
             className="p-0 container-fluid"
@@ -6468,34 +6464,33 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_firstName"
+                  >
+                    First name
+                  </label>
                   <div
                     className="root root isActive"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        First name
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_firstName"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="text"
-                        value="Chuck"
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_firstName__error root_firstName__description root_firstName__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_firstName"
+                      name="root_firstName"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      type="text"
+                      value="Chuck"
+                    />
                   </div>
                   <div
                     className="field-description text-muted"
@@ -6528,34 +6523,34 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_age"
+                  >
+                    Age
+                  </label>
                   <div
                     className="root root"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        Age
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_age"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="integer"
-                        value=""
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_age__error root_age__description root_age__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_age"
+                      name="root_age"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      step={1}
+                      type="number"
+                      value=""
+                    />
                   </div>
                   <div
                     className="field-description text-muted"
@@ -6588,35 +6583,35 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_telephone"
+                  >
+                    Telephone
+                  </label>
                   <div
                     className="root root"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        Telephone
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_telephone"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="text"
-                        value=""
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_telephone__error root_telephone__description root_telephone__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_telephone"
+                      name="root_telephone"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      type="text"
+                      value=""
+                    />
                   </div>
+                  
                 </div>
               </div>
             </div>

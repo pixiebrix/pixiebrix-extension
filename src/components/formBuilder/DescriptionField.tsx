@@ -30,7 +30,7 @@ type FormPreviewDescriptionFieldProps = {
 export const DescriptionField: React.VoidFunctionComponent<
   FormPreviewDescriptionFieldProps
 > = ({ id, description, className: classNameProp }) => {
-  if (description) {
+  if (!description) {
     return null;
   }
 
