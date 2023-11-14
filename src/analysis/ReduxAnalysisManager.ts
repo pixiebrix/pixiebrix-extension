@@ -31,8 +31,9 @@ import {
 import { type Analysis } from "./analysisTypes";
 import { type RootState } from "@/pageEditor/pageEditorTypes";
 import { debounce } from "lodash";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import AsyncAnalysisQueue from "./asyncAnalysisQueue";
+import { serializeError } from "serialize-error";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,
@@ -42,7 +43,7 @@ type AnalysisEffect = ListenerEffect<
 
 type AnalysisListenerConfig =
   | {
-      actionCreator: TypedActionCreator<any>;
+      actionCreator: TypedActionCreator<string>;
     }
   | {
       matcher: MatchFunction<AnyAction>;
@@ -64,7 +65,7 @@ type AnalysisFactory<
   TAnalysis extends Analysis,
   TAction = AnyAction,
   TState = unknown
-> = (action: TAction, state: TState) => TAnalysis | null;
+> = (action: TAction, state: TState) => TAnalysis | null | Promise<TAnalysis>;
 
 class ReduxAnalysisManager {
   private readonly listenerMiddleware = createListenerMiddleware();
@@ -82,6 +83,7 @@ class ReduxAnalysisManager {
     let abortController: AbortController;
 
     const effect: AnalysisEffect = async (action, listenerApi) => {
+      // Abort the previous analysis run, if running
       if (abortController) {
         abortController.abort();
       }
@@ -102,7 +104,7 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const analysis = analysisFactory(action, state);
+        const analysis = await analysisFactory(action, state);
         if (!analysis) {
           return;
         }
@@ -116,7 +118,18 @@ class ReduxAnalysisManager {
           })
         );
 
-        await analysis.run(activeElement);
+        try {
+          await analysis.run(activeElement);
+        } catch (error) {
+          listenerApi.dispatch(
+            analysisSlice.actions.failAnalysis({
+              extensionId,
+              analysisId: analysis.id,
+              error: serializeError(error),
+            })
+          );
+          return;
+        }
 
         listenerApi.dispatch(
           analysisSlice.actions.finishAnalysis({
@@ -142,7 +155,7 @@ class ReduxAnalysisManager {
             trailing: true,
           })
         : effect,
-    } as any);
+    } as never);
   }
 }
 

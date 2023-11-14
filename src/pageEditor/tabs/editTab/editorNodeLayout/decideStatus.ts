@@ -18,7 +18,7 @@
 import { RunStatus } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { type TraceRecord } from "@/telemetry/trace";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 
 type DecideBlockStatusArgs = {
   blockAnnotations: AnalysisAnnotation[];

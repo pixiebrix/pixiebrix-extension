@@ -21,13 +21,11 @@ import {
   type IntermediateState,
   type ReduceOptions,
 } from "@/runtime/reducePipeline";
-import { type ApiVersion, type BlockArgContext, type UUID } from "@/core";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
+import { type SerializableResponse } from "@/types/messengerTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/contentScript/pageEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import {
@@ -36,25 +34,36 @@ import {
   NoRendererError,
 } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
-import { type PanelPayload } from "@/sidebar/types";
-import { HeadlessModeError } from "@/blocks/errors";
+import { type PanelPayload } from "@/types/sidebarTypes";
+import { HeadlessModeError } from "@/bricks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
-import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
-import { createFrameSource } from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { waitForTemporaryPanel } from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
+import { createFrameSource } from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { waitForTemporaryPanel } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { $safeFind } from "@/utils/domUtils";
 
 export type RunBlockArgs = {
+  /**
+   * The runtime API version to use
+   */
   apiVersion: ApiVersion;
-  blockConfig: BlockConfig;
+  /**
+   * The Brick configuration.
+   */
+  blockConfig: BrickConfig;
   /**
    * Context to render the BlockArg, should include @input, @options, and service context
    * @see makeServiceContext
    */
-  context: BlockArgContext;
+  context: BrickArgsContext;
   /**
    * Root jQuery selector to determine the root if the rootMode is "inherit".
-   * @see BlockConfig.rootMode
+   * @see BrickConfig.rootMode
    */
   rootSelector: string | undefined;
 };
@@ -63,22 +72,29 @@ export type RunBlockArgs = {
  * Run a single block (e.g., for generating output previews)
  * @see BlockPreview
  */
-export async function runBlock({
+export async function runBlockPreview({
   blockConfig,
   context,
   apiVersion,
+  blueprintId,
   rootSelector,
-}: RunBlockArgs): Promise<unknown> {
+}: RunBlockArgs & {
+  blueprintId: RegistryId | null;
+}): Promise<unknown> {
   const versionOptions = apiVersionOptions(apiVersion);
 
   if (!versionOptions.explicitDataFlow) {
     throw new BusinessError(
-      "Preview only supported for extensions using runtime v2 or later"
+      "Preview only supported for mods using runtime v2 or later"
     );
   }
 
   const state: IntermediateState = {
-    context,
+    context: extendModVariableContext(context, {
+      blueprintId,
+      update: true,
+      options: versionOptions,
+    }),
     // Can pick any index. It's only used for adding context to log messages, and we're disabling value logging
     // below with `logValues: false`
     index: 0,
@@ -140,18 +156,26 @@ type Location = "modal" | "panel";
  * Note: Currently only implemented for the temporary sidebar panels
  * @see useDocumentPreviewRunBlock
  */
-export async function runRendererBlock(
-  extensionId: UUID,
-  runId: UUID,
-  title: string,
-  args: RunBlockArgs,
-  location: Location
-): Promise<void> {
+export async function runRendererBlock({
+  extensionId,
+  blueprintId,
+  runId,
+  title,
+  args,
+  location,
+}: {
+  extensionId: UUID;
+  blueprintId: RegistryId | null;
+  runId: UUID;
+  title: string;
+  args: RunBlockArgs;
+  location: Location;
+}): Promise<void> {
   const nonce = uuidv4();
 
   let payload: PanelPayload;
   try {
-    await runBlock(args);
+    await runBlockPreview({ ...args, blueprintId });
     // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
     // noinspection ExceptionCaughtLocallyJS
     throw new NoRendererError();
@@ -178,6 +202,7 @@ export async function runRendererBlock(
       showTemporarySidebarPanel({
         // Pass extension id so previous run is cancelled
         extensionId,
+        blueprintId,
         nonce,
         heading: title,
         payload,
@@ -189,11 +214,17 @@ export async function runRendererBlock(
       showModal({ url, controller });
 
       try {
-        await waitForTemporaryPanel(nonce, {
-          extensionId,
+        await waitForTemporaryPanel({
           nonce,
-          heading: title,
-          payload,
+          location,
+          extensionId,
+          entry: {
+            extensionId,
+            blueprintId,
+            nonce,
+            heading: title,
+            payload,
+          },
         });
       } catch (error) {
         // Match behavior of Display Temporary Info

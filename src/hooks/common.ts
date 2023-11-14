@@ -21,7 +21,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type StateFactory<T> = Promise<T> | (() => Promise<T>);
 
-export type AsyncState<T> = [
+export type AsyncState<T = unknown> = [
   /**
    * The value, or `undefined` if the state is loading or there was an error computing the state
    */
@@ -75,6 +75,9 @@ const slice = createSlice({
   },
 });
 
+/**
+ * @deprecated use useAsyncState.ts instead
+ */
 export function useAsyncState<T>(
   promiseOrGenerator: StateFactory<T>,
   dependencies: unknown[] = [],
@@ -117,11 +120,13 @@ export function useAsyncState<T>(
 
 export function useIsMounted(): () => boolean {
   const isMountedRef = useRef(true);
+
   useEffect(
     () => () => {
       isMountedRef.current = false;
     },
     []
   );
+
   return () => isMountedRef.current;
 }

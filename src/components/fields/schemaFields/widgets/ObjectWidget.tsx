@@ -19,15 +19,17 @@
 import React, { useCallback, useMemo, useRef } from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form, Table } from "react-bootstrap";
-import { type SafeString, type Schema } from "@/core";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { isEmpty } from "lodash";
 import { type FieldValidator, useField, useFormikContext } from "formik";
 import { produce } from "immer";
-import { freshIdentifier, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
+import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
+import { type Schema } from "@/types/schemaTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { joinName } from "@/utils/formUtils";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 type PropertyRowProps = {
   name: string;
@@ -183,7 +185,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
   // Allow additional properties for empty schema (empty schema allows shape)
-  const additionalProperties = isEmpty(schema) || schema.additionalProperties;
+  const isCustomizable = isCustomizableObjectSchema(schema);
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
@@ -206,7 +208,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
 
   const onDelete = useCallback(
     (property: string) => {
-      setFieldValue(
+      void setFieldValue(
         name,
         produce(valueRef.current, (draft) => {
           if (draft) {
@@ -229,7 +231,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
           previousValue,
         });
 
-        setFieldValue(
+        void setFieldValue(
           name,
           produce(previousValue, (draft) => {
             draft[newProp] = draft[oldProp] ?? "";
@@ -242,7 +244,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
   );
 
   const addProperty = useCallback(() => {
-    setFieldValue(
+    void setFieldValue(
       name,
       produce(valueRef.current, (draft) => {
         const prop = freshIdentifier(
@@ -259,7 +261,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
       <Table size="sm" className="mb-0">
         <thead>
           <tr>
-            <th scope="col">Property</th>
+            <th scope="col">Property name</th>
             <th scope="col">Value</th>
           </tr>
         </thead>
@@ -282,9 +284,7 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
           ))}
         </tbody>
       </Table>
-      {additionalProperties && (
-        <Button onClick={addProperty}>Add Property</Button>
-      )}
+      {isCustomizable && <Button onClick={addProperty}>Add Property</Button>}
     </div>
   );
 };

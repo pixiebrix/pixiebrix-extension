@@ -21,6 +21,7 @@ import { type AuthState } from "./authTypes";
 import { localStorage } from "redux-persist-webextension-storage";
 import { isEmpty } from "lodash";
 import { type StorageInterface } from "@/store/StorageInterface";
+import { revertAll } from "@/store/commonActions";
 
 export const authSlice = createSlice({
   name: "auth",
@@ -39,6 +40,9 @@ export const authSlice = createSlice({
         groups: Array.isArray(payload.groups) ? payload.groups : [],
       };
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(revertAll, () => anonAuth);
   },
 });
 

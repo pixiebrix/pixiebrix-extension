@@ -18,7 +18,6 @@
 import React, {
   type FocusEventHandler,
   useCallback,
-  useEffect,
   useRef,
   useState,
 } from "react";
@@ -56,16 +55,10 @@ const NumberWidget: React.VFC<
     useField<number>(name);
   const [value, setValue] = useState<string>(String(formValue));
 
-  const inputRef = useRef<HTMLInputElement>();
+  const defaultInputRef = useRef<HTMLElement>();
+  const inputRef = inputRefProp ?? defaultInputRef;
 
   useAutoFocusConfiguration({ elementRef: inputRef, focus: focusInput });
-
-  useEffect(() => {
-    // Sync the ref values
-    if (inputRefProp) {
-      inputRefProp.current = inputRef.current;
-    }
-  }, [inputRef.current]);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     ({ target }) => {
@@ -74,10 +67,10 @@ const NumberWidget: React.VFC<
     []
   );
 
-  const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(() => {
+  const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(async () => {
     const numberValue = Number(value);
     const newValue = step ? round(numberValue / step) * step : numberValue;
-    setFormValue(newValue);
+    await setFormValue(newValue);
     setValue(String(newValue));
   }, [setFormValue, step, value]);
 

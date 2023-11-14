@@ -1,19 +1,26 @@
 import React from "react";
-import { type IBrick } from "@/core";
 import { type MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
-import { MARKETPLACE_URL } from "@/utils/strings";
+import { type Metadata } from "@/types/registryTypes";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
-const BrickDetail: React.FunctionComponent<{
-  brick: IBrick;
+type BrickDetailProps<T extends Metadata> = {
+  brick: T;
   listing?: MarketplaceListing;
   onSelect: () => void;
   selectCaption: React.ReactNode;
-}> = ({ brick, selectCaption = "Select", listing, onSelect }) => (
+};
+
+const BrickDetail = <T extends Metadata>({
+  brick,
+  selectCaption = "Select",
+  listing,
+  onSelect,
+}: BrickDetailProps<T>) => (
   <Row>
     <Col xs={12} className="d-flex justify-content-between mb-3">
       <div>

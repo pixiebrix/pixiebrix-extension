@@ -15,16 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema, type SchemaDefinition } from "@/core";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type FieldValidator } from "formik";
 import { type Draft, produce } from "immer";
 import type * as Yup from "yup";
+import { isEmpty } from "lodash";
+import { type Schema, type SchemaDefinition } from "@/types/schemaTypes";
+import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 
 export function fieldLabel(name: string): string {
-  return name.split(".").at(-1);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Presumably the name is never empty, so there's always a "last item"
+  return name.split(".").at(-1)!;
 }
 
 type TypePredicate = (fieldDefinition: Schema) => boolean;
@@ -59,21 +61,26 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
  * Does not resolve the variables against a context.
  * Mutates the given object.
  */
-export function unwrapTemplateExpressions(mutableObj: Draft<any>) {
+export function unwrapTemplateExpressions<
+  T extends UnknownObject | ArrayLike<unknown>
+>(mutableObj: Draft<T | null>) {
   if (mutableObj === null || typeof mutableObj !== "object") {
     return;
   }
 
   for (const [key, value] of Object.entries(mutableObj)) {
     if (isTemplateExpression(value)) {
+      // @ts-expect-error -- typings need to be improved
       mutableObj[key] = value.__value__;
     } else if (typeof value === "object") {
-      unwrapTemplateExpressions(value);
+      unwrapTemplateExpressions(value as UnknownObject);
     }
   }
 }
 
-export function getPreviewValues<TObj = UnknownObject>(obj: TObj): TObj {
+export function getPreviewValues<
+  T extends UnknownObject | ArrayLike<unknown> = UnknownObject
+>(obj: T): T {
   return produce(obj, (draft) => {
     unwrapTemplateExpressions(draft);
   });
@@ -101,3 +108,40 @@ export function getFieldValidator(
     }
   };
 }
+
+// Collects custom validation error messages for this schema to be passed to the `config.errMessages`
+// parameter of buildYup
+// See https://github.com/kristianmandrup/schema-to-yup#quick-start
+export const getValidationErrMessages = (
+  schema: Schema | undefined
+): Record<string, Record<string, string>> => {
+  const errMessages: Record<string, Record<string, string>> = {};
+
+  if (!schema?.properties) {
+    return errMessages;
+  }
+
+  for (const [key, definition] of Object.entries(schema.properties)) {
+    if (typeof definition === "boolean") {
+      continue;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- no user generated values here
+    const messages = errMessages[key] ?? {};
+
+    if (schema.required?.includes(key)) {
+      messages.required = `${key} is a required field`;
+    }
+
+    if (definition.pattern) {
+      messages.pattern = `Invalid ${key} format`;
+    }
+
+    if (!isEmpty(messages)) {
+      // eslint-disable-next-line security/detect-object-injection -- no user generated values here
+      errMessages[key] = messages;
+    }
+  }
+
+  return errMessages;
+};

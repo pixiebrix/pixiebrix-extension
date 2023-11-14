@@ -15,9 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApplyJqPayload, type TemplateRenderPayload } from "./api";
+import { type JavaScriptPayload, type TemplateRenderPayload } from "./api";
 import { isErrorObject } from "@/errors/errorHelpers";
-import { InvalidTemplateError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  InvalidTemplateError,
+  PropError,
+} from "@/errors/businessErrors";
 
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload
@@ -57,11 +61,37 @@ export async function renderHandlebarsTemplate(
   return compiledTemplate(context);
 }
 
-export async function applyJq(payload: ApplyJqPayload) {
-  const { input, filter } = payload;
-  const { default: jq } = await import(
-    /* webpackChunkName: "jq-web" */ "jq-web"
-  );
+export async function runUserJs({
+  code,
+  data,
+  blockId,
+}: JavaScriptPayload): Promise<string> {
+  let userFunction;
+  try {
+    // Returning the user-defined function allows for an anonymous function
+    // eslint-disable-next-line no-new-func -- We're in the sandbox
+    userFunction = new Function(`return ${code}`)();
+  } catch {
+    throw new PropError(
+      "Failed to construct JavaScript function",
+      blockId,
+      "function",
+      code
+    );
+  }
 
-  return jq.promised.json(input, filter);
+  // See https://stackoverflow.com/a/67102501/288906
+  const context = data
+    ? new Proxy(data, {
+        has: () => true,
+      })
+    : undefined;
+
+  try {
+    return userFunction(context);
+  } catch (error) {
+    throw new BusinessError("Error running user-defined JavaScript", {
+      cause: error,
+    });
+  }
 }

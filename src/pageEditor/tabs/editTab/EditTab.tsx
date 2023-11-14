@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Col, Tab } from "react-bootstrap";
+import { Collapse, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -28,17 +28,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 import {
   selectActiveNodeId,
+  selectDataPanelExpanded,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
 import TooltipIconButton from "@/components/TooltipIconButton";
-import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDoubleLeft,
+  faCopy,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -52,6 +58,8 @@ const EditTab: React.FC<{
   const activeNodeId = useSelector(selectActiveNodeId);
 
   const pipelineMap = useSelector(selectPipelineMap);
+
+  const isDataPanelExpanded = useSelector(selectDataPanelExpanded);
 
   function copyBlock(instanceId: UUID) {
     // eslint-disable-next-line security/detect-object-injection -- UUID
@@ -103,33 +111,57 @@ const EditTab: React.FC<{
           </div>
         </div>
         <div className={styles.configPanel}>
-          <Col>
-            <ErrorBoundary
-              key={
-                // Pass in the activeNodeId as the render key for error boundary so
-                // that switching the node can potentially avoid the bad state without
-                // having to reload the whole page editor frame
-                activeNodeId
-              }
-            >
-              {isApiAtLeastV2 ? (
-                activeNodeId === FOUNDATION_NODE_ID ? (
-                  <FoundationNodeConfigPanel />
-                ) : (
-                  <EditorNodeConfigPanel />
-                )
+          <ErrorBoundary
+            key={
+              // Pass in the activeNodeId as the render key for error boundary so
+              // that switching the node can potentially avoid the bad state without
+              // having to reload the whole page editor frame
+              activeNodeId
+            }
+          >
+            {isApiAtLeastV2 ? (
+              activeNodeId === FOUNDATION_NODE_ID ? (
+                <FoundationNodeConfigPanel />
               ) : (
-                <UnsupportedApiV1 />
-              )}
-            </ErrorBoundary>
-          </Col>
+                <EditorNodeConfigPanel />
+              )
+            ) : (
+              <UnsupportedApiV1 />
+            )}
+          </ErrorBoundary>
         </div>
-        <div className={styles.dataPanel}>
-          {activeNodeId === FOUNDATION_NODE_ID ? (
-            <FoundationDataPanel />
-          ) : (
-            <DataPanel key={activeNodeId} />
-          )}
+        <div className={styles.collapseWrapper}>
+          <button
+            className={cx(styles.toggle, {
+              [styles.active]: isDataPanelExpanded,
+            })}
+            type="button"
+            onClick={() => {
+              dispatch(
+                actions.setDataSectionExpanded({
+                  isExpanded: !isDataPanelExpanded,
+                })
+              );
+            }}
+          >
+            <FontAwesomeIcon icon={faAngleDoubleLeft} />
+          </button>
+          <Collapse
+            dimension="width"
+            in={isDataPanelExpanded}
+            unmountOnExit={true}
+            mountOnEnter={true}
+          >
+            <div className={styles.dataPanelWrapper}>
+              <div className={styles.dataPanel}>
+                {activeNodeId === FOUNDATION_NODE_ID ? (
+                  <FoundationDataPanel />
+                ) : (
+                  <DataPanel key={activeNodeId} />
+                )}
+              </div>
+            </div>
+          </Collapse>
         </div>
       </div>
     </Tab.Pane>

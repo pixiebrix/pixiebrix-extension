@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MAX_Z_INDEX } from "@/common";
+import { MAX_Z_INDEX } from "@/domConstants";
 
-if (process.env.ENVIRONMENT === "development") {
+/**
+ * Add a visual indicator to the top-left of the DOM.
+ */
+export function addContentScriptIndicator() {
   const indicator = document.createElement("div");
 
   // Hide on hover
@@ -36,5 +39,6 @@ if (process.env.ENVIRONMENT === "development") {
     borderLeft: "solid 5px white",
     borderRight: "solid 5px black",
   });
+
   document.body.prepend(indicator);
 }

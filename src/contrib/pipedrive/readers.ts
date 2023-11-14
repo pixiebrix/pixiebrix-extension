@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Reader } from "@/types";
-import { startCase, mapValues } from "lodash";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { startCase } from "lodash";
 import { withReadWindow } from "@/pageScript/messenger/api";
-import { type PathSpec } from "@/blocks/readers/window";
+import { type PathSpec } from "@/bricks/readers/window";
+import { type JsonObject } from "type-fest";
+import { mapObject } from "@/utils/objectUtils";
 
 export async function checkRoute(expectedRoute: string): Promise<boolean> {
   const { route } = await withReadWindow({
@@ -27,7 +29,7 @@ export async function checkRoute(expectedRoute: string): Promise<boolean> {
   return route === expectedRoute;
 }
 
-export class PipedriveReader extends Reader {
+export class PipedriveReader extends ReaderABC {
   private get ROOT_PATH() {
     return "app.router.currentView.model.attributes";
   }
@@ -56,13 +58,13 @@ export class PipedriveReader extends Reader {
     return checkRoute(this.resourceType);
   }
 
-  async read() {
-    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31265
+  async read(): Promise<JsonObject> {
+    const pathSpecObj =
+      typeof this.pathSpec === "string"
+        ? { value: this.pathSpec }
+        : this.pathSpec;
     return withReadWindow({
-      pathSpec: mapValues(
-        this.pathSpec,
-        (x: string) => `${this.ROOT_PATH}.${x}`
-      ) as any,
+      pathSpec: mapObject(pathSpecObj, (x: string) => `${this.ROOT_PATH}.${x}`),
     });
   }
 }

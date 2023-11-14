@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type OutputKey, type RenderedArgs } from "@/core";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
-import { traces } from "@/background/messenger/api";
+import { recordBrickRun, traces } from "@/background/messenger/api";
 import {
   type TraceEntryData,
   type TraceExitData,
@@ -34,32 +33,21 @@ import {
 } from "@/telemetry/trace";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
+import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
-const addEntryMock = traces.addEntry as jest.MockedFunction<
-  typeof traces.addEntry
->;
-const addExitMock = traces.addExit as jest.MockedFunction<
-  typeof traces.addExit
->;
+const addEntryMock = jest.mocked(traces.addEntry);
+const addExitMock = jest.mocked(traces.addExit);
+const recordBrickRunMock = jest.mocked(recordBrickRun);
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock, throwBlock]);
+  blockRegistry.register([echoBrick, contextBrick, throwBrick]);
   addEntryMock.mockReset();
   addExitMock.mockReset();
+  recordBrickRunMock.mockReset();
 });
 
 describe("Trace normal exit", () => {
@@ -68,7 +56,7 @@ describe("Trace normal exit", () => {
 
     const result = await reducePipeline(
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
         },
@@ -95,6 +83,9 @@ describe("Trace normal exit", () => {
         skippedRun: false,
       })
     );
+
+    // Should not record brick run when tracing is enabled
+    expect(recordBrickRunMock).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -105,7 +96,7 @@ describe("Trace render error", () => {
     await expect(async () =>
       reducePipeline(
         {
-          id: echoBlock.id,
+          id: echoBrick.id,
           config: {
             message: makeTemplateExpression("var", "@doesNotExist.bar"),
           },
@@ -141,7 +132,7 @@ describe("Trace render error", () => {
 
     await reducePipeline(
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: makeTemplateExpression("var", "@doesNotExist.bar") },
         outputKey: validateOutputKey("conditional"),
         if: "f",
@@ -175,7 +166,7 @@ describe("Trace conditional execution", () => {
     await reducePipeline(
       [
         {
-          id: echoBlock.id,
+          id: echoBrick.id,
           config: {
             message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
           },
@@ -184,7 +175,7 @@ describe("Trace conditional execution", () => {
           instanceId: uuidv4(),
         },
         {
-          id: echoBlock.id,
+          id: echoBrick.id,
           config: {
             message: makeTemplateExpression("var", "@conditional.property"),
           },
@@ -223,7 +214,7 @@ describe("Trace normal execution", () => {
     const extensionId = uuidv4();
 
     const blockConfig = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: { message: "{{@input.inputArg}}" },
       instanceId,
     };
@@ -242,7 +233,7 @@ describe("Trace normal execution", () => {
       runId,
       branches: [],
       blockInstanceId: instanceId,
-      blockId: echoBlock.id,
+      blockId: echoBrick.id,
     };
 
     const expectedEntry: TraceEntryData = {
@@ -279,15 +270,15 @@ describe("Trace normal execution", () => {
     const extensionId = uuidv4();
     const outputKey = "echo" as OutputKey;
 
-    const blockConfig: BlockPipeline = [
+    const blockConfig: BrickPipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{@input.inputArg}}" },
         outputKey,
         instanceId,
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
         instanceId: uuidv4(),
       },
@@ -307,7 +298,7 @@ describe("Trace normal execution", () => {
       runId,
       branches: [],
       blockInstanceId: instanceId,
-      blockId: echoBlock.id,
+      blockId: echoBrick.id,
     };
 
     const expectedExit: TraceExitData = {
@@ -332,15 +323,15 @@ describe("Trace normal execution", () => {
     const extensionId = uuidv4();
     const outputKey = "never" as OutputKey;
 
-    const blockConfig: BlockPipeline = [
+    const blockConfig: BrickPipeline = [
       {
-        id: throwBlock.id,
+        id: throwBrick.id,
         config: { message: "{{@input.inputArg}}" },
         outputKey,
         instanceId,
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
         instanceId: uuidv4(),
       },
@@ -361,7 +352,7 @@ describe("Trace normal execution", () => {
       runId,
       branches: [],
       blockInstanceId: instanceId,
-      blockId: throwBlock.id,
+      blockId: throwBrick.id,
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(1);
@@ -379,10 +370,27 @@ describe("Trace normal execution", () => {
 });
 
 describe("Tracing disabled", () => {
+  it("Records brick runs to telemetry if tracing disabled", async () => {
+    const result = await reducePipeline(
+      {
+        id: echoBrick.id,
+        config: {
+          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+        },
+      },
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+
+    expect(result).toStrictEqual({ message: "hello" });
+
+    expect(recordBrickRunMock).toHaveBeenCalledTimes(1);
+  });
+
   it("Does not call addEntry or addExit if tracing is disabled", async () => {
     const result = await reducePipeline(
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
         },
@@ -407,7 +415,7 @@ describe("Tracing disabled", () => {
 
     const result = await reducePipeline(
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         if: false,
         config: {
           message: makeTemplateExpression(

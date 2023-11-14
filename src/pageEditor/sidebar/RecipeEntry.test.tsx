@@ -17,7 +17,6 @@
 
 import React from "react";
 import extensionsSlice from "@/store/extensionsSlice";
-import { recipeFactory, recipeMetadataFactory } from "@/testUtils/factories";
 import {
   createRenderFunctionWithRedux,
   type RenderFunctionWithRedux,
@@ -28,20 +27,26 @@ import {
 } from "@/pageEditor/slices/editorSlice";
 import RecipeEntry, { type RecipeEntryProps } from "./RecipeEntry";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { type ExtensionOptionsState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
+import {
+  defaultModDefinitionFactory,
+  metadataFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
+import { screen } from "@testing-library/react";
 
 let renderRecipeEntry: RenderFunctionWithRedux<
   {
     editor: EditorState;
-    options: ExtensionOptionsState;
+    options: ModComponentState;
   },
   RecipeEntryProps
 >;
 
 beforeEach(() => {
-  const recipe = recipeFactory();
+  const recipe = defaultModDefinitionFactory();
   const recipeId = recipe.metadata.id;
+  // eslint-disable-next-line testing-library/no-render-in-lifecycle -- higher order function, not the actual render
   renderRecipeEntry = createRenderFunctionWithRedux({
     reducer: {
       editor: editorSlice.reducer,
@@ -68,46 +73,46 @@ beforeEach(() => {
 });
 
 test("it renders", () => {
-  const rendered = renderRecipeEntry();
+  const { asFragment } = renderRecipeEntry();
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("renders with empty recipe", () => {
-  const rendered = renderRecipeEntry({
+  const { asFragment } = renderRecipeEntry({
     propsOverride: {
       recipe: undefined,
     },
   });
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("renders with empty metadata", () => {
-  const recipe = recipeFactory({ metadata: null });
-  const rendered = renderRecipeEntry({
+  const recipe = defaultModDefinitionFactory({ metadata: null });
+  const { asFragment } = renderRecipeEntry({
     propsOverride: {
       recipe,
     },
   });
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("renders the warning icon when has update", () => {
-  const recipe = recipeFactory({
-    metadata: recipeMetadataFactory({
+  const recipe = defaultModDefinitionFactory({
+    metadata: metadataFactory({
       version: validateSemVerString("2.0.0"),
     }),
   });
-  const rendered = renderRecipeEntry({
+  renderRecipeEntry({
     propsOverride: {
       recipe,
     },
   });
 
-  const warningIcon = rendered.getByTitle(
-    "You are editing version 1.0.0 of this blueprint, the latest version is 2.0.0."
+  const warningIcon = screen.getByTitle(
+    "You are editing version 1.0.0 of this mod, the latest version is 2.0.0."
   );
 
   expect(warningIcon).toBeInTheDocument();

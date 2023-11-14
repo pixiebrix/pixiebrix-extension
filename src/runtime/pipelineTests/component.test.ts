@@ -15,40 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
 
-import { fromJS } from "@/blocks/transformers/blockFactory";
+import { fromJS } from "@/bricks/transformers/brickFactory";
 import { validateSemVerString } from "@/types/helpers";
+import { setContext } from "@/testUtils/detectPageMock";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
+setContext("contentScript");
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
-const componentBlock = fromJS({
+const componentBlock = fromJS(blockRegistry, {
   apiVersion: "v1",
   kind: "component",
   metadata: {
     id: "test/component",
-    name: "Component Block",
+    name: "Component Brick",
     version: validateSemVerString("1.0.0"),
     description: "Component block using v1 runtime",
   },
@@ -59,7 +52,7 @@ const componentBlock = fromJS({
   },
   pipeline: [
     {
-      id: echoBlock.id,
+      id: echoBrick.id,
       // Implicit application of mustache template referencing input without @input
       config: { message: "{{message}}" },
     },
@@ -79,12 +72,12 @@ describe("component block v1", () => {
         },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: "{{@first.message}}",
         },
       },
-    ] as BlockPipeline;
+    ] as BrickPipeline;
 
     const result = await reducePipeline(
       pipeline,
@@ -110,7 +103,7 @@ describe("component block v1", () => {
         },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: {
             __type__: "mustache",
@@ -118,7 +111,7 @@ describe("component block v1", () => {
           },
         },
       },
-    ] as BlockPipeline;
+    ] as BrickPipeline;
 
     const result = await reducePipeline(
       pipeline,

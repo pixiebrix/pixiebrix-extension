@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TemplateEngine, type Expression } from "@/core";
-import { type BlockPipeline } from "@/blocks/types";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type BrickPipeline } from "@/bricks/types";
+import {
+  type Expression,
+  type PipelineExpression,
+  type TemplateEngine,
+} from "@/types/runtimeTypes";
 
 export function makeTemplateExpression(
   template: TemplateEngine,
@@ -30,7 +33,7 @@ export function makeTemplateExpression(
 }
 
 export function makePipelineExpression(
-  value: BlockPipeline
+  value: BrickPipeline
 ): PipelineExpression {
   return {
     __type__: "pipeline",
@@ -41,10 +44,6 @@ export function makePipelineExpression(
 export function makeVariableExpression(
   value: string
 ): Expression<string, "var"> {
-  if (!value.startsWith("@")) {
-    throw new Error("Expected @-prefixed variable");
-  }
-
   return {
     __type__: "var",
     __value__: value,

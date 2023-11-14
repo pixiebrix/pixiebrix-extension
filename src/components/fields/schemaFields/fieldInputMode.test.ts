@@ -16,6 +16,7 @@
  */
 
 import { inferInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 
 describe("test input mode", () => {
   test("variable expression", () => {
@@ -57,5 +58,43 @@ describe("test input mode", () => {
         enum: ["apple", "banana"],
       })
     ).toBe("select");
+  });
+
+  test("labelled enum", () => {
+    expect(
+      inferInputMode({ field: "apple" }, "field", {
+        type: "string",
+        oneOf: [
+          { const: "apple", title: "Apple" },
+          { const: "banana", title: "Banana" },
+        ],
+      })
+    ).toBe("select");
+  });
+
+  test("not-required, undefined value, infers omit", () => {
+    expect(
+      inferInputMode(
+        { field: undefined },
+        "field",
+        {
+          $ref: googleSheetIdSchema.$id,
+        },
+        { isRequired: false }
+      )
+    ).toBe("omit");
+  });
+
+  test("not-required, null ref value, infers string", () => {
+    expect(
+      inferInputMode(
+        { field: null },
+        "field",
+        {
+          $ref: googleSheetIdSchema.$id,
+        },
+        { isRequired: false }
+      )
+    ).toBe("string");
   });
 });

@@ -16,7 +16,6 @@
  */
 
 import React, { useMemo } from "react";
-import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -29,6 +28,9 @@ import {
   type SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
 import styles from "./ErrorDetail.module.scss";
+import useAsyncState from "@/hooks/useAsyncState";
+import { containsPermissions } from "@/background/messenger/api";
+import AsyncStateGate from "@/components/AsyncStateGate";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {
@@ -46,20 +48,12 @@ function tryParse(value: unknown): unknown {
 const NetworkErrorDetail: React.FunctionComponent<{
   error: SerializableAxiosError;
 }> = ({ error }) => {
-  const absoluteUrl = useMemo(
-    () => selectAbsoluteUrl(error.config),
-    [error.config]
-  );
+  const absoluteUrl = selectAbsoluteUrl(error.config);
 
-  const [hasPermissions, permissionsPending, permissionsError] = useAsyncState<
-    boolean | undefined
-  >(async () => {
-    if (browser.permissions?.contains) {
-      return browser.permissions.contains({
-        origins: [absoluteUrl],
-      });
-    }
-  }, [absoluteUrl]);
+  const permissionsState = useAsyncState<boolean | undefined>(
+    async () => containsPermissions({ origins: [absoluteUrl] }),
+    [absoluteUrl]
+  );
 
   const cleanConfig = useMemo(() => {
     const { data, ...rest } = error.config;
@@ -72,7 +66,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
   const cleanResponse = useMemo(() => {
     if (error.response) {
       const { request, config, data, ...rest } = error.response;
-      // Don't include request or config, since we're showing it the other column
+      // Don't include request or config, because we're showing it the other column
       return {
         ...rest,
         data: tryParse(data),
@@ -81,25 +75,33 @@ const NetworkErrorDetail: React.FunctionComponent<{
   }, [error.response]);
 
   const status = error.response?.status;
-  const permissionsReady = !permissionsError && !permissionsPending;
 
   return (
     <div className={styles.root}>
       <div className={styles.column}>
         <h5>Response</h5>
-        {permissionsReady && !hasPermissions && (
-          <div className="text-warning">
-            <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does not
-            have permission to access {absoluteUrl}. Specify an Integration to
-            access the API, or add an Extra Permissions rule to the extension.
-          </div>
-        )}
-        {permissionsReady && hasPermissions && (
-          <div className="text-info">
-            <FontAwesomeIcon icon={faCheck} /> PixieBrix has permission to
-            access {absoluteUrl}
-          </div>
-        )}
+        <AsyncStateGate
+          state={permissionsState}
+          renderLoader={() => null}
+          renderError={() => null}
+        >
+          {({ data: hasPermissions }) =>
+            hasPermissions ? (
+              <div className="text-info">
+                <FontAwesomeIcon icon={faCheck} /> PixieBrix has permission to
+                access {absoluteUrl}
+              </div>
+            ) : (
+              <div className="text-warning">
+                <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does
+                not have permission to access {absoluteUrl}. Contact your IT
+                Administrator for the
+                <code>runtime_blocked_hosts</code> Chrome Browser Extension
+                policy.
+              </div>
+            )
+          }
+        </AsyncStateGate>
         {status && (
           <div>
             Status: {status} &mdash; {safeGuessStatusText(status)}
@@ -107,17 +109,16 @@ const NetworkErrorDetail: React.FunctionComponent<{
         )}
         {cleanResponse == null ? (
           <div>
-            <div>PixieBrix did not receive a response. Possible causes:</div>
-            <ul>
-              <li>
-                Your browser or another extension blocked the request. Check
-                that PixieBrix has permission to the access the host. If
-                PixieBrix is not showing a Grant Permissions button, ensure that
-                the integration has an{" "}
-                <code className="px-0 mx-0">isAvailable</code> section defined
-              </li>
-              <li>The remote server did not respond. Try the request again</li>
-            </ul>
+            <div>
+              PixieBrix did not receive a response. See{" "}
+              <a
+                href="https://docs.pixiebrix.com/network-errors"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Troubleshooting Network Errors
+              </a>
+            </div>
           </div>
         ) : (
           <JsonTree data={cleanResponse} />

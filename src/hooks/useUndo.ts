@@ -23,7 +23,7 @@ const MAX_HISTORY_SIZE = 100;
 
 function useUndo<T>(
   realValue: T,
-  setRealValue: (value: T) => void
+  setRealValue: (value: T | undefined) => void
 ): () => void {
   // Array used like a stack
   const history = useRef<T[]>([]);
@@ -44,8 +44,10 @@ function useUndo<T>(
       history.current = [debouncedValue.current, ...oldHistory];
       debouncedValue.current = value;
     },
-    300,
-    500
+    {
+      delayMillis: 300,
+      maxWaitMillis: 500,
+    }
   );
 
   return useCallback(() => {
@@ -55,7 +57,8 @@ function useUndo<T>(
 
     const [oldValue, ...newHistory] = history.current;
     setRealValue(oldValue);
-    debouncedValue.current = oldValue;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks config mismatch
+    debouncedValue.current = oldValue as T;
     history.current = newHistory;
   }, [history, setRealValue]);
 }

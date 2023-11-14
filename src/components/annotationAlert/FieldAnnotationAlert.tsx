@@ -21,16 +21,13 @@ import WarningIcon from "@/icons/warning.svg?loadAsComponent";
 import InfoIcon from "@/icons/info.svg?loadAsComponent";
 import cx from "classnames";
 import styles from "./FieldAnnotationAlert.module.scss";
-import { isEmpty } from "lodash";
 import AsyncButton from "@/components/AsyncButton";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
-const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
-  message,
-  type,
-  actions,
-}) => {
+const FieldAnnotationAlert: React.FunctionComponent<
+  FieldAnnotation & { className?: string }
+> = ({ message, type, actions, className }) => {
   let Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   switch (type) {
     case AnnotationType.Error: {
@@ -55,22 +52,22 @@ const FieldAnnotationAlert: React.FunctionComponent<FieldAnnotation> = ({
 
   return (
     // eslint-disable-next-line security/detect-object-injection -- annotation type, not user input
-    <div className={cx(styles.root, styles[type])}>
+    <div className={cx(styles.root, styles[type], className)}>
       <div className={styles.alert}>
         {Icon && <Icon className={styles.icon} />}
         <div className={styles.message}>
           <span>{message}</span>
         </div>
       </div>
-      {!isEmpty(actions) && (
+      {actions?.length ? (
         <div className={styles.actions}>
-          {actions.map(({ caption, action }) => (
-            <AsyncButton key={caption} onClick={action}>
+          {actions.map(({ caption, action }, index) => (
+            <AsyncButton key={index} onClick={action}>
               {caption}
             </AsyncButton>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

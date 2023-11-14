@@ -16,6 +16,12 @@
  */
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
+import { type UnknownObject } from "@/types/objectTypes";
+
+export enum VarExistence {
+  MAYBE = "MAYBE",
+  DEFINITELY = "DEFINITELY",
+}
 
 type SetExistenceArgs = {
   /**
@@ -39,19 +45,22 @@ type SetExistenceArgs = {
    */
   allowAnyChild?: boolean;
 
+  /**
+   * True if the variable is an array
+   */
   isArray?: boolean;
 };
 
-type SetOutputKeyExistenceArgs = {
+type SetVariableExistenceArgs = {
   /**
    * The source for the VarMap (e.g. "input:reader", "trace", or block path in the pipeline)
    */
   source: string;
 
   /**
-   * The output key of the block
+   * The variable name with `@` prefix, e.g., the output key of the block.
    */
-  outputKey: string;
+  variableName: string;
 
   /**
    * Existence of the variable
@@ -82,15 +91,13 @@ type SetExistenceFromValuesArgs = {
   parentPath?: string;
 };
 
-export enum VarExistence {
-  MAYBE = "MAYBE",
-  DEFINITELY = "DEFINITELY",
-}
-
 // This symbols are used to define the own properties of the existence tree node
 export const SELF_EXISTENCE = Symbol("SELF_EXISTENCE");
+
 export const ALLOW_ANY_CHILD = Symbol("ALLOW_ANY_CHILD");
+
 export const IS_ARRAY = Symbol("IS_ARRAY");
+
 export type ExistenceNode = {
   /**
    * Existence of the current node
@@ -98,7 +105,7 @@ export type ExistenceNode = {
   [SELF_EXISTENCE]?: VarExistence;
 
   /**
-   * Whether the current node allows any child (i.e. doesn't have  a strict schema)
+   * Whether the current node allows any child (i.e. doesn't have a strict schema)
    */
   [ALLOW_ANY_CHILD]?: boolean;
 
@@ -133,7 +140,7 @@ function createNode(
   return node;
 }
 
-const numberReges = /^\d+$/;
+const numberRegex = /^\d+$/;
 
 class VarMap {
   private map: Record<string, ExistenceNode> = {};
@@ -199,20 +206,37 @@ class VarMap {
   }
 
   /**
-   * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence. Ex. converting trace output to an existence map
+   * Converts an object containing variables to a var existence map. Each node gets a DEFINITELY existence.
+   *
+   * Use this method for:
+   * - Converting trace output to an existence map
+   * - Converting current mod variables to an existence map
    */
   public setExistenceFromValues({
     source,
     values,
     parentPath = "",
   }: SetExistenceFromValuesArgs): void {
+    if (values == null) {
+      console.warn(`setExistenceFromValues: values null for source: ${source}`);
+      return;
+    }
+
     for (const [key, value] of Object.entries(values)) {
       if (typeof value === "object") {
         this.setExistenceFromValues({
           source,
-          values: value as Record<string, unknown>,
+          values: value as UnknownObject,
           parentPath: parentPath === "" ? key : `${parentPath}.${key}`,
         });
+
+        if (Array.isArray(value)) {
+          setWith(
+            this.map,
+            [source, ...toPath(parentPath), key, IS_ARRAY],
+            true
+          );
+        }
       } else {
         setWith(
           this.map,
@@ -225,18 +249,18 @@ class VarMap {
   }
 
   /**
-   * Adds an existence for a block with output key
+   * Directly set that a variable exists for a given variable name.
    */
-  public setOutputKeyExistence({
+  public setVariableExistence({
     source,
-    outputKey,
+    variableName,
     existence,
     allowAnyChild,
-  }: SetOutputKeyExistenceArgs): void {
-    // While any block can provide no more than one output key,
-    // we are safe to create a new object for the 'source'
+  }: SetVariableExistenceArgs): void {
+    // While any block can provide no more than one output key, we are safe to create a new object for the 'source'
+    // eslint-disable-next-line security/detect-object-injection -- from Object.entries
     this.map[source] = {
-      [outputKey]: createNode(existence, { allowAnyChild }),
+      [variableName]: createNode(existence, { allowAnyChild }),
     };
   }
 
@@ -244,8 +268,13 @@ class VarMap {
    * Merges in another VarMap. Overwrites any existing source records
    * @param varMap A VarMap to merge in
    */
-  public addSourceMap(varMap: VarMap): void {
+  public addSourceMap(varMap: VarMap | null): void {
+    if (varMap == null) {
+      return;
+    }
+
     for (const [source, existenceMap] of Object.entries(varMap.map)) {
+      // eslint-disable-next-line security/detect-object-injection -- from Object.entries
       this.map[source] = existenceMap;
     }
   }
@@ -257,21 +286,29 @@ class VarMap {
    */
   public isVariableDefined(path: string): boolean {
     const pathParts = toPath(path);
+    const [outputKey] = pathParts;
+
+    if (!outputKey) {
+      return false;
+    }
 
     for (const sourceMap of Object.values(this.map).filter(
       // Only check the sources (bricks) that provide the output key (the first part of the path)
       // Usually there is one brick providing the output key and the vars from traces
-      (x) => x[pathParts[0]] != null
+      (x) => x[outputKey] != null
     )) {
       const pathPartsCopy = [...pathParts];
-      let bag = sourceMap;
+      let bag: ExistenceNode | undefined = sourceMap;
       while (pathPartsCopy.length > 0) {
-        const part = pathPartsCopy.shift();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Existence verified via `length` check so `!` is fine
+        const part = pathPartsCopy.shift()!;
 
         // Handle the array case (allow only numeric keys)
-        const isNumberPart = numberReges.test(part);
+        const isNumberPart = numberRegex.test(part);
+        // eslint-disable-next-line security/detect-object-injection -- Symbol
         if (isNumberPart && bag[IS_ARRAY]) {
           // Dealing with array of primitives or array of unknown objects
+          // eslint-disable-next-line security/detect-object-injection -- Symbol
           if (pathPartsCopy.length === 0 || bag[ALLOW_ANY_CHILD]) {
             return true;
           }
@@ -285,11 +322,13 @@ class VarMap {
         }
 
         // Check if any child is allowed and the current bag is not an array
+        // eslint-disable-next-line security/detect-object-injection -- Symbols
         if (bag[ALLOW_ANY_CHILD] && !bag[IS_ARRAY]) {
           return true;
         }
       }
 
+      // eslint-disable-next-line security/detect-object-injection -- Symbols
       if (bag?.[SELF_EXISTENCE] != null) {
         return true;
       }

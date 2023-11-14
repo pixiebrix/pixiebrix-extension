@@ -15,58 +15,62 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  readReduxStorage,
-  type ReduxStorageKey,
-  setReduxStorage,
-} from "@/chrome";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createMigrate } from "redux-persist";
-import { boolean } from "@/utils";
 import {
-  migrateActiveExtensions,
-  migrateExtensionsShape,
+  inferModComponentStateVersion,
   migrations,
 } from "@/store/extensionsMigrations";
-import { type ExtensionOptionsState } from "./extensionsTypes";
+import { type ModComponentState } from "./extensionsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
+import { type RegistryId } from "@/types/registryTypes";
+import { compact, isEmpty } from "lodash";
+import { boolean } from "@/utils/typeUtils";
+import {
+  readReduxStorage,
+  setReduxStorage,
+  validateReduxStorageKey,
+} from "@/utils/storageUtils";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { initialState } from "@/store/extensionsSliceInitialState";
 
-const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
+const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
 
-type JSONString = string;
-
-type PersistedOptionsState = Record<string, JSONString>;
-
-async function getOptionsState(): Promise<PersistedOptionsState> {
-  return readReduxStorage(STORAGE_KEY, {});
-}
-
-/**
- * Read extension options from local storage (without going through redux-persistor).
- */
-export async function loadOptions(): Promise<ExtensionOptionsState> {
-  console.debug("Loading raw options from storage");
-
-  const base = await getOptionsState();
-  // The redux persist layer persists the extensions value as JSON-string.
-  // Also apply the upgradeExtensionsState migration here because the migration in store might not have run yet.
-  return migrateActiveExtensions(
-    migrateExtensionsShape({
-      extensions: JSON.parse(base.extensions ?? "[]"),
-    })
+export async function getModComponentState(): Promise<ModComponentState> {
+  return readReduxStorage<ModComponentState>(
+    STORAGE_KEY,
+    migrations,
+    initialState,
+    inferModComponentStateVersion
   );
 }
 
 /**
- * Save extension options to local storage (without going through redux-persistor).
+ * Returns the set of currently activated mod ids. Reads current activated mods from storage.
  */
-export async function saveOptions(state: ExtensionOptionsState): Promise<void> {
-  const base = await getOptionsState();
-  await setReduxStorage(STORAGE_KEY, {
-    ...base,
-    // The redux persist layer persists the extensions value as a JSON-string
-    extensions: JSON.stringify(state.extensions),
-  });
+export async function getActivatedModIds(): Promise<Set<RegistryId>> {
+  const modComponentState = await getModComponentState();
+
+  if (isEmpty(modComponentState?.extensions)) {
+    return new Set();
+  }
+
+  return new Set(
+    compact(modComponentState.extensions.map(({ _recipe }) => _recipe?.id))
+  );
+}
+
+/**
+ * Save mod component state to local storage (without going through redux-persistor).
+ */
+export async function saveModComponentState(
+  state: ModComponentState
+): Promise<void> {
+  await setReduxStorage(
+    STORAGE_KEY,
+    state,
+    getMaxMigrationsVersion(migrations)
+  );
 }
 
 export const persistExtensionOptionsConfig = {
@@ -74,7 +78,7 @@ export const persistExtensionOptionsConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 2,
+  version: 3,
   // https://github.com/rt2zz/redux-persist#migrations
   migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
 };

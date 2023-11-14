@@ -1,21 +1,22 @@
-import { type BlockPipeline, type Branch } from "@/blocks/types";
+import { type BrickPipeline, type Branch } from "@/bricks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import {
-  type BlockArgContext,
-  type MessageContext,
-  type ServiceContext,
-  type UserOptions,
-  type UUID,
-} from "@/core";
 import { expectContext } from "@/utils/expectContext";
-import { HeadlessModeError } from "@/blocks/errors";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
+import { HeadlessModeError } from "@/bricks/errors";
 import { type Args, mapArgs, type MapOptions } from "@/runtime/mapArgs";
 import { type Except } from "type-fest";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type ApiVersionOptions } from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors/businessErrors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { type UUID } from "@/types/stringTypes";
+import {
+  type BrickArgsContext,
+  type ServiceContext,
+} from "@/types/runtimeTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type RendererRunPayload } from "@/types/rendererTypes";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { type RegistryId } from "@/types/registryTypes";
 
 type RunMetadata = {
   /**
@@ -34,15 +35,15 @@ type RunMetadata = {
 
 type RunPipelineParams = {
   nonce: UUID;
-  pipeline: BlockPipeline;
-  context: BlockArgContext;
+  pipeline: BrickPipeline;
+  context: BrickArgsContext;
   options: ApiVersionOptions;
   meta: RunMetadata;
   messageContext: MessageContext;
 };
 
 /**
- * Run a BlockPipeline in the contentScript, passing back the information required to run the renderer
+ * Run a BrickPipeline in the contentScript, passing back the information required to run the renderer
  * @param pipeline the block pipeline
  * @param context the context, including @input, @options, and services
  * @param nonce a nonce to help the caller correlate requests/responses. (This shouldn't be necessary in practice though
@@ -59,7 +60,7 @@ export async function runRendererPipeline({
   options,
   meta,
   messageContext,
-}: RunPipelineParams): Promise<RendererPayload> {
+}: RunPipelineParams): Promise<RendererRunPayload> {
   expectContext("contentScript");
 
   try {
@@ -67,7 +68,7 @@ export async function runRendererPipeline({
       pipeline,
       {
         input: context["@input"] ?? {},
-        optionsArgs: (context["@options"] ?? {}) as UserOptions,
+        optionsArgs: context["@options"] ?? {},
         // Pass null here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
         // it would be the page that contains the React tree (i.e., the frame of the sidebar)
         root: null,
@@ -101,24 +102,27 @@ export async function runRendererPipeline({
   throw new BusinessError("Pipeline does not include a renderer");
 }
 
-export async function runEffectPipeline({
+/**
+ * Run a pipeline in headless mode.
+ */
+export async function runHeadlessPipeline({
   pipeline,
   context,
   options,
   meta,
   messageContext,
-}: RunPipelineParams): Promise<void> {
+}: RunPipelineParams): Promise<unknown> {
   expectContext("contentScript");
 
   if (meta.extensionId == null) {
-    throw new Error("runEffectPipeline requires meta.extensionId");
+    throw new Error("runHeadlessPipeline requires meta.extensionId");
   }
 
-  await reducePipeline(
+  return reducePipeline(
     pipeline,
     {
       input: context["@input"] ?? {},
-      optionsArgs: (context["@options"] ?? {}) as UserOptions,
+      optionsArgs: context["@options"] ?? {},
       // Pass null here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
       // it would be the page that contains the React tree (i.e., the frame of the sidebar)
       root: null,
@@ -155,12 +159,28 @@ export async function runMapArgs({
   config,
   context,
   options,
+  blueprintId,
 }: {
   config: Args;
   context: UnknownObject;
-  options: Except<MapOptions, "implicitRender">;
+  options: Except<MapOptions, "implicitRender"> & {
+    /**
+     * True to extend the context with the mod variable.
+     * @since 1.7.34
+     */
+    extendModVariable: boolean;
+  };
+  blueprintId: RegistryId | null;
 }): Promise<unknown> {
   expectContext("contentScript");
 
-  return mapArgs(config, context, { ...options, implicitRender: null });
+  const extendedContext = extendModVariableContext(context, {
+    blueprintId,
+    options,
+    // The mod variable is only update when running a brick in a pipeline. It's not updated for `defer` expressions,
+    // e.g., when rendering items for a ListElement in the Document Builder.
+    update: false,
+  });
+
+  return mapArgs(config, extendedContext, { ...options, implicitRender: null });
 }

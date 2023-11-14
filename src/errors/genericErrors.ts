@@ -21,7 +21,7 @@
  * This helps avoids circular references.
  */
 
-import { type MessageContext } from "@/core";
+import { type MessageContext } from "@/types/loggerTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
@@ -31,7 +31,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
  *
  * This indicates an error in the PixieBrix code, of either:
  * - The endpoint is enforcing authentication when it should (e.g., it should return an empty response for
- * unauthenticated users, or
+ * unauthenticated users), or
  * - The client should not make the call if the extensions is not linked
  */
 export class EndpointAuthError extends Error {
@@ -87,4 +87,15 @@ export class PromiseCancelled extends Error {
 
 export class IncompatibleServiceError extends SuspiciousOperationError {
   override name = "IncompatibleServiceError";
+}
+
+export class InvalidTypeError extends Error {
+  override name = "InvalidTypeError";
+
+  public readonly context?: unknown;
+
+  constructor(message: string, context?: unknown) {
+    super(message);
+    this.context = context;
+  }
 }

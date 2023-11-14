@@ -23,15 +23,20 @@ import { persistReducer } from "redux-persist";
 import { appApi, useGetMeQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
+import integrationsSlice, {
+  persistIntegrationsConfig,
+} from "@/integrations/store/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { type Me } from "@/types/contract";
 
 function optionsStore(initialState?: any) {
   return configureStore({
     reducer: {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
-      services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+      integrations: persistReducer(
+        persistIntegrationsConfig,
+        integrationsSlice.reducer
+      ),
       settings: settingsSlice.reducer,
     },
     preloadedState: initialState,
@@ -102,6 +107,8 @@ describe("RequireAuth", () => {
   });
 
   test("loading state does not flash content", () => {
+    // FIXME: this is not a real internal state the app can be in. In order for the meQuery to be loading,
+    //  they must have a token, which implies there is a cached user in the auth state.
     mockMeQuery({
       isLoading: true,
     });

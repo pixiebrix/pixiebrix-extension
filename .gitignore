@@ -47,6 +47,7 @@ artifacts
 /scripts/bin/
 headers.json
 report.html
+pixiebrix-extension-*.zip
 
 # Storybook artifacts
 storybook-static

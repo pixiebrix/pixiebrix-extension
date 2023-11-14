@@ -15,14 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema, type UiSchema } from "@/core";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import type React from "react";
 import { type FieldInputMode } from "./fieldInputMode";
 import type * as Yup from "yup";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
-
-export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;
 
 export interface SchemaFieldProps {
   /**
@@ -111,3 +109,5 @@ export interface SchemaFieldProps {
    */
   inputRef?: React.MutableRefObject<HTMLElement>;
 }
+
+export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;

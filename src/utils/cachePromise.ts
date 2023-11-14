@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEqual } from "lodash";
+import { isEqual, remove } from "lodash";
 
 type SharedPromise<T = unknown> = {
   dependencies: unknown[];
@@ -34,6 +34,7 @@ async function cachePromise<T = unknown>(
   const match = promises.find((x) => isEqual(x.dependencies, dependencies));
 
   if (match) {
+    // Return existing promise
     return match.promise as Promise<T>;
   }
 
@@ -43,13 +44,9 @@ async function cachePromise<T = unknown>(
   try {
     return await promise;
   } catch {
-    // Remove failed promises so they can be retried
-    const index = promises.findIndex(
-      (x) => !isEqual(x.dependencies, dependencies)
-    );
-    if (index >= 0) {
-      promises.splice(index, 1);
-    }
+    remove(promises, (x) => isEqual(x.dependencies, dependencies));
+    // Return promise so caller can handle the rejection
+    return promise;
   }
 }
 

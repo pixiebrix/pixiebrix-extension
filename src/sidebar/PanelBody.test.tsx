@@ -18,94 +18,91 @@
 import React from "react";
 import { render } from "@/sidebar/testHelpers";
 import PanelBody from "@/sidebar/PanelBody";
-import { type RendererError } from "@/sidebar/types";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import blocksRegistry from "@/blocks/registry";
-import { HtmlRenderer } from "@/blocks/renderers/html";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import {
+  type RendererErrorPayload,
+  type RendererRunPayload,
+} from "@/types/rendererTypes";
+import { screen } from "shadow-dom-testing-library";
 
-jest.mock("@/blocks/registry", () => ({
-  __esModule: true,
-  default: {
-    lookup: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  },
-}));
-
-const lookupMock = blocksRegistry.lookup as jest.Mock;
+const extensionId = uuidv4();
+const blueprintId = registryIdFactory();
 
 describe("PanelBody", () => {
-  beforeEach(() => {
-    lookupMock.mockReset();
+  beforeAll(() => {
+    registerBuiltinBlocks();
   });
 
   it("renders application error", () => {
-    const payload: RendererError = {
+    const payload: RendererErrorPayload = {
       key: uuidv4(),
       error: serializeError(new Error("test error")),
       runId: uuidv4(),
-      extensionId: uuidv4(),
+      extensionId,
     };
 
-    const result = render(
+    const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{}}
+        context={{ extensionId, blueprintId }}
         payload={payload}
       />
     );
 
-    expect(result).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders business error", () => {
-    const payload: RendererError = {
+    const payload: RendererErrorPayload = {
       key: uuidv4(),
       error: serializeError(new BusinessError("test error")),
       runId: uuidv4(),
-      extensionId: uuidv4(),
+      extensionId,
     };
 
-    const result = render(
+    const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{}}
+        context={{ extensionId, blueprintId }}
         payload={payload}
       />
     );
 
-    expect(result).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders cancellation", () => {
-    const payload: RendererError = {
+    const payload: RendererErrorPayload = {
       key: uuidv4(),
       error: serializeError(new CancelError("test error")),
       runId: uuidv4(),
-      extensionId: uuidv4(),
+      extensionId,
     };
 
-    const result = render(
+    const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{}}
+        context={{ extensionId, blueprintId }}
         payload={payload}
       />
     );
 
-    expect(result).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("renders html brick", async () => {
-    const payload: RendererPayload = {
+    const payload: RendererRunPayload = {
       key: uuidv4(),
       runId: uuidv4(),
-      extensionId: uuidv4(),
+      extensionId,
       blockId: validateRegistryId("@pixiebrix/html"),
       args: {
         html: "<h1>Test</h1>",
@@ -113,13 +110,11 @@ describe("PanelBody", () => {
       ctxt: {},
     };
 
-    lookupMock.mockResolvedValue(new HtmlRenderer());
-
-    const result = render(
+    const { asFragment } = render(
       <PanelBody
         isRootPanel
         onAction={jest.fn()}
-        context={{}}
+        context={{ extensionId, blueprintId }}
         payload={payload}
       />
     );
@@ -127,6 +122,34 @@ describe("PanelBody", () => {
     await waitForEffect();
 
     // There's a shadow root in BodyContainer, so the snapshot cuts off at the div
-    expect(result).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it("delays loading indicator render", async () => {
+    const payload: RendererRunPayload = {
+      key: uuidv4(),
+      runId: uuidv4(),
+      extensionId,
+      blockId: validateRegistryId("@pixiebrix/html"),
+      args: {
+        html: "<h1>Test</h1>",
+      },
+      ctxt: {},
+    };
+
+    render(
+      <PanelBody
+        isRootPanel
+        onAction={jest.fn()}
+        context={{ extensionId, blueprintId }}
+        payload={payload}
+      />
+    );
+
+    expect(screen.queryByShadowText("Test")).not.toBeInTheDocument();
+
+    await waitForEffect();
+
+    expect(screen.getByShadowText("Test")).toBeVisible();
   });
 });

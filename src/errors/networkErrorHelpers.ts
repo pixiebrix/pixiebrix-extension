@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isObject } from "@/utils";
 import { type Except } from "type-fest";
 import { type AxiosError, type AxiosResponse } from "axios";
-import { isEmpty, isPlainObject } from "lodash";
+import { isEmpty } from "lodash";
 import { getReasonPhrase } from "http-status-codes";
+import { isObject } from "@/utils/objectUtils";
 
 /**
  * Axios offers its own serialization method, but it doesn't include the response.
@@ -49,7 +49,7 @@ export const NO_RESPONSE_MESSAGE =
  */
 export function selectNetworkErrorMessage(error: unknown): string | null {
   if (!isAxiosError(error)) {
-    return;
+    return null;
   }
 
   if (!navigator.onLine) {
@@ -74,6 +74,7 @@ export function selectNetworkErrorMessage(error: unknown): string | null {
   }
 
   // Likely a non-200 error. No special handling needed, getErrorMessage can handle it
+  return null;
 }
 
 /**
@@ -97,7 +98,7 @@ type BadRequestObjectData = {
   // the model? See: https://github.com/encode/django-rest-framework/issues/1450
   // If __all__ the  only key, it will still end up getting reported as the error message in getErrorMessage
   non_field_errors?: string[];
-  [field: string]: string[];
+  [field: string]: string[] | undefined;
 };
 // If an array of objects is passed to an endpoint, DRF will return an array of BadRequestObjectData
 type BadRequestData = BadRequestObjectData | BadRequestObjectData[];
@@ -111,7 +112,7 @@ type ClientErrorData = {
 export function isBadRequestObjectData(
   data: unknown
 ): data is BadRequestObjectData {
-  if (!isPlainObject(data)) {
+  if (!isObject(data)) {
     return false;
   }
 
@@ -132,8 +133,12 @@ function isClientErrorData(data: unknown): data is ClientErrorData {
  * @param response the API response
  */
 function isBadRequestResponse(
-  response: AxiosResponse
+  response?: AxiosResponse
 ): response is AxiosResponse<BadRequestData> {
+  if (!response) {
+    return false;
+  }
+
   if (response.status !== 400) {
     return false;
   }
@@ -153,10 +158,12 @@ function isBadRequestResponse(
 export function isSingleObjectBadRequestError(
   error: unknown
 ): error is AxiosError<BadRequestObjectData> {
+  if (!isAxiosError(error)) {
+    return false;
+  }
+
   return (
-    isAxiosError(error) &&
-    isBadRequestResponse(error.response) &&
-    !Array.isArray(error.response.data)
+    isBadRequestResponse(error.response) && !Array.isArray(error.response.data)
   );
 }
 
@@ -205,16 +212,14 @@ function selectServerErrorMessage(response: AxiosResponse): string | null {
       ? response.data.find((x) => isEmpty(x))
       : response.data;
 
-    // Prefer object-level errors
-    if (data?.non_field_errors) {
-      return data.non_field_errors[0];
+    if (!data) {
+      return null;
     }
 
-    // Take an arbitrary field
-    const fieldMessages = Object.values(data)[0];
+    const objectLevelError = data.non_field_errors?.[0];
+    const arbitraryFieldMessage = Object.values(data)[0]?.[0];
 
-    // Take an arbitrary message
-    return fieldMessages[0];
+    return objectLevelError ?? arbitraryFieldMessage ?? null;
   }
 
   // Handle 4XX responses created by DRF
@@ -227,6 +232,7 @@ function selectServerErrorMessage(response: AxiosResponse): string | null {
   // to avoid dumping JSON to the user
   if (
     typeof response.data === "string" &&
+    typeof response.headers["content-type"] === "string" &&
     ["text/plain", "application/json"].includes(
       response.headers["content-type"]
     )

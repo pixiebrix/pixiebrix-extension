@@ -9,12 +9,13 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    # The tests currently take ~16 minutes to run. Anything longer is probably due to a flaky test.
+    timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
       - run: npm run test -- --coverage
@@ -28,12 +29,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
           name: extension-test-coverage
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v1.0.36
+        uses: Wandalen/wretry.action@v1.3.0
         with:
           action: codecov/codecov-action@v3
           with: |
@@ -51,10 +52,10 @@ jobs:
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
       - run: npm run build:webpack
@@ -62,6 +63,7 @@ jobs:
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
           SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
@@ -80,8 +82,13 @@ jobs:
           if-no-files-found: error
 
       # The polyfill cannot be used outside the extension context
-      - run: "! grep 'loaded in a browser extension' dist/pageScript.js"
+      - run: "! grep 'loaded in a browser extension' dist/pageScript.js --quiet"
         name: Detect browser-polyfill in pageScript.js
+
+      # The messenger cannot be executed twice; only load it in contentScriptCore
+      # https://github.com/pixiebrix/webext-messenger/issues/88
+      - run: "! grep '__getTabData' dist/loadActivationEnhancements.js dist/contentScript.js --quiet"
+        name: Detect webext-messenger in loadActivationEnhancements.js and dist/contentScript.js
 
       - uses: actions/upload-artifact@v3
         name: Save report.html
@@ -104,10 +111,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
       - run: npm run build:scripts
@@ -125,44 +132,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
       - run: npm run build:typescript
+      # Prevent regressions in the files that have already been made strictNullCheck-compliant
+      - run: npm run build:strictNullChecks
 
   lint:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: package.json
           cache: npm
       - run: npm ci
-      - run: npm run lint -- --quiet
-
-  circular-deps:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: ".nvmrc"
-          cache: npm
-      # Fixed version to avoid random breaks. Not in package.json due to #1084
-      - run: npm install --global madge@5.0.1
-      - run: npm run madge:circular
-        name: Detect circular dependencies
+      - run: npm run lint:full
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
       - uses: pre-commit/action@v3.0.0

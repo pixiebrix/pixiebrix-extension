@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import { validateRegistryId } from "@/types/helpers";
-import { joinName } from "@/utils";
 import { useField } from "formik";
 import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { joinName } from "@/utils/formUtils";
+import useAsyncEffect from "use-async-effect";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -33,11 +34,11 @@ const DocumentOptions: React.FC<{
   const [{ value }, , { setValue }] =
     useField<DocumentElement[]>(documentBodyName);
 
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (!Array.isArray(value)) {
-      setValue([]);
+      await setValue([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- exclude setValue because reference changes on render
+    // Exclude setValue because reference changes on render
   }, [value]);
 
   return (

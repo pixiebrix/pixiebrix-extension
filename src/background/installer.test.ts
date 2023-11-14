@@ -33,6 +33,10 @@ jest.mock("@/auth/token", () => ({
   getUserData: jest.fn().mockResolvedValue(null),
 }));
 
+jest.mock("@/store/syncFlags", () => ({
+  syncFlagOn: jest.fn().mockResolvedValue(false),
+}));
+
 jest.mock("@/background/locator", () => ({
   locator: {
     locateAllForService: jest.fn().mockResolvedValue([]),
@@ -42,16 +46,12 @@ jest.mock("@/background/locator", () => ({
 const createTabMock = browser.tabs.create as jest.Mock;
 const updateTabMock = browser.tabs.update as jest.Mock;
 const queryTabsMock = browser.tabs.query as jest.Mock;
-const getExtensionUrlMock = browser.runtime.getURL as jest.Mock;
 const isLinkedMock = auth.isLinked as jest.Mock;
 const getExtensionTokenMock = auth.getExtensionToken as jest.Mock;
 const getUserData = auth.getUserData as jest.Mock;
 const locateAllForServiceMock = locator.locateAllForService as jest.Mock;
 
 beforeEach(() => {
-  getExtensionUrlMock.mockImplementation(
-    (resource: string) => `chrome-extension://abc123/${resource}`
-  );
   jest.clearAllMocks();
 });
 
@@ -68,7 +68,7 @@ describe("openInstallPage", () => {
       url: APP_BASE_URL,
       active: true,
     });
-    expect(createTabMock.mock.calls.length).toBe(0);
+    expect(createTabMock.mock.calls).toHaveLength(0);
   });
 
   it("Opens Extension Console in same tab for enterprise partner", async () => {
@@ -80,10 +80,10 @@ describe("openInstallPage", () => {
     ]);
     await openInstallPage();
     expect(updateTabMock).toHaveBeenCalledWith(1, {
-      url: "chrome-extension://abc123/options.html#/start?hostname=enterprise.com",
+      url: "chrome-extension://abcxyz/options.html#/start?hostname=enterprise.com",
       active: true,
     });
-    expect(createTabMock.mock.calls.length).toBe(0);
+    expect(createTabMock.mock.calls).toHaveLength(0);
   });
 
   it("Opens Admin Console in same tab for community partner", async () => {
@@ -98,14 +98,14 @@ describe("openInstallPage", () => {
       url: APP_BASE_URL,
       active: true,
     });
-    expect(createTabMock.mock.calls.length).toBe(0);
+    expect(createTabMock.mock.calls).toHaveLength(0);
   });
 
   it("Opens new Extension Console tab if no Admin Console onboarding tab found", async () => {
     queryTabsMock.mockResolvedValue([]);
     await openInstallPage();
     expect(createTabMock).toHaveBeenCalledWith({ url: APP_BASE_URL });
-    expect(updateTabMock.mock.calls.length).toBe(0);
+    expect(updateTabMock.mock.calls).toHaveLength(0);
   });
 });
 
@@ -115,8 +115,8 @@ describe("checkPartnerAuth", () => {
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls.length).toBe(0);
-    expect(updateTabMock.mock.calls.length).toBe(0);
+    expect(createTabMock.mock.calls).toHaveLength(0);
+    expect(updateTabMock.mock.calls).toHaveLength(0);
   });
 
   it("skip if no partner", async () => {
@@ -128,8 +128,8 @@ describe("checkPartnerAuth", () => {
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls.length).toBe(0);
-    expect(updateTabMock.mock.calls.length).toBe(0);
+    expect(createTabMock.mock.calls).toHaveLength(0);
+    expect(updateTabMock.mock.calls).toHaveLength(0);
   });
 
   it("skip if partner JWT install", async () => {
@@ -144,8 +144,8 @@ describe("checkPartnerAuth", () => {
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls.length).toBe(0);
-    expect(updateTabMock.mock.calls.length).toBe(0);
+    expect(createTabMock.mock.calls).toHaveLength(0);
+    expect(updateTabMock.mock.calls).toHaveLength(0);
   });
 
   it("opens extension console if linked with partner and no services", async () => {
@@ -165,11 +165,11 @@ describe("checkPartnerAuth", () => {
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls.length).toBe(1);
+    expect(createTabMock.mock.calls).toHaveLength(1);
     expect(createTabMock).toHaveBeenCalledWith({
-      url: "chrome-extension://abc123/options.html",
+      url: "chrome-extension://abcxyz/options.html",
     });
-    expect(updateTabMock.mock.calls.length).toBe(0);
+    expect(updateTabMock.mock.calls).toHaveLength(0);
   });
 
   it("opens extension console in same tab if linked with partner and no services and extension console open", async () => {
@@ -190,10 +190,10 @@ describe("checkPartnerAuth", () => {
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls.length).toBe(0);
-    expect(updateTabMock.mock.calls.length).toBe(1);
+    expect(createTabMock.mock.calls).toHaveLength(0);
+    expect(updateTabMock.mock.calls).toHaveLength(1);
     expect(updateTabMock).toHaveBeenCalledWith(1, {
-      url: "chrome-extension://abc123/options.html",
+      url: "chrome-extension://abcxyz/options.html",
       active: true,
     });
   });
@@ -214,7 +214,7 @@ describe("checkPartnerAuth", () => {
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls.length).toBe(0);
-    expect(updateTabMock.mock.calls.length).toBe(0);
+    expect(createTabMock.mock.calls).toHaveLength(0);
+    expect(updateTabMock.mock.calls).toHaveLength(0);
   });
 });

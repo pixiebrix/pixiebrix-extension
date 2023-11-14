@@ -18,24 +18,46 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import servicesSlice from "@/store/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import { createRenderWithWrappers } from "@/testUtils/testHelpers";
+import {
+  createRenderHookWithWrappers,
+  createRenderWithWrappers,
+} from "@/testUtils/testHelpers";
+import { appApi } from "@/services/api";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
+import sessionSlice from "@/pageEditor/slices/sessionSlice";
 
-const renderWithWrappers = createRenderWithWrappers(() =>
+export const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       options: extensionsSlice.reducer,
       sidebar: sidebarSlice.reducer,
+      session: sessionSlice.reducer,
       settings: settingsSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
     },
-  })
+    middleware(getDefaultMiddleware) {
+      return getDefaultMiddleware()
+        .concat(appApi.middleware)
+        .concat(modDefinitionsMiddleware)
+        .concat(sessionChangesMiddleware);
+    },
+  });
+
+const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
+const renderHookWithWrappers = createRenderHookWithWrappers(
+  configureStoreForTests
 );
 
 // eslint-disable-next-line import/export -- re-export RTL
 export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
+export { renderHookWithWrappers as renderHook };

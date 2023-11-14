@@ -20,7 +20,7 @@ import SelectWidget, {
   type Option,
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedServiceConfiguration } from "@/core";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";
@@ -29,10 +29,10 @@ import { BusinessError } from "@/errors/businessErrors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type OptionsFactory<T = unknown> = (
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   factoryArgs?: UnknownObject
 ) => Promise<Array<Option<T>>>;
 
@@ -42,13 +42,13 @@ type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
 > & {
   isClearable?: boolean;
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
-  config: SanitizedServiceConfiguration | null;
+  config: SanitizedIntegrationConfig | null;
   factoryArgs?: UnknownObject;
   loadingMessage?: string;
 };
 
 export function useOptionsResolver<T>(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>,
   factoryArgs: UnknownObject
 ): AsyncState<Array<Option<T>>> {
@@ -71,6 +71,7 @@ export function useOptionsResolver<T>(
 
 /**
  * Widget for selecting values retrieved from a 3rd party API
+ * @see AsyncRemoteSelectWidget
  */
 const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   config,

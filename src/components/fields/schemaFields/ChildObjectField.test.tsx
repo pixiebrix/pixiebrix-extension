@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleMode"] }] */
+
 import React from "react";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { render } from "@/pageEditor/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -64,6 +66,10 @@ describe("ChildObjectField", () => {
 
     // Starts as Exclude because it's not required
     expectToggleMode(container, "toggle-data.InputValue", "Exclude");
-    await expectToggleOptions(container, ["string", "var", "omit"]);
+    await expectToggleOptions("toggle-data.InputValue", [
+      "string",
+      "var",
+      "omit",
+    ]);
   });
 });

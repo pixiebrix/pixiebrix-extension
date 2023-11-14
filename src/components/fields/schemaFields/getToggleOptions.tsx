@@ -6,18 +6,27 @@ import {
   type OmitOption,
   type StringOption,
 } from "./widgets/templateToggleWidgetTypes";
-import { type ExpressionType, type Schema } from "@/core";
-import { isTemplateExpression } from "@/runtime/mapArgs";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import { type CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
 import {
-  isKeyStringField,
-  isSelectField,
   isDatabaseField,
+  isGoogleSheetIdField,
   isIconField,
+  isKeyStringField,
+  isLabelledEnumField,
+  isSelectField,
+  isSimpleServiceField,
 } from "./fieldTypeCheckers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
+import { IntegrationDependencyFieldDescription } from "@/components/fields/schemaFields/integrations/IntegrationDependencyField";
+import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
+import { type Schema } from "@/types/schemaTypes";
+import { type ExpressionType } from "@/types/runtimeTypes";
+import { isTemplateExpression } from "@/utils/expressionUtils";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -134,6 +143,13 @@ export function getToggleOptions({
     }
   }
 
+  for (const mode of customToggleModes) {
+    // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
+    if (mode.match(fieldSchema)) {
+      pushOptions(mode.option);
+    }
+  }
+
   if (isKeyStringField(fieldSchema)) {
     pushOptions({
       label: "Key",
@@ -146,17 +162,10 @@ export function getToggleOptions({
     return options;
   }
 
-  for (const mode of customToggleModes) {
-    // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
-    if (mode.match(fieldSchema)) {
-      pushOptions(mode.option);
-    }
-  }
-
   if (isDatabaseField(fieldSchema)) {
     pushOptions({
       label: "Database",
-      value: "database",
+      value: "select",
       symbol: <OptionIcon icon="select" />,
       Widget: widgetsRegistry.DatabaseWidget,
       interpretValue: () =>
@@ -174,7 +183,7 @@ export function getToggleOptions({
   if (isIconField(fieldSchema)) {
     pushOptions({
       label: "Icon",
-      value: "icon",
+      value: "select",
       symbol: <OptionIcon icon="select" />,
       Widget: widgetsRegistry.IconWidget,
       interpretValue: () => null,
@@ -186,11 +195,43 @@ export function getToggleOptions({
     return options;
   }
 
-  const multiSchemas = [
-    ...(fieldSchema.anyOf ?? []),
-    ...(fieldSchema.oneOf ?? []),
-    ...(fieldSchema.allOf ?? []),
-  ];
+  // Let the multi-schema handling do its thing, don't check here
+  if (isSimpleServiceField(fieldSchema)) {
+    pushOptions({
+      label: "Integration",
+      value: "select",
+      symbol: <FontAwesomeIcon icon={faCloud} fixedWidth />,
+      Widget: widgetsRegistry.ServiceWidget,
+      description: (
+        <IntegrationDependencyFieldDescription schema={fieldSchema} />
+      ),
+      interpretValue: () => null, // ServiceWidget has logic that will make this null anyway
+    });
+    handleOptionalValue();
+    return options;
+  }
+
+  if (isGoogleSheetIdField(fieldSchema)) {
+    pushOptions({
+      label: "Sheet",
+      value: "string",
+      symbol: <FontAwesomeIcon icon={faFileAlt} fixedWidth />,
+      Widget: widgetsRegistry.SheetsFileWidget,
+      interpretValue: () => "",
+    });
+    handleVarOption();
+    handleOptionalValue();
+    return options;
+  }
+
+  // Labelled enum fields are handled by isSelectFieldCheck
+  const multiSchemas = isLabelledEnumField(fieldSchema)
+    ? []
+    : [
+        ...(fieldSchema.anyOf ?? []),
+        ...(fieldSchema.oneOf ?? []),
+        ...(fieldSchema.allOf ?? []),
+      ];
 
   const anyType = isEmpty(multiSchemas) && !fieldSchema.type;
 
@@ -234,12 +275,19 @@ export function getToggleOptions({
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     isEmpty(fieldSchema)
   ) {
+    const custom = isCustomizableObjectSchema(fieldSchema);
+
     // Don't allow editing objects inside other objects
     const Widget = isObjectProperty
-      ? widgetsRegistry.WorkshopMessageWidget
+      ? custom
+        ? widgetsRegistry.WorkshopMessageWidget
+        : widgetsRegistry.FixedInnerObjectWidget
       : widgetsRegistry.ObjectWidget;
     pushOptions({
-      label: "Object properties",
+      label:
+        Widget === widgetsRegistry.FixedInnerObjectWidget
+          ? "Advanced properties"
+          : "Object properties",
       value: "object",
       symbol: <OptionIcon icon="object" />,
       Widget,
@@ -276,6 +324,7 @@ export function getToggleOptions({
     });
   }
 
+  // Select fields will match the basic string check also
   if (fieldSchema.type === "string" || anyType) {
     pushOptions(textOption);
     handleVarOption();
@@ -351,7 +400,12 @@ export function getToggleOptions({
       isArrayItem,
       allowExpressions,
     }).map((option) => {
-      option.description = subSchema.description;
+      // Only use the schema description if a custom description wasn't already
+      // set for the input mode option
+      if (!option.description) {
+        option.description = subSchema.description;
+      }
+
       return option;
     });
   });

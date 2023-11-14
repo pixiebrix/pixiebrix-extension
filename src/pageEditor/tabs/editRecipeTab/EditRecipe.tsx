@@ -21,16 +21,14 @@ import {
   selectActiveRecipeId,
   selectDirtyMetadataForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { type RecipeMetadataFormState } from "@/types/definitions";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import Effect from "@/pageEditor/components/Effect";
+import Effect from "@/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./EditRecipe.module.scss";
-import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
@@ -38,7 +36,10 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import Alert from "@/components/Alert";
 import { createSelector } from "reselect";
 import { lt } from "semver";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
+import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -64,7 +65,11 @@ const selectFirstExtension = createSelector(
 
 const EditRecipe: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipe, isFetching, error } = useRecipe(recipeId);
+  const {
+    data: recipe,
+    isFetching,
+    error,
+  } = useOptionalModDefinition(recipeId);
 
   // Select a single extension for the recipe to check the installed version.
   // We rely on the assumption that every extension in the recipe has the same version.
@@ -81,7 +86,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
   const savedMetadata = recipe?.metadata;
   const metadata = dirtyMetadata ?? savedMetadata;
 
-  const initialFormState: RecipeMetadataFormState = {
+  const initialFormState: ModMetadataFormState = {
     id: metadata?.id,
     name: metadata?.name,
     version: metadata?.version,
@@ -90,7 +95,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
-    (metadata: RecipeMetadataFormState) => {
+    (metadata: ModMetadataFormState) => {
       dispatch(actions.editRecipeMetadata(metadata));
     },
     [dispatch]
@@ -113,51 +118,51 @@ const EditRecipe: React.VoidFunctionComponent = () => {
   }
 
   const renderBody: RenderBody = ({ values }) => (
-    <>
+    <IntegrationsSliceModIntegrationsContextAdapter>
       <Effect values={values} onChange={updateRedux} delayMillis={100} />
 
       <Card>
-        <Card.Header>Blueprint Metadata</Card.Header>
+        <Card.Header>Mod Metadata</Card.Header>
         <Card.Body>
           {showOldRecipeWarning && (
             <Alert variant="warning">
-              You are editing version {installedRecipeVersion} of this
-              blueprint, the latest version is {latestRecipeVersion}. To get the
-              latest version,{" "}
+              You are editing version {installedRecipeVersion} of this mod, the
+              latest version is {latestRecipeVersion}. To get the latest
+              version,{" "}
               <a
-                href="/options.html#/blueprints"
+                href="/options.html#/mods"
                 target="_blank"
-                title="Re-activate the blueprint"
+                title="Re-activate the mod"
               >
-                re-activate the blueprint
+                re-activate the mod
               </a>
             </Alert>
           )}
           <ConnectedFieldTemplate
             name="id"
-            label="Blueprint ID"
-            description={FieldDescriptions.BLUEPRINT_ID}
+            label="Mod ID"
+            description={FieldDescriptions.MOD_ID}
             // Blueprint IDs may not be changed after creation
             readOnly
           />
           <ConnectedFieldTemplate
             name="name"
             label="Name"
-            description={FieldDescriptions.BLUEPRINT_NAME}
+            description={FieldDescriptions.MOD_NAME}
           />
           <ConnectedFieldTemplate
             name="version"
             label="Version"
-            description={FieldDescriptions.BLUEPRINT_VERSION}
+            description={FieldDescriptions.MOD_VERSION}
           />
           <ConnectedFieldTemplate
             name="description"
             label="Description"
-            description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
+            description={FieldDescriptions.MOD_DESCRIPTION}
           />
         </Card.Body>
       </Card>
-    </>
+    </IntegrationsSliceModIntegrationsContextAdapter>
   );
 
   return (

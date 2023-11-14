@@ -17,19 +17,17 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import { partial } from "lodash";
-import { joinName } from "@/utils";
 import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
-import { type Trigger } from "@/extensionPoints/sidebarExtension";
+import { type Trigger } from "@/starterBricks/sidebarExtension";
 import { useField, useFormikContext } from "formik";
-import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type DebounceOptions } from "@/extensionPoints/types";
+import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type DebounceOptions } from "@/starterBricks/types";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import { joinName } from "@/utils/formUtils";
 
 const SidebarConfiguration: React.FC<{
   isLocked: boolean;
@@ -50,71 +48,67 @@ const SidebarConfiguration: React.FC<{
     const nextTrigger = currentTarget.value as Trigger;
 
     if (nextTrigger === "custom") {
-      setFieldValue(fieldName("customEvent"), { eventName: "" });
+      void setFieldValue(fieldName("customEvent"), { eventName: "" });
     } else {
-      setFieldValue(fieldName("customEvent"), null);
+      void setFieldValue(fieldName("customEvent"), null);
     }
 
     if (nextTrigger !== "manual" && debounce == null) {
       // Add debounce by default, because the selection event fires for every event when clicking and dragging
-      setFieldValue(fieldName("debounce"), {
+      void setFieldValue(fieldName("debounce"), {
         waitMillis: 250,
         leading: false,
         trailing: true,
       });
     } else if (nextTrigger === "manual") {
-      setFieldValue(fieldName("debounce"), null);
+      void setFieldValue(fieldName("debounce"), null);
     }
 
-    setFieldValue(fieldName("trigger"), currentTarget.value);
+    void setFieldValue(fieldName("trigger"), currentTarget.value);
   };
 
   return (
-    <Card>
-      <FieldSection title="Configuration">
+    <>
+      <ConnectedFieldTemplate
+        name="extension.heading"
+        label="Tab title"
+        description="The text that will appear in the tab along the top of the Sidebar Panel"
+      />
+
+      <UrlMatchPatternField
+        name="extensionPoint.definition.isAvailable.matchPatterns"
+        {...makeLockableFieldProps("Sites", isLocked)}
+      />
+
+      <ConnectedFieldTemplate
+        name={fieldName("trigger")}
+        as="select"
+        description="Event to refresh the panel"
+        onChange={onTriggerChange}
+        {...makeLockableFieldProps("Trigger", isLocked)}
+      >
+        <option value="load">Page Load / Navigation</option>
+        <option value="selectionchange">Selection Change</option>
+        <option value="statechange">State Change</option>
+        <option value="custom">Custom Event</option>
+        <option value="manual">Manual</option>
+      </ConnectedFieldTemplate>
+
+      {trigger === "custom" && (
         <ConnectedFieldTemplate
-          name="extension.heading"
-          label="Heading"
-          description="Panel heading to show in the sidebar"
+          title="Custom Event"
+          name={fieldName("customEvent", "eventName")}
+          description="The custom event name"
+          {...makeLockableFieldProps("Custom Event", isLocked)}
         />
+      )}
 
-        <UrlMatchPatternField
-          name="extensionPoint.definition.isAvailable.matchPatterns"
-          {...makeLockableFieldProps("Sites", isLocked)}
-        />
-      </FieldSection>
-
-      <FieldSection title="Panel Refresh">
-        <ConnectedFieldTemplate
-          name={fieldName("trigger")}
-          as="select"
-          description="Event to refresh the panel"
-          onChange={onTriggerChange}
-          {...makeLockableFieldProps("Trigger", isLocked)}
-        >
-          <option value="load">Page Load / Navigation</option>
-          <option value="selectionchange">Selection Change</option>
-          <option value="statechange">State Change</option>
-          <option value="custom">Custom Event</option>
-          <option value="manual">Manual</option>
-        </ConnectedFieldTemplate>
-
-        {trigger === "custom" && (
-          <ConnectedFieldTemplate
-            title="Custom Event"
-            name={fieldName("customEvent", "eventName")}
-            description="The custom event name"
-            {...makeLockableFieldProps("Custom Event", isLocked)}
-          />
-        )}
-
-        <DebounceFieldSet isLocked={isLocked} />
-      </FieldSection>
+      <DebounceFieldSet isLocked={isLocked} />
 
       <MatchRulesSection isLocked={isLocked} />
 
       <ExtraPermissionsSection />
-    </Card>
+    </>
   );
 };
 

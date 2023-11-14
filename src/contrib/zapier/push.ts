@@ -15,21 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { proxyService } from "@/background/messenger/api";
-import { Effect, type UnknownObject } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type Schema,
-  type SchemaProperties,
-} from "@/core";
-import { pixieServiceFactory } from "@/services/locator";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
 import { type Webhook } from "@/contrib/zapier/contract";
 import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 
@@ -49,7 +46,7 @@ export const ZAPIER_PERMISSIONS: Permissions.Permissions = {
   origins: ["https://hooks.zapier.com/hooks/*"],
 };
 
-export class PushZap extends Effect {
+export class PushZap extends EffectABC {
   constructor() {
     super(ZAPIER_ID, "Push data to Zapier", "Push data to Zapier");
   }
@@ -67,12 +64,12 @@ export class PushZap extends Effect {
   override permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
   async effect(
-    { pushKey, data }: BlockArg<{ pushKey: string; data: UnknownObject }>,
-    options: BlockOptions
+    { pushKey, data }: BrickArgs<{ pushKey: string; data: UnknownObject }>,
+    options: BrickOptions
   ): Promise<void> {
-    const { data: webhooks } = await proxyService<{
+    const { data: webhooks } = await performConfiguredRequestInBackground<{
       new_push_fields: Webhook[];
-    }>(await pixieServiceFactory(), {
+    }>(await pixiebrixConfigurationFactory(), {
       baseURL: await getBaseURL(),
       url: "/api/webhooks/hooks/",
       method: "get",
@@ -92,7 +89,7 @@ export class PushZap extends Effect {
       options.logger.warn("Invalid data for Zapier effect");
     }
 
-    await proxyService(null, {
+    await performConfiguredRequestInBackground(null, {
       url: webhook.url,
       method: "post",
       data: {

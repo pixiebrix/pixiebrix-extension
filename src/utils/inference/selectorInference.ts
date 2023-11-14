@@ -17,16 +17,22 @@
 
 import { compact, identity, intersection, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
+import type { CssSelectorType } from "css-selector-generator/types/types.js";
 import {
-  type CssSelectorType,
-  type CssSelectorMatch,
-} from "css-selector-generator/types/types";
-import { $safeFind } from "@/helpers";
-import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
+  CONTENT_SCRIPT_READY_ATTRIBUTE,
+  EXTENSION_POINT_DATA_ATTR,
+  PIXIEBRIX_DATA_ATTR,
+} from "@/domConstants";
 import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
-import { matchesAnyPattern } from "@/utils";
-import { escapeSingleQuotes } from "@/utils/escape";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+import {
+  getSiteSelectorHint,
+  SELECTOR_HINTS,
+  type SiteSelectorHint,
+} from "@/utils/inference/siteSelectorHints";
+import { escapeSingleQuotes, matchesAnyPattern } from "@/utils/stringUtils";
+import { $safeFind } from "@/utils/domUtils";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
+import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
 
 export const BUTTON_TAGS: string[] = [
   "li",
@@ -36,56 +42,13 @@ export const BUTTON_TAGS: string[] = [
   "input",
   "svg",
 ];
+
 const MENU_TAGS = ["ul", "tbody"];
-
-type SiteSelectorHint = {
-  /**
-   * Name for the rule hint-set.
-   */
-  siteName: string;
-  /**
-   * Return true if the these hints apply to the current site.
-   */
-  siteValidator: (element?: HTMLElement) => boolean;
-  badPatterns: CssSelectorMatch[];
-  uniqueAttributes: string[];
-  stableAnchors: CssSelectorMatch[];
-};
-
-const SELECTOR_HINTS: SiteSelectorHint[] = [
-  {
-    // Matches all sites using Salesforce's Lightning framework
-    // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/intro_components.htm
-    siteName: "Salesforce",
-    siteValidator: (element) =>
-      $(element).closest("[data-aura-rendered-by]").length > 0,
-    badPatterns: [
-      getAttributeSelectorRegex(
-        // Salesforce Aura component tracking
-        "data-aura-rendered-by"
-      ),
-
-      /#\\+\d+ \d+\\+:0/,
-      /#\w+[_-]\d+/,
-      /.*\.hover.*/,
-      /.*\.not-selected.*/,
-      /^\[name='leftsidebar'] */,
-    ],
-    uniqueAttributes: ["data-component-id"],
-    stableAnchors: [
-      ".consoleRelatedRecord",
-      /\.consoleRelatedRecord\d+/,
-      ".navexWorkspaceManager",
-      ".active",
-      ".oneConsoleTab",
-      ".tabContent",
-    ],
-  },
-];
 
 export const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
+  "role",
 
   // Data attributes people use in automated tests are unlikely to change frequently
   "data-cy", // Cypress
@@ -123,23 +86,6 @@ const UNSTABLE_SELECTORS = [
   ),
 ];
 
-function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
-  let siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator(element)
-  );
-  if (!siteSelectorHint) {
-    siteSelectorHint = {
-      siteName: "",
-      siteValidator: () => false,
-      badPatterns: [],
-      uniqueAttributes: [],
-      stableAnchors: [],
-    };
-  }
-
-  return siteSelectorHint;
-}
-
 function getUniqueAttributeSelectors(
   element: HTMLElement,
   siteSelectorHint: SiteSelectorHint
@@ -165,7 +111,9 @@ function getSelectorFromClass(className: string): string {
   return "." + [...classHelper.classList].join(".");
 }
 
-/** ID selectors and certain other attributes can uniquely identify items */
+/**
+ * Return true if a selector is likely to uniquely identify an element.
+ */
 function isSelectorUsuallyUnique(selector: string): boolean {
   return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
 }
@@ -173,7 +121,7 @@ function isSelectorUsuallyUnique(selector: string): boolean {
 /**
  * Return selectors sorted by quality
  * - getSelectorPreference
- * - length (lower is better)
+ * - textual length (lower is better)
  * @param selectors an array of selectors, or items with selector properties to sort
  * @param iteratee a method to select the selector field for an item
  *
@@ -206,7 +154,7 @@ export function sortBySelector<Item = string>(
  * -3  "[data-cy='b4da55']"
  * -2  '.iAmAUniqueGreatClassSelector' // it's rare case but happens when classname is unique
  * -1  '#parentId a' // tag name followed by parent unique Selector
- * -1  '[data-test-id='b4da55'] input' // tag name followed by parent unique Selector
+ * -1  '[data-test-id='b4da55'] input' // tag name preceded by parent unique Selector
  *  0  '.navItem'
  *  0  '.birdsArentReal'
  *  1  'a'
@@ -252,7 +200,7 @@ export function getSelectorPreference(selector: string): number {
   return 1;
 }
 
-const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
+const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
   "id",
   "tag",
   "class",
@@ -262,24 +210,10 @@ const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
 ];
 
 interface SafeCssSelectorOptions {
-  selectors?: Array<keyof typeof CssSelectorType>;
+  selectors?: CssSelectorType[];
   root?: Element;
   excludeRandomClasses?: boolean;
   allowMultiSelection?: boolean;
-}
-
-/**
- * Generates a regex to test attribute selectors generated by `css-selector-generator`,
- * to be used in the whitelist/blacklist arrays. The regex will match any selector with or
- * without a value specified: `[attr]`, `[attr='value']`
- * @example getAttributeSelectorRegex('name', 'aria-label')
- * @returns /^\[name(=|]$)|^\[aria-label(=|]$)/
- */
-export function getAttributeSelectorRegex(...attributes: string[]): RegExp {
-  // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
-  return new RegExp(
-    attributes.map((attribute) => `^\\[${attribute}(=|]$)`).join("|")
-  );
 }
 
 /**
@@ -291,7 +225,6 @@ export function safeCssSelector(
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
-    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
     root = undefined,
   }: SafeCssSelectorOptions = {}
 ): string {
@@ -338,7 +271,7 @@ export function safeCssSelector(
 }
 
 /**
- * Returns true if selectors match any of the same elements
+ * Returns true if selectors match any of the same elements.
  */
 function selectorsOverlap(
   lhs: string,
@@ -368,7 +301,6 @@ export function expandedCssSelector(
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
-    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
     root = undefined,
   }: SafeCssSelectorOptions = {}
 ): string {
@@ -395,6 +327,7 @@ export function expandedCssSelector(
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
     ...siteSelectorHint.stableAnchors,
+    ...siteSelectorHint.requiredSelectors,
   ];
 
   // Find ancestors of each user-selected element. Unlike single-element select, includes both
@@ -520,7 +453,7 @@ export function inferSelectors(
   root?: Element,
   excludeRandomClasses?: boolean
 ): string[] {
-  const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
+  const makeSelector = (allowed?: CssSelectorType[]) => {
     try {
       return safeCssSelector([element], {
         selectors: allowed,
@@ -551,11 +484,66 @@ export function inferSelectors(
   );
 }
 
+export type InferSelectorArgs = {
+  /**
+   * The root to generate the selector with respect to. Provide null to use the document.
+   */
+  root: HTMLElement | null;
+  /**
+   * True to exclude class names that appear to be randomly generated.
+   */
+  excludeRandomClasses: boolean;
+};
+
 /**
- * Returns true if selector uniquely identifies an element on the page
+ * Infer a selector that matches multiple elements.
+ * @param elements the example elements
+ * @param root the root element, or null to generate with respect to the document
+ * @param excludeRandomClasses true to attempt to exclude random classes, e.g. CSS module hashes
+ * @param shouldSelectSimilar true to expand the selector to match similar elements
+ * @see inferSingleElementSelector
  */
-function doesSelectOneElement(selector: string): boolean {
-  return $safeFind(selector).length === 1;
+export function inferMultiElementSelector({
+  elements,
+  root,
+  excludeRandomClasses,
+  shouldSelectSimilar,
+}: InferSelectorArgs & {
+  elements: HTMLElement[];
+  shouldSelectSimilar?: boolean;
+}): ElementInfo {
+  const selector = shouldSelectSimilar
+    ? expandedCssSelector(elements, {
+        root,
+        excludeRandomClasses,
+      })
+    : safeCssSelector(elements, {
+        root,
+        excludeRandomClasses,
+      });
+
+  const inferredSelectors = uniq([
+    selector,
+    // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
+    // ...inferSelectorsIncludingStableAncestors(elements[0]),
+  ]);
+
+  return {
+    selectors: inferredSelectors,
+    tagName: elements[0].tagName, // Will first element tag be enough/same for all elements?
+    parent: null,
+    isMulti: true,
+  };
+}
+
+/**
+ * Returns true if selector uniquely identifies a single element on the page.
+ */
+export function doesSelectOneElement(
+  selector: string,
+  parent?: HTMLElement | Document | JQuery<HTMLElement | Document>
+): boolean {
+  return $safeFind(selector, parent).length === 1;
 }
 
 export function getCommonAncestor(...args: HTMLElement[]): HTMLElement {
@@ -695,9 +683,9 @@ function getElementSelectors(target: Element): string[] {
   );
 
   return compact([
+    target.tagName.toLowerCase(),
     ...attributeSelectors,
     ...classSelectors,
-    target.tagName.toLowerCase(),
   ]);
 }
 

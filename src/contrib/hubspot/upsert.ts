@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { proxyService } from "@/background/messenger/api";
-import { type Schema, type BlockArg } from "@/core";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { partial } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
+import { type Schema } from "@/types/schemaTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 
 function makeProperties(
   obj: Record<string, unknown>,
@@ -33,7 +34,7 @@ function makeProperties(
     }));
 }
 
-export class AddUpdateContact extends Effect {
+export class AddUpdateContact extends EffectABC {
   constructor() {
     super(
       "hubspot/create-update-contact",
@@ -98,8 +99,8 @@ export class AddUpdateContact extends Effect {
     lastname,
     company,
     ...otherValues
-  }: BlockArg): Promise<void> {
-    const proxyHubspot = partial(proxyService, service);
+  }: BrickArgs): Promise<void> {
+    const proxyHubspot = partial(performConfiguredRequestInBackground, service);
 
     const properties = makeProperties({
       ...otherValues,
@@ -148,7 +149,7 @@ export class AddUpdateContact extends Effect {
   }
 }
 
-export class AddUpdateCompany extends Effect {
+export class AddUpdateCompany extends EffectABC {
   constructor() {
     super(
       "hubspot/create-update-company",
@@ -185,10 +186,10 @@ export class AddUpdateCompany extends Effect {
     required: ["website"],
   };
 
-  async effect(config: BlockArg): Promise<void> {
+  async effect(config: BrickArgs): Promise<void> {
     const { hubspot, website } = config;
 
-    const proxyHubspot = partial(proxyService, hubspot);
+    const proxyHubspot = partial(performConfiguredRequestInBackground, hubspot);
 
     if (!website) {
       console.error("Website is required", config);
@@ -197,7 +198,7 @@ export class AddUpdateCompany extends Effect {
 
     const properties = makeProperties(config, "name");
 
-    const hostName = new URL(website).hostname;
+    const hostName = new URL(String(website)).hostname;
 
     // @ts-expect-error come back and define types for the hubspot API
     const { results } = await proxyHubspot({

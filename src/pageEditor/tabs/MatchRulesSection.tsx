@@ -18,13 +18,13 @@
 import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import SelectorMatchField from "@/pageEditor/fields/SelectorMatchField";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import React from "react";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const MatchRulesSection: React.FunctionComponent<{
   isLocked: boolean;
 }> = ({ isLocked }) => (
-  <FieldSection title="Advanced: Match Rules">
+  <ConnectedCollapsibleFieldSection title="Advanced: Match Rules">
     <UrlPatternField
       name="extensionPoint.definition.isAvailable.urlPatterns"
       {...makeLockableFieldProps("URL Patterns", isLocked)}
@@ -34,7 +34,7 @@ const MatchRulesSection: React.FunctionComponent<{
       name="extensionPoint.definition.isAvailable.selectors"
       {...makeLockableFieldProps("Selectors", isLocked)}
     />
-  </FieldSection>
+  </ConnectedCollapsibleFieldSection>
 );
 
 export default MatchRulesSection;

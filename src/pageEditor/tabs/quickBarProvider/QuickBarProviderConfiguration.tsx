@@ -17,19 +17,18 @@
 
 import React, { type ChangeEvent } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField, useFormikContext } from "formik";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { type QuickBarProviderConfig } from "@/extensionPoints/quickBarProviderExtension";
-import { type QuickBarProviderFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type QuickBarProviderConfig } from "@/starterBricks/quickBarProviderExtension";
+import { type QuickBarProviderFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const QuickBarProviderConfiguration: React.FC<{
   isLocked: boolean;
@@ -41,73 +40,68 @@ const QuickBarProviderConfiguration: React.FC<{
   >("extension.rootAction");
 
   return (
-    <Card>
-      <FieldSection title="Configuration">
-        <UrlMatchPatternField
-          name="extensionPoint.definition.documentUrlPatterns"
-          {...makeLockableFieldProps("Sites", isLocked)}
-          description={
-            <span>
-              URL match patterns to show the menu item on. See{" "}
-              <a
-                href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <code>match_patterns</code> Documentation
-              </a>{" "}
-              for examples.
-            </span>
+    <>
+      <UrlMatchPatternField
+        name="extensionPoint.definition.documentUrlPatterns"
+        {...makeLockableFieldProps("Sites", isLocked)}
+        description={
+          <span>
+            URL match patterns to show the menu item on. See{" "}
+            <a
+              href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <code>match_patterns</code> Documentation
+            </a>{" "}
+            for examples.
+          </span>
+        }
+      />
+
+      <FieldTemplate
+        name="extension.rootAction"
+        label="Parent Action"
+        as={SwitchButtonWidget}
+        value={Boolean(rootActionField.value)}
+        description="Toggle on to show a parent action that contains child actions when selected"
+        onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
+          if (target.value) {
+            await setFieldValue("extension.rootAction", {
+              title: null,
+              icon: null,
+              requireActiveRoot: false,
+            });
+          } else {
+            await setFieldValue("extension.rootAction", null);
           }
-        />
-      </FieldSection>
+        }}
+      />
 
-      <FieldSection title="Parent Action">
-        <FieldTemplate
-          name="extension.rootAction"
-          label="Parent Action"
-          as={SwitchButtonWidget}
-          value={Boolean(rootActionField.value)}
-          description="Toggle on to show a parent action that contains child actions when selected"
-          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
-            if (target.value) {
-              setFieldValue("extension.rootAction", {
-                title: null,
-                icon: null,
-                requireActiveRoot: false,
-              });
-            } else {
-              setFieldValue("extension.rootAction", null);
-            }
-          }}
-        />
+      {rootActionField.value && (
+        <>
+          <ConnectedFieldTemplate
+            name="extension.rootAction.title"
+            label="Action Title"
+            description="Quick Bar action title"
+          />
 
-        {rootActionField.value && (
-          <>
-            <ConnectedFieldTemplate
-              name="extension.rootAction.title"
-              label="Action Title"
-              description="Quick Bar action title"
-            />
+          <ConnectedFieldTemplate
+            name="extension.rootAction.icon"
+            label="Action Icon"
+            as={IconWidget}
+            description="Icon to show in the Quick Bar for the action"
+          />
 
-            <ConnectedFieldTemplate
-              name="extension.rootAction.icon"
-              label="Action Icon"
-              as={IconWidget}
-              description="Icon to show in the Quick Bar for the action"
-            />
-
-            <ConnectedFieldTemplate
-              name="extension.rootAction.requireActiveRoot"
-              label="Require Active Root"
-              as={SwitchButtonWidget}
-              description="Toggle on to only generate actions when the parent action is selected"
-            />
-          </>
-        )}
-      </FieldSection>
-
-      <FieldSection title="Advanced">
+          <ConnectedFieldTemplate
+            name="extension.rootAction.requireActiveRoot"
+            label="Require Active Root"
+            as={SwitchButtonWidget}
+            description="Toggle on to only generate actions when the parent action is selected"
+          />
+        </>
+      )}
+      <ConnectedCollapsibleFieldSection title="Advanced">
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns"
           description={
@@ -120,10 +114,10 @@ const QuickBarProviderConfiguration: React.FC<{
           }
           {...makeLockableFieldProps("Automatic Permissions", isLocked)}
         />
-      </FieldSection>
+      </ConnectedCollapsibleFieldSection>
 
       <ExtraPermissionsSection />
-    </Card>
+    </>
   );
 };
 

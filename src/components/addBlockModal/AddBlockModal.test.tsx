@@ -16,70 +16,40 @@
  */
 
 import React from "react";
-import {
-  formStateFactory,
-  marketplaceListingFactory,
-  marketplaceTagFactory,
-} from "@/testUtils/factories";
 import { render, screen } from "@/pageEditor/testHelpers";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import * as api from "@/services/api";
-import { type RegistryId } from "@/core";
-import { type MarketplaceListing } from "@/types/contract";
-import { useAsyncIcon } from "@/components/asyncIcon";
-import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import blocksRegistry from "@/blocks/registry";
-import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import bricksRegistry from "@/bricks/registry";
+import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+
+import {
+  marketplaceListingFactory,
+  marketplaceTagFactory,
+} from "@/testUtils/factories/marketplaceFactories";
 
 // Need at least one item so callers see the registry as initialized
-blocksRegistry.register([echoBlock]);
-
-jest.mock("@/services/api", () => {
-  const originalModule = jest.requireActual("@/services/api");
-
-  return {
-    ...originalModule,
-    useGetMarketplaceTagsQuery: jest.fn(),
-    useGetMarketplaceListingsQuery: jest.fn(),
-  };
-});
-jest.mock("@/components/asyncIcon", () => ({
-  useAsyncIcon: jest.fn(),
-}));
-jest.mock("@/hooks/useTheme", () => ({
-  useGetTheme: jest.fn(),
-}));
+bricksRegistry.register([echoBrick]);
 
 beforeAll(() => {
   const tags = array(marketplaceTagFactory, 3)({ subtype: "role" });
-  (api.useGetMarketplaceTagsQuery as jest.Mock).mockReturnValue({
-    data: tags,
-    isLoading: false,
-  });
-  const listings: Record<RegistryId, MarketplaceListing> = {};
-  for (let i = 0; i < 10; i++) {
-    const listing = marketplaceListingFactory({ tags });
-    listings[listing.id as RegistryId] = listing;
-  }
+  const listings = array(marketplaceListingFactory, 10)({ tags });
 
-  (api.useGetMarketplaceListingsQuery as jest.Mock).mockReturnValue({
-    data: listings,
-    isLoading: false,
-  });
-
-  (useAsyncIcon as jest.Mock).mockReturnValue(faCube);
+  appApiMock.reset();
+  appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);
+  appApiMock.onGet("/api/marketplace/listings/").reply(200, listings);
 });
 
 describe("AddBlockModal", () => {
   test("it renders", async () => {
     const formState = formStateFactory();
-    const rendered = render(<AddBlockModal />, {
+    const { asFragment } = render(<AddBlockModal />, {
       setupRedux(dispatch) {
         dispatch(actions.addElement(formState));
         dispatch(actions.selectElement(formState.uuid));
@@ -95,15 +65,16 @@ describe("AddBlockModal", () => {
       //  See: https://github.com/testing-library/react-testing-library/issues/62
       container: document.body,
     });
+
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders with tag selected and search query", async () => {
     const formState = formStateFactory();
 
-    const rendered = render(<AddBlockModal />, {
+    const { asFragment } = render(<AddBlockModal />, {
       setupRedux(dispatch) {
         dispatch(actions.addElement(formState));
         dispatch(actions.selectElement(formState.uuid));
@@ -118,15 +89,18 @@ describe("AddBlockModal", () => {
       container: document.body,
     });
 
+    await waitForEffect();
+
     // Click the last tag
     const tags = screen.getAllByTestId("search-tag-item", {
       exact: false,
     });
+
     await userEvent.click(tags.at(-1));
 
     // Enter a query
     await userEvent.type(screen.getByTestId("tag-search-input"), "google");
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

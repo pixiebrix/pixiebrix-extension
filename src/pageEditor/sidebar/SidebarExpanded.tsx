@@ -16,13 +16,19 @@
  */
 
 import styles from "./Sidebar.module.scss";
-import React, { type FormEvent, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { sortBy } from "lodash";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Accordion, Button, Form, ListGroup } from "react-bootstrap";
+import {
+  Accordion,
+  Button,
+  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+  Form,
+  InputGroup,
+  ListGroup,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import hash from "object-hash";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
@@ -51,12 +57,14 @@ import AddExtensionPointButton from "./AddExtensionPointButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import { useDebounce } from "use-debounce";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
-  const { data: allRecipes, isLoading: isAllRecipesLoading } = useAllRecipes();
+  const { data: allRecipes, isLoading: isAllRecipesLoading } =
+    useAllModDefinitions();
 
   useEffect(() => {
     if (!isAllRecipesLoading) {
@@ -70,13 +78,9 @@ const SidebarExpanded: React.FunctionComponent<{
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
   const installed = useSelector(selectNotDeletedExtensions);
   const elements = useSelector(selectNotDeletedElements);
-  const {
-    availableInstalledIds,
-    unavailableInstalledCount,
-    availableDynamicIds,
-    unavailableDynamicCount,
-  } = useSelector(selectExtensionAvailability);
-  const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
+  const { availableInstalledIds, availableDynamicIds } = useSelector(
+    selectExtensionAvailability
+  );
 
   const recipes = useMemo(() => {
     const installedAndElements = [...installed, ...elements];
@@ -94,7 +98,12 @@ const SidebarExpanded: React.FunctionComponent<{
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
 
-  const [showAll, setShowAll] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const [debouncedQuery] = useDebounce(query, 250, {
+    trailing: true,
+    leading: false,
+  });
 
   const elementHash = hash(
     sortBy(
@@ -115,24 +124,18 @@ const SidebarExpanded: React.FunctionComponent<{
         elements,
         installed,
         recipes,
-        availableInstalledIds,
-        availableDynamicIds,
-        showAll,
         activeElementId,
         activeRecipeId,
-        expandedRecipeId,
+        query: debouncedQuery,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash and recipeHash to track changes
     [
       installed,
       elementHash,
       recipeHash,
-      availableDynamicIds,
-      showAll,
-      availableInstalledIds,
       activeElementId,
       activeRecipeId,
-      expandedRecipeId,
+      debouncedQuery,
     ]
   );
 
@@ -149,7 +152,7 @@ const SidebarExpanded: React.FunctionComponent<{
         firstElement == null
           ? // If there's no extensions in the Blueprint (empty Blueprint?), use the Blueprint's version
             recipe?.metadata?.version
-          : isExtension(firstElement)
+          : isModComponentBase(firstElement)
           ? firstElement._recipe.version
           : firstElement.recipe.version;
 
@@ -190,10 +193,10 @@ const SidebarExpanded: React.FunctionComponent<{
     return (
       <ExtensionEntry
         key={getIdForElement(item)}
+        extension={item}
         recipes={recipes}
         availableInstalledIds={availableInstalledIds}
         availableDynamicIds={availableDynamicIds}
-        extension={item}
       />
     );
   });
@@ -224,21 +227,35 @@ const SidebarExpanded: React.FunctionComponent<{
             <FontAwesomeIcon icon={faAngleDoubleLeft} />
           </Button>
         </div>
+      </div>
 
-        {unavailableCount ? (
-          <div className={styles.unavailable}>
-            <Form.Check
-              id="unavailable-extensions-checkbox"
-              type="checkbox"
-              label={`Show ${unavailableCount} unavailable`}
-              defaultChecked={showAll}
-              onChange={(event: FormEvent<HTMLInputElement>) => {
-                setShowAll(event.currentTarget.checked);
+      {/* Quick Filter */}
+      <div className={styles.searchWrapper}>
+        <div className={styles.searchContainer}>
+          <InputGroup>
+            <Form.Control
+              placeholder="Quick filter"
+              value={query}
+              onChange={({ target }) => {
+                setQuery(target.value);
               }}
             />
-          </div>
-        ) : null}
+          </InputGroup>
+          {query.length > 0 ? (
+            <Button
+              variant="link"
+              size="sm"
+              onClick={() => {
+                setQuery("");
+              }}
+            >
+              Clear
+            </Button>
+          ) : null}
+        </div>
       </div>
+
+      {/* Extension List */}
       <div className={styles.extensions}>
         <Accordion activeKey={expandedRecipeId}>
           <ListGroup>{listItems}</ListGroup>

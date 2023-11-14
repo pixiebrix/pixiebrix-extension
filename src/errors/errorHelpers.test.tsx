@@ -16,6 +16,7 @@
  */
 
 import {
+  formatSchemaValidationMessage,
   getErrorMessage,
   getErrorMessageWithCauses,
   hasSpecificErrorCause,
@@ -29,7 +30,11 @@ import {
 } from "@/errors/errorHelpers";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
-import { InputValidationError, OutputValidationError } from "@/blocks/errors";
+import {
+  InputValidationError,
+  OutputValidationError,
+  type SchemaValidationError,
+} from "@/bricks/errors";
 import { configureStore, isPlainObject } from "@reduxjs/toolkit";
 import axios, { type AxiosError } from "axios";
 import {
@@ -44,25 +49,14 @@ import {
   ClientRequestError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
-import MockAdapter from "axios-mock-adapter";
 import { uuidv4 } from "@/types/helpers";
 import { renderHook } from "@testing-library/react-hooks";
 import { appApi, useGetPackageQuery } from "@/services/api";
 import { Provider } from "react-redux";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { getLinkedApiClient } from "@/services/apiClient";
 import React from "react";
-
-const axiosMock = new MockAdapter(axios);
-
-jest.mock("@/services/apiClient", () => ({
-  getLinkedApiClient: jest.fn(),
-}));
-
-const getLinkedApiClientMock = getLinkedApiClient as jest.Mock;
-
-getLinkedApiClientMock.mockResolvedValue(axios.create());
+import { appApiMock } from "@/testUtils/appApiMock";
 
 function testStore() {
   return configureStore({
@@ -70,7 +64,6 @@ function testStore() {
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
       return getDefaultMiddleware().concat(appApi.middleware);
     },
     preloadedState: {},
@@ -201,6 +194,10 @@ describe("hasSpecificErrorCause BusinessError", () => {
 });
 
 describe("getErrorMessage", () => {
+  beforeEach(() => {
+    appApiMock.resetHandlers();
+  });
+
   test("handles string", () => {
     expect(getErrorMessage(TEST_MESSAGE)).toBe(TEST_MESSAGE);
   });
@@ -215,7 +212,7 @@ describe("getErrorMessage", () => {
   });
 
   test("handles axios error", async () => {
-    axiosMock
+    appApiMock
       .onGet()
       .reply(404, { detail: "These aren't the droids you're looking for" });
 
@@ -230,7 +227,7 @@ describe("getErrorMessage", () => {
   });
 
   test("handles serialized axios error", async () => {
-    axiosMock
+    appApiMock
       .onGet()
       .reply(404, { detail: "These aren't the droids you're looking for" });
 
@@ -248,7 +245,7 @@ describe("getErrorMessage", () => {
   });
 
   test("handles error message from RTK", async () => {
-    axiosMock
+    appApiMock
       .onGet()
       .reply(404, { detail: "These aren't the droids you're looking for" });
 
@@ -271,6 +268,63 @@ describe("getErrorMessage", () => {
     expect(getErrorMessage(serializeError(error))).toBe(
       "These aren't the droids you're looking for"
     );
+  });
+
+  test("if error object, return error message", () => {
+    const errorObject = { name: "Error", message: "error message" };
+    const message = getErrorMessage(errorObject, "default message");
+    expect(message).toEqual(errorObject.message);
+  });
+
+  test("if InputValidationError, prefer error message property if it exists", () => {
+    const inputValidationError = {
+      name: "InputValidationError",
+      message: "error message",
+      schema: {},
+      errors: [{ error: "error", keywordLocation: "#/foo" }],
+    } as InputValidationError;
+    const message = getErrorMessage(inputValidationError, "default message");
+    expect(message).toEqual(inputValidationError.message);
+  });
+
+  test("if InputValidationError with no message property, return first error", () => {
+    const firstError = { error: "error", keywordLocation: "#/foo" };
+    const secondError = { error: "second error", keywordLocation: "#/bar" };
+    const inputValidationError = {
+      schema: {},
+      errors: [firstError, secondError],
+    } as InputValidationError;
+    const message = getErrorMessage(inputValidationError, "default message");
+    expect(message).toBe(`${firstError.keywordLocation}: ${firstError.error}`);
+  });
+});
+
+const validationError = {
+  keywordLocation: "#/foo",
+  error: "Property bar does not match schema",
+} as SchemaValidationError["errors"][number];
+
+describe("formatSchemaValidationMessage", () => {
+  test("it returns a message in the form of 'keywordLocation: error'", () => {
+    const message = formatSchemaValidationMessage(validationError);
+    expect(message).toBe(
+      `${validationError.keywordLocation}: ${validationError.error}`
+    );
+  });
+
+  test("it returns just the error if no keyword location", () => {
+    const message = formatSchemaValidationMessage({
+      ...validationError,
+      keywordLocation: undefined,
+    });
+    expect(message).toEqual(validationError.error);
+  });
+
+  test("it returns empty string if no error or keyword location", () => {
+    const message = formatSchemaValidationMessage(
+      {} as SchemaValidationError["errors"][number]
+    );
+    expect(message).toBe("");
   });
 });
 
@@ -330,6 +384,14 @@ describe("getErrorMessageWithCauses", () => {
         "There was an error while fetching the page.
         420."
       `);
+  });
+
+  test("ignores duplicate error messages", () => {
+    expect(
+      getErrorMessageWithCauses(
+        new Error(FIRST_ERROR, { cause: new Error(FIRST_ERROR) })
+      )
+    ).toBe(`${FIRST_ERROR}.`);
   });
 });
 

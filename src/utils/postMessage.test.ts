@@ -18,13 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sleep } from "@/utils";
 import polyfill from "node:worker_threads";
 import { serializeError } from "serialize-error";
 import postMessage, {
   addPostMessageListener,
   type RequestPacket,
 } from "./postMessage";
+import { sleep } from "@/utils/timeUtils";
 
 (global as any).MessageChannel = polyfill.MessageChannel;
 (global as any).MessagePort = polyfill.MessagePort;
@@ -40,7 +40,8 @@ describe("postMessage", () => {
           payload: undefined,
         });
         expect(port).toBeInstanceOf(MessagePort);
-        port.postMessage({ response: "pong" });
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks config mismatch
+        port!.postMessage({ response: "pong" });
       },
     };
 
@@ -55,7 +56,8 @@ describe("postMessage", () => {
   test("post message and receive error", async () => {
     const channel = {
       postMessage(_: unknown, __: string, [port]: MessagePort[]): void {
-        port.postMessage({
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks config mismatch
+        port!.postMessage({
           error: serializeError(new Error("No balls found")),
         });
       },

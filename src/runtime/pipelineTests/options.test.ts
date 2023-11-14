@@ -15,36 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion } from "@/core";
-import blockRegistry from "@/blocks/registry";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
-
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("implicit use @options", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: "@options.message",
         },
@@ -65,7 +56,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     test("pass @options to brick", async () => {
       const pipeline = [
         {
-          id: contextBlock.id,
+          id: contextBrick.id,
           config: {},
         },
       ];
@@ -74,9 +65,11 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         { ...simpleInput({}), optionsArgs: { message: "Test message" } },
         testOptions(apiVersion)
       );
+
       expect(result).toStrictEqual({
         "@input": {},
         "@options": { message: "Test message" },
+        ...extraEmptyModStateContext(apiVersion),
       });
     });
   }

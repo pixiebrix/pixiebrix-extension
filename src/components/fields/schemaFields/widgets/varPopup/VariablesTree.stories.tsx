@@ -26,7 +26,7 @@ export default {
 } as ComponentMeta<typeof VariablesTree>;
 
 // Empty objects in the tree correspond to the ExistenceMap leaf
-const knownVars: any = {
+const knownVars = {
   "root:Array Composite Reader": {
     "@input": {
       description: {},
@@ -73,7 +73,7 @@ const knownVars: any = {
 const Template: Story<typeof VariablesTree> = () => {
   const source = "root:Array Composite Reader";
   const vars = knownVars[source];
-  return <VariablesTree vars={vars} onVarSelect={noop} />;
+  return <VariablesTree vars={vars} onVarSelect={noop} likelyVariable={null} />;
 };
 
 export const Default = Template.bind({});

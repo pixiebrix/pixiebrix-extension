@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { render } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotationAction } from "@/components/form/FieldAnnotation";
 
 describe("FieldAnnotationAlert", () => {
@@ -28,35 +28,56 @@ describe("FieldAnnotationAlert", () => {
   };
 
   test("renders error", () => {
-    const rendered = render(
+    const { asFragment } = render(
       <FieldAnnotationAlert
         type={AnnotationType.Error}
         message="Error annotation"
         actions={[action]}
       />
     );
-    expect(rendered.asFragment()).toMatchSnapshot();
+
+    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByText("Error annotation")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: /test action/i,
+      })
+    ).toBeInTheDocument();
   });
 
   test("renders warning", () => {
-    const rendered = render(
+    const { asFragment } = render(
       <FieldAnnotationAlert
         type={AnnotationType.Warning}
         message="Warning annotation"
         actions={[action]}
       />
     );
-    expect(rendered.asFragment()).toMatchSnapshot();
+
+    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByText("Warning annotation")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: /test action/i,
+      })
+    ).toBeInTheDocument();
   });
 
   test("renders info", () => {
-    const rendered = render(
+    const { asFragment } = render(
       <FieldAnnotationAlert
         type={AnnotationType.Info}
         message="Info annotation"
         actions={[action]}
       />
     );
-    expect(rendered.asFragment()).toMatchSnapshot();
+
+    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByText("Info annotation")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: /test action/i,
+      })
+    ).toBeInTheDocument();
   });
 });

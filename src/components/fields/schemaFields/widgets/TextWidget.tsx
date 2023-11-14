@@ -17,6 +17,7 @@
 
 import React, {
   type KeyboardEventHandler,
+  type MutableRefObject,
   useCallback,
   useContext,
   useEffect,
@@ -28,8 +29,6 @@ import { useField } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
-import { type Schema, type TemplateEngine } from "@/core";
-import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
@@ -40,6 +39,10 @@ import {
   makeTemplateExpression,
   makeVariableExpression,
 } from "@/runtime/expressionCreators";
+import { type Schema } from "@/types/schemaTypes";
+import { type TemplateEngine } from "@/types/runtimeTypes";
+import { isTemplateExpression } from "@/utils/expressionUtils";
+import { trimEndOnce } from "@/utils/stringUtils";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({
@@ -55,8 +58,47 @@ function schemaSupportsTemplates(schema: Schema): boolean {
   );
 }
 
-function isVarValue(value: string): boolean {
-  return value.startsWith("@") && !value.includes(" ");
+// Regex Breakdown
+//   -^: Assert the start of the string.
+//   -@: Check for a @ character at the beginning of the string.
+//   -(?!\d): Ensure the first character of the identifier is not a digit.
+//   -([\w$]+): Capture the initial identifier, which can consist of letters, digits, underscores, or dollar signs.
+//   -((\.[\w$]+)|(\[(\d+|"[^"]+")\]))*: Match any number of properties or array indices, separated by periods or enclosed in square brackets.\.[\w$]+: A property preceded by a period, consisting of letters, digits, underscores, or dollar signs.
+//   -\[(\d+|"[^"]+")\]: Either an array index consisting of one or more digits, or a property name wrapped in double quotes and containing any characters except double quotes, both enclosed in square brackets.
+//   -$: Assert the end of the string.
+const objectPathRegex =
+  // eslint-disable-next-line security/detect-unsafe-regex -- risky for long strings, but ok for var names
+  /^@(?!\d)([\w$]+)((\.[\w$]+)|(\[(\d+|"[^"]+"|'[^']+')]))*$/;
+
+// Regex to help detect if the user is typing a bracket expression on the end of a variable
+// eslint-disable-next-line security/detect-unsafe-regex -- risky for long strings, but ok for var names
+const unfinishedBracketExpressionRegex = /^(?<base>@.*)\[("[^"]*"?|\d*)?$/;
+
+/**
+ * Return true if the value is a valid variable expression
+ */
+export function isVarValue(value: string): boolean {
+  return objectPathRegex.test(value);
+}
+
+/**
+ * Returns true if the value is a valid variable expression or var-like expression while the user is typing
+ */
+export function isVarLike(value: string): boolean {
+  if (
+    isVarValue(value) ||
+    // User-just started typing a variable
+    value === "@" ||
+    // User is starting to access a sub property.
+    isVarValue(trimEndOnce(value, ".")) ||
+    // User is starting to access an array index, or property with whitespace.
+    isVarValue(trimEndOnce(value, "["))
+  ) {
+    return true;
+  }
+
+  const match = unfinishedBracketExpressionRegex.exec(value);
+  return match != null && isVarValue(match.groups.base);
 }
 
 const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
@@ -80,18 +122,15 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
 
-  const textAreaRef = useRef<HTMLTextAreaElement>();
+  const defaultTextAreaRef = useRef<HTMLTextAreaElement>();
+  const textAreaRef: MutableRefObject<HTMLTextAreaElement> =
+    (inputRef as MutableRefObject<HTMLTextAreaElement>) ?? defaultTextAreaRef;
 
   useEffect(() => {
     if (textAreaRef.current) {
       fitTextarea.watch(textAreaRef.current);
     }
-
-    // Sync the ref values
-    if (inputRef) {
-      inputRef.current = textAreaRef.current;
-    }
-  }, [textAreaRef.current]);
+  }, [textAreaRef]);
 
   useEffect(() => {
     if (focusInput) {
@@ -118,7 +157,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
         current.selectionEnd = current.textLength;
       }, 150);
     }
-  }, [focusInput]);
+  }, [textAreaRef, focusInput]);
 
   const supportsTemplates = useMemo(
     () => schemaSupportsTemplates(schema),
@@ -135,25 +174,30 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
 
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
-      const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
+      const onChange: React.ChangeEventHandler<HTMLInputElement> = async ({
         target,
       }) => {
-        const changeValue = target.value;
+        const nextValue = target.value;
         // Automatically switch to var if user types "@" in the input
-        if (templateEngine !== "var" && isVarValue(changeValue)) {
-          setValue(makeVariableExpression(changeValue));
+        if (
+          templateEngine !== "var" &&
+          (isVarValue(nextValue) || nextValue === "@")
+        ) {
+          await setValue(makeVariableExpression(nextValue));
         } else if (
+          // Automatically switch from var to text if the user starts typing text
           templateEngine === "var" &&
           supportsTemplates &&
-          !isVarValue(changeValue)
+          !isVarLike(nextValue)
         ) {
-          const trimmed = trim(changeValue);
+          // If the user is typing whitespace, automatically wrap in mustache braces
+          const trimmed = trim(nextValue);
           const templateValue = isVarValue(trimmed)
-            ? changeValue.replace(trimmed, `{{${trimmed}}}`)
-            : changeValue;
-          setValue(makeTemplateExpression("nunjucks", templateValue));
+            ? nextValue.replace(trimmed, `{{${trimmed}}}`)
+            : nextValue;
+          await setValue(makeTemplateExpression("nunjucks", templateValue));
         } else {
-          setValue(makeTemplateExpression(templateEngine, changeValue));
+          await setValue(makeTemplateExpression(templateEngine, nextValue));
         }
       };
 
@@ -180,8 +224,8 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     const onChange: React.ChangeEventHandler<HTMLInputElement> =
       allowExpressions
         ? onChangeForTemplate("nunjucks")
-        : (event) => {
-            setValue(event.target.value);
+        : async (event) => {
+            await setValue(event.target.value);
           };
 
     return [fieldValue, onChange];

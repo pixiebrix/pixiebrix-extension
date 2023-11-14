@@ -22,9 +22,9 @@ import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
-import { thisTab } from "./utils";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { formStateFactory } from "@/testUtils/factories";
+
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // This mock is required because of coupling between useTheme and Options store, which is problematic to mock
 // EditorLayout -> Modals -> AddBlockModal -> useGetTheme -> persistor -> @/store/optionsStore
@@ -35,15 +35,8 @@ jest.mock("@/pageEditor/EditorLayout", () => ({
 
 jest.mock("@/contentScript/messenger/api", () => ({
   __esModule: true,
-  removeExtension: jest.fn(),
+  removeInstalledExtension: jest.fn(),
   updateDynamicElement: jest.fn(),
-}));
-
-// In the tests we don't render the PanelContent component, but testing the listeners
-// Hence mocking for the topmost component in PanelContent
-jest.mock("@/pageEditor/store", () => ({
-  __esModule: true,
-  persistor: {},
 }));
 
 jest.mock("redux-persist/integration/react", () => ({
@@ -63,7 +56,7 @@ describe("Listen to navigationEvent", () => {
     await waitForEffect();
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(1);
 
-    navigationEvent.emit(thisTab.tabId);
+    navigationEvent.emit();
 
     // One call on load and one on navigation event
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
@@ -84,7 +77,7 @@ describe("Listen to navigationEvent", () => {
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(1);
     expect(updateDynamicElement).not.toHaveBeenCalled();
 
-    navigationEvent.emit(thisTab.tabId);
+    navigationEvent.emit();
 
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
     // Panels are not automatically updated on navigation

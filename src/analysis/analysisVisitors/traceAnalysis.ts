@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
+import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import {
   isTraceError,
   type TraceError,
   type TraceRecord,
 } from "@/telemetry/trace";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
-import { type UUID } from "@/core";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type UUID } from "@/types/stringTypes";
 import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isInputValidationError } from "@/blocks/errors";
-import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type JsonObject } from "type-fest";
-import { AnnotationType } from "@/types";
+import { isSchemaValidationError } from "@/bricks/errors";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type ErrorObject } from "serialize-error";
+import { AnnotationType } from "@/types/annotationTypes";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
 
 const rootPropertyRegex = /^#\/(?<property>.+)$/;
 
-class TraceAnalysis extends AnalysisVisitor {
+class TraceAnalysis extends AnalysisVisitorABC {
   get id() {
     return "trace";
   }
@@ -59,12 +59,12 @@ class TraceAnalysis extends AnalysisVisitor {
   }
 
   mapErrorAnnotations(
-    position: BlockPosition,
-    traceError: JsonObject
+    position: BrickPosition,
+    traceError: ErrorObject
   ): AnalysisAnnotation[] {
     const annotations: AnalysisAnnotation[] = [];
 
-    if (isInputValidationError(traceError)) {
+    if (isSchemaValidationError(traceError)) {
       for (const maybeInputError of traceError.errors) {
         const rootProperty = rootPropertyRegex.exec(
           maybeInputError.instanceLocation
@@ -115,12 +115,12 @@ class TraceAnalysis extends AnalysisVisitor {
     return annotations;
   }
 
-  override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+  override visitBrick(
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     const errorRecord = this.traceErrorMap.get(blockConfig.instanceId)?.at(0);
     if (errorRecord == null) {
@@ -132,7 +132,7 @@ class TraceAnalysis extends AnalysisVisitor {
     this.annotations.push(...this.mapErrorAnnotations(position, traceError));
   }
 
-  override run(extension: FormState): void {
+  override run(extension: ModComponentFormState): void {
     if (this.traceErrorMap.size === 0) {
       return;
     }

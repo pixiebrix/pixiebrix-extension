@@ -15,8 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion, type TemplateEngine } from "@/core";
+import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 
+/**
+ * The current PixieBrix runtime version.
+ */
+export const DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";
+
+/**
+ * Default template engine for v1 bricks that don't specify a template engine.
+ */
 export const DEFAULT_IMPLICIT_TEMPLATE_ENGINE: TemplateEngine = "mustache";
 
 /**
@@ -44,6 +52,12 @@ export type ApiVersionOptions = {
    * @since apiVersion 3
    */
   explicitRender?: boolean;
+
+  /**
+   * True to automatically include a "@mod" variable in the context for the brick.
+   * @since 1.7.34
+   */
+  extendModVariable: boolean;
 
   /**
    * `true` to throw an error if JSON Schema validation fails against the inputSchema for a brick. Logs a warning
@@ -85,6 +99,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitRender: true,
         validateInput: true,
         autoescape: false,
+        extendModVariable: true,
       };
     }
 
@@ -95,6 +110,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitRender: false,
         validateInput: true,
         autoescape: true,
+        extendModVariable: false,
       };
     }
 
@@ -106,6 +122,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitRender: false,
         validateInput: true,
         autoescape: true,
+        extendModVariable: false,
       };
     }
   }

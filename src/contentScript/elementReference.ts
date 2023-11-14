@@ -16,8 +16,8 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { type ElementReference } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
+import { type ElementReference } from "@/types/runtimeTypes";
 
 type ElementOrDocument = HTMLElement | Document;
 
@@ -27,6 +27,15 @@ const knownElementReferences = new WeakMap<
   ElementReference
 >();
 const elementLookup = new Map<ElementReference, WeakRef<ElementOrDocument>>();
+
+/**
+ * Generate a selector to target the element across contexts. For example, when targeting elements with the page script.
+ */
+export function getSelectorForElement(element: HTMLElement): string {
+  const id = getReferenceForElement(element);
+  element.dataset.pbElementRef = id;
+  return `[data-pb-element-ref="${id}"]`;
+}
 
 /**
  * Returns a reference uuid for element. If a reference already exists, it is returned.

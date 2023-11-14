@@ -21,24 +21,37 @@ import {
   type AnalysisState,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import { type UUID } from "@/core";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
+import { type ErrorObject } from "serialize-error";
+import { type UUID } from "@/types/stringTypes";
 
 const initialState: AnalysisState = {
   extensionAnnotations: {},
   knownVars: {},
+  knownEventNames: {},
 };
 
 const analysisSlice = createSlice({
   name: "analysis",
   initialState,
   reducers: {
-    // TODO: if you see this action and it's still NOOP, remove it
+    // `startAnalysis` action is to help with debugging via redux-logger
     startAnalysis(
       state,
       action: PayloadAction<{ extensionId: UUID; analysisId: string }>
     ) {
-      // NOOP
+      // NOP
+    },
+    // `failAnalysis` action is to help with debugging via redux-logger
+    failAnalysis(
+      state,
+      action: PayloadAction<{
+        extensionId: UUID;
+        analysisId: string;
+        error: ErrorObject;
+      }>
+    ) {
+      // NOP
     },
     finishAnalysis(
       state,
@@ -73,6 +86,16 @@ const analysisSlice = createSlice({
     ) {
       const { extensionId, vars } = action.payload;
       state.knownVars[extensionId] = vars;
+    },
+    setKnownEventNames(
+      state,
+      action: PayloadAction<{
+        extensionId: UUID;
+        eventNames: string[];
+      }>
+    ) {
+      const { extensionId, eventNames } = action.payload;
+      state.knownEventNames[extensionId] = eventNames;
     },
   },
 });

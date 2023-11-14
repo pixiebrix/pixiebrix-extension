@@ -16,20 +16,20 @@
  */
 
 import React from "react";
-import { formStateWithTraceDataFactory } from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
+import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("FoundationDataPanel", () => {
   test("it renders with form state and trace data", async () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const extensionId = formState.uuid;
     const { instanceId } = formState.extension.blockPipeline[0];
-    const rendered = render(<FoundationDataPanel />, {
+    const { asFragment } = render(<FoundationDataPanel />, {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
@@ -45,6 +45,6 @@ describe("FoundationDataPanel", () => {
     });
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

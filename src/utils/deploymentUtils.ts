@@ -15,26 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type DeploymentContext,
-  type IExtension,
-  type RegistryId,
-  type SanitizedServiceConfiguration,
-  type UUID,
-} from "@/core";
 import { type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
-import { compact, sortBy, uniq, uniqBy } from "lodash";
-import { type RecipeDefinition } from "@/types/definitions";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { compact, uniqBy } from "lodash";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import {
+  type IntegrationDependency,
+  type SanitizedIntegrationConfig,
+} from "@/integrations/integrationTypes";
+import { validateUUID } from "@/types/helpers";
+import { type Except } from "type-fest";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
  * @since 1.4.0
- * @see IExtension._deployment
+ * @see ModComponentBase._deployment
  */
 export function isDeploymentActive(extensionLike: {
-  _deployment?: DeploymentContext;
+  _deployment?: ModComponentBase["_deployment"];
 }): boolean {
   return (
     // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
@@ -59,7 +61,7 @@ export function isDeploymentActive(extensionLike: {
  * @param restricted `true` if the user is a restricted organization user (i.e., as opposed to a developer)
  */
 export const makeUpdatedFilter =
-  (installed: IExtension[], { restricted }: { restricted: boolean }) =>
+  (installed: ModComponentBase[], { restricted }: { restricted: boolean }) =>
   (deployment: Deployment) => {
     const deploymentMatch = installed.find(
       (extension) => extension._deployment?.id === deployment.id
@@ -129,17 +131,6 @@ export function checkExtensionUpdateRequired(
 }
 
 /**
- * Return service registry ids used by the blueprint.
- */
-export function extractRecipeServiceIds(
-  recipe: RecipeDefinition
-): RegistryId[] {
-  return sortBy(
-    uniq(recipe.extensionPoints.flatMap((x) => Object.values(x.services ?? {})))
-  );
-}
-
-/**
  * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
  */
 type InstalledDeployment = {
@@ -149,7 +140,7 @@ type InstalledDeployment = {
 };
 
 export function selectInstalledDeployments(
-  extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
+  extensions: Array<Pick<ModComponentBase, "_deployment" | "_recipe">>
 ): InstalledDeployment[] {
   return uniqBy(
     extensions
@@ -164,73 +155,134 @@ export function selectInstalledDeployments(
 }
 
 /**
- * Service configuration lookup method. Extracted as parameter to support background messenger calls and calls directly
+ * Integration config lookup method. Extracted as parameter to support background messenger calls and calls directly
  * from the background page.
  */
 export type Locate = (
-  serviceId: RegistryId
-) => Promise<SanitizedServiceConfiguration[]>;
+  integrationId: RegistryId
+) => Promise<SanitizedIntegrationConfig[]>;
+
+// XXX: this is incorrect for server-based OAuth2 integrations, because they're owned by user but still show as proxy
+// because the requests need to be proxied through our server.
+const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
 
 /**
- * Return local service configurations that are valid to use for the deployment.
+ * Return local, configured integration dependencies that are valid to use for the deployment.
  *
- * Excludes the PixieBrix API service and services that are bound in the deployment configuration.
+ * Excludes the PixieBrix API integration and integrations that are bound in the deployment configuration.
  */
-export async function findLocalDeploymentServiceConfigurations(
+export async function findLocalDeploymentConfiguredIntegrationDependencies(
   deployment: Deployment,
   locate: Locate
-): Promise<Record<RegistryId, SanitizedServiceConfiguration[]>> {
-  const deploymentServices = extractRecipeServiceIds(deployment.package.config);
-  // Services in the deployment that are bound to a team credential
-  const boundServices = new Set(
+): Promise<
+  Array<
+    Except<IntegrationDependency, "configId"> & {
+      configs: SanitizedIntegrationConfig[];
+    }
+  >
+> {
+  const deploymentIntegrations = getUnconfiguredComponentIntegrations(
+    deployment.package.config
+  );
+  // Integrations in the deployment that are bound to a team credential
+  const teamBoundIntegrationIds = new Set(
     deployment.bindings.map((x) => x.auth.service_id)
   );
-  const unboundServices = deploymentServices.filter(
-    (serviceId) =>
-      !boundServices.has(serviceId) && serviceId !== PIXIEBRIX_SERVICE_ID
+  const unboundIntegrations = deploymentIntegrations.filter(
+    ({ integrationId }) =>
+      !teamBoundIntegrationIds.has(integrationId) &&
+      integrationId !== PIXIEBRIX_INTEGRATION_ID
   );
 
-  // XXX: this is incorrect for server-based OAuth2 integrations, because they're owned by user but still show as proxy
-  // because the requests need to be proxied through our server.
-  const isPersonal = (x: SanitizedServiceConfiguration) => !x.proxy;
-
-  const servicePromises = await Promise.all(
-    unboundServices.map(async (serviceId: RegistryId) => {
-      const all = await locate(serviceId);
-      return [serviceId, all.filter((x) => isPersonal(x))];
+  return Promise.all(
+    unboundIntegrations.flatMap(async (unconfiguredDependency) => {
+      const allConfigs = await locate(unconfiguredDependency.integrationId);
+      const personalConfigs = allConfigs.filter((x) => isPersonal(x));
+      return {
+        ...unconfiguredDependency,
+        configs: personalConfigs,
+      };
     })
   );
-
-  return Object.fromEntries(servicePromises);
 }
 
-export async function mergeDeploymentServiceConfigurations(
+/**
+ * Merge deployment service bindings and personal configurations to get all integration dependencies for a deployment.
+ */
+export async function mergeDeploymentIntegrationDependencies(
   deployment: Deployment,
   locate: Locate
-): Promise<Record<RegistryId, UUID>> {
-  // Merge deployment service bindings and personal configurations
-  const personalConfigurations = await findLocalDeploymentServiceConfigurations(
-    deployment,
-    locate
-  );
-  const serviceEntries = [
-    ...Object.entries(personalConfigurations).map(([serviceId, configs]) => {
-      if (configs.length > 1) {
-        throw new Error(
-          `Multiple local configurations found for integration: ${serviceId}`
-        );
-      }
+): Promise<IntegrationDependency[]> {
+  // Note/to-do: There is some logic overlap here with findLocalDeploymentConfiguredIntegrationDependencies() above,
+  // but it's tricky to extract right now
 
-      return [serviceId, configs[0]?.id];
-    }),
-    ...deployment.bindings.map(({ auth }) => [auth.service_id, auth.id]),
+  const deploymentIntegrations = getUnconfiguredComponentIntegrations(
+    deployment.package.config
+  );
+  const teamBoundIntegrationIds = new Set(
+    deployment.bindings.map((x) => x.auth.service_id)
+  );
+
+  const pixiebrixIntegration = deploymentIntegrations.find(
+    ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID
+  );
+
+  const personalIntegrationDependencies: IntegrationDependency[] =
+    await Promise.all(
+      deploymentIntegrations
+        .filter(
+          ({ integrationId }) =>
+            !teamBoundIntegrationIds.has(integrationId) &&
+            integrationId !== PIXIEBRIX_INTEGRATION_ID
+        )
+        .map(async (unconfiguredDependency) => {
+          const sanitizedConfigs = await locate(
+            unconfiguredDependency.integrationId
+          );
+          const personalConfigs = sanitizedConfigs.filter((x) => isPersonal(x));
+          if (personalConfigs.length > 1) {
+            throw new Error(
+              `Multiple local configurations found for integration: ${unconfiguredDependency.integrationId}`
+            );
+          }
+
+          return {
+            ...unconfiguredDependency,
+            configId: personalConfigs[0]?.id,
+          };
+        })
+    );
+
+  const deploymentBindingConfigs = Object.fromEntries(
+    deployment.bindings.map(({ auth, key }) => [auth.service_id, auth.id])
+  );
+  const teamIntegrationDependencies: IntegrationDependency[] =
+    deploymentIntegrations
+      .filter(({ integrationId }) => teamBoundIntegrationIds.has(integrationId))
+      .map((unconfiguredDependency) => ({
+        ...unconfiguredDependency,
+        configId: validateUUID(
+          deploymentBindingConfigs[unconfiguredDependency.integrationId]
+        ),
+      }));
+
+  const integrationDependencies: IntegrationDependency[] = [
+    ...personalIntegrationDependencies,
+    ...teamIntegrationDependencies,
   ];
 
-  for (const [serviceId, authId] of serviceEntries) {
-    if (authId == null) {
-      throw new Error(`No configuration found for integration: ${serviceId}`);
+  for (const { integrationId, configId } of integrationDependencies) {
+    if (configId == null) {
+      throw new Error(
+        `No configuration found for integration: ${integrationId}`
+      );
     }
   }
 
-  return Object.fromEntries(serviceEntries);
+  // Placeholder configuration does not have an explicit configuration.
+  if (pixiebrixIntegration) {
+    integrationDependencies.push(pixiebrixIntegration);
+  }
+
+  return integrationDependencies;
 }

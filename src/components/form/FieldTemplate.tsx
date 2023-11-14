@@ -19,36 +19,47 @@ import React, { type ReactNode } from "react";
 import {
   Col,
   type ColProps,
-  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+  // eslint-disable-next-line no-restricted-imports -- never uses the actual Form component
   Form as BootstrapForm,
   type FormControlProps,
   Row,
+  Collapse,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
 import cx from "classnames";
 import { isEmpty, isPlainObject } from "lodash";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
-import LinkifiedString from "@/components/LinkifiedString";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { DESCRIPTION_ALLOWED_TAGS } from "@/types/schemaTypes";
+import MarkdownInline from "@/components/MarkdownInline";
+import { type Except } from "type-fest";
+import { type ActionMeta } from "react-select";
 
-export type FieldProps<As extends React.ElementType = React.ElementType> =
-  FormControlProps &
-    React.ComponentProps<As> & {
-      name: string;
-      label?: ReactNode;
-      fitLabelWidth?: boolean;
-      widerLabel?: boolean;
-      description?: ReactNode;
-      annotations?: FieldAnnotation[];
-      touched?: boolean;
+export type FieldProps<
+  As extends React.ElementType = React.ElementType,
+  T = Element
+> = Except<FormControlProps, "onChange" | "value"> &
+  Except<React.ComponentProps<As>, "name"> & {
+    name: string;
+    label?: ReactNode;
+    fitLabelWidth?: boolean;
+    widerLabel?: boolean;
+    description?: ReactNode;
+    annotations?: FieldAnnotation[];
+    touched?: boolean;
+    onChange?:
+      | React.ChangeEventHandler<T>
+      | ((args: React.FormEvent<T>) => void)
+      | ((option: unknown, actionMeta: ActionMeta<unknown>) => void);
 
-      /**
-       * This value is regarded as absence of value, unset property.
-       * It will be passed to the UI input control when the value is undefined.
-       */
-      blankValue?: unknown;
-    };
+    /**
+     * This value is regarded as absence of value, unset property.
+     * It will be passed to the UI input control when the value is undefined.
+     */
+    // TODO: the goal of this type was to use the type of "value", but instead it's returning any
+    blankValue?: React.ComponentProps<As>["value"];
+  };
 
 type WidgetElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type CustomFieldWidgetProps<
@@ -71,9 +82,9 @@ export type CustomFieldWidget<
 > = React.ComponentType<TFieldWidgetProps>;
 
 type ComputeLabelAndColSizeArgs = {
-  fitLabelWidth: boolean;
-  widerLabel: boolean;
-  label: ReactNode;
+  fitLabelWidth?: boolean;
+  widerLabel?: boolean;
+  label?: ReactNode;
 };
 
 export function computeLabelAndColSize({
@@ -102,13 +113,15 @@ export function computeLabelAndColSize({
   return { labelSize, colSize };
 }
 
-const FieldTemplate: React.FC<FieldProps> = ({
+const FieldTemplate: <As extends React.ElementType, T = Element>(
+  p: FieldProps<As, T>
+) => React.ReactElement<FieldProps<As, T>> = ({
   name,
   label,
   fitLabelWidth,
   widerLabel,
   description,
-  annotations: untypedAnnotations,
+  annotations,
   touched,
   value,
   children,
@@ -117,7 +130,6 @@ const FieldTemplate: React.FC<FieldProps> = ({
   className,
   ...restFieldProps
 }) => {
-  const annotations: FieldAnnotation[] = untypedAnnotations;
   const isInvalid = !isEmpty(
     annotations?.filter(
       (annotation) => annotation.type === AnnotationType.Error
@@ -125,7 +137,8 @@ const FieldTemplate: React.FC<FieldProps> = ({
   );
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
-  const nonUndefinedValue = value === undefined ? blankValue : value;
+  const nonUndefinedValue: string | number | string[] =
+    value === undefined ? blankValue : value;
 
   const isBuiltinControl =
     AsControl === undefined || typeof AsControl === "string";
@@ -181,18 +194,22 @@ const FieldTemplate: React.FC<FieldProps> = ({
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
-      {!isEmpty(annotations) && (
+      <Collapse in={!isEmpty(annotations)}>
         <Col xs="12" className="mb-2">
-          {annotations.map(({ message, type, actions }) => (
-            <FieldAnnotationAlert
-              key={`${type}-${message.slice(0, 10)}`}
-              message={message}
-              type={type}
-              actions={actions}
-            />
-          ))}
+          {isEmpty(annotations) ? (
+            <div className={styles.annotationPlaceholder} />
+          ) : (
+            annotations?.map(({ message, type, actions }, index) => (
+              <FieldAnnotationAlert
+                key={`${index}-${type}`}
+                message={message}
+                type={type}
+                actions={actions}
+              />
+            ))
+          )}
         </Col>
-      )}
+      </Collapse>
       {label && (
         <BootstrapForm.Label
           column
@@ -207,7 +224,15 @@ const FieldTemplate: React.FC<FieldProps> = ({
         {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">
-            <LinkifiedString>{description}</LinkifiedString>
+            {typeof description === "string" ? (
+              <MarkdownInline
+                markdown={description}
+                sanitizeConfig={DESCRIPTION_ALLOWED_TAGS}
+                as="span"
+              />
+            ) : (
+              description
+            )}
           </BootstrapForm.Text>
         )}
       </Col>
@@ -215,4 +240,4 @@ const FieldTemplate: React.FC<FieldProps> = ({
   );
 };
 
-export default React.memo(FieldTemplate);
+export default React.memo(FieldTemplate) as typeof FieldTemplate;

@@ -18,7 +18,7 @@
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import FieldAnnotationAlert from "./FieldAnnotationAlert";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 
 export default {
   title: "Common/FieldAnnotationAlert",

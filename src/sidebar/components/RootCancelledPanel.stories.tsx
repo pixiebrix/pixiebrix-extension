@@ -16,18 +16,17 @@
  */
 
 import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import { type Meta, type StoryFn } from "@storybook/react";
 
-import type AsyncButton from "@/components/AsyncButton";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import { CancelError } from "@/errors/businessErrors";
 
 export default {
   title: "Panels/RootCancelledPanel",
   component: RootCancelledPanel,
-} as ComponentMeta<typeof AsyncButton>;
+} as Meta<typeof RootCancelledPanel>;
 
-const Template: ComponentStory<typeof RootCancelledPanel> = (args) => (
+const Template: StoryFn<typeof RootCancelledPanel> = (args) => (
   <div style={{ width: 400, height: 500, backgroundColor: "white" }}>
     <RootCancelledPanel {...args} />
   </div>

@@ -15,27 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import extensionsSlice from "@/store/extensionsSlice";
-import {
-  clearLog,
-  traces,
-  uninstallContextMenu,
-} from "@/background/messenger/api";
-import {
-  clearDynamicElements,
-  removeSidebar,
-} from "@/contentScript/messenger/api";
+import { actions as extensionsActions } from "@/store/extensionsSlice";
+import { clearDynamicElements } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-
-const { actions: extensionsActions } = extensionsSlice;
+import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 
 type Config = {
   extensionId: UUID;
@@ -53,9 +45,9 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
 
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
-          title: "Remove Extension?",
+          title: "Remove Mod?",
           message:
-            "You can reactivate extensions and blueprints from the PixieBrix Options page",
+            "You can reactivate mods from the PixieBrix Extension Console",
           submitCaption: "Remove",
         });
 
@@ -64,24 +56,18 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
         }
       }
 
-      reportEvent("PageEditorRemove", {
+      reportEvent(Events.PAGE_EDITOR_REMOVE, {
         sessionId,
         extensionId,
       });
 
       try {
+        // Remove from page editor
+        // Equivalent of @/store/dynamicElementStorage.ts:removeDynamicElements
+        dispatch(editorActions.removeElement(extensionId));
+
         // Remove from options slice / extension storage
         dispatch(extensionsActions.removeExtension({ extensionId }));
-
-        await Promise.allSettled([
-          uninstallContextMenu({ extensionId }),
-          removeSidebar(thisTab, extensionId),
-          traces.clear(extensionId),
-          clearLog({ extensionId }),
-        ]);
-
-        // Remove from page editor
-        dispatch(editorActions.removeElement(extensionId));
 
         // Remove from the host page
         try {
@@ -92,6 +78,8 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
           // Element might not be on the page anymore
           console.info("Cannot clear dynamic element from page", { error });
         }
+
+        removeExtensionsFromAllTabs([extensionId]);
       } catch (error: unknown) {
         notify.error({
           message: "Error removing element",

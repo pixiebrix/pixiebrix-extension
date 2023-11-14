@@ -17,7 +17,7 @@
 
 import React from "react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";

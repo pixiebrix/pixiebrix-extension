@@ -22,9 +22,13 @@ import { TextEncoder, TextDecoder } from "node:util";
 import "urlpattern-polyfill";
 
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
+process.env.MARKETPLACE_URL = "https://www.pixiebrix.com/marketplace/";
 
+// Drop after https://github.com/jsdom/jsdom/issues/2524
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+
+// TODO: Drop after https://github.com/jsdom/jsdom/issues/2401
 global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
   constructor(type, init) {
     super(type);

@@ -19,14 +19,14 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import PushOptions from "@/contrib/zapier/PushOptions";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
-import AppendSpreadsheetOptions from "@/contrib/google/sheets/AppendSpreadsheetOptions";
+import AppendSpreadsheetOptions from "@/contrib/google/sheets/ui/AppendSpreadsheetOptions";
 import SheetServiceOptions, {
   SERVICE_GOOGLE_SHEET_ID,
-} from "@/contrib/google/sheets/SheetServiceOptions";
+} from "@/contrib/google/sheets/ui/SheetServiceOptions";
 import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
 import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
-import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/append";
+import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/bricks/append";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import FormModalOptions, {
@@ -35,10 +35,8 @@ import FormModalOptions, {
 import FormRendererOptions, {
   FORM_RENDERER_ID,
 } from "@/pageEditor/fields/FormRendererOptions";
-import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
-import ComponentReaderOptions from "@/blocks/transformers/component/ComponentReaderOptions";
-import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/lookup";
-import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
+import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/bricks/lookup";
+import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import DatabaseGetOptions, {
   DATABASE_GET_ID,
 } from "@/pageEditor/fields/DatabaseGetOptions";
@@ -51,8 +49,14 @@ import DocumentOptions, {
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "@/pageEditor/fields/RemoteMethodOptions";
-import { TourStepTransformer } from "@/blocks/transformers/tourStep/tourStep";
-import TourStepOptions from "@/blocks/transformers/tourStep/TourStepOptions";
+import { TourStepTransformer } from "@/bricks/transformers/tourStep/tourStep";
+import TourStepOptions from "@/bricks/transformers/tourStep/TourStepOptions";
+import { ALERT_EFFECT_ID } from "@/bricks/effects/alert";
+import AlertOptions from "@/pageEditor/fields/AlertOptions";
+import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
+import JQueryReaderOptions from "@/bricks/transformers/jquery/JQueryReaderOptions";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
+import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -73,7 +77,9 @@ export default function registerEditors() {
   optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
   optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
   optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);
-  optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);
   optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
   optionsRegistry.set(TourStepTransformer.BLOCK_ID, TourStepOptions);
+  optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
+  optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);
+  optionsRegistry.set(AssignModVariable.BRICK_ID, AssignModVariableOptions);
 }

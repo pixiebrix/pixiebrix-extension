@@ -46,14 +46,17 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import Alert from "@/components/Alert";
-import { CustomFormRenderer } from "@/blocks/renderers/customForm";
-import { FormTransformer } from "@/blocks/transformers/ephemeralForm/formTransformer";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import DocumentOutline from "@/components/documentBuilder/outline/DocumentOutline";
-import useAllBlocks from "@/blocks/hooks/useAllBlocks";
+import useAllBricks from "@/bricks/hooks/useAllBricks";
 import StateTab from "./tabs/StateTab";
 import ConfigurationTab from "./tabs/ConfigurationTab";
-import { joinPathParts } from "@/utils";
+import useAsyncState from "@/hooks/useAsyncState";
+import { fallbackValue } from "@/utils/asyncStateUtils";
+import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
+import { joinPathParts } from "@/utils/formUtils";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -71,8 +74,6 @@ const contextFilter = (value: unknown, key: string) => {
   return true;
 };
 
-const pageStateBlockIds = ["@pixiebrix/state/set", "@pixiebrix/state/get"];
-
 const DataPanel: React.FC = () => {
   const activeNodeId = useSelector(selectActiveNodeId);
   const { flagOn } = useFlags();
@@ -88,8 +89,9 @@ const DataPanel: React.FC = () => {
     pipeline,
   } = useSelector(selectActiveNodeInfo);
 
-  const { allBlocks } = useAllBlocks();
-  const blockType = allBlocks.get(blockId)?.type;
+  const { allBlocks } = useAllBricks();
+  const block = allBlocks.get(blockId);
+  const blockType = block?.type;
 
   const traces = useSelector(selectActiveElementTraces);
   const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
@@ -128,6 +130,11 @@ const DataPanel: React.FC = () => {
     [record?.templateContext]
   );
 
+  const { data: showPageState } = fallbackValue(
+    useAsyncState(async () => block?.block.isPageStateAware() ?? true, [block]),
+    true
+  );
+
   const documentBodyName = joinPathParts(blockPath, "config.body");
 
   const outputObj: JsonObject =
@@ -144,7 +151,6 @@ const DataPanel: React.FC = () => {
     blockId === FormTransformer.BLOCK_ID;
   const showDocumentPreview = blockId === DocumentRenderer.BLOCK_ID;
   const showBlockPreview = record || previewInfo?.traceOptional;
-  const showPageState = pageStateBlockIds.includes(blockId);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview
@@ -235,7 +241,7 @@ const DataPanel: React.FC = () => {
               </Alert>
             )}
             <DataTabJsonTree
-              data={relevantContext}
+              data={contextAsPlainObject(relevantContext)}
               copyable
               searchable
               tabKey={DataPanelTabKey.Context}
@@ -364,7 +370,7 @@ const DataPanel: React.FC = () => {
               </ErrorBoundary>
             ) : (
               <div className="text-muted">
-                Run the extension once to enable live preview
+                Run the mod once to enable live preview
               </div>
             )}
           </DataTab>

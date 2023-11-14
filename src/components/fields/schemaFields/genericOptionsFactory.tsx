@@ -16,16 +16,12 @@
  */
 
 import React from "react";
-import { inputProperties } from "@/helpers";
-import { type Schema, type UiSchema } from "@/core";
-import { isEmpty, sortBy } from "lodash";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { joinName } from "@/utils";
-import pipelineSchema from "@schemas/pipeline.json";
-import {
-  isDatabaseField,
-  isServiceField,
-} from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { joinName } from "@/utils/formUtils";
+import { inputProperties } from "@/utils/schemaUtils";
 
 export type BlockOptionProps = {
   /**
@@ -35,87 +31,14 @@ export type BlockOptionProps = {
 
   /**
    * The property name of the block configuration -- in general this should be "config"
-   * @see BlockConfig
+   * @see BrickConfig
    */
   configKey?: string;
 };
 
 const NoOptions: React.FunctionComponent = () => (
-  <div>No options available</div>
+  <div>This brick does not require any configuration</div>
 );
-
-type FieldConfig = {
-  prop: string;
-  isRequired: boolean;
-  fieldSchema: Schema;
-  propUiSchema: unknown;
-};
-
-export function sortedFields(
-  schema: Schema,
-  uiSchema: UiSchema | null,
-  { preserveSchemaOrder = false }: { preserveSchemaOrder?: boolean } = {}
-): FieldConfig[] {
-  const optionSchema = inputProperties(schema);
-
-  const order = uiSchema?.["ui:order"] ?? ["*"];
-  const asteriskIndex = order.indexOf("*");
-
-  const uiSchemaOrder = (field: FieldConfig) => {
-    // https://react-jsonschema-form.readthedocs.io/en/docs/usage/objects/#specifying-property-order
-    const propIndex = order.indexOf(field.prop);
-    const index = propIndex === -1 ? asteriskIndex : propIndex;
-    return index === -1 ? order.length : index;
-  };
-
-  const fieldTypeOrder = (field: FieldConfig) => {
-    // Integration configurations
-    if (isServiceField(field.fieldSchema)) {
-      return 0;
-    }
-
-    // Databases
-    if (isDatabaseField(field.fieldSchema)) {
-      return 1;
-    }
-
-    // Required fields, and fields that will have input values pre-filled
-    if (field.isRequired || field.fieldSchema.default != null) {
-      return 2;
-    }
-
-    // Optional fields that are excluded by default
-    return Number.MAX_SAFE_INTEGER;
-  };
-
-  // Order by label
-  const labelOrder = (field: FieldConfig) =>
-    (field.fieldSchema.title ?? field.prop).toLowerCase();
-
-  const fields: FieldConfig[] = Object.entries(optionSchema)
-    .filter(
-      ([, fieldSchema]) =>
-        typeof fieldSchema === "object" &&
-        fieldSchema.$ref !== pipelineSchema.$id
-    )
-    .map(([prop, fieldSchema]) => {
-      // Fine because coming from Object.entries for the schema
-      // eslint-disable-next-line security/detect-object-injection
-      const propUiSchema = uiSchema?.[prop];
-
-      return {
-        prop,
-        isRequired: schema.required?.includes(prop),
-        // The fieldSchema type has been filtered so its safe to assume it is Schema
-        fieldSchema: fieldSchema as Schema,
-        propUiSchema,
-      };
-    });
-
-  return preserveSchemaOrder && isEmpty(uiSchema)
-    ? fields
-    : sortBy(fields, uiSchemaOrder, fieldTypeOrder, labelOrder);
-}
 
 /**
  * Return the Options fields for configuring a block with the given schema.

@@ -24,21 +24,20 @@ import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNo
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
-  type BlockConfig,
-  type BlockPipeline,
+  type BrickConfig,
+  type BrickPipeline,
   type Branch,
-} from "@/blocks/types";
+} from "@/bricks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
   getBlockAnnotations,
   getDocumentPipelinePaths,
   getFoundationNodeAnnotations,
-  getInputKeyForSubPipeline,
+  getVariableKeyForSubPipeline,
   getPipelinePropNames,
 } from "@/pageEditor/utils";
-import { isNullOrBlank, joinName, joinPathParts } from "@/utils";
 import { get, isEmpty } from "lodash";
 import {
   type DocumentElement,
@@ -46,29 +45,39 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import {
+  actions,
+  actions as editorActions,
+} from "@/pageEditor/slices/editorSlice";
 import BrickIcon from "@/components/BrickIcon";
 import {
   decideBlockStatus,
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
-import useAllBlocks from "@/blocks/hooks/useAllBlocks";
+import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
 import {
   selectActiveElement,
   selectActiveNodeId,
+  selectCollapsedNodes,
+  selectNodePreviewActiveElement,
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
-import { getRootPipelineFlavor } from "@/blocks/blockFilterHelpers";
+import { getRootPipelineFlavor } from "@/bricks/blockFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type OutputKey, type UUID } from "@/core";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBlock from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBlock";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { type Brick } from "@/types/brickTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { joinName, joinPathParts } from "@/utils/formUtils";
+import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/components/documentBuilder/preview/ElementPreview";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -83,7 +92,7 @@ type SubPipeline = {
    */
   headerLabel: string;
 
-  pipeline: BlockPipeline;
+  pipeline: BrickPipeline;
 
   /**
    * Formik path to the pipeline
@@ -95,12 +104,38 @@ type SubPipeline = {
   inputKey?: string;
 };
 
-function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
+function getNodePreviewElementId(
+  brickConfig: BrickConfig,
+  path: string
+): string | null {
+  if (brickConfig.id === DocumentRenderer.BLOCK_ID) {
+    // The Document Preview element name is a substring of the header node path, e.g.
+    // SubPipeline.path: config.body.0.children.9.children.0.children.0.config.onClick.__value__0.children.9.children.0.children.0
+    // Document element: 0.children.9.children.0.children.0
+    const regex = /config\.body\.(.*)\.config\..*$/;
+    const result = regex.exec(path);
+    if (result) {
+      return result[1];
+    }
+  }
+
+  return null;
+}
+
+/**
+ *
+ * @param block the block, or null if the resolved block is not available yet
+ * @param blockConfig the block config
+ */
+function getSubPipelinesForBlock(
+  block: Brick | null,
+  blockConfig: BrickConfig
+): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
   if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
     for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
       const path = joinPathParts(docPipelinePath, "__value__");
-      const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
+      const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
 
       // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
       const elementPathParts = docPipelinePath.split(".").slice(0, -2);
@@ -121,9 +156,9 @@ function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
       });
     }
   } else {
-    for (const pipelinePropName of getPipelinePropNames(blockConfig)) {
+    for (const pipelinePropName of getPipelinePropNames(block, blockConfig)) {
       const path = joinName("config", pipelinePropName, "__value__");
-      const pipeline: BlockPipeline = get(blockConfig, path) ?? [];
+      const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
 
       const subPipeline: SubPipeline = {
         headerLabel: pipelinePropName,
@@ -132,7 +167,10 @@ function getSubPipelinesForBlock(blockConfig: BlockConfig): SubPipeline[] {
         flavor: PipelineFlavor.NoRenderer,
       };
 
-      const inputKey = getInputKeyForSubPipeline(blockConfig, pipelinePropName);
+      const inputKey = getVariableKeyForSubPipeline(
+        blockConfig,
+        pipelinePropName
+      );
 
       if (inputKey) {
         subPipeline.inputKey = inputKey;
@@ -159,13 +197,18 @@ const usePipelineNodes = (): {
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveElementTraces);
   const maybePipelineMap = useSelector(selectPipelineMap);
+  const collapsedNodes = useSelector(selectCollapsedNodes);
+
   const annotations = useSelector(
     selectExtensionAnnotations(activeElement.uuid)
+  );
+  const activeNodePreviewElementId = useSelector(
+    selectNodePreviewActiveElement
   );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { allBlocks } = useAllBlocks();
+  const { allBlocks, isLoading } = useAllBricks();
 
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;
@@ -175,10 +218,6 @@ const usePipelineNodes = (): {
     ADAPTERS.get(extensionPointType);
   const rootPipeline = activeElement.extension.blockPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(extensionPointType);
-
-  const [collapsedState, setCollapsedState] = useState<Record<UUID, boolean>>(
-    {}
-  );
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
   const { nodes, extensionHasTraces } = mapPipelineToNodes({
@@ -235,25 +274,27 @@ const usePipelineNodes = (): {
     lastIndex,
     isRootPipeline,
     showAppend,
-    parentIsActive,
+    isParentActive,
+    isAncestorActive,
     nestingLevel,
     extensionHasTraces: extensionHasTracesInput,
   }: {
     index: number;
-    blockConfig: BlockConfig;
+    blockConfig: BrickConfig;
     latestPipelineCall: Branch[];
     flavor: PipelineFlavor;
     pipelinePath: string;
     lastIndex: number;
     isRootPipeline: boolean;
     showAppend: boolean;
-    parentIsActive: boolean;
+    isParentActive: boolean;
+    isAncestorActive: boolean;
     nestingLevel: number;
     extensionHasTraces?: boolean;
   }): MapOutput {
     const nodes: EditorNodeProps[] = [];
     const block = allBlocks.get(blockConfig.id)?.block;
-    const nodeIsActive = blockConfig.instanceId === activeNodeId;
+    const isNodeActive = blockConfig.instanceId === activeNodeId;
 
     const traceRecords = filterTracesByCall(
       traces.filter(
@@ -281,21 +322,29 @@ const usePipelineNodes = (): {
       extensionHasTraces = true;
     }
 
-    const subPipelines = getSubPipelinesForBlock(blockConfig);
+    const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
-    const collapsed = collapsedState[blockConfig.instanceId];
+    const collapsed = collapsedNodes.includes(blockConfig.instanceId);
     const expanded = hasSubPipelines && !collapsed;
 
     const onClick = () => {
-      if (nodeIsActive) {
-        if (hasSubPipelines) {
-          setCollapsedState((previousState) => ({
-            ...previousState,
-            [blockConfig.instanceId]: !collapsed,
-          }));
+      if (activeNodePreviewElementId) {
+        dispatch(actions.setNodePreviewActiveElement(null));
+
+        if (isNodeActive) {
+          return;
         }
-      } else {
+      }
+
+      if (!isNodeActive) {
         setActiveNodeId(blockConfig.instanceId);
+        return;
+      }
+
+      if (hasSubPipelines) {
+        dispatch(
+          actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId)
+        );
       }
     };
 
@@ -388,6 +437,15 @@ const usePipelineNodes = (): {
       };
     }
 
+    const isSubPipelineHeaderActive =
+      activeNodePreviewElementId === null
+        ? false
+        : subPipelines.some(
+            ({ path }) =>
+              activeNodePreviewElementId ===
+              getNodePreviewElementId(blockConfig, path)
+          );
+
     const restBrickNodeProps: Except<
       BrickNodeProps,
       keyof BrickNodeContentProps
@@ -395,15 +453,16 @@ const usePipelineNodes = (): {
       onClickMoveUp,
       onClickMoveDown,
       onClick,
-      active: nodeIsActive,
+      active: !isSubPipelineHeaderActive && isNodeActive,
       onHoverChange,
-      parentIsActive,
+      isParentActive,
       nestingLevel,
       hasSubPipelines,
       collapsed,
       nodeActions: expanded ? [] : brickNodeActions,
       showBiggerActions,
       trailingMessage,
+      isSubPipelineHeaderActive,
     };
 
     nodes.push({
@@ -423,6 +482,11 @@ const usePipelineNodes = (): {
       } of subPipelines) {
         const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
+        const nodePreviewElementId = getNodePreviewElementId(blockConfig, path);
+        const isHeaderNodeActive =
+          activeNodePreviewElementId &&
+          nodePreviewElementId === activeNodePreviewElementId;
+        const isSiblingHeaderActive = isSubPipelineHeaderActive;
 
         const headerActions: NodeAction[] = [
           {
@@ -457,8 +521,29 @@ const usePipelineNodes = (): {
           nestingLevel,
           nodeActions: headerActions,
           pipelineInputKey: inputKey,
-          active: nodeIsActive,
-          nestedActive: parentIsActive,
+          active: isHeaderNodeActive,
+          isParentActive: !isSiblingHeaderActive && isNodeActive,
+          isAncestorActive: !isSiblingHeaderActive && isParentActive,
+          nodePreviewElement: nodePreviewElementId
+            ? {
+                name: nodePreviewElementId,
+                focus() {
+                  setActiveNodeId(blockConfig.instanceId);
+                  dispatch(
+                    editorActions.setNodePreviewActiveElement(
+                      nodePreviewElementId
+                    )
+                  );
+                  window.dispatchEvent(
+                    new Event(
+                      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${nodePreviewElementId}`
+                    )
+                  );
+                },
+                active: nodePreviewElementId === activeNodePreviewElementId,
+              }
+            : null,
+          isPipelineLoading: isLoading,
         };
 
         const {
@@ -469,7 +554,12 @@ const usePipelineNodes = (): {
           flavor,
           pipelinePath: fullSubPath,
           nestingLevel: nestingLevel + 1,
-          parentIsActive: nodeIsActive || parentIsActive,
+          isParentActive: isSiblingHeaderActive
+            ? isHeaderNodeActive
+            : isNodeActive || isParentActive,
+          isAncestorActive: isSiblingHeaderActive
+            ? isHeaderNodeActive
+            : isParentActive || isAncestorActive,
         });
 
         nodes.push(
@@ -490,8 +580,8 @@ const usePipelineNodes = (): {
         showBiggerActions,
         trailingMessage,
         nestingLevel,
-        active: nodeIsActive,
-        nestedActive: parentIsActive,
+        active: !isSubPipelineHeaderActive && isNodeActive,
+        nestedActive: isParentActive,
         hovered,
         onHoverChange,
         onClick,
@@ -514,13 +604,15 @@ const usePipelineNodes = (): {
     flavor,
     pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
     nestingLevel = 0,
-    parentIsActive = false,
+    isParentActive = false,
+    isAncestorActive = false,
   }: {
-    pipeline: BlockPipeline;
+    pipeline: BrickPipeline;
     flavor: PipelineFlavor;
     pipelinePath?: string;
     nestingLevel?: number;
-    parentIsActive?: boolean;
+    isParentActive?: boolean;
+    isAncestorActive?: boolean;
   }): MapOutput {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
@@ -555,7 +647,8 @@ const usePipelineNodes = (): {
           lastIndex,
           isRootPipeline,
           showAppend,
-          parentIsActive,
+          isParentActive,
+          isAncestorActive,
           nestingLevel,
           extensionHasTraces,
         });

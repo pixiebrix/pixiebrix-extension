@@ -23,7 +23,10 @@ import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";
 import { UserRole } from "@/types/contract";
 import { validateRegistryId } from "@/types/helpers";
-import { authStateFactory, organizationFactory } from "@/testUtils/factories";
+import {
+  authStateFactory,
+  organizationStateFactory,
+} from "@/testUtils/factories/authFactories";
 
 const editorRoles = new Set<number>([
   UserRole.admin,
@@ -51,8 +54,9 @@ describe("RegistryIdWidget", () => {
       },
     });
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const scopeInput = container.querySelector("input[name='testField-scope']");
-    const idInput = screen.getByTestId("registryId-testField-id");
+    const idInput = screen.getByRole("textbox");
 
     expect(scopeInput).toHaveValue(testUserScope);
     expect(idInput).toHaveValue(testIdValue);
@@ -125,8 +129,7 @@ describe("RegistryIdWidget", () => {
     await userEvent.clear(idInput);
     await userEvent.type(idInput, newTestId);
 
-    const formState = await getFormState();
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       testField: `${anotherOrganization.scope}/${newTestId}`,
     });
   });
@@ -136,13 +139,13 @@ describe("RegistryIdWidget", () => {
     const authState = authStateFactory({
       scope: testUserScope,
       organizations: [
-        organizationFactory({
+        organizationStateFactory({
           scope: null,
         }),
       ],
     });
 
-    const { container } = render(<RegistryIdWidget name="testField" />, {
+    render(<RegistryIdWidget name="testField" />, {
       initialValues: { testField: id },
       setupRedux(dispatch) {
         dispatch(authActions.setAuth(authState));
@@ -150,12 +153,11 @@ describe("RegistryIdWidget", () => {
     });
 
     await userEvent.click(screen.getByText(testUserScope));
-    // Using the hardcoded id of the DOM element as the easiest option to access an element within React Select
-    const reactSelectOptionsSelector = "#react-select-5-listbox div";
-    const reactSelectOptions = container.querySelector(
-      reactSelectOptionsSelector
-    );
 
+    // eslint-disable-next-line testing-library/no-node-access
+    const reactSelectOptions = screen.getByRole("combobox").closest("div");
+
+    // eslint-disable-next-line testing-library/no-node-access
     expect(reactSelectOptions.children).toHaveLength(1);
   });
 });

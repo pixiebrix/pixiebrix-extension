@@ -16,28 +16,29 @@
  */
 
 import React from "react";
-import { render } from "@/sidebar/testHelpers";
+import { render, act } from "@/sidebar/testHelpers";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import DocumentView from "@/blocks/renderers/documentView/DocumentView";
+import DocumentView from "@/bricks/renderers/documentView/DocumentView";
 import { screen } from "shadow-dom-testing-library";
-import { act } from "@testing-library/react";
-import { SubmitPanelAction } from "@/blocks/errors";
+import { SubmitPanelAction } from "@/bricks/errors";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { runEffectPipeline } from "@/contentScript/messenger/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 
 jest.mock("@/contentScript/messenger/api", () => ({
-  runEffectPipeline: jest.fn().mockRejectedValue(new Error("not implemented")),
+  runHeadlessPipeline: jest
+    .fn()
+    .mockRejectedValue(new Error("not implemented")),
 }));
 
-const runEffectPipelineMock = runEffectPipeline as jest.MockedFunction<
-  typeof runEffectPipeline
+const runHeadlessPipelineMock = runHeadlessPipeline as jest.MockedFunction<
+  typeof runHeadlessPipeline
 >;
 
 describe("RendererComponent", () => {
   beforeEach(() => {
-    runEffectPipelineMock.mockReset();
+    runHeadlessPipelineMock.mockReset();
   });
 
   test("provide onAction to document renderer", async () => {
@@ -45,7 +46,7 @@ describe("RendererComponent", () => {
     const extensionId = uuidv4();
     const onAction = jest.fn();
 
-    runEffectPipelineMock.mockRejectedValue(
+    runHeadlessPipelineMock.mockRejectedValue(
       new SubmitPanelAction("submit", { foo: "bar" })
     );
 

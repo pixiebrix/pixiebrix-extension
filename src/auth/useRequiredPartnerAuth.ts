@@ -18,9 +18,8 @@
 import { appApi } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
-import { type RegistryId } from "@/core";
-import { selectConfiguredServices } from "@/store/servicesSelectors";
-import { selectSettings } from "@/store/settingsSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import {
   addListener as addAuthListener,
@@ -28,14 +27,15 @@ import {
   removeListener as removeAuthListener,
 } from "@/auth/token";
 import { useEffect } from "react";
-import {
-  AUTOMATION_ANYWHERE_PARTNER_KEY,
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_SERVICE_ID,
-} from "@/services/constants";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import { type AuthState } from "@/auth/authTypes";
-import { type SettingsState } from "@/store/settingsTypes";
-import { type ManualStorageKey, readStorage } from "@/chrome";
+import { type SettingsState } from "@/store/settings/settingsTypes";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import { type RegistryId } from "@/types/registryTypes";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 /**
  * Map from partner keys to partner service IDs
@@ -43,7 +43,10 @@ import { type ManualStorageKey, readStorage } from "@/chrome";
 const PARTNER_MAP = new Map<string, Set<RegistryId>>([
   [
     AUTOMATION_ANYWHERE_PARTNER_KEY,
-    new Set([CONTROL_ROOM_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID]),
+    new Set([
+      CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+    ]),
   ],
 ]);
 
@@ -84,32 +87,29 @@ type RequiredPartnerState = {
   error: unknown;
 };
 
-function decidePartnerServiceIds({
-  authServiceIdOverride,
+function decidePartnerIntegrationIds({
+  authIntegrationIdOverride,
   authMethodOverride,
   partnerId,
 }: {
-  authServiceIdOverride: RegistryId | null;
+  authIntegrationIdOverride: RegistryId | null;
   authMethodOverride: SettingsState["authMethod"];
   partnerId: AuthState["partner"]["theme"] | null;
 }): Set<RegistryId> {
-  if (authServiceIdOverride) {
-    return new Set<RegistryId>([authServiceIdOverride]);
+  if (authIntegrationIdOverride) {
+    return new Set<RegistryId>([authIntegrationIdOverride]);
   }
 
   if (authMethodOverride === "partner-oauth2") {
-    return new Set<RegistryId>([CONTROL_ROOM_OAUTH_SERVICE_ID]);
+    return new Set<RegistryId>([CONTROL_ROOM_OAUTH_INTEGRATION_ID]);
   }
 
   if (authMethodOverride === "partner-token") {
-    return new Set<RegistryId>([CONTROL_ROOM_SERVICE_ID]);
+    return new Set<RegistryId>([CONTROL_ROOM_TOKEN_INTEGRATION_ID]);
   }
 
   return PARTNER_MAP.get(partnerId) ?? new Set();
 }
-
-const CONTROL_ROOM_URL_MANAGED_KEY = "controlRoomUrl" as ManualStorageKey;
-const PARTNER_MANAGED_KEY = "partnerId" as ManualStorageKey;
 
 /**
  * Hook for determining if the extension has required integrations for the partner.
@@ -123,23 +123,16 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const { isLoading, data: me, error } = appApi.endpoints.getMe.useQueryState();
   const localAuth = useSelector(selectAuth);
   const {
-    authServiceId: authServiceIdOverride,
+    authIntegrationId: authIntegrationIdOverride,
     authMethod: authMethodOverride,
     partnerId: partnerIdOverride,
   } = useSelector(selectSettings);
-  const configuredServices = useSelector(selectConfiguredServices);
+  const integrationConfigs = useSelector(selectIntegrationConfigs);
 
-  // Control Room URL specified by IT department during force-install
-  const [managedControlRoomUrl] = useAsyncState(
-    async () => readStorage(CONTROL_ROOM_URL_MANAGED_KEY, undefined, "managed"),
-    []
-  );
-
-  // Partner Id/Key specified by IT department during force-install
-  const [managedPartnerId] = useAsyncState(
-    async () => readStorage(PARTNER_MANAGED_KEY, undefined, "managed"),
-    []
-  );
+  // Read enterprise managed state
+  const { data: managedState = {} } = useManagedStorageState();
+  const { controlRoomUrl: managedControlRoomUrl, partnerId: managedPartnerId } =
+    managedState;
 
   // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;
@@ -162,14 +155,14 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     partner?.theme ??
     (hasControlRoom || isCommunityEditionUser ? "automation-anywhere" : null);
 
-  const partnerServiceIds = decidePartnerServiceIds({
-    authServiceIdOverride,
+  const partnerIntegrationIds = decidePartnerIntegrationIds({
+    authIntegrationIdOverride,
     authMethodOverride,
     partnerId,
   });
 
-  const partnerConfiguration = configuredServices.find((service) =>
-    partnerServiceIds.has(service.serviceId)
+  const partnerConfiguration = integrationConfigs.find((integrationConfig) =>
+    partnerIntegrationIds.has(integrationConfig.integrationId)
   );
 
   // WARNING: the logic in this method must match the logic in usePartnerLoginMode
@@ -185,7 +178,16 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
       return false;
     }
 
-    if (hasControlRoom || authMethodOverride === "partner-oauth2") {
+    // Require partner OAuth2 if:
+    // - A Control Room URL is configured - on the cached organization or in managed storage
+    // - The partner is Automation Anywhere in managed storage. (This is necessary, because the control room URL is
+    //   not known at bot agent install time for registry HKLM hive installs)
+    // - The user used Advanced Settings > Authentication Method to force partner OAuth2
+    if (
+      hasControlRoom ||
+      managedPartnerId === "automation-anywhere" ||
+      authMethodOverride === "partner-oauth2"
+    ) {
       // Future improvement: check that the Control Room URL from readPartnerAuthData matches the expected
       // Control Room URL
       const { token: partnerToken } = await readPartnerAuthData();
@@ -193,7 +195,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     }
 
     return false;
-  }, [authMethodOverride, localAuth, hasControlRoom]);
+  }, [authMethodOverride, localAuth, hasControlRoom, managedPartnerId]);
 
   useEffect(() => {
     // Listen for token invalidation
@@ -212,6 +214,8 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const requiresIntegration =
     // Primary organization has a partner and linked control room
     (hasPartner && Boolean(organization?.control_room)) ||
+    // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
+    managedPartnerId === "automation-anywhere" ||
     // Community edition users are required to be linked until they join an organization
     (me?.partner && isCommunityEditionUser) ||
     // User has overridden local settings
@@ -233,7 +237,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   return {
     hasPartner,
-    partnerKey: partner?.theme,
+    partnerKey: partner?.theme ?? managedPartnerId,
     requiresIntegration,
     hasConfiguredIntegration:
       requiresIntegration &&

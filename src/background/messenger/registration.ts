@@ -18,34 +18,35 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import * as sheets from "@/contrib/google/sheets/handlers";
+import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
 import {
   ensureContextMenu,
-  uninstallContextMenu,
   preloadContextMenus,
+  uninstallContextMenu,
 } from "@/background/contextMenus";
 import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
   activateTab,
   closeTab,
   openTab,
+  requestRunInAllFrames,
+  requestRunInOtherTabs,
   requestRunInOpener,
   requestRunInTarget,
-  requestRunInBroadcast,
-  waitForTargetByUrl,
   requestRunInTop,
+  waitForTargetByUrl,
 } from "@/background/executor";
-import * as registry from "@/registry/localRegistry";
+import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
-import serviceRegistry from "@/services/registry";
-import { deleteCachedAuthData, getCachedAuthData } from "@/background/auth";
-import { proxyService } from "@/background/requests";
-import { readQuery } from "@/contrib/google/bigquery/handlers";
+import serviceRegistry from "@/integrations/registry";
+import { performConfiguredRequest } from "@/background/requests";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
 import initPartnerTheme from "@/background/partnerTheme";
+import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods";
 
 import {
   clearExtensionDebugLogs,
@@ -62,7 +63,10 @@ import {
   clearTraces,
 } from "@/telemetry/trace";
 import {
+  collectPerformanceDiagnostics,
   initTelemetry,
+  pong,
+  recordBrickRun,
   recordEvent,
   sendDeploymentAlert,
   uid,
@@ -73,18 +77,26 @@ import {
   getPartnerPrincipals,
   launchAuthIntegration,
 } from "@/background/partnerIntegrations";
+import {
+  deleteCachedAuthData,
+  getCachedAuthData,
+} from "@/background/auth/authStorage";
 
 expectContext("background");
 
 declare global {
   interface MessengerMethods {
+    GOOGLE_DRIVE_IS_LOGGED_IN: typeof sheets.isLoggedIn;
+    GOOGLE_DRIVE_GET_USER_EMAIL: typeof sheets.getGoogleUserEmail;
+
+    GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: typeof sheets.getAllSpreadsheets;
+    GOOGLE_SHEETS_GET_SPREADSHEET: typeof sheets.getSpreadsheet;
     GOOGLE_SHEETS_GET_TAB_NAMES: typeof sheets.getTabNames;
     GOOGLE_SHEETS_GET_SHEET_PROPERTIES: typeof sheets.getSheetProperties;
     GOOGLE_SHEETS_GET_HEADERS: typeof sheets.getHeaders;
+    GOOGLE_SHEETS_GET_ALL_ROWS: typeof sheets.getAllRows;
     GOOGLE_SHEETS_CREATE_TAB: typeof sheets.createTab;
     GOOGLE_SHEETS_APPEND_ROWS: typeof sheets.appendRows;
-    GOOGLE_SHEETS_BATCH_UPDATE: typeof sheets.batchUpdate;
-    GOOGLE_SHEETS_BATCH_GET: typeof sheets.batchGet;
 
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     INJECT_SCRIPT: typeof ensureContentScript;
@@ -98,14 +110,19 @@ declare global {
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
 
+    INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
+
     GET_UID: typeof uid;
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
 
+    PING: typeof pong;
+    COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
+
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
+    REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
-    REGISTRY_FETCH: typeof registry.fetchNewPackages;
     REGISTRY_SYNC: typeof registry.syncPackages;
     REGISTRY_CLEAR: typeof registry.clear;
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
@@ -118,20 +135,20 @@ declare global {
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
     REQUEST_RUN_IN_TOP: typeof requestRunInTop;
-    REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
+    REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
+    REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
 
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
-    PROXY: typeof proxyService;
+    CONFIGURED_REQUEST: typeof performConfiguredRequest;
     CLEAR_SERVICE_CACHE: VoidFunction;
-    GOOGLE_BIGQUERY_READ: typeof readQuery;
-
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
 
     RECORD_LOG: typeof recordLog;
     RECORD_WARNING: typeof recordWarning;
     RECORD_ERROR: typeof recordError;
+    RECORD_BRICK_RUN: typeof recordBrickRun;
     RECORD_EVENT: typeof recordEvent;
     CLEAR_LOGS: typeof clearLogs;
     CLEAR_LOG: typeof clearLog;
@@ -153,17 +170,23 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
+    GOOGLE_DRIVE_IS_LOGGED_IN: sheets.isLoggedIn,
+    GOOGLE_DRIVE_GET_USER_EMAIL: sheets.getGoogleUserEmail,
+
+    GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: sheets.getAllSpreadsheets,
+    GOOGLE_SHEETS_GET_SPREADSHEET: sheets.getSpreadsheet,
     GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,
     GOOGLE_SHEETS_GET_SHEET_PROPERTIES: sheets.getSheetProperties,
     GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
+    GOOGLE_SHEETS_GET_ALL_ROWS: sheets.getAllRows,
     GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
     GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
-    GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
-    GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
 
     ACTIVATE_PARTNER_THEME: initPartnerTheme,
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
+
+    INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,
@@ -177,11 +200,14 @@ export default function registerMessenger(): void {
     GET_UID: uid,
     WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
 
+    PING: pong,
+    COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
+
     ACTIVATE_TAB: activateTab,
     REACTIVATE_EVERY_TAB: reactivateEveryTab,
+    REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
-    REGISTRY_FETCH: registry.fetchNewPackages,
     REGISTRY_SYNC: registry.syncPackages,
     REGISTRY_CLEAR: registry.clear,
     REGISTRY_GET_BY_KINDS: registry.getByKinds,
@@ -194,13 +220,13 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,
     REQUEST_RUN_IN_TOP: requestRunInTop,
-    REQUEST_RUN_IN_ALL: requestRunInBroadcast,
+    REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
+    REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
 
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
-    PROXY: proxyService,
-    GOOGLE_BIGQUERY_READ: readQuery,
+    CONFIGURED_REQUEST: performConfiguredRequest,
 
     GET_DATA_STORE: getRecord,
     SET_DATA_STORE: setRecord,
@@ -208,6 +234,7 @@ export default function registerMessenger(): void {
     RECORD_LOG: recordLog,
     RECORD_WARNING: recordWarning,
     RECORD_ERROR: recordError,
+    RECORD_BRICK_RUN: recordBrickRun,
     RECORD_EVENT: recordEvent,
     CLEAR_LOGS: clearLogs,
     CLEAR_LOG: clearLog,

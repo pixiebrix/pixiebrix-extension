@@ -17,25 +17,23 @@
 
 import { type AuthRootState } from "@/auth/authTypes";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type SavingExtensionState } from "@/pageEditor/panes/save/savingExtensionSlice";
-import { type SettingsRootState } from "@/store/settingsTypes";
+import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/slices/runtimeSliceTypes";
-import { type ExtensionPointType } from "@/extensionPoints/types";
-import { type RegistryId, type UUID } from "@/core";
-import { type BlockConfig } from "@/blocks/types";
-import {
-  type OptionsDefinition,
-  type RecipeMetadataFormState,
-} from "@/types/definitions";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId, type Metadata } from "@/types/registryTypes";
+import { type BrickConfig } from "@/bricks/types";
 import { type ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
-import { type FormState } from "./extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "./starterBricks/formStateTypes";
 import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
-import { type RecipesRootState } from "@/recipes/recipesTypes";
+import { type ModDefinitionsRootState } from "@/modDefinitions/modDefinitionsTypes";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 
 export enum PipelineFlavor {
   AllBlocks = "allBlocks",
@@ -69,6 +67,11 @@ export enum ModalKey {
   ADD_BLOCK,
 }
 
+export type ModMetadataFormState = Pick<
+  Metadata,
+  "id" | "name" | "version" | "description"
+>;
+
 export interface EditorState {
   /**
    * A sequence number that changes whenever a new element is selected.
@@ -80,7 +83,7 @@ export interface EditorState {
   /**
    * The element type, if the page editor is in "insertion-mode"
    */
-  inserting: ExtensionPointType | null;
+  inserting: StarterBrickType | null;
 
   /**
    * The uuid of the active element, if an extension is selected
@@ -107,7 +110,7 @@ export interface EditorState {
   /**
    * Unsaved elements
    */
-  readonly elements: FormState[];
+  readonly elements: ModComponentFormState[];
 
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
@@ -125,14 +128,14 @@ export interface EditorState {
   isBetaUI: boolean;
 
   /**
-   * The current UI state of each element, indexed by element Id
+   * The current UI state of each element, indexed by the element id
    */
   elementUIStates: Record<UUID, ElementUIState>;
 
   /**
    * A clipboard-style-copy of a block ready to paste into an extension
    */
-  copiedBlock?: BlockConfig;
+  copiedBlock?: BrickConfig;
 
   /**
    * Are we currently showing the info message to users about upgrading from v2 to v3 of
@@ -143,12 +146,12 @@ export interface EditorState {
   /**
    * Unsaved, changed recipe options definitions
    */
-  dirtyRecipeOptionsById: Record<RegistryId, OptionsDefinition>;
+  dirtyRecipeOptionsById: Record<RegistryId, ModOptionsDefinition>;
 
   /**
    * Unsaved, changed recipe metadata
    */
-  dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
+  dirtyRecipeMetadataById: Record<RegistryId, ModMetadataFormState>;
 
   /**
    * Which modal are we showing, if any?
@@ -156,7 +159,7 @@ export interface EditorState {
   visibleModalKey?: ModalKey;
 
   /**
-   * The pipeline location where a new block will be added.
+   * The pipeline location where a new brick will be added.
    *
    * Note: This will only have a value when visibleModalKey === "addBlock"
    *
@@ -174,7 +177,7 @@ export interface EditorState {
   /**
    * Unsaved extensions that have been deleted from a recipe
    */
-  deletedElementsByRecipeId: Record<RegistryId, FormState[]>;
+  deletedElementsByRecipeId: Record<RegistryId, ModComponentFormState[]>;
 
   /**
    * Newly created recipes that have not been saved yet
@@ -210,6 +213,22 @@ export interface EditorState {
    * How many dynamic elements are not available on the current tab?
    */
   unavailableDynamicCount: number;
+
+  /**
+   * Is data panel expanded or collapsed
+   */
+  isDataPanelExpanded: boolean;
+
+  /**
+   * Is mod list expanded or collapsed
+   */
+  isModListExpanded: boolean;
+
+  /**
+   * Is the variable popover visible?
+   * @since 1.7.34
+   */
+  isVariablePopoverVisible: boolean;
 }
 
 export type EditorRootState = {
@@ -218,10 +237,10 @@ export type EditorRootState = {
 
 export type RootState = AuthRootState &
   LogRootState &
-  ExtensionsRootState &
+  ModComponentsRootState &
   AnalysisRootState &
   EditorRootState &
-  RecipesRootState &
+  ModDefinitionsRootState &
   TabStateRootState &
   RuntimeRootState &
   SettingsRootState &

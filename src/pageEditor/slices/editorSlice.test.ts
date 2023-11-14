@@ -21,19 +21,25 @@ import {
   initialState,
 } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { blockConfigFactory, formStateFactory } from "@/testUtils/factories";
 import {
   type EditorRootState,
   type EditorState,
 } from "@/pageEditor/pageEditorTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import {
-  echoBlock,
-  teapotBlock,
+  echoBrick,
+  teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { type OutputKey } from "@/core";
-import { defaultBlockConfig } from "@/blocks/util";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { defaultBlockConfig } from "@/bricks/util";
+import { validateRegistryId } from "@/types/helpers";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
 function getTabState(
   state: EditorState,
@@ -43,6 +49,24 @@ function getTabState(
     FOUNDATION_NODE_ID
   ].dataPanel[tabKey];
 }
+
+const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
+
+const standardBrick = brickConfigFactory({
+  id: teapotBrick.id,
+  outputKey: "teapotOutput" as OutputKey,
+  config: defaultBlockConfig(teapotBrick.inputSchema),
+});
+
+const brickWithService = brickConfigFactory({
+  id: echoBrick.id,
+  outputKey: "echoOutput" as OutputKey,
+  config: {
+    spreadsheetId: makeVariableExpression("@google"),
+    tabName: null,
+    rowValues: {},
+  },
+});
 
 describe("DataPanel state", () => {
   let state: EditorState;
@@ -63,7 +87,7 @@ describe("DataPanel state", () => {
       })
     );
 
-    expect(getTabState(editorState).query).toEqual("test query");
+    expect(getTabState(editorState).query).toBe("test query");
   });
 
   test("should set the expanded state", () => {
@@ -94,37 +118,97 @@ describe("DataPanel state", () => {
 
     expect(
       getTabState(editorState, DataPanelTabKey.Preview).activeElement
-    ).toEqual("test-field");
+    ).toBe("test-field");
   });
 });
 
-describe("Cloning", () => {
-  test("Can clone an extension", async () => {
+describe("Add/Remove Bricks", () => {
+  let editor: EditorState;
+
+  const source = formStateFactory(
+    {
+      label: "Test Extension",
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: GOOGLE_SHEET_SERVICE_ID,
+          outputKey: "google" as OutputKey,
+          configId: uuidSequence,
+        }),
+      ],
+    },
+    [brickWithService, standardBrick]
+  );
+
+  beforeEach(() => {
     blockRegistry.clear();
-    blockRegistry.register([echoBlock, teapotBlock]);
+    blockRegistry.register([echoBrick, teapotBrick]);
 
-    const source = formStateFactory(
-      {
-        label: "Test Extension",
-      },
-      [
-        blockConfigFactory({
-          id: echoBlock.id,
-          outputKey: "echoOutput" as OutputKey,
-          config: defaultBlockConfig(echoBlock.inputSchema),
-        }),
-        blockConfigFactory({
-          id: teapotBlock.id,
-          outputKey: "teapotOutput" as OutputKey,
-          config: defaultBlockConfig(teapotBlock.inputSchema),
-        }),
-      ]
+    editor = editorSlice.reducer(initialState, actions.selectInstalled(source));
+  });
+
+  test("Add Brick", async () => {
+    // Get initial bricks
+    const initialBricks = editor.elements[0].extension.blockPipeline;
+
+    // Add a Brick
+    editor = editorSlice.reducer(
+      editor,
+      actions.addNode({
+        block: standardBrick,
+        pipelinePath: "extension.blockPipeline",
+        pipelineIndex: 0,
+      })
     );
 
-    const editor = editorSlice.reducer(
-      initialState,
-      actions.selectInstalled(source)
+    // Ensure we have one more brick than we started with
+    expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
+      initialBricks.length + 1
     );
+  });
+
+  test("Remove Brick with Integration Dependency", async () => {
+    // Get initial bricks and integration dependencies
+    const initialBricks = editor.elements[0].extension.blockPipeline;
+    const initialIntegrationDependencies =
+      editor.elements[0].integrationDependencies;
+
+    // Remove the brick with integration dependency
+    editor = editorSlice.reducer(
+      editor,
+      actions.removeNode(brickWithService.instanceId)
+    );
+
+    // Ensure Integration Dependency was removed
+    expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
+      initialBricks.length - 1
+    );
+    expect(editor.elements[0].integrationDependencies).toBeArrayOfSize(
+      initialIntegrationDependencies.length - 1
+    );
+  });
+
+  test("Remove Brick without Integration Dependency", async () => {
+    // Get initial bricks and services
+    const initialBricks = editor.elements[0].extension.blockPipeline;
+    const initialIntegrationDependencies =
+      editor.elements[0].integrationDependencies;
+
+    // Remove the brick with service
+    editor = editorSlice.reducer(
+      editor,
+      actions.removeNode(standardBrick.instanceId)
+    );
+
+    // Ensure Service was NOT removed
+    expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
+      initialBricks.length - 1
+    );
+    expect(editor.elements[0].integrationDependencies).toBeArrayOfSize(
+      initialIntegrationDependencies.length
+    );
+  });
+
+  test("Can clone an extension", async () => {
     const dispatch = jest.fn();
     const getState: () => EditorRootState = () => ({ editor });
 

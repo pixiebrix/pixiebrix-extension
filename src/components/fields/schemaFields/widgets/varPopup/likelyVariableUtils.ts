@@ -23,23 +23,68 @@ type LikelyVariable = {
   endIndex: number;
 };
 
-// This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
+/**
+ * Returns the variable expression at the position in the path. Excludes characters after the cursor to allow the user
+ * to use the cursor to navigate the variable popover/refine the search.
+ * @param path the variable path.
+ * @param position the cursor position in the variable entry text control
+ */
+export function getVariableAtPosition(path: string, position: number): string {
+  return path.slice(0, position);
+}
+
+/**
+ * Returns the likely variable path at the given cursor position in the template
+ * @param template the text template
+ * @param position the cursor position in the template
+ * @param clampCursor if true, the endIndex/name will be clamped to the cursor position
+ * @param includeBoundary if true, match a variable if the cursor is at the variable boundary
+ */
 export function getLikelyVariableAtPosition(
   template: string,
-  position: number
+  position: number,
+  {
+    clampPosition = false,
+    includeBoundary = false,
+  }: { clampPosition?: boolean; includeBoundary?: boolean } = {}
 ): LikelyVariable {
+  // Cursor is at whitespace, detect if the cursor is at the end of the variable
+  const matchPosition =
+    includeBoundary && [" ", undefined].includes(template.at(position))
+      ? position - 1
+      : position;
+
+  // This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
   let match = varRegex.exec(template);
   while (match !== null) {
-    const { varName } = match.groups;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Guaranteed by regex
+    const varName = match.groups!.varName!;
     const startIndex = match.index;
-    const endIndex = startIndex + varName.length;
-    if (startIndex <= position && position <= endIndex) {
+    const variableEndIndex = startIndex + varName.length;
+    if (startIndex <= matchPosition && matchPosition <= variableEndIndex) {
       varRegex.lastIndex = 0;
+
+      if (clampPosition) {
+        if (startIndex === matchPosition) {
+          return {
+            name: varName.slice(0, 1),
+            startIndex,
+            endIndex: startIndex + 1,
+          };
+        }
+
+        const trimAmount = variableEndIndex - position;
+        return {
+          name: varName.slice(0, varName.length - trimAmount),
+          startIndex,
+          endIndex: Math.min(variableEndIndex, position),
+        };
+      }
 
       return {
         name: varName,
         startIndex,
-        endIndex,
+        endIndex: variableEndIndex,
       };
     }
 
@@ -53,11 +98,60 @@ export function getLikelyVariableAtPosition(
   };
 }
 
+function getOpeningBracesLeftOfIndex(
+  template: string,
+  index: number
+): "{{" | "{%" | null {
+  const templatePartLeft = template.slice(0, index);
+  let openingBraces = null;
+  for (let i = templatePartLeft.length - 1; i > 0; i--) {
+    // eslint-disable-next-line security/detect-object-injection -- number is coming from loop index
+    const char = templatePartLeft[i];
+    const charLeftOfChar = templatePartLeft[i - 1];
+    if (char === "}" && (charLeftOfChar === "}" || charLeftOfChar === "%")) {
+      break;
+    }
+
+    if ((char === "{" || char === "%") && charLeftOfChar === "{") {
+      openingBraces = (charLeftOfChar + char) as "{{" | "{%";
+      break;
+    }
+  }
+
+  return openingBraces;
+}
+
+function getClosingBracesRightOfIndex(
+  template: string,
+  index: number
+): "}}" | "%}" | null {
+  const templatePartRight = template.slice(index);
+  let closingBraces = null;
+  for (let i = 0; i < templatePartRight.length - 1; i++) {
+    // eslint-disable-next-line security/detect-object-injection -- number is coming from loop index
+    const char = templatePartRight[i];
+    const charRightOfChar = templatePartRight[i + 1];
+    if (char === "{" && (charRightOfChar === "{" || charRightOfChar === "%")) {
+      break;
+    }
+
+    if ((char === "}" || char === "%") && charRightOfChar === "}") {
+      closingBraces = (char + charRightOfChar) as "}}" | "%}";
+      break;
+    }
+  }
+
+  return closingBraces;
+}
+
 export function replaceLikelyVariable(
   template: string,
   position: number,
   replacement: string
-): string {
+): {
+  newTemplate: string;
+  newCursorPosition: number;
+} {
   let { startIndex, endIndex } = getLikelyVariableAtPosition(
     template,
     position
@@ -68,48 +162,30 @@ export function replaceLikelyVariable(
     endIndex = position;
   }
 
-  const templatePartBefore = template.slice(0, startIndex);
-  const templatePartAfter = template.slice(endIndex);
+  const templatePartLeftOfLikelyVariable = template.slice(0, startIndex);
+  const templatePartRightOfLikelyVariable = template.slice(endIndex);
 
-  // Check if we need to add braces before the inserted variable
-  // For instance, in the case of "@foo }}"
-  // See likelyVariableUtils.test.ts for more examples
-  let shouldInsertBracesBefore = true;
-  for (let i = templatePartBefore.length - 1; i > 0; i--) {
-    const char = templatePartBefore[i];
-    if (
-      char === "}" &&
-      (templatePartBefore[i - 1] === "}" || templatePartBefore[i - 1] === "%")
-    ) {
-      break;
-    }
+  const openingBraces = getOpeningBracesLeftOfIndex(template, startIndex);
+  const shouldInsertOpeningBraces = !openingBraces;
+  const closingBlockToken: "%" | "}" = openingBraces?.endsWith("%") ? "%" : "}";
 
-    if ((char === "{" || char === "%") && templatePartBefore[i - 1] === "{") {
-      shouldInsertBracesBefore = false;
-      break;
-    }
-  }
+  const closingBraces = getClosingBracesRightOfIndex(template, endIndex);
+  const shouldInsertClosingBraces = !closingBraces;
+  const openingBlockToken: "%" | "{" = closingBraces?.startsWith("%")
+    ? "%"
+    : "{";
 
-  // Check if we need to add braces after the inserted variable
-  // For instance, in the case of "{{ @foo"
-  // See likelyVariableUtils.test.ts for more examples
-  let shouldInsertBracesAfter = true;
-  for (let i = 0; i < templatePartAfter.length - 1; i++) {
-    const char = templatePartAfter[i];
-    if (
-      char === "{" &&
-      (templatePartAfter[i + 1] === "{" || templatePartAfter[i + 1] === "%")
-    ) {
-      break;
-    }
+  const replacementWithBraces = `${
+    shouldInsertOpeningBraces ? `{${openingBlockToken} ` : ""
+  }${replacement}${shouldInsertClosingBraces ? ` ${closingBlockToken}}` : ""}`;
 
-    if ((char === "}" || char === "%") && templatePartAfter[i + 1] === "}") {
-      shouldInsertBracesAfter = false;
-      break;
-    }
-  }
+  const endOfVariableIndex =
+    startIndex +
+    replacementWithBraces.length -
+    (shouldInsertClosingBraces ? 3 : 0);
 
-  return `${templatePartBefore}${
-    shouldInsertBracesBefore ? "{{ " : ""
-  }${replacement}${shouldInsertBracesAfter ? " }}" : ""}${templatePartAfter}`;
+  return {
+    newTemplate: `${templatePartLeftOfLikelyVariable}${replacementWithBraces}${templatePartRightOfLikelyVariable}`,
+    newCursorPosition: endOfVariableIndex,
+  };
 }

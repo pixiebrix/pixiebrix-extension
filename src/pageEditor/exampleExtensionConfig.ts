@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockPipeline } from "@/blocks/types";
-import { type ExtensionPointType } from "@/extensionPoints/types";
+import { type BrickPipeline } from "@/bricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { validateRegistryId } from "@/types/helpers";
 import {
   createNewBlock,
@@ -28,9 +28,7 @@ const documentBlockId = validateRegistryId("@pixiebrix/document");
 const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
 const tourStepBlockId = validateRegistryId("@pixiebrix/tour/step");
 
-export function getExampleBlockPipeline(
-  type: ExtensionPointType
-): BlockPipeline {
+export function getExampleBlockPipeline(type: StarterBrickType): BrickPipeline {
   if (type === "actionPanel") {
     const documentBuilderBlock = createNewBlock(documentBlockId);
     return [documentBuilderBlock];

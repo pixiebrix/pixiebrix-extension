@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "@/telemetry/reportError";
-import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
-import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
-import { isChrome } from "webext-detect-page";
-import pMemoize from "p-memoize";
+import pMemoize, { pMemoizeClear } from "p-memoize";
 import injectScriptTag from "@/utils/injectScriptTag";
 import { isMV3 } from "@/mv3/api";
+import { DISCOVERY_DOCS as SHEETS_DOCS } from "@/contrib/google/sheets/core/sheetsConstants";
+import pDefer from "p-defer";
+
+import { sleep } from "@/utils/timeUtils";
+import { isGoogleChrome } from "@/utils/browserUtils";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
+
+let initialized = false;
+
+type Listener = () => void;
+const listeners = new Set<Listener>();
 
 declare global {
   interface Window {
@@ -31,46 +37,136 @@ declare global {
   }
 }
 
-// https://bumbu.me/gapi-in-chrome-extension
-async function onGAPILoad(): Promise<void> {
-  try {
-    await gapi.client.init({
-      // Don't pass client nor scope as these will init auth2, which we don't want
-      // until the user actually uses a brick
-      apiKey: API_KEY,
-      discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
-    });
-    console.info("gapi initialized");
-  } catch (error) {
-    // Catch explicitly instead of letting it reach to top-level rejected promise handler
-    // https://github.com/google/google-api-javascript-client/issues/64#issuecomment-336488275
-    reportError(error);
+/**
+ * Helper function to generate a GAPI onload function with an awaitable promise.
+ */
+function onGAPILoadFactory() {
+  const deferredPromise = pDefer<void>();
+
+  // https://bumbu.me/gapi-in-chrome-extension
+  async function onGAPILoad(): Promise<void> {
+    // Hacky setTimeout workaround to avoid open bug when loading the gapi script asynchronously
+    // See: https://github.com/google/google-api-javascript-client/issues/399
+    await sleep(1);
+
+    try {
+      await gapi.client.init({
+        // Don't pass client nor scope as these will init auth2, which we don't want
+        // until the user actually uses a brick
+        apiKey: API_KEY,
+        discoveryDocs: [...SHEETS_DOCS],
+      });
+    } catch (error) {
+      deferredPromise.reject(
+        new Error("Error initializing gapi client", { cause: error })
+      );
+      return;
+    }
+
+    if (!globalThis.gapi) {
+      deferredPromise.reject(
+        new Error("gapi global variable was not set by gapi.client.init")
+      );
+      return;
+    }
+
+    if (!gapi.client.sheets) {
+      markGoogleInvalidated();
+      deferredPromise.reject(new Error("gapi sheets module not loaded"));
+    }
+
+    initialized = true;
+
+    // Resolve first before notifying to allow callers to proceed
+    deferredPromise.resolve();
+
+    for (const listener of listeners) {
+      listener();
+    }
   }
+
+  return {
+    onGAPILoad,
+    promise: deferredPromise.promise,
+  };
 }
 
-async function _initGoogle(): Promise<boolean> {
-  if (!isChrome() || isMV3()) {
-    // TODO: Use feature detection instead of sniffing the user agent
-    console.info(
-      "Google API not enabled because it's not supported by this browser"
-    );
-    return false;
+/**
+ * Return true if GAPI is supported by the browser.
+ */
+export function isGAPISupported(): boolean {
+  // Google Chrome dropped support for the chrome.identity API in other Chromium browsers
+  // GAPI is not support in MV3 because it fetches remote code
+  return isGoogleChrome() && !isMV3();
+}
+
+/**
+ * Initialize the Google API.
+ */
+async function _initGoogle(): Promise<void> {
+  if (!isGAPISupported()) {
+    // Could use BusinessError here, but this error has caused confusion, so we need to ensure the error hits Rollbar
+    // to facilitate customer support
+    throw new Error("Google API is not supported by this browser");
   }
 
   if (!API_KEY) {
-    console.info("Google API not enabled because the API key is not available");
-    return false;
+    throw new Error("Google API is not available");
   }
 
-  window.onGAPILoad = onGAPILoad;
+  const { onGAPILoad, promise: onloadPromise } = onGAPILoadFactory();
 
+  // Match the name passed to onload query param
+  window.onGAPILoad = onGAPILoad;
   await injectScriptTag(
     "https://apis.google.com/js/client.js?onload=onGAPILoad"
   );
 
-  return true;
+  await onloadPromise;
+
+  console.info("gapi initialized");
 }
 
-// `pMemoize` will avoid multiple injections, while also allow retrying if the first injection fails
+/**
+ * Initialize the Google API.
+ *
+ * Memoized to avoid multiple injections, while also allow retrying if the initial injection fails or the context
+ * is later invalidated.
+ *
+ * @see markGoogleInvalidated
+ */
 const initGoogle = pMemoize(_initGoogle);
+
+/**
+ * Mark the Google API context as invalidated and notify listeners.
+ */
+export function markGoogleInvalidated(): void {
+  initialized = false;
+  pMemoizeClear(initGoogle);
+
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
+/**
+ * Return true if the Google API has been initialized.
+ */
+export function isGoogleInitialized(): boolean {
+  return initialized;
+}
+
+/**
+ * Subscribe to changes in the Google API initialization state.
+ * @param listener the listener to subscribe
+ * @see isGoogleInitialized
+ */
+export function subscribe(listener: Listener): () => void {
+  listeners.add(listener);
+
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
 export default initGoogle;

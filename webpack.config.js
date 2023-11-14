@@ -68,6 +68,7 @@ const defaults = {
 
   // PixieBrix URL to enable connection to for credential exchange
   SERVICE_URL: "https://app.pixiebrix.com",
+  MARKETPLACE_URL: "https://www.pixiebrix.com/marketplace/",
 };
 
 dotenv.config({
@@ -82,6 +83,7 @@ for (const [env, defaultValue] of Object.entries(defaults)) {
 
 console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
+console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
 console.log(
   "ROLLBAR_BROWSER_ACCESS_TOKEN:",
@@ -103,10 +105,18 @@ const produceSourcemap =
 const sourceMapPublicUrl =
   parseEnv(process.env.PUBLIC_RELEASE) &&
   `${process.env.SOURCE_MAP_URL_BASE}/${process.env.SOURCE_MAP_PATH}/`;
-console.log(
-  "Sourcemaps:",
-  sourceMapPublicUrl ? sourceMapPublicUrl : produceSourcemap ? "Local" : "No"
-);
+
+let sourcemapsLogMessage = "Sourcemaps: ";
+
+if (sourceMapPublicUrl) {
+  sourcemapsLogMessage += sourceMapPublicUrl;
+} else if (produceSourcemap) {
+  sourcemapsLogMessage += "Local";
+} else {
+  sourcemapsLogMessage += "None";
+}
+
+console.log(sourcemapsLogMessage);
 
 function getVersion() {
   // `manifest.json` only supports numbers in the version, so use the semver
@@ -218,6 +228,7 @@ function customizeManifest(manifest, isProduction) {
 
   manifest.content_scripts[0].matches = uniq([
     new URL("*", process.env.SERVICE_URL).href,
+    new URL("*", process.env.MARKETPLACE_URL).href,
     ...manifest.content_scripts[0].matches,
     ...internal,
   ]);
@@ -271,9 +282,10 @@ module.exports = (env, options) =>
       [
         "background/background",
         "contentScript/contentScript",
+        "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
         "pageEditor/pageEditor",
-        "options/options",
+        "extensionConsole/options",
         "sidebar/sidebar",
         "sandbox/sandbox",
 
@@ -293,10 +305,6 @@ module.exports = (env, options) =>
 
     resolve: {
       alias: {
-        // Enforce a single version
-        // TODO: Undo after https://github.com/fregante/webext-dynamic-content-scripts/issues/54
-        "webext-content-scripts": require.resolve("webext-content-scripts"),
-
         ...mockHeavyDependencies(),
 
         ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
@@ -323,7 +331,8 @@ module.exports = (env, options) =>
           terserOptions: {
             // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
             // Keep error classnames because we perform name comparison (see selectSpecificError)
-            keep_classnames: /.*Error/,
+            // We use Action for SubmitPanelAction, AbortPanelAction, etc.
+            keep_classnames: /.*(Error|Action)$/,
           },
         }),
         new CssMinimizerPlugin(),
@@ -382,13 +391,13 @@ module.exports = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: options.mode,
-        WEBEXT_MESSENGER_LOGGING: false,
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
         // Record telemetry events in development?
         DEV_EVENT_TELEMETRY: false,
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
+        MARKETPLACE_URL: undefined,
         SOURCE_VERSION: undefined,
         CHROME_EXTENSION_ID: undefined,
 
@@ -396,6 +405,10 @@ module.exports = (env, options) =>
         ROLLBAR_BROWSER_ACCESS_TOKEN: null,
         GOOGLE_API_KEY: null,
         GOOGLE_APP_ID: null,
+
+        // DataDog RUM
+        DATADOG_APPLICATION_ID: null,
+        DATADOG_CLIENT_TOKEN: null,
       }),
 
       new MiniCssExtractPlugin({
@@ -443,6 +456,29 @@ module.exports = (env, options) =>
               },
             },
           ],
+        },
+        // Pull bootstrap-icons and simple-icons from CDN to reduce bundle size.
+        {
+          test: /bootstrap-icons\/.*\.svg$/,
+          type: "asset/resource",
+          generator: {
+            emit: false,
+            publicPath: `https://cdn.jsdelivr.net/npm/bootstrap-icons@${
+              require("bootstrap-icons/package.json").version
+            }/`,
+            filename: "icons/[name][ext]",
+          },
+        },
+        {
+          test: /simple-icons\/.*\.svg$/,
+          type: "asset/resource",
+          generator: {
+            emit: false,
+            publicPath: `https://cdn.jsdelivr.net/npm/simple-icons@${
+              require("simple-icons/package.json").version
+            }/`,
+            filename: "icons/[name][ext]",
+          },
         },
       ],
     },

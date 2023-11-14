@@ -30,7 +30,7 @@ const UnsupportedApiV1: React.FC = () => (
         the Page Editor.
       </Alert>
       <p>
-        Use the Workshop to edit this brick/extension.{" "}
+        Use the Workshop to edit this mod.{" "}
         <a
           href="https://docs.pixiebrix.com/runtime"
           target="_blank"

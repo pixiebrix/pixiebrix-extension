@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock, type OutputKey } from "@/core";
+import type React from "react";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveElement,
@@ -28,27 +29,29 @@ import {
   selectPipelineMap,
 } from "@/pageEditor/slices/editorSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
-import { joinPathParts } from "@/utils";
-import { type BlockConfig } from "@/blocks/types";
+import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
+import { type BrickConfig } from "@/bricks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type Brick } from "@/types/brickTypes";
+import { joinPathParts } from "@/utils/formUtils";
 
 type TestAddBlockResult = {
-  error?: string;
+  error?: React.ReactNode;
 };
 
 type AddBlock = {
-  testAddBlock: (block: IBlock) => Promise<TestAddBlockResult>;
-  addBlock: (block: IBlock) => Promise<void>;
+  testAddBlock: (block: Brick) => Promise<TestAddBlockResult>;
+  addBlock: (block: Brick) => Promise<void>;
 };
 
 function makeBlockLevelAnalyses(): Analysis[] {
   return [
-    new BlockTypeAnalysis(),
+    new BrickTypeAnalysis(),
     new FormBrickAnalysis(),
     new RenderersAnalysis(),
   ];
@@ -63,7 +66,7 @@ function useAddBlock(): AddBlock {
   const addBlockLocation = useSelector(selectAddBlockLocation);
 
   const makeNewBlock = useCallback(
-    async (block: IBlock): Promise<BlockConfig> => {
+    async (block: Brick): Promise<BrickConfig> => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([
@@ -89,7 +92,7 @@ function useAddBlock(): AddBlock {
    * with adding the particular block.
    */
   const testAddBlock = useCallback(
-    async (block: IBlock): Promise<TestAddBlockResult> => {
+    async (block: Brick): Promise<TestAddBlockResult> => {
       if (!addBlockLocation) {
         return {};
       }
@@ -130,7 +133,7 @@ function useAddBlock(): AddBlock {
   );
 
   const addBlock = useCallback(
-    async (block: IBlock) => {
+    async (block: Brick) => {
       if (!addBlockLocation) {
         return;
       }
@@ -145,7 +148,7 @@ function useAddBlock(): AddBlock {
         })
       );
 
-      reportEvent("BrickAdd", {
+      reportEvent(Events.BRICK_ADD, {
         brickId: block.id,
         sessionId,
         extensionId: activeExtension.uuid,

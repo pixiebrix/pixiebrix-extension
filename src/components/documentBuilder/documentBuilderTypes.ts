@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types";
-import { type Expression } from "@/core";
+import { type UnknownObject } from "@/types/objectTypes";
 import {
   type DeferExpression,
+  type Expression,
   type PipelineExpression,
-} from "@/runtime/mapArgs";
-import { type ElementType, type MouseEventHandler } from "react";
+} from "@/types/runtimeTypes";
+import { type ElementType, type MouseEventHandler, type Ref } from "react";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header",
@@ -84,8 +84,12 @@ export type ButtonDocumentConfig = {
   label: string;
   title: string | Expression;
   variant?: string | Expression;
-  // Default size type coming from Bootstrap Button
+  /**
+   * Default size type coming from React Bootstrap Button
+   */
   size?: "sm" | "lg" | Expression<"sm" | "lg">;
+  fullWidth?: boolean | Expression;
+  disabled?: boolean | Expression;
   className?: string | Expression;
   onClick: PipelineExpression;
 };
@@ -131,6 +135,7 @@ export type BuildDocumentBranch = (
 
 export type PreviewComponentProps = {
   className?: string;
+  elementRef: Ref<HTMLDivElement>;
   documentBodyName: string;
   elementName: string;
   isHovered: boolean;

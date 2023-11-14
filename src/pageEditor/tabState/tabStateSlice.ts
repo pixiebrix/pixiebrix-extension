@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pTimeout from "p-timeout";
-import { type FrameworkMeta } from "@/pageScript/messenger/constants";
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
-import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
 import { onContextInvalidated } from "@/errors/contextInvalidated";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -29,16 +26,16 @@ import {
   type TabStateRootState,
 } from "@/pageEditor/tabState/tabStateTypes";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { canAccessTab } from "@/utils/permissions";
+import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";
 import { BusinessError } from "@/errors/businessErrors";
+import reportError from "@/telemetry/reportError";
 
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,
   hasPermissions: false,
-  meta: undefined,
   frameId: 0,
 };
 
@@ -48,11 +45,26 @@ const initialTabState: TabState = {
   error: null,
 };
 
+export const CONTEXT_INVALIDATED_MESSAGE =
+  "PixieBrix was updated or restarted. Please reload 1) the Browser Tab, and then 2) the Page Editor to continue.";
+
+/**
+ * This thunk is long-running. It waits for the page's chrome runtime context
+ * to be invalidated, and then resolves with an error.
+ */
+const awaitContextInvalidated = createAsyncThunk<
+  void,
+  void,
+  { state: TabStateRootState }
+>("tabState/awaitContextInvalidated", async () => {
+  await onContextInvalidated();
+});
+
 const connectToContentScript = createAsyncThunk<
   FrameConnectionState,
   void,
   // We need to include these states to enable dispatching the availability async thunk actions
-  { state: TabStateRootState & EditorRootState & ExtensionsRootState }
+  { state: TabStateRootState & EditorRootState & ModComponentsRootState }
 >("tabState/connectToContentScript", async (_, thunkAPI) => {
   const uuid = uuidv4();
   const common = { ...defaultFrameState, navSequence: uuid };
@@ -66,18 +78,6 @@ const connectToContentScript = createAsyncThunk<
   console.debug("connectToContentScript: ensuring contentScript");
   await ensureContentScript(thisTab, 4500);
 
-  let frameworks: FrameworkMeta[] = [];
-  try {
-    console.debug("connectToContentScript: detecting frameworks");
-    frameworks = await pTimeout(detectFrameworks(thisTab, null), {
-      milliseconds: 500,
-    });
-  } catch (error) {
-    console.debug("connectToContentScript: error detecting frameworks", {
-      error,
-    });
-  }
-
   void thunkAPI.dispatch(awaitContextInvalidated());
   void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
   void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
@@ -86,20 +86,7 @@ const connectToContentScript = createAsyncThunk<
   return {
     ...common,
     hasPermissions: true,
-    meta: { frameworks },
   };
-});
-
-/**
- * This thunk is long-running. It waits for the page's chrome runtime context
- * to be invalidated, and then resolves with an error.
- */
-const awaitContextInvalidated = createAsyncThunk<
-  void,
-  void,
-  { state: TabStateRootState }
->("tabState/awaitContextInvalidated", async () => {
-  await onContextInvalidated();
 });
 
 export const tabStateSlice = createSlice({
@@ -130,9 +117,7 @@ export const tabStateSlice = createSlice({
       .addCase(awaitContextInvalidated.fulfilled, (state) => {
         state.isConnecting = false;
         state.frameState = defaultFrameState;
-        const error = new BusinessError(
-          "PixieBrix was updated or restarted. Reload the Page Editor to continue."
-        );
+        const error = new BusinessError(CONTEXT_INVALIDATED_MESSAGE);
         state.error = serializeError(error);
       });
   },

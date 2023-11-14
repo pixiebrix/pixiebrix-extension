@@ -15,23 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import automationAnywhere from "@contrib/services/automation-anywhere.yaml";
-import automationAnywhereOAuth2 from "@contrib/services/automation-anywhere-oauth2.yaml";
-import greenhouse from "@contrib/services/greenhouse.yaml";
+import automationAnywhere from "@contrib/integrations/automation-anywhere.yaml";
+import automationAnywhereOAuth2 from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import greenhouse from "@contrib/integrations/greenhouse.yaml";
 import { fromJS } from "@/services/factory";
-import { type ServiceDefinition } from "@/types/definitions";
-import { type SanitizedConfig, type ServiceConfig } from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
+import {
+  type SanitizedConfig,
+  type SecretsConfig,
+  type IntegrationDefinition,
+} from "@/integrations/integrationTypes";
 
 describe("LocalDefinedService", () => {
   test("includes version", () => {
-    const service = fromJS(automationAnywhere as unknown as ServiceDefinition);
+    const service = fromJS(
+      automationAnywhere as unknown as IntegrationDefinition
+    );
     expect(service.version).toBe("1.0.0");
+    expect(service.uiSchema).toMatchObject({
+      "ui:order": expect.toBeArrayOfSize(5),
+    });
   });
 
   test("get origins for oauth2 service", () => {
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as ServiceDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition
     );
     const origins = service.getOrigins({
       controlRoomUrl: "https://controlroom.example.com",
@@ -48,7 +56,7 @@ describe("LocalDefinedService", () => {
     const authConfigOrigin = "https://authconfig.example.com";
 
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as ServiceDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition
     );
     const origins = service.getOrigins({
       controlRoomUrl: "https://controlroom.example.com",
@@ -64,7 +72,7 @@ describe("LocalDefinedService", () => {
 
   test("excludes invalid base URL", () => {
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as ServiceDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition
     );
     const origins = service.getOrigins({
       controlRoomUrl: "",
@@ -79,9 +87,9 @@ describe("LocalDefinedService", () => {
 
   test("default client ID", () => {
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as ServiceDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition
     );
-    const oauth2 = service.getOAuth2Context({} as unknown as ServiceConfig);
+    const oauth2 = service.getOAuth2Context({} as unknown as SecretsConfig);
     expect(oauth2.client_id).toBe("g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM");
   });
 
@@ -89,27 +97,27 @@ describe("LocalDefinedService", () => {
     const clientId = "12345";
 
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as ServiceDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition
     );
     const oauth2 = service.getOAuth2Context({
       clientId,
-    } as unknown as ServiceConfig);
+    } as unknown as SecretsConfig);
     expect(oauth2.client_id).toBe(clientId);
   });
 });
 
 describe("LocalDefinedService.authenticateBasicRequest", () => {
   it("adds authorization header", () => {
-    const service = fromJS(greenhouse as unknown as ServiceDefinition);
+    const service = fromJS(greenhouse as unknown as IntegrationDefinition);
 
     expect(service.isBasicHttpAuth).toBeTrue();
 
     const config = service.authenticateRequest(
-      { apiToken: "topsecret" } as unknown as ServiceConfig,
+      { apiToken: "topsecret" } as unknown as SecretsConfig,
       { url: "/v1/candidates/", method: "get" }
     );
 
-    expect(config.baseURL).toEqual("https://harvest.greenhouse.io");
+    expect(config.baseURL).toBe("https://harvest.greenhouse.io");
 
     expect(config.headers).toStrictEqual({
       Authorization: `Basic ${btoa("topsecret:")}`,
@@ -117,13 +125,13 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
   });
 
   it("requires value", () => {
-    const service = fromJS(greenhouse as unknown as ServiceDefinition);
+    const service = fromJS(greenhouse as unknown as IntegrationDefinition);
 
     expect(service.isBasicHttpAuth).toBeTrue();
 
     expect(() =>
       service.authenticateRequest(
-        { notTheKey: "topsecret" } as unknown as ServiceConfig,
+        { notTheKey: "topsecret" } as unknown as SecretsConfig,
         { url: "/v1/candidates/", method: "get" }
       )
     ).toThrow(BusinessError);

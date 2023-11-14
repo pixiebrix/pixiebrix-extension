@@ -15,30 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useContext } from "react";
 import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
-import ServiceField from "@/components/fields/schemaFields/ServiceField";
-import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
+import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/AppApiIntegrationDependencyField";
 import CssClassField from "./CssClassField";
 import HeadingStyleField from "./HeadingStyleField";
 import {
   isAppServiceField,
   isCssClassField,
   isHeadingStyleField,
-  isServiceField,
+  hasCustomWidget,
 } from "./fieldTypeCheckers";
 import RootAwareField from "@/components/fields/schemaFields/RootAwareField";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
+import { get } from "lodash";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
+import { type CustomWidgetRegistry } from "@/components/fields/schemaFields/schemaFieldTypes";
 
 const SchemaField: SchemaFieldComponent = (props) => {
-  const { schema } = props;
+  const { schema, uiSchema } = props;
+  const { customWidgets } = useContext(SchemaFieldContext);
 
   if (isAppServiceField(schema)) {
-    return <AppServiceField {...props} />;
-  }
-
-  if (isServiceField(schema)) {
-    return <ServiceField {...props} />;
+    return <AppApiIntegrationDependencyField {...props} />;
   }
 
   if (isCssClassField(schema)) {
@@ -47,6 +47,19 @@ const SchemaField: SchemaFieldComponent = (props) => {
 
   if (isHeadingStyleField(schema)) {
     return <HeadingStyleField {...props} />;
+  }
+
+  if (hasCustomWidget(uiSchema)) {
+    const widget = get(
+      customWidgets,
+      uiSchema["ui:widget"] as keyof CustomWidgetRegistry
+    );
+
+    // If the uiWidget is registered, render it. Otherwise, render the default field.
+    if (widget) {
+      const Component = defaultFieldFactory(widget);
+      return <Component {...props} />;
+    }
   }
 
   if (props.name.endsWith(".isRootAware")) {
@@ -58,4 +71,5 @@ const SchemaField: SchemaFieldComponent = (props) => {
   return <BasicSchemaField {...props} />;
 };
 
-export default SchemaField;
+// Need to memoize SchemaField to prevent uiWidgets from repeatedly mounting/unmounting
+export default React.memo(SchemaField);

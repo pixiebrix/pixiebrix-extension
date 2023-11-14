@@ -16,43 +16,50 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import {
-  type ExtensionRef,
-  type RegistryId,
-  type RunArgs,
-  RunReason,
-  type UUID,
-} from "@/core";
-import type {
-  FormEntry,
-  PanelEntry,
-  RendererError,
-  ActivatePanelOptions,
-  TemporaryPanelEntry,
-} from "@/sidebar/types";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty } from "lodash";
-import { logPromiseDuration } from "@/utils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import {
   insertSidebarFrame,
   isSidebarFrameVisible,
   removeSidebarFrame,
 } from "./sidebarDomControllerLite";
+import { type Except } from "type-fest";
+import { type RunArgs, RunReason } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+import type {
+  ActivatePanelOptions,
+  ModActivationPanelEntry,
+  FormPanelEntry,
+  PanelEntry,
+  PanelPayload,
+  TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
+import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
+import { logPromiseDuration } from "@/utils/promiseUtils";
+import { waitAnimationFrame } from "@/utils/domUtils";
 
-export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
+export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
 /**
  * Sequence number for ensuring render requests are handled in order
  */
 let renderSequenceNumber = 0;
 
+/**
+ * Event listeners triggered when the sidebar shows and is ready to receive messages.
+ */
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
+
+let modActivationPanelEntry: ModActivationPanelEntry = null;
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
@@ -61,10 +68,14 @@ const panels: PanelEntry[] = [];
 export async function showSidebar(
   activateOptions: ActivatePanelOptions = {}
 ): Promise<void> {
-  reportEvent("SidePanelShow");
-  const isShowing = isSidebarFrameVisible();
+  console.debug("sidebarController:showSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
 
-  if (!isShowing) {
+  reportEvent(Events.SIDEBAR_SHOW);
+  const isAlreadyShowing = isSidebarFrameVisible();
+
+  if (!isAlreadyShowing) {
     insertSidebarFrame();
   }
 
@@ -74,9 +85,22 @@ export async function showSidebar(
     throw new Error("The sidebar did not respond in time", { cause: error });
   }
 
-  if (!isShowing || (activateOptions.refresh ?? true)) {
-    // Run the extension points available on the page. If the sidebar is already in the page, running
+  if (!isAlreadyShowing || (activateOptions.refresh ?? true)) {
+    // Run the sidebar extension points available on the page. If the sidebar is already in the page, running
     // all the callbacks ensures the content is up-to-date
+
+    // Currently, this runs the listening SidebarExtensionPoint.run callbacks in not particular order. Also note that
+    // we're not awaiting their resolution (because they may contain long-running bricks).
+    if (!isSidebarFrameVisible()) {
+      console.error(
+        "Pre-condition failed: sidebar is not attached in the page for call to sidebarShowEvents.emit"
+      );
+    }
+
+    console.debug("sidebarController:showSidebar emitting sidebarShowEvents", {
+      isSidebarFrameVisible: isSidebarFrameVisible(),
+    });
+
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
   }
 
@@ -89,9 +113,9 @@ export async function showSidebar(
     void sidebarInThisTab
       .activatePanel(seqNum, {
         ...activateOptions,
-        // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation, where
-        // depending on when the message is received, the sidebar might already be showing a panel)
-        force: activateOptions.force || !isShowing,
+        // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation,
+        // where depending on when the message is received, the sidebar might already be showing a panel)
+        force: activateOptions.force || !isAlreadyShowing,
       })
       // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
       .catch((error: unknown) => {
@@ -127,16 +151,28 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
  * @see showSidebar
  */
 export async function ensureSidebar(): Promise<void> {
+  console.debug("sidebarController:ensureSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   if (!isSidebarFrameVisible()) {
     expectContext("contentScript");
     await logPromiseDuration("ensureSidebar", showSidebar());
   }
 }
 
+/**
+ * Hide the sidebar. Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
+ * @see HIDE_SIDEBAR_EVENT_NAME
+ */
 export function hideSidebar(): void {
-  reportEvent("SidePanelHide");
+  console.debug("sidebarController:hideSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
+  reportEvent(Events.SIDEBAR_HIDE);
   removeSidebarFrame();
-  window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
+  window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
 }
 
 /**
@@ -146,8 +182,9 @@ export function hideSidebar(): void {
  * - Does not reload ephemeral forms
  */
 export async function reloadSidebar(): Promise<void> {
-  // Need to hide and re-show because the controller sends the content on load. The sidebar doesn't automatically
-  // request its own content on mount.
+  console.debug("sidebarController:reloadSidebar");
+
+  // Hide and reshow to force a full-refresh of the sidebar
 
   if (isSidebarFrameVisible()) {
     hideSidebar();
@@ -157,15 +194,30 @@ export async function reloadSidebar(): Promise<void> {
 }
 
 /**
- * After a browserAction "toggleSidebarFrame" call, which handles the DOM insertion,
- * activate the frame if it was inserted, otherwise run other events on "hide"
+ * Rehydrate the already visible sidebar.
+ *
+ * For use with background/browserAction.
+ * - `browserAction` calls toggleSidebarFrame to immediately adds the sidebar iframe
+ * - It injects the content script
+ * - It calls this method via messenger to complete the sidebar initialization
  */
-export function rehydrateSidebar(): void {
+export async function rehydrateSidebar(): Promise<void> {
+  // Ensure DOM state is ready for accurate call to isSidebarFrameVisible. Shouldn't strictly be necessary, but
+  // giving it a try and shouldn't impact performance. The background page has limited ability to determine when it's
+  // OK to call rehydrateSidebar via messenger. See background/browserAction.ts.
+  await waitAnimationFrame();
+
+  // To assist with debugging race conditions in sidebar initialization
+  console.debug("sidebarController:rehydrateSidebar", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   if (isSidebarFrameVisible()) {
     // `showSidebar` includes the logic to hydrate it
-    void showSidebar();
+    // `refresh: true` is the default, but be explicit that the sidebarShowEvents must run.
+    void showSidebar({ refresh: true });
   } else {
-    // `hideSidebar` includes events
+    // `hideSidebar` includes events to cleanup the sidebar
     hideSidebar();
   }
 }
@@ -173,16 +225,20 @@ export function rehydrateSidebar(): void {
 function renderPanelsIfVisible(): void {
   expectContext("contentScript");
 
+  console.debug("sidebarController:renderPanelsIfVisible");
+
   if (isSidebarFrameVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
     void sidebarInThisTab.renderPanels(seqNum, panels);
   } else {
-    console.debug("Skipping renderPanels because the sidebar is not visible");
+    console.debug(
+      "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible"
+    );
   }
 }
 
-export function showSidebarForm(entry: FormEntry): void {
+export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
@@ -191,7 +247,7 @@ export function showSidebarForm(entry: FormEntry): void {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  void sidebarInThisTab.showForm(seqNum, entry);
+  void sidebarInThisTab.showForm(seqNum, { type: "form", ...entry });
 }
 
 export function hideSidebarForm(nonce: UUID): void {
@@ -207,7 +263,9 @@ export function hideSidebarForm(nonce: UUID): void {
   void sidebarInThisTab.hideForm(seqNum, nonce);
 }
 
-export function showTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
+export function showTemporarySidebarPanel(
+  entry: Except<TemporaryPanelEntry, "type">
+): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
@@ -217,10 +275,15 @@ export function showTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
   }
 
   const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.showTemporaryPanel(sequence, entry);
+  void sidebarInThisTab.showTemporaryPanel(sequence, {
+    type: "temporaryPanel",
+    ...entry,
+  });
 }
 
-export function updateTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
+export function updateTemporarySidebarPanel(
+  entry: Except<TemporaryPanelEntry, "type">
+): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
@@ -230,7 +293,10 @@ export function updateTemporarySidebarPanel(entry: TemporaryPanelEntry): void {
   }
 
   const sequence = renderSequenceNumber++;
-  sidebarInThisTab.updateTemporaryPanel(sequence, entry);
+  sidebarInThisTab.updateTemporaryPanel(sequence, {
+    type: "temporaryPanel",
+    ...entry,
+  });
 }
 
 export function hideTemporarySidebarPanel(nonce: UUID): void {
@@ -244,12 +310,18 @@ export function hideTemporarySidebarPanel(nonce: UUID): void {
   void sidebarInThisTab.hideTemporaryPanel(sequence, nonce);
 }
 
-export function removeExtension(extensionId: UUID): void {
+/**
+ * Remove all panels associated with given extensionIds.
+ * @param extensionIds the extension UUIDs to remove
+ */
+export function removeExtensions(extensionIds: UUID[]): void {
   expectContext("contentScript");
+
+  console.debug("sidebarController:removeExtensions", { extensionIds });
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
-  panels.push(...current.filter((x) => x.extensionId !== extensionId));
+  panels.push(...current.filter((x) => !extensionIds.includes(x.extensionId)));
   renderPanelsIfVisible();
 }
 
@@ -265,8 +337,9 @@ export function removeExtensionPoint(
 ): void {
   expectContext("contentScript");
 
-  console.debug("removeExtensionPoint %s", extensionPointId, {
+  console.debug("sidebarController:removeExtensionPoint %s", extensionPointId, {
     preserveExtensionIds,
+    panels: panels.filter((x) => x.extensionPointId === extensionPointId),
   });
 
   // `panels` is const, so replace the contents
@@ -278,13 +351,14 @@ export function removeExtensionPoint(
         preserveExtensionIds.includes(x.extensionId)
     )
   );
+
   renderPanelsIfVisible();
 }
 
 /**
  * Create placeholder panels showing loading indicators
  */
-export function reservePanels(refs: ExtensionRef[]): void {
+export function reservePanels(refs: ModComponentRef[]): void {
   if (refs.length === 0) {
     return;
   }
@@ -293,15 +367,16 @@ export function reservePanels(refs: ExtensionRef[]): void {
   for (const { extensionId, extensionPointId, blueprintId } of refs) {
     if (!current.has(extensionId)) {
       const entry: PanelEntry = {
+        type: "panel",
         extensionId,
         extensionPointId,
         blueprintId,
-        heading: null,
+        heading: "",
         payload: null,
       };
 
       console.debug(
-        "reservePanels: reserve panel %s for %s",
+        "sidebarController:reservePanels: reserve panel %s for %s",
         extensionId,
         extensionPointId,
         blueprintId,
@@ -317,6 +392,12 @@ export function reservePanels(refs: ExtensionRef[]): void {
 
 export function updateHeading(extensionId: UUID, heading: string): void {
   const entry = panels.find((x) => x.extensionId === extensionId);
+
+  console.debug("sidebarController:updateHeading %s", extensionId, {
+    heading,
+    panel: entry,
+  });
+
   if (entry) {
     entry.heading = heading;
     console.debug(
@@ -335,16 +416,16 @@ export function updateHeading(extensionId: UUID, heading: string): void {
 }
 
 export function upsertPanel(
-  { extensionId, extensionPointId, blueprintId }: ExtensionRef,
+  { extensionId, extensionPointId, blueprintId }: ModComponentRef,
   heading: string,
-  payload: RendererPayload | RendererError
+  payload: PanelPayload
 ): void {
   const entry = panels.find((panel) => panel.extensionId === extensionId);
   if (entry) {
     entry.payload = payload;
     entry.heading = heading;
     console.debug(
-      "upsertPanel: update existing panel %s for %s",
+      "sidebarController:upsertPanel: update existing panel %s for %s",
       extensionId,
       extensionPointId,
       blueprintId,
@@ -352,7 +433,7 @@ export function upsertPanel(
     );
   } else {
     console.debug(
-      "upsertPanel: add new panel %s for %s",
+      "sidebarController:upsertPanel: add new panel %s for %s",
       extensionId,
       extensionPointId,
       blueprintId,
@@ -364,6 +445,7 @@ export function upsertPanel(
       }
     );
     panels.push({
+      type: "panel",
       extensionId,
       extensionPointId,
       blueprintId,
@@ -373,4 +455,73 @@ export function upsertPanel(
   }
 
   renderPanelsIfVisible();
+}
+
+/**
+ * Show a mod activation panel in the sidebar. If there's already a panel showing, it will be replaced.
+ *
+ * @param entry the mod activation panel entry
+ * @throws Error if the sidebar frame is not visible
+ */
+export function showModActivationInSidebar(
+  entry: Except<ModActivationPanelEntry, "type">
+): void {
+  expectContext("contentScript");
+
+  if (!isSidebarFrameVisible()) {
+    throw new Error(
+      "Cannot activate mods in the sidebar if the sidebar is not visible"
+    );
+  }
+
+  modActivationPanelEntry = {
+    type: "activateMods",
+    ...entry,
+  };
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.showModActivationPanel(
+    sequence,
+    modActivationPanelEntry
+  );
+}
+
+/**
+ * Hide the mod activation panel in the sidebar.
+ * @see showModActivationInSidebar
+ */
+export function hideModActivationInSidebar(): void {
+  expectContext("contentScript");
+
+  // Clear out in in-memory tracking
+  modActivationPanelEntry = null;
+
+  if (!isSidebarFrameVisible()) {
+    return;
+  }
+
+  const sequence = renderSequenceNumber++;
+  void sidebarInThisTab.hideModActivationPanel(sequence);
+}
+
+/**
+ * Return the panels that are "reserved", that will be shown when the sidebar is shown. The content may not be computed
+ * yet. This includes:
+ * - Permanent panels added by sidebarExtension
+ * - Temporary panels added by DisplayTemporaryInfo
+ * - Temporary form definitions added by ephemeralForm
+ * - Activate Recipe panel added by sidebarActivation.ts activate button click-handlers
+ */
+export function getReservedPanelEntries(): {
+  panels: PanelEntry[];
+  temporaryPanels: TemporaryPanelEntry[];
+  forms: FormPanelEntry[];
+  modActivationPanel: ModActivationPanelEntry | null;
+} {
+  return {
+    panels,
+    temporaryPanels: getTemporaryPanelSidebarEntries(),
+    forms: getFormPanelSidebarEntries(),
+    modActivationPanel: modActivationPanelEntry,
+  };
 }

@@ -24,8 +24,7 @@ import "@/development/errorsBadge";
 // Required for MV3; Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
 
-import "webext-dynamic-content-scripts/including-active-tab";
-
+import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/background/messenger/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
@@ -33,33 +32,47 @@ import initContextMenus from "@/background/contextMenus";
 import initBrowserAction from "@/background/browserAction";
 import initInstaller from "@/background/installer";
 import initNavigation from "@/background/navigation";
-import initGoogle from "@/contrib/google/initGoogle";
+import initGoogle, { isGAPISupported } from "@/contrib/google/initGoogle";
 import initExecutor from "@/background/executor";
 import initBrowserCommands from "@/background/initBrowserCommands";
-import initDeploymentUpdater from "@/background/deployment";
+import initDeploymentUpdater from "@/background/deploymentUpdater";
 import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import initActiveTabTracking from "@/background/activeTab";
 import initPartnerTheme from "@/background/partnerTheme";
-import initStarterBlueprints from "@/background/starterBlueprints";
+import initStarterMods from "@/background/starterMods";
 import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
 import { initContentScriptReadyListener } from "@/background/contentScript";
+import { initLogSweep } from "@/telemetry/logging";
+import { initModUpdater } from "@/background/modUpdater";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
 
 void initLocator();
+void initMessengerLogging();
+void initRuntimeLogging();
 registerMessenger();
 registerExternalMessenger();
 initBrowserAction();
 initInstaller();
 initNavigation();
 initExecutor();
-void initGoogle();
 initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
 initFirefoxCompat();
 activateBrowserActionIcon();
-initActiveTabTracking();
 initPartnerTheme();
-initStarterBlueprints();
+initStarterMods();
 initPartnerTokenRefresh();
+initLogSweep();
+initModUpdater();
+
+if (isGAPISupported()) {
+  // Optimistically initialize Google API, if Google API is supported. But do not prompt for permissions
+  void initGoogle();
+} else {
+  console.debug("Google API not supported by browser", {
+    // @ts-expect-error -- exists on Chromium, but not other browsers
+    browserBrands: navigator.userAgentData?.brands,
+  });
+}

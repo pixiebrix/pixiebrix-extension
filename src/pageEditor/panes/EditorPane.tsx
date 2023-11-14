@@ -25,14 +25,15 @@ import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import Effect from "@/pageEditor/components/Effect";
+import Effect from "@/components/Effect";
 import ElementWizard from "@/pageEditor/ElementWizard";
 import { logActions } from "@/components/logViewer/logSlice";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveElement,
   selectSelectionSeq,
 } from "@/pageEditor/slices/editorSelectors";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -40,13 +41,13 @@ const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
 const EditorPaneContent: React.VoidFunctionComponent<{
-  element: FormState;
+  element: ModComponentFormState;
 }> = ({ element }) => {
   const dispatch = useDispatch();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
-    (values: FormState) => {
+    (values: ModComponentFormState) => {
       dispatch(editorActions.editElement(values));
       dispatch(actions.checkActiveElementAvailability());
     },
@@ -63,14 +64,14 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   }, [element.uuid, element.recipe, dispatch]);
 
   return (
-    <>
+    <IntegrationsSliceModIntegrationsContextAdapter>
       <Effect
         values={element}
         onChange={syncReduxState}
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
       <ElementWizard element={element} />
-    </>
+    </IntegrationsSliceModIntegrationsContextAdapter>
   );
 };
 
@@ -81,29 +82,27 @@ const EditorPane: React.VFC = () => {
   const key = `${activeElement.uuid}-${activeElement.installed}-${selectionSeq}`;
 
   return (
-    <>
-      <ErrorBoundary key={key}>
-        <Formik
-          key={key}
-          initialValues={activeElement}
-          onSubmit={() => {
-            console.error(
-              "Formik's submit should not be called to save an extension."
-            );
-          }}
-          // We're validating on blur instead of on change as a stop-gap measure to improve typing
-          // performance in schema fields of block configs in dev builds of the extension.
-          // The long-term better solution is to split up our pipeline validation code to work
-          // on one block at a time, and then modify the usePipelineField hook to only validate
-          // one block at a time. Then we can re-enable change validation here once this doesn't
-          // cause re-rendering the entire form on every change.
-          validateOnChange={false}
-          validateOnBlur={true}
-        >
-          {({ values: element }) => <EditorPaneContent element={element} />}
-        </Formik>
-      </ErrorBoundary>
-    </>
+    <ErrorBoundary key={key}>
+      <Formik
+        key={key}
+        initialValues={activeElement}
+        onSubmit={() => {
+          console.error(
+            "Formik's submit should not be called to save an extension."
+          );
+        }}
+        // We're validating on blur instead of on change as a stop-gap measure to improve typing
+        // performance in schema fields of block configs in dev builds of the extension.
+        // The long-term better solution is to split up our pipeline validation code to work
+        // on one block at a time, and then modify the usePipelineField hook to only validate
+        // one block at a time. Then we can re-enable change validation here once this doesn't
+        // cause re-rendering the entire form on every change.
+        validateOnChange={false}
+        validateOnBlur={true}
+      >
+        {({ values: element }) => <EditorPaneContent element={element} />}
+      </Formik>
+    </ErrorBoundary>
   );
 };
 

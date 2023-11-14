@@ -17,25 +17,26 @@
 
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import {
-  CONTEXT_INVALIDATED_ERROR,
-  getErrorMessage,
-  getRootCause,
-} from "./errorHelpers";
+import { getErrorMessage, getRootCause } from "./errorHelpers";
+import { CONTEXT_INVALIDATED_ERROR } from "@/errors/knownErrorMessages";
 
-const id = "connection-lost";
+/**
+ * Notification id to avoid displaying the same notification multiple times.
+ */
+const CONNECT_LOST_NOTIFICATION_ID = "connection-lost";
 
 /**
  * Display a notification when the background page unloads/reloads because at this point
- * all communcation becomes impossible.
+ * all communication becomes impossible.
  */
 export async function notifyContextInvalidated(): Promise<void> {
-  // `import()` is only needed to avoid execution of its dependencies, not to lazy-load it
+  // `import()` is needed to avoid execution of its dependencies (telemetry)
+  // Also, lazily import to avoid importing React unnecessarily
   // https://github.com/pixiebrix/pixiebrix-extension/issues/4058#issuecomment-1217391772
   // eslint-disable-next-line import/dynamic-import-chunkname
-  const { notify } = await import(/* webpackMode: "eager" */ "@/utils/notify");
+  const { notify } = await import(/* webpackMode: "lazy" */ "@/utils/notify");
   notify.error({
-    id,
+    id: CONNECT_LOST_NOTIFICATION_ID,
     message: "PixieBrix was updated or restarted. Reload the page to continue",
     reportError: false, // It cannot report it because its background page no longer exists
     duration: Number.POSITIVE_INFINITY,
@@ -51,6 +52,9 @@ export function isContextInvalidatedError(possibleError: unknown): boolean {
   );
 }
 
+/**
+ * Return true if the browser extension context has been invalidated, e.g., due to a restart/update/crash.
+ */
 export const wasContextInvalidated = () => !chrome.runtime?.id;
 
 /**

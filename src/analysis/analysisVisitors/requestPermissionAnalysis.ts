@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { nestedPosition, type VisitBlockExtra } from "@/blocks/PipelineVisitor";
-import { GetAPITransformer } from "@/blocks/transformers/httpGet";
-import { RemoteMethod } from "@/blocks/transformers/remoteMethod";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isTemplateString } from "@/pageEditor/extensionPoints/upgrade";
-import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { isAbsoluteUrl } from "@/utils";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { GetAPITransformer } from "@/bricks/transformers/httpGet";
+import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { isTemplateString } from "@/pageEditor/starterBricks/upgrade";
+import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
-import { requestPermissions } from "@/utils/permissions";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
  */
-class RequestPermissionAnalysis extends AnalysisVisitor {
+class RequestPermissionAnalysis extends AnalysisVisitorABC {
   // XXX: for now we handle asynchronous pipeline traversal by gathering all the promises and awaiting them all
   // see discussion https://github.com/pixiebrix/pixiebrix-extension/pull/4013#discussion_r944690969
   private readonly permissionCheckPromises: Array<Promise<void>> = [];
@@ -41,12 +41,12 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
     return "requestPermission";
   }
 
-  override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+  override visitBrick(
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     // Analyze the known blocks that make external HTTP request
     if (
@@ -112,7 +112,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
             this.annotations.push({
               position: nestedPosition(position, "config.url"),
               message:
-                "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the extension.",
+                "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the starter brick.",
               analysisId: this.id,
               type: AnnotationType.Error,
               actions: [
@@ -122,7 +122,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
                   path: "permissions.origins",
                   value: permissionsValue,
                   async extraCallback() {
-                    await requestPermissions({
+                    await ensurePermissionsFromUserGesture({
                       origins: [permissionsValue],
                     });
                   },
@@ -136,7 +136,7 @@ class RequestPermissionAnalysis extends AnalysisVisitor {
     }
   }
 
-  override async run(extension: FormState): Promise<void> {
+  override async run(extension: ModComponentFormState): Promise<void> {
     super.run(extension);
 
     // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs

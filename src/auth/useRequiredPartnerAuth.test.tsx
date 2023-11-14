@@ -23,14 +23,23 @@ import { appApi } from "@/services/api";
 import { uuidv4 } from "@/types/helpers";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import servicesSlice, { type ServicesState } from "@/store/servicesSlice";
+import integrationsSlice, {
+  type IntegrationsState,
+} from "@/integrations/store/integrationsSlice";
 import { type AuthState } from "@/auth/authTypes";
-import settingsSlice from "@/store/settingsSlice";
-import { type SettingsState } from "@/store/settingsTypes";
-import { waitForEffect } from "@/testUtils/testHelpers";
-import { CONTROL_ROOM_OAUTH_SERVICE_ID } from "@/services/constants";
-import { type RawServiceConfiguration } from "@/core";
+import settingsSlice from "@/store/settings/settingsSlice";
+import { type SettingsState } from "@/store/settings/settingsTypes";
+
 import { type Me } from "@/types/contract";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+
+jest.mock("@/store/enterprise/useManagedStorageState", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({ data: {}, isLoading: false }),
+}));
 
 jest.mock("@/services/api", () => ({
   appApi: {
@@ -56,18 +65,28 @@ function mockMeQuery(state: {
 
 function testStore(initialState?: {
   auth: AuthState;
-  services: ServicesState;
+  integrations: IntegrationsState;
   settings: SettingsState;
 }) {
   return configureStore({
     reducer: {
       auth: authSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       settings: settingsSlice.reducer,
     },
     preloadedState: initialState,
   });
 }
+
+const useManagedStorageStateMock =
+  useManagedStorageState as jest.MockedFunction<typeof useManagedStorageState>;
+
+beforeEach(() => {
+  useManagedStorageStateMock.mockReturnValue({
+    data: {},
+    isLoading: false,
+  });
+});
 
 describe("useRequiredPartnerAuth", () => {
   test("no partner", async () => {
@@ -102,10 +121,10 @@ describe("useRequiredPartnerAuth", () => {
   test("require partner via settings screen", async () => {
     const store = testStore({
       auth: authSlice.getInitialState(),
-      services: servicesSlice.getInitialState(),
+      integrations: integrationsSlice.getInitialState(),
       settings: {
         ...settingsSlice.getInitialState(),
-        authServiceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
+        authIntegrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         authMethod: "partner-oauth2",
       },
     });
@@ -157,6 +176,33 @@ describe("useRequiredPartnerAuth", () => {
         },
       } as any,
     });
+
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    });
+
+    await waitForEffect();
+
+    expect(result.current).toStrictEqual({
+      hasPartner: true,
+      partnerKey: "automation-anywhere",
+      requiresIntegration: true,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    });
+  });
+
+  test("requires integration for managed storage partner", async () => {
+    const store = testStore();
+
+    useManagedStorageStateMock.mockReturnValue({
+      data: { partnerId: "automation-anywhere" },
+      isLoading: false,
+    });
+
+    // Unauthenticated user
+    mockMeQuery({ data: {} as any, isLoading: false, isSuccess: true });
 
     const { result } = renderHook(() => useRequiredPartnerAuth(), {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
@@ -241,12 +287,12 @@ describe("useRequiredPartnerAuth", () => {
   test("has required integration", async () => {
     const store = testStore({
       auth: authSlice.getInitialState(),
-      services: {
-        ...servicesSlice.getInitialState(),
+      integrations: {
+        ...integrationsSlice.getInitialState(),
         configured: {
           [uuidv4()]: {
-            serviceId: CONTROL_ROOM_OAUTH_SERVICE_ID,
-          } as RawServiceConfiguration,
+            integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+          } as IntegrationConfig,
         },
       },
       settings: settingsSlice.getInitialState(),

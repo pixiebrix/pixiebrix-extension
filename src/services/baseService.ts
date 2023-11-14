@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty } from "lodash";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isExtensionContext } from "webext-detect-page";
-import { useAsyncEffect } from "use-async-effect";
-import { useCallback, useState } from "react";
+import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
+import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
+import { StorageItem } from "webext-storage";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
-export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
-const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
+type ConfiguredHost = string;
 
-type ConfiguredHost = string | null | undefined;
-
-const MANAGED_HOSTNAME_KEY = "serviceUrl" as ManualStorageKey;
+const serviceStorage = new StorageItem<ConfiguredHost>("service-url");
 
 export function withoutTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -41,17 +38,14 @@ export function withoutTrailingSlash(url: string): string {
  */
 export async function getBaseURL(): Promise<string> {
   if (isExtensionContext()) {
-    const configured = await readStorage<ConfiguredHost>(SERVICE_STORAGE_KEY);
-    if (!isEmpty(configured)) {
+    const configured = await serviceStorage.get();
+    if (configured) {
       return withoutTrailingSlash(configured);
     }
 
-    const managed = await readStorage<string>(
-      MANAGED_HOSTNAME_KEY,
-      undefined,
-      "managed"
-    );
-    if (!isEmpty(managed)) {
+    const managed = await readManagedStorageByKey("serviceUrl");
+
+    if (managed) {
       return withoutTrailingSlash(managed);
     }
   }
@@ -59,34 +53,14 @@ export async function getBaseURL(): Promise<string> {
   return withoutTrailingSlash(DEFAULT_SERVICE_URL);
 }
 
-export async function setBaseURL(serviceURL: string): Promise<void> {
-  await setStorage(SERVICE_STORAGE_KEY, serviceURL);
-}
-
-type ConfiguredHostResult = [ConfiguredHost, (url: string) => Promise<void>];
+type ConfiguredHostResult = [
+  ConfiguredHost | undefined,
+  (url: string) => Promise<void>
+];
 
 /**
  * Hook for retrieving/setting the manually configured host.
  */
 export function useConfiguredHost(): ConfiguredHostResult {
-  const [state, setState] = useState<ConfiguredHost>();
-
-  useAsyncEffect(
-    async (isMounted) => {
-      const configured = await readStorage<ConfiguredHost>(SERVICE_STORAGE_KEY);
-      if (!isMounted()) return;
-      setState(configured);
-    },
-    [setState]
-  );
-
-  const setUrl = useCallback(
-    async (url) => {
-      await setBaseURL(url);
-      setState(url);
-    },
-    [setState]
-  );
-
-  return [isEmpty(state) ? undefined : state, setUrl];
+  return useUpdatableAsyncState(serviceStorage.get, serviceStorage.set);
 }

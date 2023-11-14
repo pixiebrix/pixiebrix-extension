@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockPosition } from "@/blocks/types";
+import { type BrickPosition } from "@/bricks/types";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import { validateRegistryId } from "@/types/helpers";
-import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 
-const position: BlockPosition = {
+const position: BrickPosition = {
   path: "test.path",
 };
 
 describe("RegexAnalysis", () => {
   test("ignore expression", () => {
     const analysis = new RegexAnalysis();
-    analysis.visitBlock(
+    analysis.visitBrick(
       position,
       {
         id: validateRegistryId("@pixiebrix/regex"),
@@ -46,7 +46,7 @@ describe("RegexAnalysis", () => {
 
   test("validate string literal", () => {
     const analysis = new RegexAnalysis();
-    analysis.visitBlock(
+    analysis.visitBrick(
       position,
       {
         id: validateRegistryId("@pixiebrix/regex"),
@@ -62,7 +62,7 @@ describe("RegexAnalysis", () => {
 
   test("error on invalid regex", () => {
     const analysis = new RegexAnalysis();
-    analysis.visitBlock(
+    analysis.visitBrick(
       position,
       {
         id: validateRegistryId("@pixiebrix/regex"),
@@ -77,28 +77,9 @@ describe("RegexAnalysis", () => {
     );
 
     expect(analysis.getAnnotations()).toHaveLength(1);
-    expect(analysis.getAnnotations()[0].message).toEqual(
+    expect(analysis.getAnnotations()[0].message).toBe(
       "Invalid regular expression: /(?<foo>abc/: Unterminated group"
     );
-  });
-
-  test("warns on missing regex named capture group", () => {
-    const analysis = new RegexAnalysis();
-    analysis.visitBlock(
-      position,
-      {
-        id: validateRegistryId("@pixiebrix/regex"),
-        config: {
-          regex: {
-            __type__: "nunjucks",
-            __value__: "^bar$",
-          },
-        },
-      },
-      {} as VisitBlockExtra
-    );
-
-    expect(analysis.getAnnotations()).toHaveLength(1);
   });
 
   test.each([
@@ -108,7 +89,7 @@ describe("RegexAnalysis", () => {
     ["before-group(?<foo>bar)"],
   ])("accept value pattern: %s", (pattern) => {
     const analysis = new RegexAnalysis();
-    analysis.visitBlock(
+    analysis.visitBrick(
       position,
       {
         id: validateRegistryId("@pixiebrix/regex"),

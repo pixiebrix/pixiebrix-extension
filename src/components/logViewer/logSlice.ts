@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { clearLog, getLog, type LogEntry } from "@/telemetry/logging";
-import { type MessageContext } from "@/core";
+import { clearLog, getLogEntries, type LogEntry } from "@/telemetry/logging";
+import { type MessageContext } from "@/types/loggerTypes";
 import {
   createAsyncThunk,
   createSlice,
@@ -26,8 +26,7 @@ import {
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
 import { type LogRootState, type LogState } from "./logViewerTypes";
-import { castDraft } from "immer";
-import { type WritableDraft } from "immer/dist/types/types-external";
+import { castDraft, type Draft } from "immer";
 
 const REFRESH_INTERVAL = 750;
 
@@ -60,10 +59,10 @@ const pollLogs = createAsyncThunk<
   const activeContext = selectActiveContext(thunkAPI.getState());
   let availableEntries: LogEntry[] = [];
   if (activeContext != null) {
-    availableEntries = await getLog(activeContext);
+    availableEntries = await getLogEntries(activeContext);
   }
 
-  setTimeout(() => thunkAPI.dispatch(pollLogs()), REFRESH_INTERVAL);
+  setTimeout(async () => thunkAPI.dispatch(pollLogs()), REFRESH_INTERVAL);
 
   return availableEntries;
 });
@@ -74,9 +73,9 @@ const pollLogs = createAsyncThunk<
 export const logSlice: Slice<
   LogState,
   {
-    refreshEntries(state: WritableDraft<LogState>): void;
+    refreshEntries(state: Draft<LogState>): void;
     setContext(
-      state: WritableDraft<LogState>,
+      state: Draft<LogState>,
       action: PayloadAction<MessageContext>
     ): void;
   },

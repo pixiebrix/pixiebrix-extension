@@ -15,45 +15,87 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import Select, { type Options } from "react-select";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { isEmpty, sortBy, uniq } from "lodash";
+import { isEmpty, uniq } from "lodash";
 import { useField } from "formik";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
+import { isExpression } from "@/utils/expressionUtils";
+import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 import Creatable from "react-select/creatable";
+import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
-type StringOption = {
+export type StringOption = {
+  label: string;
   value: string;
 };
-type StringOptionsType = Options<StringOption>;
 
-const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
+export type StringOptionsType = Options<StringOption>;
+
+const SchemaSelectWidget: React.VFC<
+  SchemaFieldProps & { placeholder?: string }
+> = ({ name, schema, isRequired, focusInput, placeholder, uiSchema }) => {
   const [created, setCreated] = useState([]);
-  const [{ value }, , { setValue }] = useField(name);
+  const [{ value: fieldValue }, , { setValue }] = useField(name);
 
-  const [creatable, options]: [boolean, StringOptionsType] = useMemo(() => {
-    const values = schema.examples ?? schema.enum;
-    const options =
-      schema.type === "string" && Array.isArray(values)
-        ? sortBy(
-            uniq([...created, ...values, value].filter((x) => x != null))
-          ).map((value) => ({
-            value,
-            label: value,
-          }))
-        : [];
-    return [schema?.enum == null, options];
-  }, [schema.examples, schema.enum, created, value, schema.type]);
+  // Defaulting to true for these options
+  const { isSearchable = true, isClearable = true } =
+    uiSchema?.options?.props ?? {};
+
+  const elementRef = useRef();
+  useAutoFocusConfiguration({ elementRef, focus: focusInput });
+
+  // Need to handle expressions because this field could be toggled to "var"
+  // and the Widget won't change until the input mode can be inferred again
+  // from the new value.
+  const value = isExpression(fieldValue) ? fieldValue.__value__ : fieldValue;
+
+  const [textInputValue, setTextInputValue] = useState("");
+
+  const { creatable, options } = useMemo(
+    () =>
+      mapSchemaToOptions({
+        schema,
+        created,
+        value,
+      }),
+    [schema, created, value]
+  );
+
+  // Show placeholder if users can create new options and the search is empty
+  const optionsWithPlaceholder = useAddCreatablePlaceholder({
+    creatable,
+    options,
+    textInputValue,
+  });
 
   const selectedValue = options.find((x) => x.value === value) ?? {
+    label: null,
     value: null,
   };
 
   const selectOnChange = useCallback(
-    (option: StringOption) => {
-      setValue(option?.value ?? null);
+    async (option: StringOption) => {
+      if (option == null) {
+        await setValue(null);
+        reportEvent(Events.SCHEMA_SELECT_WIDGET_CLEAR, {
+          field_name: name,
+          schema_title: schema.title,
+        });
+      } else {
+        await setValue(option.value);
+        reportEvent(Events.SCHEMA_SELECT_WIDGET_SELECT, {
+          field_name: name,
+          schema_title: schema.title,
+          option_label: option.label,
+          option_value: option.value,
+        });
+      }
     },
-    [setValue]
+    [name, schema.title, setValue]
   );
 
   if (isEmpty(options)) {
@@ -62,21 +104,30 @@ const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
 
   return creatable ? (
     <Creatable
-      isClearable
-      options={options}
-      onCreateOption={(value) => {
-        setValue(value);
+      inputId={name}
+      isClearable={!isRequired}
+      options={optionsWithPlaceholder}
+      onCreateOption={async (value) => {
+        await setValue(value);
         setCreated(uniq([...created, value]));
       }}
       value={selectedValue}
       onChange={selectOnChange}
+      ref={elementRef}
+      placeholder={placeholder}
+      openMenuOnFocus={true}
+      onInputChange={setTextInputValue}
     />
   ) : (
     <Select
-      isClearable
+      inputId={name}
+      isClearable={!isRequired && isClearable}
       options={options}
       value={selectedValue}
       onChange={selectOnChange}
+      ref={elementRef}
+      openMenuOnFocus={true}
+      isSearchable={isSearchable}
     />
   );
 };

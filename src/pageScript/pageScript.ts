@@ -22,20 +22,17 @@
  * See for more information: https://github.com/pixiebrix/pixiebrix-extension/issues/4058
  */
 
-import { uuidv4 } from "@/types/helpers";
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
-  DETECT_FRAMEWORK_VERSIONS,
-  type Framework,
   GET_COMPONENT_DATA,
-  GET_COMPONENT_INFO,
+  GET_ELEMENT_INFO,
   READ_WINDOW,
   SCRIPT_LOADED,
   SET_COMPONENT_DATA,
   type FrameworkAdapter,
+  CKEDITOR_SET_VALUE,
 } from "@/pageScript/messenger/constants";
-import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/pageScript/frameworks/adapters";
 import {
   type ReadPayload,
@@ -43,21 +40,25 @@ import {
   type ReadOptions,
   type WritePayload,
 } from "@/pageScript/messenger/api";
-import { awaitValue } from "@/utils";
 import {
   type ReadableComponentAdapter,
   traverse,
 } from "@/pageScript/frameworks/component";
-import { elementInfo } from "@/pageScript/frameworks";
-import { findSingleElement } from "@/utils/requireSingleElement";
+import { elementInfo } from "@/pageScript/elementInfo";
 import {
   getPropByPath,
   noopProxy,
   type ReadProxy,
 } from "@/runtime/pathHelpers";
-import { type UnknownObject } from "@/types";
-import { initialize, type SerializableResponse } from "./messenger/pigeon";
+import { type UnknownObject } from "@/types/objectTypes";
+import { initialize } from "./messenger/receiver";
 import { TimeoutError } from "p-timeout";
+import { setCKEditorData } from "@/contrib/ckeditor";
+import { awaitValue } from "@/utils/promiseUtils";
+import { findSingleElement } from "@/utils/domUtils";
+import { uuidv4 } from "@/types/helpers";
+import { type SerializableResponse } from "@/types/messengerTypes";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
@@ -77,14 +78,13 @@ if (window[PAGESCRIPT_SYMBOL]) {
   );
 }
 
+// Safe to use uuidv4 polyfill here because the value is opaque/doesn't matter. It's just to detect double-injection.
 // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
 window[PAGESCRIPT_SYMBOL] = uuidv4();
 
 const MAX_READ_DEPTH = 5;
 
 const attachListener = initialize();
-
-attachListener(DETECT_FRAMEWORK_VERSIONS, async () => detectLibraries());
 
 function readPathSpec(
   // eslint-disable-next-line @typescript-eslint/ban-types -- object because we need to pass in window
@@ -104,7 +104,7 @@ function readPathSpec(
     );
   }
 
-  const values: Record<string, unknown> = {};
+  const values: UnknownObject = {};
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
@@ -116,7 +116,7 @@ function readPathSpec(
       });
     } else {
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(obj as Record<string, unknown>, pathOrObj, {
+      values[key] = getPropByPath(obj as UnknownObject, pathOrObj, {
         proxy,
         maxDepth: MAX_READ_DEPTH,
       });
@@ -126,16 +126,25 @@ function readPathSpec(
   return values;
 }
 
-attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
-  const factory = () => {
-    const values = readPathSpec(window, pathSpec);
-    return Object.values(values).every((value) => isEmpty(value))
-      ? undefined
-      : values;
-  };
+attachListener(
+  READ_WINDOW,
+  async ({
+    pathSpec,
+    waitMillis,
+  }: {
+    pathSpec: PathSpec;
+    waitMillis: number;
+  }) => {
+    const factory = () => {
+      const values = readPathSpec(window, pathSpec);
+      return Object.values(values).every((value) => isEmpty(value))
+        ? undefined
+        : values;
+    };
 
-  return awaitValue(factory, { waitMillis }) as SerializableResponse;
-});
+    return awaitValue(factory, { waitMillis }) as SerializableResponse;
+  }
+);
 
 async function read<TComponent>(
   adapter: ReadableComponentAdapter<TComponent>,
@@ -189,6 +198,8 @@ async function read<TComponent>(
   const target = traverse(adapter.getParent, component, traverseUp);
   const rawData = adapter.getData(target);
   const readData = readPathSpec(
+    // TODO: Find a better solution than casting to any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, security/detect-object-injection
     rootProp ? (rawData as any)[rootProp] : rawData,
     pathSpec,
     adapter.proxy
@@ -249,25 +260,20 @@ attachListener(
 );
 
 attachListener(
-  GET_COMPONENT_INFO,
-  async ({
-    selector,
-    framework,
-    traverseUp = 0,
-  }: {
-    selector: string;
-    framework?: Framework;
-
-    /**
-     * TraverseUp controls how many ancestor elements to also return
-     */
-    traverseUp: number;
-  }) => {
-    console.debug("GET_COMPONENT_INFO", { selector, framework, traverseUp });
+  GET_ELEMENT_INFO,
+  async ({ selector }: { selector: string }): Promise<ElementInfo> => {
     const element = findSingleElement(selector);
-    const info = await elementInfo(element, framework, [selector], traverseUp);
+    const info = await elementInfo(element, [selector], 0);
     console.debug("Element info", { element, selector, info });
     return info;
+  }
+);
+
+attachListener(
+  CKEDITOR_SET_VALUE,
+  async ({ selector, value }: { selector: string; value: string }) => {
+    const element = findSingleElement(selector);
+    setCKEditorData(element, value);
   }
 );
 

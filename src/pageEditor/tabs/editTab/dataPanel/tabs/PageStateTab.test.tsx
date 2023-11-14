@@ -20,14 +20,12 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import PageStateTab from "./PageStateTab";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import {
-  formStateFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories";
 import { getPageState } from "@/contentScript/messenger/api";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("PageStateTab", () => {
   beforeAll(() => {
@@ -37,8 +35,8 @@ describe("PageStateTab", () => {
     });
   });
 
-  async function renderPageStateTab(formState: FormState) {
-    const rendered = render(
+  async function renderPageStateTab(formState: ModComponentFormState) {
+    const utils = render(
       <Tab.Container activeKey={DataPanelTabKey.PageState}>
         <PageStateTab />
       </Tab.Container>,
@@ -52,20 +50,20 @@ describe("PageStateTab", () => {
 
     await waitForEffect();
 
-    return rendered;
+    return utils;
   }
 
   test("it renders with orphan extension", async () => {
     const formState = formStateFactory();
-    const rendered = await renderPageStateTab(formState);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = await renderPageStateTab(formState);
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders with recipe extension", async () => {
     const formState = formStateFactory({
-      recipe: installedRecipeMetadataFactory(),
+      recipe: modMetadataFactory(),
     });
-    const rendered = await renderPageStateTab(formState);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = await renderPageStateTab(formState);
+    expect(asFragment()).toMatchSnapshot();
   });
 });

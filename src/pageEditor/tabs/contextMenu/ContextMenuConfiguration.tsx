@@ -17,8 +17,6 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import TemplateWidget, {
   type Snippet,
@@ -26,6 +24,9 @@ import TemplateWidget, {
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import { useField } from "formik";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 
@@ -46,9 +47,11 @@ export const contextOptions = [
 
 const ContextMenuConfiguration: React.FC<{
   isLocked: boolean;
-}> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
+}> = ({ isLocked = false }) => {
+  const [{ value: onSuccess }] = useField("extension.onSuccess");
+
+  return (
+    <>
       <ConnectedFieldTemplate
         name="extension.title"
         label="Title"
@@ -70,12 +73,12 @@ const ContextMenuConfiguration: React.FC<{
         options={contextOptions}
         description={
           <span>
-            One or more contexts to include the context menu item. For example,
-            use the <code>selection</code> context to show the menu item when
-            right-clicking selected text.
+            Limit when the Context Menu item is shown. For example, selecting
+            only the <code>link</code> option will show the item only when
+            right-clicking on a link.
           </span>
         }
-        {...makeLockableFieldProps("Contexts", isLocked)}
+        {...makeLockableFieldProps("Menu context", isLocked)}
       />
 
       <UrlMatchPatternField
@@ -95,44 +98,55 @@ const ContextMenuConfiguration: React.FC<{
           </span>
         }
       />
-    </FieldSection>
+      <ConnectedCollapsibleFieldSection title="Advanced">
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.targetMode"
+          as="select"
+          title="Target Mode"
+          blankValue="legacy"
+          description={
+            <p>
+              Use&nbsp;<code>eventTarget</code> to pass the target of the
+              right-click as the action root. Use&nbsp;
+              <code>document</code> to pass the document as the action root.
+            </p>
+          }
+          {...makeLockableFieldProps("Target Mode", isLocked)}
+        >
+          <option value="eventTarget">eventTarget</option>
+          <option value="document">document</option>
+          <option value="legacy">legacy</option>
+        </ConnectedFieldTemplate>
 
-    <FieldSection title="Advanced">
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.targetMode"
-        as="select"
-        title="Target Mode"
-        blankValue="legacy"
-        description={
-          <p>
-            Use&nbsp;<code>eventTarget</code> to pass the target of the
-            right-click as the action root. Use&nbsp;
-            <code>document</code> to pass the document as the action root.
-          </p>
-        }
-        {...makeLockableFieldProps("Target Mode", isLocked)}
-      >
-        <option value="eventTarget">eventTarget</option>
-        <option value="document">document</option>
-        <option value="legacy">legacy</option>
-      </ConnectedFieldTemplate>
+        {(typeof onSuccess === "boolean" || onSuccess == null) && (
+          // Punt on object-based configuration for now. Enterprise customers are just asking to turn off the message.
+          // If they want a custom message they can add an alert brick.
+          <ConnectedFieldTemplate
+            name="extension.onSuccess"
+            label="Show Success Message"
+            as={SwitchButtonWidget}
+            description="Show the default success message when run"
+            blankValue={true}
+          />
+        )}
 
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        description={
-          <span>
-            URL match patterns give PixieBrix access to a page without you first
-            clicking the context menu. Including URLs here helps PixieBrix run
-            you action quicker, and accurately detect which page element you
-            clicked to invoke the context menu.
-          </span>
-        }
-        {...makeLockableFieldProps("Automatic Permissions", isLocked)}
-      />
-    </FieldSection>
+        <UrlMatchPatternField
+          name="extensionPoint.definition.isAvailable.matchPatterns"
+          description={
+            <span>
+              URL match patterns give PixieBrix access to a page without you
+              first clicking the context menu. Including URLs here helps
+              PixieBrix run you action quicker, and accurately detect which page
+              element you clicked to invoke the context menu.
+            </span>
+          }
+          {...makeLockableFieldProps("Automatic Permissions", isLocked)}
+        />
+      </ConnectedCollapsibleFieldSection>
 
-    <ExtraPermissionsSection />
-  </Card>
-);
+      <ExtraPermissionsSection />
+    </>
+  );
+};
 
 export default ContextMenuConfiguration;

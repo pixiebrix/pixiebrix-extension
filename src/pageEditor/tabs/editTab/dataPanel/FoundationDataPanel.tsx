@@ -86,8 +86,8 @@ const FoundationDataPanel: React.FC = () => {
           className={dataPanelStyles.tabPane}
         >
           <div className="text-muted">
-            A foundation is the first step in the execution flow, they do not
-            receive inputs
+            This is the first step in the execution flow, so it does not receive
+            inputs from any other brick.
           </div>
         </Tab.Pane>
         {showDeveloperTabs && (
@@ -101,8 +101,8 @@ const FoundationDataPanel: React.FC = () => {
           className={dataPanelStyles.tabPane}
         >
           <div className="text-muted">
-            A foundation is the first step in the execution flow, they do not
-            receive inputs
+            This is the first step in the execution flow, so it does not receive
+            inputs from any other brick.
           </div>
         </Tab.Pane>
         <Tab.Pane
@@ -121,8 +121,8 @@ const FoundationDataPanel: React.FC = () => {
             />
           ) : (
             <div className="text-muted">
-              No trace available, add a brick and run the extension to see the
-              data produced by the foundation
+              This is the first step in the execution flow, so it does not
+              receive inputs from any other brick.
             </div>
           )}
         </Tab.Pane>

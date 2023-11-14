@@ -15,24 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Expression } from "@/core";
 import {
   type Analysis,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import { type BlockPosition } from "@/blocks/types";
-import { isNunjucksExpression, isTemplateExpression } from "@/runtime/mapArgs";
+import { type BrickPosition } from "@/bricks/types";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { Template } from "nunjucks";
-import PipelineExpressionVisitor from "@/blocks/PipelineExpressionVisitor";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { AnnotationType } from "@/types";
+import PipelineExpressionVisitor from "@/bricks/PipelineExpressionVisitor";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { AnnotationType } from "@/types/annotationTypes";
+import {
+  isNunjucksExpression,
+  isTemplateExpression,
+} from "@/utils/expressionUtils";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
 
 type PushAnnotationArgs = {
-  position: BlockPosition;
+  position: BrickPosition;
   message: string;
   expression: Expression<unknown>;
 };
@@ -47,7 +50,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.annotations;
   }
 
-  run(extension: FormState): void {
+  run(extension: ModComponentFormState): void {
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });
@@ -68,7 +71,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   override visitExpression(
-    position: BlockPosition,
+    position: BrickPosition,
     expression: Expression<unknown>
   ): void {
     if (!isTemplateExpression(expression)) {

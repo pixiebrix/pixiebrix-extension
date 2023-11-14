@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Renders the tree 1`] = `
+<DocumentFragment>
+  <ul
+    style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
+  >
+    <li
+      style="padding: 0px; margin: 0px;"
+    >
+      <ul
+        style="padding: 0px; margin: 0px; list-style: none;"
+      >
+        <li
+          style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px; display: flex; align-items: center; flex-wrap: wrap;"
+        >
+          <div
+            style="display: inline-block; cursor: pointer; padding: 4px; margin-right: 10px; background-color: rgb(240, 239, 242); border-radius: 2px;"
+          >
+            <div
+              style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; height: 12px; width: 12px; display: flex; justify-content: center; align-items: center; color: rgb(46, 36, 65);"
+            >
+              ▶
+            </div>
+          </div>
+          <label
+            style="display: inline-block; color: rgb(46, 36, 65); word-break: initial; text-indent: -0.5em; margin: 0px; padding: 0px; cursor: pointer;"
+          >
+            <button
+              class="btn"
+              type="button"
+            >
+              @input
+            </button>
+          </label>
+          <span
+            style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
+          >
+            <span>
+              <span
+                style="margin-left: 0.3em; margin-right: 0.3em;"
+              >
+                {}
+              </span>
+               5 keys
+            </span>
+          </span>
+          <ul
+            style="padding: 0px; margin: 0px; list-style: none; display: block; width: 100%;"
+          />
+        </li>
+      </ul>
+    </li>
+  </ul>
+</DocumentFragment>
+`;

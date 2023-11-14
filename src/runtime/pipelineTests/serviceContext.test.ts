@@ -15,40 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ApiVersion,
-  type SanitizedServiceConfiguration,
-  type ServiceDependency,
-} from "@/core";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  contextBlock,
-  echoBlock,
-  identityBlock,
+  contextBrick,
+  echoBrick,
+  identityBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
-import { makeServiceContext } from "@/services/serviceUtils";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { pixieServiceFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
+import { type ApiVersion } from "@/types/runtimeTypes";
+import {
+  type SanitizedIntegrationConfig,
+  type IntegrationDependency,
+} from "@/integrations/integrationTypes";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock, identityBlock]);
+  blockRegistry.register([echoBrick, contextBrick, identityBrick]);
 });
 
 describe.each([["v1"], ["v2"], ["v3"]])(
@@ -57,29 +49,36 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     test("pass services in context with __service", async () => {
       (services.locate as any) = jest
         .fn()
-        .mockResolvedValue(pixieServiceFactory());
+        .mockResolvedValue(pixiebrixConfigurationFactory());
 
-      const dependencies: ServiceDependency[] = [
-        { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
+      const dependencies: IntegrationDependency[] = [
+        integrationDependencyFactory({
+          integrationId: PIXIEBRIX_INTEGRATION_ID,
+          outputKey: validateOutputKey("pixiebrix"),
+        }),
       ];
 
       const result = await reducePipeline(
         {
-          id: contextBlock.id,
+          id: contextBrick.id,
           config: {},
         },
         {
           ...simpleInput({}),
-          serviceContext: await makeServiceContext(dependencies),
+          serviceContext: await makeServiceContextFromDependencies(
+            dependencies
+          ),
         },
         testOptions(apiVersion)
       );
+
       expect(result).toStrictEqual({
         "@input": {},
         "@pixiebrix": {
-          __service: await pixieServiceFactory(),
+          __service: await pixiebrixConfigurationFactory(),
         },
         "@options": {},
+        ...extraEmptyModStateContext(apiVersion),
       });
     });
   }
@@ -89,25 +88,28 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("pass services for var without __service", async () => {
     (services.locate as any) = jest
       .fn()
-      .mockResolvedValue(pixieServiceFactory());
+      .mockResolvedValue(pixiebrixConfigurationFactory());
 
-    const dependencies: ServiceDependency[] = [
-      { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
+    const dependencies: IntegrationDependency[] = [
+      integrationDependencyFactory({
+        integrationId: PIXIEBRIX_INTEGRATION_ID,
+        outputKey: validateOutputKey("pixiebrix"),
+      }),
     ];
 
     const result = await reducePipeline(
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: { data: "@pixiebrix" },
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContext(dependencies),
+        serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
       testOptions(apiVersion)
     );
     expect(result).toStrictEqual({
-      data: await pixieServiceFactory(),
+      data: await pixiebrixConfigurationFactory(),
     });
   });
 
@@ -122,20 +124,23 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       config: {
         prop: "abc123",
       },
-    } as unknown as SanitizedServiceConfiguration);
+    } as unknown as SanitizedIntegrationConfig);
 
-    const dependencies: ServiceDependency[] = [
-      { id: serviceId, outputKey: validateOutputKey("service") },
+    const dependencies: IntegrationDependency[] = [
+      integrationDependencyFactory({
+        integrationId: serviceId,
+        outputKey: validateOutputKey("service"),
+      }),
     ];
 
     const result = await reducePipeline(
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: { data: "@service.prop" },
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContext(dependencies),
+        serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
       testOptions(apiVersion)
     );
@@ -149,15 +154,18 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("pass services for var without __service", async () => {
     (services.locate as any) = jest
       .fn()
-      .mockResolvedValue(pixieServiceFactory());
+      .mockResolvedValue(pixiebrixConfigurationFactory());
 
-    const dependencies: ServiceDependency[] = [
-      { id: PIXIEBRIX_SERVICE_ID, outputKey: validateOutputKey("pixiebrix") },
+    const dependencies: IntegrationDependency[] = [
+      integrationDependencyFactory({
+        integrationId: PIXIEBRIX_INTEGRATION_ID,
+        outputKey: validateOutputKey("pixiebrix"),
+      }),
     ];
 
     const result = await reducePipeline(
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: {
           data: {
             __type__: "var",
@@ -167,12 +175,12 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContext(dependencies),
+        serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
       testOptions(apiVersion)
     );
     expect(result).toStrictEqual({
-      data: await pixieServiceFactory(),
+      data: await pixiebrixConfigurationFactory(),
     });
   });
 
@@ -187,15 +195,18 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       config: {
         prop: "abc123",
       },
-    } as unknown as SanitizedServiceConfiguration);
+    } as unknown as SanitizedIntegrationConfig);
 
-    const dependencies: ServiceDependency[] = [
-      { id: serviceId, outputKey: validateOutputKey("service") },
+    const dependencies: IntegrationDependency[] = [
+      integrationDependencyFactory({
+        integrationId: serviceId,
+        outputKey: validateOutputKey("service"),
+      }),
     ];
 
     const result = await reducePipeline(
       {
-        id: identityBlock.id,
+        id: identityBrick.id,
         config: {
           data: {
             __type__: "var",
@@ -205,7 +216,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext: await makeServiceContext(dependencies),
+        serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
       testOptions(apiVersion)
     );
@@ -231,15 +242,18 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         config: {
           prop: "abc123",
         },
-      } as unknown as SanitizedServiceConfiguration);
+      } as unknown as SanitizedIntegrationConfig);
 
-      const dependencies: ServiceDependency[] = [
-        { id: serviceId, outputKey: validateOutputKey("service") },
+      const dependencies: IntegrationDependency[] = [
+        integrationDependencyFactory({
+          integrationId: serviceId,
+          outputKey: validateOutputKey("service"),
+        }),
       ];
 
       const result = await reducePipeline(
         {
-          id: identityBlock.id,
+          id: identityBrick.id,
           config: {
             data: {
               __type__: templateEngine,
@@ -249,7 +263,9 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         },
         {
           ...simpleInput({}),
-          serviceContext: await makeServiceContext(dependencies),
+          serviceContext: await makeServiceContextFromDependencies(
+            dependencies
+          ),
         },
         testOptions(apiVersion)
       );

@@ -15,16 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type Schema,
-  type SchemaProperties,
-} from "@/core";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import type { JobResult } from "@uipath/robot/dist/models";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/local-process");
 
@@ -39,7 +35,7 @@ const UIPATH_PROPERTIES: SchemaProperties = {
   },
 };
 
-export class RunLocalProcess extends Transformer {
+export class RunLocalProcess extends TransformerABC {
   constructor() {
     super(
       UIPATH_ID,
@@ -56,8 +52,8 @@ export class RunLocalProcess extends Transformer {
   };
 
   async transform(
-    { releaseKey, inputArguments = {} }: BlockArg,
-    { logger }: BlockOptions
+    { releaseKey, inputArguments = {} }: BrickArgs,
+    { logger }: BrickOptions
   ): Promise<JobResult> {
     const { UiPathRobot } = await import(
       /* webpackChunkName: "uipath-robot" */ "@/contrib/uipath/UiPathRobot"

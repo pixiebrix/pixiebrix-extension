@@ -33,8 +33,8 @@ const BetaPane: React.FunctionComponent = () => (
       </p>
 
       <p>
-        In the meantime, you can create extensions that depend on this feature
-        in the Workshop.
+        In the meantime, you can create mods that depend on this feature in the
+        Workshop.
       </p>
     </div>
   </Centered>

@@ -16,22 +16,22 @@
  */
 
 import { getIn, useFormikContext } from "formik";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
 import { produce } from "immer";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { useCallback } from "react";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 
 function useDeleteElement(documentBodyName: string) {
   const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
+    useFormikContext<ModComponentFormState>();
 
   const dispatch = useDispatch();
 
   return useCallback(
-    (elementName: string) => {
+    async (elementName: string) => {
       dispatch(editorActions.setNodePreviewActiveElement(null));
 
       const { collectionName, elementIndex } = getElementCollectionName(
@@ -47,7 +47,7 @@ function useDeleteElement(documentBodyName: string) {
       // If the element used a service, remove the service link as well
       nextState = produceExcludeUnusedDependencies(nextState);
 
-      setFormState(nextState);
+      await setFormState(nextState);
     },
     [setFormState, formState, dispatch, documentBodyName]
   );

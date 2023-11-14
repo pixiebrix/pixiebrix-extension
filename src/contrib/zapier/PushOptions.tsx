@@ -15,28 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { type Expression, type Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "@/contrib/zapier/contract";
-import { pixieServiceFactory } from "@/services/locator";
+import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
-import { requestPermissions } from "@/utils/permissions";
-import { containsPermissions, proxyService } from "@/background/messenger/api";
+import {
+  containsPermissions,
+  performConfiguredRequestInBackground,
+} from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { joinName } from "@/utils";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
+import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -44,14 +49,13 @@ function useHooks(): {
   error: unknown;
 } {
   const [hooks, isPending, error] = useAsyncState(async () => {
-    const { data } = await proxyService<{ new_push_fields: Webhook[] }>(
-      await pixieServiceFactory(),
-      {
-        baseURL: await getBaseURL(),
-        url: "/api/webhooks/hooks/",
-        method: "get",
-      }
-    );
+    const { data } = await performConfiguredRequestInBackground<{
+      new_push_fields: Webhook[];
+    }>(await pixiebrixConfigurationFactory(), {
+      baseURL: await getBaseURL(),
+      url: "/api/webhooks/hooks/",
+      method: "get",
+    });
 
     return data.new_push_fields;
   }, []);
@@ -94,11 +98,15 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const basePath = joinName(name, configKey);
 
-  const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
+  const permissionsState = useExtensionPermissions();
+
   const [hasPermissions] = useAsyncState(
     async () => containsPermissions(ZAPIER_PERMISSIONS),
-    []
+    [permissionsState]
   );
+
+  const onRequestPermissions =
+    useRequestPermissionsCallback(ZAPIER_PERMISSIONS);
 
   const [{ value: pushKey }] = useField<string | Expression>(
     `${basePath}.pushKey`
@@ -106,17 +114,12 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const { hooks, error } = useHooks();
 
-  const onRequestPermissions = useCallback(async () => {
-    const result = await requestPermissions(ZAPIER_PERMISSIONS);
-    setGrantedPermissions(result);
-  }, [setGrantedPermissions]);
-
   const hook = useMemo(
     () => hooks?.find((x) => x.display_name === pushKey),
     [hooks, pushKey]
   );
 
-  if (!(grantedPermissions || hasPermissions)) {
+  if (!hasPermissions) {
     return (
       <div className="my-2">
         <p>

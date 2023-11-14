@@ -15,35 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
-  throwBlock,
+  throwBrick,
 } from "./pipelineTestHelpers";
 import { sendDeploymentAlert } from "@/background/messenger/api";
-import { type ApiVersion } from "@/core";
+import { type ApiVersion } from "@/types/runtimeTypes";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors/genericErrors";
-
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock, throwBlock]);
+  blockRegistry.register([echoBrick, contextBrick, throwBrick]);
   (sendDeploymentAlert as any).mockReset();
 });
 
@@ -54,7 +45,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       await expect(async () => {
         await reducePipeline(
           {
-            id: throwBlock.id,
+            id: throwBrick.id,
             config: {
               message: "Example input",
             },
@@ -78,7 +69,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
       const pipeline = reducePipeline(
         {
-          id: throwBlock.id,
+          id: throwBrick.id,
           config: {
             message: "Example input",
           },
@@ -95,15 +86,17 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const contextError = await pipeline.catch((error) => error);
 
       expect(sendDeploymentAlert).toHaveBeenCalledTimes(1);
+
       expect(sendDeploymentAlert).toHaveBeenCalledWith({
         deploymentId,
         data: {
-          id: throwBlock.id,
+          id: throwBrick.id,
           context: {
             "@input": {
               inputArg: "hello",
             },
             "@options": {},
+            ...extraEmptyModStateContext(apiVersion),
           },
           error: serializeError((contextError as ContextError).cause),
         },

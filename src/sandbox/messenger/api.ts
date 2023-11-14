@@ -17,10 +17,11 @@
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
+import { type RegistryId } from "@/types/registryTypes";
 import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 import postMessage from "@/utils/postMessage";
 import pMemoize from "p-memoize";
-import { type JsonValue, type JsonObject } from "type-fest";
+import { type JsonObject } from "type-fest";
 
 // Uses pMemoize to allow retries after a failure
 const loadSandbox = pMemoize(async () => {
@@ -62,15 +63,16 @@ export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
   });
 }
 
-export type ApplyJqPayload = {
-  input: JsonValue;
-  filter: string;
+export type JavaScriptPayload = {
+  code: string;
+  data?: JsonObject;
+  blockId: RegistryId;
 };
 
-export async function applyJq(payload: ApplyJqPayload) {
+export async function runUserJs(payload: JavaScriptPayload) {
   return postMessage({
     recipient: await loadSandbox(),
     payload,
-    type: "APPLY_JQ",
+    type: "RUN_USER_JS",
   });
 }

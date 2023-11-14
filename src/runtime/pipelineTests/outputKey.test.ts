@@ -15,44 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion } from "@/core";
-import blockRegistry from "@/blocks/registry";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
-
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("apiVersion: v1", () => {
   test("pass data via output key", async () => {
-    const pipeline: BlockPipeline = [
+    const pipeline: BrickPipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         outputKey: validateOutputKey("foo"),
         config: { message: "{{inputArg}}" },
       },
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "hello, {{@foo.message}}" },
       },
     ];
@@ -68,7 +59,7 @@ describe("apiVersion: v1", () => {
     const initialContext = { inputArg: "bar" };
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         // Is only block in pipeline and how an outputKey, so the original input value is returned
         outputKey: validateOutputKey("foo"),
         config: { message: "inputArg" },
@@ -90,14 +81,14 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     test("block outputKey takes precedence over @input", async () => {
       const pipeline = [
         {
-          id: echoBlock.id,
+          id: echoBrick.id,
           outputKey: validateOutputKey("input"),
           config: {
             message: "First block",
           },
         },
         {
-          id: contextBlock.id,
+          id: contextBrick.id,
           config: {},
         },
       ];
@@ -106,9 +97,11 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         simpleInput({}),
         testOptions(apiVersion)
       );
+
       expect(result).toStrictEqual({
         "@input": { message: "First block" },
         "@options": {},
+        ...extraEmptyModStateContext(apiVersion),
       });
     });
   }

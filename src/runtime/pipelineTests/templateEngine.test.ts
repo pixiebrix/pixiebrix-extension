@@ -15,31 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
 import { selectSpecificError } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 describe.each([["mustache"], ["handlebars"], ["nunjucks"]])(
@@ -47,13 +37,13 @@ describe.each([["mustache"], ["handlebars"], ["nunjucks"]])(
   (templateEngine) => {
     test("render template with templateEngine", async () => {
       const pipeline = {
-        id: echoBlock.id,
+        id: echoBrick.id,
         // All of the engines accept the same {{ template for standard strings
         config: { message: "{{inputArg}}" },
         templateEngine,
       };
       const result = await reducePipeline(
-        pipeline as BlockConfig,
+        pipeline as BrickConfig,
         simpleInput({ inputArg: "hello" }),
         testOptions("v1")
       );
@@ -65,7 +55,7 @@ describe.each([["mustache"], ["handlebars"], ["nunjucks"]])(
 describe("apiVersion: v1", () => {
   test("default to mustache", async () => {
     const pipeline = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: { message: "{{inputArg}}" },
     };
     const result = await reducePipeline(
@@ -78,12 +68,12 @@ describe("apiVersion: v1", () => {
 
   test("use nunjucks filter", async () => {
     const pipeline = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: { message: "{{inputArg | upper}}" },
       templateEngine: "nunjucks",
     };
     const result = await reducePipeline(
-      pipeline as BlockConfig,
+      pipeline as BrickConfig,
       simpleInput({ inputArg: "hello" }),
       testOptions("v1")
     );
@@ -94,7 +84,7 @@ describe("apiVersion: v1", () => {
 describe("apiVersion: v3", () => {
   test("ignore implicit mustache template", async () => {
     const pipeline = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: { message: "{{@input.inputArg}}" },
     };
     const result = await reducePipeline(
@@ -113,7 +103,7 @@ describe("apiVersion: v3", () => {
   ])("apply explicit %s template", (templateEngine) => {
     test("apply explicit template with property path", async () => {
       const pipeline = {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: {
           message: {
             __type__: templateEngine,
@@ -134,7 +124,7 @@ describe("apiVersion: v3", () => {
   // see: https://handlebarsjs.com/api-reference/data-variables.html
   test("handlebars can't reference @-prefixed variables", async () => {
     const pipeline = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: {
         message: {
           __type__: "handlebars",
@@ -152,7 +142,7 @@ describe("apiVersion: v3", () => {
 
   test("ignore templateEngine property", async () => {
     const pipeline = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: {
         message: {
           __type__: "nunjucks",
@@ -162,7 +152,7 @@ describe("apiVersion: v3", () => {
       templateEngine: "mustache",
     };
     const result = await reducePipeline(
-      pipeline as BlockConfig,
+      pipeline as BrickConfig,
       simpleInput({ inputArg: "hello" }),
       testOptions("v3")
     );
@@ -171,7 +161,7 @@ describe("apiVersion: v3", () => {
 
   test("apply var", async () => {
     const pipeline = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: {
         message: {
           __type__: "var",
@@ -191,7 +181,7 @@ describe("apiVersion: v3", () => {
 describe("Error handling", () => {
   test("throws InvalidTemplateError on malformed template", async () => {
     const pipeline = {
-      id: echoBlock.id,
+      id: echoBrick.id,
       config: {
         message: {
           __type__: "nunjucks",
@@ -201,7 +191,7 @@ describe("Error handling", () => {
     };
     try {
       await reducePipeline(
-        pipeline as BlockConfig,
+        pipeline as BrickConfig,
         simpleInput({ inputArg: "hello" }),
         testOptions("v3")
       );
@@ -210,7 +200,7 @@ describe("Error handling", () => {
       expect(selectSpecificError(error, BusinessError)).toBeInstanceOf(
         BusinessError
       );
-      expect(error.message).toEqual(
+      expect(error.message).toBe(
         `Invalid template: (unknown path) [Line 1, Column 14]
   expected variable end. Template: "{{@input }"`
       );

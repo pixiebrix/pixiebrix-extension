@@ -1,0 +1,777 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WorkshopPage renders empty workshop 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="d-flex"
+    >
+      <div
+        class="flex-grow-1"
+      >
+        <div
+          class="page-header"
+        >
+          <h3
+            class="page-title"
+          >
+            <span
+              class="page-title-icon bg-gradient-primary text-white mr-2"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-hammer fa-w-18 "
+                data-icon="hammer"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 576 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M571.31 193.94l-22.63-22.63c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31-28.9-28.9c5.63-21.31.36-44.9-16.35-61.61l-45.25-45.25c-62.48-62.48-163.79-62.48-226.28 0l90.51 45.25v18.75c0 16.97 6.74 33.25 18.75 45.25l49.14 49.14c16.71 16.71 40.3 21.98 61.61 16.35l28.9 28.9-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63l22.63 22.63c6.25 6.25 16.38 6.25 22.63 0l90.51-90.51c6.23-6.24 6.23-16.37-.02-22.62zm-286.72-15.2c-3.7-3.7-6.84-7.79-9.85-11.95L19.64 404.96c-25.57 23.88-26.26 64.19-1.53 88.93s65.05 24.05 88.93-1.53l238.13-255.07c-3.96-2.91-7.9-5.87-11.44-9.41l-49.14-49.14z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            Workshop
+          </h3>
+        </div>
+      </div>
+      <div>
+        <button
+          class="btn btn-info"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-plus fa-w-14 "
+            data-icon="plus"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+              fill="currentColor"
+            />
+          </svg>
+           Create New Brick
+        </button>
+      </div>
+    </div>
+    <div
+      class="pb-4"
+    >
+      <p>
+        Text-based editor for advanced users to create and edit bricks. Mods created in the Page Editor can also be edited here.
+      </p>
+    </div>
+    <div
+      class="max-950"
+    >
+      <form
+        class=""
+      >
+        <div
+          class="mb-2 mr-sm-2 input-group"
+        >
+          <div
+            class="input-group-prepend"
+          >
+            <span
+              class="input-group-text"
+            >
+              Search
+            </span>
+          </div>
+          <input
+            class="form-control"
+            id="query"
+            placeholder="Start typing to find results"
+            value=""
+          />
+        </div>
+      </form>
+      <div
+        class="d-flex"
+      >
+        <div
+          style="width: 200px;"
+        >
+          <div
+            class=" css-b62m3t-container"
+          >
+            <span
+              class="css-1f43avz-a11yText-A11yText"
+              id="react-select-2-live-region"
+            />
+            <span
+              aria-atomic="false"
+              aria-live="polite"
+              aria-relevant="additions text"
+              class="css-1f43avz-a11yText-A11yText"
+            />
+            <div
+              class=" css-13cymwt-control"
+            >
+              <div
+                class=" css-1fdsijx-ValueContainer"
+              >
+                <div
+                  class=" css-1jqq78o-placeholder"
+                  id="react-select-2-placeholder"
+                >
+                  Filter @scope
+                </div>
+                <div
+                  class=" css-qbdosj-Input"
+                  data-value=""
+                >
+                  <input
+                    aria-autocomplete="list"
+                    aria-describedby="react-select-2-placeholder"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    autocapitalize="none"
+                    autocomplete="off"
+                    autocorrect="off"
+                    class=""
+                    id="react-select-2-input"
+                    role="combobox"
+                    spellcheck="false"
+                    style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                    tabindex="0"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class=" css-1hb7zxy-IndicatorsContainer"
+              >
+                <span
+                  class=" css-1u9des2-indicatorSeparator"
+                />
+                <div
+                  aria-hidden="true"
+                  class=" css-1xc3v61-indicatorContainer"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="css-tj5bde-Svg"
+                    focusable="false"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    width="20"
+                  >
+                    <path
+                      d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="ml-3"
+          style="width: 200px;"
+        >
+          <div
+            class=" css-b62m3t-container"
+          >
+            <span
+              class="css-1f43avz-a11yText-A11yText"
+              id="react-select-3-live-region"
+            />
+            <span
+              aria-atomic="false"
+              aria-live="polite"
+              aria-relevant="additions text"
+              class="css-1f43avz-a11yText-A11yText"
+            />
+            <div
+              class=" css-13cymwt-control"
+            >
+              <div
+                class=" css-1fdsijx-ValueContainer"
+              >
+                <div
+                  class=" css-1jqq78o-placeholder"
+                  id="react-select-3-placeholder"
+                >
+                  Filter collection
+                </div>
+                <div
+                  class=" css-qbdosj-Input"
+                  data-value=""
+                >
+                  <input
+                    aria-autocomplete="list"
+                    aria-describedby="react-select-3-placeholder"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    autocapitalize="none"
+                    autocomplete="off"
+                    autocorrect="off"
+                    class=""
+                    id="react-select-3-input"
+                    role="combobox"
+                    spellcheck="false"
+                    style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                    tabindex="0"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class=" css-1hb7zxy-IndicatorsContainer"
+              >
+                <span
+                  class=" css-1u9des2-indicatorSeparator"
+                />
+                <div
+                  aria-hidden="true"
+                  class=" css-1xc3v61-indicatorContainer"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="css-tj5bde-Svg"
+                    focusable="false"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    width="20"
+                  >
+                    <path
+                      d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="ml-3"
+          style="width: 200px;"
+        >
+          <div
+            class=" css-b62m3t-container"
+          >
+            <span
+              class="css-1f43avz-a11yText-A11yText"
+              id="react-select-4-live-region"
+            />
+            <span
+              aria-atomic="false"
+              aria-live="polite"
+              aria-relevant="additions text"
+              class="css-1f43avz-a11yText-A11yText"
+            />
+            <div
+              class=" css-13cymwt-control"
+            >
+              <div
+                class=" css-1fdsijx-ValueContainer"
+              >
+                <div
+                  class=" css-1jqq78o-placeholder"
+                  id="react-select-4-placeholder"
+                >
+                  Filter type
+                </div>
+                <div
+                  class=" css-qbdosj-Input"
+                  data-value=""
+                >
+                  <input
+                    aria-autocomplete="list"
+                    aria-describedby="react-select-4-placeholder"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    autocapitalize="none"
+                    autocomplete="off"
+                    autocorrect="off"
+                    class=""
+                    id="react-select-4-input"
+                    role="combobox"
+                    spellcheck="false"
+                    style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                    tabindex="0"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class=" css-1hb7zxy-IndicatorsContainer"
+              >
+                <span
+                  class=" css-1u9des2-indicatorSeparator"
+                />
+                <div
+                  aria-hidden="true"
+                  class=" css-1xc3v61-indicatorContainer"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="css-tj5bde-Svg"
+                    focusable="false"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    width="20"
+                  >
+                    <path
+                      d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="ml-3"
+        />
+      </div>
+      <div
+        class="mt-4"
+      >
+        <div
+          class="card"
+        >
+          <div
+            class="d-flex align-items-center card-header"
+          >
+            <div
+              class="flex-grow-1"
+            >
+              Custom Bricks
+            </div>
+          </div>
+          <div
+            class="p-0 card-body"
+          >
+            <div
+              class="table-responsive"
+            >
+              <table
+                class="paginatedTable table"
+                role="table"
+                style="min-width: 0px;"
+              >
+                <thead
+                  class="d-block w-100"
+                >
+                  <tr
+                    role="row"
+                    style="display: flex; flex: 1 0 auto; min-width: 0px;"
+                  >
+                    <th
+                      class="th"
+                      colspan="1"
+                      role="columnheader"
+                      style="position: relative; box-sizing: border-box; flex: 250 0 auto; min-width: 0px; width: 250px; cursor: pointer;"
+                      title="Toggle SortBy"
+                    >
+                      <div
+                        class="header-content d-flex"
+                      >
+                        Name
+                        <span
+                          class="text-muted ml-2"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="svg-inline--fa fa-sort fa-w-10 sortIcon"
+                            data-icon="sort"
+                            data-prefix="fas"
+                            focusable="false"
+                            role="img"
+                            viewBox="0 0 320 512"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                      <div
+                        class="resize"
+                        draggable="false"
+                        role="separator"
+                        style="cursor: col-resize;"
+                      />
+                    </th>
+                    <th
+                      class="th"
+                      colspan="1"
+                      role="columnheader"
+                      style="position: relative; box-sizing: border-box; flex: 150 0 auto; min-width: 0px; width: 150px; cursor: pointer;"
+                      title="Toggle SortBy"
+                    >
+                      <div
+                        class="header-content d-flex"
+                      >
+                        Collection
+                        <span
+                          class="text-muted ml-2"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="svg-inline--fa fa-sort fa-w-10 sortIcon"
+                            data-icon="sort"
+                            data-prefix="fas"
+                            focusable="false"
+                            role="img"
+                            viewBox="0 0 320 512"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                      <div
+                        class="resize"
+                        draggable="false"
+                        role="separator"
+                        style="cursor: col-resize;"
+                      />
+                    </th>
+                    <th
+                      class="th"
+                      colspan="1"
+                      role="columnheader"
+                      style="position: relative; box-sizing: border-box; flex: 150 0 auto; min-width: 0px; width: 150px; cursor: pointer;"
+                      title="Toggle SortBy"
+                    >
+                      <div
+                        class="header-content d-flex"
+                      >
+                        Type
+                        <span
+                          class="text-muted ml-2"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="svg-inline--fa fa-sort fa-w-10 sortIcon"
+                            data-icon="sort"
+                            data-prefix="fas"
+                            focusable="false"
+                            role="img"
+                            viewBox="0 0 320 512"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                      <div
+                        class="resize"
+                        draggable="false"
+                        role="separator"
+                        style="cursor: col-resize;"
+                      />
+                    </th>
+                    <th
+                      class="th"
+                      colspan="1"
+                      role="columnheader"
+                      style="position: relative; box-sizing: border-box; flex: 150 0 auto; min-width: 0px; width: 150px; cursor: pointer;"
+                      title="Toggle SortBy"
+                    >
+                      <div
+                        class="header-content d-flex"
+                      >
+                        Version
+                        <span
+                          class="text-muted ml-2"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="svg-inline--fa fa-sort fa-w-10 sortIcon"
+                            data-icon="sort"
+                            data-prefix="fas"
+                            focusable="false"
+                            role="img"
+                            viewBox="0 0 320 512"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="d-block w-100"
+                  role="rowgroup"
+                >
+                  <tr>
+                    <td
+                      class="text-muted"
+                      colspan="5"
+                    >
+                      No records found.
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot
+                  class="tfoot"
+                >
+                  <tr
+                    class="d-block w-100"
+                  >
+                    <td
+                      class="d-block w-100"
+                    >
+                      <div
+                        class="d-flex align-items-center"
+                      >
+                        <div
+                          class="text-muted"
+                        >
+                          Showing 0 to 0 of 0
+                        </div>
+                        <div
+                          class="flex-grow-1"
+                        >
+                          <ul
+                            class="m-0 float-right pagination"
+                          >
+                            <li
+                              class="page-item disabled"
+                            >
+                              <span
+                                class="page-link"
+                                disabled=""
+                              >
+                                <span
+                                  aria-hidden="true"
+                                >
+                                  «
+                                </span>
+                                <span
+                                  class="sr-only"
+                                >
+                                  First
+                                </span>
+                              </span>
+                            </li>
+                            <li
+                              class="page-item disabled"
+                            >
+                              <span
+                                class="page-link"
+                                disabled=""
+                              >
+                                <span
+                                  aria-hidden="true"
+                                >
+                                  ‹
+                                </span>
+                                <span
+                                  class="sr-only"
+                                >
+                                  Previous
+                                </span>
+                              </span>
+                            </li>
+                            <li
+                              class="page-item disabled"
+                            >
+                              <span
+                                class="page-link"
+                                disabled=""
+                              >
+                                Page 1 of 1
+                              </span>
+                            </li>
+                            <li
+                              class="page-item disabled"
+                            >
+                              <span
+                                class="page-link"
+                                disabled=""
+                              >
+                                <span
+                                  aria-hidden="true"
+                                >
+                                  ›
+                                </span>
+                                <span
+                                  class="sr-only"
+                                >
+                                  Next
+                                </span>
+                              </span>
+                            </li>
+                            <li
+                              class="page-item disabled"
+                            >
+                              <span
+                                class="page-link"
+                                disabled=""
+                              >
+                                <span
+                                  aria-hidden="true"
+                                >
+                                  »
+                                </span>
+                                <span
+                                  class="sr-only"
+                                >
+                                  Last
+                                </span>
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`WorkshopPage require account alias 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <div
+      class="title"
+    >
+      Welcome to the PixieBrix Workshop!
+    </div>
+    <div
+      class="font-weight-bold"
+    >
+      To use the Workshop, you must first set an account alias for your PixieBrix account
+    </div>
+    <div
+      class="fade mt-2 alert alert-info show"
+      role="alert"
+    >
+      <p>
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-info fa-w-6 "
+          data-icon="info"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M20 424.229h20V279.771H20c-11.046 0-20-8.954-20-20V212c0-11.046 8.954-20 20-20h112c11.046 0 20 8.954 20 20v212.229h20c11.046 0 20 8.954 20 20V492c0 11.046-8.954 20-20 20H20c-11.046 0-20-8.954-20-20v-47.771c0-11.046 8.954-20 20-20zM96 0C56.235 0 24 32.235 24 72s32.235 72 72 72 72-32.235 72-72S135.764 0 96 0z"
+            fill="currentColor"
+          />
+        </svg>
+         Your account alias is a unique name used to prevent duplicate identifiers between the bricks you create and public/team bricks.
+      </p>
+    </div>
+    <div
+      class="fade mt-2 alert alert-info show"
+      role="alert"
+    >
+      <p>
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-eye-slash fa-w-20 "
+          data-icon="eye-slash"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 640 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+            fill="currentColor"
+          />
+        </svg>
+         Your account alias will not be visible to anyone unless you choose to share a brick or mod.
+      </p>
+    </div>
+    <div
+      class="container"
+    >
+      <form
+        class=""
+        novalidate=""
+      >
+        <div
+          class="formGroup form-group row"
+        >
+          <div
+            class="mb-2 collapse col-12"
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
+          <label
+            class="label form-label col-form-label col-lg-auto"
+            for="scope"
+          >
+            Account Alias
+          </label>
+          <div
+            class="col-lg"
+          >
+            <input
+              class="form-control"
+              id="scope"
+              name="scope"
+              placeholder="@peter-parker"
+              value=""
+            />
+            <small
+              class="text-muted form-text"
+            >
+              <span>
+                Your @alias for publishing bricks, e.g. @peter-parker
+              </span>
+            </small>
+          </div>
+        </div>
+        <div
+          class="submitDiv"
+        >
+          <button
+            class="submit btn btn-primary"
+            type="submit"
+          >
+            Set My Account Alias
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</DocumentFragment>
+`;

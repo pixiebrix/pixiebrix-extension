@@ -15,74 +15,80 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type Config,
-  type EmptyConfig,
-  type IBlock,
-  type IExtension,
-  type IExtensionPoint,
-  type InnerDefinitionRef,
-  type InnerDefinitions,
-  type RegistryId,
-  type ResolvedExtension,
-} from "@/core";
 import { produce } from "immer";
 import objectHash from "object-hash";
-import { cloneDeep, isEmpty, isPlainObject, mapValues, pick } from "lodash";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import blockRegistry from "@/blocks/registry";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
-import { resolveObj } from "@/utils";
+import { cloneDeep, isEmpty, mapValues, pick, pickBy } from "lodash";
+import extensionPointRegistry from "@/starterBricks/registry";
+import brickRegistry from "@/bricks/registry";
+import { fromJS as extensionPointFactory } from "@/starterBricks/factory";
+import { fromJS as brickFactory } from "@/bricks/transformers/brickFactory";
 import {
-  type ExtensionPointConfig as ExtensionDefinition,
-  type RecipeDefinition,
-  type ResolvedExtensionPointConfig,
-} from "@/types/definitions";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { type ReaderConfig } from "@/blocks/types";
-import { type UnknownObject } from "@/types";
+  type ModDefinition,
+  type ResolvedModComponentDefinition,
+} from "@/types/modDefinitionTypes";
+import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type ReaderConfig } from "@/bricks/types";
+import { type UnknownObject } from "@/types/objectTypes";
+import {
+  INNER_SCOPE,
+  type InnerDefinitions,
+  type RegistryId,
+} from "@/types/registryTypes";
+import {
+  type ModComponentBase,
+  type ResolvedModComponent,
+} from "@/types/modComponentTypes";
+import { type StarterBrick } from "@/types/starterBrickTypes";
+import { type Brick } from "@/types/brickTypes";
+import { resolveObj } from "@/utils/promiseUtils";
+import { isObject } from "@/utils/objectUtils";
 
-type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
+type InnerExtensionPoint = Pick<StarterBrickConfig, "definition" | "kind">;
+type InnerBlock<K extends "component" | "reader" = "component" | "reader"> =
+  UnknownObject & {
+    kind: K;
+  };
 
-interface RawConfig<T extends string = string> extends Config {
-  kind: T;
-}
+type InnerDefinition = InnerExtensionPoint | InnerBlock;
 
 export function makeInternalId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
-  return `@internal/${hash}` as RegistryId;
+  return `${INNER_SCOPE}/${hash}` as RegistryId;
 }
 
-async function ensureBlock(
+async function resolveBrickDefinition(
   definitions: InnerDefinitions,
-  config: RawConfig<"reader" | "component">
-) {
-  // Don't include outputSchema in because it can't affect functionality. Include it in the item in the future?
-  const obj = pick(config, ["inputSchema", "kind", "pipeline", "definition"]);
+  innerDefinition: InnerDefinition
+): Promise<Brick> {
+  // Don't include outputSchema in because it can't affect functionality
+  const obj = pick(innerDefinition, [
+    "inputSchema",
+    "kind",
+    "pipeline",
+    "definition",
+  ]);
   const registryId = makeInternalId(obj);
 
-  if (await blockRegistry.exists(registryId)) {
-    console.debug(
-      `Internal ${obj.kind} already exists: ${registryId}; using existing block`
-    );
-    return blockRegistry.lookup(registryId);
+  try {
+    return await brickRegistry.lookup(registryId);
+  } catch {
+    // Not in registry yet, so add it
   }
 
-  const item = blockFactory({
+  const item = brickFactory(brickRegistry, {
     ...obj,
     metadata: {
       id: registryId,
-      name: `Anonymous ${config.kind}`,
+      name: `Anonymous ${innerDefinition.kind}`,
     },
   });
 
-  blockRegistry.register([item]);
+  brickRegistry.register([item], { source: "internal", notify: false });
 
   return item;
 }
 
-async function ensureReaders(
+async function resolveReaderDefinition(
   definitions: InnerDefinitions,
   reader: unknown
 ): Promise<ReaderConfig> {
@@ -100,9 +106,9 @@ async function ensureReaders(
         );
       }
 
-      const block = await ensureBlock(
+      const block = await resolveBrickDefinition(
         definitions,
-        definition as RawConfig<"reader">
+        definition as InnerBlock<"component">
       );
       return block.id;
     }
@@ -112,14 +118,14 @@ async function ensureReaders(
   }
 
   if (Array.isArray(reader)) {
-    return Promise.all(reader.map(async (x) => ensureReaders(definitions, x)));
+    return Promise.all(
+      reader.map(async (x) => resolveReaderDefinition(definitions, x))
+    );
   }
 
-  if (isPlainObject(reader)) {
+  if (isObject(reader)) {
     return resolveObj(
-      mapValues(reader as Record<string, unknown>, async (x) =>
-        ensureReaders(definitions, x)
-      )
+      mapValues(reader, async (x) => resolveReaderDefinition(definitions, x))
     );
   }
 
@@ -131,143 +137,158 @@ async function ensureReaders(
   throw new TypeError("Unexpected reader definition");
 }
 
-async function ensureExtensionPoint(
+async function resolveExtensionPointDefinition(
   definitions: InnerDefinitions,
-  originalConfig: InnerExtensionPoint
-) {
-  const config = cloneDeep(originalConfig);
+  originalInnerDefinition: InnerExtensionPoint
+): Promise<StarterBrick> {
+  const innerDefinition = cloneDeep(originalInnerDefinition);
 
   // We have to resolve the readers before computing the registry id, b/c otherwise different extension points could
   // clash if they use the same name for different readers
-  config.definition.reader = await ensureReaders(
+  innerDefinition.definition.reader = await resolveReaderDefinition(
     definitions,
-    config.definition.reader
+    innerDefinition.definition.reader
   );
 
-  const obj = pick(config, ["kind", "definition"]);
-  const registryId = makeInternalId(obj);
+  const obj = pick(innerDefinition, ["kind", "definition"]);
+  const internalRegistryId = makeInternalId(obj);
 
-  if (await extensionPointRegistry.exists(registryId)) {
-    console.debug(
-      `Internal ${obj.kind} already exists: ${registryId}; using existing block`
-    );
-    return extensionPointRegistry.lookup(registryId);
+  try {
+    return await extensionPointRegistry.lookup(internalRegistryId);
+  } catch {
+    // NOP - will register
   }
 
   const item = extensionPointFactory({
     ...obj,
     metadata: {
-      id: registryId,
+      id: internalRegistryId,
       name: "Anonymous extensionPoint",
     },
-  } as ExtensionPointConfig);
+  } as StarterBrickConfig);
 
-  extensionPointRegistry.register([item]);
+  extensionPointRegistry.register([item], {
+    source: "internal",
+    notify: false,
+  });
   return item;
 }
 
-async function ensureInner(
+/**
+ * Ensure inner definitions are registered in the in-memory brick registry
+ * @param definitions all of the definitions. Used to resolve references from innerDefinition
+ * @param innerDefinition the inner definition to resolve
+ */
+async function resolveInnerDefinition(
   definitions: InnerDefinitions,
-  config: Config
-): Promise<IBlock | IExtensionPoint> {
-  if (typeof config.kind !== "string") {
+  innerDefinition: InnerDefinitions[string]
+): Promise<Brick | StarterBrick> {
+  if (typeof innerDefinition.kind !== "string") {
     throw new TypeError("Expected kind of type string for inner definition");
   }
 
-  switch (config.kind) {
+  switch (innerDefinition.kind) {
     case "extensionPoint": {
-      return ensureExtensionPoint(definitions, config as InnerExtensionPoint);
+      return resolveExtensionPointDefinition(
+        definitions,
+        innerDefinition as InnerExtensionPoint
+      );
     }
 
     case "reader":
     case "component": {
-      return ensureBlock(
-        definitions,
-        config as RawConfig<"reader" | "component">
-      );
+      return resolveBrickDefinition(definitions, innerDefinition as InnerBlock);
     }
 
     default: {
-      throw new Error(`Invalid kind for inner definition: ${config.kind}`);
+      throw new Error(
+        `Invalid kind for inner definition: ${innerDefinition.kind}`
+      );
     }
   }
 }
 
 /**
- * Return a new copy of the extension with its inner references re-written.
+ * Return a new copy of the ModComponentBase with its inner references re-written.
+ * TODO: resolve/map ids for other definitions (brick, service, etc.) within the extension
  */
-export async function resolveDefinitions<T extends Config = EmptyConfig>(
-  extension: IExtension<T>
-): Promise<ResolvedExtension<T>> {
+export async function resolveExtensionInnerDefinitions<
+  T extends UnknownObject = UnknownObject
+>(extension: ModComponentBase<T>): Promise<ResolvedModComponent<T>> {
   if (isEmpty(extension.definitions)) {
-    return extension as ResolvedExtension<T>;
+    return extension as ResolvedModComponent<T>;
   }
 
-  // Too noisy since all IExtensions created with Page Editor have definitions
-  // console.debug("Resolving definitions for extension: %s", extension.id, {
-  //   extension,
-  // });
-
   return produce(extension, async (draft) => {
-    const ensured = await resolveObj(
-      mapValues(draft.definitions, async (config) =>
-        ensureInner(draft.definitions, config)
+    // The ModComponentBase has definitions for all extensionPoints from the mod, even ones it doesn't use
+    const relevantDefinitions = pickBy(
+      draft.definitions,
+      (definition, name) =>
+        definition.kind !== "extensionPoint" || draft.extensionPointId === name
+    );
+
+    const resolvedDefinitions = await resolveObj(
+      mapValues(relevantDefinitions, async (definition) =>
+        resolveInnerDefinition(draft.definitions, definition)
       )
     );
-    const definitions = new Map(Object.entries(ensured));
+
     delete draft.definitions;
-    if (definitions.has(draft.extensionPointId)) {
-      draft.extensionPointId = definitions.get(draft.extensionPointId).id;
+    if (resolvedDefinitions[draft.extensionPointId] != null) {
+      draft.extensionPointId = resolvedDefinitions[draft.extensionPointId].id;
     }
-  }) as Promise<ResolvedExtension<T>>;
+  }) as Promise<ResolvedModComponent<T>>;
 }
 
 /**
  * Resolve inline extension point definitions.
- *
- * TODO: resolve other definitions within the extensions
+ * TODO: resolve other definitions (brick, service, etc.) within the extensions
  */
-export async function resolveRecipe(
-  recipe: RecipeDefinition,
-  selected: ExtensionDefinition[]
-): Promise<ResolvedExtensionPointConfig[]> {
+export async function resolveRecipeInnerDefinitions(
+  recipe: Pick<ModDefinition, "extensionPoints" | "definitions">
+): Promise<ResolvedModComponentDefinition[]> {
+  const extensionDefinitions = recipe.extensionPoints;
+
   if (isEmpty(recipe.definitions)) {
-    return selected as ResolvedExtensionPointConfig[];
+    return extensionDefinitions as ResolvedModComponentDefinition[];
   }
 
-  const ensured = await resolveObj(
-    mapValues(recipe.definitions, async (config) =>
-      ensureInner(recipe.definitions, config)
+  const extensionPointReferences = new Set<string>(
+    recipe.extensionPoints.map((x) => x.id)
+  );
+
+  // Some mods created with the Page Editor end up with irrelevant definitions in the recipe, because they aren't
+  // cleaned up properly on save, etc.
+  const relevantDefinitions = pickBy(
+    recipe.definitions,
+    (definition, name) =>
+      definition.kind !== "extensionPoint" || extensionPointReferences.has(name)
+  );
+
+  const resolvedDefinitions = await resolveObj(
+    mapValues(relevantDefinitions, async (config) =>
+      resolveInnerDefinition(relevantDefinitions, config)
     )
   );
-  const definitions = new Map(Object.entries(ensured));
-  return selected.map(
-    (config) =>
-      (definitions.has(config.id)
-        ? { ...config, id: definitions.get(config.id).id }
-        : config) as ResolvedExtensionPointConfig
+
+  return extensionDefinitions.map(
+    (definition) =>
+      (definition.id in resolvedDefinitions
+        ? { ...definition, id: resolvedDefinitions[definition.id].id }
+        : definition) as ResolvedModComponentDefinition
   );
 }
 
 /**
- * Scope for inner definitions
+ * Returns true if the extension is using an InnerDefinitionRef. _Will always return false for ResolvedExtensions._
+ * @see InnerDefinitionRef
+ * @see UnresolvedExtension
+ * @see ResolvedModComponent
  */
-export const INNER_SCOPE = "@internal";
-
-export function isInnerExtensionPoint(id: string): id is InnerDefinitionRef {
-  return id.startsWith(INNER_SCOPE + "/");
-}
-
-export function hasInnerExtensionPoint(extension: IExtension): boolean {
-  const hasInner = extension.extensionPointId in (extension.definitions ?? {});
-
-  if (!hasInner && isInnerExtensionPoint(extension.extensionPointId)) {
-    console.warn(
-      "Extension is missing inner definition for %s",
-      extension.extensionPointId,
-      { extension }
-    );
-  }
-
-  return hasInner;
+export function hasInnerExtensionPointRef(
+  extension: ModComponentBase
+): boolean {
+  // XXX: should this also check for `@internal/` scope in the referenced id? The type ModComponentBase could receive a
+  // ResolvedExtension, which would have the id mapped to the internal registry id
+  return extension.extensionPointId in (extension.definitions ?? {});
 }

@@ -1,39 +1,39 @@
-import { type IExtension } from "@/core";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type JsonObject } from "type-fest";
 
 /**
  * Select data to report to the team admins for the deployment
  */
 export function selectEventData(
-  extension: IExtension | null | undefined
+  modComponent: ModComponentBase | null | undefined
 ): JsonObject {
-  if (extension == null) {
+  if (modComponent == null) {
     return {};
   }
 
   // For team deployments and blueprints, include additional information to track use consistently across installations.
   // The extension on each activation
-  if (extension._deployment) {
+  if (modComponent._deployment) {
     return {
-      label: extension.label,
-      extensionId: extension.id,
-      deploymentId: extension._deployment?.id,
-      extensionPointId: extension.extensionPointId,
-      blueprintId: extension._recipe?.id,
-      blueprintVersion: extension._recipe?.version,
+      label: modComponent.label,
+      extensionId: modComponent.id,
+      deploymentId: modComponent._deployment?.id,
+      extensionPointId: modComponent.extensionPointId,
+      blueprintId: modComponent._recipe?.id ?? null,
+      blueprintVersion: modComponent._recipe?.version ?? null,
     };
   }
 
-  if (extension._recipe) {
+  if (modComponent._recipe) {
     return {
-      label: extension.label,
-      extensionId: extension.id,
-      blueprintId: extension._recipe?.id,
-      blueprintVersion: extension._recipe?.version,
+      label: modComponent.label,
+      extensionId: modComponent.id,
+      blueprintId: modComponent._recipe?.id,
+      blueprintVersion: modComponent._recipe?.version ?? null,
     };
   }
 
   return {
-    extensionId: extension.id,
+    extensionId: modComponent.id,
   };
 }

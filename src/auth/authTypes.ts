@@ -15,20 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId, type UUID } from "@/core";
 import {
   type Me,
   type OrganizationTheme,
   type Milestone,
 } from "@/types/contract";
 import { type Except } from "type-fest";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
+export type AuthSharing = "private" | "shared" | "built-in";
 export interface AuthOption {
   label: string;
   /** The UUID of the auth credential **/
   value: UUID;
   serviceId: RegistryId;
   local: boolean;
+  sharingType: AuthSharing;
 }
 
 export type UserData = Partial<{
@@ -155,7 +158,7 @@ export type OrganizationAuthState = {
   /**
    * The Automation Anywhere Control Room information
    */
-  readonly control_room?: Me["organization"]["control_room"];
+  readonly control_room?: NonNullable<Me["organization"]>["control_room"];
 };
 
 export type AuthUserOrganization = {
@@ -179,10 +182,6 @@ export type AuthUserOrganization = {
    * True if the user is a manager of at least one team deployment.
    */
   isDeploymentManager: boolean;
-  /**
-   * True if the organization's compliance auth token is set
-   */
-  hasComplianceAuthToken: boolean;
 };
 
 export type AuthState = {
@@ -213,9 +212,17 @@ export type AuthState = {
   readonly extension: boolean;
 
   /**
-   *  The primary organization for the user
+   *  The primary organization for the user, or null.
    */
   readonly organization?: OrganizationAuthState | null;
+
+  /**
+   * The enterprise organization used for telemetry collection, or null. Generally, if set, this will be the same as the
+   * user's primary organization.
+   *
+   * @since 1.7.35
+   */
+  readonly telemetryOrganizationId?: UUID | null;
 
   /**
    * Organizations the user is a member of

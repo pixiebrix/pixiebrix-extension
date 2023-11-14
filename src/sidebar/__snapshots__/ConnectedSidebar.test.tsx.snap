@@ -5,92 +5,151 @@ exports[`SidebarApp renders 1`] = `
   <div
     class="full-height"
   >
-    <div>
+    <div
+      class="full-height"
+    >
       <div
-        class="root container"
+        class="tabContainer nav nav-tabs nav-justified"
+        role="tablist"
       >
         <div
-          class="sidebarRow row"
+          class="tabWrapper active nav-item"
         >
-          <div
-            class="col"
+          <a
+            aria-controls="panel-container-tabpane-static-modLauncher-panel"
+            aria-selected="true"
+            class="tabHeader nav-link active"
+            data-rb-event-key="static-modLauncher-panel"
+            href="#"
+            id="panel-container-tab-static-modLauncher-panel"
+            role="tab"
+            target="_self"
           >
-            <img
-              alt=""
-              src="test-file-stub"
-              width="300"
+            <span
+              class="tabTitle"
+            >
+              Mods
+            </span>
+            <button
+              class="close"
+              type="button"
+            >
+              <span
+                aria-hidden="true"
+              >
+                ×
+              </span>
+              <span
+                class="sr-only"
+              >
+                Close
+              </span>
+            </button>
+          </a>
+          <div
+            class="tabDivider"
+          />
+        </div>
+        <button
+          aria-label="open mod launcher"
+          class="addButton btn btn-link btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-plus fa-w-14 "
+            data-icon="plus"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+              fill="currentColor"
             />
-          </div>
-        </div>
+          </svg>
+        </button>
+      </div>
+      <div
+        class="p-0 border-0 full-height bg-white tabContainer tab-content"
+      >
         <div
-          class="sidebarRow row"
+          aria-hidden="false"
+          aria-labelledby="panel-container-tab-static-modLauncher-panel"
+          class="fade h-100 paneOverrides tab-pane active show"
+          id="panel-container-tabpane-static-modLauncher-panel"
+          role="tabpanel"
         >
           <div
-            class="col"
+            class="d-flex flex-column h-100"
           >
-            <h4
-              class="callout"
+            <div
+              class="full-height flex-grow"
             >
-              Get started with PixieBrix
-            </h4>
-            <p>
-              Go to the PixieBrix tab via the 
-              <strong>
-                Chrome Dev Tools
-              </strong>
-            </p>
-            <p>
-              <kbd>
-                Ctrl + Shift + C
-              </kbd>
-              or
-              <kbd>
-                F12
-              </kbd>
-            </p>
-          </div>
-        </div>
-        <div
-          class="sidebarRowWithDivider row"
-        >
-          <div
-            class="col"
-          >
-            <h4
-              class="tinyCallout"
+              <div
+                class="scrollable-area container"
+              >
+                <div
+                  class="emptyViewRoot"
+                >
+                  <div>
+                    <p>
+                      We didn't find any mods to run
+                    </p>
+                    <h4>
+                      Don't worry, there's a solution
+                    </h4>
+                    <img
+                      alt="Workshop"
+                      class="illustration"
+                      src="test-file-stub"
+                    />
+                    <p>
+                      Some mods don't run on every page.
+                      <br />
+                      And other mods don't run in the Sidebar.
+                      <br />
+                      <br />
+                      Check that the mod is configured correctly.
+                    </p>
+                  </div>
+                  <p>
+                    Looking for new mods?
+                    <br />
+                    Check out the 
+                    <a
+                      href="https://www.pixiebrix.com/marketplace/"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      PixieBrix Marketplace
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <nav
+              class="footer navbar navbar-expand navbar-light"
             >
-              Need more help?
-            </h4>
-            <p>
-              Visit the 
               <a
-                href="https://docs.pixiebrix.com/quick-start-guide"
-                rel="noopener noreferrer"
-                target="_blank"
+                href="https://pixiebrix.com/developers-welcome"
               >
-                Quick Start Guide
+                Learn: Open the Page Editor
               </a>
-               or ask questions in the 
+              <span
+                class="mx-2"
+              >
+                •
+              </span>
+               
               <a
-                href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-                rel="noopener noreferrer"
-                target="_blank"
+                href="https://docs.pixiebrix.com/"
               >
-                Slack Community
+                Documentation
               </a>
-              . 
-            </p>
-            <p>
-              Visit the 
-              <a
-                href="https://www.pixiebrix.com/marketplace/"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                PixieBrix Marketplace
-              </a>
-               for ideas.
-            </p>
+            </nav>
           </div>
         </div>
       </div>
@@ -183,11 +242,11 @@ exports[`SidebarApp renders not connected partner view 1`] = `
             Connect your AARI account
           </h4>
           <p>
-            Authenticate with Automation Anywhere to continue using your team extensions
+            Authenticate with Automation Anywhere to continue using your team's AARI extensions
           </p>
           <a
             class="mt-4 btn btn-primary"
-            href="chrome-extension://example.url/options.html"
+            href="chrome-extension://abcxyz/options.html"
             target="_blank"
           >
             <svg

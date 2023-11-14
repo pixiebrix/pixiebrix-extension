@@ -20,7 +20,6 @@ import styles from "./DocumentEditor.module.scss";
 import { useField } from "formik";
 import React from "react";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { getProperty } from "@/utils";
 import { Col, Row } from "react-bootstrap";
 import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
@@ -28,6 +27,10 @@ import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/components/documentBuilder/edit/useElementOptions";
 import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { getProperty } from "@/utils/objectUtils";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import { joinName } from "@/utils/formUtils";
+import CssSpacingField from "@/components/fields/schemaFields/CssSpacingField";
 
 type ElementEditorProps = {
   documentBodyName: string;
@@ -66,6 +69,17 @@ const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
       <Row>
         <Col>
           <MoveElement documentBodyName={documentBodyName} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ConnectedCollapsibleFieldSection title="Advanced: Layout">
+            <CssSpacingField
+              name={joinName(elementName, "config", "className")}
+              schema={{ type: "string" }}
+              label="Spacing"
+            />
+          </ConnectedCollapsibleFieldSection>
         </Col>
       </Row>
     </>

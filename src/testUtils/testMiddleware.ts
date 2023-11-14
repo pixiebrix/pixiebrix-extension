@@ -20,8 +20,7 @@ import { type Action } from "redux";
 
 const actions: Action[] = [];
 
-// eslint-disable-next-line unicorn/consistent-function-scoping -- idiomatic redux
-const testMiddleware: Middleware = (store) => (next) => (action) => {
+const testMiddleware: Middleware = (store) => (next) => (action: Action) => {
   actions.push(action);
   next(action);
 };

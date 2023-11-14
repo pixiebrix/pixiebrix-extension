@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { inputProperties } from "@/blocks/transformers/remoteMethod";
+import { inputProperties } from "@/bricks/transformers/remoteMethod";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { isTemplateExpression } from "@/runtime/mapArgs";
 import { validateRegistryId } from "@/types/helpers";
-import { joinName } from "@/utils";
 import { useField } from "formik";
 import { partial } from "lodash";
 import React, { useEffect } from "react";
 import { Alert } from "react-bootstrap";
+import { isTemplateExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
 
 export const REMOTE_METHOD_ID = validateRegistryId("@pixiebrix/http");
 

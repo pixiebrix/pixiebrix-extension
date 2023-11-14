@@ -23,7 +23,7 @@ import cx from "classnames";
 import styles from "./PipelineFooterNode.module.scss";
 import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
-import { type OutputKey } from "@/core";
+import { type OutputKey } from "@/types/runtimeTypes";
 import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
 
 export type PipelineFooterNodeProps = {

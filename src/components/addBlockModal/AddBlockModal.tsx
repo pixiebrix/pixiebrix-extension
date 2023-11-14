@@ -26,9 +26,8 @@ import React, {
 } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { compact, isEmpty } from "lodash";
-import { type IBlock, type RegistryId } from "@/core";
 import { FixedSizeGrid as LazyGrid } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import { BLOCK_ITEM_FIXED_HEIGHT_PX } from "./BlockGridItem";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,7 +44,7 @@ import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import useAllBlocks from "@/blocks/hooks/useAllBlocks";
+import useAllBricks from "@/bricks/hooks/useAllBricks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
 import BlockGridItemRenderer from "@/components/addBlockModal/BlockGridItemRenderer";
 import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
@@ -66,6 +65,8 @@ import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import aaLogo from "@img/aa-logo-small.svg";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Brick } from "@/types/brickTypes";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";
@@ -74,7 +75,7 @@ type State = {
   query: string;
   searchTag: string;
   scrollPosition: number;
-  detailBlock: IBlock | null;
+  detailBlock: Brick | null;
   scrollTo: number | null;
 };
 
@@ -101,7 +102,7 @@ const slice = createSlice({
     setScrollPosition(state, action: PayloadAction<number>) {
       state.scrollPosition = action.payload;
     },
-    onSetDetailBlock(state, action: PayloadAction<IBlock>) {
+    onSetDetailBlock(state, action: PayloadAction<Brick>) {
       state.detailBlock = action.payload;
       state.scrollTo = state.scrollPosition;
     },
@@ -130,7 +131,7 @@ const AddBlockModal: React.FC = () => {
 
   const gridRef = useRef<LazyGrid>();
 
-  const { allBlocks, isLoading: isLoadingAllBlocks } = useAllBlocks();
+  const { allBlocks, isLoading: isLoadingAllBlocks } = useAllBricks();
 
   const reduxDispatch = useDispatch();
   const closeModal = useCallback(() => {
@@ -141,7 +142,7 @@ const AddBlockModal: React.FC = () => {
   const { testAddBlock, addBlock } = useAddBlock();
 
   const onSelectBlock = useCallback(
-    async (block: IBlock) => {
+    async (block: Brick) => {
       try {
         await addBlock(block);
       } catch (error) {
@@ -209,7 +210,7 @@ const AddBlockModal: React.FC = () => {
     return items;
   }, [marketplaceTags, partnerKey]);
 
-  const filteredBlocks = useMemo<IBlock[]>(() => {
+  const filteredBlocks = useMemo<Brick[]>(() => {
     if (isLoadingAllBlocks || isLoadingTags || isEmpty(allBlocks)) {
       return [];
     }
@@ -269,13 +270,15 @@ const AddBlockModal: React.FC = () => {
     return [...popular, ...regular];
   }, [searchResults, state.query, taggedBrickIds]);
 
-  const [invalidBlockMessages] = useAsyncState<Map<RegistryId, string>>(
+  const [invalidBlockMessages] = useAsyncState<
+    BlockGridData["invalidBlockMessages"]
+  >(
     async () =>
       new Map(
         compact(
           await Promise.all(
             blockOptions.map(
-              async (blockOption): Promise<[RegistryId, string]> => {
+              async (blockOption): Promise<[RegistryId, React.ReactNode]> => {
                 const result = await testAddBlock(blockOption.blockResult);
                 if (result.error) {
                   return [blockOption.blockResult.id, result.error];
@@ -295,10 +298,10 @@ const AddBlockModal: React.FC = () => {
       blockOptions,
       invalidBlockMessages:
         invalidBlockMessages ?? new Map<RegistryId, string>(),
-      onSetDetailBlock(block: IBlock) {
+      onSetDetailBlock(block: Brick) {
         dispatch(slice.actions.onSetDetailBlock(block));
       },
-      onSelectBlock(block: IBlock) {
+      onSelectBlock(block: Brick) {
         void onSelectBlock(block);
       },
     }),
@@ -401,7 +404,7 @@ const AddBlockModal: React.FC = () => {
                 <Loader />
               ) : (
                 <AutoSizer>
-                  {({ height, width }) => (
+                  {({ height, width }: Size) => (
                     <LazyGrid
                       height={height}
                       width={width}

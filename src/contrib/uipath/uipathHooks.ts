@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import useDependency from "@/services/useDependency";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
@@ -27,8 +27,8 @@ import {
   type ODataResponseData,
   type Release,
 } from "@/contrib/uipath/uipathContract";
-import { type SanitizedServiceConfiguration } from "@/core";
-import { proxyService } from "@/background/messenger/api";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import cachePromise from "@/utils/cachePromise";
 
 const optionalFetchReleases = optionalFactory(fetchReleases);
@@ -36,9 +36,11 @@ const optionalFetchReleases = optionalFactory(fetchReleases);
 type ReleaseOption = Option & { data: Release };
 
 async function fetchReleases(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<ReleaseOption[]> {
-  const response = await proxyService<ODataResponseData<Release>>(config, {
+  const response = await performConfiguredRequestInBackground<
+    ODataResponseData<Release>
+  >(config, {
     url: "/odata/Releases",
     method: "get",
   });
@@ -53,14 +55,15 @@ async function fetchReleases(
 export function useSelectedRelease(releaseKeyFieldName: string) {
   const [{ value: releaseKey }] = useField<string>(releaseKeyFieldName);
 
-  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_IDS);
+  const { data: sanitizedConfig } =
+    useSanitizedIntegrationConfigFormikAdapter(UIPATH_SERVICE_IDS);
 
   const releasesPromise = useMemo(
     async () =>
-      cachePromise(["uipath:useSelectedRelease", config], async () =>
-        optionalFetchReleases(hasPermissions ? config : null)
+      cachePromise(["uipath:useSelectedRelease", sanitizedConfig], async () =>
+        optionalFetchReleases(sanitizedConfig)
       ),
-    [config, hasPermissions]
+    [sanitizedConfig]
   );
 
   const [selectedRelease] = useAsyncState(async () => {

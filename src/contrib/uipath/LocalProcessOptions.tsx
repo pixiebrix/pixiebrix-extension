@@ -18,13 +18,11 @@
 import React, { useMemo, useState } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import { type Expression, type Schema } from "@/core";
 import { useAsyncEffect } from "use-async-effect";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
-import { joinName } from "@/utils";
-import RequireServiceConfig from "@/contrib/RequireServiceConfig";
+import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 // TODO: Fix `no-restricted-paths`: Look into a standardized way to mark this whole as pageEditor-only
@@ -32,9 +30,12 @@ import { thisTab } from "@/pageEditor/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/api";
 import { isDevToolsPage } from "webext-detect-page";
 import { useField } from "formik";
-import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
 
 function useLocalRobot() {
   expectContext(
@@ -117,12 +118,11 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
           UiPath Assistant consent code: {consentCode}
         </span>
       )}
-
-      <RequireServiceConfig
+      <RequireIntegrationConfig
         // FIXME: this service use is options-only. As-is this will create an integration entry in the background. We
         //  need to support 1) making RemoteServiceConfig optional, and 2) not storing the state in Formik
-        serviceSchema={REMOTE_UIPATH_PROPERTIES.uipath as Schema}
-        serviceFieldName={configName("service")}
+        integrationsSchema={REMOTE_UIPATH_PROPERTIES.uipath as Schema}
+        integrationsFieldName={configName("service")}
       >
         {() => (
           <>
@@ -142,7 +142,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
             />
           </>
         )}
-      </RequireServiceConfig>
+      </RequireIntegrationConfig>
     </div>
   );
 };

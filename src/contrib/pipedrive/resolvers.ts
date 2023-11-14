@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { proxyService } from "@/background/messenger/api";
-import { type BlockArg, type Schema } from "@/core";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 
@@ -34,7 +36,7 @@ interface SearchResult {
   data: { items: SearchResultItem[] };
 }
 
-export class ResolvePerson extends Transformer {
+export class ResolvePerson extends TransformerABC {
   constructor() {
     super("pipedrive/persons-search", "Search for a person in Pipedrive");
   }
@@ -60,35 +62,45 @@ export class ResolvePerson extends Transformer {
     pipedriveService,
     name,
     organization,
-  }: BlockArg): Promise<unknown> {
+  }: BrickArgs<{
+    pipedriveService: SanitizedIntegrationConfig;
+    name: string;
+    organization?: number;
+  }>): Promise<unknown> {
     let organization_id;
 
     if (organization) {
       const {
         data: { data },
-      } = await proxyService<SearchResult>(pipedriveService, {
-        url: "https://api.pipedrive.com/v1/organizations/search",
-        method: "get",
-        params: {
-          exact_match: true,
-          term: name,
-        },
-      });
+      } = await performConfiguredRequestInBackground<SearchResult>(
+        pipedriveService,
+        {
+          url: "https://api.pipedrive.com/v1/organizations/search",
+          method: "get",
+          params: {
+            exact_match: true,
+            term: name,
+          },
+        }
+      );
       organization_id =
         data.items.length > 0 ? data.items[0].item.id : undefined;
     }
 
     const {
       data: { data },
-    } = await proxyService<SearchResult>(pipedriveService, {
-      url: "https://api.pipedrive.com/v1/persons/search",
-      method: "get",
-      params: {
-        exact_match: true,
-        term: name,
-        organization_id,
-      },
-    });
+    } = await performConfiguredRequestInBackground<SearchResult>(
+      pipedriveService,
+      {
+        url: "https://api.pipedrive.com/v1/persons/search",
+        method: "get",
+        params: {
+          exact_match: true,
+          term: name,
+          organization_id,
+        },
+      }
+    );
 
     if (data.items.length === 0) {
       throw new BusinessError(`Could not find person matching ${name}`);

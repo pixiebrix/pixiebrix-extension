@@ -1,13 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`UiPath LocalProcess Options Can render options 1`] = `
-<div>
+<DocumentFragment>
   <div>
     <span
       class="text-danger"
     >
-      UiPath Assistant not found. Don't have the UiPath Assistant?
-       
+      UiPath Assistant not found. Don't have the UiPath Assistant? 
       <a
         href="https://robotjs.uipath.com/download"
         rel="noopener noreferrer"
@@ -17,5 +16,5 @@ exports[`UiPath LocalProcess Options Can render options 1`] = `
       </a>
     </span>
   </div>
-</div>
+</DocumentFragment>
 `;

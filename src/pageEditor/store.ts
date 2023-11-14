@@ -17,20 +17,20 @@
 
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import { localStorage } from "redux-persist-webextension-storage";
 import {
   editorSlice,
   persistEditorConfig,
 } from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
-import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/services/api";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import integrationsSlice, {
+  persistIntegrationsConfig,
+} from "@/integrations/store/integrationsSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
@@ -38,9 +38,8 @@ import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
-import { type StorageInterface } from "@/store/StorageInterface";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import {
   persistSessionChangesConfig,
   sessionChangesSlice,
@@ -48,16 +47,11 @@ import {
 } from "@/store/sessionChanges/sessionChangesSlice";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
+import { boolean } from "@/utils/typeUtils";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import { defaultCreateStateSyncMiddlewareConfig } from "@/store/defaultMiddlewareConfig";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
-
-const persistSettingsConfig = {
-  key: "settings",
-  // Change the type of localStorage to our overridden version so that it can be exported
-  // See: @/store/StorageInterface.ts
-  storage: localStorage as StorageInterface,
-  version: 1,
-};
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {
@@ -78,7 +72,10 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    integrations: persistReducer(
+      persistIntegrationsConfig,
+      integrationsSlice.reducer
+    ),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,
@@ -91,7 +88,7 @@ const store = configureStore({
     logs: logSlice.reducer,
     analysis: analysisSlice.reducer,
     tabState: tabStateSlice.reducer,
-    recipes: recipesSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
@@ -105,11 +102,12 @@ const store = configureStore({
     })
       .concat(appApi.middleware)
       .concat(pageEditorAnalysisManager.middleware)
-      .concat(recipesMiddleware)
+      .concat(modDefinitionsMiddleware)
       .concat(conditionalMiddleware)
       .concat(sessionChangesMiddleware)
       .concat(
         createStateSyncMiddleware({
+          ...defaultCreateStateSyncMiddlewareConfig,
           // In the future: concat whitelisted sync action lists here
           whitelist: sessionChangesStateSyncActions,
         })

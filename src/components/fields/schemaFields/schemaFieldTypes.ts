@@ -15,13 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import type React from "react";
 
 export type CustomFieldToggleMode = {
   match: (fieldSchema: Schema) => boolean;
   option: InputModeOption;
 };
+
+export type CustomWidgetRegistry = {
+  SchemaButtonVariantWidget: React.VFC<SchemaFieldProps>;
+  SchemaCustomEventWidget: React.VFC<SchemaFieldProps>;
+  CodeEditorWidget: React.VFC<SchemaFieldProps>;
+};
+
 export type CustomFieldDefinitions = {
   customToggleModes: CustomFieldToggleMode[];
+  customWidgets: CustomWidgetRegistry;
 };

@@ -21,6 +21,7 @@ import { waitForEffect } from "./testHelpers";
 
 type RenderFn = (ui: React.ReactElement) => RenderResult;
 
+// eslint-disable-next-line jest/no-export -- TODO: Use expect.extend() instead of a helper function
 export type ItRendersOptions<TProps> = {
   Component: React.ComponentType<TProps>;
   props: TProps;
@@ -42,6 +43,7 @@ function testItRenders<TProps = unknown>(
     renderFn = render,
   } = typeof options === "function" ? options() : options;
 
+  // eslint-disable-next-line jest/valid-title
   test(testName, async () => {
     const ui = TemplateComponent ? (
       <TemplateComponent>
@@ -50,13 +52,14 @@ function testItRenders<TProps = unknown>(
     ) : (
       <Component {...props} />
     );
-    const rendered = renderFn(ui);
+    const { asFragment } = renderFn(ui);
     if (isAsync) {
       await waitForEffect();
     }
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 }
 
+// eslint-disable-next-line jest/no-export -- TODO: Use expect.extend() instead of a helper function
 export default testItRenders;

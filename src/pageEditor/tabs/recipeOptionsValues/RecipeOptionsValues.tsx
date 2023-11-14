@@ -21,9 +21,10 @@ import {
   selectActiveRecipeId,
   selectDirtyOptionDefinitionsForRecipeId,
   selectDirtyOptionValuesForRecipeId,
+  selectNotDeletedElements,
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
-import { useRecipe } from "@/recipes/recipesHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,
@@ -34,16 +35,20 @@ import Loader from "@/components/Loader";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { inferRecipeOptions } from "@/store/extensionsUtils";
+import {
+  inferRecipeDependencies,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
-import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/common";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
-import Effect from "@/pageEditor/components/Effect";
-import { type UserOptions } from "@/core";
+import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { type OptionsArgs } from "@/types/runtimeTypes";
+import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
-  apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
+  apiVersion: DEFAULT_RUNTIME_API_VERSION,
   allowExpressions: false,
 };
 
@@ -54,9 +59,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
     data: recipe,
     isFetching: isLoadingRecipe,
     error: recipeError,
-  } = useRecipe(recipeId);
-  const [validationSchema, isLoadingSchema, schemaError] =
-    useAsyncRecipeOptionsValidationSchema(recipe?.options?.schema);
+  } = useOptionalModDefinition(recipeId);
   const dirtyRecipeOptions = useSelector(
     selectDirtyOptionDefinitionsForRecipeId(recipeId)
   );
@@ -64,6 +67,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
     selectDirtyOptionValuesForRecipeId(recipeId)
   );
   const installedExtensions = useSelector(selectNotDeletedExtensions);
+  const dirtyElements = useSelector(selectNotDeletedElements);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyRecipeOptions) {
@@ -72,6 +76,12 @@ const RecipeOptionsValuesContent: React.FC = () => {
 
     return recipe?.options ?? EMPTY_RECIPE_OPTIONS_DEFINITION;
   }, [dirtyRecipeOptions, recipe?.options]);
+
+  const {
+    data: validationSchema,
+    isLoading: isLoadingSchema,
+    error: schemaError,
+  } = useAsyncRecipeOptionsValidationSchema(optionsDefinition?.schema);
 
   const OptionsFieldGroup = useMemo(
     () =>
@@ -82,19 +92,31 @@ const RecipeOptionsValuesContent: React.FC = () => {
     [optionsDefinition]
   );
 
-  const initialValues = useMemo(() => {
-    if (modifiedOptionValues) {
-      return modifiedOptionValues;
-    }
+  const recipeExtensions = useMemo(
+    () =>
+      installedExtensions.filter(
+        (extension) => extension._recipe?.id === recipeId
+      ),
+    [installedExtensions, recipeId]
+  );
 
-    const recipeExtensions = installedExtensions.filter(
-      (extension) => extension._recipe?.id === recipeId
-    );
-    return inferRecipeOptions(recipeExtensions);
-  }, [installedExtensions, modifiedOptionValues, recipeId]);
+  const initialValues = useMemo(
+    () => modifiedOptionValues ?? inferRecipeOptions(recipeExtensions),
+    [modifiedOptionValues, recipeExtensions]
+  );
+
+  const recipeElements = useMemo(
+    () => dirtyElements.filter((element) => element.recipe?.id === recipeId),
+    [dirtyElements, recipeId]
+  );
+
+  const integrationDependencies = useMemo(
+    () => inferRecipeDependencies(recipeExtensions, recipeElements),
+    [recipeExtensions, recipeElements]
+  );
 
   const updateRedux = useCallback(
-    (options: UserOptions) => {
+    (options: OptionsArgs) => {
       dispatch(actions.editRecipeOptionsValues(options));
     },
     [dispatch]
@@ -111,17 +133,17 @@ const RecipeOptionsValuesContent: React.FC = () => {
   }
 
   const renderBody: RenderBody = ({ values }) => (
-    <>
+    <ModIntegrationsContext.Provider value={{ integrationDependencies }}>
       <Effect values={values} onChange={updateRedux} delayMillis={300} />
       <Card>
-        <Card.Header>Blueprint Input Options</Card.Header>
+        <Card.Header>Mod Input Options</Card.Header>
         <Card.Body>
           <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
             <OptionsFieldGroup name="" />
           </FieldRuntimeContext.Provider>
         </Card.Body>
       </Card>
-    </>
+    </ModIntegrationsContext.Provider>
   );
 
   return (

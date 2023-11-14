@@ -15,11 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+eslint-disable @typescript-eslint/consistent-type-imports --
+Import statements turn `globals.d.ts` in a "module definition" file instead of an ambient file.
+https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-1666667362
+*/
+
 // We only use this package for its types. URLPattern is Chrome 95+
 /// <reference types="urlpattern-polyfill" />
 
-// This cannot be a regular import because it turns `globals.d.ts` in a "module definition", which it isn't
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+// Improve standard type library https://www.totaltypescript.com/ts-reset
+/// <reference types="@total-typescript/ts-reset" />
+
 type Browser = import("webextension-polyfill").Browser;
 
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
@@ -76,17 +83,13 @@ declare module "react-select-virtualized" {
 }
 
 declare module "generate-schema" {
-  import { type UnknownObject } from "@/types";
+  import { type UnknownObject } from "@/types/objectTypes";
 
   const json: (title: string, obj: unknown) => UnknownObject;
 }
 
-// The package breaks Madge, so we have to include a patch in tsconfig, which breaks the @types package.
-// In the end, the types aren't even used.
-declare module "marked";
-
 // No types available
-declare module "jq-web";
+declare module "@pixiebrix/jq-web";
 declare module "canvas-confetti";
 
 // From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
@@ -106,7 +109,7 @@ declare module "page-metadata-parser" {
 }
 
 declare module "@/vendors/initialize" {
-  import { type Promisable } from "type-fest";
+  import { type JsonValue, type Promisable } from "type-fest";
 
   /** Attach a MutationObserver specifically for a selector */
   const initialize: (
@@ -190,6 +193,21 @@ interface ErrorConstructor {
   (message?: string, options?: ErrorOptions): Error;
 }
 
+// This changes the return value from `any` to `JsonValue`.
+// "total-typescript" sets it to `unknown` but `JsonValue` is more useful and accurate.
+interface JSON {
+  /**
+   * Converts a JavaScript Object Notation (JSON) string into an object.
+   * @param text A valid JSON string.
+   * @param reviver A function that transforms the results. This function is called for each member of the object.
+   * If a member contains nested objects, the nested objects are transformed before the parent object is.
+   */
+  parse(
+    text: string,
+    reviver?: (this: unknown, key: string, value: unknown) => unknown
+  ): import("type-fest").JsonValue;
+}
+
 // TODO: This overrides Firefox’ types. It's possible that the return types are different between Firefox and Chrome
 interface ExtendedRuntime
   extends Omit<Browser["runtime"], "requestUpdateCheck"> {
@@ -205,38 +223,9 @@ interface ExtendedStorage extends BrowserStorage {
   session: Browser.storage.local;
 }
 
-type Identity = Browser["identity"];
-
-/**
- * Gets an OAuth2 access token using the client ID and scopes specified in the oauth2 section of manifest.json.
- */
-interface ExtendedIdentity extends Identity {
-  /**
-   * Gets an OAuth2 access token using the client ID and scopes specified in the oauth2 section of manifest.json.
-   */
-  getAuthToken(details?: chrome.identity.TokenDetails): Promise<string>;
-
-  /**
-   * Removes an OAuth2 access token from the Identity API's token cache.
-   */
-  removeCachedAuthToken(
-    details: chrome.identity.TokenInformation
-  ): Promise<void>;
-
-  /**
-   * Resets the state of the Identity API:
-   *
-   *  * Removes all OAuth2 access tokens from the token cache
-   *  * Removes user's account preferences
-   *  * De-authorizes the user from all auth flows
-   */
-  clearAllCachedAuthTokens(): Promise<void>;
-}
-
 // @ts-expect-error See Firefox/requestUpdateCheck-related comment above
 interface ChromeifiedBrowser extends Browser {
   runtime: ExtendedRuntime;
-  identity: ExtendedIdentity;
   storage: ExtendedStorage;
 }
 
@@ -246,7 +235,14 @@ declare namespace CSS {
   function px(length: number): string;
 }
 
-// Temporary type until officially added
-declare namespace chrome.storage {
-  export const session: StorageArea;
+// These types are unnecessarily loose
+// https://dom.spec.whatwg.org/#dom-node-textcontent
+interface ChildNode {
+  textContent: string;
+}
+interface Text {
+  textContent: string;
+}
+interface Element {
+  textContent: string;
 }

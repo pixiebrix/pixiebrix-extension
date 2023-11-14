@@ -15,16 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TemplateEngine } from "@/core";
+import { type TemplateEngine } from "@/types/runtimeTypes";
 import Mustache from "mustache";
 import { identity, mapKeys } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
-import { type UnknownObject } from "@/types";
 import { type JsonObject } from "type-fest";
 import {
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
 } from "@/sandbox/messenger/executor";
+import { type UnknownObject } from "@/types/objectTypes";
+import { containsTemplateExpression } from "@/utils/expressionUtils";
 
 export type AsyncTemplateRenderer = (
   template: string,
@@ -35,14 +36,6 @@ export type TemplateRenderer = (template: string, context: unknown) => unknown;
 export type RendererOptions = {
   autoescape?: boolean;
 };
-
-/**
- * Returns true if `literalOrTemplate` includes any template expressions that would be replaced by `context`.
- * @param literalOrTemplate the string literal or Nunjucks/Handlebars template.
- */
-function containsTemplateExpression(literalOrTemplate: string): boolean {
-  return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
-}
 
 export function engineRenderer(
   templateEngine: TemplateEngine,

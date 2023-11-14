@@ -15,17 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { proxyService } from "@/background/messenger/api";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type SanitizedServiceConfiguration,
-} from "@/core";
 import { BusinessError } from "@/errors/businessErrors";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
-export class AddOrganization extends Effect {
+export class AddOrganization extends EffectABC {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations
 
   constructor() {
@@ -60,14 +57,16 @@ export class AddOrganization extends Effect {
       pipedrive,
       name,
       owner_id,
-    }: BlockArg<{
+    }: BrickArgs<{
       name: string;
       owner_id: number;
-      pipedrive: SanitizedServiceConfiguration;
+      pipedrive: SanitizedIntegrationConfig;
     }>,
-    { logger }: BlockOptions
+    { logger }: BrickOptions
   ): Promise<void> {
-    const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
+    const { data } = await performConfiguredRequestInBackground<{
+      items: unknown[];
+    }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/organizations/search",
       method: "get",
       params: {
@@ -82,7 +81,7 @@ export class AddOrganization extends Effect {
     }
 
     try {
-      await proxyService(pipedrive, {
+      await performConfiguredRequestInBackground(pipedrive, {
         url: "https://api.pipedrive.com/v1/organizations",
         method: "post",
         data: { name, owner_id },
@@ -93,7 +92,7 @@ export class AddOrganization extends Effect {
   }
 }
 
-export class AddPerson extends Effect {
+export class AddPerson extends EffectABC {
   // https://developers.pipedrive.com/docs/api/v1/#!/Persons/post_persons
 
   constructor() {
@@ -132,10 +131,24 @@ export class AddPerson extends Effect {
   );
 
   async effect(
-    { pipedrive, name, owner_id, email, phone }: BlockArg,
-    { logger }: BlockOptions
+    {
+      pipedrive,
+      name,
+      owner_id,
+      email,
+      phone,
+    }: BrickArgs<{
+      pipedrive: SanitizedIntegrationConfig;
+      name: string;
+      owner_id: number;
+      email?: string;
+      phone?: string;
+    }>,
+    { logger }: BrickOptions
   ): Promise<void> {
-    const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
+    const { data } = await performConfiguredRequestInBackground<{
+      items: unknown[];
+    }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",
       params: {
@@ -150,7 +163,7 @@ export class AddPerson extends Effect {
     }
 
     try {
-      await proxyService(pipedrive, {
+      await performConfiguredRequestInBackground(pipedrive, {
         url: "https://api.pipedrive.com/v1/persons",
         method: "post",
         data: {

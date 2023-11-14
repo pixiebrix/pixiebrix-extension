@@ -15,85 +15,141 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RawServiceConfiguration } from "@/core";
-import { type AuthOption } from "@/auth/authTypes";
-import { useAsyncState } from "./common";
-import { readRawConfigurations } from "@/services/registry";
-import { useMemo, useCallback } from "react";
-import { useGetServiceAuthsQuery } from "@/services/api";
+import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
+import { readRawConfigurations } from "@/integrations/registry";
 import { sortBy } from "lodash";
-import { type SanitizedAuth } from "@/types/contract";
+import { type RemoteIntegrationConfig } from "@/types/contract";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import useAsyncState from "@/hooks/useAsyncState";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
+import { useGetIntegrationAuthsQuery } from "@/services/api";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
   return normalized === "" ? "Default" : normalized;
 }
 
-function decideRemoteLabel(auth: SanitizedAuth): string {
-  let visibility = "✨ Built-in";
-
+export function getSharingType(auth: RemoteIntegrationConfig): AuthSharing {
   if (auth.organization?.name) {
-    visibility = auth.organization.name;
+    return "shared";
   }
 
   if (auth.user) {
-    visibility = "Private";
+    return "private";
   }
 
-  return `${defaultLabel(auth.label)} — ${visibility}`;
+  return "built-in";
 }
 
-export function useAuthOptions(): [AuthOption[], () => void] {
+const getVisibilityLabel = (auth: RemoteIntegrationConfig): string => {
+  const sharingType = getSharingType(auth);
+  switch (sharingType) {
+    case "shared": {
+      return auth.organization.name;
+    }
+
+    case "private": {
+      return "Private";
+    }
+
+    default: {
+      return "✨ Built-in";
+    }
+  }
+};
+
+function getRemoteLabel(auth: RemoteIntegrationConfig): string {
+  return `${defaultLabel(auth.label)} — ${getVisibilityLabel(auth)}`;
+}
+
+function mapConfigurationsToOptions(
+  locationIntegrationConfigs: IntegrationConfig[],
+  remoteIntegrationConfigs: RemoteIntegrationConfig[]
+) {
+  const localOptions = sortBy(
+    locationIntegrationConfigs.map((integrationConfig) => ({
+      value: integrationConfig.id,
+      label: `${defaultLabel(integrationConfig.label)} — Private`,
+      local: true,
+      serviceId: integrationConfig.integrationId,
+      sharingType: "private" as AuthSharing,
+    })),
+    (x) => x.label
+  );
+
+  const sharedOptions = sortBy(
+    remoteIntegrationConfigs.map((remoteAuth) => ({
+      value: remoteAuth.id,
+      label: getRemoteLabel(remoteAuth),
+      local: false,
+      user: remoteAuth.user,
+      serviceId: remoteAuth.service.config.metadata.id,
+      sharingType: getSharingType(remoteAuth),
+    })),
+    (x) => (x.user ? 0 : 1),
+    (x) => x.label
+  );
+
+  return [...localOptions, ...sharedOptions];
+}
+
+/**
+ * Return available integration configuration options suitable for display in a react-select dropdown.
+ */
+export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
   // store to reload if it's changed on another tab
-  const [configuredServices, isLocalLoading, _localError, refreshLocal] =
-    useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
+  const locationIntegrationConfigsState = useAsyncState<IntegrationConfig[]>(
+    readRawConfigurations,
+    []
+  );
 
-  const {
-    data: remoteAuths,
-    isFetching: isRemoteLoading,
-    refetch: refreshRemote,
-  } = useGetServiceAuthsQuery();
+  const remoteIntegrationAuthsState = useGetIntegrationAuthsQuery();
 
-  const authOptions = useMemo(() => {
-    if (isLocalLoading || isRemoteLoading) {
-      // Return no options to avoid unwanted default behavior when the local options are loaded but the remote options
-      // are still pending
-      return [];
-    }
+  return useMergeAsyncState(
+    locationIntegrationConfigsState,
+    remoteIntegrationAuthsState,
+    mapConfigurationsToOptions
+  );
+}
 
-    const localOptions = sortBy(
-      (configuredServices ?? []).map((x) => ({
-        value: x.id,
-        label: `${defaultLabel(x.label)} — Private`,
-        local: true,
-        serviceId: x.serviceId,
-      })),
-      (x) => x.label
-    );
+export function getDefaultAuthOptionsForMod(
+  modDefinition: ModDefinition,
+  authOptions: AuthOption[]
+): Record<RegistryId, AuthOption | null> {
+  const requiredIntegrationIds = getModDefinitionIntegrationIds(modDefinition, {
+    // The PixieBrix service gets automatically configured, so no need to include it
+    excludePixieBrix: true,
+  });
 
-    const sharedOptions = sortBy(
-      (remoteAuths ?? []).map((x) => ({
-        value: x.id,
-        label: decideRemoteLabel(x),
-        local: false,
-        user: x.user,
-        serviceId: x.service.config.metadata.id,
-      })),
-      (x) => (x.user ? 0 : 1),
-      (x) => x.label
-    );
+  return Object.fromEntries(
+    requiredIntegrationIds.map((integrationId) => {
+      const authOptionsForIntegration = authOptions.filter(
+        (authOption) => authOption.serviceId === integrationId
+      );
 
-    return [...localOptions, ...sharedOptions];
-  }, [isLocalLoading, isRemoteLoading, remoteAuths, configuredServices]);
+      // Prefer arbitrary personal or shared configuration
+      const personalOrSharedOption = authOptionsForIntegration.find(
+        (authOption) => ["private", "shared"].includes(authOption.sharingType)
+      );
+      if (personalOrSharedOption) {
+        return [integrationId, personalOrSharedOption];
+      }
 
-  const refresh = useCallback(() => {
-    // Locally, eslint run in IntelliJ disagrees with the linter run in CI. There might be a package version mismatch
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises -- reported as promise on next line
-    refreshRemote();
-    void refreshLocal();
-  }, [refreshRemote, refreshLocal]);
+      // Default to built-in option otherwise
+      const builtInOption = authOptionsForIntegration.find(
+        (authOption) => authOption.sharingType === "built-in"
+      );
+      if (builtInOption) {
+        return [integrationId, builtInOption];
+      }
 
-  return [authOptions, refresh];
+      return [integrationId, null];
+    })
+  );
 }

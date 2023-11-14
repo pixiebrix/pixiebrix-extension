@@ -18,13 +18,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import {
-  cloudExtensionFactory,
-  extensionPointDefinitionFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { getCurrentURL } from "@/pageEditor/utils";
@@ -32,13 +27,18 @@ import { validateRegistryId } from "@/types/helpers";
 import {
   type MenuDefinition,
   RemoteMenuItemExtensionPoint,
-} from "@/extensionPoints/menuItemExtension";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { type Metadata } from "@/core";
+} from "@/starterBricks/menuItemExtension";
+import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type Metadata } from "@/types/registryTypes";
 import {
   type QuickBarDefinition,
   RemoteQuickBarExtensionPoint,
-} from "@/extensionPoints/quickBarExtension";
+} from "@/starterBricks/quickBarExtension";
+import {
+  starterBrickConfigFactory,
+  metadataFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
+import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getInstalledExtensionPoints: jest.fn(),
@@ -56,75 +56,72 @@ describe("checkAvailableInstalledExtensions", () => {
     (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
 
     const availableButtonId = validateRegistryId("test/available-button");
-    const availableButton = cloudExtensionFactory({
+    const availableButton = standaloneModDefinitionFactory({
       extensionPointId: availableButtonId,
     });
     const unavailableButtonId = validateRegistryId("test/unavailable-button");
-    const unavailableButton = cloudExtensionFactory({
+    const unavailableButton = standaloneModDefinitionFactory({
       extensionPointId: unavailableButtonId,
     });
     const availableQbId = validateRegistryId("test/available-quickbar");
-    const availableQb = cloudExtensionFactory({
+    const availableQb = standaloneModDefinitionFactory({
       extensionPointId: availableQbId,
     });
     const unavailableQbId = validateRegistryId("test/unavailable-quickbar");
-    const unavailableQb = cloudExtensionFactory({
+    const unavailableQb = standaloneModDefinitionFactory({
       extensionPointId: unavailableQbId,
     });
 
-    const availableButtonExtensionPointConfig = extensionPointDefinitionFactory(
-      {
-        metadata(): Metadata {
-          return recipeMetadataFactory({
-            id: availableButtonId,
-          });
-        },
-        definition(): MenuDefinition {
-          return {
-            type: "menuItem",
-            containerSelector: "",
-            template: "",
-            isAvailable: {
-              matchPatterns: [testUrl],
-            },
-            reader: validateRegistryId("@pixiebrix/document-context"),
-          };
-        },
-      }
-    ) as ExtensionPointConfig<MenuDefinition>;
+    const availableButtonStarterBrickConfig = starterBrickConfigFactory({
+      metadata(): Metadata {
+        return metadataFactory({
+          id: availableButtonId,
+        });
+      },
+      definition(): MenuDefinition {
+        return {
+          type: "menuItem",
+          containerSelector: "",
+          template: "",
+          isAvailable: {
+            matchPatterns: [testUrl],
+          },
+          reader: validateRegistryId("@pixiebrix/document-context"),
+        };
+      },
+    }) as StarterBrickConfig<MenuDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
-      availableButtonExtensionPointConfig
+      availableButtonStarterBrickConfig
     );
 
-    const availableQuickbarExtensionPointConfig =
-      extensionPointDefinitionFactory({
-        metadata(): Metadata {
-          return recipeMetadataFactory({
-            id: availableQbId,
-          });
-        },
-        definition(): QuickBarDefinition {
-          return {
-            type: "quickBar",
-            contexts: ["all"],
-            documentUrlPatterns: [testUrl],
-            isAvailable: {
-              matchPatterns: [testUrl],
-            },
-            reader: validateRegistryId("@pixiebrix/document-context"),
-            targetMode: "document",
-          };
-        },
-      }) as ExtensionPointConfig<QuickBarDefinition>;
+    const availableQuickbarStarterBrickConfig = starterBrickConfigFactory({
+      metadata(): Metadata {
+        return metadataFactory({
+          id: availableQbId,
+        });
+      },
+      definition(): QuickBarDefinition {
+        return {
+          type: "quickBar",
+          contexts: ["all"],
+          documentUrlPatterns: [testUrl],
+          isAvailable: {
+            matchPatterns: [testUrl],
+          },
+          reader: validateRegistryId("@pixiebrix/document-context"),
+          targetMode: "document",
+        };
+      },
+    }) as StarterBrickConfig<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
-      availableQuickbarExtensionPointConfig
+      availableQuickbarStarterBrickConfig
     );
     (getInstalledExtensionPoints as jest.Mock).mockResolvedValue([
       availableButtonExtensionPoint,
       availableQuickbarExtensionPoint,
     ]);
 
-    const store = configureStore<EditorRootState & ExtensionsRootState>({
+    const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
         options: extensionsReducer,
@@ -155,6 +152,6 @@ describe("checkAvailableInstalledExtensions", () => {
       availableButton.id,
       availableQb.id,
     ]);
-    expect(unavailableInstalledCount).toStrictEqual(2);
+    expect(unavailableInstalledCount).toBe(2);
   });
 });

@@ -15,22 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject } from "type-fest";
 import { debounce } from "lodash";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
-import {
-  type MessageContext,
-  type SemVerString,
-  type SerializedError,
-} from "@/core";
 import {
   hasSpecificErrorCause,
   selectSpecificError,
 } from "@/errors/errorHelpers";
 import { allowsTrack } from "@/telemetry/dnt";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import { isObject } from "@/utils";
-import { flagOn, getUserData } from "@/auth/token";
+import { getUserData } from "@/auth/token";
 import {
   isAppRequest,
   selectAbsoluteUrl,
@@ -39,6 +32,12 @@ import {
 import { type ErrorItem } from "@/types/contract";
 import { expectContext } from "@/utils/expectContext";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { type SerializedError } from "@/types/messengerTypes";
+import { type SemVerString } from "@/types/registryTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { isObject } from "@/utils/objectUtils";
+import type { UnknownObject } from "@/types/objectTypes";
+import { flagOn } from "@/auth/authUtils";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -70,13 +69,15 @@ async function flush(): Promise<void> {
  */
 export async function selectExtraContext(
   error: Error | SerializedError
-): Promise<JsonObject & { extensionVersion: SemVerString }> {
+): Promise<UnknownObject & { extensionVersion: SemVerString }> {
   const { version } = browser.runtime.getManifest();
-
   const extensionVersion = validateSemVerString(version);
+  const extraContext: UnknownObject & { extensionVersion: SemVerString } = {
+    extensionVersion,
+  };
 
   if (!isObject(error)) {
-    return { extensionVersion };
+    return extraContext;
   }
 
   const axiosError = selectAxiosError(error);
@@ -85,13 +86,18 @@ export async function selectExtraContext(
     axiosError &&
     ((await flagOn("enterprise-telemetry")) || (await isAppRequest(axiosError)))
   ) {
-    return {
-      extensionVersion,
-      url: selectAbsoluteUrl(axiosError.config),
-    };
+    extraContext.url = selectAbsoluteUrl(axiosError.config);
   }
 
-  return { extensionVersion };
+  const { name, stack, code, cause } = error;
+
+  return {
+    ...extraContext,
+    name,
+    stack,
+    cause,
+    code,
+  };
 }
 
 /**
@@ -139,7 +145,6 @@ export async function reportToErrorService(
     user_agent: window.navigator.userAgent,
     user_agent_extension_version: extensionVersion,
     is_application_error: !selectSpecificError(error, BusinessError),
-    // Already capturing extension version in user_agent_extension_version
     error_data: data,
     timestamp: new Date().toISOString(),
   };

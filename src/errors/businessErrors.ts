@@ -16,8 +16,9 @@
  */
 
 import { truncate } from "lodash";
-import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/errorHelpers";
 import { type AxiosResponse } from "axios";
+import { type RegistryId } from "@/types/registryTypes";
+import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
 
 /**
  * @file ONLY KEEP ACTUAL ERRORS IN HERE.
@@ -116,13 +117,18 @@ export class InvalidSelectorError extends BusinessError {
 export class PropError extends BusinessError {
   override name = "PropError";
 
-  public readonly blockId: string;
+  public readonly blockId: RegistryId;
 
   public readonly prop: string;
 
   public readonly value: unknown;
 
-  constructor(message: string, blockId: string, prop: string, value: unknown) {
+  constructor(
+    message: string,
+    blockId: RegistryId,
+    prop: string,
+    value: unknown
+  ) {
     super(message);
     this.blockId = blockId;
     this.prop = prop;
@@ -153,7 +159,7 @@ export class MissingConfigurationError extends BusinessError {
 
   id: string;
 
-  constructor(message: string, serviceId: string, id?: string) {
+  constructor(message: string, serviceId: string, id: string) {
     super(message);
     this.serviceId = serviceId;
     this.id = id;
@@ -170,7 +176,7 @@ export class NotConfiguredError extends BusinessError {
   constructor(
     message: string,
     serviceId: string,
-    missingProperties?: string[]
+    missingProperties: string[] = []
   ) {
     super(message);
     this.serviceId = serviceId;
@@ -178,7 +184,10 @@ export class NotConfiguredError extends BusinessError {
   }
 }
 
-type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
+export type ProxiedResponse = Pick<
+  AxiosResponse,
+  "data" | "status" | "statusText"
+>;
 
 /**
  * An error response from a 3rd party API via the PixieBrix proxy
@@ -189,7 +198,7 @@ export class ProxiedRemoteServiceError extends BusinessError {
   readonly response: ProxiedResponse;
 
   constructor(message: string, response: ProxiedResponse) {
-    super(message);
+    super(`Remote API Error: ${message}`);
 
     this.response = response;
   }

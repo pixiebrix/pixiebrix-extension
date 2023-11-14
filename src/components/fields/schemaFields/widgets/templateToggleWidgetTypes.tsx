@@ -17,8 +17,8 @@
 
 import type React from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { type Expression } from "@/core";
-import { type UnknownObject } from "@/types";
+import { type Expression } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type JSONSchema7Array } from "json-schema";
 
@@ -35,7 +35,7 @@ interface InputModeOptionBase<
 }
 
 export type StringOption = InputModeOptionBase<"string" | "select" | "var"> & {
-  interpretValue: (oldValue: unknown) => string | Expression;
+  interpretValue: (oldValue: unknown) => string | Expression | null;
 };
 type NumberOption = InputModeOptionBase<"number"> & {
   interpretValue: (oldValue: unknown) => number;
@@ -45,12 +45,6 @@ type BooleanOption = InputModeOptionBase<"boolean"> & {
 };
 type ArrayOption = InputModeOptionBase<"array"> & {
   interpretValue: (oldValue: unknown) => JSONSchema7Array;
-};
-type DatabaseOption = InputModeOptionBase<"database"> & {
-  interpretValue: (oldValue: unknown) => string | null;
-};
-type IconOption = InputModeOptionBase<"icon"> & {
-  interpretValue: (oldValue: unknown) => UnknownObject;
 };
 type ObjectOption = InputModeOptionBase<"object"> & {
   interpretValue: (oldValue: unknown) => UnknownObject;
@@ -63,8 +57,6 @@ export type InputModeOption =
   | BooleanOption
   | ArrayOption
   | ObjectOption
-  | DatabaseOption
-  | IconOption
   | OmitOption;
 
 export type TemplateToggleWidgetProps = SchemaFieldProps & {

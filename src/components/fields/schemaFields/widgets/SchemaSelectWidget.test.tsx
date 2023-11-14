@@ -17,11 +17,10 @@
 
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { render } from "@/pageEditor/testHelpers";
-
-jest.unmock("react-redux");
+import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -77,5 +76,33 @@ describe("SchemaSelectWidget", () => {
         }
       ).asFragment()
     ).toMatchSnapshot();
+  });
+});
+
+describe("mapSchemaToOptions", () => {
+  it("includes current value in options", () => {
+    expect(
+      mapSchemaToOptions({
+        schema: { type: "string", enum: [] },
+        value: "foo",
+        created: [],
+      })
+    ).toEqual({
+      creatable: false,
+      options: [{ value: "foo", label: "foo" }],
+    });
+  });
+
+  it("extracts labelled enum values", () => {
+    expect(
+      mapSchemaToOptions({
+        schema: { type: "string", oneOf: [{ const: "foo", title: "Foo" }] },
+        value: "foo",
+        created: [],
+      })
+    ).toEqual({
+      creatable: false,
+      options: [{ value: "foo", label: "Foo" }],
+    });
   });
 });

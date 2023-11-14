@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import BrickNodeContent from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import styles from "./BrickNode.module.scss";
@@ -29,11 +29,31 @@ import {
   type BrickNodeProps,
   RunStatus,
 } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { useSelector } from "react-redux";
+import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+
+const useScrollIntoViewEffect = (
+  active: boolean,
+  isSubPipelineHeaderActive: boolean
+) => {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const activeNodePreviewElementId = useSelector(
+    selectNodePreviewActiveElement
+  );
+
+  useEffect(() => {
+    if (active && !isSubPipelineHeaderActive && activeNodePreviewElementId) {
+      nodeRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }, [activeNodePreviewElementId, isSubPipelineHeaderActive, active]);
+
+  return nodeRef;
+};
 
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
   active,
-  parentIsActive,
+  isParentActive,
   onHoverChange,
   icon,
   runStatus,
@@ -47,9 +67,9 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   nodeActions,
   showBiggerActions,
   trailingMessage,
+  isSubPipelineHeaderActive,
 }) => {
-  const nodeRef = useRef<HTMLDivElement>(null);
-
+  const nodeRef = useScrollIntoViewEffect(active, isSubPipelineHeaderActive);
   useAutoFocusConfiguration({ elementRef: nodeRef, focus: active });
 
   return (
@@ -61,7 +81,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
         active={active}
         className={cx(styles.root, "list-group-item-action", {
           [styles.expanded]: hasSubPipelines && !collapsed,
-          [styles.parentIsActive]: parentIsActive,
+          [styles.parentIsActive]: isParentActive,
         })}
         title={
           runStatus === RunStatus.SKIPPED

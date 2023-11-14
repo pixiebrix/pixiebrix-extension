@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
+
 import {
   marketplaceListingFactory,
   marketplaceTagFactory,
-} from "@/testUtils/factories";
-import groupListingsByTag from "@/components/addBlockModal/groupListingsByTag";
+} from "@/testUtils/factories/marketplaceFactories";
 
 describe("groupListingsByTag", () => {
   it("groups tags", () => {

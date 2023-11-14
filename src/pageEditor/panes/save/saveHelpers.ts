@@ -16,34 +16,45 @@
  */
 
 import {
-  type RegistryId,
-  type Metadata,
-  type IExtension,
-  type SafeString,
   type InnerDefinitionRef,
   type InnerDefinitions,
-  type UnresolvedExtension,
-} from "@/core";
+  type Metadata,
+  type RegistryId,
+} from "@/types/registryTypes";
 import {
-  type EditablePackage,
-  type ExtensionPointConfig,
-  type OptionsDefinition,
-  type RecipeDefinition,
-  type RecipeMetadataFormState,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
-import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
+  isInnerDefinitionRegistryId,
+  PACKAGE_REGEX,
+  validateRegistryId,
+} from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { freshIdentifier } from "@/utils";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isInnerExtensionPoint } from "@/registry/internal";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   DEFAULT_EXTENSION_POINT_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-} from "@/pageEditor/extensionPoints/base";
+} from "@/pageEditor/starterBricks/base";
 import { type Except } from "type-fest";
+import {
+  type ModComponentDefinition,
+  type ModDefinition,
+  type ModOptionsDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
+import {
+  type ModComponentBase,
+  type UnresolvedModComponent,
+} from "@/types/modComponentTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type EditablePackageMetadata } from "@/types/contract";
+import { freshIdentifier } from "@/utils/variableUtils";
+import {
+  type IntegrationDependency,
+  type ModDependencyAPIVersion,
+} from "@/integrations/integrationTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -61,9 +72,9 @@ export function generateScopeBrickId(
 }
 
 export function isRecipeEditable(
-  editablePackages: EditablePackage[],
-  recipe: RecipeDefinition
-) {
+  editablePackages: EditablePackageMetadata[],
+  recipe: ModDefinition
+): boolean {
   // The user might lose access to the recipe while they were editing it (the recipe or an extension)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
   const recipeId = recipe?.metadata?.id;
@@ -80,8 +91,8 @@ export function isRecipeEditable(
  * For now, we'll just handle the normal case and send people to the workshop for the corner cases.
  */
 function findRecipeIndex(
-  sourceRecipe: RecipeDefinition,
-  extension: IExtension
+  sourceRecipe: ModDefinition,
+  extension: ModComponentBase
 ): number {
   if (sourceRecipe.metadata.version !== extension._recipe.version) {
     console.warn(
@@ -100,13 +111,13 @@ function findRecipeIndex(
 
   if (labelMatches.length === 0) {
     throw new Error(
-      `There are no extensions in the blueprint with label "${extension.label}". You must edit the blueprint in the Workshop`
+      `There are no starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`
     );
   }
 
   if (labelMatches.length > 1) {
     throw new Error(
-      `There are multiple extensions in the blueprint with label "${extension.label}". You must edit the blueprint in the Workshop`
+      `There are multiple starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`
     );
   }
 
@@ -115,6 +126,66 @@ function findRecipeIndex(
       (x) => x.label === extension.label
     );
   }
+}
+
+/**
+ * Return the highest API Version used by any of the integrations in the mod. Only exported for testing.
+ * @param integrationDependencies mod integration dependencies
+ * @since 1.7.37
+ * @note This function is just for safety, there's currently no way for a mod to end up with "mixed" integration api versions.
+ */
+export function findMaxIntegrationDependencyApiVersion(
+  integrationDependencies: Array<Pick<IntegrationDependency, "apiVersion">>
+): ModDependencyAPIVersion {
+  let maxApiVersion: ModDependencyAPIVersion = "v1";
+  for (const integrationDependency of integrationDependencies) {
+    if (integrationDependency.apiVersion > maxApiVersion) {
+      maxApiVersion = integrationDependency.apiVersion;
+    }
+  }
+
+  return maxApiVersion;
+}
+
+export function selectExtensionPointIntegrations({
+  integrationDependencies,
+}: Pick<
+  ModComponentBase,
+  "integrationDependencies"
+>): ModComponentDefinition["services"] {
+  const apiVersion = findMaxIntegrationDependencyApiVersion(
+    integrationDependencies
+  );
+  if (apiVersion === "v1") {
+    return Object.fromEntries(
+      integrationDependencies.map((x) => [x.outputKey, x.integrationId])
+    );
+  }
+
+  if (apiVersion === "v2") {
+    const properties: Record<string, Schema> = {};
+    const required: string[] = [];
+    for (const {
+      outputKey,
+      integrationId,
+      isOptional,
+    } of integrationDependencies) {
+      properties[outputKey] = {
+        $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationId}`,
+      };
+      if (!isOptional) {
+        required.push(outputKey);
+      }
+    }
+
+    return {
+      properties,
+      required,
+    } as Schema;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
+  throw new Error(`Unknown ModDependencyApiVersion: ${apiVersion}`);
 }
 
 /**
@@ -130,18 +201,18 @@ function findRecipeIndex(
  * @param element the new extension state (i.e., submitted via Formik)
  */
 export function replaceRecipeExtension(
-  sourceRecipe: RecipeDefinition,
+  sourceRecipe: ModDefinition,
   metadata: Metadata,
-  installedExtensions: IExtension[],
-  element: FormState
-): UnsavedRecipeDefinition {
+  installedExtensions: ModComponentBase[],
+  element: ModComponentFormState
+): UnsavedModDefinition {
   const installedExtension = installedExtensions.find(
     (x) => x.id === element.uuid
   );
 
   if (installedExtension == null) {
     throw new Error(
-      `Could not find local copy of recipe extension: ${element.uuid}`
+      `Could not find local copy of starter brick: ${element.uuid}`
     );
   }
 
@@ -163,7 +234,7 @@ export function replaceRecipeExtension(
         }
       } else {
         throw new Error(
-          `Element's API Version (${element.apiVersion}) does not match recipe's API Version (${sourceRecipe.apiVersion}) and recipe's API Version cannot be updated`
+          `Element's API Version (${element.apiVersion}) does not match mod's API Version (${sourceRecipe.apiVersion}) and mod's API Version cannot be updated`
         );
       }
     }
@@ -179,9 +250,10 @@ export function replaceRecipeExtension(
     const adapter = ADAPTERS.get(element.type);
     const rawExtension = adapter.selectExtension(element);
     const extensionPointId = element.extensionPoint.metadata.id;
-    const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
+    const hasInnerExtensionPoint =
+      isInnerDefinitionRegistryId(extensionPointId);
 
-    const commonExtensionConfig: Except<ExtensionPointConfig, "id"> = {
+    const commonExtensionConfig: Except<ModComponentDefinition, "id"> = {
       ...pick(rawExtension, [
         "label",
         "config",
@@ -193,10 +265,9 @@ export function replaceRecipeExtension(
     // The `services` field is optional, so only add it to the config if the raw
     // extension has a value. Normalizing here makes testing harder because we
     // then have to account for the normalized value in assertions.
-    if (rawExtension.services) {
-      commonExtensionConfig.services = Object.fromEntries(
-        rawExtension.services.map((x) => [x.outputKey, x.id])
-      );
+    if (rawExtension.integrationDependencies) {
+      commonExtensionConfig.services =
+        selectExtensionPointIntegrations(rawExtension);
     }
 
     if (hasInnerExtensionPoint) {
@@ -264,32 +335,30 @@ export function replaceRecipeExtension(
 }
 
 function selectExtensionPointConfig(
-  extension: IExtension
-): ExtensionPointConfig {
-  const extensionPoint: ExtensionPointConfig = {
+  extension: ModComponentBase
+): ModComponentDefinition {
+  const extensionPoint: ModComponentDefinition = {
     ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
     id: extension.extensionPointId,
   };
 
   // To make round-trip testing easier, don't add a `services` property if it didn't already exist
-  if (extension.services != null) {
-    extensionPoint.services = Object.fromEntries(
-      extension.services.map((x) => [x.outputKey, x.id])
-    );
+  if (extension.integrationDependencies != null) {
+    extensionPoint.services = selectExtensionPointIntegrations(extension);
   }
 
   return extensionPoint;
 }
 
 type RecipeParts = {
-  sourceRecipe?: RecipeDefinition;
-  cleanRecipeExtensions: UnresolvedExtension[];
-  dirtyRecipeElements: FormState[];
-  options?: OptionsDefinition;
-  metadata?: RecipeMetadataFormState;
+  sourceRecipe?: ModDefinition;
+  cleanRecipeExtensions: UnresolvedModComponent[];
+  dirtyRecipeElements: ModComponentFormState[];
+  options?: ModOptionsDefinition;
+  metadata?: ModMetadataFormState;
 };
 
-const emptyRecipe: UnsavedRecipeDefinition = {
+const emptyRecipe: UnsavedModDefinition = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   kind: "recipe",
   metadata: {
@@ -322,10 +391,10 @@ export function buildRecipe({
   dirtyRecipeElements,
   options,
   metadata,
-}: RecipeParts): UnsavedRecipeDefinition {
+}: RecipeParts): UnsavedModDefinition {
   // If there's no source recipe, then we're creating a new one, so we
   // start with an empty recipe definition that will be filled in
-  const recipe: UnsavedRecipeDefinition = sourceRecipe ?? emptyRecipe;
+  const recipe: UnsavedModDefinition = sourceRecipe ?? emptyRecipe;
 
   return produce(recipe, (draft) => {
     // Options dirty state is only populated if a change is made
@@ -347,22 +416,22 @@ export function buildRecipe({
 
     if (badApiVersion) {
       throw new Error(
-        `Blueprint extensions have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All extensions in a blueprint must have the same API Version.`
+        `Mod bricks have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All bricks in a mod must have the same API Version.`
       );
     }
 
     if (itemsApiVersion !== recipe.apiVersion) {
       throw new Error(
-        `Blueprint has API Version ${recipe.apiVersion}, but it's extensions have version ${itemsApiVersion}. Please use the Workshop to edit this blueprint.`
+        `Mod uses API Version ${recipe.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`
       );
     }
 
-    const dirtyRecipeExtensions: IExtension[] = dirtyRecipeElements.map(
+    const dirtyRecipeExtensions: ModComponentBase[] = dirtyRecipeElements.map(
       (element) => {
         const adapter = ADAPTERS.get(element.type);
         const extension = adapter.selectExtension(element);
 
-        if (isInnerExtensionPoint(extension.extensionPointId)) {
+        if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
           extension.definitions = {
@@ -392,14 +461,14 @@ export function buildRecipe({
 
 type BuildExtensionPointsResult = {
   innerDefinitions: InnerDefinitions;
-  extensionPoints: ExtensionPointConfig[];
+  extensionPoints: ModComponentDefinition[];
 };
 
 function buildExtensionPoints(
-  extensions: IExtension[]
+  extensions: ModComponentBase[]
 ): BuildExtensionPointsResult {
   const innerDefinitions: InnerDefinitions = {};
-  const extensionPoints: ExtensionPointConfig[] = [];
+  const extensionPoints: ModComponentDefinition[] = [];
 
   for (const extension of extensions) {
     // When an extensionPointId is an @inner/* style reference, or if the
@@ -417,7 +486,7 @@ function buildExtensionPoints(
       let isDefinitionAlreadyAdded = false;
       let needsFreshExtensionPointId = false;
 
-      if (isInnerExtensionPoint(extensionPointId)) {
+      if (isInnerDefinitionRegistryId(extensionPointId)) {
         // Always replace inner ids
         needsFreshExtensionPointId = true;
 

@@ -16,33 +16,32 @@
  */
 
 import {
-  type IExtensionPoint,
-  type IReader,
-  type ReaderOutput,
-  type ReaderRoot,
-  type UUID,
-} from "@/core";
-import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
-import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
+  clearEditorExtension,
+  runEditorExtension,
+} from "@/contentScript/lifecycle";
+import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import Overlay from "@/vendors/Overlay";
-import { resolveDefinitions } from "@/registry/internal";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
-import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
-import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
-import { $safeFind } from "@/helpers";
-import { type TriggerDefinition } from "@/extensionPoints/triggerExtension";
-import selection from "@/utils/selectionController";
-import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
+import { type TriggerDefinition } from "@/starterBricks/triggerExtension";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import {
   activateExtensionPanel,
   ensureSidebar,
 } from "@/contentScript/sidebarController";
-import { type TourDefinition } from "@/extensionPoints/tourExtension";
+import { type TourDefinition } from "@/starterBricks/tourExtension";
+import { type JsonObject } from "type-fest";
+import { type SelectorRoot } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { $safeFind } from "@/utils/domUtils";
 
 let _overlay: Overlay | null = null;
-const _temporaryExtensions = new Map<string, IExtensionPoint>();
 
+/**
+ * A version of `clearEditorExtension` that takes an object instead of a positional UUID argument.
+ * @param uuid the uuid of the extension, or null to clear all page editor extensions
+ * @see clearEditorExtension
+ */
 export async function clearDynamicElements({
   uuid,
 }: {
@@ -50,58 +49,17 @@ export async function clearDynamicElements({
 }): Promise<void> {
   expectContext("contentScript");
 
-  clearDynamic(uuid);
-  if (uuid) {
-    _temporaryExtensions.delete(uuid);
-  } else {
-    _temporaryExtensions.clear();
-  }
+  clearEditorExtension(uuid);
 }
-
-/**
- * A "polyfill" of ContextMenuReader that produces the same values as the browser would for the chosen context.
- */
-const contextMenuReaderShim = {
-  isAvailable: async () => true,
-
-  outputSchema: new ContextMenuReader().outputSchema,
-
-  async read() {
-    const { activeElement } = document;
-
-    const linkProps =
-      activeElement?.tagName === "A"
-        ? {
-            linkText: activeElement.textContent,
-            linkUrl: activeElement.getAttribute("href"),
-          }
-        : { linkText: null, linkUrl: null };
-
-    // XXX: do we need to support SVG here too?
-    const mediaType = {
-      IMG: "image",
-      VIDEO: "video",
-      AUDIO: "audio",
-    }[activeElement?.tagName];
-
-    return {
-      mediaType,
-      selectionText: selection.get(),
-      srcUrl: activeElement?.getAttribute("src"),
-      documentUrl: document.location.href,
-      ...linkProps,
-    };
-  },
-};
 
 export async function runExtensionPointReader(
   { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
   rootSelector: string | undefined
-): Promise<ReaderOutput> {
+): Promise<JsonObject> {
   expectContext("contentScript");
 
   const { activeElement } = document;
-  let root: ReaderRoot = null;
+  let root: SelectorRoot = null;
 
   // Handle element-based reader context for triggers
   if (rootSelector) {
@@ -129,18 +87,9 @@ export async function runExtensionPointReader(
     }
   }
 
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(extensionPointConfig);
 
-  // HACK: same as ContextMenuExtensionPoint, but with the shim reader based on the focused element/selection
-  if (extensionPoint instanceof ContextMenuExtensionPoint) {
-    extensionPoint.defaultReader = async () =>
-      new ArrayCompositeReader([
-        await extensionPoint.getBaseReader(),
-        contextMenuReaderShim as unknown as IReader,
-      ]);
-  }
-
-  const reader = await extensionPoint.defaultReader();
+  const reader = await starterBrick.previewReader();
 
   // FIXME: this will return an incorrect value in the following scenario(s):
   //  - A menuItem uses a readerSelector (which is OK, because that param is not exposed in the Page Editor)
@@ -168,23 +117,21 @@ export async function updateDynamicElement({
     tourDefinition.autoRunSchedule = "never";
   }
 
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
-
-  _temporaryExtensions.set(extensionConfig.id, extensionPoint);
+  const starterBrick = starterBrickFactory(extensionPointConfig);
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated dynamic element
   // will automatically replace the old panel because the panels are keyed by extension id
-  if (extensionPoint.kind !== "actionPanel") {
-    clearDynamic(extensionConfig.id, { clearTrace: false });
+  if (starterBrick.kind !== "actionPanel") {
+    clearEditorExtension(extensionConfig.id, { clearTrace: false });
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
-  const resolved = await resolveDefinitions(extensionConfig);
+  const resolved = await resolveExtensionInnerDefinitions(extensionConfig);
 
-  extensionPoint.addExtension(resolved);
-  await runDynamic(extensionConfig.id, extensionPoint);
+  starterBrick.registerModComponent(resolved);
+  await runEditorExtension(extensionConfig.id, starterBrick);
 
-  if (extensionPoint.kind === "actionPanel") {
+  if (starterBrick.kind === "actionPanel") {
     await ensureSidebar();
     await activateExtensionPanel(extensionConfig.id);
   }

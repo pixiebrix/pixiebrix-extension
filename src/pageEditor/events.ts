@@ -16,12 +16,12 @@
  */
 
 import { type WebNavigation } from "webextension-polyfill";
-import { SimpleEvent } from "@/hooks/events";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 
-export const navigationEvent = new SimpleEvent<NavigationDetails>();
+export const navigationEvent = new SimpleEventTarget<NavigationDetails>();
 
 export function updatePageEditor() {
-  navigationEvent.emit(chrome.devtools.inspectedWindow.tabId);
+  navigationEvent.emit();
 }

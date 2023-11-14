@@ -3,7 +3,7 @@
   "$id": "https://app.pixiebrix.com/schemas/recipe#",
   "type": "object",
   "title": "PixieBrix Recipe",
-  "description": "A PixieBrix blueprint for one or more installed bricks",
+  "description": "A PixieBrix mod containing one or more installed bricks",
   "properties": {
     "apiVersion": {
       "type": "string",
@@ -46,10 +46,19 @@
             "description": "The id of the extension point, or an inner definition key"
           },
           "services": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "https://app.pixiebrix.com/schemas/ref#/service"
-            }
+            "anyOf": [
+              {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "description": "JSON schema defining the mod integrations; should use 'properties' and 'required' keywords, with outputKey property names and $ref values pointing to the services."
+              },
+              {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "https://app.pixiebrix.com/schemas/ref#/service"
+                },
+                "description": "Record with outputKey property names and service registryId values"
+              }
+            ]
           }
         },
         "label": {

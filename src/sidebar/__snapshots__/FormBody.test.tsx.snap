@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormBody renders successfully 1`] = `
+<DocumentFragment>
+  <iframe
+    height="100%"
+    src="https://www.testurl.com/"
+    title="00000001-0000-4000-A000-000000000000"
+    width="100%"
+  />
+</DocumentFragment>
+`;

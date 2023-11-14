@@ -19,7 +19,7 @@ import React, { Suspense, lazy } from "react";
 import { type IconOption } from "@/icons/types";
 import { useField } from "formik";
 import { type CustomFieldWidget } from "@/components/form/FieldTemplate";
-import { type IconLibrary } from "@/core";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const IconSelector = lazy(
   async () =>
@@ -36,26 +36,30 @@ type IconValue = {
 };
 
 const IconWidget: CustomFieldWidget = (props) => {
-  const [field, meta, helpers] = useField<IconValue>(props);
+  const [field, meta, helpers] = useField<IconValue | null>(props);
 
-  const handleSelect = (option: IconOption | null) => {
+  const handleSelect = async (option: IconOption | null) => {
     if (option) {
       const { value } = option;
-      helpers.setValue({
+      await helpers.setValue({
         id: value.id,
         library: value.library,
         size: field.value?.size ?? 16,
       });
     } else {
-      helpers.setValue(null);
+      await helpers.setValue(null);
     }
 
-    helpers.setTouched(true);
+    await helpers.setTouched(true);
   };
 
   return (
     <Suspense fallback={<div>Loading icons...</div>}>
-      <IconSelector value={meta.value} onChange={handleSelect} />
+      <IconSelector
+        value={meta.value}
+        onChange={handleSelect}
+        disabled={props.disabled}
+      />
     </Suspense>
   );
 };

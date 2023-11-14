@@ -16,14 +16,11 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { getRollbar } from "@/telemetry/initRollbar";
-import { type MessageContext, type SerializedError, type UUID } from "@/core";
 import { type Except, type JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
-import { type DBSchema, openDB } from "idb/with-async-ittr";
+import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
-import { type ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
@@ -38,10 +35,27 @@ import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type MessengerMeta } from "webext-messenger";
+import { type SerializedError } from "@/types/messengerTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type UUID } from "@/types/stringTypes";
+import { deleteDatabase } from "@/utils/idbUtils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { StorageItem } from "webext-storage";
+import { flagOn } from "@/auth/authUtils";
 
-const STORAGE_KEY = "LOG";
+const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
 const DB_VERSION_NUMBER = 3;
+/**
+ * Maximum number of most recent logs to keep in the database. A low-enough number that performance should not be
+ * impacted due to the number of entries.
+ */
+const MAX_LOG_RECORDS = 1250;
+
+/**
+ * Amount to clear old logs, as a ratio of the maximum number of logs.
+ */
+const LOG_STORAGE_RATIO = 0.75;
 
 export type MessageLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -97,8 +111,12 @@ const indexKeys: IndexKey[] = [
   "authId",
 ];
 
-async function getDB() {
-  return openDB<LogDB>(STORAGE_KEY, DB_VERSION_NUMBER, {
+async function openLoggingDB() {
+  // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
+  // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
+  let database: IDBPDatabase<LogDB> | null = null;
+
+  database = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
     upgrade(db) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -123,12 +141,36 @@ async function getDB() {
         });
       }
     },
+    blocking() {
+      // Don't block closing/upgrading the database
+      console.debug("Closing log database due to upgrade/delete");
+      database?.close();
+      database = null;
+    },
+    terminated() {
+      console.debug("Log database connection was unexpectedly terminated");
+      database = null;
+    },
   });
+
+  database.addEventListener("close", () => {
+    database = null;
+  });
+
+  return database;
 }
 
+/**
+ * Add a log entry to the database.
+ * @param entry the log entry to add
+ */
 export async function appendEntry(entry: LogEntry): Promise<void> {
-  const db = await getDB();
-  await db.add(ENTRY_OBJECT_STORE, entry);
+  const db = await openLoggingDB();
+  try {
+    await db.add(ENTRY_OBJECT_STORE, entry);
+  } finally {
+    db.close();
+  }
 }
 
 function makeMatchEntry(
@@ -143,63 +185,108 @@ function makeMatchEntry(
     });
 }
 
+/**
+ * Returns the number of log entries in the database.
+ */
+export async function count(): Promise<number> {
+  const db = await openLoggingDB();
+  try {
+    return await db.count(ENTRY_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
+}
+
+/**
+ * Deletes and recreates the logging database.
+ */
+export async function recreateDB(): Promise<void> {
+  await deleteDatabase(DATABASE_NAME);
+
+  // Open the database to recreate it
+  const db = await openLoggingDB();
+  db.close();
+}
+
+/**
+ * Clears all log entries from the database.
+ */
 export async function clearLogs(): Promise<void> {
-  const db = await getDB();
-
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-  await tx.store.clear();
+  const db = await openLoggingDB();
+  try {
+    await db.clear(ENTRY_OBJECT_STORE);
+  } finally {
+    db.close();
+  }
 }
 
+/**
+ * Clear logs matching a given context, for example a specific mod.
+ * @param context the query context to clear.
+ */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  const db = await getDB();
+  const db = await openLoggingDB();
 
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  try {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
-  if (isEmpty(context)) {
-    await tx.store.clear();
-    return;
-  }
-
-  const match = makeMatchEntry(context);
-  for await (const cursor of tx.store) {
-    if (match(cursor.value)) {
-      await cursor.delete();
+    if (isEmpty(context)) {
+      await tx.store.clear();
+      return;
     }
+
+    const match = makeMatchEntry(context);
+    for await (const cursor of tx.store) {
+      if (match(cursor.value)) {
+        await cursor.delete();
+      }
+    }
+  } finally {
+    db.close();
   }
 }
 
-export async function getLog(
+/**
+ * Returns log entries matching the given context.
+ * @param context the query log entry context
+ */
+export async function getLogEntries(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
-  const db = await getDB();
-  const objectStore = db
-    .transaction(ENTRY_OBJECT_STORE, "readonly")
-    .objectStore(ENTRY_OBJECT_STORE);
+  const db = await openLoggingDB();
 
-  let indexKey: IndexKey;
-  for (const key of indexKeys) {
-    // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-    if (context[key] != null) {
-      indexKey = key;
-      break;
+  try {
+    const objectStore = db
+      .transaction(ENTRY_OBJECT_STORE, "readonly")
+      .objectStore(ENTRY_OBJECT_STORE);
+
+    let indexKey: IndexKey;
+    for (const key of indexKeys) {
+      // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+      if (context[key] != null) {
+        indexKey = key;
+        break;
+      }
     }
+
+    if (!indexKey) {
+      throw new Error(
+        "At least one of the known index keys must be set in the context to get logs"
+      );
+    }
+
+    // Use the index to do an initial filter on IDB, and then makeMatchEntry to apply the full filter in JS.
+    // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+    const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
+
+    const match = makeMatchEntry(context);
+    const matches = entries.filter((entry) => match(entry));
+
+    // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+    return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
+  } finally {
+    db.close();
   }
-
-  if (!indexKey) {
-    throw new Error(
-      "At least one of the known index keys must be set in the context to get logs"
-    );
-  }
-
-  // We use the index to do an initial filter on the IndexedDB level, and then makeMatchEntry to apply the full filter in JS.
-  // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-  const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
-
-  const match = makeMatchEntry(context);
-  const matches = entries.filter((entry) => match(entry));
-
-  // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-  return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
 /**
@@ -232,7 +319,11 @@ const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
 const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number = null;
 
-async function reportToRollbar(
+/**
+ * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
+ * It's only exported for testing.
+ */
+export async function reportToRollbar(
   // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
   // (It treats POJO as the custom data)
   // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
@@ -241,7 +332,10 @@ async function reportToRollbar(
   message: string
 ): Promise<void> {
   // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
-  if (hasSpecificErrorCause(error, BusinessError)) {
+  if (
+    hasSpecificErrorCause(error, BusinessError) ||
+    (await flagOn("rollbar-disable-report"))
+  ) {
     return;
   }
 
@@ -274,6 +368,11 @@ async function reportToRollbar(
   // to determine log level also handle serialized/deserialized errors.
   // See https://github.com/sindresorhus/serialize-error/issues/48
 
+  const { getRollbar } = await import(
+    /* webpackChunkName: "rollbar" */
+    "@/telemetry/initRollbar"
+  );
+
   const rollbar = await getRollbar();
   const details = await selectExtraContext(error);
 
@@ -286,6 +385,8 @@ export async function recordError(
   serializedError: SerializedError,
   context: MessageContext,
   data?: JsonObject
+  // NOTE: If this function signature is changed, also update it in sidebar/messenger/registration.ts
+  // If those types are removed from that file, then also remove this comment.
 ): Promise<void> {
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
   expectContext(
@@ -340,6 +441,11 @@ export async function recordWarning(
     return;
   }
 
+  const { getRollbar } = await import(
+    /* webpackChunkName: "rollbar" */
+    "@/telemetry/initRollbar"
+  );
+
   const rollbar = await getRollbar();
   rollbar.warning(message, data);
 }
@@ -364,27 +470,83 @@ export type LoggingConfig = {
   logValues: boolean;
 };
 
-const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
-
-export async function getLoggingConfig(): Promise<LoggingConfig> {
-  return readStorage(LOG_CONFIG_STORAGE_KEY, {
+export const loggingConfig = new StorageItem<LoggingConfig>("LOG_OPTIONS", {
+  defaultValue: {
     logValues: false,
-  });
-}
+  },
+});
 
-export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
-  await setStorage(LOG_CONFIG_STORAGE_KEY, config);
-}
-
+/**
+ * Clear all debug and trace level logs for the given extension.
+ */
 export async function clearExtensionDebugLogs(
   extensionId: UUID
 ): Promise<void> {
-  const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-  const index = tx.store.index("extensionId");
-  for await (const cursor of index.iterate(extensionId)) {
-    if (cursor.value.level === "debug") {
-      await cursor.delete();
+  const db = await openLoggingDB();
+
+  try {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const index = tx.store.index("extensionId");
+    for await (const cursor of index.iterate(extensionId)) {
+      if (cursor.value.level === "debug" || cursor.value.level === "trace") {
+        await cursor.delete();
+      }
+    }
+  } finally {
+    db.close();
+  }
+}
+
+/**
+ * Free up space in the log database.
+ */
+async function _sweepLogs(): Promise<void> {
+  const numRecords = await count();
+
+  if (numRecords > MAX_LOG_RECORDS) {
+    const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+
+    console.debug("Sweeping logs", {
+      numRecords,
+      numToDelete,
+    });
+
+    const db = await openLoggingDB();
+
+    try {
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+
+      let deletedCount = 0;
+
+      // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+      // This might mostly "just work" if the cursor happens to iterate in insertion order
+      for await (const cursor of tx.store) {
+        await cursor.delete();
+        deletedCount++;
+
+        if (deletedCount > numToDelete) {
+          return;
+        }
+      }
+    } finally {
+      db.close();
     }
   }
+}
+
+/**
+ * Free up space in the log database.
+ */
+export const sweepLogs = memoizeUntilSettled(_sweepLogs);
+
+export function initLogSweep(): void {
+  expectContext(
+    "background",
+    "Log sweep should only be initialized in the background page"
+  );
+
+  // Sweep after initial extension startup
+  setTimeout(sweepLogs, 5000);
+  // Sweep logs every 5 minutes
+  setInterval(sweepLogs, 300_000);
 }

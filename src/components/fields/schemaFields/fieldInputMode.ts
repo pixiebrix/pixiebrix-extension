@@ -15,11 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types";
-import { isTemplateExpression, isVarExpression } from "@/runtime/mapArgs";
-import { type Schema } from "@/core";
-import { isEmpty } from "lodash";
-import { isDatabaseField, isIconField } from "./fieldTypeCheckers";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { compact, isEmpty, uniq } from "lodash";
+import {
+  isDatabaseField,
+  isGoogleSheetIdField,
+  isGoogleSheetIdValue,
+  isIconField,
+  isSimpleServiceField,
+  isIntegrationDependencyValueFormat,
+  isLabelledEnumField,
+  isSelectField,
+} from "./fieldTypeCheckers";
+import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 
 export type FieldInputMode =
   | "string"
@@ -29,41 +38,85 @@ export type FieldInputMode =
   | "array"
   | "object"
   | "select"
-  | "database"
-  | "icon"
   | "omit"; // An input option to remove a property
+
+const DEFAULT_OPTIONS = {
+  safeDefault: true,
+};
 
 /**
  * Try to infer the field toggle input mode from the current value of the field.
  * @param fieldConfig the current state/configuration of the field
  * @param fieldName the name of the field in the configuration
  * @param fieldSchema the JSON Schema for the field
+ * @param options extra options for the function
+ * @param options.safeDefault if true, return "string" instead of undefined when nothing matches; defaults to true
  */
 export function inferInputMode(
   fieldConfig: UnknownObject,
   fieldName: string,
-  fieldSchema: Schema
+  fieldSchema: Schema,
+  options: {
+    safeDefault?: boolean;
+    isRequired?: boolean;
+  } = DEFAULT_OPTIONS
 ): FieldInputMode {
-  const hasField = Object.hasOwn(fieldConfig, fieldName);
-  if (!hasField) {
-    return "omit";
-  }
+  const { safeDefault = true, isRequired } = options;
 
   // eslint-disable-next-line security/detect-object-injection -- config field names
   const value = fieldConfig[fieldName];
+  if (value === undefined && !isRequired) {
+    return "omit";
+  }
+
+  // We need to check sub-schemas first so things like services don't end up as var
+  // Labelled enum fields (using oneOf and const) are handled by isSelectField check
+  const subSchemas = isLabelledEnumField(fieldSchema)
+    ? []
+    : uniq([
+        ...(fieldSchema.anyOf ?? []),
+        ...(fieldSchema.oneOf ?? []),
+        ...(fieldSchema.allOf ?? []),
+      ]);
+
+  if (!isEmpty(subSchemas)) {
+    const required = fieldSchema.required ?? [];
+    const inputModes = compact(
+      subSchemas
+        .filter((x) => typeof x !== "boolean")
+        .map((subSchema) =>
+          inferInputMode(fieldConfig, fieldName, subSchema as Schema, {
+            safeDefault: false,
+            isRequired: required.includes(fieldName),
+          })
+        )
+    );
+    if (!isEmpty(inputModes)) {
+      return inputModes[0];
+    }
+  }
 
   if (isDatabaseField(fieldSchema)) {
-    return isVarExpression(value) ? "var" : "database";
+    return isVarExpression(value) ? "var" : "select";
   }
 
   if (isIconField(fieldSchema)) {
-    return isVarExpression(value) ? "var" : "icon";
+    return isVarExpression(value) ? "var" : "select";
   }
 
-  const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
+  if (
+    isSimpleServiceField(fieldSchema) &&
+    isIntegrationDependencyValueFormat(value)
+  ) {
+    return "select";
+  }
+
+  if (isGoogleSheetIdField(fieldSchema) && isGoogleSheetIdValue(value)) {
+    return "string";
+  }
 
   if (value == null) {
-    return hasEnum ? "select" : "string";
+    return isSelectField(fieldSchema) ? "select" : "string";
   }
 
   if (isTemplateExpression(value)) {
@@ -81,7 +134,7 @@ export function inferInputMode(
 
   const typeOf: string = typeof value;
   if (typeOf === "string") {
-    return hasEnum ? "select" : "string";
+    return isSelectField(fieldSchema) ? "select" : "string";
   }
 
   // TODO: Should handle number the same way as string when implementing https://github.com/pixiebrix/pixiebrix-extension/issues/2341
@@ -89,5 +142,9 @@ export function inferInputMode(
     return typeOf;
   }
 
-  return "string";
+  if (safeDefault) {
+    return "string";
+  }
+
+  return undefined;
 }

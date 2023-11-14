@@ -15,13 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer, type UnknownObject } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type Schema,
-  type SchemaProperties,
-} from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import {
@@ -35,12 +28,16 @@ import {
   type EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import {
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_SERVICE_ID,
-} from "@/services/constants";
 import { cloneDeep } from "lodash";
 import { getCachedAuthData, getUserData } from "@/background/messenger/api";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"
@@ -48,11 +45,12 @@ export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
 
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {
-    anyOf: [CONTROL_ROOM_SERVICE_ID, CONTROL_ROOM_OAUTH_SERVICE_ID].map(
-      (id) => ({
-        $ref: `https://app.pixiebrix.com/schemas/services/${id}`,
-      })
-    ),
+    anyOf: [
+      CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+    ].map((id) => ({
+      $ref: `https://app.pixiebrix.com/schemas/services/${id}`,
+    })),
   },
   workspaceType: {
     type: "string",
@@ -117,7 +115,7 @@ const ENTERPRISE_EDITION_PUBLIC_PROPERTIES: SchemaProperties = {
   },
 };
 
-export class RunBot extends Transformer {
+export class RunBot extends TransformerABC {
   constructor() {
     super(
       AUTOMATION_ANYWHERE_RUN_BOT_ID,
@@ -163,8 +161,8 @@ export class RunBot extends Transformer {
   };
 
   async transform(
-    args: BlockArg<BotArgs>,
-    { logger }: BlockOptions
+    args: BrickArgs<BotArgs>,
+    { logger }: BrickOptions
   ): Promise<UnknownObject> {
     const {
       awaitResult,
@@ -202,7 +200,7 @@ export class RunBot extends Transformer {
     let runAsUserIds: number[] = enterpriseBotArgs.runAsUserIds ?? [];
     if (
       enterpriseBotArgs.isAttended &&
-      service.serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID
+      service.serviceId === CONTROL_ROOM_OAUTH_INTEGRATION_ID
     ) {
       // Attended mode uses the authenticated user id as a runAsUserId
 
@@ -224,7 +222,7 @@ export class RunBot extends Transformer {
       enterpriseBotArgs.poolIds = [];
     } else if (
       enterpriseBotArgs.isAttended &&
-      service.serviceId === CONTROL_ROOM_SERVICE_ID
+      service.serviceId === CONTROL_ROOM_TOKEN_INTEGRATION_ID
     ) {
       // Attended mode uses the authenticated user id as a runAsUserId
 

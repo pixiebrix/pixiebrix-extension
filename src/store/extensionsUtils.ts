@@ -15,59 +15,104 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type IExtension,
-  type RegistryId,
-  type UserOptions,
-  type UUID,
-} from "@/core";
-import { compact, groupBy, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { flatten, groupBy, uniqBy } from "lodash";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 /**
  * Infer options from existing extension-like instances for reinstalling a recipe
  * @see installRecipe
  */
 export function inferRecipeOptions(
-  extensions: Array<Pick<IExtension, "optionsArgs">>
-): UserOptions {
+  extensions: Array<Pick<ModComponentBase, "optionsArgs">>
+): OptionsArgs {
   // For a given recipe, all the extensions receive the same options during the install process (even if they don't
   // use the options), so we can just take the optionsArgs for any of the extensions
   return extensions[0]?.optionsArgs ?? {};
 }
 
 /**
- * Infer service configurations from existing extension-like instances for reinstalling a recipe
- * @see installRecipe
+ * Infer configured integration dependencies from existing mod-component-like
+ * instances for reinstalling a mod. Filters out any optional integrations that
+ * don't have a config set.
+ * @param modComponents mod components from which to extract integration dependencies
+ * @param optional don't check integration dependencies for valid configs
+ * @returns IntegrationDependency[] the configured integration dependencies for the mod components
+ * @see installMod
  */
-export function inferRecipeAuths(
-  extensions: Array<Pick<IExtension, "services">>,
+export function inferConfiguredModIntegrations(
+  modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
   { optional = false }: { optional?: boolean } = {}
-): Record<RegistryId, UUID> {
-  // The extensions for the recipe will only have the services that are declared on each extension. So we have to take
-  // the union of the service credentials. There's currently no way in the UX that the service auths could become
-  // inconsistent for a given service key, but guard against that case anyway.
+): IntegrationDependency[] {
+  // The mod components will only have the integration dependencies that are
+  // declared on each extension. So we have to take the union of the integration
+  // configs. There's currently no way in the UX that the integration configurations
+  // could become inconsistent for a given integration key, but guard against
+  // that case anyway.
 
-  const serviceAuths = groupBy(
-    extensions.flatMap((x) => x.services ?? []),
-    (x) => x.id
+  const dependenciesByIntegrationId = groupBy(
+    modComponents.flatMap(
+      ({ integrationDependencies }) => integrationDependencies ?? []
+    ),
+    ({ integrationId }) => integrationId
   );
-  const result: Record<RegistryId, UUID> = {};
-  for (const [id, auths] of Object.entries(serviceAuths)) {
-    const configs = uniq(compact(auths.map(({ config }) => config)));
-    if (id !== PIXIEBRIX_SERVICE_ID && configs.length === 0 && !optional) {
-      // PIXIEBRIX_SERVICE_ID gets the implicit configuration
-      throw new Error(`Service ${id} is not configured`);
+  const result: IntegrationDependency[] = [];
+  for (const [id, dependencies] of Object.entries(
+    dependenciesByIntegrationId
+  )) {
+    const configuredDependencies = uniqBy(
+      dependencies.filter(
+        ({ integrationId, configId }) =>
+          configId != null || integrationId === PIXIEBRIX_INTEGRATION_ID
+      ),
+      ({ configId }) => configId
+    );
+
+    // PIXIEBRIX_INTEGRATION_ID will never have empty dependencies here, they aren't filtered out above
+    if (configuredDependencies.length === 0) {
+      if (optional) {
+        continue;
+      } else {
+        throw new Error(`Integration ${id} is not configured`);
+      }
     }
 
-    // If optional is passed in, we know that the user is being given an opportunity to switch which config is applied,
-    // so the user can always switch to a different configuration if they want.
-    if (configs.length > 1 && !optional) {
-      throw new Error(`Service ${id} has multiple configurations`);
+    // If optional is passed in, we know that the user is being given an
+    // opportunity to switch which configuration is applied, so the user can
+    // always switch to a different config if they want.
+    if (
+      id !== PIXIEBRIX_INTEGRATION_ID &&
+      configuredDependencies.length > 1 &&
+      !optional
+    ) {
+      throw new Error(`Integration ${id} has multiple configurations`);
     }
 
-    result[id as RegistryId] = configs[0];
+    result.push(configuredDependencies[0]);
   }
 
   return result;
+}
+
+/**
+ * Infer all unique integration dependencies for a recipe
+ */
+export function inferRecipeDependencies(
+  installedRecipeExtensions: ModComponentBase[],
+  dirtyRecipeElements: ModComponentFormState[]
+): IntegrationDependency[] {
+  const withIntegrations: Array<{
+    integrationDependencies?: IntegrationDependency[];
+  }> = [...installedRecipeExtensions, ...dirtyRecipeElements];
+  return uniqBy(
+    flatten(
+      withIntegrations.map(
+        ({ integrationDependencies }) => integrationDependencies ?? []
+      )
+    ),
+    JSON.stringify
+  );
 }

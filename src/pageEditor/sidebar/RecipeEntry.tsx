@@ -16,7 +16,7 @@
  */
 
 import React, { type PropsWithChildren } from "react";
-import { type SemVerString } from "@/core";
+import { type SemVerString } from "@/types/registryTypes";
 import styles from "./Entry.module.scss";
 import {
   RecipeHasUpdateIcon,
@@ -38,12 +38,12 @@ import {
   selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 
 export type RecipeEntryProps = PropsWithChildren<{
-  recipe: RecipeDefinition | undefined;
+  recipe: ModDefinition | undefined;
   isActive?: boolean;
   installedVersion: SemVerString;
   onSave: () => Promise<void>;
@@ -115,7 +115,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         {hasUpdate && (
           <span className={cx(styles.icon, "text-warning")}>
             <RecipeHasUpdateIcon
-              title={`You are editing version ${installedVersion} of this blueprint, the latest version is ${latestRecipeVersion}.`}
+              title={`You are editing version ${installedVersion} of this mod, the latest version is ${latestRecipeVersion}.`}
             />
           </span>
         )}

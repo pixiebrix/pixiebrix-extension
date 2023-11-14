@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import styles from "./Icon.module.scss";
-import { useAsyncEffect } from "use-async-effect";
-import { type IconLibrary } from "@/core";
+import useAsyncState from "@/hooks/useAsyncState";
 import getSvgIcon from "@/icons/getSvgIcon";
 import cx from "classnames";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const Icon: React.FunctionComponent<{
   icon?: string;
@@ -28,18 +28,9 @@ const Icon: React.FunctionComponent<{
   size?: number;
   className?: string;
 }> = ({ icon, library, size = 16, className }) => {
-  const [svg, setSvg] = useState("");
-
-  useAsyncEffect(
-    async (isMounted) => {
-      const svg = await getSvgIcon({ id: icon, library, size });
-      if (!isMounted()) {
-        return;
-      }
-
-      setSvg(svg);
-    },
-    [icon, library, setSvg]
+  const { data: svg = "" } = useAsyncState(
+    async () => getSvgIcon({ id: icon, library, size }),
+    [icon, library]
   );
 
   return (

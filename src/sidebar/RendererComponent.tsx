@@ -1,8 +1,9 @@
 import React, { useMemo } from "react";
-import { type RegistryId, type RendererOutput } from "@/core";
-import { type UnknownObject } from "@/types";
-import { type PanelRunMeta } from "@/sidebar/types";
-import { type SubmitPanelAction } from "@/blocks/errors";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type PanelRunMeta } from "@/types/sidebarTypes";
+import { type SubmitPanelAction } from "@/bricks/errors";
+import { type RegistryId } from "@/types/registryTypes";
+import { type RendererOutput } from "@/types/runtimeTypes";
 
 /**
  * React component to display the output of a renderer brick
@@ -19,7 +20,7 @@ const RendererComponent: React.FunctionComponent<{
       // This is safe because if body is a string it's a SafeHTML value
       return (
         <div
-          style={{ height: "100%" }}
+          style={{ height: "100%", overflow: "hidden" }}
           dangerouslySetInnerHTML={{ __html: body }}
         />
       );

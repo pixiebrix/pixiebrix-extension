@@ -17,15 +17,17 @@
 
 /* eslint-disable unicorn/prefer-module -- There's no module equivalent to require.context */
 
-import { type IconLibrary } from "@/core";
+import { type IconLibrary } from "@/types/iconTypes";
 
 type RequireContext = __WebpackModuleApi.RequireContext;
 
 function getIconMap(resolve: RequireContext): Map<string, string> {
   const icons = new Map<string, string>();
   for (const url of resolve.keys()) {
-    const iconName = url.split("/").pop().replace(".svg", "");
-    icons.set(iconName, resolve(url));
+    // `.split()` will always create an array with at least one item
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const iconName = url.split("/").pop()!.replace(".svg", "");
+    icons.set(iconName, String(resolve(url)));
   }
 
   return icons;

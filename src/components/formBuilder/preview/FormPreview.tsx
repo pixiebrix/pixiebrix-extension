@@ -36,11 +36,13 @@ import { unwrapTemplateExpressions } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
-import SelectWidgetPreview from "./SelectWidgetPreview";
+import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
-import { type WritableDraft } from "immer/dist/internal";
-import { type Schema } from "@/core";
+import googleSheetSchema from "@schemas/googleSheetId.json";
+import { type Draft } from "immer";
+import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
+import FormPreviewArrayField from "@/components/formBuilder/preview/FormPreviewArrayField";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -82,40 +84,79 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           ).filter(
             (value) =>
               typeof value === "object" && value.$ref === databaseSchema.$id
-          ) as Array<WritableDraft<Schema>>;
+          ) as Array<Draft<Schema>>;
 
           for (const property of databaseProperties) {
             property.type = "string";
 
-            /** Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details */
+            if (property.format === "preview") {
+              // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
+              property.enum = [`[Mod Name] - ${activeField} database`];
+            } else {
+              // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
+              property.enum = ["Select..."];
+            }
+
+            delete property.$ref;
+          }
+
+          const googleSheetProperties = Object.values(
+            draftSchema.properties
+          ).filter(
+            (value) =>
+              typeof value === "object" && value.$ref === googleSheetSchema.$id
+          ) as Array<Draft<Schema>>;
+
+          for (const property of googleSheetProperties) {
+            property.type = "string";
+
+            // Intentionally setting a string value, not an array. @see FormPreviewSchemaField for details
             // @ts-expect-error -- intentionally assigning to a string
-            property.enum = "Select...";
+            property.enum = "Select a sheet...";
             delete property.$ref;
           }
         }
 
-        // RJSF Form throws when Dropdown with labels selected, no options set and default is empty. Let's fix that!
-        // We only interested in select with labels, otherwise we don't need to do anything.
-        // Loop through the uiSchema props, because UI Widget must be set for the Select, then take a look at the oneOf property.
+        // Set default values for multi-select checkboxes and dropdowns
         for (const [key, value] of Object.entries(draftUiSchema)) {
-          const propertySchema = draftSchema.properties[key];
-
-          if (
-            !(UI_WIDGET in value) ||
-            value[UI_WIDGET] !== "select" ||
-            typeof propertySchema !== "object" ||
-            propertySchema.oneOf === undefined
-          ) {
+          // We're only looking for sub-property UiSchemas
+          if (KEYS_OF_UI_SCHEMA.includes(key)) {
             continue;
           }
 
-          if (propertySchema.default == null) {
-            // Setting the default value for preview to hide an empty option
-            propertySchema.default = "";
+          const propertySchema = draftSchema.properties[key];
+
+          if (!(UI_WIDGET in value) || typeof propertySchema !== "object") {
+            continue;
           }
 
-          if (!propertySchema.oneOf?.length) {
-            propertySchema.oneOf = [{ const: "" }];
+          // If the options enum for the checkboxes widget is not an array (i.e. if the enum references a variable),
+          // then set a default value in order to allow the preview to render.
+          if (
+            value[UI_WIDGET] === "checkboxes" &&
+            typeof propertySchema.items === "object" &&
+            !Array.isArray(propertySchema.items)
+          ) {
+            propertySchema.items.enum = Array.isArray(propertySchema.items.enum)
+              ? propertySchema.items.enum
+              : ["Option 1", "Option 2", "Option 3"];
+            continue;
+          }
+
+          // RJSF Form throws when Dropdown with labels selected, no options set and default is empty. Set a default
+          // value to avoid this.
+          if (
+            value[UI_WIDGET] === "select" &&
+            propertySchema.oneOf !== undefined
+          ) {
+            if (propertySchema.default == null) {
+              // Setting the default value for preview to hide an empty option
+              propertySchema.default = "";
+            }
+
+            if (!propertySchema.oneOf?.length) {
+              propertySchema.oneOf = [{ const: "" }];
+            }
           }
         }
       }),
@@ -139,6 +180,13 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     [setActiveField]
   );
 
+  const ArrayField = useCallback(
+    (props: FieldProps) => (
+      <FormPreviewArrayField setActiveField={setActiveField} {...props} />
+    ),
+    [setActiveField]
+  );
+
   if (!previewSchema || !previewUiSchema) {
     return null;
   }
@@ -148,12 +196,14 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     StringField,
     BooleanField,
     DescriptionField,
+    ArrayField,
   };
 
   const widgets = {
     imageCrop: ImageCropWidgetPreview,
-    database: SelectWidgetPreview,
-    SelectWidget: SelectWidgetPreview,
+    database: RjsfSelectWidget,
+    SelectWidget: RjsfSelectWidget,
+    googleSheet: RjsfSelectWidget,
   };
 
   return (

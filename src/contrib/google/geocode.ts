@@ -16,14 +16,12 @@
  */
 
 import { isEmpty } from "lodash";
-import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types";
-import {
-  type BlockArg,
-  type SanitizedServiceConfiguration,
-  type Schema,
-} from "@/core";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 
 interface GeocodedAddress {
   state?: string;
@@ -66,17 +64,20 @@ interface GeocodeData {
 }
 
 async function geocodeAddress(
-  service: SanitizedServiceConfiguration,
+  service: SanitizedIntegrationConfig,
   address: string
 ): Promise<GeocodedAddress> {
   if (isEmpty(address)) {
     return {};
   }
 
-  const { data } = await proxyService<GeocodeData>(service, {
-    url: "https://maps.googleapis.com/maps/api/geocode/json",
-    params: { address },
-  });
+  const { data } = await performConfiguredRequestInBackground<GeocodeData>(
+    service,
+    {
+      url: "https://maps.googleapis.com/maps/api/geocode/json",
+      params: { address },
+    }
+  );
 
   const { results } = data;
 
@@ -100,7 +101,7 @@ async function geocodeAddress(
   };
 }
 
-export class GeocodeTransformer extends Transformer {
+export class GeocodeTransformer extends TransformerABC {
   constructor() {
     super(
       "google/geocode",
@@ -120,7 +121,13 @@ export class GeocodeTransformer extends Transformer {
     },
   });
 
-  async transform({ service, address }: BlockArg): Promise<GeocodedAddress> {
+  async transform({
+    service,
+    address,
+  }: BrickArgs<{
+    address: string;
+    service: SanitizedIntegrationConfig;
+  }>): Promise<GeocodedAddress> {
     return geocodeAddress(service, address);
   }
 }

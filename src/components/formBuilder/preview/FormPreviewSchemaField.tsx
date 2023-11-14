@@ -18,7 +18,7 @@
 import { getDefaultRegistry } from "@rjsf/core";
 import React from "react";
 import { type FormPreviewFieldProps } from "./FormPreviewFieldTemplate";
-import { type SchemaDefinition } from "@/core";
+import { type SchemaDefinition } from "@/types/schemaTypes";
 
 const RjsfSchemaField = getDefaultRegistry().fields.SchemaField;
 
@@ -27,7 +27,6 @@ const RjsfSchemaField = getDefaultRegistry().fields.SchemaField;
  */
 const FormPreviewSchemaField: React.FC<FormPreviewFieldProps> = (props) => {
   let fieldProps: FormPreviewFieldProps;
-
   // The value of oneOf/enum is a string when we render a @var
   // or in some special cases when the dropdown should be disabled (e.g. database selector)
   // In such case use this string value as a single option

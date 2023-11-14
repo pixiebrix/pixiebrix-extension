@@ -16,86 +16,44 @@
  */
 
 import styles from "@/pageEditor/panes/Pane.module.scss";
-
-import {
-  type PanelDefinition,
-  PanelExtensionPoint,
-} from "@/extensionPoints/panelExtension";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
 import React from "react";
-import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
 import Centered from "@/components/Centered";
-import BrickModal from "@/components/brickModalNoTags/BrickModal";
 import { Alert, Button } from "react-bootstrap";
-import config from "@/pageEditor/extensionPoints/panel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationTriangle,
   faMousePointer,
-  faSearch,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import useAddExisting from "@/pageEditor/panes/insert/useAddExisting";
-import useFlags from "@/hooks/useFlags";
-
-type PanelWithConfig = PanelExtensionPoint & {
-  rawConfig: ExtensionPointConfig<PanelDefinition>;
-};
 
 const InsertPanelPane: React.FunctionComponent<{
   cancel: () => void;
-}> = ({ cancel }) => {
-  const panelExtensionPoints = useAvailableExtensionPoints(PanelExtensionPoint);
-  const addExistingPanel = useAddExisting(config, cancel);
+}> = ({ cancel }) => (
+  <Centered isScrollable>
+    <div className={styles.title}>Inserting Panel</div>
 
-  const { flagOn } = useFlags();
+    <div className="text-left">
+      <p>
+        <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on an existing{" "}
+        <code>div</code> or container-like element to insert a panel in that
+        container. You may also search the{" "}
+        <span className="text-info">Marketplace</span> for existing panels.
+      </p>
 
-  return (
-    <Centered isScrollable>
-      <div className={styles.title}>Inserting Panel</div>
-
-      <div className="text-left">
-        <p>
-          <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on an
-          existing <code>div</code> or container-like element to insert a panel
-          in that container. You may also search the{" "}
-          <span className="text-info">Marketplace</span> for existing panels.
-        </p>
-
-        <div>
-          <Alert variant="warning">
-            <FontAwesomeIcon icon={faExclamationTriangle} /> Automatic panel
-            placement is currently in <b>Alpha</b> and typically requires manual
-            configuration/adjustment
-          </Alert>
-        </div>
-      </div>
       <div>
-        {flagOn("page-editor-extension-point-marketplace") && (
-          <BrickModal
-            bricks={panelExtensionPoints ?? []}
-            caption="Select panel foundation"
-            renderButton={(onClick) => (
-              <Button
-                variant="info"
-                onClick={onClick}
-                disabled={!panelExtensionPoints?.length}
-              >
-                <FontAwesomeIcon icon={faSearch} /> Search Marketplace
-              </Button>
-            )}
-            onSelect={async (block) =>
-              addExistingPanel(block as PanelWithConfig)
-            }
-          />
-        )}
-
-        <Button className="ml-2" variant="danger" onClick={cancel}>
-          <FontAwesomeIcon icon={faTimes} /> Cancel
-        </Button>
+        <Alert variant="warning">
+          <FontAwesomeIcon icon={faExclamationTriangle} /> Automatic panel
+          placement is currently in <b>Alpha</b> and typically requires manual
+          configuration/adjustment
+        </Alert>
       </div>
-    </Centered>
-  );
-};
+    </div>
+    <div>
+      <Button className="ml-2" variant="danger" onClick={cancel}>
+        <FontAwesomeIcon icon={faTimes} /> Cancel
+      </Button>
+    </div>
+  </Centered>
+);
 
 export default InsertPanelPane;

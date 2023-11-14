@@ -19,10 +19,11 @@ import type React from "react";
 
 export const theme = {
   background: "rgb(252, 252, 252)",
-  foreground: "rgb(28, 28, 29)",
+  foreground: "#3B2E53",
   shadow: "0px 6px 20px rgba(0, 0, 0, 20%)",
-  a1: "rgba(0, 0, 0, 0.05)",
+  a1: "#F7F7F7",
   a2: "rgba(0, 0, 0, 0.1)",
+  activeIndicator: "#5217C6",
 };
 
 export const searchStyle = {

@@ -55,7 +55,7 @@ const useRequiredAuth = () => {
     error: meError,
     data: me,
     isSuccess: isMeSuccess,
-  } = useGetMeQuery(null, {
+  } = useGetMeQuery(undefined, {
     // Only call /api/me/ if the extension is "linked" is with an Authorization token. If not, the session id will
     // be passed in the header which leads to inconsistent results depending on whether the session is still valid
     skip: !hasToken,

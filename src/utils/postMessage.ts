@@ -30,20 +30,24 @@
  * Relevant discussion: https://github.com/w3c/webextensions/issues/78
  */
 
-import { type SerializedError } from "@/core";
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
+import { type SerializedError } from "@/types/messengerTypes";
+import { assert } from "./typeUtils";
 import { type JsonValue } from "type-fest";
 
 const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
-const LOGGING_ENABLED = process.env.WEBEXT_MESSENGER_LOGGING === "true";
+// TODO: Allow toggling logging. This isn't possible via `getMessengerLogging`/`storage.get`
+// due to the sandbox. This might need to be done via an ENV, partially reverting:
+// https://github.com/pixiebrix/pixiebrix-extension/pull/6546
+const log = console.debug;
 
 export type RequestPacket = {
   type: string;
-  payload: Payload;
+  payload?: Payload;
 };
 
 type ResponsePacket = { response: Payload } | { error: SerializedError };
@@ -54,7 +58,7 @@ export interface PostMessageInfo {
   recipient: Window;
 }
 
-type PostMessageListener = (payload: Payload) => Promise<Payload>;
+type PostMessageListener = (payload?: Payload) => Promise<Payload>;
 
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage({
@@ -77,9 +81,7 @@ export default async function postMessage({
       { once: true }
     );
 
-    if (LOGGING_ENABLED) {
-      console.debug("SANDBOX:", type, "Posting payload:", payload);
-    }
+    log("SANDBOX:", type, "Posting payload:", payload);
 
     const packet: RequestPacket = {
       type,
@@ -110,23 +112,18 @@ export function addPostMessageListener(
       return;
     }
 
-    // Only log with process.env.WEBEXT_MESSENGER_LOGGING to avoid large logging payloads
+    assert(source, "No source port was provided");
+
     try {
-      if (LOGGING_ENABLED) {
-        console.debug("SANDBOX:", type, "Received payload:", data.payload);
-      }
+      log("SANDBOX:", type, "Received payload:", data.payload);
 
       const response = await listener(data.payload);
 
-      if (LOGGING_ENABLED) {
-        console.debug("SANDBOX:", type, "Responding with", response);
-      }
+      log("SANDBOX:", type, "Responding with", response);
 
       source.postMessage({ response } satisfies ResponsePacket);
     } catch (error) {
-      if (LOGGING_ENABLED) {
-        console.debug("SANDBOX:", type, "Throwing", error);
-      }
+      log("SANDBOX:", type, "Throwing", error);
 
       source.postMessage({
         error: serializeError(error),

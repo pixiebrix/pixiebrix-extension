@@ -17,8 +17,7 @@
 
 import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { flagOn } from "@/auth/token";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
@@ -26,6 +25,7 @@ import useAddElement from "@/pageEditor/hooks/useAddElement";
 import { useSelector } from "react-redux";
 import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors";
 import { useAsyncState } from "@/hooks/common";
+import { flagOn } from "@/auth/authUtils";
 
 const sortedExtensionPoints = sortBy(
   [...ADAPTERS.values()],
@@ -60,7 +60,7 @@ const AddExtensionPointButton: React.FunctionComponent = () => {
   const [entries] = useAsyncState<React.ReactNode>(
     async () => {
       const results = await Promise.all(
-        sortedExtensionPoints.map((config) => {
+        sortedExtensionPoints.map(async (config) => {
           if (!config.flag) {
             return true;
           }

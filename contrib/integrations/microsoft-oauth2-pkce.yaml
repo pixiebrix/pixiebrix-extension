@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: microsoft/oauth2-pkce
+  version: 1.0.0
+  name: Microsoft Azure
+  description: OAuth2 PKCE Authentication for custom Microsoft Azure applications
+  url: "https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow"
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    application_id:
+      title: "Application (client) ID"
+      description: The application (client) ID of the custom Microsoft Azure application
+      type: string
+    directory_id:
+      title: "Directory (tenant) ID"
+      description: the Directory (tenant) ID of the custom Microsoft Azure application
+      type: string
+    scope:
+      title: Scope
+      description: One or more scopes to request, separated by spaces. See https://learn.microsoft.com/en-us/graph/permissions-reference
+      default: User.ReadBasic.All
+      type: string
+  required:
+    - application_id
+    - directory_id
+    - scope
+authentication:
+  # No baseURL because we're hitting multiple different Microsoft API base URLs
+  oauth2:
+    authorizeUrl: https://login.microsoftonline.com/{{{ directory_id }}}/oauth2/v2.0/authorize
+    tokenUrl: https://login.microsoftonline.com/{{{ directory_id }}}/oauth2/v2.0/token
+    code_challenge_method: S256
+    scope: "{{{ scope }}}"
+    client_id: "{{{ application_id }}}"
+  headers:
+    Authorization: "Bearer {{{ access_token }}}"

@@ -9,9 +9,9 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { useField, useFormikContext } from "formik";
-import { joinName } from "@/utils";
-import { type TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { type DebounceOptions } from "@/extensionPoints/types";
+import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type DebounceOptions } from "@/starterBricks/types";
+import { joinName } from "@/utils/formUtils";
 
 const DebounceFieldSet: React.FC<{
   isLocked: boolean;
@@ -28,18 +28,18 @@ const DebounceFieldSet: React.FC<{
     <>
       <FieldTemplate
         as={SwitchButtonWidget}
-        description="Debounce the trigger"
+        description="Group trigger events to limit the number of runs and increase performance"
         name="debounce"
         value={!isEmpty(debounce)}
-        onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+        onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
           if (target.value) {
-            setFieldValue(fieldName("debounce"), {
+            await setFieldValue(fieldName("debounce"), {
               waitMillis: 250,
               leading: false,
               trailing: true,
             });
           } else {
-            setFieldValue(fieldName("debounce"), null);
+            await setFieldValue(fieldName("debounce"), null);
           }
         }}
         {...makeLockableFieldProps("Debounce", isLocked)}

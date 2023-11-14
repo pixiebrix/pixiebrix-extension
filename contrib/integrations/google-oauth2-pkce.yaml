@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: google/oauth2-pkce
+  version: 1.0.0
+  name: Google (Client Integration)
+  description: OAuth2 PKCE Authentication for Google
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties: {}
+authentication:
+  # No baseURL because we're hitting multiple different Google API base URLs
+  oauth2:
+    # access_type=offline and prompt=consent will force a refresh token to be returned
+    authorizeUrl: https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent
+    tokenUrl: https://oauth2.googleapis.com/token
+    code_challenge_method: S256
+    scope: https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.email
+    client_id: 676864882630-n33qt0a585mcaf2vithipddia0l8blmc.apps.googleusercontent.com
+    client_secret: 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
+  headers:
+    Authorization: "Bearer {{{ access_token }}}"

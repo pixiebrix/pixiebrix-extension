@@ -17,13 +17,15 @@
 
 import React from "react";
 
-import { render } from "@testing-library/react";
+import { render } from "@/sidebar/testHelpers";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import { CancelError } from "@/errors/businessErrors";
 
 describe("RootCancelledPanel", () => {
   it("should render", () => {
-    const result = render(<RootCancelledPanel error={new CancelError()} />);
-    expect(result).toMatchSnapshot();
+    const { asFragment } = render(
+      <RootCancelledPanel error={new CancelError()} />
+    );
+    expect(asFragment()).toMatchSnapshot();
   });
 });

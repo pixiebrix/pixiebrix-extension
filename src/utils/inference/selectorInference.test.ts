@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectSelector", "expectRoundtripSelector", "expectSimilarElements", "expectSelectors"] }] */
+
 import {
   expandedCssSelector,
   generateSelector,
   getAttributeSelector,
-  getAttributeSelectorRegex,
   getSelectorPreference,
   inferSelectors,
   inferSelectorsIncludingStableAncestors,
@@ -27,9 +28,9 @@ import {
   sortBySelector,
 } from "./selectorInference";
 import { JSDOM } from "jsdom";
-import { html } from "@/utils";
 import { uniq } from "lodash";
-import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/common";
+import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/domConstants";
+import { html } from "code-tag";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- It's a global namespace
@@ -91,40 +92,11 @@ describe("getAttributeSelector", () => {
     );
   });
   test("exclude non-unique selectors", () => {
-    expect(getAttributeSelector("class", "bold italic")).toBe(undefined);
+    expect(getAttributeSelector("class", "bold italic")).toBeUndefined();
   });
 });
 
-function testAttribute(regex: RegExp, attribute: string) {
-  expect(`[${attribute}]`).toMatch(regex);
-  expect(`[${attribute}=anything]`).toMatch(regex);
-  expect(`[${attribute}='anything']`).toMatch(regex);
-
-  expect(`[no${attribute}]`).not.toMatch(regex);
-  expect(`[no-${attribute}]`).not.toMatch(regex);
-  expect(`[${attribute}d]`).not.toMatch(regex);
-  expect(`[${attribute}-user]`).not.toMatch(regex);
-  expect(`[${attribute}]:checked`).not.toMatch(regex);
-}
-
-test("getAttributeSelectorRegex", () => {
-  const singleAttributeRegex = getAttributeSelectorRegex("name");
-  testAttribute(singleAttributeRegex, "name");
-  expect(singleAttributeRegex).toStrictEqual(/^\[name(=|]$)/);
-
-  const multipleAttributeRegex = getAttributeSelectorRegex(
-    "name",
-    "aria-label"
-  );
-  testAttribute(multipleAttributeRegex, "name");
-  testAttribute(multipleAttributeRegex, "aria-label");
-  expect(multipleAttributeRegex).toStrictEqual(
-    /^\[name(=|]$)|^\[aria-label(=|]$)/
-  );
-});
-
 describe("safeCssSelector", () => {
-  /* eslint-disable jest/expect-expect -- Custom expectSelector */
   const expectSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
 
@@ -252,12 +224,9 @@ describe("safeCssSelector", () => {
       `
     );
   });
-
-  /* eslint-enable jest/expect-expect */
 });
 
 describe("expandedCssSelector", () => {
-  /* eslint-disable jest/expect-expect -- Custom expectSelector */
   const expectRoundtripSelector = (selector: string, body: string) => {
     document.body.innerHTML = body;
     const elements = [...document.body.querySelectorAll<HTMLElement>(selector)];
@@ -396,7 +365,6 @@ describe("expandedCssSelector", () => {
       body
     );
   });
-  /* eslint-enable jest/expect-expect */
 });
 
 describe("sortBySelector", () => {
@@ -432,7 +400,6 @@ test("getSelectorPreference: matches expected sorting", () => {
 });
 
 describe("inferSelectors", () => {
-  /* eslint-disable jest/expect-expect -- Custom expectSelectors */
   const expectSelectors = (selectors: string[], body: string) => {
     document.body.innerHTML = body;
 
@@ -520,13 +487,9 @@ describe("inferSelectors", () => {
       );
     }
   );
-
-  /* eslint-enable jest/expect-expect */
 });
 
 describe("inferSelectorsIncludingStableAncestors", () => {
-  /* eslint-disable jest/expect-expect -- Custom expectSelectors */
-
   const expectSelectors = (selectors: string[], body: string) => {
     document.body.innerHTML = body;
 
@@ -577,6 +540,4 @@ describe("inferSelectorsIncludingStableAncestors", () => {
       `
     );
   });
-
-  /* eslint-enable jest/expect-expect */
 });

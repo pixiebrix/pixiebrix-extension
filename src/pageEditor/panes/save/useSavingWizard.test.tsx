@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable promise/prefer-await-to-then */
-
 import { configureStore, type Store } from "@reduxjs/toolkit";
 import { renderHook, act } from "@testing-library/react-hooks";
 import React from "react";
@@ -24,15 +22,8 @@ import { Provider } from "react-redux";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { savingExtensionSlice } from "./savingExtensionSlice";
 import useSavingWizard from "./useSavingWizard";
-import {
-  formStateFactory,
-  menuItemFormStateFactory,
-  recipeMetadataFactory,
-  recipeFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories";
-import useCreateMock from "@/pageEditor/hooks/useCreate";
-import useResetMock from "@/pageEditor/hooks/useResetExtension";
+import useUpsertFormElementMock from "@/pageEditor/hooks/useUpsertFormElement";
+import useResetExtensionMock from "@/pageEditor/hooks/useResetExtension";
 import {
   useCreateRecipeMutation as useCreateRecipeMutationMock,
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,
@@ -40,16 +31,24 @@ import {
 } from "@/services/api";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
-import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import menuItem from "@/pageEditor/starterBricks/menuItem";
 import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
-import { type OptionsDefinition } from "@/types/definitions";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  formStateFactory,
+  menuItemFormStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import {
+  defaultModDefinitionFactory,
+  metadataFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("@/telemetry/logging");
-jest.mock("@/pageEditor/hooks/useCreate");
+jest.mock("@/pageEditor/hooks/useUpsertFormElement");
 jest.mock("@/pageEditor/hooks/useResetExtension");
 
 jest.mock("@/services/api", () => ({
@@ -61,8 +60,8 @@ jest.mock("@/services/api", () => ({
   }),
 }));
 
-jest.mock("@/recipes/recipesHooks", () => ({
-  useAllRecipes: jest.fn().mockReturnValue({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
+  useAllModDefinitions: jest.fn().mockReturnValue({
     data: [],
     isLoading: false,
   }),
@@ -88,13 +87,13 @@ const renderUseSavingWizard = (store: Store) =>
   });
 
 test("maintains wizard open state", () => {
-  const recipe = recipeFactory();
-  (useAllRecipes as jest.Mock).mockReturnValue({
+  const recipe = defaultModDefinitionFactory();
+  (useAllModDefinitions as jest.Mock).mockReturnValue({
     data: [recipe],
     isLoading: false,
   });
 
-  const recipeMetadata = installedRecipeMetadataFactory(recipe.metadata);
+  const recipeMetadata = modMetadataFactory(recipe.metadata);
   const element = formStateFactory({
     recipe: recipeMetadata,
   });
@@ -108,13 +107,7 @@ test("maintains wizard open state", () => {
 
   // Save will open the modal window.
   // Should not await for the promise to resolve to check that window is open.
-  act(() => {
-    void result.current.save().catch((error) => {
-      // Got an error, failing the test
-      console.error(error);
-      expect(error).toBeUndefined();
-    });
-  });
+  void act(async () => expect(result.current.save()).toResolve());
 
   // Modal is open/
   expect(result.current.isWizardOpen).toBe(true);
@@ -138,25 +131,28 @@ test("saves non recipe element", async () => {
   store.dispatch(editorSlice.actions.addElement(element));
 
   const createMock = jest.fn();
-  (useCreateMock as jest.Mock).mockReturnValueOnce(createMock);
+  (useUpsertFormElementMock as jest.Mock).mockReturnValueOnce(createMock);
 
   const { result } = renderUseSavingWizard(store);
 
-  act(() => {
-    result.current.save().catch((error) => {
-      // Got an error, failing the test
-      console.error(error);
-      expect(error).toBeUndefined();
-    });
-  });
+  void act(async () => expect(result.current.save()).toResolve());
 
   expect(result.current.isSaving).toBe(true);
   expect(createMock).toHaveBeenCalledTimes(1);
-  expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: true });
+  expect(createMock).toHaveBeenCalledWith({
+    element,
+    options: {
+      // Single ModComponentBase, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
+      pushToCloud: true,
+      checkPermissions: true,
+      notifySuccess: true,
+      reactivateEveryTab: true,
+    },
+  });
 });
 
 describe("saving a Recipe Extension", () => {
-  const recipeOptions: OptionsDefinition = {
+  const recipeOptions: ModOptionsDefinition = {
     schema: {
       type: "object",
       properties: {
@@ -169,10 +165,10 @@ describe("saving a Recipe Extension", () => {
     uiSchema: getMinimalUiSchema(),
   };
   const setupMocks = () => {
-    const recipe = recipeFactory({
+    const recipe = defaultModDefinitionFactory({
       options: recipeOptions,
     });
-    (useAllRecipes as jest.Mock).mockReturnValue({
+    (useAllModDefinitions as jest.Mock).mockReturnValue({
       data: [recipe],
       isLoading: false,
     });
@@ -202,11 +198,11 @@ describe("saving a Recipe Extension", () => {
     store.dispatch(editorSlice.actions.addElement(element));
 
     const createMock = jest.fn();
-    (useCreateMock as jest.Mock).mockReturnValue(createMock);
+    (useUpsertFormElementMock as jest.Mock).mockReturnValue(createMock);
 
     const resetMock = jest.fn();
     resetMock.mockResolvedValue(undefined);
-    (useResetMock as jest.Mock).mockReturnValue(resetMock);
+    (useResetExtensionMock as jest.Mock).mockReturnValue(resetMock);
 
     const createRecipeMock = jest.fn();
     (useCreateRecipeMutationMock as jest.Mock).mockReturnValue([
@@ -236,13 +232,7 @@ describe("saving a Recipe Extension", () => {
     const { result } = renderUseSavingWizard(store);
 
     // Get into the saving process
-    act(() => {
-      void result.current.save().catch((error) => {
-        // Got an error, failing the test
-        console.error(error);
-        expect(error).toBeUndefined();
-      });
-    });
+    void act(async () => expect(result.current.save()).toResolve());
 
     // Ensure the Saving dialog is open, but saving hasn't started yet
     expect(result.current.isWizardOpen).toBe(true);
@@ -291,7 +281,14 @@ describe("saving a Recipe Extension", () => {
     expect(createMock).toHaveBeenCalledTimes(1);
     expect(createMock).toHaveBeenCalledWith({
       element: elements[1],
-      pushToCloud: true,
+      options: {
+        // Single ModComponentBase, so need to push as StandaloneModDefinition an handle all permissions/notifications/reactivation
+        pushToCloud: true,
+        // FIXME: verify checkPermissions should be false
+        checkPermissions: false,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
     });
 
     // Resolving the create promise to go further in the saveElementAsPersonalExtension
@@ -325,7 +322,7 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(false);
 
     // Saving with a new Recipe
-    const newRecipeMeta = recipeMetadataFactory();
+    const newRecipeMeta = metadataFactory();
     const savingElementPromise = act(async () =>
       result.current.saveElementAndCreateNewRecipe(newRecipeMeta)
     );
@@ -340,7 +337,17 @@ describe("saving a Recipe Extension", () => {
     expect(createRecipeMock).toHaveBeenCalledTimes(1);
 
     // Check the element is saved
-    expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: false });
+    expect(createMock).toHaveBeenCalledWith({
+      element,
+      options: {
+        pushToCloud: false,
+        // New ModDefinition with single ModComponentDefinition, so let create handle permissions
+        // check/notifications/reactivation
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
 
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(1);
@@ -367,7 +374,7 @@ describe("saving a Recipe Extension", () => {
     });
 
     // Saving with a new Recipe
-    const newRecipeMeta = recipeMetadataFactory();
+    const newRecipeMeta = metadataFactory();
     let creatingRecipePromise: Promise<void>;
     act(() => {
       creatingRecipePromise =
@@ -378,7 +385,7 @@ describe("saving a Recipe Extension", () => {
       await creatingRecipePromise;
       await savingPromise;
     } catch (error) {
-      expect(error).toBe("Failed to create new Blueprint");
+      expect(error).toBe("Failed to create new mod");
     }
 
     // Wizard closes on error
@@ -409,7 +416,7 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(false);
 
     // Saving with a new Recipe
-    const newRecipeMeta = recipeMetadataFactory({ id: recipe.metadata.id });
+    const newRecipeMeta = metadataFactory({ id: recipe.metadata.id });
     const savingElementPromise = act(async () =>
       result.current.saveElementAndUpdateRecipe(newRecipeMeta)
     );
@@ -424,7 +431,16 @@ describe("saving a Recipe Extension", () => {
     expect(updateRecipeMock).toHaveBeenCalledTimes(1);
 
     // Check the element is saved
-    expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: true });
+    expect(createMock).toHaveBeenCalledWith({
+      element,
+      options: {
+        // FIXME: is this correct?
+        pushToCloud: true,
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
 
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(1);
@@ -450,7 +466,7 @@ describe("saving a Recipe Extension", () => {
     });
 
     // Saving with a new Recipe
-    const newRecipeMeta = recipeMetadataFactory();
+    const newRecipeMeta = metadataFactory();
     let updatingRecipePromise: Promise<void>;
     act(() => {
       updatingRecipePromise =
@@ -461,7 +477,7 @@ describe("saving a Recipe Extension", () => {
       await updatingRecipePromise;
       await savingPromise;
     } catch (error) {
-      expect(error).toBe("Failed to update the Blueprint");
+      expect(error).toBe("Failed to update the mod");
     }
 
     // Wizard closes on error

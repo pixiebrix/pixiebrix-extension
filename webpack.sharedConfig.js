@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const JSON5 = require("json5");
 const { merge } = require("webpack-merge");
 
@@ -40,6 +40,9 @@ const shared = {
       // https://github.com/webpack/webpack/pull/12693#issuecomment-914079083
       filenamify: "filenamify/browser",
 
+      // Silently improve tree-shakeability and AMD-related errors like #943
+      lodash: "lodash-es",
+
       // Lighter jQuery version
       jquery: "jquery/dist/jquery.slim.min.js",
     },
@@ -49,7 +52,7 @@ const shared = {
       crypto: false,
       console: false,
       vm: false,
-      path: false,
+      path: require.resolve("path-browserify"),
       chokidar: false,
     },
   },
@@ -59,7 +62,7 @@ const shared = {
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!@pixiebrix)/,
         options: {
           transpileOnly: true,
         },
@@ -84,20 +87,6 @@ const shared = {
         type: "asset/resource",
         generator: {
           filename: "img/[name][ext]",
-        },
-      },
-      {
-        test: /bootstrap-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/bootstrap-icons/[name][ext]",
-        },
-      },
-      {
-        test: /simple-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/simple-icons/[name][ext]",
         },
       },
       {

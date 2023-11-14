@@ -16,10 +16,13 @@
  */
 
 import { getBaseURL } from "@/services/baseService";
-import { type IService, type RegistryId } from "@/core";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import { type ServiceDefinition } from "@/types/definitions";
+import {
+  type Integration,
+  type IntegrationDefinition,
+} from "@/integrations/integrationTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 type FlowOptions = {
   target: "_blank" | "_self";
@@ -43,7 +46,10 @@ function useAuthorizationGrantFlow() {
   const modals = useModals();
 
   return useCallback(
-    async (service: IService | ServiceDefinition, options: FlowOptions) => {
+    async (
+      service: Integration | IntegrationDefinition,
+      options: FlowOptions
+    ) => {
       const name = "name" in service ? service.name : service.metadata.name;
       const serviceId = "id" in service ? service.id : service.metadata.id;
 

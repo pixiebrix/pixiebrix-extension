@@ -15,32 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Target } from "@/types";
-import { type IExtension, type RegistryId, type UUID } from "@/core";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isExtension } from "@/pageEditor/sidebar/common";
-import { type BlockConfig } from "@/blocks/types";
-import ForEach from "@/blocks/transformers/controlFlow/ForEach";
-import IfElse from "@/blocks/transformers/controlFlow/IfElse";
-import TryExcept from "@/blocks/transformers/controlFlow/TryExcept";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
+import { type BrickConfig } from "@/bricks/types";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import {
   type DocumentElement,
   isButtonElement,
   isListElement,
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { joinPathParts } from "@/utils";
-import ForEachElement from "@/blocks/transformers/controlFlow/ForEachElement";
-import Retry from "@/blocks/transformers/controlFlow/Retry";
-import { castArray } from "lodash";
+import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
+import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
-import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { expectContext } from "@/utils/expectContext";
-import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type RecipeDefinition } from "@/types/definitions";
-import AddQuickBarAction from "@/blocks/effects/AddQuickBarAction";
-import TourStepTransformer from "@/blocks/transformers/tourStep/tourStep";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
+import { type Target } from "@/types/messengerTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Brick } from "@/types/brickTypes";
+import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
+import { inputProperties } from "@/utils/schemaUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -61,20 +62,22 @@ export const thisTab: Target = {
   frameId: 0,
 };
 
-export function getIdForElement(element: IExtension | FormState): UUID {
-  return isExtension(element) ? element.id : element.uuid;
+export function getIdForElement(
+  element: ModComponentBase | ModComponentFormState
+): UUID {
+  return isModComponentBase(element) ? element.id : element.uuid;
 }
 
 export function getRecipeIdForElement(
-  element: IExtension | FormState
+  element: ModComponentBase | ModComponentFormState
 ): RegistryId {
-  return isExtension(element) ? element._recipe?.id : element.recipe?.id;
+  return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
 }
 
 export function getRecipeById(
-  recipes: RecipeDefinition[],
+  recipes: ModDefinition[],
   id: RegistryId
-): RecipeDefinition | undefined {
+): ModDefinition | undefined {
   return recipes.find((recipe) => recipe.metadata.id === id);
 }
 
@@ -83,53 +86,30 @@ export function getRecipeById(
  *
  * Returns prop names in the order they should be displayed in the layout.
  *
- * @param block the configured block
+ * @param block the block, or null if resolved block not available yet
+ * @param blockConfig the block configuration
  */
-export function getPipelinePropNames(block: BlockConfig): string[] {
-  switch (block.id) {
-    case ForEach.BLOCK_ID: {
-      return ["body"];
-    }
-
-    case Retry.BLOCK_ID: {
-      return ["body"];
-    }
-
-    case ForEachElement.BLOCK_ID: {
-      return ["body"];
-    }
-
-    case DisplayTemporaryInfo.BLOCK_ID: {
-      return ["body"];
-    }
-
-    case IfElse.BLOCK_ID: {
-      return ["if", "else"];
-    }
-
-    case TryExcept.BLOCK_ID: {
-      return ["try", "except"];
-    }
-
-    case AddQuickBarAction.BLOCK_ID: {
-      return ["action"];
-    }
-
+export function getPipelinePropNames(
+  block: Brick | null,
+  blockConfig: BrickConfig
+): string[] {
+  switch (blockConfig.id) {
+    // Special handling for tour step to avoid clutter and input type alternatives
     case TourStepTransformer.BLOCK_ID: {
       const propNames = [];
 
       // Only show onBeforeShow if it's provided, to avoid cluttering the UI
-      if (block.config.onBeforeShow != null) {
+      if (blockConfig.config.onBeforeShow != null) {
         propNames.push("onBeforeShow");
       }
 
       // `body` can be a markdown value, or a pipeline
-      if (isPipelineExpression(block.config.body)) {
+      if (isPipelineExpression(blockConfig.config.body)) {
         propNames.push("body");
       }
 
       // Only show onAfterShow if it's provided, to avoid cluttering the UI
-      if (block.config.onAfterShow != null) {
+      if (blockConfig.config.onAfterShow != null) {
         propNames.push("onAfterShow");
       }
 
@@ -137,18 +117,36 @@ export function getPipelinePropNames(block: BlockConfig): string[] {
     }
 
     default: {
-      return [];
+      if (block == null) {
+        return [];
+      }
+
+      const pipelineProperties = pickBy(
+        inputProperties(block.inputSchema),
+        (value) =>
+          typeof value === "object" &&
+          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#"
+      );
+
+      return sortedFields(pipelineProperties, block.uiSchema, {
+        includePipelines: true,
+        // JS control flow bricks don't define a uiSchema
+        preserveSchemaOrder: true,
+      }).map((x) => x.prop);
     }
   }
 }
 
-export function getInputKeyForSubPipeline(
-  blockConfig: BlockConfig,
+export function getVariableKeyForSubPipeline(
+  blockConfig: BrickConfig,
   pipelinePropName: string
 ): string | null {
   let keyPropName: string = null;
 
-  if (blockConfig.id === ForEach.BLOCK_ID && pipelinePropName === "body") {
+  if (
+    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID].includes(blockConfig.id) &&
+    pipelinePropName === "body"
+  ) {
     keyPropName = "elementKey";
   }
 
@@ -211,7 +209,7 @@ function getElementsPipelinePropNames(
   return propNames;
 }
 
-export function getDocumentPipelinePaths(block: BlockConfig): string[] {
+export function getDocumentPipelinePaths(block: BrickConfig): string[] {
   return getElementsPipelinePropNames(
     "config.body",
     (block.config.body ?? []) as DocumentElement[]
@@ -236,7 +234,8 @@ export function getBlockAnnotations(
   const relatedAnnotations = annotations.filter((annotation) =>
     annotation.position.path.startsWith(blockPath)
   );
-  const ownAnnotations = relatedAnnotations.filter((annotation) => {
+
+  return relatedAnnotations.filter((annotation) => {
     const restPath = annotation.position.path.slice(pathLength);
     // XXX: this may be not a reliable way to determine if the annotation
     // is owned by the block or its sub pipeline.
@@ -244,6 +243,13 @@ export function getBlockAnnotations(
     // and a pipeline field always has this pattern in its path.
     return !restPath.includes(".__value__.");
   });
+}
 
-  return ownAnnotations;
+export function selectPageEditorDimensions() {
+  return {
+    pageEditorWidth: window.innerWidth,
+    pageEditorHeight: window.innerHeight,
+    pageEditorOrientation:
+      window.innerWidth > window.innerHeight ? "landscape" : "portrait",
+  };
 }

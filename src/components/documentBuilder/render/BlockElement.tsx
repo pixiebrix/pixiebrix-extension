@@ -16,22 +16,23 @@
  */
 
 import React, { useContext } from "react";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { useAsyncState } from "@/hooks/common";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/sidebar/PanelBody";
-import { type RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 import { getTopLevelFrame } from "webext-messenger";
+import { type PanelContext } from "@/types/sidebarTypes";
+import { type RendererRunPayload } from "@/types/rendererTypes";
 
 type BlockElementProps = {
-  pipeline: BlockPipeline;
+  pipeline: BrickPipeline;
   tracePath: DynamicPath;
 };
 
@@ -45,8 +46,11 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
     onAction,
   } = useContext(DocumentContext);
 
+  // Logger context will have both extensionId and blueprintId because they're passed from the containing PanelBody
+  const panelContext = logger.context as PanelContext;
+
   const [payload, isLoading, error] =
-    useAsyncState<RendererPayload>(async () => {
+    useAsyncState<RendererRunPayload>(async () => {
       // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
       const topLevelFrame = await getTopLevelFrame();
 
@@ -67,14 +71,14 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
 
   if (isLoading) {
     return (
-      <PanelBody payload={null} context={logger.context} onAction={onAction} />
+      <PanelBody payload={null} context={panelContext} onAction={onAction} />
     );
   }
 
   if (error) {
     return (
       <PanelBody
-        context={logger.context}
+        context={panelContext}
         onAction={onAction}
         payload={{
           key: `error-${getErrorMessage(error)}`,
@@ -86,7 +90,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   }
 
   return (
-    <PanelBody context={logger.context} payload={payload} onAction={onAction} />
+    <PanelBody context={panelContext} payload={payload} onAction={onAction} />
   );
 };
 

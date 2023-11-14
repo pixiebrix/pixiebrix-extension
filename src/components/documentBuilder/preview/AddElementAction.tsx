@@ -47,21 +47,38 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
     DocumentElement[]
   >(elementsCollectionName);
 
-  const addElement = (elementType: DocumentElementType) => {
+  const addElement = async (
+    elementType: Parameters<typeof createNewElement>[0]
+  ) => {
     const element = createNewElement(elementType);
-    setValue([...elementsCollection, element]);
+    await setValue([...elementsCollection, element]);
   };
+
+  const elementItems = allowedTypes.map((elementType) => ({
+    // eslint-disable-next-line security/detect-object-injection -- type checked
+    title: elementTypeLabels[elementType],
+    async action() {
+      await addElement(elementType);
+    },
+  }));
+
+  // Extra pipeline items; can be added wherever a pipeline is allowed
+  const pipelineItems = allowedTypes.includes("pipeline")
+    ? [
+        {
+          title: "Form",
+          async action() {
+            await addElement("form");
+          },
+        },
+      ]
+    : [];
 
   return (
     <EllipsisMenu
       className={className}
       toggleClassName={styles.toggle}
-      items={allowedTypes.map((elementType) => ({
-        title: elementTypeLabels[elementType],
-        action() {
-          addElement(elementType);
-        },
-      }))}
+      items={[...elementItems, ...pipelineItems]}
       menuBoundary={menuBoundary}
     />
   );

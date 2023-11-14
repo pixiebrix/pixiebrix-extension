@@ -31,18 +31,15 @@ module.exports = mergeWithShared({
   },
   externals: {
     // Exclude some troublesome/unnecessary dependencies
-    "webextension-polyfill": "{}",
+    nunjucks: "{}",
     rollbar: "{init(){}}",
+    "webextension-polyfill": "{}",
     "@/vendors/hoverintent/hoverintent": "{}",
   },
   resolve: {
-    // Mock any modules that appear in __mocks__
-    // e.g. src/__mocks__/webextension-polyfill.js
+    // Auto-mocks. See documentation in ../src/__mocks__/readme.md
     modules: [path.resolve("src/__mocks__"), "node_modules"],
-
     alias: {
-      // Mock any LOCAL modules that appear in __mocks__
-      // e.g. src/__mocks__/@/telemetry/reportErrors.ts
       "@": [path.resolve("src/__mocks__/@"), path.resolve("src")],
     },
   },
@@ -71,7 +68,7 @@ module.exports = mergeWithShared({
     // Don't fail on import of styles.
     // Using an identity object instead of actual style sheet because styles are not needed for headers generations
     new webpack.NormalModuleReplacementPlugin(
-      /\.module\.(css|scss)$/,
+      /.(css|scss)$/,
       "identity-obj-proxy"
     ),
   ],

@@ -15,37 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Block, Reader } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
+import blockRegistry from "@/bricks/registry";
 import {
-  type ApiVersion,
-  type BlockArg,
-  type BlockOptions,
-  type Expression,
-  type ReaderRoot,
-} from "@/core";
-import blockRegistry from "@/blocks/registry";
-import {
-  echoBlock,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import {
+  type ApiVersion,
+  type BrickArgs,
+  type BrickOptions,
+  type Expression,
+  type SelectorRoot,
+} from "@/types/runtimeTypes";
+import { BrickABC } from "@/types/brickTypes";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
-class RootAwareBlock extends Block {
+class RootAwareBlock extends BrickABC {
   constructor() {
-    super("block/root-aware", "Root Aware Block");
+    super("block/root-aware", "Root Aware Brick");
   }
 
   inputSchema = propertiesToSchema({});
@@ -54,7 +45,7 @@ class RootAwareBlock extends Block {
     return true;
   }
 
-  async run(arg: BlockArg, { root }: BlockOptions) {
+  async run(arg: BrickArgs, { root }: BrickOptions) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,
@@ -62,7 +53,7 @@ class RootAwareBlock extends Block {
   }
 }
 
-class RootAwareReader extends Reader {
+class RootAwareReader extends ReaderABC {
   constructor() {
     super("reader/root-aware", "Root Aware Reader");
   }
@@ -77,7 +68,7 @@ class RootAwareReader extends Reader {
     return true;
   }
 
-  async read(root: ReaderRoot) {
+  async read(root: SelectorRoot) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,
@@ -90,7 +81,7 @@ const rootReader = new RootAwareReader();
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([rootBlock, rootReader, echoBlock]);
+  blockRegistry.register([rootBlock, rootReader, echoBrick]);
   // https://stackoverflow.com/questions/42805128/does-jest-reset-the-jsdom-document-after-every-suite-or-test
   document.querySelectorAll("html")[0].innerHTML = "";
 });

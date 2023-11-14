@@ -19,12 +19,31 @@ import React from "react";
 import { act, renderHook } from "@testing-library/react-hooks";
 import useActions from "@/components/quickBar/useActions";
 import { KBarProvider, useKBar } from "kbar";
-import defaultActions from "@/components/quickBar/defaultActions";
+import defaultActions, {
+  pageEditorAction,
+} from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
+
+jest.mock("@/auth/token", () => ({
+  __esModule: true,
+  ...jest.requireActual("@/auth/token"),
+  readAuthData: jest.fn().mockResolvedValue({
+    flags: [],
+  }),
+}));
+
+beforeAll(async () => {
+  // Ensure default actions are registered
+  await initQuickBarApp();
+});
+
+const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
+  .length;
 
 describe("useActions", () => {
   test("should return the default actions", () => {
-    const hook = renderHook(
+    const { result } = renderHook(
       () => {
         useActions();
         return useKBar(({ actions }) => ({ actions }));
@@ -34,13 +53,13 @@ describe("useActions", () => {
       }
     );
 
-    expect(Object.keys(hook.result.current.actions)).toHaveLength(
-      defaultActions.length
+    expect(Object.keys(result.current.actions)).toHaveLength(
+      NUM_DEFAULT_QUICKBAR_ACTIONS
     );
   });
 
   test("should add/remove action", async () => {
-    const hook = renderHook(
+    const { result } = renderHook(
       () => {
         useActions();
         return useKBar(({ actions }) => ({ actions }));
@@ -57,16 +76,16 @@ describe("useActions", () => {
       });
     });
 
-    expect(Object.keys(hook.result.current.actions)).toHaveLength(
-      defaultActions.length + 1
+    expect(Object.keys(result.current.actions)).toHaveLength(
+      NUM_DEFAULT_QUICKBAR_ACTIONS + 1
     );
 
     await act(async () => {
       quickBarRegistry.removeAction("test");
     });
 
-    expect(Object.keys(hook.result.current.actions)).toHaveLength(
-      defaultActions.length
+    expect(Object.keys(result.current.actions)).toHaveLength(
+      NUM_DEFAULT_QUICKBAR_ACTIONS
     );
   });
 });

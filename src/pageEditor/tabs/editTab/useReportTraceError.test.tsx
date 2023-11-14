@@ -25,15 +25,18 @@ import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { configureStore, type Store } from "@reduxjs/toolkit";
 import { type TraceRecord } from "@/telemetry/trace";
 import { uuidv4 } from "@/types/helpers";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
 import { renderHook } from "@testing-library/react-hooks";
 import useReportTraceError from "./useReportTraceError";
 import { Provider } from "react-redux";
-import { traceErrorFactory, traceRecordFactory } from "@/testUtils/factories";
 
-jest.mock("@/telemetry/events", () => ({
-  reportEvent: jest.fn(),
-}));
+import {
+  traceErrorFactory,
+  traceRecordFactory,
+} from "@/testUtils/factories/traceFactories";
+
+// Override the manual mock to support `expect` assertions
+jest.mock("@/telemetry/reportEvent");
 
 const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
   const activeElementId = uuidv4();

@@ -20,11 +20,12 @@ import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import {
-  getInstalled,
+  ensureInstalled,
+  getActiveExtensionPoints,
   handleNavigate,
   queueReactivateTab,
   reactivateTab,
-  removeExtension,
+  removePersistedExtension,
 } from "@/contentScript/lifecycle";
 import {
   getFormDefinition,
@@ -35,8 +36,9 @@ import {
   hideSidebar,
   showSidebar,
   rehydrateSidebar,
-  removeExtension as removeSidebar,
+  removeExtensions as removeSidebars,
   reloadSidebar,
+  getReservedPanelEntries,
 } from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 import { insertButton } from "@/contentScript/pageEditor/insertButton";
@@ -48,13 +50,12 @@ import {
   updateDynamicElement,
 } from "@/contentScript/pageEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
-import { withDetectFrameworkVersions } from "@/pageScript/messenger/api";
 import {
-  runBlock,
+  runBlockPreview,
   resetTab,
   runRendererBlock,
 } from "@/contentScript/pageEditor";
-import { checkAvailable } from "@/blocks/available";
+import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
 import { runBrick } from "@/contentScript/executor";
 import {
@@ -62,7 +63,7 @@ import {
   selectElement,
 } from "@/contentScript/pageEditor/elementPicker";
 import {
-  runEffectPipeline,
+  runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
@@ -73,7 +74,9 @@ import {
   getPanelDefinition,
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
-} from "@/blocks/transformers/temporaryInfo/temporaryPanelProtocol";
+} from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 
 expectContext("contentScript");
 
@@ -88,7 +91,8 @@ declare global {
     TEMPORARY_PANEL_RESOLVE: typeof resolveTemporaryPanel;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
-    REMOVE_EXTENSION: typeof removeExtension;
+    REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
+
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -96,8 +100,9 @@ declare global {
     REHYDRATE_SIDEBAR: typeof rehydrateSidebar;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
+    GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
     RELOAD_SIDEBAR: typeof reloadSidebar;
-    REMOVE_SIDEBAR: typeof removeSidebar;
+    REMOVE_SIDEBARS: typeof removeSidebars;
 
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -105,8 +110,8 @@ declare global {
     UIPATH_INIT: typeof initRobot;
     UIPATH_GET_PROCESSES: typeof getProcesses;
 
-    DETECT_FRAMEWORKS: typeof withDetectFrameworkVersions;
-    RUN_SINGLE_BLOCK: typeof runBlock;
+    GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
+    RUN_SINGLE_BLOCK: typeof runBlockPreview;
     RUN_RENDERER_BLOCK: typeof runRendererBlock;
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
@@ -114,7 +119,8 @@ declare global {
     RUN_EXTENSION_POINT_READER: typeof runExtensionPointReader;
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
-    INSTALLED_EXTENSION_POINTS: typeof getInstalled;
+    INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
+    ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
     RUN_BRICK: typeof runBrick;
@@ -122,7 +128,7 @@ declare global {
     SELECT_ELEMENT: typeof selectElement;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
-    RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
+    RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
     RUN_MAP_ARGS: typeof runMapArgs;
 
     NOTIFY_INFO: typeof notify.info;
@@ -131,6 +137,8 @@ declare global {
 
     GET_PAGE_STATE: typeof getPageState;
     SET_PAGE_STATE: typeof setPageState;
+
+    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
   }
 }
 
@@ -147,7 +155,8 @@ export default function registerMessenger(): void {
 
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
-    REMOVE_EXTENSION: removeExtension,
+    REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
+    GET_RESERVED_SIDEBAR_ENTRIES: getReservedPanelEntries,
     RESET_TAB: resetTab,
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
@@ -156,7 +165,7 @@ export default function registerMessenger(): void {
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
     RELOAD_SIDEBAR: reloadSidebar,
-    REMOVE_SIDEBAR: removeSidebar,
+    REMOVE_SIDEBARS: removeSidebars,
 
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
@@ -164,8 +173,8 @@ export default function registerMessenger(): void {
     UIPATH_INIT: initRobot,
     UIPATH_GET_PROCESSES: getProcesses,
 
-    DETECT_FRAMEWORKS: withDetectFrameworkVersions,
-    RUN_SINGLE_BLOCK: runBlock,
+    GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
+    RUN_SINGLE_BLOCK: runBlockPreview,
     RUN_RENDERER_BLOCK: runRendererBlock,
 
     CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
@@ -173,7 +182,8 @@ export default function registerMessenger(): void {
     RUN_EXTENSION_POINT_READER: runExtensionPointReader,
     ENABLE_OVERLAY: enableOverlay,
     DISABLE_OVERLAY: disableOverlay,
-    INSTALLED_EXTENSION_POINTS: getInstalled,
+    INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
+    ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
     CHECK_AVAILABLE: checkAvailable,
     HANDLE_NAVIGATE: handleNavigate,
 
@@ -182,7 +192,7 @@ export default function registerMessenger(): void {
     SELECT_ELEMENT: selectElement,
 
     RUN_RENDERER_PIPELINE: runRendererPipeline,
-    RUN_EFFECT_PIPELINE: runEffectPipeline,
+    RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
     RUN_MAP_ARGS: runMapArgs,
 
     NOTIFY_INFO: notify.info,
@@ -191,5 +201,7 @@ export default function registerMessenger(): void {
 
     GET_PAGE_STATE: getPageState,
     SET_PAGE_STATE: setPageState,
+
+    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
   });
 }

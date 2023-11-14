@@ -20,10 +20,12 @@ import "./contentScript.scss";
 import "@/extensionContext";
 
 // Normal imports
+import { initMessengerLogging } from "@/development/messengerLogging";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
+import brickRegistry from "@/bricks/registry";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
@@ -34,7 +36,10 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
-import initSandbox from "@/sandbox/messenger/api";
+import initFloatingActions from "@/components/floatingActions/initFloatingActions";
+import { initSidebarActivation } from "@/contentScript/sidebarActivation";
+import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
+import { initRuntime } from "@/runtime/reducePipeline";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -47,20 +52,29 @@ onUncaughtError((error) => {
 });
 
 export async function init(): Promise<void> {
+  console.debug(`contentScriptCore: init, location: ${location.href}`);
+
+  void initMessengerLogging();
   registerMessenger();
   registerExternalMessenger();
   registerBuiltinBlocks();
   registerContribBlocks();
+  // Since 1.8.2, the brick registry was de-coupled from the runtime to avoid circular dependencies
+  initRuntime(brickRegistry);
 
   initTelemetry();
   initToaster();
-  void initSandbox();
 
   await handleNavigate();
+
+  void initSidebarActivation();
 
   // Inform `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
 
   // Let the partner page know
   initPartnerIntegrations();
+  void initFloatingActions();
+
+  void initPerformanceMonitoring();
 }

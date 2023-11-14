@@ -23,20 +23,20 @@ import { useFormikContext } from "formik";
 import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import ReloadToolbar from "@/pageEditor/toolbar/ReloadToolbar";
-import { type WizardStep } from "@/pageEditor/extensionPoints/base";
+import { type WizardStep } from "@/pageEditor/starterBricks/base";
 import PermissionsToolbar from "@/pageEditor/toolbar/PermissionsToolbar";
 import LogsTab, { LOGS_EVENT_KEY } from "@/pageEditor/tabs/logs/LogsTab";
 import EditTab from "@/pageEditor/tabs/editTab/EditTab";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
-import { upgradePipelineToV3 } from "@/pageEditor/extensionPoints/upgrade";
-import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
+import { upgradePipelineToV3 } from "@/pageEditor/starterBricks/upgrade";
 import cx from "classnames";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
+import { selectVariablePopoverVisible } from "@/pageEditor/slices/editorSelectors";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -63,11 +63,14 @@ const WizardNavItem: React.FunctionComponent<{
  * @see RecipePane
  */
 const ElementWizard: React.FunctionComponent<{
-  element: FormState;
+  element: ModComponentFormState;
 }> = ({ element }) => {
   const [step, setStep] = useState(wizard[0].step);
 
-  const { isValid, status, handleReset } = useFormikContext<FormState>();
+  const isVariablePopoverVisible = useSelector(selectVariablePopoverVisible);
+
+  const { isValid, status, handleReset } =
+    useFormikContext<ModComponentFormState>();
 
   const dispatch = useDispatch();
 
@@ -84,7 +87,7 @@ const ElementWizard: React.FunctionComponent<{
   };
 
   const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
+    useFormikContext<ModComponentFormState>();
 
   const wizardSteps = [...wizard];
 
@@ -100,7 +103,7 @@ const ElementWizard: React.FunctionComponent<{
         return;
       }
 
-      setFormState(newState);
+      await setFormState(newState);
       dispatch(actions.showV3UpgradeMessage());
     }
   }, []);
@@ -112,6 +115,10 @@ const ElementWizard: React.FunctionComponent<{
           shouldUseAnalysis: true,
           showUntouchedErrors: false,
           showFieldActions: true,
+          // Hide variable/template annotations while the popover is open because the user is editing the field
+          ignoreAnalysisIds: isVariablePopoverVisible
+            ? ["var", "template"]
+            : [],
         }}
       >
         <BootstrapForm
@@ -129,11 +136,6 @@ const ElementWizard: React.FunctionComponent<{
             {wizardSteps.map((step) => (
               <WizardNavItem key={step.step} step={step} />
             ))}
-
-            {/* spacer */}
-            <div className="mr-2" />
-
-            <AskQuestionModalButton />
 
             {/* spacer */}
             <div className="flex-grow-1" />

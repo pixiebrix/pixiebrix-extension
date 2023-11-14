@@ -30,8 +30,8 @@ type RemoveElementProps = {
 const RemoveElement: React.FC<RemoveElementProps> = ({ documentBodyName }) => {
   const activeElement = useSelector(selectNodePreviewActiveElement);
   const deleteElement = useDeleteElement(documentBodyName);
-  const onDelete = () => {
-    deleteElement(activeElement);
+  const onDelete = async () => {
+    await deleteElement(activeElement);
   };
 
   return (

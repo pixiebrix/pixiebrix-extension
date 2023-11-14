@@ -1,0 +1,53 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: '@pixiebrix-dev/new-services-schema-format'
+  name: Services Schema Format Test
+  description: Created with the PixieBrix Page Editor
+  version: 1.0.0
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: menuItem
+      reader:
+        - '@pixiebrix/document-metadata'
+      isAvailable:
+        matchPatterns:
+          - 'https://www.linkedin.com/*'
+        urlPatterns: []
+        selectors: []
+      containerSelector: div:has(> button:contains('More'))
+      position: append
+      template: |-
+        <button
+            class="artdeco-dropdown__trigger artdeco-dropdown__trigger--placement-bottom org-overflow-menu__dropdown-trigger artdeco-button artdeco-button--2 artdeco-button--secondary artdeco-button--muted"
+            type="button">{{{ caption }}}</button>
+extensionPoints:
+  - id: 'test/sheets-button'
+    label: Send Property to Google Sheets
+    services:
+      type: object
+      properties:
+        - google:
+          $ref: 'https://app.pixiebrix.com/schemas/services/google/oauth2-pkce'
+        - sheet:
+          $ref: 'https://app.pixiebrix.com/schemas/services/google/sheet'
+      required: ['google']
+    config:
+      caption: Sheets
+      icon:
+        id: googlesheets
+        library: simple-icons
+        size: 24
+      action:
+        - id: '@pixiebrix/google/sheets-append'
+          config:
+            googleAccount: !var 'google/oauth2-pkce'
+            spreadsheetId: "XYZabc123"
+            tabName: Test Sheet
+            rowValues:
+              - header: Foo Id
+                value: '@exampleId'
+              - header: Name
+                value: '@info.name'

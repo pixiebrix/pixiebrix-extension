@@ -18,10 +18,10 @@
 import React, { useCallback } from "react";
 import {
   PACKAGE_REGEX,
-  uuidv4,
   testIsSemVerString,
-  validateSemVerString,
+  uuidv4,
   validateRegistryId,
+  validateSemVerString,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -38,11 +38,6 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
-import {
-  type RecipeDefinition,
-  type RecipeMetadataFormState,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
 import { selectScope } from "@/auth/authSelectors";
 import {
   buildRecipe,
@@ -55,34 +50,47 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { useCreateRecipeMutation } from "@/services/api";
-import useCreate, { checkPermissions } from "@/pageEditor/hooks/useCreate";
+import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
-import { FieldDescriptions } from "@/utils/strings";
 import { object, string } from "yup";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { type RecipeMetadata, type RegistryId } from "@/core";
+import {
+  inferConfiguredModIntegrations,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
-import { generateRecipeId } from "@/utils/recipeUtils";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
+import {
+  useAllModDefinitions,
+  useOptionalModDefinition,
+} from "@/modDefinitions/modDefinitionHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
+import {
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
+import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { generatePackageId } from "@/utils/registryUtils";
+import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 
 const { actions: optionsActions } = extensionsSlice;
 
 function selectRecipeMetadata(
-  unsavedRecipe: UnsavedRecipeDefinition,
+  unsavedRecipe: UnsavedModDefinition,
   response: PackageUpsertResponse
-): RecipeMetadata {
+): ModComponentBase["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
     sharing: pick(response, ["public", "organizations"]),
@@ -90,10 +98,14 @@ function selectRecipeMetadata(
   };
 }
 
-function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
+function useSaveCallbacks({
+  activeElement,
+}: {
+  activeElement: ModComponentFormState;
+}) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
-  const createExtension = useCreate();
+  const createExtension = useUpsertFormElement();
   const removeExtension = useRemoveExtension();
   const removeRecipe = useRemoveRecipe();
 
@@ -106,43 +118,51 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
 
   const createRecipeFromElement = useCallback(
     // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-    (element: FormState, metadata: RecipeMetadataFormState) =>
+    (element: ModComponentFormState, metadata: ModMetadataFormState) =>
       // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-      checkPermissions(element).then(async (hasPermissions) => {
-        if (!hasPermissions) {
-          return;
-        }
+      ensureElementPermissionsFromUserGesture(element).then(
+        async (hasPermissions) => {
+          if (!hasPermissions) {
+            return;
+          }
 
-        let recipeElement = produce(activeElement, (draft) => {
-          draft.uuid = uuidv4();
-        });
-        const newRecipe = buildRecipe({
-          cleanRecipeExtensions: [],
-          dirtyRecipeElements: [recipeElement],
-          metadata,
-        });
-        const response = await createRecipe({
-          recipe: newRecipe,
-          organizations: [],
-          public: false,
-        }).unwrap();
-        recipeElement = produce(recipeElement, (draft) => {
-          draft.recipe = selectRecipeMetadata(newRecipe, response);
-        });
-        dispatch(editorActions.addElement(recipeElement));
-        // Don't push to cloud since we're saving it with the recipe
-        await createExtension({
-          element: recipeElement,
-          pushToCloud: false,
-          checkPermissions: false,
-        });
-        if (!keepLocalCopy) {
-          await removeExtension({
-            extensionId: activeElement.uuid,
-            shouldShowConfirmation: false,
+          let recipeElement = produce(activeElement, (draft) => {
+            draft.uuid = uuidv4();
           });
+          const newRecipe = buildRecipe({
+            cleanRecipeExtensions: [],
+            dirtyRecipeElements: [recipeElement],
+            metadata,
+          });
+          const response = await createRecipe({
+            recipe: newRecipe,
+            organizations: [],
+            public: false,
+          }).unwrap();
+          recipeElement = produce(recipeElement, (draft) => {
+            draft.recipe = selectRecipeMetadata(newRecipe, response);
+          });
+          dispatch(editorActions.addElement(recipeElement));
+          await createExtension({
+            element: recipeElement,
+            options: {
+              // Don't push to cloud since we're saving it with the recipe
+              pushToCloud: false,
+              // Permissions are already checked above
+              checkPermissions: false,
+              // Need to provide user feedback
+              notifySuccess: true,
+              reactivateEveryTab: true,
+            },
+          });
+          if (!keepLocalCopy) {
+            await removeExtension({
+              extensionId: activeElement.uuid,
+              shouldShowConfirmation: false,
+            });
+          }
         }
-      }),
+      ),
     [
       activeElement,
       createExtension,
@@ -154,7 +174,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
   );
 
   const createRecipeFromRecipe = useCallback(
-    async (recipe: RecipeDefinition, metadata: RecipeMetadataFormState) => {
+    async (recipe: ModDefinition, metadata: ModMetadataFormState) => {
       const recipeId = recipe.metadata.id;
       // eslint-disable-next-line security/detect-object-injection -- recipeId
       const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
@@ -193,7 +213,7 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
         public: false,
       }).unwrap();
 
-      const savedRecipe: RecipeDefinition = {
+      const savedRecipe: ModDefinition = {
         ...newRecipe,
         sharing: {
           public: response.public,
@@ -206,18 +226,15 @@ function useSaveCallbacks({ activeElement }: { activeElement: FormState }) {
         await removeRecipe({ recipeId, shouldShowConfirmation: false });
       }
 
+      const modComponents = [...dirtyRecipeElements, ...cleanRecipeExtensions];
+
       dispatch(
-        optionsActions.installRecipe({
-          recipe: savedRecipe,
-          services: inferRecipeAuths([
-            ...dirtyRecipeElements,
-            ...cleanRecipeExtensions,
-          ]),
-          optionsArgs: inferRecipeOptions([
-            ...dirtyRecipeElements,
-            ...cleanRecipeExtensions,
-          ]),
-          extensionPoints: savedRecipe.extensionPoints,
+        optionsActions.installMod({
+          modDefinition: savedRecipe,
+          configuredDependencies: inferConfiguredModIntegrations(modComponents),
+          optionsArgs: inferRecipeOptions(modComponents),
+          screen: "pageEditor",
+          isReinstall: false,
         })
       );
 
@@ -253,9 +270,9 @@ function useInitialFormState({
   activeRecipe,
   activeElement,
 }: {
-  activeElement: FormState;
-  activeRecipe: RecipeDefinition | null;
-}): RecipeMetadataFormState | null {
+  activeElement: ModComponentFormState;
+  activeRecipe: ModDefinition | null;
+}): ModMetadataFormState | null {
   const scope = useSelector(selectScope);
 
   const activeRecipeId =
@@ -284,7 +301,7 @@ function useInitialFormState({
   // Handle creating a new blueprint from a selected extension
   if (activeElement) {
     return {
-      id: generateRecipeId(scope, activeElement.label),
+      id: generatePackageId(scope, activeElement.label),
       name: activeElement.label,
       version: validateSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
@@ -296,7 +313,7 @@ function useInitialFormState({
 
 function useFormSchema() {
   const newRecipeIds = useSelector(selectNewRecipeIds);
-  const { data: recipes } = useAllRecipes();
+  const { data: recipes } = useAllModDefinitions();
   const savedRecipeIds: RegistryId[] = (recipes ?? []).map(
     (x) => x.metadata.id
   );
@@ -308,10 +325,10 @@ function useFormSchema() {
     id: string()
       .matches(
         PACKAGE_REGEX,
-        "Blueprint ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~"
+        "Mod ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~"
       )
-      .notOneOf(allRecipeIds, "Blueprint ID is already in use")
-      .required("Blueprint ID is required"),
+      .notOneOf(allRecipeIds, "Mod ID is already in use")
+      .required("Mod ID is required"),
     name: string().required("Name is required"),
     version: string()
       .test(
@@ -334,7 +351,7 @@ const CreateRecipeModalBody: React.FC = () => {
   const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
   const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
   const { data: activeRecipe, isFetching: isRecipeFetching } =
-    useRecipe(activeRecipeId);
+    useOptionalModDefinition(activeRecipeId);
 
   const formSchema = useFormSchema();
 
@@ -347,10 +364,7 @@ const CreateRecipeModalBody: React.FC = () => {
     activeElement,
   });
 
-  const onSubmit: OnSubmit<RecipeMetadataFormState> = async (
-    values,
-    helpers
-  ) => {
+  const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
     try {
       // `activeRecipe` must come first. It's possible that both activeElement and activeRecipe are set because
       // activeRecipe will be the recipe of the active element if in a "Save as New" workflow for an existing recipe
@@ -361,7 +375,7 @@ const CreateRecipeModalBody: React.FC = () => {
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS
-        throw new Error("Expected either active element or blueprint");
+        throw new Error("Expected either active element or mod");
       }
 
       hideModal();
@@ -372,7 +386,7 @@ const CreateRecipeModalBody: React.FC = () => {
       }
 
       notify.error({
-        message: "Error creating blueprint",
+        message: "Error creating mod",
         error,
       });
     } finally {
@@ -384,8 +398,8 @@ const CreateRecipeModalBody: React.FC = () => {
     <Modal.Body>
       <ConnectedFieldTemplate
         name="id"
-        label="Blueprint ID"
-        description={FieldDescriptions.BLUEPRINT_ID}
+        label="Mod ID"
+        description={FieldDescriptions.MOD_ID}
         widerLabel
         as={RegistryIdWidget}
       />
@@ -393,19 +407,19 @@ const CreateRecipeModalBody: React.FC = () => {
         name="name"
         label="Name"
         widerLabel
-        description={FieldDescriptions.BLUEPRINT_NAME}
+        description={FieldDescriptions.MOD_NAME}
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
         widerLabel
-        description={FieldDescriptions.BLUEPRINT_VERSION}
+        description={FieldDescriptions.MOD_VERSION}
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
         widerLabel
-        description={FieldDescriptions.BLUEPRINT_DESCRIPTION}
+        description={FieldDescriptions.MOD_DESCRIPTION}
       />
     </Modal.Body>
   );
@@ -426,7 +440,7 @@ const CreateRecipeModalBody: React.FC = () => {
   );
 
   return (
-    <RequireScope scopeSettingsDescription="To create a blueprint, you must first set an account alias for your PixieBrix account">
+    <RequireScope scopeSettingsDescription="To create a mod, you must first set an account alias for your PixieBrix account">
       {isRecipeFetching ? (
         <Loader />
       ) : (
@@ -455,7 +469,7 @@ const CreateRecipeModal: React.FunctionComponent = () => {
   }, [dispatch]);
 
   return (
-    <ModalLayout title="Create new blueprint" show={show} onHide={hideModal}>
+    <ModalLayout title="Create new mod" show={show} onHide={hideModal}>
       <CreateRecipeModalBody />
     </ModalLayout>
   );

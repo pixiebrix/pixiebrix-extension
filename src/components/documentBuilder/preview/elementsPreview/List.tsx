@@ -23,7 +23,8 @@ import {
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
-import { isExpression } from "@/runtime/mapArgs";
+
+import { isExpression } from "@/utils/expressionUtils";
 
 type ListProps = PreviewComponentProps & {
   element: DocumentElement;
@@ -37,6 +38,7 @@ const List: React.FunctionComponent<ListProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => {
   const { config = {}, type } = element;
@@ -50,6 +52,7 @@ const List: React.FunctionComponent<ListProps> = ({
         documentTreeStyles.container,
         documentTreeStyles.listContainer
       )}
+      ref={elementRef}
       {...restPreviewProps}
     >
       <Flaps

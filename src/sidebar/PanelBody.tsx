@@ -17,16 +17,16 @@
 
 import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
-import blockRegistry from "@/blocks/registry";
-import ReactShadowRoot from "react-shadow-root";
+import blockRegistry from "@/bricks/registry";
+import EmotionShadowRoot from "react-shadow/emotion";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import {
-  type BlockArg,
-  type MessageContext,
-  type RegistryId,
-  type RendererOutput,
-} from "@/core";
-import { type PanelPayload, type PanelRunMeta } from "@/sidebar/types";
+  isRendererErrorPayload,
+  isRendererLoadingPayload,
+  type PanelContext,
+  type PanelPayload,
+  type PanelRunMeta,
+} from "@/types/sidebarTypes";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
@@ -34,7 +34,16 @@ import { useAsyncEffect } from "use-async-effect";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { type SubmitPanelAction } from "@/blocks/errors";
+import { type SubmitPanelAction } from "@/bricks/errors";
+import { type RegistryId } from "@/types/registryTypes";
+import { type RendererOutput } from "@/types/runtimeTypes";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { isEmpty } from "lodash";
+import DelayedRender from "@/components/DelayedRender";
+
+// Used for the loading message
+// import cx from "classnames";
+// import styles from "./PanelBody.module.scss";
 
 type BodyProps = {
   blockId: RegistryId;
@@ -43,25 +52,18 @@ type BodyProps = {
 };
 
 const BodyContainer: React.FC<
-  BodyProps & {
-    isFetching: boolean;
-    onAction: (action: SubmitPanelAction) => void;
-  }
-> = ({ blockId, body, isFetching, onAction, meta }) => (
-  <>
-    {isFetching && <Loader />}
-
-    <div className="full-height" data-block-id={blockId}>
-      <ReactShadowRoot>
-        <RendererComponent
-          blockId={blockId}
-          body={body}
-          meta={meta}
-          onAction={onAction}
-        />
-      </ReactShadowRoot>
-    </div>
-  </>
+  // In the future, may want to support providing isFetching to show a loading indicator/badge over the previous content
+  BodyProps & { onAction: (action: SubmitPanelAction) => void }
+> = ({ blockId, body, onAction, meta }) => (
+  // Use a shadow dom to prevent the webpage styles from affecting the sidebar
+  <EmotionShadowRoot.div className="full-height" data-testid={blockId}>
+    <RendererComponent
+      blockId={blockId}
+      body={body}
+      meta={meta}
+      onAction={onAction}
+    />
+  </EmotionShadowRoot.div>
 );
 
 type State = {
@@ -81,6 +83,10 @@ type State = {
    * Error to display from running the renderer
    */
   error: unknown;
+  /**
+   * Optional customized loading message to display in the panel
+   */
+  loadingMessage?: string;
 };
 
 const initialPanelState: State = {
@@ -94,6 +100,9 @@ const slice = createSlice({
   name: "panelSlice",
   initialState: initialPanelState,
   reducers: {
+    setLoadingMessage(state, action: PayloadAction<string>) {
+      state.loadingMessage = action.payload;
+    },
     reactivate(state) {
       // Don't clear out the component/error, because we want to keep showing the old component while the panel is
       // reloading
@@ -117,7 +126,7 @@ const slice = createSlice({
 const PanelBody: React.FunctionComponent<{
   isRootPanel?: boolean;
   payload: PanelPayload;
-  context: MessageContext;
+  context: PanelContext;
   onAction: (action: SubmitPanelAction) => void;
 }> = ({ payload, context, isRootPanel = false, onAction }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
@@ -129,8 +138,16 @@ const PanelBody: React.FunctionComponent<{
         return;
       }
 
-      if ("error" in payload) {
+      if (isRendererErrorPayload(payload)) {
         dispatch(slice.actions.failure({ error: payload.error }));
+        return;
+      }
+
+      if (isRendererLoadingPayload(payload)) {
+        if (!isEmpty(payload.loadingMessage)) {
+          dispatch(slice.actions.setLoadingMessage(payload.loadingMessage));
+        }
+
         return;
       }
 
@@ -143,9 +160,8 @@ const PanelBody: React.FunctionComponent<{
         console.debug("Running panel body for panel payload", payload);
 
         const block = await blockRegistry.lookup(blockId);
-        // In the future, the renderer brick should run in the contentScript, not the panel frame
-        // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
-        const body = await block.run(args as BlockArg, {
+
+        const body = await block.run(unsafeAssumeValidArg(args), {
           ctxt,
           root: null,
           logger: new BackgroundLogger({
@@ -194,7 +210,20 @@ const PanelBody: React.FunctionComponent<{
   // avoid remounting the whole generated component. Some components maybe have long initialization times. E.g., our
   // Document Builder loads Bootstrap into the Shadow DOM
   if (state.isLoading) {
-    return <Loader />;
+    // TODO: wire up loading message to be configured somewhere
+    // if (state.loadingMessage) {
+    //   return (
+    //     <div className={cx("text-muted", styles.loadingMessage)}>
+    //       {state.loadingMessage}
+    //     </div>
+    //   );
+    // }
+
+    return (
+      <DelayedRender millis={600}>
+        <Loader />
+      </DelayedRender>
+    );
   }
 
   if (state.error) {
@@ -229,13 +258,7 @@ const PanelBody: React.FunctionComponent<{
     );
   }
 
-  return (
-    <BodyContainer
-      {...state.component}
-      isFetching={state.isFetching}
-      onAction={onAction}
-    />
-  );
+  return <BodyContainer {...state.component} onAction={onAction} />;
 };
 
 export default PanelBody;

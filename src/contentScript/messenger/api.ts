@@ -27,22 +27,31 @@ export const closeTemporaryPanel = getNotifier("TEMPORARY_PANEL_CLOSE");
 export const resolveTemporaryPanel = getNotifier("TEMPORARY_PANEL_RESOLVE");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
-export const removeExtension = getNotifier("REMOVE_EXTENSION");
+export const ensureExtensionPointsInstalled = getMethod(
+  "ENSURE_EXTENSION_POINTS_INSTALLED"
+);
+export const removeInstalledExtension = getNotifier(
+  "REMOVE_INSTALLED_EXTENSION"
+);
 export const resetTab = getNotifier("RESET_TAB");
-
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const rehydrateSidebar = getMethod("REHYDRATE_SIDEBAR");
+
+export const getReservedSidebarEntries = getMethod(
+  "GET_RESERVED_SIDEBAR_ENTRIES"
+);
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const reloadSidebar = getMethod("RELOAD_SIDEBAR");
-export const removeSidebar = getMethod("REMOVE_SIDEBAR");
+export const removeSidebars = getMethod("REMOVE_SIDEBARS");
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
 
 export const initRobot = getMethod("UIPATH_INIT");
 export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
-export const detectFrameworks = getMethod("DETECT_FRAMEWORKS");
+
+export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
 export const runRendererBlock = getMethod("RUN_RENDERER_BLOCK");
@@ -62,11 +71,15 @@ export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getMethod("SELECT_ELEMENT");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
-export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");
+export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
 export const runMapArgs = getMethod("RUN_MAP_ARGS");
 
 export const getPageState = getMethod("GET_PAGE_STATE");
 export const setPageState = getMethod("SET_PAGE_STATE");
+
+export const reloadMarketplaceEnhancements = getMethod(
+  "RELOAD_MARKETPLACE_ENHANCEMENTS"
+);
 
 export const notify = {
   info: getNotifier("NOTIFY_INFO"),

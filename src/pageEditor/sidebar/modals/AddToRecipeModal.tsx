@@ -25,7 +25,6 @@ import {
   selectEditorModalVisibilities,
   selectInstalledRecipeMetadatas,
 } from "@/pageEditor/slices/editorSelectors";
-import { type RecipeMetadata, type RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import notify from "@/utils/notify";
 import Form, {
@@ -38,6 +37,8 @@ import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioIt
 import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
 type FormState = {
   recipeId: RegistryId;
@@ -65,7 +66,7 @@ const AddToRecipeModal: React.FC = () => {
   const removeExtension = useRemoveExtension();
 
   const recipeMetadataById = useMemo(() => {
-    const result: Record<RegistryId, RecipeMetadata> = {};
+    const result: Record<RegistryId, ModComponentBase["_recipe"]> = {};
     for (const metadata of recipeMetadatas) {
       result[metadata.id] = metadata;
     }
@@ -117,7 +118,7 @@ const AddToRecipeModal: React.FC = () => {
       }
 
       notify.error({
-        message: "Problem adding extension to blueprint",
+        message: "Problem adding to mod",
         error,
       });
     } finally {
@@ -126,7 +127,7 @@ const AddToRecipeModal: React.FC = () => {
   };
 
   const selectOptions = [
-    { label: "➕ Create new blueprint...", value: NEW_RECIPE_ID },
+    { label: "➕ Create new mod...", value: NEW_RECIPE_ID },
     ...recipeMetadatas.map((metadata) => ({
       label: metadata.name,
       value: metadata.id,
@@ -135,11 +136,11 @@ const AddToRecipeModal: React.FC = () => {
 
   const radioItems: RadioItem[] = [
     {
-      label: "Move the extension into the blueprint",
+      label: "Move into the selected mod",
       value: "move",
     },
     {
-      label: "Create a copy of the extension in the blueprint",
+      label: "Create a copy in the selected mod",
       value: "copy",
     },
   ];
@@ -149,7 +150,7 @@ const AddToRecipeModal: React.FC = () => {
       <ConnectedFieldTemplate
         name="recipeId"
         hideLabel
-        description="Choose a blueprint"
+        description="Choose a mod"
         as={SelectWidget}
         options={selectOptions}
         widerLabel
@@ -159,7 +160,7 @@ const AddToRecipeModal: React.FC = () => {
         hideLabel
         as={RadioItemListWidget}
         items={radioItems}
-        header="Move or copy the extension?"
+        header="Move or copy the starter brick?"
       />
     </Modal.Body>
   );
@@ -187,7 +188,7 @@ const AddToRecipeModal: React.FC = () => {
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Add <em>{activeElement?.label}</em> to a blueprint
+          Add <em>{activeElement?.label}</em> to a mod
         </Modal.Title>
       </Modal.Header>
       <Form

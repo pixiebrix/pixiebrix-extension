@@ -19,28 +19,40 @@ import {
   type Analysis,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import PipelineVisitor from "@/blocks/PipelineVisitor";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import blockRegistry, { type TypedBlockMap } from "@/blocks/registry";
+import PipelineVisitor from "@/bricks/PipelineVisitor";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 
 /**
  * A base class for creating analysis visitors.
  */
-export abstract class AnalysisVisitor
+export abstract class AnalysisVisitorABC
   extends PipelineVisitor
   implements Analysis
 {
   abstract readonly id: string;
 
-  protected extension: FormState;
+  protected extension: ModComponentFormState;
 
   protected readonly annotations: AnalysisAnnotation[] = [];
   getAnnotations(): AnalysisAnnotation[] {
     return this.annotations;
   }
 
-  run(extension: FormState): void {
+  /**
+   * Visit the extension point definition.
+   * @param extensionPoint
+   */
+  visitExtensionPoint(
+    extensionPoint: ModComponentFormState["extensionPoint"]
+  ): void {
+    // NOP
+  }
+
+  run(extension: ModComponentFormState): void {
     this.extension = extension;
+
+    this.visitExtensionPoint(extension.extensionPoint);
 
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
@@ -48,10 +60,10 @@ export abstract class AnalysisVisitor
   }
 }
 
-export abstract class AnalysisVisitorWithResolvedBlocks extends AnalysisVisitor {
+export abstract class AnalysisVisitorWithResolvedBricksABC extends AnalysisVisitorABC {
   protected allBlocks: TypedBlockMap;
 
-  override async run(extension: FormState): Promise<void> {
+  override async run(extension: ModComponentFormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();
 
     super.run(extension);

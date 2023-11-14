@@ -22,10 +22,6 @@ import {
   makeInitialElementUIState,
   makeInitialNodeUIState,
 } from "@/pageEditor/uiState/uiState";
-import {
-  formStateFactory,
-  installedRecipeMetadataFactory,
-} from "@/testUtils/factories";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureElementUIState,
@@ -52,6 +48,8 @@ import {
   selectElements,
   selectExpandedRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("ensureElementUIState", () => {
   test("does not affect existing ui state", () => {
@@ -353,7 +351,7 @@ describe("removeElement", () => {
 
 describe("removeRecipeData", () => {
   test("removes expanded active recipe", () => {
-    const recipe = installedRecipeMetadataFactory();
+    const recipe = modMetadataFactory();
     const element1 = formStateFactory({ recipe });
     const element2 = formStateFactory({ recipe });
     const orphanElement = formStateFactory();
@@ -431,7 +429,7 @@ describe("removeRecipeData", () => {
 
 describe("selectRecipeId", () => {
   test("select unselected recipe", () => {
-    const recipe = installedRecipeMetadataFactory();
+    const recipe = modMetadataFactory();
     const newState = produce(initialState, (draft) => {
       selectRecipeId(draft, recipe.id);
     });
@@ -440,7 +438,7 @@ describe("selectRecipeId", () => {
   });
 
   test("re-select selected recipe", () => {
-    const recipe = installedRecipeMetadataFactory();
+    const recipe = modMetadataFactory();
     const state: EditorState = {
       ...initialState,
       activeRecipeId: recipe.id,

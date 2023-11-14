@@ -19,16 +19,17 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { FieldArray, useField } from "formik";
 import { Button } from "react-bootstrap";
 import React, { useMemo } from "react";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import {
   booleanPredicate,
   findOneOf,
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
-import { type UnknownObject } from "@/types";
-import { defaultBlockConfig } from "@/blocks/util";
+import { type UnknownObject } from "@/types/objectTypes";
+import { defaultBlockConfig } from "@/bricks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { joinName } from "@/utils";
+import styles from "./ArrayWidget.module.scss";
+import { joinName } from "@/utils/formUtils";
 
 type ArrayWidgetProps = SchemaFieldProps & {
   addButtonCaption?: string;
@@ -104,6 +105,8 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
             ))}
           </ul>
           <Button
+            variant="link"
+            className={styles.addButton}
             onClick={() => {
               push(getDefaultArrayItem(schemaItems));
             }}

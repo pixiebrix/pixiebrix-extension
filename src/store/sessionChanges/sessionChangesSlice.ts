@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
@@ -31,6 +31,9 @@ export const sessionChangesSlice = createSlice({
   name: key,
   initialState,
   reducers: {
+    resetSessionChanges() {
+      return initialState;
+    },
     setSessionChanges(
       state,
       action: PayloadAction<{

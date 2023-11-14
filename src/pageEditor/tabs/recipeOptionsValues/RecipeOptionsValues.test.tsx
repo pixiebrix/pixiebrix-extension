@@ -19,40 +19,38 @@ import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
 import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
-import { recipeFactory } from "@/testUtils/factories";
 import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
-import { useAllRecipes, useRecipe } from "@/recipes/recipesHooks";
-import { type RecipeDefinition } from "@/types/definitions";
-import { type Except } from "type-fest";
-import { type UseCachedQueryResult } from "@/core";
+import {
+  useAllModDefinitions,
+  useOptionalModDefinition,
+} from "@/modDefinitions/modDefinitionHooks";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("@/recipes/recipesHooks", () => ({
-  useRecipe: jest.fn(),
-  useAllRecipes: jest.fn(),
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
+  useOptionalModDefinition: jest.fn(),
+  useAllModDefinitions: jest.fn(),
 }));
 
-const mockFlags: Except<UseCachedQueryResult<RecipeDefinition[]>, "data"> = {
-  isFetchingFromCache: false,
-  isCacheUninitialized: false,
-  isFetching: false,
-  isLoading: false,
-  isUninitialized: false,
-  error: undefined,
-  refetch: jest.fn(),
-};
+jest.mock("@/contrib/google/initGoogle", () => ({
+  __esModule: true,
+  isGoogleInitialized: jest.fn().mockReturnValue(true),
+  isGAPISupported: jest.fn().mockReturnValue(true),
+  subscribe: jest.fn(),
+}));
 
-function mockRecipe(recipe: RecipeDefinition) {
-  (useAllRecipes as jest.Mock).mockReturnValue({
-    data: [recipe],
-    ...mockFlags,
-  });
-
-  (useRecipe as jest.Mock).mockReturnValue({
-    data: recipe,
-    ...mockFlags,
-  });
+function mockModDefinition(modDefinition: ModDefinition) {
+  (useAllModDefinitions as jest.Mock).mockReturnValue(
+    valueToAsyncCacheState([modDefinition])
+  );
+  (useOptionalModDefinition as jest.Mock).mockReturnValue(
+    valueToAsyncCacheState(modDefinition)
+  );
 }
 
 beforeEach(() => {
@@ -61,22 +59,23 @@ beforeEach(() => {
 
 describe("ActivationOptions", () => {
   test("renders empty options", async () => {
-    const recipe = recipeFactory();
-    mockRecipe(recipe);
-    const rendered = render(<RecipeOptionsValues />, {
+    const modDefinition = defaultModDefinitionFactory();
+    mockModDefinition(modDefinition);
+    const { asFragment } = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders blueprint options", async () => {
-    const recipe = recipeFactory({
+    const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -109,25 +108,32 @@ describe("ActivationOptions", () => {
                 },
               },
             },
+            myDatabase: {
+              $ref: databaseSchema.$id,
+            },
+            myGoogleSheet: {
+              $ref: googleSheetIdSchema.$id,
+            },
           },
         },
       },
     });
-    mockRecipe(recipe);
-    const rendered = render(<RecipeOptionsValues />, {
+    mockModDefinition(modDefinition);
+    const { asFragment } = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders blueprint options with additional props", async () => {
-    const recipe = recipeFactory({
+    const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -137,21 +143,22 @@ describe("ActivationOptions", () => {
         },
       },
     });
-    mockRecipe(recipe);
-    const rendered = render(<RecipeOptionsValues />, {
+    mockModDefinition(modDefinition);
+    const { asFragment } = render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
     await waitForEffect();
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders blueprint options with uiSchema sort order", async () => {
-    const recipe = recipeFactory({
+    const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
           type: "object",
@@ -175,12 +182,13 @@ describe("ActivationOptions", () => {
         },
       },
     });
-    mockRecipe(recipe);
+    mockModDefinition(modDefinition);
     render(<RecipeOptionsValues />, {
       setupRedux(dispatch) {
-        extensionsSlice.actions.installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
+        extensionsSlice.actions.installMod({
+          modDefinition,
+          screen: "pageEditor",
+          isReinstall: false,
         });
       },
     });
@@ -193,5 +201,40 @@ describe("ActivationOptions", () => {
     const strInput = await screen.findByLabelText("Input String");
 
     expect(allInputs).toStrictEqual([numInput, boolInput, strInput]);
+  });
+
+  it("renders google sheets field type option if gapi is loaded", async () => {
+    const modDefinition = defaultModDefinitionFactory({
+      options: {
+        schema: {
+          type: "object",
+          properties: {
+            mySheet: {
+              $ref: googleSheetIdSchema.$id,
+            },
+          },
+          required: ["mySheet"],
+        },
+      },
+    });
+    mockModDefinition(modDefinition);
+    render(<RecipeOptionsValues />, {
+      setupRedux(dispatch) {
+        extensionsSlice.actions.installMod({
+          modDefinition,
+          screen: "pageEditor",
+          isReinstall: false,
+        });
+      },
+    });
+
+    await waitForEffect();
+
+    const input = screen.getByLabelText("mySheet");
+    expect(input).toBeInTheDocument();
+    const selectButton = screen.getByRole("button", { name: "Select" });
+    expect(selectButton).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access -- TODO: find better query
+    expect(input.parentElement).toContainElement(selectButton);
   });
 });

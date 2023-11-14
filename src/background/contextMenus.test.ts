@@ -19,22 +19,21 @@ import {
   preloadContextMenus,
   ensureContextMenu,
 } from "@/background/contextMenus";
-import {
-  extensionFactory,
-  extensionPointDefinitionFactory,
-} from "@/testUtils/factories";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import {
   type ContextMenuConfig,
   fromJS,
   type MenuDefinition,
-} from "@/extensionPoints/contextMenu";
+} from "@/starterBricks/contextMenu";
 import * as backgroundApi from "@/background/messenger/api";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import { type IExtension } from "@/core";
+import { type StarterBrickConfig } from "@/starterBricks/types";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
+import { setContext } from "@/testUtils/detectPageMock";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("webext-dynamic-content-scripts/distribution/active-tab");
+setContext("background");
 
 jest.mock("webext-polyfill-kinda", () => ({
   contextMenus: {
@@ -42,28 +41,13 @@ jest.mock("webext-polyfill-kinda", () => ({
   },
 }));
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => false,
-  isExtensionContext: () => true,
-  isBackground: () => true,
-  isBackgroundPage: () => true,
-  isContentScript: () => false,
-}));
-
 (browser.contextMenus as any) = {
   update: jest.fn(),
 };
 
-const updateMenuMock = browser.contextMenus.update as jest.MockedFunction<
-  typeof browser.contextMenus.update
->;
-const createMenuMock = chromeP.contextMenus.create as jest.MockedFunction<
-  typeof chromeP.contextMenus.create
->;
-const ensureContextMenuMock =
-  backgroundApi.ensureContextMenu as jest.MockedFunction<
-    typeof backgroundApi.ensureContextMenu
-  >;
+const updateMenuMock = jest.mocked(browser.contextMenus.update);
+const createMenuMock = jest.mocked(chromeP.contextMenus.create);
+const ensureContextMenuMock = jest.mocked(backgroundApi.ensureContextMenu);
 
 describe("contextMenus", () => {
   beforeEach(() => {
@@ -77,30 +61,30 @@ describe("contextMenus", () => {
     expect(createMenuMock).not.toHaveBeenCalled();
   });
 
-  it("don't fail on missing extension point", async () => {
-    // Unknown extension point
-    const menuExtension = extensionFactory();
-    await preloadContextMenus([menuExtension]);
+  it("don't fail on missing starter brick", async () => {
+    // Unknown starter brick
+    const menuModComponent = modComponentFactory();
+    await preloadContextMenus([menuModComponent]);
     expect(updateMenuMock).not.toHaveBeenCalled();
     expect(createMenuMock).not.toHaveBeenCalled();
   });
 
   it("preload context menu", async () => {
     const extensionPoint =
-      extensionPointDefinitionFactory() as unknown as ExtensionPointConfig<MenuDefinition>;
+      starterBrickConfigFactory() as unknown as StarterBrickConfig<MenuDefinition>;
     extensionPoint.definition.type = "contextMenu";
     extensionPoint.definition.contexts = ["all"];
 
     updateMenuMock.mockRejectedValue(new Error("My Error"));
 
-    extensionPointRegistry.register([fromJS(extensionPoint as any)]);
+    extensionPointRegistry.register([fromJS(extensionPoint)]);
 
-    const menuExtension = extensionFactory({
+    const menuModComponent = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,
-    }) as IExtension<ContextMenuConfig>;
-    menuExtension.config.title = "Test Menu";
+    }) as ModComponentBase<ContextMenuConfig>;
+    menuModComponent.config.title = "Test Menu";
 
-    await preloadContextMenus([menuExtension]);
+    await preloadContextMenus([menuModComponent]);
     expect(updateMenuMock).toHaveBeenCalledWith(
       expect.stringMatching(/pixiebrix-\S+/),
       {

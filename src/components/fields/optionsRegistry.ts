@@ -17,7 +17,7 @@
 
 import type React from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 
 /**
  * Mapping from block id to block editor.

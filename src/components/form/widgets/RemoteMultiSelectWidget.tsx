@@ -19,14 +19,14 @@ import React from "react";
 import { useField } from "formik";
 import Select from "react-select";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type SanitizedServiceConfiguration } from "@/core";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import {
   type OptionsFactory,
   useOptionsResolver,
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 
 type RemoteMultiSelectWidgetProps = {
   id?: string;
@@ -34,7 +34,7 @@ type RemoteMultiSelectWidgetProps = {
   disabled?: boolean;
   isClearable?: boolean;
   optionsFactory: OptionsFactory | Promise<Array<Option<unknown>>>;
-  config: SanitizedServiceConfiguration | null;
+  config: SanitizedIntegrationConfig | null;
   /**
    * Additional arguments to pass to optionsFactory, if optionsFactory is a function.
    */
@@ -83,8 +83,8 @@ const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
           (field.value ?? []).includes(option.value)
         ) ?? []
       }
-      onChange={(options) => {
-        helpers.setValue(options.map((option) => option.value));
+      onChange={async (options) => {
+        await helpers.setValue(options.map((option) => option.value));
       }}
     />
   );

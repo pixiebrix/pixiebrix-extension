@@ -16,59 +16,39 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import { extensionFactory } from "@/testUtils/factories";
-import { type PersistedExtension } from "@/core";
+import { render, screen } from "@/sidebar/testHelpers";
 import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
-
-function optionsStore(initialState?: {
-  extensions: PersistedExtension[];
-  auth: AuthState;
-}) {
-  return configureStore({
-    reducer: {
-      options: extensionsSlice.reducer,
-      auth: authSlice.reducer,
-    },
-    preloadedState: initialState ?? undefined,
-  });
-}
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
-    const state = {
-      extensions: [extensionFactory() as PersistedExtension],
-      auth: { flags: [] } as AuthState,
-    };
+    render(<DefaultPanel />);
 
-    render(
-      <Provider store={optionsStore(state)}>
-        <DefaultPanel />
-      </Provider>
-    );
-
-    expect(screen.queryByText("Get started with PixieBrix")).not.toBeNull();
+    expect(screen.getByText("Get started with PixieBrix")).not.toBeNull();
   });
 
   it("renders restricted user content", () => {
-    const state = {
-      extensions: [extensionFactory() as PersistedExtension],
-      auth: { flags: ["restricted-marketplace"] } as AuthState,
-    };
+    render(<DefaultPanel />, {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.saveExtension({
+            extension: modComponentFactory() as ActivatedModComponent,
+            pushToCloud: false,
+          })
+        );
 
-    render(
-      <Provider store={optionsStore(state)}>
-        <DefaultPanel />
-      </Provider>
-    );
+        dispatch(
+          authSlice.actions.setAuth({
+            flags: ["restricted-marketplace"],
+          } as AuthState)
+        );
+      },
+    });
 
-    expect(
-      screen.queryByText("No panels activated for the page")
-    ).not.toBeNull();
+    expect(screen.getByText("No panels activated for the page")).not.toBeNull();
   });
 });

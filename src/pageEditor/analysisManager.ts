@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BlockTypeAnalysis from "@/analysis/analysisVisitors/blockTypeAnalysis";
+import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import ExtensionUrlPatternAnalysis from "@/analysis/analysisVisitors/extensionUrlPatternAnalysis";
 import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import { type TraceRecord } from "@/telemetry/trace";
-import { type PayloadAction, isAnyOf } from "@reduxjs/toolkit";
+import { isAnyOf, type PayloadAction } from "@reduxjs/toolkit";
 import { type RootState } from "./pageEditorTypes";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import runtimeSlice from "./slices/runtimeSlice";
@@ -33,12 +33,55 @@ import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectActiveElementTraces } from "./slices/runtimeSelectors";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import analysisSlice from "@/analysis/analysisSlice";
-import { selectSettings } from "@/store/settingsSelectors";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
+import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
+import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
+import { getPageState } from "@/contentScript/messenger/api";
+import { thisTab } from "@/pageEditor/utils";
+import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
+import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableNamesVisitor";
 
 const runtimeActions = runtimeSlice.actions;
 
 const pageEditorAnalysisManager = new ReduxAnalysisManager();
+
+/**
+ * Returns form states for the active mod. Includes both dirty elements tracked by the page editor, and other
+ * components that are active on the page.
+ * @param state the Page Editor Redux State
+ */
+export async function selectActiveModFormStates(
+  state: RootState
+): Promise<ModComponentFormState[]> {
+  const element = selectActiveElement(state);
+
+  if (element?.recipe) {
+    const dirtyElements = state.editor.elements.filter(
+      (x) => x.recipe?.id === element.recipe.id
+    );
+    const dirtyIds = new Set(dirtyElements.map((x) => x.uuid));
+
+    const extensions = selectExtensions(state);
+    const otherExtensions = extensions.filter(
+      (x) => x._recipe?.id === element.recipe.id && !dirtyIds.has(x.id)
+    );
+    const otherElements = await Promise.all(
+      otherExtensions.map(async (x) => extensionToFormState(x))
+    );
+
+    return [...dirtyElements, ...otherElements];
+  }
+
+  if (element) {
+    return [element];
+  }
+
+  return [];
+}
 
 // These actions will be used with every analysis so the annotation path is up-to-date
 // with the node position in the pipeline
@@ -73,7 +116,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
-  () => new BlockTypeAnalysis(),
+  () => new BrickTypeAnalysis(),
   {
     matcher: isAnyOf(...nodeListMutationActions),
   }
@@ -98,6 +141,13 @@ pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new PageStateAnalysis(),
+  {
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
+
+pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
@@ -115,19 +165,37 @@ pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
 });
 
-const varAnalysisFactory = (
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new HttpRequestAnalysis(),
+  {
+    matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
+  }
+);
+
+async function varAnalysisFactory(
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
   state: RootState
-) => {
-  const { varAnalysis } = selectSettings(state);
-  if (!varAnalysis) {
-    return null;
-  }
+) {
+  const trace = selectActiveElementTraces(state);
+  const extension = selectActiveElement(state);
 
-  const records = selectActiveElementTraces(state);
+  // The potential mod known mod variables
+  const formStates = await selectActiveModFormStates(state);
+  const variables = await ModVariableNames.collectNames(formStates);
 
-  return new VarAnalysis(records);
-};
+  // The actual mod variables
+  const modState = await getPageState(thisTab, {
+    namespace: "blueprint",
+    extensionId: extension.uuid,
+    blueprintId: extension.recipe?.id,
+  });
+
+  return new VarAnalysis({
+    trace,
+    modState,
+    modVariables: variables.knownNames,
+  });
+}
 
 // OutputKeyAnalysis seems to be the slowest one, so we register it in the end
 pageEditorAnalysisManager.registerAnalysisEffect(
@@ -137,12 +205,40 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   }
 );
 
-// VarAnalysis is not the slowest itself, but it triggers a post-analysis action,
-// so it is the last one
+// CheckEventNamesAnalysis is not the slowest, but it triggers a post-analysis action, so put toward the end
+pageEditorAnalysisManager.registerAnalysisEffect(
+  async (action, state: RootState) => {
+    const formStates = await selectActiveModFormStates(state);
+    return new CheckEventNamesAnalysis(formStates);
+  },
+  {
+    matcher: isAnyOf(
+      // Must run whenever the active element changes in order to see changes from other mod components.
+      editorActions.selectElement,
+      editorActions.editElement,
+      ...nodeListMutationActions
+    ),
+  },
+  {
+    postAnalysisAction(analysis, extensionId, listenerApi) {
+      listenerApi.dispatch(
+        analysisSlice.actions.setKnownEventNames({
+          extensionId,
+          eventNames: analysis.knownEventNames,
+        })
+      );
+    },
+  }
+);
+
+// VarAnalysis is not the slowest, but it triggers a post-analysis action, so put toward the end
 pageEditorAnalysisManager.registerAnalysisEffect(
   varAnalysisFactory,
   {
     matcher: isAnyOf(
+      editorActions.showVariablePopover,
+      // Include selectElement so that variable analysis is ready when user first types
+      editorActions.selectElement,
       editorActions.editElement,
       runtimeActions.setExtensionTrace,
       ...nodeListMutationActions

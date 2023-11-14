@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { proxyService } from "@/background/messenger/api";
-import { Effect } from "@/types";
-import { type BlockArg, type Schema } from "@/core";
-import { boolean } from "@/utils";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
-export class SendSimpleSlackMessage extends Effect {
+import { boolean } from "@/utils/typeUtils";
+
+export class SendSimpleSlackMessage extends EffectABC {
   constructor() {
     super(
       "slack/simple-message",
@@ -69,8 +71,8 @@ export class SendSimpleSlackMessage extends Effect {
     iconEmoji,
     botName,
     unfurlLinks,
-  }: BlockArg): Promise<void> {
-    await proxyService(null, {
+  }: BrickArgs): Promise<void> {
+    await performConfiguredRequestInBackground(null, {
       url: hookUrl,
       method: "post",
       // https://stackoverflow.com/questions/45752537/slack-incoming-webhook-request-header-field-content-type-is-not-allowed-by-acce
@@ -88,7 +90,7 @@ export class SendSimpleSlackMessage extends Effect {
   }
 }
 
-export class SendAdvancedSlackMessage extends Effect {
+export class SendAdvancedSlackMessage extends EffectABC {
   constructor() {
     super(
       "slack/advanced-message",
@@ -188,12 +190,12 @@ export class SendAdvancedSlackMessage extends Effect {
     botName,
     unfurlLinks,
     attachments,
-  }: BlockArg): Promise<void> {
+  }: BrickArgs): Promise<void> {
     if (!hookUrl) {
       throw new Error("hookUrl not configured");
     }
 
-    await proxyService(null, {
+    await performConfiguredRequestInBackground(null, {
       url: hookUrl,
       method: "post",
       // https://stackoverflow.com/questions/45752537/slack-incoming-webhook-request-header-field-content-type-is-not-allowed-by-acce

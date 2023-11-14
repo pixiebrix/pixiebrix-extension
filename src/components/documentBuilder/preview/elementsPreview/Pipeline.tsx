@@ -24,7 +24,7 @@ import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 
 type PipelineProps = PreviewComponentProps & {
   element: DocumentElement;
@@ -38,10 +38,12 @@ const Pipeline: React.FunctionComponent<PipelineProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => (
   <div
     className={cx(documentTreeStyles.shiftRightWrapper, className)}
+    ref={elementRef}
     {...restPreviewProps}
   >
     <Flaps

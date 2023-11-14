@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockPosition } from "@/blocks/types";
-import { type UUID } from "@/core";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type BrickPosition } from "@/bricks/types";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
-import { type BaseAnnotation } from "@/types";
+import { type BaseAnnotation } from "@/types/annotationTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export enum AnalysisAnnotationActionType {
   AddValueToArray,
@@ -37,7 +37,7 @@ export type AnalysisAnnotation = BaseAnnotation & {
   /**
    * Position of the annotation within the extension configuration
    */
-  position: BlockPosition;
+  position: BrickPosition;
   /**
    * Unique identifier for analysis that created this annotation
    */
@@ -52,6 +52,10 @@ export type AnalysisAnnotation = BaseAnnotation & {
   actions?: AnalysisAnnotationAction[];
 };
 
+/**
+ * An analysis to run against the FormState for a single ModComponentBase.
+ * @see ModComponentFormState
+ */
 export interface Analysis {
   /**
    * Unique identifier for this analysis
@@ -67,7 +71,7 @@ export interface Analysis {
    * Run the analysis on the given extension
    * @param extension The extension to analyze
    */
-  run(extension: FormState): void | Promise<void>;
+  run(extension: ModComponentFormState): void | Promise<void>;
 }
 
 export type AnalysisState = {
@@ -77,11 +81,20 @@ export type AnalysisState = {
   extensionAnnotations: Record<UUID, AnalysisAnnotation[]>;
 
   /**
-   * Known variables
-   * stored for each block by block path (string key of the Map)
-   * withing an extension (the UUID key of the Record)
+   * Known variables as map: ModComponentBase Id -> block path -> VarMap
+   * - Stored for each block by block path (string key of the Map)
+   * - Within an extension (the UUID key of the Record)
    */
   knownVars: Record<UUID, Map<string, VarMap>>;
+
+  /**
+   * Known custom event names emitted by the `@pixiebrix/event` brick.
+   *
+   * Currently, all mod components are aware of the same event names.
+   *
+   * @since 1.7.34
+   */
+  knownEventNames: Record<UUID, string[]>;
 };
 
 export type AnalysisRootState = {

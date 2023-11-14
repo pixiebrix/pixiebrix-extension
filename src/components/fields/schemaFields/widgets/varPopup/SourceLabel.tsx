@@ -2,7 +2,7 @@ import React from "react";
 import { type BlockInfo } from "@/pageEditor/uiState/uiStateTypes";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import styles from "./SourceLabel.module.scss";
-import { type TypedBlockMap } from "@/blocks/registry";
+import { type TypedBlockMap } from "@/bricks/registry";
 
 type SourceLabelProps = {
   source: string;
@@ -17,27 +17,39 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
   blocksInfo,
   allBlocks,
 }) => {
+  const [kind] = source.split(":");
   let label: string;
-  if (source.includes(":")) {
-    const [kind] = source.split(":");
+  if (
+    [
+      KnownSources.INPUT,
+      KnownSources.OPTIONS,
+      KnownSources.SERVICE,
+      KnownSources.MOD,
+    ].includes(kind)
+  ) {
     switch (kind) {
       case KnownSources.INPUT: {
-        label = extensionPointLabel;
+        label = `Starter Brick: ${extensionPointLabel}`;
         break;
       }
 
       case KnownSources.OPTIONS: {
-        label = "Blueprint Options";
+        label = "Mod Options";
+        break;
+      }
+
+      case KnownSources.MOD: {
+        label = "Mod Variables";
         break;
       }
 
       case KnownSources.SERVICE: {
-        label = "Services";
+        label = "Integrations";
         break;
       }
 
       default: {
-        label = source;
+        throw new Error(`Unexpected kind: ${kind}`);
       }
     }
   } else {

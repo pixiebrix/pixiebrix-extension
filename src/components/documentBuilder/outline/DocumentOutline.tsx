@@ -69,20 +69,23 @@ const DocumentOutline = ({
   const onMove = useMoveElement(documentBodyName);
 
   const renderItem = useCallback(
-    (params: RenderItemParams) => (
-      // Don't need to handle "body" synthetic element b/c it won't be rendered
-      <OutlineItem
-        {...params}
-        isActive={activeElement === params.item.data.elementName}
-        onSelect={() => {
-          setActiveElement(params.item.data.elementName as string);
-        }}
-        dragItem={dragItemId ? tree.items[dragItemId] : null}
-        onDelete={() => {
-          onDelete(params.item.data.elementName);
-        }}
-      />
-    ),
+    (params: RenderItemParams) => {
+      const { elementName }: { elementName: string } = params.item.data;
+      return (
+        // Don't need to handle "body" synthetic element b/c it won't be rendered
+        <OutlineItem
+          {...params}
+          isActive={activeElement === elementName}
+          onSelect={() => {
+            setActiveElement(elementName);
+          }}
+          dragItem={dragItemId ? tree.items[dragItemId] : null}
+          onDelete={async () => {
+            await onDelete(elementName);
+          }}
+        />
+      );
+    },
     [activeElement, setActiveElement, dragItemId, tree, onDelete]
   );
 
@@ -98,14 +101,14 @@ const DocumentOutline = ({
     [dispatch, treeExpandedState]
   );
 
-  const onDragEnd = (
+  const onDragEnd = async (
     sourcePosition: TreeSourcePosition,
     destinationPosition?: TreeDestinationPosition
   ) => {
     setDragItemId(null);
 
     if (destinationPosition) {
-      onMove(sourcePosition, destinationPosition);
+      await onMove(sourcePosition, destinationPosition);
     }
   };
 

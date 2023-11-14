@@ -19,22 +19,22 @@ import React from "react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
-import { formStateWithTraceDataFactory } from "@/testUtils/factories";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import blocksRegistry from "@/blocks/registry";
-import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import bricksRegistry from "@/bricks/registry";
+import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Need at least one item so callers see the registry as initialized
-blocksRegistry.register([echoBlock]);
+bricksRegistry.register([echoBrick]);
 
 describe("DataPanel", () => {
   test("it renders with form state and trace data", async () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const extensionId = formState.uuid;
     const { instanceId } = formState.extension.blockPipeline[1];
-    const rendered = render(<DataPanel />, {
+    const { asFragment } = render(<DataPanel />, {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
@@ -50,6 +50,6 @@ describe("DataPanel", () => {
     });
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

@@ -53,9 +53,12 @@ export function moveElement(
 ): DocumentElement[] {
   return produce(body, (draft) => {
     const sourceParent = getIn(draft, source.parentId as string);
-    const destinationParent = getIn(draft, destination.parentId as string);
+    const destinationParent: DocumentElement = getIn(
+      draft,
+      destination.parentId as string
+    );
 
-    const element = sourceParent.children[source.index];
+    const element: DocumentElement = sourceParent.children[source.index];
 
     if (!acceptDrop(element, destinationParent)) {
       console.warn(
@@ -106,14 +109,14 @@ function useMoveElement(documentBodyName: string) {
   );
 
   return useCallback(
-    (
+    async (
       sourcePosition: TreeSourcePosition,
       destinationPosition?: TreeDestinationPosition
     ) => {
       // For now, just clear out the active element to ensure the active elementName is valid in the new tree
       setActiveElement(null);
 
-      setValue(moveElement(body, sourcePosition, destinationPosition));
+      await setValue(moveElement(body, sourcePosition, destinationPosition));
     },
     [body, setValue, setActiveElement]
   );

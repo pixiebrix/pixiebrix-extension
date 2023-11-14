@@ -21,28 +21,27 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import LoginPanel from "@/sidebar/LoginPanel";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import settingsSlice from "@/store/settingsSlice";
-import servicesSlice from "@/store/servicesSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/services/api";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export default {
   title: "Sidebar/LoginPanel",
   component: LoginPanel,
 } as ComponentMeta<typeof LoginPanel>;
 
-function optionsStore(initialState?: any) {
+function optionsStore(initialState?: UnknownObject) {
   return configureStore({
     reducer: {
       settings: settingsSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       auth: authSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware().concat(appApi.middleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
     ...(initialState ?? { preloadedState: initialState }),
   });

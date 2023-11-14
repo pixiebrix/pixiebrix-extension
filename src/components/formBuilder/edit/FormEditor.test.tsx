@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema, type UiSchema } from "@/core";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import testItRenders, {
   type ItRendersOptions,
@@ -27,7 +27,7 @@ import {
   createFormikTemplate,
   fireTextInput,
   fireFormSubmit,
-  selectSchemaFieldType,
+  selectSchemaFieldInputMode,
 } from "@/testUtils/formHelpers";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor, { type FormEditorProps } from "./FormEditor";
@@ -278,7 +278,7 @@ describe("FormEditor", () => {
       onSubmitMock
     );
 
-    const rendered = render(
+    const { container } = render(
       <FormikTemplate>
         <FormEditor activeField={fieldName} {...defaultProps} />
       </FormikTemplate>
@@ -296,7 +296,8 @@ describe("FormEditor", () => {
     expect(getRequiredFieldFromMock(0)).toBeUndefined();
 
     // Make it required
-    const requiredSwitch = rendered.container.querySelector(".switch.btn");
+    // eslint-disable-next-line testing-library/no-container
+    const requiredSwitch = container.querySelector(".switch.btn");
     fireEvent.click(requiredSwitch);
 
     // Check the field is required
@@ -354,7 +355,7 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
-    await selectSchemaFieldType(
+    await selectSchemaFieldInputMode(
       `${RJSF_SCHEMA_PROPERTY_NAME}.schema.properties.${fieldName}.default`,
       "string"
     );

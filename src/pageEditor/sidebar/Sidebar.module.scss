@@ -1,3 +1,4 @@
+@import "@/themes/colors.scss";
 $logoSize: 31px;
 
 .root {
@@ -92,10 +93,7 @@ $logoSize: 31px;
   border-radius: 0 !important;
   width: $logoSize;
   padding: 0 !important;
-
-  &:hover {
-    background-color: #e9ecef !important;
-  }
+  background: transparent !important;
 
   svg {
     margin: 5px;
@@ -109,4 +107,24 @@ $logoSize: 31px;
 .extensions {
   overflow-y: auto;
   flex: 1;
+}
+
+.searchWrapper {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 8px;
+  .searchContainer {
+    position: relative;
+    button {
+      z-index: 3;
+      color: black;
+      text-decoration: none;
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      bottom: 8px;
+      background: rgba(255, 255, 255, 0.5);
+      color: $N400;
+      padding: 0;
+    }
+  }
 }

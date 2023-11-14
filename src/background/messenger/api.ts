@@ -21,9 +21,9 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -42,21 +42,27 @@ export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
+export const removeExtensionForEveryTab = getNotifier(
+  "REMOVE_EXTENSION_EVERY_TAB",
+  bg
+);
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
-export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
 
 export const sheets = {
+  isLoggedIn: getMethod("GOOGLE_DRIVE_IS_LOGGED_IN", bg),
+  getUserEmail: getMethod("GOOGLE_DRIVE_GET_USER_EMAIL", bg),
+  getAllSpreadsheets: getMethod("GOOGLE_SHEETS_GET_ALL_SPREADSHEETS", bg),
+  getSpreadsheet: getMethod("GOOGLE_SHEETS_GET_SPREADSHEET", bg),
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
   getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES", bg),
   getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
+  getAllRows: getMethod("GOOGLE_SHEETS_GET_ALL_ROWS", bg),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-  batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE", bg),
-  batchGet: getMethod("GOOGLE_SHEETS_BATCH_GET", bg),
 };
 
 /**
@@ -67,7 +73,6 @@ export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
 export const openTab = getMethod("OPEN_TAB", bg);
 
 export const registry = {
-  fetch: getMethod("REGISTRY_FETCH", bg),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
   getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
   find: getMethod("REGISTRY_FIND", bg),
@@ -83,7 +88,8 @@ export const requestRun = {
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
   inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
   inTop: getMethod("REQUEST_RUN_IN_TOP", bg),
-  inAll: getMethod("REQUEST_RUN_IN_ALL", bg),
+  inOtherTabs: getMethod("REQUEST_RUN_IN_OTHER_TABS", bg),
+  inAllFrames: getMethod("REQUEST_RUN_IN_ALL_FRAMES", bg),
 };
 
 export const contextMenus = {
@@ -98,8 +104,11 @@ export const services = {
 };
 
 // `getMethod` currently strips generics, so we must copy the function signature here
-export const proxyService = getMethod("PROXY", bg) as <TData>(
-  serviceConfig: SanitizedServiceConfiguration | null,
+export const performConfiguredRequestInBackground = getMethod(
+  "CONFIGURED_REQUEST",
+  bg
+) as <TData>(
+  integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 
@@ -108,6 +117,7 @@ export const proxyService = getMethod("PROXY", bg) as <TData>(
 
 export const recordLog = getNotifier("RECORD_LOG", bg);
 export const recordWarning = getNotifier("RECORD_WARNING", bg);
+export const recordBrickRun = getNotifier("RECORD_BRICK_RUN", bg);
 export const recordEvent = getNotifier("RECORD_EVENT", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
@@ -129,3 +139,15 @@ export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
 export const captureTab = getMethod("CAPTURE_TAB", bg);
 
 export const getUserData = getMethod("GET_USER_DATA", bg);
+
+export const installStarterBlueprints = getMethod(
+  "INSTALL_STARTER_BLUEPRINTS",
+  bg
+);
+
+export const ping = getMethod("PING", bg);
+
+export const collectPerformanceDiagnostics = getMethod(
+  "COLLECT_PERFORMANCE_DIAGNOSTICS",
+  bg
+);

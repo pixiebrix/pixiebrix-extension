@@ -15,24 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSettingsState } from "@/store/settingsStorage";
-import { getThemeLogo } from "@/utils/themeUtils";
+import { getThemeLogo } from "@/themes/themeUtils";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import { DEFAULT_THEME } from "@/options/types";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { browserAction } from "@/mv3/api";
+import { expectContext } from "@/utils/expectContext";
+import { getActiveTheme } from "@/themes/themeStore";
 
+/**
+ * Set the toolbar icon based on the current theme.
+ * @see useGetTheme
+ */
 async function setToolbarIcon(): Promise<void> {
-  const { theme } = await getSettingsState();
+  const activeTheme = await getActiveTheme();
 
-  if (theme === DEFAULT_THEME) {
+  if (activeTheme === DEFAULT_THEME) {
     activateBrowserActionIcon();
     return;
   }
 
-  const themeLogo = getThemeLogo(theme);
+  const themeLogo = getThemeLogo(activeTheme);
   browserAction.setIcon({ path: themeLogo.small });
 }
 
 export default function initPartnerTheme() {
+  expectContext("background");
+
   void setToolbarIcon();
 }

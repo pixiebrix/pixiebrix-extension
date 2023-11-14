@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IconConfig } from "@/core";
+import { type IconConfig } from "@/types/iconTypes";
+
+const DEFAULT_ICON_ID = "box";
 
 export default async function getSvgIcon({
   library = "bootstrap",
-  id = "box",
+  id = DEFAULT_ICON_ID,
   size = 14,
   color = "#ae87e8",
 }: Partial<IconConfig> = {}): Promise<string> {
@@ -32,7 +34,7 @@ export default async function getSvgIcon({
     throw new Error(`Unknown icon library: ${library}`);
   }
 
-  const iconUrl = libraryCache.get(id) ?? libraryCache.get("box");
+  const iconUrl = libraryCache.get(id) ?? libraryCache.get(DEFAULT_ICON_ID);
   if (!iconUrl) {
     throw new Error(`Could not find icon ${id} in icon library ${library}`);
   }
@@ -40,6 +42,8 @@ export default async function getSvgIcon({
   const response = await fetch(iconUrl);
   const svgText = await response.text();
 
+  // We just created an element, it can't be "undefined". `!` is fine
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return $(svgText)
     .filter("svg") // There might also be comment nodes, so they need to be filtered out
     .attr({
@@ -47,5 +51,5 @@ export default async function getSvgIcon({
       height: size,
       fill: color,
     })
-    .get(0).outerHTML;
+    .get(0)!.outerHTML;
 }

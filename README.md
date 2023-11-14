@@ -4,7 +4,7 @@ PixieBrix is a browser extension and platform for safely extending your favorite
 with low/no-code.
 
 In addition to the extension, we maintain [pixiebrix.com](https://www.pixiebrix.com/), a
-registry of bricks and pre-made blueprints. You can create a PixieBrix account to enable
+registry of bricks and pre-made mods. You can create a PixieBrix account to enable
 support for team features, such as shared integration configurations and team bricks.
 
 <table>
@@ -49,6 +49,15 @@ the [Contributing file](https://github.com/pixiebrix/pixiebrix-extension/blob/ma
 more information.
 
 See the wiki for [instructions for setting up a local build](https://github.com/pixiebrix/pixiebrix-extension/wiki/Local-build-setup).
+
+## License
+
+PixieBrix provides this project under a dual license model to meet the development and distribution needs of both
+commercial distributors (such as OEMs and VARs) and open source projects.
+
+Developers who use or distribute open source applications under the AGPL can use the AGPL-licensed PixieBrix software,
+and OEMs and VARs that do not want to combine or distribute the PixieBrix software with their own commercial
+software under an AGPL license can purchase a commercial license.
 
 ## Why not _X_?
 

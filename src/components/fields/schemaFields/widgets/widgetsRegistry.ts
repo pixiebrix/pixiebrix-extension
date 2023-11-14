@@ -19,6 +19,7 @@ import { type FormControlProps } from "react-bootstrap";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import type React from "react";
 import { type TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
+import { type IntegrationDependencyWidgetProps } from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
 
 type Widgets = {
   ArrayWidget: React.VFC<SchemaFieldProps>;
@@ -31,6 +32,7 @@ type Widgets = {
       }
   >;
   ObjectWidget: React.VFC<SchemaFieldProps>;
+  FixedInnerObjectWidget: React.VFC<SchemaFieldProps>;
   OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   SchemaSelectWidget: React.VFC<SchemaFieldProps>;
   TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps>;
@@ -43,8 +45,9 @@ type Widgets = {
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
   DatabaseWidget: React.VFC<{ name: string }>;
   PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps>;
-
   IconWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+  ServiceWidget: React.FC<IntegrationDependencyWidgetProps>;
+  SheetsFileWidget: React.FC<SchemaFieldProps>;
 };
 
 function unsetWidgetFactory(label: string): React.VFC {
@@ -68,6 +71,7 @@ const widgetsRegistry: Widgets = {
   IntegerWidget: unsetWidgetFactory("IntegerWidget"),
   NumberWidget: unsetWidgetFactory("NumberWidget"),
   ObjectWidget: unsetWidgetFactory("ObjectWidget"),
+  FixedInnerObjectWidget: unsetWidgetFactory("FixedInnerObjectWidget"),
   OmitFieldWidget: unsetWidgetFactory("OmitFieldWidget"),
   SchemaSelectWidget: unsetWidgetFactory("SchemaSelectWidget"),
   TemplateToggleWidget: unsetWidgetFactory("TemplateToggleWidget"),
@@ -81,6 +85,8 @@ const widgetsRegistry: Widgets = {
   DatabaseWidget: unsetWidgetFactory("DatabaseWidget"),
   PasswordWidget: unsetWidgetFactory("PasswordWidget"),
   IconWidget: unsetWidgetFactory("IconWidget"),
+  ServiceWidget: unsetWidgetFactory("ServiceWidget"),
+  SheetsFileWidget: unsetWidgetFactory("SheetsFileWidget"),
 };
 
 export default widgetsRegistry;

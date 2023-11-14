@@ -1,15 +1,16 @@
 import React from "react";
-import { type IBlock } from "@/core";
+import { type Brick } from "@/types/brickTypes";
 import { type MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
-import { MARKETPLACE_URL } from "@/utils/strings";
+
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const BlockDetail: React.FunctionComponent<{
-  block: IBlock;
+  block: Brick;
   listing?: MarketplaceListing;
   onSelect: () => void;
   selectCaption: React.ReactNode;

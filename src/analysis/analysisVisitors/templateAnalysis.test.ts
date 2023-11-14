@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockPosition } from "@/blocks/types";
+import { type BrickPosition } from "@/bricks/types";
 import { toExpression } from "@/testUtils/testHelpers";
 import TemplateAnalysis from "./templateAnalysis";
 
-const position: BlockPosition = {
+const position: BrickPosition = {
   path: "test.path.property",
 };
 

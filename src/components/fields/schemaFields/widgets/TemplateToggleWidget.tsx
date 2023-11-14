@@ -17,7 +17,13 @@
 
 import styles from "./TemplateToggleWidget.module.scss";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
@@ -28,7 +34,8 @@ import {
   type TemplateToggleWidgetProps,
 } from "./templateToggleWidgetTypes";
 import VarPopup from "./varPopup/VarPopup";
-import { isTemplateExpression } from "@/runtime/mapArgs";
+
+import { isTemplateExpression } from "@/utils/expressionUtils";
 
 export function getOptionForInputMode(
   options: InputModeOption[],
@@ -48,16 +55,23 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   inputModeOptions,
   setFieldDescription,
   defaultType,
-  inputRef: inputRefProp, // Cut out from the rest of the props, not used
+  inputRef: inputRefProp,
   ...schemaFieldProps
 }) => {
   const [{ value }, , { setValue }] = useField(schemaFieldProps.name);
+
   const { inputMode, onOmitField } = useToggleFormField(
     schemaFieldProps.name,
-    schemaFieldProps.schema
+    schemaFieldProps.schema,
+    schemaFieldProps.isRequired
   );
-  const inputRef = useRef<HTMLTextAreaElement>();
-  const selectedOption = getOptionForInputMode(inputModeOptions, inputMode);
+
+  const defaultInputRef = useRef<HTMLElement>();
+  const inputRef = inputRefProp ?? defaultInputRef;
+  const selectedOption = useMemo(
+    () => getOptionForInputMode(inputModeOptions, inputMode),
+    [inputMode, inputModeOptions]
+  );
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
   const [focusInput, setFocusInput] = useState(false);
 
@@ -72,7 +86,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   ]);
 
   const onModeChange = useCallback(
-    (newInputMode: FieldInputMode) => {
+    async (newInputMode: FieldInputMode) => {
       if (newInputMode === inputMode) {
         // Don't execute anything on "re-select", we don't want to
         // overwrite the field with the default value again.
@@ -90,7 +104,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
       );
 
       // Already handled "omit" and returned above
-      setValue(interpretValue(value));
+      await setValue(interpretValue(value));
       setFocusInput(true);
     },
     [inputMode, inputModeOptions, setValue, value, onOmitField]
@@ -101,39 +115,62 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
     focusInput,
     inputRef,
   };
+
   if (inputMode === "omit") {
-    widgetProps.onClick = () => {
+    const optionValues = new Set(
+      inputModeOptions.map((option) => option.value)
+    );
+    widgetProps.onClick = async (event) => {
       if (defaultType != null) {
-        onModeChange(defaultType);
-      } else if (inputModeOptions.some((option) => option.value === "string")) {
-        onModeChange("string");
-      } else if (inputModeOptions.some((option) => option.value === "number")) {
-        onModeChange("number");
-      } else if (inputModeOptions.some((option) => option.value === "var")) {
-        onModeChange("var");
+        await onModeChange(defaultType);
+      }
+
+      // Order matters here, for ex. we want select to take precedence over string
+      const fieldInputModePriorities: FieldInputMode[] = [
+        "select",
+        "string",
+        "number",
+        "boolean",
+        "var",
+        "array",
+        "object",
+      ];
+      for (const fieldInputMode of fieldInputModePriorities) {
+        if (optionValues.has(fieldInputMode)) {
+          // eslint-disable-next-line no-await-in-loop -- awaiting doesn't matter here because of the break statement
+          await onModeChange(fieldInputMode);
+          break;
+        }
       }
     };
   }
 
   const stringValue = isTemplateExpression(value) ? value.__value__ : "";
-  const setNewValueFromString = (newValue: string) => {
-    if (inputMode !== "var" && inputMode !== "string") {
-      return;
-    }
+  const setNewValueFromString = useCallback(
+    async (newValue: string) => {
+      if (inputMode !== "var" && inputMode !== "string") {
+        return;
+      }
 
-    setValue(selectedOption.interpretValue(newValue));
-  };
+      await setValue(selectedOption.interpretValue(newValue));
+    },
+    [inputMode, selectedOption, setValue]
+  );
+
+  const renderVarPopup = inputMode === "var" || inputMode === "string";
 
   return (
     <div className={styles.root}>
       <div className={styles.field}>
         <Widget {...widgetProps} />
-        <VarPopup
-          inputMode={inputMode}
-          inputElementRef={inputRef}
-          value={stringValue}
-          setValue={setNewValueFromString}
-        />
+        {renderVarPopup ? (
+          <VarPopup
+            inputMode={inputMode}
+            inputElementRef={inputRef}
+            value={stringValue}
+            setValue={setNewValueFromString}
+          />
+        ) : null}
       </div>
       <DropdownButton
         title={

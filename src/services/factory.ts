@@ -15,45 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Service } from "@/types";
 import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
-import {
-  type OAuth2Context,
-  type AuthData,
-  type Schema,
-  type ServiceConfig,
-  type TokenContext,
-  type SanitizedConfig,
-  type SemVerString,
-} from "@/core";
-import { testMatchPatterns } from "@/blocks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
-import {
-  type ServiceDefinition,
-  type KeyAuthenticationDefinition,
-  type OAuth2AuthenticationDefinition,
-  type TokenAuthenticationDefinition,
-  type OAuth2AuthorizationGrantDefinition,
-  type BasicAuthenticationDefinition,
-} from "@/types/definitions";
 import { type AxiosRequestConfig } from "axios";
-import { isAbsoluteUrl, safeParseUrl } from "@/utils";
-import { missingProperties } from "@/helpers";
 import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import {
+  type AuthData,
+  type BasicAuthenticationDefinition,
+  type KeyAuthenticationDefinition,
+  type OAuth2AuthenticationDefinition,
+  type OAuth2AuthorizationGrantDefinition,
+  type OAuth2Context,
+  type SanitizedConfig,
+  IntegrationABC,
+  type SecretsConfig,
+  type IntegrationDefinition,
+  type TokenAuthenticationDefinition,
+  type TokenContext,
+} from "@/integrations/integrationTypes";
+import { type SemVerString } from "@/types/registryTypes";
+import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
+import { missingProperties } from "@/utils/schemaUtils";
 
 /**
  * A service created from a local definition. Has the ability to authenticate requests because it has
  * access to authenticate secrets.
  */
 class LocalDefinedService<
-  TDefinition extends ServiceDefinition = ServiceDefinition
-> extends Service {
+  TDefinition extends IntegrationDefinition = IntegrationDefinition
+> extends IntegrationABC {
   private readonly _definition: TDefinition;
 
   public readonly schema: Schema;
+  public readonly uiSchema: UiSchema;
 
   public readonly hasAuth: boolean;
 
@@ -64,6 +63,7 @@ class LocalDefinedService<
     super(id, name, description, icon);
     this._definition = definition;
     this.schema = this._definition.inputSchema;
+    this.uiSchema = this._definition.uiSchema;
     this.hasAuth = !isEmpty(this._definition.authentication);
     this.version = version;
   }
@@ -95,6 +95,19 @@ class LocalDefinedService<
     return (
       this._definition.authentication != null &&
       "oauth2" in this._definition.authentication
+    );
+  }
+
+  /**
+   * Returns true if the integration defines an OAuth2 PKCE flow
+   * @since 1.7.37
+   */
+  get isOAuth2PKCE(): boolean {
+    return (
+      this.isOAuth2 &&
+      "code_challenge_method" in
+        (this._definition.authentication as OAuth2AuthenticationDefinition)
+          .oauth2
     );
   }
 
@@ -163,7 +176,7 @@ class LocalDefinedService<
 
     if (this.isToken) {
       const tokenUrl = (
-        this._definition as ServiceDefinition<TokenAuthenticationDefinition>
+        this._definition as IntegrationDefinition<TokenAuthenticationDefinition>
       ).authentication.token.url;
       patterns.push(renderMustache(tokenUrl, serviceConfig));
     }
@@ -171,7 +184,7 @@ class LocalDefinedService<
     return uniq(compact(patterns));
   }
 
-  getTokenContext(serviceConfig: ServiceConfig): TokenContext {
+  getTokenContext(serviceConfig: SecretsConfig): TokenContext {
     if (this.isToken) {
       const definition: TokenContext = (
         this._definition.authentication as TokenAuthenticationDefinition
@@ -183,7 +196,7 @@ class LocalDefinedService<
     return undefined;
   }
 
-  getOAuth2Context(serviceConfig: ServiceConfig): OAuth2Context {
+  getOAuth2Context(serviceConfig: SecretsConfig): OAuth2Context {
     if (this.isOAuth2) {
       const definition: OAuth2Context = (
         this._definition.authentication as OAuth2AuthenticationDefinition
@@ -216,7 +229,7 @@ class LocalDefinedService<
   }
 
   private authenticateRequestKey(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig
   ): AxiosRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
@@ -252,7 +265,7 @@ class LocalDefinedService<
   }
 
   private authenticateBasicRequest(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig
   ): AxiosRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
@@ -299,7 +312,7 @@ class LocalDefinedService<
   }
 
   private authenticateRequestToken(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig,
     tokenData: AuthData
   ): AxiosRequestConfig {
@@ -331,7 +344,7 @@ class LocalDefinedService<
   }
 
   authenticateRequest(
-    serviceConfig: ServiceConfig,
+    serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig,
     authData?: AuthData
   ): AxiosRequestConfig {
@@ -360,6 +373,6 @@ class LocalDefinedService<
   }
 }
 
-export function fromJS(component: ServiceDefinition): LocalDefinedService {
+export function fromJS(component: IntegrationDefinition): LocalDefinedService {
   return new LocalDefinedService(component);
 }

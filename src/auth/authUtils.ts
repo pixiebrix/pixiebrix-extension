@@ -17,7 +17,8 @@
 
 import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
+import { readAuthData } from "@/auth/token";
 
 // Used by the app
 export function selectOrganizations(
@@ -35,7 +36,6 @@ export function selectOrganizations(
       role,
       scope,
       is_deployment_manager,
-      has_compliance_auth_token,
     }) => ({
       id: organization,
       name: organization_name,
@@ -43,7 +43,6 @@ export function selectOrganizations(
       role,
       scope,
       isDeploymentManager: is_deployment_manager,
-      hasComplianceAuthToken: has_compliance_auth_token,
     })
   );
 }
@@ -80,6 +79,7 @@ export function selectExtensionAuthState({
   email,
   scope,
   organization,
+  telemetry_organization,
   is_onboarded: isOnboarded,
   test_account: isTestAccount,
   flags = [],
@@ -101,6 +101,7 @@ export function selectExtensionAuthState({
     isTestAccount,
     extension: true,
     organization,
+    telemetryOrganizationId: telemetry_organization?.id,
     organizations,
     groups,
     flags,
@@ -108,4 +109,13 @@ export function selectExtensionAuthState({
     partner,
     enforceUpdateMillis,
   };
+}
+
+/**
+ * Returns true if the specified flag is on for the current user.
+ * @param flag the feature flag to check
+ */
+export async function flagOn(flag: string): Promise<boolean> {
+  const authData = await readAuthData();
+  return authData.flags?.includes(flag);
 }

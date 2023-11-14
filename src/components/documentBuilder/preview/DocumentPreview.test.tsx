@@ -21,22 +21,24 @@ import {
   type DocumentElement,
   type ListDocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { fireEvent } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import userEvent from "@testing-library/user-event";
 import { render } from "@/pageEditor/testHelpers";
-import { formStateFactory, uuidSequence } from "@/testUtils/factories";
-import { DocumentRenderer } from "@/blocks/renderers/document";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import {
   makePipelineExpression,
   makeTemplateExpression,
 } from "@/runtime/expressionCreators";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { type PipelineExpression } from "@/types/runtimeTypes";
+
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 function renderDocumentPreview(documentElement: DocumentElement) {
   const formState = formStateFactory(undefined, [
@@ -83,46 +85,53 @@ beforeAll(async () => {
 });
 
 describe("Add new element", () => {
+  // TODO: find a better way to access the elements so we can remove the linting exceptions
   test("Dropdown 'Add new element' stays open on hovering different elements", async () => {
     // Create a container with a list with a container inside
     const listElement = createNewElement("list") as ListDocumentElement;
     listElement.config.element.__value__ = createNewElement("container");
     const containerElement = createNewElement("container");
     // There's a row in the container and a column in the row.
+    // eslint-disable-next-line testing-library/no-node-access
     containerElement.children[0].children[0].children[0] = listElement;
 
-    const rendered = renderDocumentPreview(containerElement);
-    const { container } = rendered;
+    const { container } = renderDocumentPreview(containerElement);
 
     // Select a dropdown inside a Col in List and open it
     await userEvent.click(
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       container.querySelector(".col .col .addElement button")
     );
     expect(
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       container.querySelector(".col .col .addElement button")
     ).toHaveAttribute("aria-expanded", "true");
 
     // Hover over the Col in the list
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     fireEvent.mouseOver(container.querySelector(".col .col"));
     expect(
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       container.querySelector(".col .col .addElement button")
     ).toHaveAttribute("aria-expanded", "true");
 
     // Hover over the Container of the List, .root.root - is the Document root element
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     fireEvent.mouseOver(container.querySelector(".root.root > .container"));
     expect(
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       container.querySelector(".col .col .addElement button")
     ).toHaveAttribute("aria-expanded", "true");
   });
 
   test("can add an element to a container", async () => {
-    const rendered = renderDocumentPreview(createNewElement("container"));
-    const { container } = rendered;
+    const { container } = renderDocumentPreview(createNewElement("container"));
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     await userEvent.click(container.querySelector(".col .addElement button"));
-    await userEvent.click(rendered.getByText("Header", { selector: "a" }));
+    await userEvent.click(screen.getByText("Header", { selector: "a" }));
 
-    const header = container.querySelector("h1");
+    const header = screen.getByRole("heading", { level: 1 });
 
     expect(header).toBeInTheDocument();
     expect(header).toHaveTextContent("Header");
@@ -190,9 +199,9 @@ describe("Show live preview", () => {
   }
 
   test("it renders the button", async () => {
-    const rendered = renderPreviewInTemporaryDisplayPipeline();
+    renderPreviewInTemporaryDisplayPipeline();
     await waitForEffect();
     jest.runOnlyPendingTimers();
-    expect(rendered.getByText("Show Live Preview")).toBeInTheDocument();
+    expect(screen.getByText("Show Live Preview")).toBeInTheDocument();
   });
 });

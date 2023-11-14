@@ -16,7 +16,7 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/services/api";
 
 export function settingsStore() {
@@ -26,9 +26,7 @@ export function settingsStore() {
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware().concat(appApi.middleware);
-      /* eslint-enable unicorn/prefer-spread */
     },
     preloadedState: {},
   });

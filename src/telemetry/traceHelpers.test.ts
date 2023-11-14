@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { traceRecordFactory } from "@/testUtils/factories";
 import { getLatestCall, hasBranchPrefix } from "@/telemetry/traceHelpers";
+import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
 
 describe("getLatestCall", () => {
   it("sorts by single branch", () => {

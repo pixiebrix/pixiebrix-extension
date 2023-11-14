@@ -23,20 +23,30 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { uuidv4 } from "@/types/helpers";
+import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { RegistryId } from "@/types/registryTypes";
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
-export const containsPermissions = browser.permissions
-  ? browser.permissions.contains
-  : getMethod("CONTAINS_PERMISSIONS", bg);
+export const containsPermissions = jest
+  .fn()
+  .mockRejectedValue(
+    new Error(
+      "Internal mocking error: jest should be using containsPermissions from mockPermissions"
+    )
+  );
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const getUID = jest.fn().mockResolvedValue(uuidv4());
+
+export const pong = jest.fn(() => ({
+  timestamp: Date.now(),
+}));
+
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
 export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
@@ -50,18 +60,16 @@ export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
-export const readGoogleBigQuery = jest
-  .fn()
-  .mockRejectedValue(new Error("Not implemented"));
-
 export const sheets = {
+  isLoggedIn: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getAllSpreadsheets: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getSpreadsheet: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getTabNames: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getSheetProperties: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getHeaders: jest.fn().mockRejectedValue(new Error("Not implemented")),
+  getAllRows: jest.fn().mockRejectedValue(new Error("Not implemented")),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-  batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE", bg),
-  batchGet: jest.fn().mockRejectedValue(new Error("Not implemented")),
 };
 
 /**
@@ -75,7 +83,11 @@ export const registry = {
   fetch: jest.fn().mockResolvedValue(true),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
   getByKinds: jest.fn().mockResolvedValue([]),
-  find: jest.fn().mockRejectedValue(new Error("Find not implemented in mock")),
+  find: jest.fn().mockImplementation(async (id: RegistryId) => {
+    throw new Error(
+      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`
+    );
+  }),
   clear: getMethod("REGISTRY_CLEAR", bg),
 };
 
@@ -88,7 +100,7 @@ export const requestRun = {
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
   inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
   inTop: getMethod("REQUEST_RUN_IN_TOP", bg),
-  inAll: getMethod("REQUEST_RUN_IN_ALL", bg),
+  inOtherTabs: getMethod("REQUEST_RUN_IN_OTHER_TABS", bg),
 };
 
 export const contextMenus = {
@@ -105,8 +117,11 @@ export const services = {
 };
 
 // `getMethod` currently strips generics, so we must copy the function signature here
-export const proxyService = getMethod("PROXY", bg) as <TData>(
-  serviceConfig: SanitizedServiceConfiguration | null,
+export const performConfiguredRequestInBackground = getMethod(
+  "CONFIGURED_REQUEST",
+  bg
+) as <TData>(
+  integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
 
@@ -116,6 +131,7 @@ export const proxyService = getMethod("PROXY", bg) as <TData>(
 export const recordLog = getNotifier("RECORD_LOG", bg);
 export const recordWarning = getNotifier("RECORD_WARNING", bg);
 export const recordEvent = getNotifier("RECORD_EVENT", bg);
+export const recordBrickRun = getNotifier("RECORD_BRICK_RUN", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(

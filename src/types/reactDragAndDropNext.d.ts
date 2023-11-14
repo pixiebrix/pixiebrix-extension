@@ -83,16 +83,16 @@ declare module "react-beautiful-dnd-next" {
     source: DraggableLocation;
   }
 
-  export interface DragUpdate extends DragStart {
-    destination?: DraggableLocation | undefined;
-    // Populated when a draggable is dragging over another in combine mode
-    combine?: Combine | undefined;
-  }
-
   // Details of the item that is being combined with
   export interface Combine {
     draggableId: DraggableId;
     droppableId: DroppableId;
+  }
+
+  export interface DragUpdate extends DragStart {
+    destination?: DraggableLocation | undefined;
+    // Populated when a draggable is dragging over another in combine mode
+    combine?: Combine | undefined;
   }
 
   export interface DropResult extends DragUpdate {
@@ -119,7 +119,7 @@ declare module "react-beautiful-dnd-next" {
     "data-react-beautiful-dnd-droppable": string;
   }
   export interface DroppableProvided {
-    innerRef(element: HTMLElement | null): any;
+    innerRef(element: HTMLElement | null): unknown;
     placeholder?: React.ReactElement<HTMLElement> | null | undefined;
     droppableProps: DroppableProvidedProps;
   }
@@ -176,16 +176,16 @@ declare module "react-beautiful-dnd-next" {
   }
 
   export interface DraggableProvidedDragHandleProps {
-    onMouseDown: React.MouseEventHandler<any>;
-    onKeyDown: React.KeyboardEventHandler<any>;
-    onTouchStart: React.TouchEventHandler<any>;
-    onTouchMove: React.TouchEventHandler<any>;
+    onMouseDown: React.MouseEventHandler<unknown>;
+    onKeyDown: React.KeyboardEventHandler<unknown>;
+    onTouchStart: React.TouchEventHandler<unknown>;
+    onTouchMove: React.TouchEventHandler<unknown>;
     "data-react-beautiful-dnd-drag-handle": string;
     "aria-roledescription": string;
     tabIndex: number;
     "aria-grabbed": boolean;
     draggable: boolean;
-    onDragStart: React.DragEventHandler<any>;
+    onDragStart: React.DragEventHandler<unknown>;
   }
 
   export interface DraggableProvided {
@@ -193,8 +193,21 @@ declare module "react-beautiful-dnd-next" {
     dragHandleProps: DraggableProvidedDragHandleProps | null;
 
     // Will be removed after move to react 16
-    innerRef(element?: HTMLElement | null): any;
+    innerRef(element?: HTMLElement | null): unknown;
     placeholder?: React.ReactElement<HTMLElement> | null | undefined;
+  }
+
+  export interface Position {
+    x: number;
+    y: number;
+  }
+
+  export interface DropAnimation {
+    duration: number;
+    curve: string;
+    moveTo: Position;
+    opacity?: number | undefined;
+    scale?: number | undefined;
   }
 
   export interface DraggableStateSnapshot {
@@ -208,19 +221,6 @@ declare module "react-beautiful-dnd-next" {
     combineTargetFor?: DraggableId | undefined;
     // What type of movement is being done: 'FLUID' or 'SNAP'
     mode?: MovementMode | undefined;
-  }
-
-  export interface DropAnimation {
-    duration: number;
-    curve: string;
-    moveTo: Position;
-    opacity?: number | undefined;
-    scale?: number | undefined;
-  }
-
-  export interface Position {
-    x: number;
-    y: number;
   }
 
   export interface DraggableProps {

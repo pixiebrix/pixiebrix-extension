@@ -18,14 +18,15 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
+import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
 import EditorPane from "@/pageEditor/panes/EditorPane";
 import RecipePane from "@/pageEditor/panes/RecipePane";
-import NoExtensionSelectedPane from "@/pageEditor/panes/NoExtensionSelectedPane";
-import NoExtensionsPane from "@/pageEditor/panes/NoExtensionsPane";
+import NoModSelectedPane from "@/pageEditor/panes/NoModSelectedPane";
+import NoModsPane from "@/pageEditor/panes/NoModsPane";
 import WelcomePane from "@/pageEditor/panes/WelcomePane";
 import {
   selectActiveElementId,
@@ -42,6 +43,7 @@ import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import Alert from "@/components/Alert";
 import styles from "./EditorContent.module.scss";
+import { selectPageEditorDimensions } from "@/pageEditor/utils";
 
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
@@ -85,15 +87,19 @@ const EditorContent: React.FC = () => {
   useGetMarketplaceListingsQuery();
 
   useEffect(() => {
-    reportEvent("PageEditorSessionStart", {
+    reportEvent(Events.PAGE_EDITOR_SESSION_START, {
       sessionId,
+      ...selectPageEditorDimensions(),
     });
 
-    return () => {
-      reportEvent("PageEditorSessionEnd", {
+    // Report session end before page unload instead of component unmount because closing the
+    // devtools will prevent the component from unmounting
+    window.addEventListener("beforeunload", () => {
+      reportEvent(Events.PAGE_EDITOR_SESSION_END, {
         sessionId,
+        ...selectPageEditorDimensions(),
       });
-    };
+    });
   }, [sessionId]);
 
   // Always show the main error if present - keep this first
@@ -107,7 +113,7 @@ const EditorContent: React.FC = () => {
 
   if (!tabHasPermissions && !isConnectingToContentScript) {
     // Check `connecting` to optimistically show the main interface while the devtools are connecting to the page.
-    return <PermissionsPane />;
+    return <NoTabAccessPane />;
   }
 
   // Show generic error for beta features
@@ -132,11 +138,11 @@ const EditorContent: React.FC = () => {
   }
 
   if (availableDynamicIds?.length > 0 || installed.length > unavailableCount) {
-    return <NoExtensionSelectedPane />;
+    return <NoModSelectedPane />;
   }
 
   if (installed.length > 0) {
-    return <NoExtensionsPane unavailableCount={unavailableCount} />;
+    return <NoModsPane />;
   }
 
   return <WelcomePane />;

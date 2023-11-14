@@ -18,85 +18,42 @@
 import styles from "@/pageEditor/panes/Pane.module.scss";
 
 import React from "react";
-import config from "@/pageEditor/extensionPoints/menuItem";
-import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensionPoints";
-import {
-  type MenuDefinition,
-  MenuItemExtensionPoint,
-} from "@/extensionPoints/menuItemExtension";
 import Centered from "@/components/Centered";
 import { Alert, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faInfo,
   faMousePointer,
-  faSearch,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import BrickModal from "@/components/brickModalNoTags/BrickModal";
-import { type ExtensionPointConfig } from "@/extensionPoints/types";
-import useAddExisting from "@/pageEditor/panes/insert/useAddExisting";
-import useFlags from "@/hooks/useFlags";
-
-type MenuItemWithConfig = MenuItemExtensionPoint & {
-  rawConfig: ExtensionPointConfig<MenuDefinition>;
-};
 
 const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
   cancel,
-}) => {
-  const { flagOn } = useFlags();
+}) => (
+  <Centered isScrollable>
+    <div className={styles.title}>Inserting Button/Menu Item</div>
 
-  const menuItemExtensionPoints = useAvailableExtensionPoints(
-    MenuItemExtensionPoint
-  );
+    <div className="text-left">
+      <p>
+        <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on an existing{" "}
+        <code>button</code> or button-like element to add a button to that
+        button&apos;s group. You can also select a menu item or nav link.
+      </p>
 
-  const addExisting = useAddExisting(config, cancel);
-
-  return (
-    <Centered isScrollable>
-      <div className={styles.title}>Inserting Button/Menu Item</div>
-
-      <div className="text-left">
-        <p>
-          <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on an
-          existing <code>button</code> or button-like element to add a button to
-          that button&apos;s group. You can also select a menu item or nav link.
-        </p>
-
-        <div>
-          <Alert variant="info">
-            <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the
-            accuracy of detection, you can Shift+Click one or more buttons in
-            the button group. Click a button without holding Shift to complete
-            placement.
-          </Alert>
-        </div>
-      </div>
       <div>
-        {flagOn("page-editor-extension-point-marketplace") && (
-          <BrickModal
-            bricks={menuItemExtensionPoints ?? []}
-            caption="Select button foundation"
-            renderButton={(onClick) => (
-              <Button
-                variant="info"
-                onClick={onClick}
-                disabled={!menuItemExtensionPoints?.length}
-              >
-                <FontAwesomeIcon icon={faSearch} /> Search Marketplace
-              </Button>
-            )}
-            onSelect={async (block) => addExisting(block as MenuItemWithConfig)}
-          />
-        )}
-
-        <Button variant="danger" className="ml-2" onClick={cancel}>
-          <FontAwesomeIcon icon={faTimes} /> Cancel
-        </Button>
+        <Alert variant="info">
+          <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the accuracy
+          of detection, you can Shift+Click one or more buttons in the button
+          group. Click a button without holding Shift to complete placement.
+        </Alert>
       </div>
-    </Centered>
-  );
-};
+    </div>
+    <div>
+      <Button variant="danger" className="ml-2" onClick={cancel}>
+        <FontAwesomeIcon icon={faTimes} /> Cancel
+      </Button>
+    </div>
+  </Centered>
+);
 
 export default InsertMenuItemPane;

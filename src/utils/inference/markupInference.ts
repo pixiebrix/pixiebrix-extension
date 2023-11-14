@@ -15,16 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isNullOrBlank, matchesAnyPattern, mostCommonElement } from "@/utils";
 import {
+  CONTENT_SCRIPT_READY_ATTRIBUTE,
   EXTENSION_POINT_DATA_ATTR,
   PANEL_FRAME_ID,
   PIXIEBRIX_DATA_ATTR,
-} from "@/common";
+} from "@/domConstants";
 import { BUTTON_TAGS, UNIQUE_ATTRIBUTES } from "./selectorInference";
 import { intersection, unary, uniq } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/contentScript/ready";
+import { isNullOrBlank, matchesAnyPattern } from "@/utils/stringUtils";
+import { mostCommonElement } from "@/utils/arrayUtils";
 
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg", "img"];
@@ -38,6 +39,12 @@ const TEXT_TAGS = ["span", "p", "b", "h1", "h2", "h3", "h4", "h5", "h6"];
 const ATTR_SKIP_ELEMENT_PATTERNS = [
   /^chevron-down$/,
   /^([\dA-Za-z]+)-chevron-down$/,
+];
+
+// Use `number` type to support includes() check
+const NON_RENDERED_NODES: number[] = [
+  Node.COMMENT_NODE,
+  Node.CDATA_SECTION_NODE,
 ];
 
 /**
@@ -150,13 +157,13 @@ function setCommonAttributes(common: Element, items: Element[]) {
 
 function ignoreDivChildNode(node: Node): boolean {
   return (
-    [Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType) ||
+    NON_RENDERED_NODES.includes(node.nodeType) ||
     (node.nodeType === Node.TEXT_NODE && node.textContent.trim() === "")
   );
 }
 
 function removeUnstyledLayout(node: Node): Node | null {
-  if ([Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType)) {
+  if (NON_RENDERED_NODES.includes(node.nodeType)) {
     return null;
   }
 

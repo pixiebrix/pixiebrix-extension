@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BlockArgContext, type UUID } from "@/core";
 import { useEffect, useReducer } from "react";
 import { usePreviewInfo } from "@/pageEditor/tabs/effect/BlockPreview";
-import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
+import { isTriggerExtensionPoint } from "@/pageEditor/starterBricks/formStateTypes";
 import { useSelector } from "react-redux";
 import {
   selectActiveElement,
@@ -26,16 +25,18 @@ import {
   selectParentBlockInfo,
 } from "@/pageEditor/slices/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
+import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
-import { makeServiceContext } from "@/services/serviceUtils";
+import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 import { useAsyncState } from "@/hooks/common";
-import { isExpression } from "@/runtime/mapArgs";
+import { type UUID } from "@/types/stringTypes";
+import { type BrickArgsContext } from "@/types/runtimeTypes";
+import { isExpression } from "@/utils/expressionUtils";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 type Location = "modal" | "panel";
 
@@ -104,8 +105,9 @@ export default function useDocumentPreviewRunBlock(
 
   const {
     uuid: extensionId,
+    recipe,
     apiVersion,
-    services,
+    integrationDependencies,
     extensionPoint,
   } = useSelector(selectActiveElement);
 
@@ -136,15 +138,15 @@ export default function useDocumentPreviewRunBlock(
     selectActiveElementTraceForBlock(blockInstanceId)
   );
   const [serviceContext, isLoadingServiceContext] = useAsyncState(
-    makeServiceContext(services),
-    [services]
+    makeServiceContextFromDependencies(integrationDependencies),
+    [integrationDependencies]
   );
   const context = {
     ...traceRecord?.templateContext,
     ...serviceContext,
-  } as BlockArgContext;
+  } as BrickArgsContext;
 
-  // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
+  // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
   const shouldUseExtensionPointRoot =
     blockInfo?.isRootAware &&
@@ -185,12 +187,12 @@ export default function useDocumentPreviewRunBlock(
         (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
 
       try {
-        await runRendererBlock(
-          thisTab,
+        await runRendererBlock(thisTab, {
           extensionId,
-          traceRecord.runId,
+          blueprintId: recipe?.id,
+          runId: traceRecord.runId,
           title,
-          {
+          args: {
             apiVersion,
             blockConfig: {
               ...removeEmptyValues(blockConfig),
@@ -199,8 +201,8 @@ export default function useDocumentPreviewRunBlock(
             context,
             rootSelector,
           },
-          location
-        );
+          location,
+        });
         dispatch(previewSlice.actions.setSuccess({ output: {} }));
       } catch (error) {
         dispatch(previewSlice.actions.setError({ error }));

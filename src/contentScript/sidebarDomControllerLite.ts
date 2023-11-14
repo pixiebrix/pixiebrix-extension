@@ -20,13 +20,16 @@
  * and imported by browserActionInstantHandler.ts
  */
 
-import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
+import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
+import { expectContext } from "@/utils/expectContext";
+import { uuidv4 } from "@/types/helpers";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
-const html = globalThis.document?.documentElement;
+// Use ? because it's not defined during header generation. But otherwise it will always be defined.
+const html: HTMLElement = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
@@ -51,13 +54,30 @@ function setSidebarWidth(pixels: number): void {
   html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, CSS.px(pixels));
 }
 
-const getSidebar = (): Element => document.querySelector(`#${PANEL_FRAME_ID}`);
+/**
+ * Returns the sidebar frame if it's in the DOM, or null otherwise. The sidebar might not be initialized yet.
+ */
+function getSidebar(): Element | null {
+  expectContext("contentScript");
 
-export const isSidebarFrameVisible = (): boolean => Boolean(getSidebar());
+  return html.querySelector(`#${PANEL_FRAME_ID}`);
+}
+
+/**
+ * Return true if the sidebar frame is in the DOM. The sidebar might not be initialized yet.
+ */
+export function isSidebarFrameVisible(): boolean {
+  return Boolean(getSidebar());
+}
 
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
   const sidebar = getSidebar();
+
+  console.debug("sidebarDomControllerLite:removeSidebarFrame", {
+    isSidebarFrameVisible: Boolean(sidebar),
+  });
+
   if (sidebar) {
     sidebar.remove();
     setSidebarWidth(0);
@@ -68,12 +88,17 @@ export function removeSidebarFrame(): boolean {
 
 /** Inserts the element; Returns false if it already existed */
 export function insertSidebarFrame(): boolean {
+  console.debug("sidebarDomControllerLite:insertSidebarFrame", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   if (isSidebarFrameVisible()) {
+    console.debug("insertSidebarFrame: sidebar frame already exists");
     return false;
   }
 
   storeOriginalCSSOnce();
-  const nonce = crypto.randomUUID();
+  const nonce = uuidv4();
   const actionURL = browser.runtime.getURL("sidebar.html");
 
   setSidebarWidth(SIDEBAR_WIDTH_PX);
@@ -95,7 +120,7 @@ export function insertSidebarFrame(): boolean {
     borderLeft: "1px solid lightgray",
 
     // Note that it can't use our CSS variables because this element lives on the host
-    background: "#efe8fb",
+    background: "#f9f8fa",
   });
 
   const wrapper = shadowWrap(iframe);
@@ -107,10 +132,23 @@ export function insertSidebarFrame(): boolean {
     easing: "cubic-bezier(0.23, 1, 0.32, 1)",
   });
 
+  if (!isSidebarFrameVisible()) {
+    console.error(
+      "Post-condition failed: isSidebarFrameVisible is false after insertSidebarFrame"
+    );
+  }
+
   return true;
 }
 
+/**
+ * Toggle the sidebar frame. Returns true if the sidebar is now visible, false otherwise.
+ */
 export function toggleSidebarFrame(): boolean {
+  console.debug("sidebarDomControllerLite:toggleSidebarFrame", {
+    isSidebarFrameVisible: isSidebarFrameVisible(),
+  });
+
   if (isSidebarFrameVisible()) {
     removeSidebarFrame();
     return false;

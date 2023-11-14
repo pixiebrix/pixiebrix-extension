@@ -15,21 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type RegistryId,
-  type SemVerString,
-  type Timestamp,
-  type UUID,
-} from "@/core";
 import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 import validUuidRegex from "@/vendors/validateUuid";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { v4 } from "uuid";
+import {
+  INNER_SCOPE,
+  type RegistryId,
+  type SemVerString,
+} from "@/types/registryTypes";
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
+/**
+ * Return a random v4 UUID.
+ */
 export function uuidv4(): UUID {
-  return crypto.randomUUID() as UUID;
+  // Use uuidv4 from uuid package instead of crypto.randomUUID because randomUUID is not available in insecure contexts.
+  // This is safe for content scripts because they're in a separate JS context from the host page.
+  // https://developer.mozilla.org/en-US/docs/Web/API/crypto_property
+  return v4() as UUID;
 }
 
 export function isUUID(uuid: string): uuid is UUID {
@@ -43,7 +50,8 @@ export function validateUUID(uuid: unknown): UUID {
   if (uuid == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
     // we can remove this check as strictNullChecks will check the call site
-    return uuid as UUID;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    return uuid as unknown as UUID;
   }
 
   if (typeof uuid !== "string") {
@@ -59,8 +67,19 @@ export function validateUUID(uuid: unknown): UUID {
   throw new Error("Invalid UUID");
 }
 
+/**
+ * Return true if id is a valid registry id
+ */
 export function isRegistryId(id: string): id is RegistryId {
-  return PACKAGE_REGEX.test(id);
+  return id != null && PACKAGE_REGEX.test(id);
+}
+
+/**
+ * Return true if `id` refers to an internal registry definition
+ * @see makeInternalId
+ */
+export function isInnerDefinitionRegistryId(id: string): id is RegistryId {
+  return id.startsWith(INNER_SCOPE + "/");
 }
 
 export function validateRegistryId(id: string): RegistryId {

@@ -17,8 +17,9 @@
 
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { type RegistryId, type UUID } from "@/core";
-import { type BlockConfig, type BlockPipeline } from "@/blocks/types";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 
 export type BlockInfo = {
   blockId: RegistryId;
@@ -28,7 +29,7 @@ export type BlockInfo = {
    */
   path: string;
 
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
 
   /**
    * Index of the block in its pipeline
@@ -43,7 +44,7 @@ export type BlockInfo = {
   /**
    * The block's pipeline
    */
-  pipeline: BlockPipeline;
+  pipeline: BrickPipeline;
 
   /**
    * Instance id of parent node
@@ -88,12 +89,22 @@ export type NodeUIState = {
      */
     activeTabKey: DataPanelTabKey | null;
   };
+
+  /**
+   * Which fields are expanded or collapsed
+   */
+  expandedFieldSections: Record<string, boolean>;
+
+  /**
+   * True if the node itself is collapsed in the pipeline, hiding its sub-pipeline
+   */
+  collapsed: boolean;
 };
 
 export type ElementUIState = {
   /**
-   * Flat map of all pipeline blocks including sub pipelines.
-   * Key is the block instanceId.
+   * Flat map of all pipeline bricks including sub pipelines.
+   * Key is the brick instanceId.
    */
   pipelineMap: PipelineMap;
 
@@ -105,7 +116,7 @@ export type ElementUIState = {
   activeNodeId: UUID;
 
   /**
-   * UI state of foundation and blocks in the extension pipeline
+   * UI state of bricks in the mod component pipeline, including the starter brick
    */
   nodeUIStates: Record<UUID, NodeUIState>;
 };

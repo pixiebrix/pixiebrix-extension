@@ -20,26 +20,17 @@ import styles from "./NonScriptablePage.module.scss";
 import React from "react";
 import { Col, Row, Container } from "react-bootstrap";
 import workshopImage from "@img/workshop.svg";
-import Alert from "@/components/Alert";
 
 const GetStarted: React.FunctionComponent = () => (
   <>
     <h4 className={styles.callout}>Get started with PixieBrix</h4>
     <p>
-      This is the PixieBrix Page Editor where you can create and modify
-      Blueprints.
+      This is the PixieBrix Page Editor. Use the Page Editor to create web page
+      modifications, called mods.
     </p>
-    <p>To get started, try navigating to a page you&apos;d like to edit.</p>
     <p>
-      Try the{" "}
-      <a
-        href="https://www.pixiebrix.com/playground/playground"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        PixieBrix Playground
-      </a>
-      .
+      To start, navigate to a web page that you&apos;d like to modify and then
+      click the &quot;Add&quot; button.
     </p>
   </>
 );
@@ -76,13 +67,7 @@ const NonScriptablePage: React.FunctionComponent<{ url: string }> = ({
     <div className="my-auto">
       <Row className={styles.paneRow}>
         <Col lg={9}>
-          {url?.startsWith("http://") ? (
-            <Alert variant="warning">
-              PixieBrix cannot modify insecure HTTP pages
-            </Alert>
-          ) : (
-            <GetStarted />
-          )}
+          <GetStarted />
         </Col>
 
         <Col

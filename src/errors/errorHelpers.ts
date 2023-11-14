@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deserializeError, type ErrorObject } from "serialize-error";
-import { isObject, matchesAnyPattern, smartAppendPeriod } from "@/utils";
+import {
+  deserializeError,
+  isErrorLike,
+  type ErrorObject,
+} from "serialize-error";
 import safeJsonStringify from "json-stringify-safe";
-import { isEmpty, truncate } from "lodash";
+import { isEmpty, truncate, uniq } from "lodash";
 import { selectNetworkErrorMessage } from "@/errors/networkErrorHelpers";
-import { type MessageContext } from "@/core";
-
-// From "webext-messenger". Cannot import because the webextension polyfill can only run in an extension context
-// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/3641
-const errorTargetClosedEarly =
-  "The target was closed before receiving a response";
-const errorTabDoesntExist = "The tab doesn't exist";
+import { type MessageContext } from "@/types/loggerTypes";
+import { matchesAnyPattern, smartAppendPeriod } from "@/utils/stringUtils";
+import { isObject } from "@/utils/objectUtils";
+import {
+  isSchemaValidationError,
+  type SchemaValidationError,
+} from "@/bricks/errors";
+import { type SetRequired } from "type-fest";
+import {
+  CONTEXT_INVALIDATED_ERROR,
+  ERROR_TAB_DOES_NOT_EXIST,
+  ERROR_TARGET_CLOSED_EARLY,
+} from "@/errors/knownErrorMessages";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
-
-export const JQUERY_INVALID_SELECTOR_ERROR =
-  "Syntax error, unrecognized expression: ";
-
-/**
- * Some APIs like runtime.sendMessage() and storage.get() will throw this error
- * when the background page has been reloaded
- */
-export const CONTEXT_INVALIDATED_ERROR = "Extension context invalidated.";
 
 /**
  * Errors to ignore unless they've caused extension point install or brick execution to fail.
@@ -51,6 +51,7 @@ export const CONTEXT_INVALIDATED_ERROR = "Extension context invalidated.";
  */
 const IGNORED_ERROR_PATTERNS = [
   "ResizeObserver loop limit exceeded",
+  "ResizeObserver loop completed with undelivered notifications",
   "Network Error",
   "Promise was cancelled",
   "Action cancelled",
@@ -61,8 +62,8 @@ const IGNORED_ERROR_PATTERNS = [
   /No frame with id \d+ in tab \d+/,
   /^No tab with id/,
   "The tab was closed.",
-  errorTabDoesntExist,
-  errorTargetClosedEarly,
+  ERROR_TAB_DOES_NOT_EXIST,
+  ERROR_TARGET_CLOSED_EARLY,
   CONTEXT_INVALIDATED_ERROR,
 ];
 
@@ -89,9 +90,11 @@ export function onUncaughtError(handler: (error: Error) => void): void {
   self.addEventListener("unhandledrejection", listener);
 }
 
-export function isErrorObject(error: unknown): error is ErrorObject {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
-  return typeof (error as any)?.message === "string";
+export function isErrorObject(
+  error: unknown
+): error is SetRequired<ErrorObject, "name" | "message"> {
+  // We should probably just use ErrorLike everywhere but it requires changing a lot of code
+  return isErrorLike(error);
 }
 
 export function isSpecificError<
@@ -113,7 +116,9 @@ export function isSpecificError<
 export function isCustomAggregateError(
   error: unknown
 ): error is ErrorObject & { errors: unknown[] } {
-  return isObject(error) && "errors" in error && Array.isArray(error.errors);
+  return (
+    isErrorObject(error) && "errors" in error && Array.isArray(error.errors)
+  );
 }
 
 export function selectSpecificError<
@@ -181,6 +186,15 @@ function isBusinessError(error: unknown): boolean {
   return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
 }
 
+export function formatSchemaValidationMessage(
+  error: SchemaValidationError["errors"][number]
+) {
+  const { keywordLocation, error: validationError } = error;
+  return `${keywordLocation ? `${keywordLocation}: ` : ""}${
+    validationError ?? ""
+  }`;
+}
+
 // List all ClientRequestError subclasses as text:
 // - because not all of our errors can be deserialized with the right class:
 //   https://github.com/sindresorhus/serialize-error/issues/72
@@ -206,7 +220,6 @@ export function getErrorMessage(
   error: unknown,
   defaultMessage = DEFAULT_ERROR_MESSAGE
 ): string {
-  // Two shortcuts first
   if (!error) {
     return defaultMessage;
   }
@@ -220,21 +233,54 @@ export function getErrorMessage(
     return requestErrorMessage;
   }
 
-  if (isCustomAggregateError(error)) {
-    return error.errors.filter((x) => typeof x === "string").join(". ");
+  // In most cases, prefer the error message property over all. We don't want to override
+  // the original error message unless necessary.
+  if (isObject(error) && error.message) {
+    return error.message as string;
   }
 
-  return String(selectError(error).message ?? defaultMessage);
+  if (isSchemaValidationError(error)) {
+    const firstError = error.errors[0];
+    const formattedMessage =
+      firstError && formatSchemaValidationMessage(firstError);
+
+    if (formattedMessage) {
+      return formattedMessage;
+    }
+  }
+
+  if (isCustomAggregateError(error)) {
+    const aggregatedMessage = error.errors
+      .filter((x) => typeof x === "string")
+      .join(". ");
+
+    if (aggregatedMessage) {
+      return aggregatedMessage;
+    }
+  }
+
+  return String(selectError(error).message || defaultMessage);
 }
 
+/**
+ * Return a single error message for an error with possibly nested causes.
+ *
+ * Excludes duplicate error messages.
+ *
+ * @param error the top-level error
+ * @param defaultMessage the default message to return if no messages are found
+ */
 export function getErrorMessageWithCauses(
   error: unknown,
   defaultMessage = DEFAULT_ERROR_MESSAGE
 ): string {
   if (isErrorObject(error) && error.cause) {
-    return getErrorCauseList(error)
-      .map((error) => smartAppendPeriod(getErrorMessage(error)))
-      .join("\n");
+    // Currently excluding all duplicates. Might instead consider only excluding adjacent duplicates.
+    return uniq(
+      getErrorCauseList(error).map((error) =>
+        smartAppendPeriod(getErrorMessage(error))
+      )
+    ).join("\n");
   }
 
   // Handle cause-less messages more simply, they don't need to end with a period.
@@ -304,7 +350,7 @@ export function selectErrorFromRejectionEvent(
   // WARNING: don't prefix the error message, e.g., with "Asynchronous error:" because that breaks
   // message-based error filtering via IGNORED_ERROR_PATTERNS
   if (typeof event.reason === "string" || event.reason == null) {
-    return new Error(event.reason ?? "Unknown promise rejection");
+    return new Error(String(event.reason ?? "Unknown promise rejection"));
   }
 
   return selectError(event.reason);

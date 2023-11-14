@@ -16,8 +16,8 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type Schema } from "@/core";
-import React, { useCallback, useEffect, useState } from "react";
+import { type Schema } from "@/types/schemaTypes";
+import React, { useCallback, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
@@ -25,19 +25,20 @@ import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useField, useFormikContext } from "formik";
-import { joinName } from "@/utils";
 import { partial } from "lodash";
 import {
   customFormRendererSchema,
   type Storage,
-} from "@/blocks/renderers/customForm";
-import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/serviceFieldUtils";
+} from "@/bricks/renderers/customForm";
+import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/AppApiIntegrationDependencyField";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { type Options } from "react-select";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import databaseSchema from "@schemas/database.json";
+import { joinName } from "@/utils/formUtils";
+import useAsyncEffect from "use-async-effect";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -52,28 +53,27 @@ const databaseIdSchema: Schema = {
 
 function usePruneUnusedServiceDependencies() {
   const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
+    useFormikContext<ModComponentFormState>();
 
-  return useCallback(() => {
+  return useCallback(async () => {
     const nextState = produceExcludeUnusedDependencies(formState);
 
-    setFormState(nextState);
+    await setFormState(nextState);
   }, [formState, setFormState]);
 }
-
-const storageTypes = ["localStorage", "state", "database"];
-const DEFAULT_STORAGE_TYPE = "state";
 
 type StringOption = {
   label: string;
   value: string;
 };
-const storageTypeOptions: Options<StringOption> = storageTypes.map(
-  (storageType) => ({
-    label: storageType,
-    value: storageType,
-  })
-);
+
+const storageTypeOptions: Options<StringOption> = [
+  { value: "state", label: "Page State" },
+  { value: "database", label: "Database" },
+  { value: "localStorage", label: "Local Storage (Deprecated)" },
+];
+
+const DEFAULT_STORAGE_TYPE = "state";
 
 const FormRendererOptions: React.FC<{
   name: string;
@@ -97,43 +97,48 @@ const FormRendererOptions: React.FC<{
 
   // Sets the storage type and clears out any other values the user might have configured
   // If the next type is "database", the AppServiceField will initialize the "service" variable
-  const changeStorageType = (nextStorageType: string) => {
+  const changeStorageType = async (nextStorageType: string) => {
     if (nextStorageType === "state") {
-      setStorageValue({ type: "state", namespace: "blueprint" } as Storage);
+      await setStorageValue({
+        type: "state",
+        namespace: "blueprint",
+      } as Storage);
     } else {
-      setStorageValue({ type: nextStorageType } as Storage);
+      await setStorageValue({ type: nextStorageType } as Storage);
     }
   };
 
   // If the storage type changes from "database" to something else, ensure the service record at root is cleared
   const [previousStorageType, setPreviousStorageType] = useState(storageType);
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (
       previousStorageType === "database" &&
       storageType !== previousStorageType
     ) {
       setPreviousStorageType(storageType);
-      pruneDependencies();
+      await pruneDependencies();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- useEffect is the only place that changes the previousStorageType, no need to depend on it
+    // This is the only place that changes the previousStorageType, no need to depend on it
   }, [storageType, pruneDependencies]);
 
-  // Set the default storage type
-  if (storageType == null) {
-    changeStorageType(DEFAULT_STORAGE_TYPE);
-  }
+  useAsyncEffect(async () => {
+    // Set the default storage type
+    if (storageType == null) {
+      await changeStorageType(DEFAULT_STORAGE_TYPE);
+    }
+  }, [storageType, changeStorageType]);
 
   return (
     <div>
       <FieldTemplate
         name={makeName("storage", "type")}
-        label="Type"
+        label="Storage Location"
         description="The location to submit/store the form data"
         as={Select}
         options={storageTypeOptions}
         value={storageTypeOptions.find((x) => x.value === storageType)}
-        onChange={({ value: nextStorageType }: StringOption) => {
-          changeStorageType(nextStorageType);
+        onChange={async ({ value: nextStorageType }: StringOption) => {
+          await changeStorageType(nextStorageType);
         }}
       />
 
@@ -145,7 +150,9 @@ const FormRendererOptions: React.FC<{
             isRequired
             schema={databaseIdSchema}
           />
-          <AppServiceField name={makeName("storage", "service")} />
+          <AppApiIntegrationDependencyField
+            name={makeName("storage", "service")}
+          />
         </>
       )}
 

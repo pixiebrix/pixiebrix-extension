@@ -19,23 +19,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
+import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
+import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
-import { type SettingsState } from "@/store/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { selectFrameState } from "@/pageEditor/tabState/tabStateSelectors";
-import { reportEvent } from "@/telemetry/events";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
 
 type AddElement = (config: ElementConfig) => void;
 
 function useAddElement(): AddElement {
   const dispatch = useDispatch();
-  const { meta } = useSelector(selectFrameState);
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements
@@ -62,24 +61,19 @@ function useAddElement(): AddElement {
         );
         const url = await getCurrentURL();
 
-        const metadata = internalExtensionPointMetaFactory();
+        const metadata = internalStarterBrickMetaFactory();
 
-        const initialState = config.fromNativeElement(
-          url,
-          metadata,
-          element,
-          meta?.frameworks ?? []
-        );
+        const initialState = config.fromNativeElement(url, metadata, element);
 
         await updateDynamicElement(
           thisTab,
           config.asDynamicElement(initialState)
         );
 
-        dispatch(actions.addElement(initialState as FormState));
+        dispatch(actions.addElement(initialState as ModComponentFormState));
         dispatch(actions.checkActiveElementAvailability());
 
-        reportEvent("ExtensionAddNew", {
+        reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
           type: config.elementType,
         });
       } catch (error) {
@@ -95,7 +89,7 @@ function useAddElement(): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, meta?.frameworks, flagOff, suggestElements]
+    [dispatch, flagOff, suggestElements]
   );
 }
 

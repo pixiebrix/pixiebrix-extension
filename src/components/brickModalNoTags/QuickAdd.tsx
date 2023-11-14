@@ -18,20 +18,20 @@
 import styles from "./QuickAdd.module.scss";
 
 import React from "react";
-import { type IBrick } from "@/core";
 import { Card } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import cx from "classnames";
+import { type Metadata } from "@/types/registryTypes";
 
-type OwnProps<T extends IBrick = IBrick> = {
+type OwnProps<T extends Metadata> = {
   onSelect: (block: T) => void;
   recommendations: T[];
 };
 
-const QuickAdd: React.FunctionComponent<OwnProps> = ({
+const QuickAdd = <T extends Metadata>({
   recommendations = [],
   onSelect,
-}) => (
+}: OwnProps<T>) => (
   <div>
     <h4>Recommended Bricks</h4>
     <div className={styles.root}>

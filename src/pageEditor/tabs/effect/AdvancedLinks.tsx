@@ -17,23 +17,29 @@
 
 import styles from "./AdvancedLinks.module.scss";
 
-import { type BlockIf, type BlockWindow } from "@/blocks/types";
-import { type TemplateEngine } from "@/core";
-import { joinName } from "@/utils";
+import { type BlockIf, type BrickWindow } from "@/bricks/types";
+import { type TemplateEngine } from "@/types/runtimeTypes";
 import { useField } from "formik";
 import { partial } from "lodash";
 import React, { type MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
-import { isExpression } from "@/runtime/mapArgs";
+import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
+import { windowOptions } from "@/pageEditor/tabs/effect/configurationConstants";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
-export const DEFAULT_WINDOW_VALUE: BlockWindow = "self";
+
+export const DEFAULT_WINDOW_VALUE: BrickWindow = "self";
 
 type AdvancedLinksProps = {
   name: string;
   scrollToRef: MutableRefObject<HTMLElement>;
 };
 
+/**
+ * Links to the Advanced Configuration section. Used to indicate if any advanced settings that impact brick
+ * runtime behavior are set.
+ */
 const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
   const configName = partial(joinName, name);
 
@@ -41,7 +47,7 @@ const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
     configName("templateEngine")
   );
   const [{ value: ifFieldValue }] = useField<BlockIf>(configName("if"));
-  const [{ value: windowValue }] = useField<BlockWindow>(configName("window"));
+  const [{ value: windowValue }] = useField<BrickWindow>(configName("window"));
 
   const customTemplateEngineSet =
     templateEngineValue &&
@@ -78,7 +84,9 @@ const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
       )}
       {customWindowSet && (
         <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
-          Target: {windowValue}
+          Target:{" "}
+          {windowOptions.find((x) => x.value === windowValue)?.label ??
+            windowValue}
         </Button>
       )}
     </div>

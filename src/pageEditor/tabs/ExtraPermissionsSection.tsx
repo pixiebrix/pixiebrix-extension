@@ -15,26 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import React from "react";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const ExtraPermissionsSection: React.FunctionComponent = () => (
-  <FieldSection title="Advanced: Extra Permissions">
+  <ConnectedCollapsibleFieldSection title="Advanced: Extra Permissions">
     <UrlMatchPatternField
       label="Sites/APIs"
       name="permissions.origins"
       addButtonCaption="Add Allowed Origin"
       description={
         <div>
-          URL match patterns permitting the extension to run on a site or call
-          an API. Provide URL match patterns here if the extension either 1)
-          calls an API without using an Integration, or 2) performs actions on a
-          target tab not included in the Site match patterns
+          URL match patterns permitting the starter brick to run on a site or
+          call an API. Provide URL match patterns here if the starter brick
+          either 1) calls an API without using an Integration, or 2) performs
+          actions on a target tab not included in the site match patterns
         </div>
       }
     />
-  </FieldSection>
+  </ConnectedCollapsibleFieldSection>
 );
 
 export default ExtraPermissionsSection;

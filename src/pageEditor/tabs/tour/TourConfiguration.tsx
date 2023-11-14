@@ -16,8 +16,6 @@
  */
 
 import React from "react";
-import { Card } from "react-bootstrap";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
@@ -28,41 +26,39 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 const TourConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        {...makeLockableFieldProps("Sites", isLocked)}
-      />
+  <>
+    <UrlMatchPatternField
+      name="extensionPoint.definition.isAvailable.matchPatterns"
+      {...makeLockableFieldProps("Sites", isLocked)}
+    />
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.autoRunSchedule"
-        as="select"
-        description="Schedule to run the tour automatically when the user visits a page where the tour is available"
-        {...makeLockableFieldProps("Auto-Run Schedule", isLocked)}
-      >
-        <option value="never">Never</option>
-        <option value="once">Once</option>
-        <option value="always">Always</option>
-      </ConnectedFieldTemplate>
+    <ConnectedFieldTemplate
+      name="extensionPoint.definition.autoRunSchedule"
+      as="select"
+      description="Schedule to run the tour automatically when the user visits a page where the tour is available"
+      {...makeLockableFieldProps("Auto-Run Schedule", isLocked)}
+    >
+      <option value="never">Never</option>
+      <option value="once">Once</option>
+      <option value="always">Always</option>
+    </ConnectedFieldTemplate>
 
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.allowUserRun"
-        as={SwitchButtonWidget}
-        schema={{
-          type: "boolean",
-          description:
-            "Toggle on to enable the user manually run the tour from the Quick Bar",
-          default: true,
-        }}
-        {...makeLockableFieldProps("Allow User Run", isLocked)}
-      />
-    </FieldSection>
+    <ConnectedFieldTemplate
+      name="extensionPoint.definition.allowUserRun"
+      as={SwitchButtonWidget}
+      schema={{
+        type: "boolean",
+        description:
+          "Toggle on to enable the user manually run the tour from the Quick Bar",
+        default: true,
+      }}
+      {...makeLockableFieldProps("Allow User Run", isLocked)}
+    />
 
     <MatchRulesSection isLocked={isLocked} />
 
     <ExtraPermissionsSection />
-  </Card>
+  </>
 );
 
 export default TourConfiguration;

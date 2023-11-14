@@ -20,13 +20,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import { extensionToFormState } from "@/pageEditor/extensionPoints/adapter";
+import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
 import reportError from "@/telemetry/reportError";
-import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
+import { initRecipeOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
-import { type UUID } from "@/core";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { type UUID } from "@/types/stringTypes";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 
 type Config = {
   extensionId: UUID;
@@ -36,7 +37,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectExtensions);
-  const { data: recipes } = useAllRecipes();
+  const { data: recipes } = useAllModDefinitions();
   const { showConfirmation } = useModals();
 
   return useCallback(
@@ -53,7 +54,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
         }
       }
 
-      reportEvent("PageEditorReset", {
+      reportEvent(Events.PAGE_EDITOR_RESET, {
         sessionId,
         extensionId,
       });

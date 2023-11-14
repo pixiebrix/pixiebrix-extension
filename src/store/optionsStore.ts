@@ -20,37 +20,36 @@ import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
-import { boolean } from "@/utils";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
-import servicesSlice, {
-  persistServicesConfig,
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import integrationsSlice, {
+  persistIntegrationsConfig,
   type ServicesRootState,
-} from "@/store/servicesSlice";
+} from "@/integrations/store/integrationsSlice";
 import {
-  type BlueprintModalsRootState,
-  blueprintModalsSlice,
-} from "@/options/pages/blueprints/modals/blueprintModalsSlice";
+  type ModModalsRootState,
+  modModalsSlice,
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
-import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
+import { setupListeners } from "@reduxjs/toolkit/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice from "@/store/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import workshopSlice, {
   persistWorkshopConfig,
   type WorkshopRootState,
 } from "@/store/workshopSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import { persistSettingsConfig } from "@/store/settingsStorage";
-import { type SettingsRootState } from "@/store/settingsTypes";
-import blueprintsSlice, {
-  persistBlueprintsConfig,
-} from "@/options/pages/blueprints/blueprintsSlice";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import { type SettingsRootState } from "@/store/settings/settingsTypes";
+import modsPageSlice, {
+  persistModsConfig,
+} from "@/extensionConsole/pages/mods/modsPageSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { type BlueprintsRootState } from "@/options/pages/blueprints/blueprintsSelectors";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import {
   persistSessionChangesConfig,
@@ -61,6 +60,10 @@ import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesL
 import { createStateSyncMiddleware } from "redux-state-sync";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
+import { boolean } from "@/utils/typeUtils";
+import defaultMiddlewareConfig, {
+  defaultCreateStateSyncMiddlewareConfig,
+} from "@/store/defaultMiddlewareConfig";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -68,12 +71,12 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 
 export type RootState = AuthRootState &
   LogRootState &
-  BlueprintsRootState &
-  ExtensionsRootState &
+  ModsPageRootState &
+  ModComponentsRootState &
   ServicesRootState &
   SettingsRootState &
   WorkshopRootState &
-  BlueprintModalsRootState &
+  ModModalsRootState &
   SessionRootState &
   SessionChangesRootState;
 
@@ -97,17 +100,17 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    blueprints: persistReducer(
-      persistBlueprintsConfig,
-      blueprintsSlice.reducer
+    modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
+    integrations: persistReducer(
+      persistIntegrationsConfig,
+      integrationsSlice.reducer
     ),
-    services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
-    blueprintModals: blueprintModalsSlice.reducer,
+    modModals: modModalsSlice.reducer,
     logs: logSlice.reducer,
-    recipes: recipesSlice.reducer,
+    modDefinitions: modDefinitionsSlice.reducer,
     session: sessionSlice.reducer,
     sessionChanges: persistReducer(
       persistSessionChangesConfig,
@@ -117,19 +120,15 @@ const store = configureStore({
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-    return getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
-      },
-    })
+    return getDefaultMiddleware(defaultMiddlewareConfig)
       .concat(appApi.middleware)
-      .concat(recipesMiddleware)
+      .concat(modDefinitionsMiddleware)
       .concat(routerMiddleware(hashHistory))
       .concat(conditionalMiddleware)
       .concat(sessionChangesMiddleware)
       .concat(
         createStateSyncMiddleware({
+          ...defaultCreateStateSyncMiddlewareConfig,
           // In the future: concat whitelisted sync action lists here
           whitelist: sessionChangesStateSyncActions,
         })

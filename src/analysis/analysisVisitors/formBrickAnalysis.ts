@@ -15,23 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
-import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { FORM_MODAL_ID } from "@/pageEditor/fields/FormModalOptions";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
+import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 
-class FormBrickAnalysis extends AnalysisVisitor {
+class FormBrickAnalysis extends AnalysisVisitorABC {
   get id() {
     return "form";
   }
 
-  override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+  override visitBrick(
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     // In the future, we'll want to use the isPure property to generalize the rule. However, the isPure property
     // conflates two things: 1) bricks that read state or have implicit state, so may return a different result, and
@@ -40,7 +41,7 @@ class FormBrickAnalysis extends AnalysisVisitor {
     // The other direction (not placing the renderer form in an action, is already handled by brickTypeAnalysis.ts)
 
     if (
-      extra.pipelineFlavor === "noEffect" &&
+      extra.pipelineFlavor === PipelineFlavor.NoEffect &&
       blockConfig.id === FORM_MODAL_ID
     ) {
       this.annotations.push({

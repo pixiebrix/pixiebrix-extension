@@ -15,18 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { proxyService } from "@/background/messenger/api";
-import { Transformer } from "@/types";
-import {
-  type BlockArg,
-  type BlockOptions,
-  type RegistryId,
-  type Schema,
-  type SchemaProperties,
-} from "@/core";
-import { pollUntilTruthy } from "@/utils";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { pollUntilTruthy } from "@/utils/promiseUtils";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",
@@ -101,7 +99,7 @@ interface JobsResponse {
   }>;
 }
 
-export class RunProcess extends Transformer {
+export class RunProcess extends TransformerABC {
   constructor() {
     super(
       UIPATH_ID,
@@ -127,23 +125,35 @@ export class RunProcess extends Transformer {
       awaitResult = false,
       maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
       inputArguments = {},
-    }: BlockArg,
-    { logger }: BlockOptions
+    }: BrickArgs<{
+      uipath: SanitizedIntegrationConfig;
+      releaseKey: string;
+      strategy: string;
+      jobsCount: number;
+      robotIds: number[];
+      awaitResult: boolean;
+      maxWaitMillis: number;
+      inputArguments: UnknownObject;
+    }>,
+    { logger }: BrickOptions
   ): Promise<unknown> {
-    const responsePromise = proxyService<JobsResponse>(uipath, {
-      url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
-      method: "post",
-      data: {
-        startInfo: {
-          ReleaseKey: releaseKey,
-          Strategy: strategy,
-          JobsCount: jobsCount,
-          RobotIds: robotIds,
-          Source: "Manual",
-          InputArguments: JSON.stringify(inputArguments),
+    const responsePromise = performConfiguredRequestInBackground<JobsResponse>(
+      uipath,
+      {
+        url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
+        method: "post",
+        data: {
+          startInfo: {
+            ReleaseKey: releaseKey,
+            Strategy: strategy,
+            JobsCount: jobsCount,
+            RobotIds: robotIds,
+            Source: "Manual",
+            InputArguments: JSON.stringify(inputArguments),
+          },
         },
-      },
-    });
+      }
+    );
 
     if (!awaitResult) {
       return {};
@@ -158,10 +168,11 @@ export class RunProcess extends Transformer {
     }
 
     const poll = async () => {
-      const { data: resultData } = await proxyService<JobsResponse>(uipath, {
-        url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
-        method: "get",
-      });
+      const { data: resultData } =
+        await performConfiguredRequestInBackground<JobsResponse>(uipath, {
+          url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
+          method: "get",
+        });
 
       if (resultData.value.length === 0) {
         logger.error(`UiPath job not found: ${startData.value[0].Id}`);

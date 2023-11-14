@@ -9,7 +9,7 @@ exports[`UrlPatternWidget render empty widget 1`] = `
       class="list-group mb-2"
     />
     <button
-      class="btn btn-primary"
+      class="addButton btn btn-link"
       type="button"
     >
       Add URL Pattern
@@ -38,6 +38,13 @@ exports[`UrlPatternWidget render single pattern 1`] = `
           class="formGroup mb-0 form-group row"
         >
           <div
+            class="mb-2 collapse col-12"
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
+          <div
             class="col-xl-12 col-lg-12"
           >
             <div
@@ -55,7 +62,7 @@ exports[`UrlPatternWidget render single pattern 1`] = `
                         <th
                           scope="col"
                         >
-                          Property
+                          Property name
                         </th>
                         <th
                           scope="col"
@@ -78,6 +85,13 @@ exports[`UrlPatternWidget render single pattern 1`] = `
                           <div
                             class="formGroup mb-0 form-group row"
                           >
+                            <div
+                              class="mb-2 collapse col-12"
+                            >
+                              <div
+                                class="annotationPlaceholder"
+                              />
+                            </div>
                             <div
                               class="col-xl-12 col-lg-12"
                             >
@@ -157,7 +171,7 @@ exports[`UrlPatternWidget render single pattern 1`] = `
       </li>
     </ul>
     <button
-      class="btn btn-primary"
+      class="addButton btn btn-link"
       type="button"
     >
       Add URL Pattern

@@ -37,7 +37,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import DisplayTemporaryInfo from "@/blocks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
 
 type DocumentPreviewProps = {
   documentBodyName: string;
@@ -85,6 +86,11 @@ const DocumentPreview = ({
     runBlockPreview,
   } = useDocumentPreviewRunBlock(activeNodeId);
 
+  const traceRecord = useSelector(
+    selectActiveElementTraceForBlock(activeNodeId)
+  );
+  const doesNotHaveTrace = traceRecord == null;
+
   return (
     <>
       {showPreviewButton && (
@@ -92,19 +98,26 @@ const DocumentPreview = ({
           <Button
             variant="info"
             size="sm"
-            disabled={isPreviewRunning}
+            disabled={isPreviewRunning || doesNotHaveTrace}
             onClick={runBlockPreview}
           >
             Show Live Preview <FontAwesomeIcon icon={faExternalLinkAlt} />
           </Button>
-          <br />
+          {doesNotHaveTrace && (
+            <Alert variant={"info"} className={styles.alert}>
+              No data available for preview, run the mod first to generate
+              preview data
+            </Alert>
+          )}
           {previewError && (
-            <Alert variant="danger">{getErrorMessage(previewError)}</Alert>
+            <Alert variant="danger" className={styles.alert}>
+              {getErrorMessage(previewError)}
+            </Alert>
           )}
           <hr />
         </>
       )}
-      {/* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- TODO */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- TODO */}
       <div
         onClick={onClick}
         className={cx(
@@ -116,14 +129,15 @@ const DocumentPreview = ({
             [styles.empty]: body.length === 0,
           }
         )}
+        /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events -- TODO */
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
       >
-        {bodyPreview.map((childElement, i) => (
+        {bodyPreview.map((childElement, childIndex) => (
           <ElementPreview
-            key={`${documentBodyName}.${i}`}
+            key={`${documentBodyName}.${childIndex}`}
             documentBodyName={documentBodyName}
-            elementName={String(i)}
+            elementName={String(childIndex)}
             previewElement={childElement}
             activeElement={activeElement}
             setActiveElement={setActiveElement}

@@ -17,7 +17,6 @@
 
 import React, { type ChangeEventHandler } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { joinName } from "@/utils";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
@@ -32,6 +31,7 @@ import {
 import { produce } from "immer";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { useField } from "formik";
+import { joinName } from "@/utils/formUtils";
 
 type ListOptionsProps = {
   elementName: string;
@@ -45,9 +45,12 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
     name: joinName(elementName, "config", "array"),
     schema: { type: "array" },
     label: "Array",
+    description: "An array/list of elements to render in the document",
   };
 
-  const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+  const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = async (
+    event
+  ) => {
     const nextType = event.target.value as DocumentElementType;
 
     const nextDocumentElement = produce(
@@ -57,16 +60,17 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
       }
     );
 
-    setDocumentElement(nextDocumentElement);
+    await setDocumentElement(nextDocumentElement);
   };
 
   return (
     <>
       <SchemaField {...arraySourceEdit} />
       <ConnectedFieldTemplate
-        label="Element key"
+        label="Element Key"
         name={joinName(elementName, "config", "elementKey")}
         as={KeyNameWidget}
+        description="The variable name to use for each element in the array/list"
       />
       <FieldTemplate
         label="Item type"

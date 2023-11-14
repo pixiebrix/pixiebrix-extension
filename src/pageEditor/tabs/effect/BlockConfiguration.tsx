@@ -15,46 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef } from "react";
-import { type RegistryId } from "@/core";
+import React, { useMemo, useRef } from "react";
+import { type RegistryId } from "@/types/registryTypes";
 import { getIn, useField, useFormikContext } from "formik";
-import useBlockOptions from "@/hooks/useBlockOptions";
-import { Card } from "react-bootstrap";
+import useBrickOptions from "@/hooks/useBrickOptions";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
-import SelectWidget, {
-  type Option,
-} from "@/components/form/widgets/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BlockConfig, type BlockWindow } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "@/pageEditor/tabs/effect/AdvancedLinks";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import getType from "@/runtime/getType";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import ConfigurationTitle from "./ConfigurationTitle";
-import { inputProperties } from "@/helpers";
-
-const rootModeOptions = [
-  { label: "Document", value: "document" },
-  { label: "Element", value: "element" },
-  { label: "Inherit", value: "inherit" },
-];
-
-const targetOptions: Array<Option<BlockWindow>> = [
-  { label: "Current Tab (self)", value: "self" },
-  { label: "Opener Tab (opener)", value: "opener" },
-  { label: "Target Tab (target)", value: "target" },
-  { label: "Top-level Frame (top)", value: "top" },
-  { label: "All Tabs (broadcast)", value: "broadcast" },
-];
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import { joinName } from "@/utils/formUtils";
+import { inputProperties } from "@/utils/schemaUtils";
+import {
+  rootModeOptions,
+  windowOptions,
+} from "@/pageEditor/tabs/effect/configurationConstants";
+import useAsyncEffect from "use-async-effect";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -62,14 +49,14 @@ const BlockConfiguration: React.FunctionComponent<{
 }> = ({ name, blockId }) => {
   const configName = partial(joinName, name);
 
-  const context = useFormikContext<FormState>();
-  const [config] = useField<BlockConfig>(name);
-  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BlockConfig>(
+  const context = useFormikContext<ModComponentFormState>();
+  const [config] = useField<BrickConfig>(name);
+  const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BrickConfig>(
     configName("root")
   );
   const blockErrors = getIn(context.errors, name);
 
-  const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
+  const [{ block, error }, BlockOptions] = useBrickOptions(blockId);
 
   // Conditionally show Advanced options "Condition" and "Target" depending on the value of blockType.
   // If blockType is undefined, don't show the options.
@@ -88,14 +75,14 @@ const BlockConfiguration: React.FunctionComponent<{
 
   const advancedOptionsRef = useRef<HTMLDivElement>();
 
-  useEffect(
-    () => {
+  useAsyncEffect(
+    async () => {
       // Effect to clear out unused `root` field. Technically, `root` could contain a selector when used with `document`
       // or `inherit` mode, but we don't want to support that in the Page Editor because it's legacy behavior.
       if (config.value.rootMode !== "element") {
-        rootFieldHelpers.setValue(null);
+        await rootFieldHelpers.setValue(null);
       }
-    }, // eslint-disable-next-line react-hooks/exhaustive-deps -- rootFieldHelpers changes reference every render
+    }, // Dependencies - rootFieldHelpers changes reference every render
     [config.value.rootMode]
   );
 
@@ -163,25 +150,26 @@ const BlockConfiguration: React.FunctionComponent<{
     <>
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
-      <Card>
-        <FieldSection title={<ConfigurationTitle />}>
-          <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-            {blockErrors?.id && (
-              <div className="invalid-feedback d-block mb-4">
-                Unknown block {blockId}
-              </div>
-            )}
-            {BlockOptions ? (
-              <BlockOptions name={name} configKey="config" />
-            ) : error ? (
-              <div className="invalid-feedback d-block mb-4">{error}</div>
-            ) : (
-              <Loader />
-            )}
-          </SchemaFieldContext.Provider>
-        </FieldSection>
+      <>
+        <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
+          {blockErrors?.id && (
+            <div className="invalid-feedback d-block mb-4">
+              Unknown block {blockId}
+            </div>
+          )}
+          {BlockOptions ? (
+            <BlockOptions name={name} configKey="config" />
+          ) : error ? (
+            <div className="invalid-feedback d-block mb-4">{error}</div>
+          ) : (
+            <Loader />
+          )}
+        </SchemaFieldContext.Provider>
 
-        <FieldSection title="Advanced Options" bodyRef={advancedOptionsRef}>
+        <ConnectedCollapsibleFieldSection
+          title="Advanced Options"
+          bodyRef={advancedOptionsRef}
+        >
           {showIfAndTarget && <SchemaField {...ifSchemaProps} omitIfEmpty />}
 
           {showRootMode && (
@@ -204,7 +192,7 @@ const BlockConfiguration: React.FunctionComponent<{
               name={configName("window")}
               label="Target Tab/Frame"
               as={SelectWidget}
-              options={targetOptions}
+              options={windowOptions}
               blankValue={DEFAULT_WINDOW_VALUE}
               description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
             />
@@ -213,8 +201,8 @@ const BlockConfiguration: React.FunctionComponent<{
           {noAdvancedOptions && (
             <small className="text-muted font-italic">No options to show</small>
           )}
-        </FieldSection>
-      </Card>
+        </ConnectedCollapsibleFieldSection>
+      </>
     </>
   );
 };

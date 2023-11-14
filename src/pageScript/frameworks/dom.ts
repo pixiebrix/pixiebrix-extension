@@ -15,22 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { isObject } from "@/utils/objectUtils";
+
 export function isNode(x: unknown): x is Node {
-  return typeof x === "object" && "nodeType" in x;
+  return isObject(x) && "nodeType" in x;
 }
 
 /**
  * Returns the DOM Element enclosing a DOM Node, or the node itself if it is a DOM Element.
  */
 export function findElement(node: Node): Element | null {
-  let current = node;
-  while (current && !(current instanceof Element)) {
-    current = current.parentNode;
-  }
-
-  if (current instanceof Element) {
-    return current;
-  }
-
-  return null;
+  return node instanceof Element ? node : node.parentElement;
 }

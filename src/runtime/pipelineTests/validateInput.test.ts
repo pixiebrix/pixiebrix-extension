@@ -15,38 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion } from "@/core";
-import blockRegistry from "@/blocks/registry";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { InputValidationError } from "@/blocks/errors";
+import { InputValidationError } from "@/bricks/errors";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
-  contextBlock,
-  echoBlock,
+  contextBrick,
+  echoBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
-
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([echoBlock, contextBlock]);
+  blockRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("apiVersion: v1", () => {
   test("throws error on wrong input type", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{inputArg}}" },
       },
     ];
@@ -64,7 +55,7 @@ describe("apiVersion: v1", () => {
   test("throws error on missing input", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         config: { message: "{{inputArg}}" },
       },
     ];
@@ -80,7 +71,7 @@ describe("apiVersion: v2", () => {
   test("throws error on wrong input type", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         // FIXME: this will resolve to a the empty string, is it throwing an error for the wrong reason?
         config: { message: "{{inputArg}}" },
       },
@@ -101,14 +92,14 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("no implicit inputs", async () => {
     const pipeline = [
       {
-        id: echoBlock.id,
+        id: echoBrick.id,
         outputKey: validateOutputKey("first"),
         config: {
           message: "First block",
         },
       },
       {
-        id: contextBlock.id,
+        id: contextBrick.id,
         config: {},
       },
     ];
@@ -117,9 +108,11 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       simpleInput({ inputArg: "hello" }),
       testOptions(apiVersion)
     );
+
     expect(result).toStrictEqual({
       "@input": { inputArg: "hello" },
       "@options": {},
+      ...extraEmptyModStateContext(apiVersion),
       "@first": { message: "First block" },
     });
   });

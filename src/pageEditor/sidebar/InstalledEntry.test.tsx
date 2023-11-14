@@ -16,19 +16,17 @@
  */
 
 import React from "react";
-import {
-  authStateFactory,
-  extensionFactory,
-  formStateFactory,
-} from "@/testUtils/factories";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
 
-jest.mock("@/pageEditor/extensionPoints/adapter", () => {
-  const actual = jest.requireActual("@/pageEditor/extensionPoints/adapter");
+jest.mock("@/pageEditor/starterBricks/adapter", () => {
+  const actual = jest.requireActual("@/pageEditor/starterBricks/adapter");
   return {
     ...actual,
     selectType: jest.fn().mockResolvedValue("menuItem"),
@@ -46,10 +44,10 @@ afterAll(() => {
 
 describe("InstalledEntry", () => {
   test("it renders not active element", async () => {
-    const extension = extensionFactory();
+    const modComponent = modComponentFactory();
     const formState = formStateFactory();
-    const rendered = render(
-      <InstalledEntry extension={extension} recipes={[]} isAvailable />,
+    const { asFragment } = render(
+      <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -67,14 +65,14 @@ describe("InstalledEntry", () => {
     );
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders active element", async () => {
-    const extension = extensionFactory();
+    const modComponent = modComponentFactory();
     const formState = formStateFactory();
-    const rendered = render(
-      <InstalledEntry extension={extension} recipes={[]} isAvailable />,
+    const { asFragment } = render(
+      <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -86,6 +84,6 @@ describe("InstalledEntry", () => {
     );
     await waitForEffect();
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

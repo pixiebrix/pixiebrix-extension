@@ -19,61 +19,105 @@ import {
   type MigrationManifest,
   type PersistedState,
 } from "redux-persist/es/types";
-import { type PersistedExtension } from "@/core";
 import {
-  type ExtensionOptionsState,
-  type LegacyExtensionObjectShapeState,
-  type LegacyExtensionObjectState,
-  type OptionsState,
+  type ModComponentStateVersions,
+  type ModComponentStateV0,
+  type ModComponentStateV1,
+  type ModComponentStateV2,
+  type ModComponentStateV3,
+  isModComponentStateV0,
+  isModComponentStateV1,
+  isModComponentStateV2,
+  isModComponentStateV3,
 } from "@/store/extensionsTypes";
+import { omit } from "lodash";
+import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
 
 export const migrations: MigrationManifest = {
-  1: (state: PersistedState & OptionsState) => migrateExtensionsShape(state),
-  2: (state: PersistedState & OptionsState) =>
-    migrateActiveExtensions(
-      state as PersistedState & LegacyExtensionObjectState
-    ),
+  // Redux-persist defaults to version: -1; Initialize to 0-indexed
+  // state version to match state type names and existing versions
+  // The typeguards shouldn't be necessary, but in certain cases, the rehydration can run
+  // on ModComponentStateV2 extensions before the _persist key is added
+  0: (state) => state,
+  1(state: ModComponentStateVersions & PersistedState) {
+    if (isModComponentStateV0(state)) {
+      return migrateModComponentStateV0ToV1(state);
+    }
+
+    return state;
+  },
+  2(state: ModComponentStateV1 & PersistedState) {
+    if (isModComponentStateV1(state)) {
+      return migrateModComponentStateV1ToV2(state);
+    }
+
+    return state;
+  },
+  3(state: ModComponentStateV2 & PersistedState) {
+    if (isModComponentStateV2(state)) {
+      return migrateModComponentStateV2toV3(state);
+    }
+
+    return state;
+  },
 };
 
-// Putting here because it was causing circular dependencies
-export function migrateExtensionsShape<T>(
-  state: T & (LegacyExtensionObjectShapeState | LegacyExtensionObjectState)
-): T & LegacyExtensionObjectState {
-  if (state.extensions == null) {
-    console.info("Repairing redux state");
-    return { ...state, extensions: [] };
-  }
-
-  if (Array.isArray(state.extensions)) {
-    // Already migrated
-    console.debug("Redux extensions state already migrated");
-    return state as T & LegacyExtensionObjectState;
-  }
-
-  console.info("Migrating Redux state");
-
+function migrateModComponentStateV0ToV1(
+  state: ModComponentStateV0 & PersistedState
+): ModComponentStateV1 & PersistedState {
   return {
     ...state,
-    extensions: Object.values(state.extensions).flatMap((extensionMap) =>
-      Object.values(extensionMap)
+    extensions: Object.values(state.extensions).flatMap((extension) =>
+      Object.values(extension)
     ),
   };
 }
 
-export function migrateActiveExtensions<T>(
-  state: T & (LegacyExtensionObjectState | ExtensionOptionsState)
-): T & ExtensionOptionsState {
-  const timestamp = new Date().toISOString();
-
+function migrateModComponentStateV1ToV2(
+  state: ModComponentStateV1 & PersistedState
+): ModComponentStateV2 & PersistedState {
+  const now = new Date().toISOString();
   return {
     ...state,
     extensions: state.extensions.map((x) => ({
       ...x,
       active: true,
-      createTimestamp:
-        (x as Partial<PersistedExtension>).createTimestamp ?? timestamp,
-      updateTimestamp:
-        (x as Partial<PersistedExtension>).updateTimestamp ?? timestamp,
+      createTimestamp: now,
+      updateTimestamp: now,
     })),
   };
+}
+
+function migrateModComponentStateV2toV3(
+  state: ModComponentStateV2 & PersistedState
+): ModComponentStateV3 & PersistedState {
+  return {
+    ...state,
+    extensions: state.extensions.map((extension) => ({
+      ...omit(extension, "services"),
+      integrationDependencies: migrateIntegrationDependenciesV1toV2(
+        extension.services
+      ),
+    })),
+  };
+}
+
+export function inferModComponentStateVersion(
+  state: ModComponentStateVersions
+): number {
+  if (isModComponentStateV3(state)) {
+    return 3;
+  }
+
+  if (isModComponentStateV2(state)) {
+    return 2;
+  }
+
+  if (isModComponentStateV1(state)) {
+    return 1;
+  }
+
+  if (isModComponentStateV0(state)) {
+    return 0;
+  }
 }

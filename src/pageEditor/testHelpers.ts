@@ -18,27 +18,30 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
 import extensionsSlice from "@/store/extensionsSlice";
-import servicesSlice from "@/store/servicesSlice";
-import settingsSlice from "@/store/settingsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
-import { createRenderWithWrappers } from "@/testUtils/testHelpers";
+import {
+  createRenderHookWithWrappers,
+  createRenderWithWrappers,
+} from "@/testUtils/testHelpers";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
 import { appApi } from "@/services/api";
-import { recipesSlice } from "@/recipes/recipesSlice";
-import { recipesMiddleware } from "@/recipes/recipesListenerMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 
-const renderWithWrappers = createRenderWithWrappers(() =>
+const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
       options: extensionsSlice.reducer,
-      services: servicesSlice.reducer,
+      integrations: integrationsSlice.reducer,
       settings: settingsSlice.reducer,
       editor: editorSlice.reducer,
       session: sessionSlice.reducer,
@@ -47,21 +50,24 @@ const renderWithWrappers = createRenderWithWrappers(() =>
       logs: logSlice.reducer,
       analysis: analysisSlice.reducer,
       tabState: tabStateSlice.reducer,
-      recipes: recipesSlice.reducer,
+      modDefinitions: modDefinitionsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
       return getDefaultMiddleware()
         .concat(appApi.middleware)
         .concat(pageEditorAnalysisManager.middleware)
-        .concat(recipesMiddleware);
-      /* eslint-enable unicorn/prefer-spread */
+        .concat(modDefinitionsMiddleware);
     },
-  })
+  });
+
+const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
+const renderHookWithWrappers = createRenderHookWithWrappers(
+  configureStoreForTests
 );
 
 // eslint-disable-next-line import/export -- re-export RTL
 export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
+export { renderHookWithWrappers as renderHook };

@@ -18,9 +18,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { selectCopiedBlock } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
+import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 
 function usePasteBlock():
   | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
@@ -34,7 +34,7 @@ function usePasteBlock():
   return async (pipelinePath: string, pipelineIndex: number) => {
     // Give the block a new instanceId
     const newInstanceId = uuidv4();
-    const newBlock: BlockConfig = {
+    const newBlock: BrickConfig = {
       ...copiedBlock,
       instanceId: newInstanceId,
     };

@@ -17,26 +17,28 @@
 
 import React, { useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import ToggleField from "@/pageEditor/components/ToggleField";
 import { Button } from "react-bootstrap";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { reportEvent } from "@/telemetry/events";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
-function isPanelElement(element: FormState | null): boolean {
+function isPanelElement(element: ModComponentFormState | null): boolean {
   return ["panel", "actionPanel"].includes(element?.type);
 }
 
 /**
  * Return true if the trigger runs automatically (not in response to a user action).
  */
-function isAutomaticTrigger(element: FormState): boolean {
+function isAutomaticTrigger(element: ModComponentFormState): boolean {
   const automatic = ["load", "appear", "initialize", "interval"];
   return (
     element?.type === "trigger" &&
@@ -66,7 +68,7 @@ const Controls: React.FunctionComponent<{
  * Return true if the element should be automatically updated on the page.
  * @param element the Page Editor form element
  */
-export function shouldAutoRun(element: FormState): boolean {
+export function shouldAutoRun(element: ModComponentFormState): boolean {
   // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
   const isPanel = isPanelElement(element);
   const isTrigger = isAutomaticTrigger(element);
@@ -88,7 +90,7 @@ export function shouldAutoRun(element: FormState): boolean {
  * - tours
  */
 const ReloadToolbar: React.FunctionComponent<{
-  element: FormState;
+  element: ModComponentFormState;
   refreshMillis?: number;
 }> = ({ element, refreshMillis = DEFAULT_RELOAD_MILLIS }) => {
   const sessionId = useSelector(selectSessionId);
@@ -100,13 +102,15 @@ const ReloadToolbar: React.FunctionComponent<{
 
   const manualRun = async () => {
     // Report before the run to report even if the run errors
-    reportEvent("PageEditorManualRun", {
+    reportEvent(Events.PAGE_EDITOR_MANUAL_RUN, {
       sessionId,
       extensionId: element.uuid,
     });
 
     await run();
   };
+
+  useKeyboardShortcut("F5", manualRun);
 
   const debouncedRun = useDebouncedCallback(run, refreshMillis, {
     // If we could distinguish between types of edits, it might be reasonable to set leading: true. But in

@@ -23,10 +23,10 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
-import { isValidUrl } from "@/utils";
 import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
 import { isEmpty } from "lodash";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
+import { isValidUrl } from "@/utils/urlUtils";
 
 type ImageProps = PreviewComponentProps & {
   elementType: DocumentElementType;
@@ -42,6 +42,7 @@ const Image: React.FunctionComponent<ImageProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => {
   // If it's not a valid URL, show a placeholder
@@ -53,6 +54,7 @@ const Image: React.FunctionComponent<ImageProps> = ({
     <div
       className={cx(documentTreeStyles.imageWrapper, className)}
       {...restPreviewProps}
+      ref={elementRef}
     >
       <Flaps
         className={documentTreeStyles.flapShiftRight}

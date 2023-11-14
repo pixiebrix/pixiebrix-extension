@@ -16,11 +16,6 @@
  */
 
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type FrameworkMeta } from "@/pageScript/messenger/constants";
-
-interface FrameMeta {
-  frameworks: FrameworkMeta[];
-}
 
 export interface FrameConnectionState {
   frameId: number;
@@ -34,8 +29,6 @@ export interface FrameConnectionState {
    * True if the devtools have permission to access the current tab
    */
   hasPermissions: boolean;
-
-  meta: FrameMeta | undefined;
 }
 
 export type TabState = {

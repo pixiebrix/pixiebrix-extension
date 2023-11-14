@@ -20,14 +20,15 @@ import { type Action, Priority } from "kbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAppleAlt,
+  faBook,
   faInfoCircle,
-  faSeedling,
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { MARKETPLACE_URL } from "@/utils/strings";
-
-const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
+import { faSlack } from "@fortawesome/free-brands-svg-icons";
+import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
+import { Events } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
 
 const PIXIEBRIX_SECTION = "PixieBrix";
 
@@ -67,13 +68,13 @@ const defaultActions: Action[] = [
   },
   {
     id: "community",
-    name: "Open Community",
+    name: "Open Community Slack",
     keywords: "community, how to",
     section: PIXIEBRIX_SECTION,
     priority: Priority.LOW,
-    icon: <FontAwesomeIcon icon={faSeedling} fixedWidth />,
+    icon: <FontAwesomeIcon icon={faSlack} fixedWidth />,
     perform() {
-      window.location.href = "https://community.pixiebrix.com/";
+      window.location.href = "https://slack.pixiebrix.com/";
     },
   },
   {
@@ -88,5 +89,20 @@ const defaultActions: Action[] = [
     },
   },
 ];
+
+export const pageEditorAction: Action = {
+  id: "page-editor",
+  name: "Learn: Open the Page Editor",
+  keywords: "mod, edit, page, page editor, editor, how to, open, learn",
+  section: PIXIEBRIX_SECTION,
+  priority: Priority.LOW,
+  icon: <FontAwesomeIcon icon={faBook} fixedWidth />,
+  perform() {
+    reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_LINK_CLICK, {
+      source: "quick bar",
+    });
+    window.location.href = "https://pixiebrix.com/developers-welcome";
+  },
+};
 
 export default defaultActions;

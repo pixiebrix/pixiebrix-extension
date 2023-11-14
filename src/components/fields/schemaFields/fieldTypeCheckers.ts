@@ -16,25 +16,34 @@
  */
 
 import { createTypePredicate } from "@/components/fields/fieldUtils";
-import { type Schema } from "@/core";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { type Expression } from "@/types/runtimeTypes";
 import {
-  SERVICE_BASE_SCHEMA,
-  SERVICE_FIELD_REFS,
-} from "@/services/serviceUtils";
-import { isEmpty } from "lodash";
+  type LabelledEnumSchema,
+  type Schema,
+  type UiSchema,
+} from "@/types/schemaTypes";
+import { get, isEmpty } from "lodash";
 import keySchema from "@schemas/key.json";
 import iconSchema from "@schemas/icon.json";
 import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
+
+import { isVarExpression } from "@/utils/expressionUtils";
+import {
+  INTEGRATION_DEPENDENCY_FIELD_REFS,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
+import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export const isAppServiceField = createTypePredicate(
-  (schema) => schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`
+  (schema) =>
+    schema.$ref === `${SERVICES_BASE_SCHEMA_URL}${PIXIEBRIX_INTEGRATION_ID}`
 );
 
 export const isServiceField = createTypePredicate(
   (x) =>
-    x.$ref?.startsWith(SERVICE_BASE_SCHEMA) ||
-    SERVICE_FIELD_REFS.includes(x.$ref)
+    x.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(x.$ref)
 );
 
 export const isCssClassField = (fieldDefinition: Schema) =>
@@ -45,9 +54,36 @@ export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
 
+export const hasCustomWidget = (uiSchema?: UiSchema) =>
+  typeof get(uiSchema, ["ui:widget"]) === "string";
+
+/**
+ * Returns true if the schema uses oneOf and "const" keyword to label enum options.
+ * Read more at: https://github.com/json-schema-org/json-schema-spec/issues/57#issuecomment-247861695
+ * @param schema
+ */
+export function isLabelledEnumField(
+  schema: Schema
+): schema is LabelledEnumSchema {
+  return (
+    schema.type === "string" &&
+    schema.oneOf != null &&
+    schema.oneOf.length > 0 &&
+    schema.oneOf.every((x) => typeof x === "object" && "const" in x)
+  );
+}
+
+/**
+ * Returns true if schema is a field that should be rendered as a select or a creatable select field.
+ * @param schema the field schema
+ */
 export function isSelectField(schema: Schema): boolean {
-  const values = schema.examples ?? schema.enum;
-  return schema.type === "string" && Array.isArray(values) && !isEmpty(values);
+  const primitiveValues = schema.examples ?? schema.enum;
+  const isPrimitiveSelect =
+    schema.type === "string" &&
+    Array.isArray(primitiveValues) &&
+    !isEmpty(primitiveValues);
+  return isPrimitiveSelect || isLabelledEnumField(schema);
 }
 
 export function isKeyStringField(schema: Schema): boolean {
@@ -60,4 +96,52 @@ export function isDatabaseField(schema: Schema): boolean {
 
 export function isIconField(schema: Schema): boolean {
   return schema.$ref === iconSchema.$id;
+}
+
+export function isGoogleSheetIdField(schema: Schema): boolean {
+  return (
+    schema.$ref === googleSheetIdSchema.$id ||
+    schema.$id === googleSheetIdSchema.$id
+  );
+}
+
+/**
+ * Check if a schema matches a service field without checking anyOf/oneOf/allOf
+ * @param schema
+ */
+export function isSimpleServiceField(schema: Schema): boolean {
+  return (
+    schema.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    schema.$id?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$ref) ||
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(schema.$id)
+  );
+}
+
+export function isIntegrationDependencyValueFormat(
+  value: unknown
+): value is Expression {
+  // Default service value, see ServiceWidget
+  if (value == null) {
+    return true;
+  }
+
+  if (!isVarExpression(value)) {
+    return false;
+  }
+
+  const varValue = value.__value__;
+
+  // Service starts with @ and doesn't contain whitespace
+  return /^@\S+$/.test(varValue);
+}
+
+export function isGoogleSheetIdValue(value: unknown): boolean {
+  if (value == null) {
+    // Allow null values
+    return true;
+  }
+
+  // Sheets id values are strings with no whitespace
+  return typeof value === "string" && /^\S+$/.test(value);
 }

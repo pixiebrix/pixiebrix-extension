@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MarkdownInline linkifies text 1`] = `
+<DocumentFragment>
+  <span>
+    <strong>
+      Hello
+    </strong>
+     
+    <a
+      href="https://www.example.com"
+    >
+      https://www.example.com
+    </a>
+  </span>
+</DocumentFragment>
+`;
+
+exports[`MarkdownInline renders without p tag 1`] = `
+<DocumentFragment>
+  <span>
+    <strong>
+      Hello
+    </strong>
+     World
+  </span>
+</DocumentFragment>
+`;

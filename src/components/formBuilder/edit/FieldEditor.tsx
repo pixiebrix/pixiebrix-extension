@@ -35,7 +35,6 @@ import {
   type UiTypeExtra,
   validateNextPropertyName,
 } from "@/components/formBuilder/formBuilderHelpers";
-import { type Schema, type SchemaPropertyType } from "@/core";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget, {
@@ -48,13 +47,24 @@ import { uniq } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
-import { isNullOrBlank } from "@/utils";
-import { AnnotationType } from "@/types";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import {
+  isDatabaseField,
+  isGoogleSheetIdField,
+} from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
+import { AnnotationType } from "@/types/annotationTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
   description:
     "The source image data URI: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs",
+};
+
+const UNKNOWN_OPTION: SelectStringOption = {
+  label: "unknown",
+  value: null,
 };
 
 const FieldEditor: React.FC<{
@@ -100,7 +110,7 @@ const FieldEditor: React.FC<{
     setInternalPropertyName(nextName);
   };
 
-  const updatePropertyName = () => {
+  const updatePropertyName = async () => {
     const nextName = internalPropertyName;
     if (nextName === propertyName) {
       return;
@@ -116,11 +126,11 @@ const FieldEditor: React.FC<{
       propertyName,
       nextName
     );
-    setRjsfSchema(nextRjsfSchema);
+    await setRjsfSchema(nextRjsfSchema);
     setActiveField(nextName);
   };
 
-  const onUiTypeChange: SelectWidgetOnChange = (event) => {
+  const onUiTypeChange: SelectWidgetOnChange = async (event) => {
     const { value } = event.target;
     if (!value) {
       return;
@@ -132,20 +142,27 @@ const FieldEditor: React.FC<{
       value
     );
 
-    setRjsfSchema(nextRjsfSchema);
+    await setRjsfSchema(nextRjsfSchema);
   };
 
   const getSelectedUiTypeOption = () => {
-    const isDatabaseSelector =
-      (schema?.properties?.[propertyName] as Schema)?.$ref ===
-      databaseSchema.$id;
+    const fieldSchema = schema.properties[propertyName];
+    if (typeof fieldSchema === "boolean") {
+      return UNKNOWN_OPTION;
+    }
 
-    const propertyType = isDatabaseSelector
-      ? "string"
-      : (propertySchema.type as SchemaPropertyType);
+    const isDatabaseFieldType = isDatabaseField(fieldSchema);
+    const isGoogleSheetFieldType = isGoogleSheetIdField(fieldSchema);
 
-    const uiWidget = isDatabaseSelector
+    const propertyType =
+      isDatabaseFieldType || isGoogleSheetFieldType
+        ? "string"
+        : (propertySchema.type as SchemaPropertyType);
+
+    const uiWidget = isDatabaseFieldType
       ? "database"
+      : isGoogleSheetFieldType
+      ? "googleSheet"
       : uiSchema?.[propertyName]?.[UI_WIDGET];
 
     const propertyFormat = propertySchema.format;
@@ -163,15 +180,10 @@ const FieldEditor: React.FC<{
 
     const selected = fieldTypes.find((option) => option.value === uiType);
 
-    return (
-      selected ?? {
-        label: "unknown",
-        value: null,
-      }
-    );
+    return selected ?? UNKNOWN_OPTION;
   };
 
-  const onRequiredChange = ({
+  const onRequiredChange = async ({
     target: { value: nextIsRequired },
   }: React.ChangeEvent<CheckBoxLike>) => {
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
@@ -190,7 +202,7 @@ const FieldEditor: React.FC<{
       }
     });
 
-    setRjsfSchema(nextRjsfSchema);
+    await setRjsfSchema(nextRjsfSchema);
   };
 
   const isRequired = (schema.required ?? []).includes(propertyName);
@@ -233,6 +245,10 @@ const FieldEditor: React.FC<{
             uiType.uiWidget === "database"
               ? {
                   $ref: databaseSchema.$id,
+                }
+              : uiType.uiWidget === "googleSheet"
+              ? {
+                  $ref: googleSheetIdSchema.$id,
                 }
               : {
                   type: uiType.propertyType,
@@ -287,6 +303,22 @@ const FieldEditor: React.FC<{
           <SchemaField
             label="Options"
             name={getFullFieldName("enum")}
+            schema={{
+              type: "array",
+              items: {
+                type: "string",
+              },
+            }}
+            isRequired
+          />
+        </>
+      )}
+
+      {propertySchema.type === "array" && (
+        <>
+          <SchemaField
+            label="Options"
+            name={getFullFieldName("items.enum")}
             schema={{
               type: "array",
               items: {

@@ -16,7 +16,7 @@
  */
 
 import { useCallback } from "react";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -46,9 +46,9 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
     async ({ recipeId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirmed = await showConfirmation({
-          title: "Remove Blueprint?",
+          title: "Remove Mod?",
           message:
-            "You can reactivate extensions and blueprints from the PixieBrix Options page",
+            "You can reactivate mods from the PixieBrix Extension Console",
           submitCaption: "Remove",
         });
 

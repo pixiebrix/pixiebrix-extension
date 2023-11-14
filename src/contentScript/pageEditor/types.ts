@@ -16,29 +16,31 @@
  */
 
 import {
-  type ExtensionPointConfig,
-  type ExtensionPointDefinition,
-  type ExtensionPointType,
-} from "@/extensionPoints/types";
-import { type EmptyConfig, type IExtension, type UUID } from "@/core";
+  type StarterBrickConfig,
+  type StarterBrickDefinition,
+} from "@/starterBricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import {
   type PanelConfig,
   type PanelDefinition,
-} from "@/extensionPoints/panelExtension";
+} from "@/starterBricks/panelExtension";
 import {
   type MenuDefinition,
-  type MenuItemExtensionConfig,
-} from "@/extensionPoints/menuItemExtension";
-import { type ElementInfo } from "@/pageScript/frameworks";
+  type MenuItemStarterBrickConfig,
+} from "@/starterBricks/menuItemExtension";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export interface DynamicDefinition<
-  TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
-  TExtension extends EmptyConfig = EmptyConfig
+  TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,
+  TExtension extends UnknownObject = UnknownObject
 > {
-  type: ExtensionPointType;
-  extensionPointConfig: ExtensionPointConfig<TExtensionPoint>;
-  extension: IExtension<TExtension>;
+  type: StarterBrickType;
+  extensionPointConfig: StarterBrickConfig<TExtensionPoint>;
+  extension: ModComponentBase<TExtension>;
 }
 
 export type SelectMode = "element" | "container";
@@ -53,11 +55,16 @@ export type PanelSelectionResult = {
 };
 export type ButtonDefinition = DynamicDefinition<
   MenuDefinition,
-  MenuItemExtensionConfig
+  MenuItemStarterBrickConfig
 >;
 export type ButtonSelectionResult = {
   uuid: UUID;
   menu: Except<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
-  item: Pick<MenuItemExtensionConfig, "caption">;
+  item: Pick<MenuItemStarterBrickConfig, "caption">;
   containerInfo: ElementInfo;
+};
+
+export type AttributeExample = {
+  name: string;
+  value: string;
 };

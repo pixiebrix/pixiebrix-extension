@@ -18,16 +18,30 @@
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
-import { boolean } from "@/utils";
-import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
+import { setupListeners } from "@reduxjs/toolkit/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import sidebarSlice from "@/sidebar/sidebarSlice";
-import { persistSettingsConfig } from "@/store/settingsStorage";
-import settingsSlice from "@/store/settingsSlice";
+import sidebarSlice, { persistSidebarConfig } from "@/sidebar/sidebarSlice";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import integrationsSlice, {
+  persistIntegrationsConfig,
+} from "@/integrations/store/integrationsSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { boolean } from "@/utils/typeUtils";
+import defaultMiddlewareConfig, {
+  defaultCreateStateSyncMiddlewareConfig,
+} from "@/store/defaultMiddlewareConfig";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
+import { createStateSyncMiddleware } from "redux-state-sync";
+import {
+  persistSessionChangesConfig,
+  sessionChangesSlice,
+  sessionChangesStateSyncActions,
+} from "@/store/sessionChanges/sessionChangesSlice";
+import sessionSlice from "@/pageEditor/slices/sessionSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -45,22 +59,33 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
-    sidebar: sidebarSlice.reducer,
+    sidebar: persistReducer(persistSidebarConfig, sidebarSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    // `services` slice is used to determine login state for partner installs
-    services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    // `integrations` slice is used to determine login state for partner installs
+    integrations: persistReducer(
+      persistIntegrationsConfig,
+      integrationsSlice.reducer
+    ),
+    session: sessionSlice.reducer,
+    sessionChanges: persistReducer(
+      persistSessionChangesConfig,
+      sessionChangesSlice.reducer
+    ),
+    modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-    return getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
-      },
-    })
+    return getDefaultMiddleware(defaultMiddlewareConfig)
       .concat(appApi.middleware)
-      .concat(conditionalMiddleware);
+      .concat(conditionalMiddleware)
+      .concat(sessionChangesMiddleware)
+      .concat(
+        createStateSyncMiddleware({
+          ...defaultCreateStateSyncMiddlewareConfig,
+          whitelist: sessionChangesStateSyncActions,
+        })
+      );
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,

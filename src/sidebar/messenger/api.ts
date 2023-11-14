@@ -28,6 +28,8 @@ const sidebarInThisTab = {
   showTemporaryPanel: getMethod("SIDEBAR_SHOW_TEMPORARY_PANEL", target),
   updateTemporaryPanel: getNotifier("SIDEBAR_UPDATE_TEMPORARY_PANEL", target),
   hideTemporaryPanel: getMethod("SIDEBAR_HIDE_TEMPORARY_PANEL", target),
+  showModActivationPanel: getMethod("SIDEBAR_SHOW_ACTIVATE_RECIPE", target),
+  hideModActivationPanel: getMethod("SIDEBAR_HIDE_ACTIVATE_RECIPE", target),
 };
 
 export default sidebarInThisTab;

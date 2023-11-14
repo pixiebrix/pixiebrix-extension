@@ -17,43 +17,57 @@
 
 @use "sass:math";
 @import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+@import "@/themes/colors.scss";
 
 $headerOffsetX: math.div($pipeLineOffset, 2);
 $headerOffsetY: 0.5rem;
 $headerPipeLineHeight: 4px;
 
 .root {
+  background: $defaultHeaderColor;
+  padding: 0;
   display: flex;
-  border-bottom: 1px solid lightgrey;
+
+  &.parentNodeActive {
+    background: $activeHeaderColor;
+  }
+
+  &.ancestorActive {
+    background: $nestedActiveColor;
+  }
 }
 
 .header {
   flex-grow: 1;
   position: relative; // Allow children to position relative to this element
-  background: $defaultHeaderColor;
   padding: $headerOffsetY 0 0 $headerOffsetX;
+}
 
-  &.active {
-    background-color: $activeHeaderColor;
-  }
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+}
 
-  &.nestedActive {
-    background-color: $nestedActiveColor;
-  }
+.clickable {
+  cursor: pointer;
+}
+
+.documentPreviewIcon {
+  margin-top: 2px;
+  margin-right: 4px;
 }
 
 .subPipelineLabel {
-  display: inline-block;
-  width: auto;
   margin-bottom: $headerOffsetY;
   padding: 0 0.25rem;
-  background: white;
-  border-radius: 3px;
   font-size: 0.8em;
 }
 
+.labelAndInputKey {
+  display: flex;
+}
+
 .subPipelineInputKey {
-  display: inline-block;
   margin-left: 0.25rem;
   font-size: 0.8em !important;
   font-family: monospace;
@@ -66,6 +80,10 @@ $headerPipeLineHeight: 4px;
   width: $pipeLineOffset;
   height: $headerPipeLineHeight;
   border-right: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
+  }
 }
 
 .headerPipeLineBottom {
@@ -75,4 +93,8 @@ $headerPipeLineHeight: 4px;
   width: $pipeLineOffset;
   height: $headerPipeLineHeight;
   border-right: $pipeLineBorderWidth solid black;
+
+  &.active {
+    border-color: white;
+  }
 }

@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock, type RegistryId } from "@/core";
+import type React from "react";
+import { type Brick } from "@/types/brickTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
-export type BlockResult = IBlock & {
+export type BlockResult = Brick & {
   isPopular?: boolean;
 };
 
@@ -29,9 +31,9 @@ export type BlockOption = {
 
 export type BlockGridData = {
   blockOptions: BlockOption[];
-  invalidBlockMessages: Map<RegistryId, string>;
-  onSetDetailBlock: (block: IBlock) => void;
-  onSelectBlock: (block: IBlock) => void;
+  invalidBlockMessages: Map<RegistryId, React.ReactNode>;
+  onSetDetailBlock: (block: Brick) => void;
+  onSelectBlock: (block: Brick) => void;
 };
 
 export type ItemKeyInput = {

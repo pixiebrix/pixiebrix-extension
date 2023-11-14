@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { AddUpdateCompany, AddUpdateContact } from "./hubspot/upsert";
 import { AddOrganization, AddPerson } from "./pipedrive/create";
 import { ResolvePerson } from "./pipedrive/resolvers";
@@ -24,9 +24,8 @@ import {
   ORGANIZATION_READER,
   PERSON_READER,
 } from "./pipedrive/readers";
-import { GoogleBigQueryQuery } from "./google/bigquery/query";
 import { GeocodeTransformer } from "./google/geocode";
-import { GoogleSheetsAppend } from "./google/sheets/append";
+import { GoogleSheetsAppend } from "./google/sheets/bricks/append";
 import {
   SendAdvancedSlackMessage,
   SendSimpleSlackMessage,
@@ -37,12 +36,19 @@ import { RunLocalProcess } from "./uipath/localProcess";
 import { UiPathAppRenderer } from "./uipath/embedApp";
 import { PushZap } from "./zapier/push";
 import { RunBot } from "./automationanywhere/RunBot";
-import { GoogleSheetsLookup } from "@/contrib/google/sheets/lookup";
+import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
+
+let registered = false;
 
 function registerContribBlocks(): void {
+  if (registered) {
+    console.warn(
+      "registerBuiltinBlocks already called; multiple calls are unnecessary and may impact startup performance"
+    );
+  }
+
   blockRegistry.register([
     // Google
-    new GoogleBigQueryQuery(),
     new GoogleSheetsAppend(),
     new GoogleSheetsLookup(),
     new GeocodeTransformer(),
@@ -77,6 +83,8 @@ function registerContribBlocks(): void {
     // Automation Anywhere
     new RunBot(),
   ]);
+
+  registered = true;
 }
 
 export default registerContribBlocks;

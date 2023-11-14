@@ -9,7 +9,7 @@ exports[`ArrayWidget renders empty widget 1`] = `
       class="list-group mb-2"
     />
     <button
-      class="btn btn-primary"
+      class="addButton btn btn-link"
       type="button"
     >
       Add Item
@@ -37,6 +37,13 @@ exports[`ArrayWidget renders widget with items 1`] = `
         <div
           class="formGroup mb-0 form-group row"
         >
+          <div
+            class="mb-2 collapse col-12"
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
           <div
             class="col-xl-12 col-lg-12"
           >
@@ -86,6 +93,13 @@ exports[`ArrayWidget renders widget with items 1`] = `
           class="formGroup mb-0 form-group row"
         >
           <div
+            class="mb-2 collapse col-12"
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
+          <div
             class="col-xl-12 col-lg-12"
           >
             <div
@@ -134,6 +148,13 @@ exports[`ArrayWidget renders widget with items 1`] = `
           class="formGroup mb-0 form-group row"
         >
           <div
+            class="mb-2 collapse col-12"
+          >
+            <div
+              class="annotationPlaceholder"
+            />
+          </div>
+          <div
             class="col-xl-12 col-lg-12"
           >
             <div
@@ -177,7 +198,7 @@ exports[`ArrayWidget renders widget with items 1`] = `
       </li>
     </ul>
     <button
-      class="btn btn-primary"
+      class="addButton btn btn-link"
       type="button"
     >
       Add Item

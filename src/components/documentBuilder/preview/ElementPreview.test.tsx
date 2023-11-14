@@ -25,19 +25,20 @@ import { createNewElement } from "@/components/documentBuilder/createNewElement"
 import ElementPreview, {
   type ElementPreviewProps,
 } from "@/components/documentBuilder/preview/ElementPreview";
-import { fireEvent } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
-import {
-  baseExtensionStateFactory,
-  blockConfigFactory,
-  formStateFactory,
-} from "@/testUtils/factories";
-import { defaultBlockConfig } from "@/blocks/util";
-import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import { type PipelineExpression } from "@/runtime/mapArgs";
+import { fireEvent, screen } from "@testing-library/react";
+import { defaultBlockConfig } from "@/bricks/util";
+import { MarkdownRenderer } from "@/bricks/renderers/markdown";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
+import {
+  baseExtensionStateFactory,
+  formStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 const renderElementPreview = (
   element: DocumentElement,
@@ -57,7 +58,7 @@ const renderElementPreview = (
   const formState = formStateFactory({
     extension: baseExtensionStateFactory({
       blockPipeline: [
-        blockConfigFactory({
+        brickConfigFactory({
           config: {
             body: [element],
           },
@@ -84,13 +85,11 @@ const renderElementPreview = (
 test("calls setActiveElement callback on click", async () => {
   const setActiveElementMock = jest.fn();
   const element = createNewElement("text");
-  const { container } = renderElementPreview(element, {
+  renderElementPreview(element, {
     setActiveElement: setActiveElementMock,
   });
 
-  await act(async () => {
-    fireEvent.click(container.querySelector("p"));
-  });
+  await userEvent.click(screen.getByText(/paragraph text/i));
   expect(setActiveElementMock).toHaveBeenCalledWith("element");
 });
 
@@ -99,12 +98,12 @@ test("prevents navigation on link click", async () => {
 
   const element = createNewElement("text");
   element.config.text = "Link in markdown [www.google.com](https://google.com)";
-  const rendered = renderElementPreview(element, {
+  renderElementPreview(element, {
     setActiveElement: jest.fn(),
   });
 
-  await userEvent.click(rendered.getByText("www.google.com"));
-  expect(rendered.getByText("Link in markdown")).toBeInTheDocument();
+  await userEvent.click(screen.getByText("www.google.com"));
+  expect(screen.getByText("Link in markdown")).toBeInTheDocument();
 
   // On navigation jest calls console.error, fail the test if it is called
   expect(consoleError).not.toHaveBeenCalled();
@@ -118,19 +117,20 @@ test("adds a CSS class to an active element", async () => {
     activeElement: "element",
   });
 
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- need to find better way to access this div
   expect(container.querySelector("div")).toHaveClass("active");
+  expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
 });
 
 test("calls setHoveredElement callback on hover", async () => {
   const setHoveredElementMock = jest.fn();
   const element = createNewElement("text");
-  const { container } = renderElementPreview(element, {
+  renderElementPreview(element, {
     setHoveredElement: setHoveredElementMock,
   });
 
-  await act(async () => {
-    fireEvent.mouseOver(container.querySelector("p"));
-  });
+  await userEvent.click(screen.getByText(/paragraph text/i));
+
   expect(setHoveredElementMock).toHaveBeenCalledWith("element");
   setHoveredElementMock.mockClear();
 });
@@ -138,14 +138,12 @@ test("calls setHoveredElement callback on hover", async () => {
 test("calls setHoveredElement callback when mouse leaves", async () => {
   const setHoveredElementMock = jest.fn();
   const element = createNewElement("text");
-  const { container } = renderElementPreview(element, {
+  renderElementPreview(element, {
     hoveredElement: "element",
     setHoveredElement: setHoveredElementMock,
   });
 
-  await act(async () => {
-    fireEvent.mouseLeave(container.querySelector("p"));
-  });
+  fireEvent.mouseLeave(screen.getByText(/paragraph text/i));
   expect(setHoveredElementMock).toHaveBeenCalledWith(null);
 });
 
@@ -155,6 +153,7 @@ test("adds a CSS class to a hovered element", async () => {
     hoveredElement: "element",
   });
 
+  // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- need to find better way to access this div
   expect(container.querySelector("div")).toHaveClass("hovered");
 });
 
@@ -164,22 +163,22 @@ test.each(
   )
 )("can preview default %s", (elementType: DocumentElementType) => {
   const element = createNewElement(elementType);
-  const rendered = renderElementPreview(element);
-  expect(rendered.asFragment()).toMatchSnapshot();
+  const { asFragment } = renderElementPreview(element);
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test("can preview pipeline element with bricks", () => {
-  const testBlock = blockConfigFactory();
+  const testBrick = brickConfigFactory();
   const markdownBlock = new MarkdownRenderer();
-  const markdownConfig = blockConfigFactory({
+  const markdownConfig = brickConfigFactory({
     id: markdownBlock.id,
     config: defaultBlockConfig(markdownBlock.inputSchema),
   });
 
   const element = createNewElement("pipeline");
   const pipeline = element.config.pipeline as PipelineExpression;
-  pipeline.__value__.push(testBlock, markdownConfig);
-  const rendered = renderElementPreview(element);
+  pipeline.__value__.push(testBrick, markdownConfig);
+  const { asFragment } = renderElementPreview(element);
 
-  expect(rendered.asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 });

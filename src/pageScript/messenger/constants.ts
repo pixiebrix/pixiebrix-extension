@@ -18,22 +18,14 @@
 export const READ_WINDOW = "@@pixiebrix/script/READ_WINDOW";
 export const SCRIPT_LOADED = "@@pixiebrix/script/SCRIPT_LOADED";
 export const CONNECT_EXTENSION = "@@pixiebrix/script/CONNECT_EXTENSION";
-export const DETECT_FRAMEWORK_VERSIONS =
-  "@@pixiebrix/script/DETECT_FRAMEWORK_VERSIONS";
-
 export const GET_COMPONENT_DATA = "@@pixiebrix/script/GET_COMPONENT_DATA";
 export const SET_COMPONENT_DATA = "@@pixiebrix/script/SET_COMPONENT_DATA";
-export const GET_COMPONENT_INFO = "@@pixiebrix/script/GET_COMPONENT_INFO";
+export const GET_ELEMENT_INFO = "@@pixiebrix/script/GET_ELEMENT_INFO";
 
-type UNKNOWN_VERSION = null;
+export const CKEDITOR_SET_VALUE = "@@pixiebrix/script/CKEDITOR_SET_VALUE";
 
 const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;
 export const KNOWN_READERS = [...KNOWN_ADAPTERS, "jquery"] as const;
 
 export type FrameworkAdapter = typeof KNOWN_ADAPTERS[number];
 export type Framework = typeof KNOWN_READERS[number];
-
-export interface FrameworkMeta {
-  id: Framework;
-  version: string | UNKNOWN_VERSION;
-}

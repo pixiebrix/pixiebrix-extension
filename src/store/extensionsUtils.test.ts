@@ -15,10 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { inferRecipeAuths, inferRecipeOptions } from "@/store/extensionsUtils";
-import { type ServiceDependency } from "@/core";
+import {
+  inferConfiguredModIntegrations,
+  inferRecipeOptions,
+} from "@/store/extensionsUtils";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 describe("inferRecipeOptions", () => {
   it("returns first option", () => {
@@ -32,53 +38,107 @@ describe("inferRecipeOptions", () => {
   });
 });
 
-describe("inferRecipeAuths", () => {
-  it("handles undefined services", () => {
-    expect(inferRecipeAuths([{ services: undefined }])).toStrictEqual({});
+describe("inferConfiguredModIntegrations", () => {
+  it("handles undefined integrationDependencies", () => {
+    expect(
+      inferConfiguredModIntegrations([{ integrationDependencies: undefined }])
+    ).toStrictEqual([]);
   });
 
-  it("handles same service", () => {
-    const service = validateRegistryId("foo/bar");
-    const config = uuidv4();
-    const dependency: ServiceDependency = {
-      id: service,
+  it("handles duplicate integration", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const configId = uuidv4();
+    const integrationDependency = integrationDependencyFactory({
+      integrationId,
       outputKey: validateOutputKey("foo"),
-      config,
-    };
+      configId,
+    });
 
     expect(
-      inferRecipeAuths([{ services: [dependency] }, { services: [dependency] }])
-    ).toStrictEqual({
-      [service]: config,
-    });
+      inferConfiguredModIntegrations([
+        { integrationDependencies: [integrationDependency] },
+        { integrationDependencies: [integrationDependency] },
+      ])
+    ).toStrictEqual([integrationDependency]);
   });
 
-  it("throw on mismatch", () => {
-    const service = validateRegistryId("foo/bar");
-    const config = uuidv4();
-    const dependency: ServiceDependency = {
-      id: service,
+  it("throw on mismatched configId", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const configId = uuidv4();
+    const integrationDependency = integrationDependencyFactory({
+      integrationId,
       outputKey: validateOutputKey("foo"),
-      config,
-    };
+      configId,
+    });
 
     expect(() =>
-      inferRecipeAuths([
-        { services: [dependency] },
-        { services: [{ ...dependency, config: uuidv4() }] },
+      inferConfiguredModIntegrations([
+        { integrationDependencies: [integrationDependency] },
+        {
+          integrationDependencies: [
+            { ...integrationDependency, configId: uuidv4() },
+          ],
+        },
       ])
     ).toThrow(/has multiple configurations/);
   });
 
-  it("throw on missing config", () => {
-    const service = validateRegistryId("foo/bar");
-    const dependency: ServiceDependency = {
-      id: service,
+  it("throw on missing configId", () => {
+    const integrationId = validateRegistryId("foo/bar");
+    const unconfiguredDependency: IntegrationDependency = {
+      integrationId,
       outputKey: validateOutputKey("foo"),
     };
 
-    expect(() => inferRecipeAuths([{ services: [dependency] }])).toThrow(
-      /is not configured/
-    );
+    expect(() =>
+      inferConfiguredModIntegrations([
+        { integrationDependencies: [unconfiguredDependency] },
+      ])
+    ).toThrow(/is not configured/);
+  });
+
+  it("handles unconfigured (optional) integrations", () => {
+    // Factory does not add a configId by default
+    const unconfigured = integrationDependencyFactory();
+    expect(
+      inferConfiguredModIntegrations(
+        [{ integrationDependencies: [unconfigured] }],
+        {
+          optional: true,
+        }
+      )
+    ).toBeEmpty();
+  });
+
+  it("does NOT filter out the pixiebrix integration", () => {
+    const pixiebrix = integrationDependencyFactory({
+      integrationId: PIXIEBRIX_INTEGRATION_ID,
+    });
+    expect(
+      inferConfiguredModIntegrations([{ integrationDependencies: [pixiebrix] }])
+    ).toStrictEqual([pixiebrix]);
+  });
+
+  it("handles multiple pixiebrix integrations and others", () => {
+    const pixiebrix = integrationDependencyFactory({
+      integrationId: PIXIEBRIX_INTEGRATION_ID,
+    });
+    const optional = integrationDependencyFactory({
+      isOptional: true,
+    });
+    const configured = integrationDependencyFactory({
+      configId: uuidv4(),
+    });
+    expect(
+      inferConfiguredModIntegrations(
+        [
+          { integrationDependencies: [pixiebrix, pixiebrix] },
+          { integrationDependencies: [pixiebrix, optional] },
+          { integrationDependencies: [configured, pixiebrix, optional] },
+          { integrationDependencies: [configured, optional] },
+        ],
+        { optional: true }
+      )
+    ).toStrictEqual([pixiebrix, configured]);
   });
 });

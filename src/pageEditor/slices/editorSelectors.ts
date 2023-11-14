@@ -15,15 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type IExtension,
-  type RecipeMetadata,
-  type RegistryId,
-  type UUID,
-} from "@/core";
 import { createSelector } from "reselect";
 import {
   type EditorRootState,
+  type EditorState,
   ModalKey,
   type RootState,
 } from "@/pageEditor/pageEditorTypes";
@@ -34,10 +29,14 @@ import {
   type ElementUIState,
   type TabUIState,
 } from "@/pageEditor/uiState/uiStateTypes";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { deserializeError } from "serialize-error";
-import { AnnotationType } from "@/types";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { AnnotationType } from "@/types/annotationTypes";
+import { selectKnownEventNames } from "@/analysis/analysisSelectors";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -48,12 +47,14 @@ export const selectActiveElementId = ({ editor }: EditorRootState) => {
   return editor.activeElementId;
 };
 
-export const selectElements = ({ editor }: EditorRootState) => editor.elements;
+export const selectElements = ({
+  editor,
+}: EditorRootState): EditorState["elements"] => editor.elements;
 
 export const selectActiveElement = createSelector(
   selectActiveElementId,
   selectElements,
-  (activeElementId, elements) =>
+  (activeElementId, elements): EditorState["elements"][number] =>
     elements.find((x) => x.uuid === activeElementId)
 );
 
@@ -88,7 +89,7 @@ const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
 
 export const selectNotDeletedElements: ({
   editor,
-}: EditorRootState) => FormState[] = createSelector(
+}: EditorRootState) => ModComponentFormState[] = createSelector(
   selectElements,
   selectAllDeletedElementIds,
   (elements, deletedElementIds) =>
@@ -97,7 +98,7 @@ export const selectNotDeletedElements: ({
 
 export const selectNotDeletedExtensions: ({
   options,
-}: ExtensionsRootState) => IExtension[] = createSelector(
+}: ModComponentsRootState) => ModComponentBase[] = createSelector(
   selectExtensions,
   selectAllDeletedElementIds,
   (extensions, deletedElementIds) =>
@@ -206,10 +207,10 @@ export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,
   selectExtensions,
   (elements, extensions) => {
-    const elementRecipes: RecipeMetadata[] = elements
+    const elementRecipes: Array<ModComponentBase["_recipe"]> = elements
       .filter((element) => Boolean(element.recipe))
       .map((element) => element.recipe);
-    const extensionRecipes: RecipeMetadata[] = extensions
+    const extensionRecipes: Array<ModComponentBase["_recipe"]> = extensions
       .filter((extension) => Boolean(extension._recipe))
       .map((extension) => extension._recipe);
 
@@ -226,6 +227,12 @@ export const selectSelectionSeq = ({ editor }: EditorRootState) =>
 export const selectNewRecipeIds = ({ editor }: EditorRootState) =>
   editor.newRecipeIds;
 
+export const selectModuleListExpanded = ({ editor }: EditorRootState) =>
+  editor.isModListExpanded;
+
+export const selectDataPanelExpanded = ({ editor }: EditorRootState) =>
+  editor.isDataPanelExpanded;
+
 export const selectKeepLocalCopyOnCreateRecipe = ({
   editor,
 }: EditorRootState) => editor.keepLocalCopyOnCreateRecipe;
@@ -240,9 +247,9 @@ export function selectActiveElementUIState({
   return editor.elementUIStates[editor.activeElementId];
 }
 
-const selectActiveNodeUIState = createSelector(
+export const selectActiveNodeUIState = createSelector(
   selectActiveElementUIState,
-  (elementUIState) => elementUIState.nodeUIStates[elementUIState.activeNodeId]
+  (elementUIState) => elementUIState?.nodeUIStates[elementUIState.activeNodeId]
 );
 
 export const selectActiveNodeId = createSelector(
@@ -261,6 +268,14 @@ export const selectActiveNodeInfo = createSelector(
   (uiState: ElementUIState, activeNodeId: UUID) =>
     // eslint-disable-next-line security/detect-object-injection -- UUID
     uiState.pipelineMap[activeNodeId]
+);
+
+export const selectCollapsedNodes = createSelector(
+  selectActiveElementUIState,
+  (elementUIState: ElementUIState) =>
+    Object.entries(elementUIState.nodeUIStates)
+      .map(([nodeId, { collapsed }]) => (collapsed ? nodeId : null))
+      .filter((nodeId) => nodeId != null)
 );
 
 const activeElementNodeInfoSelector = createSelector(
@@ -364,6 +379,9 @@ const annotationsForPathSelector = createSelector(
 export const selectAnnotationsForPath = (path: string) => (state: RootState) =>
   annotationsForPathSelector(state, path);
 
+export const selectVariablePopoverVisible = ({ editor }: EditorRootState) =>
+  editor.isVariablePopoverVisible;
+
 export const selectCopiedBlock = ({ editor }: EditorRootState) =>
   editor.copiedBlock;
 
@@ -384,3 +402,11 @@ export const selectExtensionAvailability = ({
   unavailableDynamicCount,
   isPendingDynamicExtensions,
 });
+
+export const selectExtensionKnownEventNames = createSelector(
+  selectActiveElementId,
+  selectKnownEventNames,
+  (activeElementId, knownEventNameMap) =>
+    // eslint-disable-next-line security/detect-object-injection -- is a UUID
+    knownEventNameMap[activeElementId] ?? []
+);

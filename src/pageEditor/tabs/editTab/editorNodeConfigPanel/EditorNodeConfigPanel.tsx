@@ -22,7 +22,7 @@ import { Col, Row } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import getType from "@/runtime/getType";
@@ -30,6 +30,9 @@ import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabe
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import cx from "classnames";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const { blockId, path: blockFieldName } = useSelector(selectActiveNodeInfo);
@@ -41,12 +44,19 @@ const EditorNodeConfigPanel: React.FC = () => {
     };
   }, [blockId]);
 
+  const { data: listings = {} } = useGetMarketplaceListingsQuery({
+    package__name: blockId,
+  });
+
+  const { instructions: listingInstructions, id: listingId } =
+    listings[blockId] ?? {};
+
   const isOutputDisabled = !(
     blockInfo === null || showOutputKey(blockInfo?.type)
   );
   const outputDescription = isOutputDisabled
     ? "Effect and renderer bricks do not produce outputs"
-    : "Provide an output key to refer to the outputs of this block later.";
+    : "Provide an output variable name to refer to the outputs of this brick later.";
 
   const PopoverOutputLabel = (
     <PopoverInfoLabel
@@ -56,9 +66,27 @@ const EditorNodeConfigPanel: React.FC = () => {
     />
   );
 
+  const showDocumentationLink = listingInstructions && listingId;
+
   return (
     <>
       <AnalysisResult />
+      <Row className={cx(styles.brickInfo, "justify-content-between")}>
+        <Col>
+          <p>{blockInfo?.block.name}</p>
+        </Col>
+        {showDocumentationLink && (
+          <Col xs="auto">
+            <a
+              href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Documentation
+            </a>
+          </Col>
+        )}
+      </Row>
       <Row className={styles.topRow}>
         <Col xl>
           <ConnectedFieldTemplate

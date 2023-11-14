@@ -16,35 +16,48 @@
  */
 
 import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
-import { useMemo } from "react";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import { type Database, type Organization } from "@/types/contract";
 
-const useDatabaseOptions = () => {
-  const { data: databases, isLoading: isLoadingDatabases } =
-    useGetDatabasesQuery();
-  const { data: organizations, isLoading: isLoadingOrganizations } =
-    useGetOrganizationsQuery();
+function databasesToOptions(
+  databases: Database[],
+  organizations: Organization[]
+): Option[] {
+  return databases.map((database) => {
+    const organization = organizations.find(
+      (x) => x.id === database.organization_id
+    );
 
-  const isLoading = isLoadingDatabases || isLoadingOrganizations;
+    return {
+      label: `${database.name} - ${organization?.name ?? "Private"}`,
+      value: database.id,
+    };
+  });
+}
 
-  const databaseOptions = useMemo(
-    () =>
-      databases && organizations
-        ? databases.map((db) => {
-            const organization = organizations.find(
-              (o) => o.id === db.organization_id
-            );
-            const dbName = `${db.name} - ${organization?.name ?? "Private"}`;
+/**
+ * React Hook that returns a fetchable list of private and team database options.
+ * @param refetchOnMount true to refetch available databases on mount (default: false)
+ */
+function useDatabaseOptions({
+  refetchOnMount,
+}: { refetchOnMount?: boolean } = {}): FetchableAsyncState<Option[]> {
+  const databasesQueryState = useGetDatabasesQuery(undefined, {
+    refetchOnMountOrArgChange: refetchOnMount,
+  });
 
-            return {
-              label: dbName,
-              value: db.id,
-            };
-          })
-        : [],
-    [databases, organizations]
+  const organizationsQueryState = useGetOrganizationsQuery(undefined, {
+    refetchOnMountOrArgChange: refetchOnMount,
+  });
+
+  return useMergeAsyncState(
+    databasesQueryState,
+    organizationsQueryState,
+    // Provide as module function so useMergeAsyncState can memoize it
+    databasesToOptions
   );
-
-  return { databaseOptions, isLoading };
-};
+}
 
 export default useDatabaseOptions;

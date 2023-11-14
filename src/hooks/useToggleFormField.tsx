@@ -22,10 +22,11 @@ import {
   type FieldInputMode,
   inferInputMode,
 } from "@/components/fields/schemaFields/fieldInputMode";
-import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
-import { type Schema } from "@/core";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { isObject } from "@/utils/objectUtils";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {
@@ -47,22 +48,26 @@ export function removeField(parent: unknown, fieldName: string): void {
 
 function useToggleFormField(
   name: string,
-  schema: Schema
+  schema: Schema,
+  isRequired: boolean
 ): {
   inputMode: FieldInputMode;
   onOmitField: () => void;
 } {
   const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
   const { values: formState, setValues: setFormState } =
-    useFormikContext<FormState>();
-  const parentValues = getIn(formState, parentFieldName) ?? formState;
+    useFormikContext<ModComponentFormState>();
+  const parentValues: UnknownObject =
+    getIn(formState, parentFieldName) ?? formState;
+  const value = getIn(formState, name);
 
   const inputMode = useMemo(
-    () => inferInputMode(parentValues, fieldName, schema),
-    [fieldName, parentValues, schema]
+    () => inferInputMode(parentValues, fieldName, schema, { isRequired }),
+    // eslint-disable-next-line -- run when value changes
+    [fieldName, value, schema]
   );
 
-  const onOmitField = useCallback(() => {
+  const onOmitField = useCallback(async () => {
     const newFormState = produce(formState, (draft) => {
       if (parentFieldName) {
         const parentField = getIn(draft, parentFieldName);
@@ -80,7 +85,7 @@ function useToggleFormField(
       }
     });
 
-    setFormState(newFormState);
+    await setFormState(newFormState);
   }, [fieldName, formState, name, parentFieldName, setFormState]);
 
   return {

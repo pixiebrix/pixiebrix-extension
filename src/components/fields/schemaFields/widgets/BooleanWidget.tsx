@@ -18,9 +18,21 @@
 import React from "react";
 import { useField } from "formik";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import useAsyncEffect from "use-async-effect";
 
-const BooleanWidget: React.VFC<{ name: string }> = ({ name }) => {
+const BooleanWidget: React.FC<SchemaFieldProps> = ({ name, focusInput }) => {
   const [{ value }, , { setValue }] = useField<boolean>(name);
+
+  // Toggle the switch if it's autofocused - element ref doesn't work
+  // with BootstrapSwitchButton
+  useAsyncEffect(async () => {
+    if (!focusInput) {
+      return;
+    }
+
+    await setValue(true);
+  }, [focusInput]);
 
   return (
     <BootstrapSwitchButton

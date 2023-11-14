@@ -16,35 +16,14 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { render } from "@/sidebar/testHelpers";
+import { screen, render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
-import { appApi } from "@/services/api";
-import { type Me } from "@/types/contract";
+import { mockCachedUser } from "@/testUtils/userMock";
 
-jest.mock("@/store/optionsStore", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
-
-jest.mock("@/services/api", () => ({
-  appApi: {
-    reducerPath: "appApi",
-    endpoints: {
-      getMe: {
-        useQueryState: jest.fn(() => ({
-          data: {},
-          isLoading: false,
-        })),
-      },
-    },
-  },
-}));
-
-function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
-  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
-}
+import {
+  userFactory,
+  userOrganizationFactory,
+} from "@/testUtils/factories/authFactories";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -52,40 +31,38 @@ beforeEach(() => {
 
 describe("Header", () => {
   it("renders", () => {
-    const rendered = render(<Header />);
+    const { asFragment } = render(<Header />);
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
   it("renders sidebar header logo per organization theme", () => {
-    mockMeQuery({
-      isLoading: false,
-      data: {
-        organization: {
+    mockCachedUser(
+      userFactory({
+        organization: userOrganizationFactory({
           theme: {
             show_sidebar_logo: true,
           },
-        },
-      } as any,
-    });
+        }),
+      })
+    );
 
-    const rendered = render(<Header />);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { asFragment } = render(<Header />);
+    expect(asFragment()).toMatchSnapshot();
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
   it("renders no sidebar header logo per organization theme", () => {
-    mockMeQuery({
-      isLoading: false,
-      data: {
-        organization: {
+    mockCachedUser(
+      userFactory({
+        organization: userOrganizationFactory({
           theme: {
             show_sidebar_logo: false,
           },
-        },
-      } as any,
-    });
+        }),
+      })
+    );
 
     render(<Header />);
 

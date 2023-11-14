@@ -66,7 +66,7 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
       class="root"
     >
       <ul
-        style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+        style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
       >
         <li
           style="padding: 0px; margin: 0px;"
@@ -81,20 +81,20 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                 style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
               >
                 <div
-                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                 >
                   ▶
                 </div>
               </div>
               <label
-                style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  extension:
+                  Private:
                 </span>
               </label>
               <span
-                style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+                style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
               >
                 <span>
                   <span
@@ -112,14 +112,14 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       foo:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(64, 175, 108);"
+                    style="color: rgb(0, 113, 36);"
                   >
                     "bar"
                   </span>
@@ -128,14 +128,14 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       baz:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(243, 100, 51);"
+                    style="color: rgb(249, 106, 56);"
                   >
                     32
                   </span>
@@ -146,16 +146,16 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
               style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
             >
               <label
-                style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
               >
                 <span>
-                  blueprint:
+                  Mod:
                 </span>
               </label>
               <span
-                style="color: rgb(64, 175, 108);"
+                style="color: rgb(0, 113, 36);"
               >
-                "Extension is not in a blueprint"
+                "Starter Brick is not in a mod"
               </span>
             </li>
             <li
@@ -165,20 +165,20 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                 style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
               >
                 <div
-                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                 >
                   ▶
                 </div>
               </div>
               <label
-                style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  shared:
+                  Public:
                 </span>
               </label>
               <span
-                style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+                style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
               >
                 <span>
                   <span
@@ -196,14 +196,14 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       foo:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(64, 175, 108);"
+                    style="color: rgb(0, 113, 36);"
                   >
                     "bar"
                   </span>
@@ -212,14 +212,14 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       baz:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(243, 100, 51);"
+                    style="color: rgb(249, 106, 56);"
                   >
                     32
                   </span>
@@ -300,7 +300,7 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
       class="root"
     >
       <ul
-        style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+        style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
       >
         <li
           style="padding: 0px; margin: 0px;"
@@ -315,20 +315,20 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                 style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
               >
                 <div
-                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                 >
                   ▶
                 </div>
               </div>
               <label
-                style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  extension:
+                  Private:
                 </span>
               </label>
               <span
-                style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+                style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
               >
                 <span>
                   <span
@@ -346,14 +346,14 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       foo:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(64, 175, 108);"
+                    style="color: rgb(0, 113, 36);"
                   >
                     "bar"
                   </span>
@@ -362,14 +362,14 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       baz:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(243, 100, 51);"
+                    style="color: rgb(249, 106, 56);"
                   >
                     32
                   </span>
@@ -383,20 +383,20 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                 style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
               >
                 <div
-                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                 >
                   ▶
                 </div>
               </div>
               <label
-                style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  blueprint:
+                  Mod:
                 </span>
               </label>
               <span
-                style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+                style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
               >
                 <span>
                   <span
@@ -414,14 +414,14 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       foo:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(64, 175, 108);"
+                    style="color: rgb(0, 113, 36);"
                   >
                     "bar"
                   </span>
@@ -430,14 +430,14 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       baz:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(243, 100, 51);"
+                    style="color: rgb(249, 106, 56);"
                   >
                     32
                   </span>
@@ -451,20 +451,20 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                 style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
               >
                 <div
-                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                  style="margin-left: 0px; transition: 150ms; transform: rotateZ(90deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                 >
                   ▶
                 </div>
               </div>
               <label
-                style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
               >
                 <span>
-                  shared:
+                  Public:
                 </span>
               </label>
               <span
-                style="padding-left: 0.5em; cursor: default; color: rgb(128, 130, 128);"
+                style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
               >
                 <span>
                   <span
@@ -482,14 +482,14 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       foo:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(64, 175, 108);"
+                    style="color: rgb(0, 113, 36);"
                   >
                     "bar"
                   </span>
@@ -498,14 +498,14 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
                   style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                 >
                   <label
-                    style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                    style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                   >
                     <span>
                       baz:
                     </span>
                   </label>
                   <span
-                    style="color: rgb(243, 100, 51);"
+                    style="color: rgb(249, 106, 56);"
                   >
                     32
                   </span>

@@ -20,12 +20,7 @@ import EditorTabLayout, {
   type ActionButton,
   type TabItem,
 } from "@/components/tabLayout/EditorTabLayout";
-import {
-  faHistory,
-  faQuestionCircle,
-  faSave,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { render } from "@/pageEditor/testHelpers";
 
 function getTabItem(name: string, badgeCount?: number): TabItem {
@@ -61,12 +56,6 @@ const sampleTabItems: TabItem[] = [
 ];
 
 const sampleButtons: ActionButton[] = [
-  {
-    variant: "info",
-    onClick: jest.fn(),
-    caption: "Ask a question",
-    icon: faQuestionCircle,
-  },
   {
     variant: "primary",
     onClick: jest.fn(),

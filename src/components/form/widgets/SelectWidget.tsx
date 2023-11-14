@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ChangeEvent } from "react";
+import React, { type ChangeEvent, useState } from "react";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import Select, {
   type GroupBase,
   type SelectComponentsConfig,
   type StylesConfig,
 } from "react-select";
+import Creatable from "react-select/creatable";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
 
 // Type of the Select options
 export type Option<TValue = string> = {
@@ -57,6 +59,11 @@ export type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
     components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
     className?: string;
     styles?: StylesConfig;
+    isSearchable?: boolean;
+    /**
+     * True if the user can create new options. Default is false.
+     */
+    creatable?: boolean;
   };
 
 export const makeStringOptions = (...items: string[]): Option[] =>
@@ -68,7 +75,8 @@ export const makeStringOptions = (...items: string[]): Option[] =>
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   options,
-  isClearable = false,
+  // Default to true to match the default isClearable value in SchemaSelectWidget
+  isClearable = true,
   isLoading,
   loadError,
   disabled,
@@ -78,7 +86,17 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   components,
   className,
   styles,
+  creatable = false,
+  isSearchable = true,
 }: SelectWidgetProps<TOption>) => {
+  const [textInputValue, setTextInputValue] = useState("");
+
+  const optionsWithPlaceholder = useAddCreatablePlaceholder({
+    creatable,
+    options,
+    textInputValue,
+  });
+
   if (loadError) {
     return (
       <div className="text-danger">
@@ -95,11 +113,13 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   };
 
   // Pass null instead of undefined if options is not defined
-  const selectValue =
+  const selectedOption =
     options?.find((option: TOption) => value === option.value) ?? null;
 
+  const Component = creatable ? Creatable : Select;
+
   return (
-    <Select
+    <Component
       className={className}
       menuPlacement="auto"
       inputId={id}
@@ -107,11 +127,13 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       isDisabled={disabled}
       isLoading={isLoading}
       isClearable={isClearable}
-      options={options}
-      value={selectValue}
+      options={optionsWithPlaceholder}
+      onInputChange={setTextInputValue}
+      value={selectedOption}
       onChange={patchedOnChange}
       components={components}
       styles={styles}
+      isSearchable={isSearchable}
     />
   );
 };

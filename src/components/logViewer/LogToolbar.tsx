@@ -52,10 +52,10 @@ const LogToolbar: React.FunctionComponent<{
   const onClear = () => {
     try {
       clear();
-      notify.success("Cleared the log entries for this extension");
+      notify.success("Cleared the log entries for this mod");
     } catch (error) {
       notify.error({
-        message: "Error clearing log entries for extension",
+        message: "Error clearing log entries for mod",
         error,
       });
     }

@@ -24,8 +24,8 @@ import React, { useMemo } from "react";
 import { type IconOption } from "@/icons/types";
 import { icons } from "@/icons/list";
 import Icon from "./Icon";
-import { type IconLibrary } from "@/core";
 import { sortBy } from "lodash";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const iconOptions: IconOption[] = sortBy(
   [...icons].flatMap(([library, libraryCache]) =>
@@ -38,7 +38,7 @@ const iconOptions: IconOption[] = sortBy(
 );
 
 // https://github.com/JedWatson/react-select/issues/3480#issuecomment-481566579
-function SingleValue(props: OptionProps<IconOption>): JSX.Element {
+function SingleValue(props: OptionProps<IconOption, false>): JSX.Element {
   const { SingleValue } = components;
   return (
     <SingleValue {...props}>
@@ -53,15 +53,17 @@ function SingleValue(props: OptionProps<IconOption>): JSX.Element {
 }
 
 interface OwnProps {
-  value: { id: string; library: IconLibrary };
+  value: { id: string; library: IconLibrary } | null;
   isClearable?: boolean;
   onChange: (option: IconOption | null) => void;
+  disabled?: boolean;
 }
 
 const IconSelector: React.FunctionComponent<OwnProps> = ({
   value,
   isClearable = true,
   onChange,
+  disabled = false,
 }) => {
   const selectedOption = useMemo(() => {
     if (value) {
@@ -75,6 +77,7 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Select
+      isDisabled={disabled}
       isClearable={isClearable}
       value={selectedOption}
       options={iconOptions}

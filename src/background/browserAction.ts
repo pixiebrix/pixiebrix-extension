@@ -17,18 +17,19 @@
 
 import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
-import { executeScript } from "webext-content-scripts";
 import webextAlert from "./webextAlert";
-import { memoizeUntilSettled, isMac } from "@/utils";
-import { notify } from "@/options/messenger/api";
+import { notify } from "@/extensionConsole/messenger/api";
 import { browserAction, type Tab } from "@/mv3/api";
-import { isScriptableUrl } from "@/utils/permissions";
+import { isScriptableUrl } from "@/permissions/permissionsUtils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { isMac } from "@/utils/browserUtils";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
 
 const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
-const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to create a new blueprint, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`;
+const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to create a new mod, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`;
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
@@ -37,6 +38,8 @@ const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
 
 // Don't accept objects here as they're not easily memoizable
 async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
+  console.debug("browserAction:toggleSidebar", tabId, tabUrl);
+
   if (!isScriptableUrl(tabUrl)) {
     // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
@@ -44,13 +47,20 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   }
 
   // Load the raw toggle script first, then the content script. The browser executes them
-  // in order but we don't need to use `Promise.all` to await them at the same time as we
+  // in order, but we don't need to use `Promise.all` to await them at the same time as we
   // want to catch each error separately.
-  const sidebarTogglePromise = executeScript({
-    tabId,
+  // Call browser.tabs.executeScript instead of using webext-content-scripts:executeScript because we need to
+  // await the script running. See https://github.com/fregante/webext-content-scripts/issues/22
+  const sidebarTogglePromise = browser.tabs.executeScript(tabId, {
+    file: "browserActionInstantHandler.js",
+    matchAboutBlank: false,
+    allFrames: false,
     frameId: TOP_LEVEL_FRAME_ID,
-    files: ["browserActionInstantHandler.js"],
+    // Run at end instead of idle to ensure immediate feedback to clicking the browser action icon
+    runAt: "document_end",
   });
+
+  // Chrome adds automatically at document_idle, so it might not be ready yet when the user click the browser action
   const contentScriptPromise = ensureContentScript({
     tabId,
     frameId: TOP_LEVEL_FRAME_ID,
@@ -76,7 +86,8 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const url = String(tab.url);
-  const optionsPage = browser.runtime.getURL("options.html");
+
+  const optionsPage = getExtensionConsoleUrl();
 
   if (url.startsWith(optionsPage)) {
     notify.info(

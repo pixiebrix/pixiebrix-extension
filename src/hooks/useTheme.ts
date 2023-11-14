@@ -15,33 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useMemo } from "react";
-import { selectSettings } from "@/store/settingsSelectors";
-import settingsSlice from "@/store/settingsSlice";
+import { useContext, useEffect, useMemo } from "react";
+import { selectSettings } from "@/store/settings/settingsSelectors";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, type Theme } from "@/options/types";
+import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
 import { activatePartnerTheme } from "@/background/messenger/api";
-import { persistor } from "@/store/optionsStore";
-import { useAsyncState } from "@/hooks/common";
-import { type ManualStorageKey, readStorage } from "@/chrome";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,
   isValidTheme,
   setThemeFavicon,
   type ThemeLogo,
-} from "@/utils/themeUtils";
+} from "@/themes/themeUtils";
 import { appApi } from "@/services/api";
 import { selectAuth } from "@/auth/authSelectors";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import { isEmpty } from "lodash";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
-const MANAGED_PARTNER_ID_KEY = "partnerId" as ManualStorageKey;
-
-async function activateBackgroundTheme(): Promise<void> {
+async function activateBackgroundTheme(
+  flush: () => Promise<void>
+): Promise<void> {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
-  await persistor.flush();
+  await flush();
   await activatePartnerTheme();
 }
 
+/**
+ * Calculate the active theme and set it on the settings slice.
+ *
+ * If not in a React context, use getActiveTheme instead.
+ *
+ * @see getActiveTheme
+ * @returns the active theme
+ */
 export function useGetTheme(): Theme {
   const { theme, partnerId } = useSelector(selectSettings);
   const { partner: cachedPartner } = useSelector(selectAuth);
@@ -49,7 +57,7 @@ export function useGetTheme(): Theme {
   const dispatch = useDispatch();
 
   const partnerTheme = useMemo(() => {
-    if (me) {
+    if (!isEmpty(me)) {
       const meTheme = me.partner?.theme;
       return isValidTheme(meTheme) ? meTheme : null;
     }
@@ -58,13 +66,9 @@ export function useGetTheme(): Theme {
     return isValidTheme(cachedTheme) ? cachedTheme : null;
   }, [me, cachedPartner?.theme]);
 
-  // Read from the browser's managed storage. The IT department can set as part of distributing the browser extension
-  // so the correct theme is applied before authentication.
-  const [managedPartnerId, managedPartnerIdIsLoading] = useAsyncState(
-    readStorage(MANAGED_PARTNER_ID_KEY, undefined, "managed"),
-    [],
-    null
-  );
+  const { data: managedState, isLoading: managedPartnerIdIsLoading } =
+    useManagedStorageState();
+  const managedPartnerId = managedState?.partnerId;
 
   useEffect(() => {
     if (partnerId === null && !managedPartnerIdIsLoading) {
@@ -119,15 +123,16 @@ type ThemeAssets = {
  * @param theme the theme to use, or nullish to automatically determine the theme.
  */
 function useTheme(theme?: Theme): ThemeAssets {
+  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
   const inferredTheme = useGetTheme();
   const organizationTheme = useGetOrganizationTheme();
   const themeLogo = getThemeLogo(theme ?? inferredTheme);
 
   useEffect(() => {
-    void activateBackgroundTheme();
+    void activateBackgroundTheme(flushReduxPersistence);
     addThemeClassToDocumentRoot(theme ?? inferredTheme);
     setThemeFavicon(theme ?? inferredTheme);
-  }, [theme, inferredTheme]);
+  }, [theme, inferredTheme, flushReduxPersistence]);
 
   return {
     logo: themeLogo,

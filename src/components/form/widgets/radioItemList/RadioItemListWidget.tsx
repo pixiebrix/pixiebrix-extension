@@ -50,8 +50,8 @@ const RadioItemListWidget: React.FC<RadioItemListWidgetProps> = ({
                 className={styles.input}
                 value={item.value}
                 checked={item.value === value}
-                onChange={() => {
-                  setValue(item.value);
+                onChange={async () => {
+                  await setValue(item.value);
                 }}
               />
               {item.label}

@@ -19,15 +19,17 @@ import {
   type Analysis,
   type AnalysisAnnotation,
 } from "@/analysis/analysisTypes";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { joinPathParts } from "@/utils";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { get, isEmpty } from "lodash";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
+import { joinPathParts } from "@/utils/formUtils";
 
 // See URL patterns at https://developer.chrome.com/docs/extensions/mv3/match_patterns/
 const urlRegexp = /^(?<scheme>.*):\/\/(?<host>[^/]*)?(?<path>.*)?$/;
 const schemeRegexp = /^\*|https?$/;
 const hostRegexp = /^(\*|(^(\*\.)?[^*/]+))$/;
+// All URLs is required for certain interactions, e.g., taking screenshots without activeTab
+const allUrls = "<all_urls>";
 
 const urlPatternFields = ["extensionPoint.definition.isAvailable.urlPatterns"];
 
@@ -72,9 +74,9 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     });
   }
 
-  async run(extension: FormState): Promise<void> {
+  async run(extension: ModComponentFormState): Promise<void> {
     for (const fieldName of urlPatternFields) {
-      const urlPatterns = get(extension, fieldName);
+      const urlPatterns: unknown[] = get(extension, fieldName);
       if (urlPatterns == null || urlPatterns.length === 0) {
         continue;
       }
@@ -84,7 +86,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
 
     const stringUrlsFieldAnalysisPromises: Array<Promise<void>> = [];
     for (const fieldName of stringUrlFields) {
-      const urls = get(extension, fieldName);
+      const urls: string[] = get(extension, fieldName);
       if (urls == null || urls.length === 0) {
         continue;
       }
@@ -122,6 +124,10 @@ class ExtensionUrlPatternAnalysis implements Analysis {
     fieldName: string
   ): Promise<void> {
     for (const [index, url] of Object.entries(urls)) {
+      if (url === allUrls) {
+        continue;
+      }
+
       if (isEmpty(url)) {
         this.pushErrorAnnotation({
           path: joinPathParts(fieldName, index),

@@ -18,45 +18,36 @@
 /**
  * Type contract between the backend and front-end.
  */
-import {
-  type RecipeDefinition,
-  type SharingDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
+import { type components } from "@/types/swagger";
+import { type Except, type JsonObject } from "type-fest";
+import { type AxiosResponse } from "axios";
+import type { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type SanitizedConfig,
-  type Metadata,
-  type UUID,
-  type Config,
-  type EmptyConfig,
-  type PersistedExtension,
-  type Timestamp,
+  type SecretsConfig,
+} from "@/integrations/integrationTypes";
+import {
   type RegistryId,
   type SemVerString,
-} from "@/core";
-
-import { type components } from "@/types/swagger";
-import { type Except } from "type-fest";
-import { type AxiosResponse } from "axios";
+  type Metadata,
+} from "@/types/registryTypes";
 import {
-  type IconName,
-  type IconPrefix,
-} from "@fortawesome/free-solid-svg-icons";
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 
-type Kind =
-  | "block"
-  | "foundation"
-  | "service"
-  | "blueprint"
-  | "reader"
-  | "recipe";
-
-type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
+type MeGroup = NonNullable<
+  components["schemas"]["Me"]["group_memberships"]
+>[number] & {
   id: UUID;
 };
 
 type MeMembershipOrganization = Except<
-  components["schemas"]["Me"]["organization_memberships"][number],
+  NonNullable<components["schemas"]["Me"]["organization_memberships"]>[number],
   "is_deployment_manager"
 > & {
   organization: UUID;
@@ -135,13 +126,31 @@ export type PackageUpsertResponse = Except<
   updated_at: Timestamp;
 };
 
-export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
-  // XXX: update serialize to required id in response type
+/**
+ * An integration configuration stored on the PixieBrix server.
+ */
+export type RemoteIntegrationConfig = Except<
+  components["schemas"]["SanitizedAuth"],
+  "config"
+> & {
   id: UUID;
-  // Specialized to `SanitizedConfig` to get nominal typing
-  config: SanitizedConfig;
+
+  /**
+   * The configuration for the integration. As of 1.7.34, this may include sensitive information if pushdown is enabled.
+   */
+  // Specialized to get nominal typing
+  config: SanitizedConfig | SecretsConfig;
+
   // XXX: update serializer to include proper metadata child serializer
-  service: { config: { metadata: Metadata } };
+  service: Except<
+    components["schemas"]["SanitizedAuth"]["service"],
+    "config"
+  > & {
+    name: RegistryId;
+    // Only pick relevant types for the extension
+    config: { metadata: Metadata };
+  };
+
   user?: UUID;
 };
 
@@ -150,19 +159,35 @@ export type Deployment = Except<
   "id" | "package"
 > & {
   id: UUID;
-  package: Except<
-    components["schemas"]["DeploymentDetail"]["package"],
-    // Patch types for the following properties which our automatic schema generation generated the wrong types for
-    "config" | "id" | "package_id"
-  > & {
-    id: UUID;
-    package_id: RegistryId;
-    config: RecipeDefinition;
-  };
+  options_config: OptionsArgs;
+  package:
+    | Except<
+        NonNullable<components["schemas"]["DeploymentDetail"]["package"]>,
+        // Patch types for the following properties which our automatic schema generation generated the wrong types for
+        "config" | "id" | "package_id"
+      > & {
+        id: UUID;
+        package_id: RegistryId;
+        config: ModDefinition;
+      };
 };
 
-export type Brick = components["schemas"]["PackageMeta"] & {
-  kind: Kind;
+/**
+ * Metadata for an editable package in the registry. See PackageMetaSerializer.
+ */
+export type EditablePackageMetadata = components["schemas"]["PackageMeta"] & {
+  id: UUID;
+
+  name: RegistryId;
+
+  /**
+   * Backend display name for the Package.kind.
+   * @see https://github.com/pixiebrix/pixiebrix-app/blob/be1c486eba393e3c8e2f99401f78af5958b4060b/api/models/registry.py#L210-L210
+   */
+  kind: "Blueprint" | "Service" | "Block" | "Reader" | "Foundation";
+
+  // Nominal typing to help distinguish from registry Metadata
+  _editableBrickBrand: never;
 };
 
 export type RegistryPackage = Pick<
@@ -171,28 +196,33 @@ export type RegistryPackage = Pick<
 > & {
   // XXX: update serializer to include proper child serializer
   metadata: Metadata;
-  kind: Kind;
+
+  /**
+   * Valid `kind` value in the YAML definition.
+   * Note that EditablePackageMetadata uses the backend's display name for this field
+   * @see https://github.com/pixiebrix/pixiebrix-app/blob/43f0a4b81d8b7aaaf11adbe7fd8e4530ca4b8bf0/api/serializers/brick.py#L204-L204
+   */
+  kind: "component" | "extensionPoint" | "recipe" | "service" | "reader";
 };
 
 /**
+ * @deprecated because ModDefinition will be used for singluar mods
  * A personal user extension synced/saved to the cloud.
  */
-export type CloudExtension<T extends Config = EmptyConfig> = Except<
-  PersistedExtension<T>,
-  "active"
-> & {
-  _remoteUserExtensionBrand: never;
-  _deployment: undefined;
-  _recipe: undefined;
-};
+export type StandaloneModDefinition<Config extends UnknownObject = JsonObject> =
+  Except<ActivatedModComponent<Config>, "active"> & {
+    _remoteUserExtensionBrand: never;
+    _deployment: undefined;
+    _recipe: undefined;
+  };
 
 /**
- * `/api/recipes/${blueprintId}`
+ * `/api/recipes/${recipeId}`
  */
-export type BlueprintResponse = {
+export type RecipeResponse = {
   // On this endpoint, the sharing and updated_at are in the envelope of the response
-  config: UnsavedRecipeDefinition;
-  sharing: SharingDefinition;
+  config: UnsavedModDefinition;
+  sharing: ModDefinition["sharing"];
   updated_at: Timestamp;
 };
 
@@ -248,4 +278,17 @@ export type ErrorItem = Except<
   deployment: UUID | null;
   organization: UUID | null;
   user_agent_extension_version: SemVerString;
+};
+
+/**
+ * Force updates available for a list of packages.
+ * There is no auto-generated swagger Type for this because it serializes
+ * the Package config, which is a JSON object.
+ * @see ModDefinition
+ */
+export type PackageVersionUpdates = {
+  updates: Array<{
+    backwards_compatible: ModDefinition | null;
+    name: RegistryId;
+  }>;
 };

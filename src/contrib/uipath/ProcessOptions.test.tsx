@@ -16,37 +16,38 @@
  */
 
 import React from "react";
-import { render } from "@/options/testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { type IService, type OutputKey } from "@/core";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
-import useDependency from "@/services/useDependency";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { useAuthOptions } from "@/hooks/auth";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { setContext } from "@/testUtils/detectPageMock";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => true,
-  isExtensionContext: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
+setContext("devToolsPage");
+
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
-// Default mock to return missing dependency
-jest.mock("@/services/useDependency", () =>
-  jest.fn().mockReturnValue({
-    config: undefined,
-    service: undefined,
-    hasPermissions: true,
-    requestPermissions: jest.fn(),
-  })
+
+const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
+  useSanitizedIntegrationConfigFormikAdapter
 );
+
 jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn().mockReturnValue([[], jest.fn()]),
+  useAuthOptions: jest.fn(),
 }));
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
@@ -75,27 +76,32 @@ jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
   };
 });
 
-const serviceId = validateRegistryId("@uipath/cloud");
+const integrationId = validateRegistryId("@uipath/cloud");
 
 function makeBaseState() {
-  const baseFormState = menuItemFormStateFactory();
-  baseFormState.services = [
-    { id: serviceId, outputKey: "uipath" as OutputKey },
-  ];
-  baseFormState.extension.blockPipeline = [
+  return menuItemFormStateFactory(
     {
-      id: UIPATH_ID,
-      config: {
-        uipath: null,
-        releaseKey: null,
-        inputArguments: {},
-      },
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId,
+          outputKey: validateOutputKey("uipath"),
+        }),
+      ],
     },
-  ];
-  return baseFormState;
+    [
+      {
+        id: UIPATH_ID,
+        config: {
+          uipath: null,
+          releaseKey: null,
+          inputArguments: {},
+        },
+      },
+    ]
+  );
 }
 
-function renderOptions(formState: FormState = makeBaseState()) {
+function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <ProcessOptions name="extension.blockPipeline.0" configKey="config" />
@@ -105,63 +111,64 @@ function renderOptions(formState: FormState = makeBaseState()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
+  (useAuthOptions as jest.Mock).mockReturnValue(valueToAsyncState([]));
+});
+
+beforeEach(() => {
+  useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+    valueToAsyncState(null)
+  );
 });
 
 describe("UiPath Options", () => {
   test("Render integration selector", async () => {
-    const rendered = renderOptions();
+    const { asFragment } = renderOptions();
 
     await waitForEffect();
 
-    expect(rendered.queryByText("Integration")).not.toBeNull();
-    expect(rendered.container).toMatchSnapshot();
+    expect(screen.getByText("Integration")).toBeInTheDocument();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("Render with selected dependency", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
       // Values not needed here, just need to return something non-null
-      config: {},
-      service: {} as IService,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
-    });
+      valueToAsyncState({} as unknown as SanitizedIntegrationConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.uipath =
       makeVariableExpression("@uipath");
 
-    const rendered = renderOptions(base);
+    const { asFragment } = renderOptions(base);
 
     await waitForEffect();
 
-    expect(rendered.queryByText("Integration")).not.toBeNull();
-    expect(rendered.queryByText("Release")).not.toBeNull();
-    expect(rendered.queryByText("Strategy")).not.toBeNull();
-    expect(rendered.queryByText("Await Result")).not.toBeNull();
-    expect(rendered.queryByText("Result Timeout (Milliseconds)")).toBeNull();
-    expect(rendered.container).toMatchSnapshot();
+    expect(screen.getByText("Integration")).toBeInTheDocument();
+    expect(screen.getByText("Release")).toBeInTheDocument();
+    expect(screen.getByText("Strategy")).toBeInTheDocument();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(screen.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   test("Render timeout field if await result", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
       // Values not needed here, just need to return something non-null
-      config: {},
-      service: {} as IService,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
-    });
+      valueToAsyncState({} as unknown as SanitizedIntegrationConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.uipath =
       makeVariableExpression("@uipath");
     base.extension.blockPipeline[0].config.awaitResult = true;
 
-    const rendered = renderOptions(base);
+    renderOptions(base);
 
     await waitForEffect();
 
     expect(
-      rendered.queryByText("Result Timeout (Milliseconds)")
-    ).not.toBeNull();
+      screen.getByText("Result Timeout (Milliseconds)")
+    ).toBeInTheDocument();
   });
 });

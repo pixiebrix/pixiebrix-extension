@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
+import VarAnalysis, {
+  KnownSources,
+} from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import VarMap, {
   ALLOW_ANY_CHILD,
   IS_ARRAY,
@@ -23,10 +25,18 @@ import VarMap, {
   VarExistence,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import getMenuOptions from "./getMenuOptions";
+import { type JsonObject } from "type-fest";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+
+beforeAll(() => {
+  registerBuiltinBlocks();
+});
 
 describe("setting values", () => {
   let knownVars: VarMap;
-  let trace: any;
+  let trace: Record<string, JsonObject>;
   beforeEach(() => {
     knownVars = new VarMap();
     knownVars.setExistenceFromValues({
@@ -39,9 +49,9 @@ describe("setting values", () => {
       parentPath: "@input",
     });
 
-    knownVars.setOutputKeyExistence({
+    knownVars.setVariableExistence({
       source: "extension.blockPipeline.0",
-      outputKey: "@jq",
+      variableName: "@jq",
       existence: VarExistence.DEFINITELY,
       allowAnyChild: true,
     });
@@ -162,6 +172,22 @@ describe("arrays", () => {
           },
         },
       ],
+    ]);
+  });
+});
+
+describe("mod variables", () => {
+  test("it includes mod variables entry", async () => {
+    const analysis = new VarAnalysis({ modState: { foo: 42 } });
+    const extension = formStateFactory({}, [brickConfigFactory()]);
+    await analysis.run(extension);
+
+    const knownVars = analysis.getKnownVars().get("extension.blockPipeline.0");
+
+    const actual = getMenuOptions(knownVars, null);
+    expect(actual).toEqual([
+      ["mod", expect.toBeObject()],
+      ["input", expect.toBeObject()],
     ]);
   });
 });

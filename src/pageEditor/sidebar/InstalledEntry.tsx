@@ -18,13 +18,12 @@
 import styles from "./Entry.module.scss";
 
 import React, { useCallback } from "react";
-import { type IExtension, type UUID } from "@/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
   extensionToFormState,
   selectType,
-} from "@/pageEditor/extensionPoints/adapter";
+} from "@/pageEditor/starterBricks/adapter";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import reportError from "@/telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
@@ -32,8 +31,8 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { type RecipeDefinition } from "@/types/definitions";
-import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { initRecipeOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
 import {
   disableOverlay,
   enableOverlay,
@@ -42,19 +41,22 @@ import {
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import {
   selectActiveElement,
   selectActiveRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
+import { type UUID } from "@/types/stringTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
  * @see DynamicEntry
  */
 const InstalledEntry: React.FunctionComponent<{
-  extension: IExtension;
-  recipes: RecipeDefinition[];
+  extension: ModComponentBase;
+  recipes: ModDefinition[];
   isAvailable: boolean;
   isNested?: boolean;
 }> = ({ extension, recipes, isAvailable, isNested = false }) => {
@@ -75,9 +77,9 @@ const InstalledEntry: React.FunctionComponent<{
     !isActive && recipeId && extension._recipe?.id === recipeId;
 
   const selectHandler = useCallback(
-    async (extension: IExtension) => {
+    async (extension: ModComponentBase) => {
       try {
-        reportEvent("PageEditorOpen", {
+        reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
           extensionId: extension.id,
         });

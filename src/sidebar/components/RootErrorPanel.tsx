@@ -39,7 +39,7 @@ const RootErrorPanel: React.VoidFunctionComponent<{ error: unknown }> = ({
           </h1>
           <div className="mb-2">No renderer found</div>
           <div>
-            <small>Add a renderer brick to the extension.</small>
+            <small>Add a renderer brick.</small>
           </div>
         </div>
       </div>

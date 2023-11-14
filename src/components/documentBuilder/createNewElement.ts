@@ -19,14 +19,23 @@ import {
   type DocumentElement,
   type DocumentElementType,
 } from "./documentBuilderTypes";
+import { validateRegistryId } from "@/types/helpers";
 import {
   type DeferExpression,
   type PipelineExpression,
-} from "@/runtime/mapArgs";
+} from "@/types/runtimeTypes";
 
-export function createNewElement(elementType: DocumentElementType) {
+const elementExtras: Record<"form", DocumentElementType> = {
+  form: "pipeline",
+};
+
+export function createNewElement(
+  elementType: DocumentElementType | keyof typeof elementExtras
+): DocumentElement {
   const element: DocumentElement = {
-    type: elementType,
+    // Writing as map to make it easier to add similar shortcuts in the future
+    // eslint-disable-next-line security/detect-object-injection -- check for valid element type
+    type: elementType === "form" ? elementExtras[elementType] : elementType,
     config: {},
   };
 
@@ -69,6 +78,42 @@ export function createNewElement(elementType: DocumentElementType) {
       break;
     }
 
+    case "form": {
+      element.config.label = "Form";
+      element.config.pipeline = {
+        __type__: "pipeline",
+        __value__: [
+          {
+            id: validateRegistryId("@pixiebrix/form"),
+            config: {
+              storage: {
+                type: "state",
+                namespace: "blueprint",
+              },
+              submitCaption: "Save",
+              schema: {
+                type: "object",
+                properties: {
+                  notes: {
+                    title: "Example Notes Field",
+                    type: "string",
+                    description: "An example notes field",
+                  },
+                },
+              },
+              uiSchema: {
+                notes: {
+                  "ui:widget": "textarea",
+                },
+              },
+              className: "p-0",
+            },
+          },
+        ],
+      } as PipelineExpression;
+      break;
+    }
+
     case "pipeline": {
       element.config.label = "Brick";
       element.config.pipeline = {
@@ -81,6 +126,11 @@ export function createNewElement(elementType: DocumentElementType) {
     case "button": {
       element.config.label = "Button";
       element.config.title = "Action";
+      element.config.size = "md";
+      element.config.variant = "primary";
+      element.config.fullWidth = false;
+      element.config.disabled = false;
+      element.config.hidden = false;
 
       element.config.onClick = {
         __type__: "pipeline",
@@ -91,6 +141,9 @@ export function createNewElement(elementType: DocumentElementType) {
     }
 
     case "list": {
+      // ListElement uses "element" as the default. But be explicit
+      element.config.elementKey = "element";
+
       element.config.element = {
         __type__: "defer",
         __value__: createNewElement("text"),

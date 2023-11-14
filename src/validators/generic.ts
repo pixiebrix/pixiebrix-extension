@@ -20,16 +20,16 @@ import {
   type ValidationResult,
   Validator,
 } from "@cfworker/json-schema";
-import { type Schema, type SchemaProperties } from "@/core";
-import serviceRegistry from "@/services/registry";
-import { inputProperties } from "@/helpers";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import serviceRegistry from "@/integrations/registry";
 import { isEmpty, pickBy } from "lodash";
+import { type UnknownObject } from "@/types/objectTypes";
 import urljoin from "url-join";
-import $RefParser, {
+import $RefParser from "@apidevtools/json-schema-ref-parser";
+import {
   type FileInfo,
   type ResolverOptions,
-} from "@apidevtools/json-schema-ref-parser";
-
+} from "@apidevtools/json-schema-ref-parser/dist/lib/types";
 import draft07 from "@schemas/draft-07.json";
 import serviceSchema from "@schemas/service.json";
 import readerSchema from "@schemas/reader.json";
@@ -44,7 +44,9 @@ import componentSchema from "@schemas/component.json";
 import pipelineSchema from "@schemas/pipeline.json";
 import databaseSchema from "@schemas/database.json";
 import elementSchema from "@schemas/element.json";
-import { type UnknownObject } from "@/types";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import { type JSONSchema7 } from "json-schema";
+import { inputProperties } from "@/utils/schemaUtils";
 
 const SCHEMA_URLS: Record<string, UnknownObject> = {
   "http://json-schema.org/draft-07/schema": draft07,
@@ -61,6 +63,7 @@ const SCHEMA_URLS: Record<string, UnknownObject> = {
   "https://app.pixiebrix.com/schemas/innerDefinition": innerDefinitionSchema,
   "https://app.pixiebrix.com/schemas/database": databaseSchema,
   "https://app.pixiebrix.com/schemas/element": elementSchema,
+  "https://app.pixiebrix.com/schemas/googleSheetId": googleSheetIdSchema,
 };
 
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";
@@ -83,7 +86,7 @@ export async function validateKind(
   kind: keyof typeof KIND_SCHEMAS
 ): Promise<ValidationResult> {
   const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);
-  const validator = new Validator(finalSchema as any);
+  const validator = new Validator(finalSchema as ValidatorSchema);
 
   validator.addSchema(draft07 as ValidatorSchema);
 
@@ -143,8 +146,7 @@ export async function validateInput(
       // @ts-expect-error: getting confused about schema types
       properties: pickBy(
         inputProperties(service.schema),
-        // @ts-expect-error: getting confused about schema types
-        (x) => !REF_SECRETS.includes(x.$ref)
+        (x: JSONSchema7) => !REF_SECRETS.includes(x.$ref)
       ),
     });
   }
@@ -175,7 +177,7 @@ const pixieResolver: ResolverOptions = {
   canRead: /^https?:\/\//i,
   async read(file: FileInfo) {
     if (SCHEMA_URLS[file.url]) {
-      return SCHEMA_URLS[file.url] as any;
+      return SCHEMA_URLS[file.url];
     }
 
     throw new Error(`Unknown file ${file.url}`);
@@ -183,7 +185,7 @@ const pixieResolver: ResolverOptions = {
 };
 
 export async function bundle(schema: Schema): Promise<Schema> {
-  return $RefParser.bundle(schema as any, {
+  return $RefParser.bundle(schema, {
     // Disable built-in resolvers
     // https://apitools.dev/json-schema-ref-parser/docs/options.html
     resolve: { pixieResolver, http: false, file: false },
@@ -191,7 +193,7 @@ export async function bundle(schema: Schema): Promise<Schema> {
 }
 
 export async function dereference(schema: Schema): Promise<Schema> {
-  return $RefParser.dereference(schema as any, {
+  return $RefParser.dereference(schema, {
     // Disable built-in resolvers
     // https://apitools.dev/json-schema-ref-parser/docs/options.html
     resolve: { pixieResolver, http: false, file: false },

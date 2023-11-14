@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { type IBrick } from "@/core";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,19 +30,23 @@ import {
   faRandom,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
-import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
-import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
-import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
-import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
+import { TriggerStarterBrickABC } from "@/starterBricks/triggerExtension";
+import { MenuItemStarterBrickABC } from "@/starterBricks/menuItemExtension";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
+import { PanelStarterBrickABC } from "@/starterBricks/panelExtension";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
 import { appApi } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
+import { type Metadata } from "@/types/registryTypes";
 
-function getDefaultBrickIcon(brick: IBrick, blockType: BlockType): IconProp {
+function getDefaultBrickIcon<T extends Metadata>(
+  brick: T,
+  blockType: BrickType
+): IconProp {
   if ("schema" in brick) {
     return faCloud;
   }
@@ -70,23 +73,23 @@ function getDefaultBrickIcon(brick: IBrick, blockType: BlockType): IconProp {
     }
   }
 
-  if (brick instanceof TriggerExtensionPoint) {
+  if (brick instanceof TriggerStarterBrickABC) {
     return faBolt;
   }
 
-  if (brick instanceof MenuItemExtensionPoint) {
+  if (brick instanceof MenuItemStarterBrickABC) {
     return faMousePointer;
   }
 
-  if (brick instanceof ContextMenuExtensionPoint) {
+  if (brick instanceof ContextMenuStarterBrickABC) {
     return faBars;
   }
 
-  if (brick instanceof PanelExtensionPoint) {
+  if (brick instanceof PanelStarterBrickABC) {
     return faWindowMaximize;
   }
 
-  if (brick instanceof SidebarExtensionPoint) {
+  if (brick instanceof SidebarStarterBrickABC) {
     return faColumns;
   }
 
@@ -95,12 +98,8 @@ function getDefaultBrickIcon(brick: IBrick, blockType: BlockType): IconProp {
 
 const SIZE_REGEX = /^(?<size>\d)x$/i;
 
-/**
- * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
- * listing and searches all the listings.
- */
-const BrickIcon: React.FunctionComponent<{
-  brick: IBrick;
+type BrickIconProps<T extends Metadata> = {
+  brick: T;
   size?: "1x" | "2x";
 
   /**
@@ -115,7 +114,18 @@ const BrickIcon: React.FunctionComponent<{
    * color schemes.
    */
   inheritColor?: boolean;
-}> = ({ brick, size = "1x", faIconClass = "", inheritColor = false }) => {
+};
+
+/**
+ * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
+ * listing and searches all the listings.
+ */
+const BrickIcon = <T extends Metadata>({
+  brick,
+  size = "1x",
+  faIconClass = "",
+  inheritColor = false,
+}: BrickIconProps<T>) => {
   const { data: listings = {} } =
     // BrickIcon only gets the data from the store. The API query must be issued by a parent component.
     appApi.endpoints.getMarketplaceListings.useQueryState();

@@ -22,19 +22,15 @@ import {
   selectActiveElement,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
-import useCreate from "@/pageEditor/hooks/useCreate";
+import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import {
-  type DeploymentContext,
   type Metadata,
-  type PersistedExtension,
-  type RecipeMetadata,
   type RegistryId,
   type SemVerString,
-} from "@/core";
-import { type UnsavedRecipeDefinition } from "@/types/definitions";
+} from "@/types/registryTypes";
 import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
@@ -47,8 +43,13 @@ import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { useAllRecipes } from "@/recipes/recipesHooks";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import {
+  type ModComponentBase,
+  type ActivatedModComponent,
+} from "@/types/modComponentTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -62,9 +63,9 @@ type RecipeConfiguration = {
 let savingDeferred: DeferredPromise<void>;
 
 export function selectRecipeMetadata(
-  unsavedRecipe: UnsavedRecipeDefinition,
+  unsavedRecipe: UnsavedModDefinition,
   response: PackageUpsertResponse
-): RecipeMetadata {
+): ModComponentBase["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
     sharing: pick(response, ["public", "organizations"]),
@@ -74,7 +75,7 @@ export function selectRecipeMetadata(
 
 const useSavingWizard = () => {
   const dispatch = useDispatch();
-  const create = useCreate();
+  const create = useUpsertFormElement();
   const reset = useResetExtension();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);
@@ -82,7 +83,7 @@ const useSavingWizard = () => {
   const elements = useSelector(selectElements);
   const element = useSelector(selectActiveElement);
 
-  const { data: recipes } = useAllRecipes();
+  const { data: recipes } = useAllModDefinitions();
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [createRecipe] = useCreateRecipeMutation();
   const [updateRecipe] = useUpdateRecipeMutation();
@@ -96,7 +97,7 @@ const useSavingWizard = () => {
       const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
       if (!recipe) {
         notify.error(
-          "You no longer have edit permissions for the blueprint. Please reload the Editor."
+          "You no longer have edit permissions for the mod. Please reload the Page Editor."
         );
         return;
       }
@@ -111,22 +112,29 @@ const useSavingWizard = () => {
   /**
    * Saves an extension that is not a part of a Recipe
    */
-  const saveNonRecipeElement = async () => {
+  async function saveNonRecipeElement() {
     dispatch(savingExtensionActions.setSavingInProgress());
-    const error = await create({ element, pushToCloud: true });
+    const error = await create({
+      element,
+      options: {
+        pushToCloud: true,
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
     closeWizard(error);
-  };
+  }
 
   /**
-   * Creates personal extension from the existing one
-   * It will not be a part of the Recipe
+   * Creates personal extension from a page editor element. It will not be a part of the Recipe
    */
   const saveElementAsPersonalExtension = async () => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
     // Stripping the recipe-related data from the element
     const { recipe, optionsDefinition, ...rest } = element;
-    const personalElement: FormState = {
+    const personalElement: ModComponentFormState = {
       ...rest,
       uuid: uuidv4(),
       // Detach from the recipe
@@ -135,7 +143,18 @@ const useSavingWizard = () => {
 
     dispatch(editorActions.addElement(personalElement));
     await reset({ extensionId: element.uuid, shouldShowConfirmation: false });
-    const error = await create({ element: personalElement, pushToCloud: true });
+
+    const error = await create({
+      element: personalElement,
+      options: {
+        pushToCloud: true,
+        // Should already have permissions because it already exists
+        checkPermissions: false,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
+
     if (!error) {
       dispatch(editorActions.removeElement(element.uuid));
       dispatch(optionsActions.removeExtension({ extensionId: element.uuid }));
@@ -158,7 +177,7 @@ const useSavingWizard = () => {
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
     if (recipeMeta.id === recipe.metadata.id) {
-      closeWizard("You must provide a new id for the Blueprint");
+      closeWizard("You must provide a new id for the mod");
       return;
     }
 
@@ -167,7 +186,7 @@ const useSavingWizard = () => {
       id: validateRegistryId(recipeMeta.id),
     };
 
-    const newRecipe: UnsavedRecipeDefinition = replaceRecipeExtension(
+    const newRecipe: UnsavedModDefinition = replaceRecipeExtension(
       recipe,
       newMeta,
       extensions,
@@ -182,7 +201,7 @@ const useSavingWizard = () => {
     });
 
     if ("error" in createRecipeResponse) {
-      const errorMessage = "Failed to create new Blueprint";
+      const errorMessage = "Failed to create new mod";
       notify.error({
         message: errorMessage,
         error: createRecipeResponse.error,
@@ -191,9 +210,18 @@ const useSavingWizard = () => {
       return;
     }
 
-    // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
-    // because it will already be available via the blueprint
-    const createExtensionError = await create({ element, pushToCloud: false });
+    const createExtensionError = await create({
+      element,
+      options: {
+        // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
+        // because it will already be available via the blueprint
+        pushToCloud: false,
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
+
     if (createExtensionError) {
       closeWizard(createExtensionError);
       return;
@@ -203,7 +231,7 @@ const useSavingWizard = () => {
       recipe.metadata.id,
       selectRecipeMetadata(newRecipe, createRecipeResponse.data),
       // Unlink the installed extensions from the deployment
-      { _deployment: null as DeploymentContext }
+      { _deployment: null as ModComponentBase["_deployment"] }
     );
 
     closeWizard(createExtensionError);
@@ -222,7 +250,7 @@ const useSavingWizard = () => {
     const elementRecipeMeta = element.recipe;
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
-    const newRecipe: UnsavedRecipeDefinition = replaceRecipeExtension(
+    const newRecipe: UnsavedModDefinition = replaceRecipeExtension(
       recipe,
       recipeMeta,
       extensions,
@@ -240,7 +268,7 @@ const useSavingWizard = () => {
     });
 
     if ("error" in updateRecipeResponse) {
-      const errorMessage = "Failed to update the Blueprint";
+      const errorMessage = "Failed to update the mod";
       notify.error({
         message: errorMessage,
         error: updateRecipeResponse.error,
@@ -249,7 +277,16 @@ const useSavingWizard = () => {
       return;
     }
 
-    const error = await create({ element, pushToCloud: true });
+    const error = await create({
+      element,
+      options: {
+        pushToCloud: true,
+        checkPermissions: true,
+        notifySuccess: true,
+        reactivateEveryTab: true,
+      },
+    });
+
     if (error) {
       closeWizard(error);
       return;
@@ -263,11 +300,11 @@ const useSavingWizard = () => {
     closeWizard(error);
   };
 
-  const updateExtensionRecipeLinks = (
+  function updateExtensionRecipeLinks(
     recipeId: RegistryId,
-    recipeMetadata: RecipeMetadata,
-    extraUpdate: Partial<PersistedExtension> = {}
-  ) => {
+    recipeMetadata: ModComponentBase["_recipe"],
+    extraUpdate: Partial<ActivatedModComponent> = {}
+  ) {
     // 1) Update the extensions in the Redux optionsSlice
     const recipeExtensions = extensions.filter(
       (x) => x._recipe?.id === recipeId
@@ -294,9 +331,9 @@ const useSavingWizard = () => {
 
       dispatch(editorActions.updateElement(elementUpdate));
     }
-  };
+  }
 
-  const closeWizard = (errorMessage?: string | null) => {
+  function closeWizard(errorMessage?: string | null) {
     dispatch(savingExtensionActions.closeWizard());
 
     if (savingDeferred) {
@@ -308,7 +345,7 @@ const useSavingWizard = () => {
 
       savingDeferred = null;
     }
-  };
+  }
 
   return {
     isWizardOpen,

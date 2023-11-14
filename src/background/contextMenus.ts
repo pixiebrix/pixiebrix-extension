@@ -18,22 +18,23 @@
 import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
-import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/contentScript";
-import { reportEvent } from "@/telemetry/events";
-import { type UUID, type IExtension, type ResolvedExtension } from "@/core";
 import { expectContext } from "@/utils/expectContext";
-import extensionPointRegistry from "@/extensionPoints/registry";
+import extensionPointRegistry from "@/starterBricks/registry";
 import {
   type ContextMenuConfig,
-  ContextMenuExtensionPoint,
-} from "@/extensionPoints/contextMenu";
-import { loadOptions } from "@/store/extensionsStorage";
-import { resolveDefinitions } from "@/registry/internal";
-import { allSettledValues, memoizeUntilSettled } from "@/utils";
-import { CancelError } from "@/errors/businessErrors";
+  ContextMenuStarterBrickABC,
+} from "@/starterBricks/contextMenu";
+import { getModComponentState } from "@/store/extensionsStorage";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { type UUID } from "@/types/stringTypes";
+import {
+  type ModComponentBase,
+  type ResolvedModComponent,
+} from "@/types/modComponentTypes";
+import { allSettledValues, memoizeUntilSettled } from "@/utils/promiseUtils";
 
 const MENU_PREFIX = "pixiebrix-";
 
@@ -48,12 +49,18 @@ type SelectionMenuOptions = {
   documentUrlPatterns: string[];
 };
 
+/**
+ * Return a unique context menu item id for the given extension id.
+ * @param extensionId
+ */
 function makeMenuId(extensionId: UUID): string {
   return `${MENU_PREFIX}${extensionId}`;
 }
 
 /**
+ * Dispatch a Chrome context menu event to the corresponding content script.
  * FIXME: this method doesn't handle frames
+ * @see handleMenuAction
  */
 async function dispatchMenu(
   info: Menus.OnClickData,
@@ -67,11 +74,9 @@ async function dispatchMenu(
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
-  reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-
   console.time("ensureContentScript");
 
-  // Using the context menu gives temporary access to the page
+  // Browser will add at document_idle. But ensure it's ready before continuing
   await pTimeout(ensureContentScript(target), {
     milliseconds: CONTEXT_SCRIPT_INSTALL_MS,
     message: `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`,
@@ -84,22 +89,13 @@ async function dispatchMenu(
       extensionId: info.menuItemId.slice(MENU_PREFIX.length) as UUID,
       args: info,
     });
-    notify.success(target, "Ran content menu item action");
   } catch (error) {
-    if (hasSpecificErrorCause(error, CancelError)) {
-      notify.info(target, "The action was cancelled");
-    } else {
-      // Report the original error here. The stack trace will point to this block anyway, but its origin will be
-      // better defined. Here it's called explicitly because the messaging API does not automatically serialize errors,
-      // especially deep inside other objects.
-      reportError(error);
-
-      notify.error(target, {
-        message: "Error handling context menu action",
-        error,
-        reportError: false,
-      });
-    }
+    // Handle internal/messenger errors here. The real error handling occurs in the contextMenu extension point
+    reportError(error);
+    notify.error(target, {
+      message: "Error handling context menu action",
+      reportError: false,
+    });
   }
 }
 
@@ -112,8 +108,11 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
 }
 
 /**
- * Uninstall contextMenu for `extensionId`. Returns true if the contextMenu was removed, or false if the contextMenu was
- * not found.
+ * Uninstall the contextMenu UI for `extensionId` from browser context menu on all tabs.
+ *
+ * Safe to call on non-context menu extension ids.
+ *
+ * @returns {boolean} true if the contextMenu was removed, or false if the contextMenu was not found.
  */
 export async function uninstallContextMenu({
   extensionId,
@@ -134,27 +133,31 @@ export async function uninstallContextMenu({
   }
 }
 
+/**
+ * Register a context menu item on all tabs.
+ */
 export const ensureContextMenu = memoizeUntilSettled(_ensureContextMenu, {
   cacheKey: ([{ extensionId }]) => extensionId,
 });
+
 async function _ensureContextMenu({
   extensionId,
   contexts,
   title,
   documentUrlPatterns,
-}: SelectionMenuOptions) {
+}: SelectionMenuOptions): Promise<void> {
   expectContext("background");
 
   if (!extensionId) {
     throw new Error("extensionId is required");
   }
 
-  const updateProperties: Menus.UpdateUpdatePropertiesType = {
+  const updateProperties = {
     type: "normal",
     title,
     contexts,
     documentUrlPatterns,
-  };
+  } satisfies Menus.UpdateUpdatePropertiesType;
 
   const expectedMenuId = makeMenuId(extensionId);
   try {
@@ -168,24 +171,29 @@ async function _ensureContextMenu({
     await chromeP.contextMenus.create({
       ...updateProperties,
       id: expectedMenuId,
-    });
+    } as chrome.contextMenus.CreateProperties);
   }
 }
 
+/**
+ * Add context menu items to the Chrome context menu on all tabs, in anticipation that on Page Load, the content
+ * script will register a handler for the item.
+ * @param extensions the ModComponent to preload.
+ */
 export async function preloadContextMenus(
-  extensions: IExtension[]
+  extensions: ModComponentBase[]
 ): Promise<void> {
   expectContext("background");
   await Promise.allSettled(
     extensions.map(async (definition) => {
-      const resolved = await resolveDefinitions(definition);
+      const resolved = await resolveExtensionInnerDefinitions(definition);
 
       const extensionPoint = await extensionPointRegistry.lookup(
         resolved.extensionPointId
       );
-      if (extensionPoint instanceof ContextMenuExtensionPoint) {
+      if (extensionPoint instanceof ContextMenuStarterBrickABC) {
         await extensionPoint.ensureMenu(
-          definition as unknown as ResolvedExtension<ContextMenuConfig>
+          definition as unknown as ResolvedModComponent<ContextMenuConfig>
         );
       }
     })
@@ -193,9 +201,9 @@ export async function preloadContextMenus(
 }
 
 async function preloadAllContextMenus(): Promise<void> {
-  const { extensions } = await loadOptions();
+  const { extensions } = await getModComponentState();
   const resolved = await allSettledValues(
-    extensions.map(async (x) => resolveDefinitions(x))
+    extensions.map(async (x) => resolveExtensionInnerDefinitions(x))
   );
   await preloadContextMenus(resolved);
 }

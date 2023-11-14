@@ -18,12 +18,12 @@
 import axios, { type AxiosInstance } from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getAuthHeaders } from "@/auth/token";
-import { isAbsoluteUrl } from "@/utils";
-import { type IExtension } from "@/core";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,
 } from "@/errors/genericErrors";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -107,7 +107,9 @@ export async function getApiClient(): Promise<AxiosInstance> {
  * Upsert a singleton extension to the user's account.
  * @deprecated use RTK Query mutation
  */
-export async function saveUserExtension(extension: IExtension): Promise<void> {
+export async function saveUserExtension(
+  extension: ModComponentBase
+): Promise<void> {
   const client = await getLinkedApiClient();
   await client.put(`/api/extensions/${extension.id}/`, extension);
 }

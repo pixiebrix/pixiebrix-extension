@@ -30,7 +30,7 @@ exports[`Input validation error 1`] = `
         class="root"
       >
         <ul
-          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
         >
           <li
             style="padding: 0px; margin: 0px;"
@@ -42,14 +42,14 @@ exports[`Input validation error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     type:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="color: rgb(0, 113, 36);"
                 >
                   "info"
                 </span>
@@ -58,14 +58,14 @@ exports[`Input validation error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     duration:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(243, 100, 51);"
+                  style="color: rgb(249, 106, 56);"
                 >
                   2500
                 </span>
@@ -77,20 +77,20 @@ exports[`Input validation error 1`] = `
                   style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
                 >
                   <div
-                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                   >
                     ▶
                   </div>
                 </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     message:
                   </span>
                 </label>
                 <span
-                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                 >
                   <span>
                     <span
@@ -120,7 +120,7 @@ exports[`Input validation error 1`] = `
         class="root"
       >
         <ul
-          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
         >
           <li
             style="padding: 0px; margin: 0px;"
@@ -132,14 +132,14 @@ exports[`Input validation error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     $schema:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="color: rgb(0, 113, 36);"
                 >
                   "https://json-schema.org/draft/2019-09/schema#"
                 </span>
@@ -148,14 +148,14 @@ exports[`Input validation error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     type:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="color: rgb(0, 113, 36);"
                 >
                   "object"
                 </span>
@@ -167,20 +167,20 @@ exports[`Input validation error 1`] = `
                   style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
                 >
                   <div
-                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                   >
                     ▶
                   </div>
                 </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     properties:
                   </span>
                 </label>
                 <span
-                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                 >
                   <span>
                     <span
@@ -202,20 +202,20 @@ exports[`Input validation error 1`] = `
                   style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
                 >
                   <div
-                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                   >
                     ▶
                   </div>
                 </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     required:
                   </span>
                 </label>
                 <span
-                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                 >
                   <span>
                     <span
@@ -268,26 +268,23 @@ exports[`Network error 1`] = `
             fill="currentColor"
           />
         </svg>
-         PixieBrix does not have permission to access https://fail.com. Specify an Integration to access the API, or add an Extra Permissions rule to the extension.
+         PixieBrix does not have permission to access https://fail.com. Contact your IT Administrator for the
+        <code>
+          runtime_blocked_hosts
+        </code>
+         Chrome Browser Extension policy.
       </div>
       <div>
         <div>
-          PixieBrix did not receive a response. Possible causes:
+          PixieBrix did not receive a response. See 
+          <a
+            href="https://docs.pixiebrix.com/network-errors"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Troubleshooting Network Errors
+          </a>
         </div>
-        <ul>
-          <li>
-            Your browser or another extension blocked the request. Check that PixieBrix has permission to the access the host. If PixieBrix is not showing a Grant Permissions button, ensure that the integration has an 
-            <code
-              class="px-0 mx-0"
-            >
-              isAvailable
-            </code>
-             section defined
-          </li>
-          <li>
-            The remote server did not respond. Try the request again
-          </li>
-        </ul>
       </div>
     </div>
     <div
@@ -300,7 +297,7 @@ exports[`Network error 1`] = `
         class="root"
       >
         <ul
-          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
         >
           <li
             style="padding: 0px; margin: 0px;"
@@ -315,20 +312,20 @@ exports[`Network error 1`] = `
                   style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
                 >
                   <div
-                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                   >
                     ▶
                   </div>
                 </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     transitional:
                   </span>
                 </label>
                 <span
-                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                 >
                   <span>
                     <span
@@ -347,14 +344,14 @@ exports[`Network error 1`] = `
                 style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 1.125em;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: default;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: default;"
                 >
                   <span>
                     transformRequest:
                   </span>
                 </label>
                 <span
-                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                 >
                   <span>
                     <span
@@ -373,14 +370,14 @@ exports[`Network error 1`] = `
                 style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 1.125em;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: default;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: default;"
                 >
                   <span>
                     transformResponse:
                   </span>
                 </label>
                 <span
-                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                 >
                   <span>
                     <span
@@ -399,14 +396,14 @@ exports[`Network error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     timeout:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(243, 100, 51);"
+                  style="color: rgb(249, 106, 56);"
                 >
                   0
                 </span>
@@ -415,14 +412,14 @@ exports[`Network error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     xsrfCookieName:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="color: rgb(0, 113, 36);"
                 >
                   "XSRF-TOKEN"
                 </span>
@@ -431,14 +428,14 @@ exports[`Network error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     xsrfHeaderName:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="color: rgb(0, 113, 36);"
                 >
                   "X-XSRF-TOKEN"
                 </span>
@@ -447,14 +444,14 @@ exports[`Network error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     maxContentLength:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(243, 100, 51);"
+                  style="color: rgb(249, 106, 56);"
                 >
                   -1
                 </span>
@@ -463,14 +460,14 @@ exports[`Network error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     maxBodyLength:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(243, 100, 51);"
+                  style="color: rgb(249, 106, 56);"
                 >
                   -1
                 </span>
@@ -482,20 +479,20 @@ exports[`Network error 1`] = `
                   style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
                 >
                   <div
-                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                   >
                     ▶
                   </div>
                 </div>
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
                 >
                   <span>
                     headers:
                   </span>
                 </label>
                 <span
-                  style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                 >
                   <span>
                     <span
@@ -514,14 +511,14 @@ exports[`Network error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     url:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="color: rgb(0, 113, 36);"
                 >
                   "https://fail.com"
                 </span>
@@ -530,14 +527,14 @@ exports[`Network error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     method:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(64, 175, 108);"
+                  style="color: rgb(0, 113, 36);"
                 >
                   "get"
                 </span>
@@ -546,16 +543,118 @@ exports[`Network error 1`] = `
                 style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
               >
                 <label
-                  style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                 >
                   <span>
                     data:
                   </span>
                 </label>
                 <span
-                  style="color: rgb(241, 89, 80);"
+                  style="color: rgb(180, 24, 63);"
                 >
                   undefined
+                </span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`RemoteApiErrorDetail 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <div
+      class="column"
+    >
+      <h5>
+        Response from Remote API
+      </h5>
+      <div>
+        Status: 400 — Bad Request
+      </div>
+      <div
+        class="root"
+      >
+        <ul
+          style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
+        >
+          <li
+            style="padding: 0px; margin: 0px;"
+          >
+            <ul
+              style="padding: 0px; margin: 0px; list-style: none;"
+            >
+              <li
+                style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px;"
+              >
+                <div
+                  style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
+                >
+                  <div
+                    style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
+                  >
+                    ▶
+                  </div>
+                </div>
+                <label
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
+                >
+                  <span>
+                    data:
+                  </span>
+                </label>
+                <span
+                  style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
+                >
+                  <span>
+                    <span
+                      style="margin-left: 0.3em; margin-right: 0.3em;"
+                    >
+                      {}
+                    </span>
+                     1 key
+                  </span>
+                </span>
+                <ul
+                  style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                />
+              </li>
+              <li
+                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+              >
+                <label
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
+                >
+                  <span>
+                    status:
+                  </span>
+                </label>
+                <span
+                  style="color: rgb(249, 106, 56);"
+                >
+                  400
+                </span>
+              </li>
+              <li
+                style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
+              >
+                <label
+                  style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
+                >
+                  <span>
+                    statusText:
+                  </span>
+                </label>
+                <span
+                  style="color: rgb(0, 113, 36);"
+                >
+                  "Bad Request"
                 </span>
               </li>
             </ul>

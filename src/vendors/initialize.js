@@ -5,7 +5,7 @@
 // - check if Element type is defined
 // - use $safeFind to catch invalid selectors #3061
 
-import { $safeFind } from "@/helpers";
+import { $safeFind } from "@/utils/domUtils";
 import { throttle } from "lodash";
 
 var combinators = [" ", ">", "+", "~"]; // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors#Combinators
@@ -65,24 +65,48 @@ var MutationSelectorObserver = function (selector, callback, options) {
 // List of MutationSelectorObservers.
 var msobservers = [];
 msobservers.initialize = function (selector, callback, options) {
+  var isMatchinInProgress = false;
+
   // Wrap the callback so that we can ensure that it is only
   // called once per element.
   var seen = new WeakSet();
   var callbackOnce = function () {
     if (!seen.has(this)) {
       seen.add(this);
-      $(this).each(callback);
+      $(this).each((index, element) => {
+        // Don't block the page transition/animation frame
+        setTimeout(() => callback(index, element), 0);
+      });
     }
   };
 
+  // Fall back handler to check the entire page for the selector
+  // Try to choose timeouts that are long enough to avoid performance bottlenecks, but short enough to provide
+  // responsiveness for triggers that depend on ancestor/sibling elements changing
+  let idleCallbackHandle = null;
   var throttledCheckTarget = throttle(
     () => {
-      // For UI performance, we might consider wrapping in a requestAnimationFrame in the future
-      $safeFind(selector, options.target).each(callbackOnce);
+      if (isMatchinInProgress) {
+        return;
+      }
+
+      // Don't accumulate idle callbacks
+      if (idleCallbackHandle) {
+        return;
+      }
+
+      // Wrap in requestIdleCallback to prevent impacting performance
+      idleCallbackHandle = requestIdleCallback(
+        () => {
+          requestAnimationFrame(() => {
+            $safeFind(selector, options.target).each(callbackOnce);
+            idleCallbackHandle = null;
+          });
+        },
+        { timeout: 150 }
+      );
     },
-    // Try to choose a wait that is long enough to avoid performance issues, but short enough to provide responsiveness
-    // for triggers that depend on ancestor/sibling elements changing
-    150,
+    100,
     { leading: true, trailing: true }
   );
 
@@ -97,7 +121,6 @@ msobservers.initialize = function (selector, callback, options) {
   );
   this.push(msobserver);
 
-  var isMatchinInProgress = false;
   // The MutationObserver watches for when new elements are added to the DOM.
   var observer = new MutationObserver(function (mutations) {
     // Avoid loop caused by Sizzle changing attributes while querying

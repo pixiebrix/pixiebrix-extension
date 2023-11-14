@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Logger, type SanitizedServiceConfiguration } from "@/core";
+import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { proxyService } from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import {
   type Activity,
   type Bot,
@@ -39,7 +39,6 @@ import {
   mapBotInput,
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
-import { pollUntilTruthy, sleep } from "@/utils";
 import {
   type CommunityBotArgs,
   type EnterpriseBotArgs,
@@ -47,6 +46,10 @@ import {
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
 import { type AxiosRequestConfig } from "axios";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { pollUntilTruthy } from "@/utils/promiseUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { sleep } from "@/utils/timeUtils";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room
@@ -64,9 +67,16 @@ const SORT_BY_NAME = {
   ],
 };
 
-async function fetchAllPages<TData>(
-  config: SanitizedServiceConfiguration,
-  requestConfig: AxiosRequestConfig
+/**
+ * Fetch paginated Control Room responses.
+ * @param config the control room integration configuration
+ * @param requestConfig the axios configuration for the request
+ * @param maxPages maximum number of pages to fetch, defaults to all pages
+ */
+async function fetchPages<TData>(
+  config: SanitizedIntegrationConfig,
+  requestConfig: AxiosRequestConfig,
+  { maxPages = Number.MAX_SAFE_INTEGER }: { maxPages?: number } = {}
 ): Promise<TData[]> {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 
@@ -80,27 +90,33 @@ async function fetchAllPages<TData>(
     length: PAGINATION_LIMIT,
   };
 
-  const initialResponse = await proxyService<ListResponse<TData>>(
-    config,
-    paginatedRequestConfig
-  );
+  const initialResponse = await performConfiguredRequestInBackground<
+    ListResponse<TData>
+  >(config, paginatedRequestConfig);
+
+  if (initialResponse.data.list == null) {
+    // Use TypeError instead of BusinessError to ensure we get the telemetry in Rollbar if we're calling API incorrectly
+    throw new TypeError("Expected list response from Control Room");
+  }
+
   const results: TData[] = [...initialResponse.data.list];
   const total = initialResponse.data.page.totalFilter;
 
   // Note that CR API uses offset/length instead of page/size
+  let page = 0;
   let offset = results.length;
-  while (offset < total) {
+  while (offset < total && page < maxPages) {
     paginatedRequestConfig.data.page = {
       offset,
       length: PAGINATION_LIMIT,
     };
     // eslint-disable-next-line no-await-in-loop -- be conservative on number of concurrent requests to CR
-    const response = await proxyService<ListResponse<TData>>(
-      config,
-      paginatedRequestConfig
-    );
+    const response = await performConfiguredRequestInBackground<
+      ListResponse<TData>
+    >(config, paginatedRequestConfig);
     results.push(...response.data.list);
     offset += response.data.list.length;
+    page += 1;
   }
 
   return results;
@@ -110,11 +126,11 @@ async function fetchAllPages<TData>(
  * Return information about a bot in a Control Room.
  */
 async function fetchBotFile(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   fileId: string
 ): Promise<Bot> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await proxyService<Bot>(config, {
+  const response = await performConfiguredRequestInBackground<Bot>(config, {
     url: `/v2/repository/files/${fileId}`,
     method: "GET",
   });
@@ -130,11 +146,11 @@ export const cachedFetchBotFile = cachePromiseMethod(
  * Return information about a bot in a Control Room.
  */
 async function fetchFolder(
-  config: SanitizedServiceConfiguration,
+  config: SanitizedIntegrationConfig,
   folderId: string
 ): Promise<Folder> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await proxyService<Folder>(config, {
+  const response = await performConfiguredRequestInBackground<Folder>(config, {
     url: `/v2/repository/files/${folderId}`,
     method: "GET",
   });
@@ -146,37 +162,83 @@ export const cachedFetchFolder = cachePromiseMethod(
   fetchFolder
 );
 
-async function fetchBots(
-  config: SanitizedServiceConfiguration,
-  options: { workspaceType: WorkspaceType }
+async function searchBots(
+  config: SanitizedIntegrationConfig,
+  options: { workspaceType: WorkspaceType; query: string; value: string | null }
 ): Promise<Option[]> {
-  const botFilterPayload = {
+  if (isNullOrBlank(options.workspaceType)) {
+    throw new TypeError("workspaceType is required");
+  }
+
+  let searchPayload = {
     ...SORT_BY_NAME,
     filter: {
-      operator: "eq",
-      field: "type",
-      value: BOT_TYPE,
+      operator: "and",
+      operands: [
+        {
+          operator: "substring",
+          field: "name",
+          value: options.query ?? "",
+        },
+        {
+          operator: "eq",
+          field: "type",
+          value: BOT_TYPE,
+        },
+      ],
     },
   };
+
+  if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
+    // If the value is set, but not the query just return the result set for the current value to ensure we can show
+    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
+    // but that would require an extra request unless the sort could somehow put the known value first
+    searchPayload = {
+      ...SORT_BY_NAME,
+      filter: {
+        operator: "and",
+        operands: [
+          {
+            operator: "eq",
+            field: "id",
+            value: options.value,
+          },
+          {
+            operator: "eq",
+            field: "type",
+            value: BOT_TYPE,
+          },
+        ],
+      },
+    };
+  }
 
   let bots: Bot[];
 
   // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
   // the Page Editor configuration is only showing bots for the folder id.
   if (isEmpty(config.config.folderId)) {
-    bots = await fetchAllPages<Bot>(config, {
-      url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
-      method: "POST",
-      data: botFilterPayload,
-    });
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 }
+    );
   } else {
     // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
     // include `type` field for filters or in the body or the response
-    bots = await fetchAllPages<Bot>(config, {
-      url: `/v2/repository/folders/${config.config.folderId}/list`,
-      method: "POST",
-      data: botFilterPayload,
-    });
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/folders/${config.config.folderId}/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 }
+    );
   }
 
   return bots.map((bot) => ({
@@ -185,12 +247,15 @@ async function fetchBots(
   }));
 }
 
-export const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
+export const cachedSearchBots = cachePromiseMethod(
+  ["aa:fetchBots"],
+  searchBots
+);
 
 async function fetchDevices(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<Option[]> {
-  const devices = await fetchAllPages<Device>(config, {
+  const devices = await fetchPages<Device>(config, {
     url: "/v2/devices/list",
     method: "POST",
     data: {},
@@ -216,9 +281,9 @@ export const cachedFetchDevices = cachePromiseMethod(
 );
 
 async function fetchDevicePools(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<Option[]> {
-  const devicePools = await fetchAllPages<DevicePool>(config, {
+  const devicePools = await fetchPages<DevicePool>(config, {
     url: "/v2/devices/pools/list",
     method: "POST",
     data: { ...SORT_BY_NAME },
@@ -235,9 +300,9 @@ export const cachedFetchDevicePools = cachePromiseMethod(
 );
 
 async function fetchRunAsUsers(
-  config: SanitizedServiceConfiguration
+  config: SanitizedIntegrationConfig
 ): Promise<Option[]> {
-  const users = await fetchAllPages<RunAsUser>(config, {
+  const users = await fetchPages<RunAsUser>(config, {
     url: "/v1/devices/runasusers/list",
     method: "POST",
     data: {},
@@ -253,15 +318,15 @@ export const cachedFetchRunAsUsers = cachePromiseMethod(
   fetchRunAsUsers
 );
 
-async function fetchSchema(
-  config: SanitizedServiceConfiguration,
-  fileId: string
-) {
+async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
   if (config && fileId) {
-    const response = await proxyService<Interface>(config, {
-      url: `/v1/filecontent/${fileId}/interface`,
-      method: "GET",
-    });
+    const response = await performConfiguredRequestInBackground<Interface>(
+      config,
+      {
+        url: `/v1/filecontent/${fileId}/interface`,
+        method: "GET",
+      }
+    );
 
     return interfaceToInputSchema(response.data);
   }
@@ -280,7 +345,7 @@ export async function runCommunityBot({
 }: CommunityBotArgs): Promise<void> {
   // Don't bother returning the DeployResponse because it's just "0" for all community deployments
   // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
-  await proxyService<DeployResponse>(service, {
+  await performConfiguredRequestInBackground<DeployResponse>(service, {
     url: "/v2/automations/deploy",
     method: "post",
     data: {
@@ -300,19 +365,20 @@ export async function runEnterpriseBot({
   poolIds = [],
 }: EnterpriseBotArgs) {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-bot-deploy-task.html
-  const { data: deployData } = await proxyService<DeployResponse>(service, {
-    url: "/v3/automations/deploy",
-    method: "post",
-    data: {
-      fileId,
-      botInput: mapBotInput(data),
-      // Use the runAsUser's default device instead of a device pool
-      overrideDefaultDevice: poolIds?.length > 0,
-      numOfRunAsUsersToUse: 1,
-      poolIds,
-      runAsUserIds: castArray(runAsUserIds),
-    },
-  });
+  const { data: deployData } =
+    await performConfiguredRequestInBackground<DeployResponse>(service, {
+      url: "/v3/automations/deploy",
+      method: "post",
+      data: {
+        fileId,
+        botInput: mapBotInput(data),
+        // Use the runAsUser's default device instead of a device pool
+        overrideDefaultDevice: poolIds?.length > 0,
+        numOfRunAsUsersToUse: 1,
+        poolIds,
+        runAsUserIds: castArray(runAsUserIds),
+      },
+    });
 
   return deployData;
 }
@@ -323,7 +389,7 @@ export async function pollEnterpriseResult({
   logger,
   maxWaitMillis = DEFAULT_MAX_WAIT_MILLIS,
 }: {
-  service: SanitizedServiceConfiguration;
+  service: SanitizedIntegrationConfig;
   deploymentId: string;
   logger: Logger;
   maxWaitMillis?: number;
@@ -333,20 +399,19 @@ export async function pollEnterpriseResult({
     await sleep(POLL_MILLIS);
 
     // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
-    const { data: activityList } = await proxyService<ListResponse<Activity>>(
-      service,
-      {
-        url: "/v3/activity/list",
-        method: "post",
-        data: {
-          filter: {
-            operator: "eq",
-            field: "deploymentId",
-            value: deploymentId,
-          },
+    const { data: activityList } = await performConfiguredRequestInBackground<
+      ListResponse<Activity>
+    >(service, {
+      url: "/v3/activity/list",
+      method: "post",
+      data: {
+        filter: {
+          operator: "eq",
+          field: "deploymentId",
+          value: deploymentId,
         },
-      }
-    );
+      },
+    });
 
     if (activityList.list.length > 1) {
       logger.error(
@@ -388,10 +453,11 @@ export async function pollEnterpriseResult({
   });
 
   if (completedActivity) {
-    const { data: execution } = await proxyService<Execution>(service, {
-      url: `/v3/activity/execution/${completedActivity.id}`,
-      method: "get",
-    });
+    const { data: execution } =
+      await performConfiguredRequestInBackground<Execution>(service, {
+        url: `/v3/activity/execution/${completedActivity.id}`,
+        method: "get",
+      });
 
     return selectBotOutput(execution);
   }

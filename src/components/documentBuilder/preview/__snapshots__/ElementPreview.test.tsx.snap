@@ -10,7 +10,7 @@ exports[`can preview default button 1`] = `
         class="root inlineWrapper"
       >
         <button
-          class="btn btn-primary"
+          class="btn btn-primary btn-md"
           type="button"
         >
           Action
@@ -36,14 +36,17 @@ exports[`can preview default card 1`] = `
     >
       <div
         class="card"
+        data-testid="card"
       >
         <div
           class="card-header"
+          data-testid="card-header"
         >
           Header
         </div>
         <div
           class="container cardBody overflow-auto card-body"
+          data-testid="card-body"
         >
           <div
             class="addElement dropdown"
@@ -469,7 +472,7 @@ exports[`can preview pipeline element with bricks 1`] = `
         Brick
       </h3>
       <p>
-        testing/block-id_17
+        testing/block-17
       </p>
       <p>
         @pixiebrix/markdown

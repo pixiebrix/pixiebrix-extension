@@ -17,9 +17,8 @@
 
 import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
-import { type UnknownObject } from "@/types";
-import { type Args, isDeferExpression } from "@/runtime/mapArgs";
-import { useAsyncState } from "@/hooks/common";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type Args } from "@/runtime/mapArgs";
 import Loader from "@/components/Loader";
 import {
   type BuildDocumentBranch,
@@ -30,9 +29,13 @@ import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
-import { isNullOrBlank, joinPathParts } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { getTopLevelFrame } from "webext-messenger";
+import useAsyncState from "@/hooks/useAsyncState";
+import DelayedRender from "@/components/DelayedRender";
+import { isDeferExpression } from "@/utils/expressionUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -58,14 +61,18 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
   const documentContext = useContext(DocumentContext);
 
-  const [rootDefinitions, isLoading, error] = useAsyncState(async () => {
+  const {
+    data: rootDefinitions,
+    isLoading,
+    error,
+  } = useAsyncState(async () => {
     const topLevelFrame = await getTopLevelFrame();
 
-    const key = `@${elementKey}`;
+    const elementVariableReference = `@${elementKey}`;
 
-    if (Object.hasOwn(documentContext.options.ctxt, key)) {
+    if (Object.hasOwn(documentContext.options.ctxt, elementVariableReference)) {
       documentContext.options.logger.warn(
-        `List key ${key} shadows an existing key`
+        `List key ${elementVariableReference} shadows an existing variable name`
       );
     }
 
@@ -73,7 +80,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
       array.map(async (itemData) => {
         const elementContext = produce(documentContext, (draft) => {
           // eslint-disable-next-line security/detect-object-injection -- we appended a @ to the front of key and are using immer
-          draft.options.ctxt[key] = itemData;
+          draft.options.ctxt[elementVariableReference] = itemData;
         });
 
         let documentElement: unknown;
@@ -81,11 +88,12 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
         if (isDeferExpression(config)) {
           documentElement = (await runMapArgs(
             topLevelFrame,
-            // TODO: pass runtime version via DocumentContext instead of hard-coding it. This is be wrong for v4+
+            // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will be wrong for v4+
             {
               config: config.__value__,
               context: elementContext.options.ctxt,
               options: apiVersionOptions("v3"),
+              blueprintId: documentContext.options.logger.context.blueprintId,
             }
           )) as DocumentElement;
         } else {
@@ -102,7 +110,13 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   }, [array, elementKey, config, documentContext]);
 
   if (isLoading) {
-    return <Loader />;
+    // Use isLoading instead of isFetching because we want to show old content until the new content is ready.
+    // Add DelayedRender to avoid flickering the loading indicator. Rendering the DeferredExpression is fast
+    return (
+      <DelayedRender millis={600}>
+        <Loader />
+      </DelayedRender>
+    );
   }
 
   if (error) {

@@ -15,31 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  extensionFactory,
-  installedRecipeMetadataFactory,
-  menuItemFormStateFactory,
-  recipeDefinitionFactory,
-  recipeMetadataFactory,
-} from "@/testUtils/factories";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type IExtension } from "@/core";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
-import { type ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import {
+  modComponentFactory,
+  modMetadataFactory,
+} from "@/testUtils/factories/modComponentFactories";
+import {
+  defaultModDefinitionFactory,
+  metadataFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Recipes
 const ID_FOO = validateRegistryId("test/recipe-foo");
-const recipeFoo: RecipeDefinition = recipeDefinitionFactory({
-  metadata: recipeMetadataFactory({
+const recipeFoo: ModDefinition = defaultModDefinitionFactory({
+  metadata: metadataFactory({
     id: ID_FOO,
     name: "Foo Recipe",
   }),
 });
 
 const ID_BAR = validateRegistryId("test/recipe-bar");
-const recipeBar: RecipeDefinition = recipeDefinitionFactory({
-  metadata: recipeMetadataFactory({
+const recipeBar: ModDefinition = defaultModDefinitionFactory({
+  metadata: metadataFactory({
     id: ID_BAR,
     name: "Bar Recipe",
   }),
@@ -47,10 +49,10 @@ const recipeBar: RecipeDefinition = recipeDefinitionFactory({
 
 // Extensions
 const ID_FOO_A = uuidv4();
-const installedFooA: IExtension = extensionFactory({
+const installedFooA: ModComponentBase = modComponentFactory({
   id: ID_FOO_A,
   label: "A",
-  _recipe: installedRecipeMetadataFactory({
+  _recipe: modMetadataFactory({
     id: ID_FOO,
   }),
 });
@@ -59,7 +61,7 @@ const ID_FOO_B = uuidv4();
 const dynamicFooB: ActionFormState = menuItemFormStateFactory({
   uuid: ID_FOO_B,
   label: "B",
-  recipe: installedRecipeMetadataFactory({
+  recipe: modMetadataFactory({
     id: ID_FOO,
   }),
 });
@@ -71,10 +73,10 @@ const dynamicOrphanC: ActionFormState = menuItemFormStateFactory({
 });
 
 const ID_BAR_D = uuidv4();
-const installedBarD: IExtension = extensionFactory({
+const installedBarD: ModComponentBase = modComponentFactory({
   id: ID_BAR_D,
   label: "D",
-  _recipe: installedRecipeMetadataFactory({
+  _recipe: modMetadataFactory({
     id: ID_BAR,
   }),
 });
@@ -83,28 +85,28 @@ const ID_BAR_E = uuidv4();
 const dynamicBarE: ActionFormState = menuItemFormStateFactory({
   uuid: ID_BAR_E,
   label: "E",
-  recipe: installedRecipeMetadataFactory({
+  recipe: modMetadataFactory({
     id: ID_BAR,
   }),
 });
 
 const ID_BAR_F = uuidv4();
-const installedBarF: IExtension = extensionFactory({
+const installedBarF: ModComponentBase = modComponentFactory({
   id: ID_BAR_F,
   label: "F",
-  _recipe: installedRecipeMetadataFactory({
+  _recipe: modMetadataFactory({
     id: ID_BAR,
   }),
 });
 
 const ID_ORPHAN_G = uuidv4();
-const installedOrphanG: IExtension = extensionFactory({
+const installedOrphanG: ModComponentBase = modComponentFactory({
   id: ID_ORPHAN_G,
   label: "G",
 });
 
 const ID_ORPHAN_H = uuidv4();
-const installedOrphanH: IExtension = extensionFactory({
+const installedOrphanH: ModComponentBase = modComponentFactory({
   id: ID_ORPHAN_H,
   label: "H",
 });
@@ -120,12 +122,9 @@ describe("arrangeElements()", () => {
       elements: [dynamicOrphanC],
       installed: [installedOrphanH, installedOrphanG],
       recipes: [],
-      availableInstalledIds: [installedOrphanG.id, installedOrphanH.id],
-      availableDynamicIds: [dynamicOrphanC.uuid],
-      showAll: false,
       activeElementId: dynamicOrphanC.uuid,
       activeRecipeId: null,
-      expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([
@@ -140,93 +139,13 @@ describe("arrangeElements()", () => {
       elements: [dynamicBarE, dynamicFooB],
       installed: [installedFooA, installedBarF, installedBarD],
       recipes: [recipeFoo, recipeBar],
-      availableInstalledIds: [
-        installedFooA.id,
-        installedBarD.id,
-        installedBarF.id,
-      ],
-      availableDynamicIds: [dynamicBarE.uuid, dynamicFooB.uuid],
-      showAll: false,
       activeElementId: dynamicBarE.uuid,
       activeRecipeId: null,
-      expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toEqual([
       [recipeBar.metadata.id, [installedBarD, dynamicBarE, installedBarF]],
-      [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
-    ]);
-  });
-
-  test("handle showAll flag properly", () => {
-    const elements = arrangeElements({
-      elements: [dynamicBarE],
-      installed: [installedFooA, installedOrphanH],
-      recipes: [recipeFoo, recipeBar],
-      availableInstalledIds: [installedFooA.id],
-      availableDynamicIds: [dynamicBarE.uuid],
-      showAll: true,
-      activeElementId: dynamicBarE.uuid,
-      activeRecipeId: null,
-      expandedRecipeId: null,
-    });
-
-    expect(elements).toStrictEqual([
-      [recipeBar.metadata.id, [dynamicBarE]],
-      [recipeFoo.metadata.id, [installedFooA]],
-      installedOrphanH,
-    ]);
-  });
-
-  test("keep active element when not available", () => {
-    const elements = arrangeElements({
-      elements: [dynamicOrphanC],
-      installed: [],
-      recipes: [],
-      availableInstalledIds: [],
-      availableDynamicIds: [],
-      showAll: false,
-      activeElementId: dynamicOrphanC.uuid,
-      activeRecipeId: null,
-      expandedRecipeId: null,
-    });
-
-    expect(elements).toStrictEqual([dynamicOrphanC]);
-  });
-
-  test("keep active recipe when elements not available", () => {
-    const elements = arrangeElements({
-      elements: [dynamicFooB, dynamicOrphanC],
-      installed: [installedFooA],
-      recipes: [recipeFoo],
-      availableInstalledIds: [],
-      availableDynamicIds: [ID_ORPHAN_C],
-      showAll: false,
-      activeElementId: null,
-      activeRecipeId: ID_FOO,
-      expandedRecipeId: null,
-    });
-
-    expect(elements).toStrictEqual([
-      dynamicOrphanC,
-      [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
-    ]);
-  });
-
-  test("show element if its recipe is expanded", () => {
-    const elements = arrangeElements({
-      elements: [dynamicFooB],
-      installed: [installedFooA],
-      recipes: [recipeFoo],
-      availableInstalledIds: [installedFooA.id],
-      availableDynamicIds: [],
-      showAll: false,
-      activeElementId: dynamicOrphanC.uuid,
-      activeRecipeId: null,
-      expandedRecipeId: recipeFoo.metadata.id,
-    });
-
-    expect(elements).toStrictEqual([
       [recipeFoo.metadata.id, [installedFooA, dynamicFooB]],
     ]);
   });
@@ -236,14 +155,37 @@ describe("arrangeElements()", () => {
       elements: [dynamicOrphanH],
       installed: [installedOrphanH],
       recipes: [],
-      availableInstalledIds: [installedOrphanH.id],
-      availableDynamicIds: [dynamicOrphanH.uuid],
-      showAll: false,
       activeElementId: ID_ORPHAN_H,
       activeRecipeId: null,
-      expandedRecipeId: null,
+      query: "",
     });
 
     expect(elements).toStrictEqual([dynamicOrphanH]);
+  });
+
+  test("search query filters correctly", () => {
+    const elements = arrangeElements({
+      elements: [dynamicOrphanC, dynamicOrphanH],
+      installed: [installedOrphanH, installedOrphanG],
+      recipes: [],
+      activeElementId: dynamicOrphanC.uuid,
+      activeRecipeId: null,
+      query: "c",
+    });
+
+    expect(elements).toStrictEqual([dynamicOrphanC]);
+  });
+
+  test("search query keeps active items", () => {
+    const elements = arrangeElements({
+      elements: [dynamicOrphanC, dynamicOrphanH],
+      installed: [installedOrphanH, installedOrphanG],
+      recipes: [],
+      activeElementId: dynamicOrphanC.uuid,
+      activeRecipeId: null,
+      query: "g",
+    });
+
+    expect(elements).toStrictEqual([dynamicOrphanC, installedOrphanG]);
   });
 });

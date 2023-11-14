@@ -18,18 +18,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
-import { checkAvailable as backgroundCheckAvailable } from "@/blocks/available";
-import { type Target } from "@/types";
+import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
+import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
-import { type Availability } from "@/blocks/types";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { type Availability } from "@/bricks/types";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   checkAvailable: jest.fn(),
@@ -46,7 +46,7 @@ describe("checkAvailableDynamicElements", () => {
     const testUrl = "https://www.myUrl.com/*";
     (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
 
-    const store = configureStore<EditorRootState & ExtensionsRootState>({
+    const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
         options: extensionsReducer,
@@ -57,7 +57,7 @@ describe("checkAvailableDynamicElements", () => {
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/available-button"),
-          name: "Test Extension Point 1",
+          name: "Test Starter Brick 1",
         },
         definition: {
           type: "menuItem",
@@ -75,7 +75,7 @@ describe("checkAvailableDynamicElements", () => {
       extensionPoint: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),
-          name: "Test Extension Point 2",
+          name: "Test Starter Brick 2",
         },
         definition: {
           type: "menuItem",
@@ -109,6 +109,6 @@ describe("checkAvailableDynamicElements", () => {
       selectExtensionAvailability(state);
 
     expect(availableDynamicIds).toStrictEqual([availableDynamicExtension.uuid]);
-    expect(unavailableDynamicCount).toStrictEqual(1);
+    expect(unavailableDynamicCount).toBe(1);
   });
 });

@@ -33,16 +33,16 @@
  * - Context invalidated: CS must be injected again
  */
 
-import { type UUID } from "@/core";
-import { type Target } from "@/types";
+import { type UUID } from "@/types/stringTypes";
+import { type Target } from "@/types/messengerTypes";
 import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
+import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/domConstants";
 
 const html = globalThis.document?.documentElement;
 
 // These two must be synched in `getTargetState`
 const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for("content-script-injected");
-export const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
 
 /** Communicates readiness to `ensureContentScript` */
 export const ENSURE_CONTENT_SCRIPT_READY =
@@ -60,11 +60,18 @@ interface TargetState {
   ready: boolean;
 }
 
+/**
+ * Returns true iff the content script has been injected in the content script Javascript VM for the window.
+ */
 export function isInstalledInThisSession(): boolean {
   return CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis;
 }
 
+/**
+ * Mark that the content script has been injected in content script Javascript VM for the window.
+ */
 export function setInstalledInThisSession(): void {
+  // eslint-disable-next-line security/detect-object-injection -- symbol
   window[CONTENT_SCRIPT_INJECTED_SYMBOL] = true;
 }
 
@@ -108,4 +115,20 @@ export async function getTargetState(target: Target): Promise<TargetState> {
       ),
     };
   });
+}
+
+let reloadOnNextNavigate = false;
+
+/**
+ * Return true if the mods should be reloaded on the next navigation.
+ */
+export function getReloadOnNextNavigate(): boolean {
+  return reloadOnNextNavigate;
+}
+
+/**
+ * Set if the mods should be reloaded on the next navigation.
+ */
+export function setReloadOnNextNavigate(value: boolean): void {
+  reloadOnNextNavigate = value;
 }

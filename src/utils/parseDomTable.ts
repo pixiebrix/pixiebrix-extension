@@ -19,7 +19,7 @@ import { compact, isEmpty, zip, zipObject } from "lodash";
 import objectHash from "object-hash";
 import slugify from "slugify";
 
-interface ParsingOptions {
+export interface ParsingOptions {
   orientation?: "vertical" | "horizontal" | "infer";
 }
 
@@ -47,13 +47,14 @@ function guessDirection(
   table: HTMLTableElement
 ): ParsingOptions["orientation"] {
   const labelRatio =
-    table.rows[0].querySelectorAll("th").length /
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Empty tables are filtered out early
+    table.rows[0]!.querySelectorAll("th").length /
     table.querySelectorAll("th").length;
   return labelRatio < 0.5 ? "horizontal" : "vertical";
 }
 
 function flattenTableContent(table: HTMLTableElement): RawTableContent {
-  // This table will be pre-filled in the adjacent rows and colums when rowspan and colspan are found.
+  // This table will be pre-filled in the adjacent rows and columns when rowspan and colspan are found.
   // Colspan means that the current cell exists on [X, Y] and [X + 1, Y]
   // Rowspan means that the current cell exists on [X, Y] and [X, Y + 1]
   // Having both means that a colspan × rowspan matrix will be pre-filled.
@@ -86,7 +87,8 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
           const row = rowIndex + rowSpanIndex;
           const col = cellIndex + colSpanIndex;
           flattened[row] = flattened[row] ?? [];
-          flattened[row][col] = {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It was just created
+          flattened[row]![col] = {
             type: tagName === "TH" ? "header" : "value",
             value: textContent.trim(),
           };
@@ -114,7 +116,7 @@ function extractData(
 ): NormalizedData {
   if (orientation === "horizontal") {
     // Transpose table so we only deal with one orientation
-    table = zip(...table);
+    table = zip(...table) as RawTableContent; // _.zip types are too loose
   }
 
   // Carefully deal with cells because the "table" could just be an empty array
@@ -125,7 +127,8 @@ function extractData(
   const textTable = table.map((row) => row.map((cell) => cell.value));
   if (hasHeader) {
     const [headers, ...body] = textTable;
-    return { fieldNames: headers, body };
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Empty tables are filtered out early
+    return { fieldNames: headers!, body };
   }
 
   // If it has no headers, use a 0-based index as header
@@ -136,6 +139,11 @@ export function parseDomTable(
   table: HTMLTableElement,
   { orientation = "infer" }: ParsingOptions = {}
 ): ParsedTable {
+  if (!table.rows[0]?.cells.length) {
+    // Empty table
+    return { fieldNames: [], records: [] };
+  }
+
   const { fieldNames, body } = extractData(
     flattenTableContent(table),
     orientation === "infer" ? guessDirection(table) : orientation
@@ -145,7 +153,7 @@ export function parseDomTable(
   return { records, fieldNames };
 }
 
-function getAriaDescription(element: HTMLElement): string | undefined {
+function getAriaDescription(element: HTMLElement): string | null | undefined {
   const describedBy = element.getAttribute("aria-describedby");
   if (describedBy) {
     return element.ownerDocument.querySelector("#" + describedBy)?.textContent;
@@ -177,6 +185,11 @@ export function getAllTables(
 ): Map<string, ParsedTable> {
   const tables = new Map();
   for (const table of $<HTMLTableElement>("table", root)) {
+    // Skip empty tables
+    if (!table.rows[0]?.cells.length) {
+      continue;
+    }
+
     const parsedTable = parseDomTable(table);
 
     tables.set(describeTable(table, parsedTable), parsedTable);

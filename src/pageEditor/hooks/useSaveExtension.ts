@@ -17,36 +17,48 @@
 
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import useCreate from "@/pageEditor/hooks/useCreate";
+import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 type ExtensionSaver = {
-  save: (element: FormState) => Promise<void>;
+  save: (element: ModComponentFormState) => Promise<void>;
   isSaving: boolean;
 };
 
 function useSaveExtension(): ExtensionSaver {
   const [isSaving, setIsSaving] = useState(false);
-  const create = useCreate();
+  const create = useUpsertFormElement();
   const sessionId = useSelector(selectSessionId);
 
-  async function save(element: FormState): Promise<void> {
+  async function save(element: ModComponentFormState): Promise<void> {
     setIsSaving(true);
 
-    const error = await create({ element, pushToCloud: true });
-    if (error) {
-      notify.error(error);
-    } else {
-      reportEvent("PageEditorSave", {
-        sessionId,
-        extensionId: element.uuid,
+    try {
+      const error = await create({
+        element,
+        options: {
+          pushToCloud: true,
+          checkPermissions: true,
+          notifySuccess: true,
+          reactivateEveryTab: true,
+        },
       });
-    }
 
-    setIsSaving(false);
+      if (error) {
+        notify.error(error);
+      } else {
+        reportEvent(Events.PAGE_EDITOR_SAVE, {
+          sessionId,
+          extensionId: element.uuid,
+        });
+      }
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return {

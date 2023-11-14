@@ -15,20 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type RJSFSchema } from "./formBuilderTypes";
+import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
+import { produce, type Draft } from "immer";
+import databaseSchema from "@schemas/database.json";
+import googleSheetSchema from "@schemas/googleSheetId.json";
+import { isEmpty } from "lodash";
 import {
   KEYS_OF_UI_SCHEMA,
-  type SafeString,
   type Schema,
   type SchemaDefinition,
   type SchemaPropertyType,
   type UiSchema,
-} from "@/core";
-import { type RJSFSchema } from "./formBuilderTypes";
-import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
-import { freshIdentifier } from "@/utils";
-import { produce } from "immer";
-import { type WritableDraft } from "immer/dist/types/types-external";
-import databaseSchema from "@schemas/database.json";
+} from "@/types/schemaTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 export const getMinimalSchema: () => Schema = () => ({
   type: "object",
@@ -77,6 +78,16 @@ export const FIELD_TYPES_WITHOUT_DEFAULT = [
     propertyType: "string",
     uiWidget: "imageCrop",
   }),
+  stringifyUiType({ propertyType: "string", uiWidget: "database" }),
+  stringifyUiType({
+    propertyType: "string",
+    uiWidget: "database",
+    propertyFormat: "preview",
+  }),
+  stringifyUiType({
+    propertyType: "string",
+    uiWidget: "googleSheet",
+  }),
 ];
 
 /**
@@ -114,10 +125,14 @@ export const moveStringInArray = (
   direction: "up" | "down"
 ) => {
   const copy = [...array];
-  const fromIndex = copy.indexOf(stringToBeMoved);
+  const fromIndex = array.indexOf(stringToBeMoved);
+  if (fromIndex === -1 || (direction === "up" && fromIndex === 0)) {
+    return copy;
+  }
+
   const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-  // eslint-disable-next-line security/detect-object-injection
-  [copy[fromIndex], copy[toIndex]] = [copy[toIndex], copy[fromIndex]];
+  // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion -- checked with indexOf
+  [copy[fromIndex], copy[toIndex]] = [copy[toIndex]!, copy[fromIndex]!];
   return copy;
 };
 
@@ -207,12 +222,23 @@ export const produceSchemaOnUiTypeChange = (
     /* eslint-disable security/detect-object-injection */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
 
-    if (uiWidget === "database") {
-      draftPropertySchema.$ref = databaseSchema.$id;
-      delete draftPropertySchema.type;
-    } else {
-      draftPropertySchema.type = propertyType;
-      delete draftPropertySchema.$ref;
+    switch (uiWidget) {
+      case "database": {
+        draftPropertySchema.$ref = databaseSchema.$id;
+        delete draftPropertySchema.type;
+        break;
+      }
+
+      case "googleSheet": {
+        draftPropertySchema.$ref = googleSheetSchema.$id;
+        delete draftPropertySchema.type;
+        break;
+      }
+
+      default: {
+        draftPropertySchema.type = propertyType;
+        delete draftPropertySchema.$ref;
+      }
     }
 
     if (propertyFormat) {
@@ -237,6 +263,16 @@ export const produceSchemaOnUiTypeChange = (
       draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
     } else if (draft.uiSchema[propertyName]) {
       delete draft.uiSchema[propertyName][UI_WIDGET];
+    }
+
+    if (uiWidget === "checkboxes" && propertyType === "array") {
+      draftPropertySchema.items = {
+        type: "string",
+        enum: ["Example option 1", "Example option 2", "Example option 3"],
+      };
+      draftPropertySchema.uniqueItems = true;
+      delete draftPropertySchema.enum;
+      delete draftPropertySchema.oneOf;
     }
 
     if (uiWidget === "select") {
@@ -267,8 +303,8 @@ export const produceSchemaOnUiTypeChange = (
  * Normalizes the schema property of the RJSF schema.
  * @param rjsfSchemaDraft The mutable draft of the RJSF schema
  */
-export const normalizeSchema = (rjsfSchemaDraft: WritableDraft<RJSFSchema>) => {
-  if (rjsfSchemaDraft.schema == null) {
+export const normalizeSchema = (rjsfSchemaDraft: Draft<RJSFSchema>) => {
+  if (isEmpty(rjsfSchemaDraft.schema)) {
     rjsfSchemaDraft.schema = getMinimalSchema();
   }
 

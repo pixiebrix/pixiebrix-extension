@@ -21,24 +21,15 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import {
-  type RecipeMetadata,
-  type RegistryId,
-  type UserOptions,
-  type UUID,
-} from "@/core";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type BlockConfig } from "@/blocks/types";
-import { type ExtensionPointType } from "@/extensionPoints/types";
-import {
-  type OptionsDefinition,
-  type RecipeMetadataFormState,
-} from "@/types/definitions";
+import { type BrickConfig } from "@/bricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import {
   type AddBlockLocation,
   type EditorRootState,
   type EditorState,
   ModalKey,
+  type ModMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -57,13 +48,14 @@ import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveElement,
   selectActiveElementUIState,
+  selectActiveNodeUIState,
   selectNotDeletedElements,
   selectNotDeletedExtensions,
 } from "./editorSelectors";
 import {
-  type FormState,
   isQuickBarExtensionPoint,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+  type ModComponentFormState,
+} from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
   activateElement,
@@ -77,22 +69,30 @@ import {
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
 import { produce } from "immer";
-import { normalizePipelineForEditor } from "@/pageEditor/extensionPoints/pipelineMapping";
-import { type ExtensionsRootState } from "@/store/extensionsTypes";
+import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
+import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
-import { resolveDefinitions } from "@/registry/internal";
-import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
-import { testMatchPatterns } from "@/blocks/available";
-import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { resolveExtensionInnerDefinitions } from "@/registry/internal";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
+import { testMatchPatterns } from "@/bricks/available";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { isExtension } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
+import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
+import { createMigrate } from "redux-persist";
+import { migrations } from "@/store/editorMigrations";
+import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -120,6 +120,11 @@ export const initialState: EditorState = {
   availableDynamicIds: [],
   unavailableDynamicCount: 0,
   isPendingDynamicExtensions: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
+
+  // Not persisted
+  isVariablePopoverVisible: false,
 };
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
@@ -144,6 +149,7 @@ const cloneActiveExtension = createAsyncThunk<
     }
   );
   // Add the cloned extension
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   thunkAPI.dispatch(actions.addElement(newElement));
 });
 
@@ -155,7 +161,7 @@ type AvailableInstalled = {
 const checkAvailableInstalledExtensions = createAsyncThunk<
   AvailableInstalled,
   void,
-  { state: EditorRootState & ExtensionsRootState }
+  { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
   const elements = selectNotDeletedElements(thunkAPI.getState());
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
@@ -164,7 +170,9 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     extensionPoints.map((extensionPoint) => [extensionPoint.id, extensionPoint])
   );
   const resolved = await Promise.all(
-    extensions.map(async (extension) => resolveDefinitions(extension))
+    extensions.map(async (extension) =>
+      resolveExtensionInnerDefinitions(extension)
+    )
   );
   const tabUrl = await getCurrentURL();
   const availableExtensionPointIds = resolved
@@ -176,7 +184,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
       }
 
       // QuickBar is installed on every page, need to filter by the documentUrlPatterns
-      if (QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)) {
+      if (QuickBarStarterBrickABC.isQuickBarExtensionPoint(extensionPoint)) {
         return testMatchPatterns(extensionPoint.documentUrlPatterns, tabUrl);
       }
 
@@ -254,7 +262,7 @@ const checkActiveElementAvailability = createAsyncThunk<
     unavailableDynamicCount: number;
   },
   void,
-  { state: EditorRootState & ExtensionsRootState }
+  { state: EditorRootState & ModComponentsRootState }
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentURL();
   const state = thunkAPI.getState();
@@ -294,7 +302,7 @@ const checkActiveElementAvailability = createAsyncThunk<
     installedExtensions,
     dynamicElements,
     (extensionOrElement) => {
-      if (isExtension(extensionOrElement)) {
+      if (isModComponentBase(extensionOrElement)) {
         return extensionOrElement.id;
       }
 
@@ -322,7 +330,10 @@ export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    toggleInsert(state, action: PayloadAction<ExtensionPointType>) {
+    resetEditor() {
+      return initialState;
+    },
+    toggleInsert(state, action: PayloadAction<StarterBrickType>) {
       state.inserting = action.payload;
       state.beta = false;
       state.error = null;
@@ -330,7 +341,7 @@ export const editorSlice = createSlice({
     markEditable(state, action: PayloadAction<RegistryId>) {
       state.knownEditable.push(action.payload);
     },
-    addElement(state, action: PayloadAction<FormState>) {
+    addElement(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       state.inserting = null;
       state.elements.push(element);
@@ -351,7 +362,7 @@ export const editorSlice = createSlice({
       state.activeElementId = uuid;
       state.selectionSeq++;
     },
-    selectInstalled(state, action: PayloadAction<FormState>) {
+    selectInstalled(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
@@ -362,7 +373,7 @@ export const editorSlice = createSlice({
 
       activateElement(state, element);
     },
-    resetInstalled(state, actions: PayloadAction<FormState>) {
+    resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
       const element = actions.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
@@ -409,7 +420,7 @@ export const editorSlice = createSlice({
      * Sync the redux state with the form state.
      * Used on by the page editor to set changed version of the element in the store.
      */
-    editElement(state, action: PayloadAction<FormState>) {
+    editElement(state, action: PayloadAction<ModComponentFormState>) {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
@@ -426,7 +437,7 @@ export const editorSlice = createSlice({
      */
     updateElement(
       state,
-      action: PayloadAction<{ uuid: UUID } & Partial<FormState>>
+      action: PayloadAction<{ uuid: UUID } & Partial<ModComponentFormState>>
     ) {
       const { uuid, ...elementUpdate } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
@@ -526,7 +537,7 @@ export const editorSlice = createSlice({
       ].activeElement = activeElement;
     },
 
-    copyBlockConfig(state, action: PayloadAction<BlockConfig>) {
+    copyBlockConfig(state, action: PayloadAction<BrickConfig>) {
       const copy = { ...action.payload };
       delete copy.instanceId;
       state.copiedBlock = copy;
@@ -542,12 +553,12 @@ export const editorSlice = createSlice({
     },
     editRecipeOptionsDefinitions(
       state,
-      action: PayloadAction<OptionsDefinition>
+      action: PayloadAction<ModOptionsDefinition>
     ) {
       const { payload: options } = action;
       editRecipeOptionsDefinitions(state, options);
     },
-    editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
+    editRecipeMetadata(state, action: PayloadAction<ModMetadataFormState>) {
       const { payload: metadata } = action;
       editRecipeMetadata(state, metadata);
     },
@@ -558,7 +569,7 @@ export const editorSlice = createSlice({
     },
     updateRecipeMetadataForElements(
       state,
-      action: PayloadAction<RecipeMetadata>
+      action: PayloadAction<ModComponentBase["_recipe"]>
     ) {
       const metadata = action.payload;
       const recipeElements = state.elements.filter(
@@ -575,7 +586,7 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         elementId: UUID;
-        recipeMetadata: RecipeMetadata;
+        recipeMetadata: ModComponentBase["_recipe"];
         keepLocalCopy: boolean;
       }>
     ) {
@@ -587,7 +598,7 @@ export const editorSlice = createSlice({
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to add extension to blueprint, extension form state not found"
+          "Unable to add extension to mod, extension form state not found"
         );
       }
 
@@ -628,7 +639,7 @@ export const editorSlice = createSlice({
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to remove extension from blueprint, extension form state not found"
+          "Unable to remove extension from mod, extension form state not found"
         );
       }
 
@@ -694,8 +705,8 @@ export const editorSlice = createSlice({
       action: PayloadAction<{
         oldRecipeId: RegistryId;
         newRecipeId: RegistryId;
-        metadata: RecipeMetadataFormState;
-        options: OptionsDefinition;
+        metadata: ModMetadataFormState;
+        options: ModOptionsDefinition;
       }>
     ) {
       const { oldRecipeId, newRecipeId, metadata, options } = action.payload;
@@ -724,7 +735,7 @@ export const editorSlice = createSlice({
     addNode(
       state,
       action: PayloadAction<{
-        block: BlockConfig;
+        block: BrickConfig;
         pipelinePath: string;
         pipelineIndex: number;
       }>
@@ -806,6 +817,8 @@ export const editorSlice = createSlice({
           : pipeline[index + 1]; // Not last item, select next
       pipeline.splice(index, 1);
 
+      removeUnusedDependencies(element);
+
       syncElementNodeUIStates(state, element);
 
       elementUiState.activeNodeId =
@@ -823,7 +836,7 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
-    editRecipeOptionsValues(state, action: PayloadAction<UserOptions>) {
+    editRecipeOptionsValues(state, action: PayloadAction<OptionsArgs>) {
       const recipeId = state.activeRecipeId;
       if (recipeId == null) {
         return;
@@ -837,6 +850,56 @@ export const editorSlice = createSlice({
         element.optionsArgs = action.payload;
         state.dirty[element.uuid] = true;
       }
+    },
+    setExpandedFieldSections(
+      state,
+      { payload }: PayloadAction<{ id: string; isExpanded: boolean }>
+    ) {
+      const uiState = selectActiveNodeUIState({
+        editor: state,
+      });
+      if (uiState.expandedFieldSections === undefined) {
+        uiState.expandedFieldSections = {};
+      }
+
+      const { id, isExpanded } = payload;
+      uiState.expandedFieldSections[id] = isExpanded;
+    },
+    expandBrickPipelineNode(state, action: PayloadAction<UUID>) {
+      const nodeId = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      const nodeUIState = elementUIState.nodeUIStates[nodeId];
+      nodeUIState.collapsed = false;
+    },
+    toggleCollapseBrickPipelineNode(state, action: PayloadAction<UUID>) {
+      const nodeId = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElementId];
+      const nodeUIState = elementUIState.nodeUIStates[nodeId];
+      nodeUIState.collapsed = !nodeUIState.collapsed;
+    },
+    setDataSectionExpanded(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>
+    ) {
+      state.isDataPanelExpanded = payload.isExpanded;
+    },
+    setModListExpanded(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>
+    ) {
+      state.isModListExpanded = payload.isExpanded;
+    },
+    /**
+     * Mark that the variable popover is showing.
+     */
+    showVariablePopover(state) {
+      state.isVariablePopoverVisible = true;
+    },
+    /**
+     * Mark that the variable popover is not showing.
+     */
+    hideVariablePopover(state) {
+      state.isVariablePopoverVisible = false;
     },
   },
   extraReducers(builder) {
@@ -915,5 +978,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 1,
+  version: 2,
+  migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
+  blacklist: ["isVarPopoverVisible"],
 };

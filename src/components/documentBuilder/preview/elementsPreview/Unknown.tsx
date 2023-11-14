@@ -35,11 +35,13 @@ const Unknown: React.FunctionComponent<UnknownProps> = ({
   elementName,
   isHovered,
   isActive,
+  elementRef,
   ...restPreviewProps
 }) => (
   <div
     className={cx(documentTreeStyles.shiftRightWrapper, className)}
     {...restPreviewProps}
+    ref={elementRef}
   >
     <Component {...props} />
   </div>

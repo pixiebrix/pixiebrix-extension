@@ -15,4 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default () => {};
+export default jest.fn((...args) =>
+  console.error("reportError() was called", ...args)
+);

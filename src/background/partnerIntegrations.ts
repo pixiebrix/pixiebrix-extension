@@ -18,17 +18,21 @@
 import { locator as serviceLocator } from "@/background/locator";
 import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
-import { safeParseUrl } from "@/utils";
-import { type RegistryId } from "@/core";
-import { launchOAuth2Flow, setCachedAuthData } from "@/background/auth";
+import { type RegistryId } from "@/types/registryTypes";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
-import serviceRegistry from "@/services/registry";
-
-import {
-  CONTROL_ROOM_OAUTH_SERVICE_ID,
-  CONTROL_ROOM_SERVICE_ID,
-} from "@/services/constants";
+import serviceRegistry from "@/integrations/registry";
 import axios from "axios";
+import { getBaseURL } from "@/services/baseService";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
+import chromeP from "webext-polyfill-kinda";
+import { safeParseUrl } from "@/utils/urlUtils";
+import { setCachedAuthData } from "@/background/auth/authStorage";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import {
+  CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+  CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+} from "@/integrations/constants";
 
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
@@ -51,7 +55,10 @@ type PartnerPrincipal = {
 export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
   expectContext("background");
 
-  const partnerIds = [CONTROL_ROOM_OAUTH_SERVICE_ID, CONTROL_ROOM_SERVICE_ID];
+  const partnerIds = [
+    CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+    CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+  ];
 
   const auths = flatten(
     await Promise.all(
@@ -104,10 +111,10 @@ export async function launchAuthIntegration({
 
   // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_SERVICE_ID, they'll be the same
   // because it doesn't have any secrets.
-  const config = await serviceLocator.getLocalConfig(localAuths[0].id);
+  const config = await serviceLocator.findIntegrationConfig(localAuths[0].id);
   const data = await launchOAuth2Flow(service, config);
 
-  if (serviceId === CONTROL_ROOM_OAUTH_SERVICE_ID) {
+  if (serviceId === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     // Hard-coding headers for now. In the future, will want to add support for defining in the service definition.
 
     if (isEmpty(config.config.controlRoomUrl)) {
@@ -116,10 +123,40 @@ export async function launchAuthIntegration({
       throw new Error("controlRoomUrl is missing on configuration");
     }
 
+    // Make a single call to the PixieBrix server with the JWT in order verify the JWT is valid for the Control Room and
+    // to set up the ControlRoomPrincipal. If the token is rejected by the Control Room, the PixieBrix server will
+    // return a 401.
+    // Once the value is set on setPartnerAuth, a cascade of network requests will happen which causes a race condition
+    // in just-in-time user initialization.
+    const baseURL = await getBaseURL();
+    try {
+      await axios.get("/api/me/", {
+        baseURL,
+        headers: {
+          Authorization: `Bearer ${data.access_token as string}`,
+          "X-Control-Room": config.config.controlRoomUrl,
+        },
+      });
+    } catch (error) {
+      if (isAxiosError(error) && [401, 403].includes(error.response?.status)) {
+        // Clear the token to allow the user re-login with the SAML/SSO provider
+        // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
+        await chromeP.identity.clearAllCachedAuthTokens();
+
+        throw new Error(
+          `Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration.
+          Error: ${getErrorMessage(error)}`
+        );
+      }
+
+      throw error;
+    }
+
     console.info(
       "Setting partner auth for Control Room %s",
       config.config.controlRoomUrl
     );
+
     await setPartnerAuth({
       authId: config.id,
       token: data.access_token as string,
@@ -140,12 +177,17 @@ export async function launchAuthIntegration({
  * Refresh an Automation Anywhere JWT. NOOP if a JWT refresh token is not available.
  */
 export async function _refreshPartnerToken(): Promise<void> {
+  expectContext("background");
+
   const authData = await readPartnerAuthData();
+
   if (authData.authId && authData.refreshToken) {
     console.debug("Refreshing partner JWT");
 
-    const service = await serviceRegistry.lookup(CONTROL_ROOM_OAUTH_SERVICE_ID);
-    const config = await serviceLocator.getLocalConfig(authData.authId);
+    const service = await serviceRegistry.lookup(
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID
+    );
+    const config = await serviceLocator.findIntegrationConfig(authData.authId);
     const context = service.getOAuth2Context(config.config);
 
     if (isEmpty(config.config.controlRoomUrl)) {
@@ -180,6 +222,8 @@ export async function _refreshPartnerToken(): Promise<void> {
         "X-Control-Room": config.config.controlRoomUrl,
       },
     });
+
+    console.debug("Successfully refreshed partner token");
   }
 }
 
@@ -191,9 +235,17 @@ export async function safeTokenRefresh(): Promise<void> {
   }
 }
 
+const TEN_HOURS = 1000 * 60 * 60 * 10;
+
 /**
- * Refresh partner JWT every 10 minutes, if a refresh token is available.
+ * The Automation Anywhere JWT access token expires every 24 hours
+ * The refresh token expires every 30 days, with an inactivity expiry of 15 days
+ * Refresh the JWT every 10 hours to ensure the token is always valid
+ * NOTE: this assumes the background script is always running
+ * TODO: re-architect to refresh the token in @/background/refreshToken.ts
  */
 export function initPartnerTokenRefresh(): void {
-  setInterval(safeTokenRefresh, 1000 * 60 * 10);
+  setInterval(async () => {
+    await safeTokenRefresh();
+  }, TEN_HOURS);
 }

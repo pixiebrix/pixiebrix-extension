@@ -18,16 +18,16 @@
 import React from "react";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Card } from "react-bootstrap";
-import { inputProperties } from "@/helpers";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { joinName } from "@/utils";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { joinName } from "@/utils/formUtils";
+import { inputProperties } from "@/utils/schemaUtils";
 
 const FALLBACK_SCHEMA: Schema = {
   type: "object",

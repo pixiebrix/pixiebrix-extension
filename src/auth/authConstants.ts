@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { StorageItem } from "webext-storage";
 import { type AuthState } from "./authTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type AuthData } from "@/integrations/integrationTypes";
 
 export const anonAuth: AuthState = Object.freeze({
   userId: undefined,
@@ -30,4 +33,9 @@ export const anonAuth: AuthState = Object.freeze({
   organizations: [],
   groups: [],
   enforceUpdateMillis: null,
+});
+
+export type AuthStorage = Record<UUID, AuthData>;
+export const oauth2Storage = new StorageItem("OAUTH2", {
+  defaultValue: {} as AuthStorage,
 });

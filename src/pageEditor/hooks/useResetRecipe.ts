@@ -16,7 +16,7 @@
  */
 
 import { useCallback } from "react";
-import { type RegistryId } from "@/core";
+import { type RegistryId } from "@/types/registryTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,9 +32,9 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   return useCallback(
     async (recipeId: RegistryId) => {
       const confirmed = await showConfirmation({
-        title: "Reset Blueprint?",
+        title: "Reset Mod?",
         message:
-          "Unsaved changes to extensions within this blueprint, or to blueprint options and metadata, will be lost.",
+          "Unsaved changes to this mod, or to mod options and metadata, will be lost.",
         submitCaption: "Reset",
       });
       if (!confirmed) {

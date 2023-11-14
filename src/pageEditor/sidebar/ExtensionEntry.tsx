@@ -15,17 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IExtension, type UUID } from "@/core";
-import { type RecipeDefinition } from "@/types/definitions";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { isExtension } from "./common";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { isModComponentBase } from "./common";
 import DynamicEntry from "./DynamicEntry";
 import InstalledEntry from "./InstalledEntry";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type UUID } from "@/types/stringTypes";
 
 type ExtensionEntryProps = {
-  extension: IExtension | FormState;
-  recipes: RecipeDefinition[];
+  extension: ModComponentBase | ModComponentFormState;
+  recipes: ModDefinition[];
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];
   isNested?: boolean;
@@ -38,7 +39,7 @@ const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
   availableDynamicIds,
   isNested = false,
 }) =>
-  isExtension(extension) ? (
+  isModComponentBase(extension) ? (
     <InstalledEntry
       key={`installed-${extension.id}`}
       extension={extension}

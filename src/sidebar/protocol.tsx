@@ -18,12 +18,14 @@
 import reportError from "@/telemetry/reportError";
 import {
   type ActivatePanelOptions,
-  type FormEntry,
+  type ModActivationPanelEntry,
+  type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
-} from "@/sidebar/types";
-import { type FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { type UUID } from "@/core";
+} from "@/types/sidebarTypes";
+import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
+import { type UUID } from "@/types/stringTypes";
+import { sortBy } from "lodash";
 
 let lastMessageSeen = -1;
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
@@ -46,28 +48,84 @@ export type SidebarListener = {
    */
   onShowTemporaryPanel: (panel: TemporaryPanelEntry) => void;
   onHideTemporaryPanel: (panel: { nonce: UUID }) => void;
+  onShowActivateRecipe: (activateRecipeEntry: ModActivationPanelEntry) => void;
+  onHideActivateRecipe: () => void;
 };
+
+// Because protocol.tsx accepts webext-messenger messages before the React App and listener initializes, we have to
+// keep track messages sent in the interim. This buffer is flushed once the listener is initialized.
+const messageBuffer: Array<{
+  method: keyof SidebarListener;
+  sequence: number;
+  data: Parameters<SidebarListener[keyof SidebarListener]>[0];
+}> = [];
 
 const listeners: SidebarListener[] = [];
 
-export function addListener(fn: SidebarListener): void {
-  if (listeners.includes(fn)) {
+/**
+ * Add a listener.
+ *
+ * If this is only listener, any buffered messages from webext-messenger will be flushed to the listener. This is to
+ * account for races between webext-messenger and React App initialization.
+ *
+ * @param listener the listener to add
+ */
+export function addListener(listener: SidebarListener): void {
+  if (listeners.includes(listener)) {
     console.warn("Listener already registered for sidebar");
-  } else {
-    listeners.push(fn);
+    return;
+  }
+
+  listeners.push(listener);
+
+  if (listeners.length === 1) {
+    // First listener was added
+    flushMessageBuffer();
   }
 }
 
-export function removeListener(fn: SidebarListener): void {
-  listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
+export function removeListener(listener: SidebarListener): void {
+  listeners.splice(
+    0,
+    listeners.length,
+    ...listeners.filter((x) => x !== listener)
+  );
+}
+
+/**
+ * Flush the message buffer to the listener and clear the buffer.
+ */
+function flushMessageBuffer(): void {
+  if (listeners.length === 0) {
+    throw new Error("Expected one or more listeners");
+  }
+
+  // `sortBy` to handle case where messages were received out of order
+  const orderedMessageBuffer = sortBy(messageBuffer, "sequence");
+  messageBuffer.length = 0;
+
+  for (const { method, sequence, data } of orderedMessageBuffer) {
+    console.debug("flushMessageBuffer: %s", method, {
+      sequence,
+      data,
+    });
+
+    runListeners(method, sequence, data);
+  }
 }
 
 function runListeners<Method extends keyof SidebarListener>(
   method: Method,
   sequence: number,
-  data: Parameters<SidebarListener[Method]>[0],
+  data?: Parameters<SidebarListener[Method]>[0],
   { force = false }: { force?: boolean } = {}
 ): void {
+  // Buffer messages until the listener is initialized
+  if (listeners.length === 0) {
+    messageBuffer.push({ method, sequence, data });
+    return;
+  }
+
   if (sequence < lastMessageSeen && !force) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
@@ -78,7 +136,7 @@ function runListeners<Method extends keyof SidebarListener>(
     return;
   }
 
-  // Use Match.max to account for unordered messages with force
+  // Use Math.max to account for unordered messages with force
   lastMessageSeen = Math.max(sequence, lastMessageSeen);
 
   console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
@@ -122,7 +180,7 @@ export async function activatePanel(
   runListeners("onActivatePanel", sequence, options, { force: true });
 }
 
-export async function showForm(sequence: number, entry: FormEntry) {
+export async function showForm(sequence: number, entry: FormPanelEntry) {
   runListeners("onShowForm", sequence, entry);
 }
 
@@ -146,4 +204,15 @@ export async function updateTemporaryPanel(
 
 export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
   runListeners("onHideTemporaryPanel", sequence, { nonce });
+}
+
+export async function showActivateMods(
+  sequence: number,
+  entry: ModActivationPanelEntry
+): Promise<void> {
+  runListeners("onShowActivateRecipe", sequence, entry);
+}
+
+export async function hideActivateMods(sequence: number): Promise<void> {
+  runListeners("onHideActivateRecipe", sequence);
 }

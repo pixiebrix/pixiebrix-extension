@@ -26,7 +26,7 @@ import {
   NotAvailableIcon,
   UnsavedChangesIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { type UUID } from "@/core";
+import { type UUID } from "@/types/stringTypes";
 import {
   disableOverlay,
   enableOverlay,
@@ -34,9 +34,10 @@ import {
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveElement,
   selectActiveRecipeId,
@@ -49,7 +50,7 @@ import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 
 type DynamicEntryProps = {
-  extension: FormState;
+  extension: ModComponentFormState;
   isAvailable: boolean;
   isNested?: boolean;
 };
@@ -122,7 +123,7 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
       }
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={() => {
-        reportEvent("PageEditorOpen", {
+        reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
           extensionId: extension.uuid,
         });

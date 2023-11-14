@@ -15,19 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId, type UUID } from "@/core";
-import { type BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
+import { type UUID } from "@/types/stringTypes";
+import { type Kind, type RegistryId } from "@/types/registryTypes";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import {
-  type EditablePackage,
-  type Kind,
-  type RecipeDefinition,
-  type ServiceDefinition,
-  type UnsavedRecipeDefinition,
-} from "@/types/definitions";
-import { type AxiosRequestConfig } from "axios";
-import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
-import {
-  type CloudExtension,
+  type EditablePackageMetadata,
+  type StandaloneModDefinition,
   type Database,
   type Group,
   type MarketplaceListing,
@@ -39,85 +32,30 @@ import {
   type PackageUpsertResponse,
   type PackageVersion,
   type PendingInvitation,
-  type SanitizedAuth,
+  type RecipeResponse,
+  type RemoteIntegrationConfig,
   UserRole,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
-import { serializeError } from "serialize-error";
-import { type UnknownObject } from "@/types";
+import { type UnknownObject } from "@/types/objectTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-
-type QueryArgs = {
-  /**
-   * The relative PixieBrix URL. The client will apply the configured base service URL.
-   */
-  url: string;
-
-  /**
-   * The REST method
-   */
-  method: AxiosRequestConfig["method"];
-
-  /**
-   * The REST JSON data
-   */
-  data?: AxiosRequestConfig["data"];
-
-  /**
-   * True if a Token is required to make the request.
-   * @see isLinked
-   */
-  requireLinked?: boolean;
-
-  /**
-   * Optional additional metadata to pass through to the result.
-   */
-  meta?: unknown;
-};
-
-// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<QueryArgs> = async ({
-  url,
-  method,
-  data,
-  requireLinked = true,
-  meta,
-}) => {
-  try {
-    const client = await (requireLinked
-      ? getLinkedApiClient()
-      : getApiClient());
-    const result = await client({ url, method, data });
-
-    return { data: result.data, meta };
-  } catch (error) {
-    if (isAxiosError(error)) {
-      // Was running into issues with AxiosError generation in axios-mock-adapter where the prototype was AxiosError
-      // but the Error name was Error and there was no isAxiosError present after serializeError
-      // See line here: https://github.com/axios/axios/blob/v0.27.2/lib/core/AxiosError.js#L79
-      error.name = "AxiosError";
-      return {
-        // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level). `useToJSON: false` skips that.
-        error: serializeError(error, { useToJSON: false }),
-      };
-    }
-
-    return {
-      error: serializeError(error),
-    };
-  }
-};
+import { type IntegrationDefinition } from "@/integrations/integrationTypes";
+import {
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
+import baseQuery from "@/services/baseQuery";
 
 export const appApi = createApi({
   reducerPath: "appApi",
-  baseQuery: appBaseQuery,
+  baseQuery,
   tagTypes: [
     "Me",
     "Auth",
     "Databases",
-    "Services",
-    "ServiceAuths",
+    "Integrations",
+    "IntegrationAuths",
     "Organizations",
     "Groups",
     "MarketplaceListings",
@@ -128,6 +66,7 @@ export const appApi = createApi({
     "Package",
     "PackageVersion",
     "StarterBlueprints",
+    "ZapierKey",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -145,7 +84,7 @@ export const appApi = createApi({
     }),
     createDatabase: builder.mutation<
       Database,
-      { name: string; organizationId: string }
+      { name: string; organizationId?: string | undefined }
     >({
       query: ({ name, organizationId }) => ({
         url: organizationId
@@ -169,18 +108,22 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Databases"],
     }),
-    getServices: builder.query<ServiceDefinition[], void>({
+    getIntegrations: builder.query<IntegrationDefinition[], void>({
       query: () => ({
         url: "/api/services/",
         method: "get",
         // Returns public service definitions if not authenticated
         requireLinked: false,
       }),
-      providesTags: ["Services"],
+      providesTags: ["Integrations"],
     }),
-    getServiceAuths: builder.query<SanitizedAuth[], void>({
-      query: () => ({ url: "/api/services/shared/?meta=1", method: "get" }),
-      providesTags: ["ServiceAuths"],
+    getIntegrationAuths: builder.query<RemoteIntegrationConfig[], void>({
+      query: () => ({
+        url: "/api/services/shared/",
+        method: "get",
+        params: { meta: 1 },
+      }),
+      providesTags: ["IntegrationAuths"],
     }),
     getOrganizations: builder.query<Organization[], void>({
       query: () => ({ url: "/api/organizations/", method: "get" }),
@@ -203,7 +146,7 @@ export const appApi = createApi({
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
           role: (apiOrganization as any).members?.some(
-            (member: { role: number }) => member.role === UserRole.admin
+            (member: { role: UserRole }) => member.role === UserRole.admin
           )
             ? UserRole.admin
             : UserRole.restricted,
@@ -250,17 +193,29 @@ export const appApi = createApi({
       query: () => ({ url: "/api/marketplace/tags/", method: "get" }),
       providesTags: ["MarketplaceTags"],
     }),
-    // ToDo use this query in places where "/api/bricks/" is called
-    getEditablePackages: builder.query<EditablePackage[], void>({
+    getEditablePackages: builder.query<EditablePackageMetadata[], void>({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getCloudExtensions: builder.query<CloudExtension[], void>({
+    getAllCloudExtensions: builder.query<StandaloneModDefinition[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
     }),
+    getCloudExtension: builder.query<
+      StandaloneModDefinition,
+      { extensionId: UUID }
+    >({
+      query: ({ extensionId }) => ({
+        url: `/api/extensions/${extensionId}/`,
+        method: "get",
+      }),
+      providesTags: (result, error, { extensionId }) => [
+        { type: "CloudExtensions", extensionId },
+        "CloudExtensions",
+      ],
+    }),
     deleteCloudExtension: builder.mutation<
-      CloudExtension,
+      StandaloneModDefinition,
       { extensionId: UUID }
     >({
       query: ({ extensionId }) => ({
@@ -269,10 +224,36 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["CloudExtensions"],
     }),
+    getRecipe: builder.query<ModDefinition, { recipeId: RegistryId }>({
+      query: ({ recipeId }) => ({
+        url: `/api/recipes/${encodeURIComponent(recipeId)}/`,
+        method: "get",
+      }),
+      transformResponse(baseQueryReturnValue: RecipeResponse): ModDefinition {
+        // Pull out sharing and updated_at from response and merge into the base
+        // response to create a ModDefinition
+        const {
+          sharing,
+          updated_at,
+          config: unsavedRecipeDefinition,
+        } = baseQueryReturnValue;
+        return {
+          ...unsavedRecipeDefinition,
+          sharing,
+          updated_at,
+        };
+      },
+      // Reminder, RTK Query caching is per-endpoint, not across endpoints. So we want to list the tags here for which
+      // we want to watch for invalidation.
+      providesTags: (result, error, { recipeId }) => [
+        { type: "Package", id: recipeId },
+        "EditablePackages",
+      ],
+    }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
       {
-        recipe: UnsavedRecipeDefinition;
+        recipe: UnsavedModDefinition;
         organizations: UUID[];
         public: boolean;
         shareDependencies?: boolean;
@@ -282,7 +263,7 @@ export const appApi = createApi({
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
-          url: "api/bricks/",
+          url: "/api/bricks/",
           method: "post",
           data: {
             config: recipeConfig,
@@ -297,7 +278,7 @@ export const appApi = createApi({
     }),
     updateRecipe: builder.mutation<
       PackageUpsertResponse,
-      { packageId: UUID; recipe: UnsavedRecipeDefinition }
+      { packageId: UUID; recipe: UnsavedModDefinition }
     >({
       query({ packageId, recipe }) {
         const recipeConfig = dumpBrickYaml(recipe);
@@ -310,9 +291,9 @@ export const appApi = createApi({
             name: recipe.metadata.id,
             config: recipeConfig,
             kind: "recipe" as Kind,
-            public: Boolean((recipe as RecipeDefinition).sharing?.public),
+            public: Boolean((recipe as ModDefinition).sharing?.public),
             organizations:
-              (recipe as RecipeDefinition).sharing?.organizations ?? [],
+              (recipe as ModDefinition).sharing?.organizations ?? [],
           },
         };
       },
@@ -328,6 +309,10 @@ export const appApi = createApi({
     getInvitations: builder.query<PendingInvitation[], void>({
       query: () => ({ url: "/api/invitations/me/", method: "get" }),
       providesTags: ["Invitations"],
+    }),
+    getZapierKey: builder.query<{ api_key: string }, void>({
+      query: () => ({ url: "/api/webhooks/key/", method: "get" }),
+      providesTags: ["ZapierKey"],
     }),
     getPackage: builder.query<Package, { id: UUID }>({
       query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
@@ -392,7 +377,7 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
-    getStarterBlueprints: builder.query<RecipeDefinition[], void>({
+    getStarterBlueprints: builder.query<ModDefinition[], void>({
       query: () => ({
         url: "/api/onboarding/starter-blueprints/",
         method: "get",
@@ -420,15 +405,18 @@ export const {
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
   useAddDatabaseToGroupMutation,
-  useGetServicesQuery,
-  useGetServiceAuthsQuery,
+  useGetIntegrationsQuery,
+  useGetIntegrationAuthsQuery,
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
   useGetGroupsQuery,
-  useGetCloudExtensionsQuery,
+  useGetZapierKeyQuery,
+  useGetCloudExtensionQuery,
+  useGetAllCloudExtensionsQuery,
   useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
+  useGetRecipeQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
   useGetInvitationsQuery,

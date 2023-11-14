@@ -30,8 +30,8 @@ const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
       offlabel=" "
       style="align-self-center"
       checked={field.value ?? false}
-      onChange={(value) => {
-        helpers.setValue(value);
+      onChange={async (value) => {
+        await helpers.setValue(value);
       }}
     />
   );

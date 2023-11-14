@@ -17,9 +17,9 @@
 
 import { toggleQuickBar } from "@/contentScript/messenger/api";
 import { type Tab } from "@/mv3/api";
-import { type Target } from "@/types";
+import { type Target } from "@/types/messengerTypes";
 import { expectContext } from "@/utils/expectContext";
-import { isScriptableUrl } from "@/utils/permissions";
+import { isScriptableUrl } from "@/permissions/permissionsUtils";
 import { ensureContentScript } from "./contentScript";
 
 async function handleCommand(command: string, tab: Tab): Promise<void> {

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isOfficial } from "@/blocks/util";
-import { type RegistryId } from "@/core";
+import { isOfficial } from "@/bricks/util";
+import { type RegistryId } from "@/types/registryTypes";
 import React from "react";
 import { Badge } from "react-bootstrap";
 

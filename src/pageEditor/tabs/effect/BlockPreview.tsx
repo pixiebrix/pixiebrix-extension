@@ -16,9 +16,9 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import { type BlockConfig } from "@/blocks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { type AsyncState, useAsyncState } from "@/hooks/common";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
 import Loader from "@/components/Loader";
@@ -32,24 +32,22 @@ import {
 import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
-import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
-import {
-  type ApiVersion,
-  type BlockArgContext,
-  type IBlock,
-  type RegistryId,
-  type ServiceDependency,
-} from "@/core";
+import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
-import { type BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -61,14 +59,14 @@ const HACK_TRACE_OPTIONAL = new Set([
 
 function isTraceOptional(
   blockId: RegistryId,
-  { type }: { type: BlockType }
+  { type }: { type: BrickType }
 ): boolean {
   return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
 }
 
 type PreviewInfo = {
-  block: IBlock;
-  type: BlockType;
+  block: Brick;
+  type: BrickType;
   isPure: boolean;
   isRootAware: boolean;
   traceOptional: boolean;
@@ -138,7 +136,7 @@ const previewSlice = createSlice({
 });
 
 const BlockPreview: React.FunctionComponent<{
-  blockConfig: BlockConfig;
+  blockConfig: BrickConfig;
   extensionPoint: BaseExtensionPointState;
   traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
@@ -149,16 +147,19 @@ const BlockPreview: React.FunctionComponent<{
     outputKey: blockConfig.outputKey,
   });
 
+  const { values } = useFormikContext<ModComponentFormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
-  const [{ value: services }] = useField<ServiceDependency[]>("services");
+  const [{ value: services }] = useField<IntegrationDependency[]>(
+    "integrationDependencies"
+  );
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
-  // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
+  // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
 
   const debouncedRun = useDebouncedCallback(
-    async (blockConfig: BlockConfig, context: BlockArgContext) => {
+    async (blockConfig: BrickConfig, context: BrickArgsContext) => {
       dispatch(previewSlice.actions.startRun());
       const { outputKey } = blockConfig;
 
@@ -169,8 +170,12 @@ const BlockPreview: React.FunctionComponent<{
             ...removeEmptyValues(blockConfig),
             if: undefined,
           },
-          context: { ...context, ...(await makeServiceContext(services)) },
+          context: {
+            ...context,
+            ...(await makeServiceContextFromDependencies(services)),
+          },
           rootSelector: undefined,
+          blueprintId: values.recipe?.id,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {
@@ -187,7 +192,7 @@ const BlockPreview: React.FunctionComponent<{
 
   useEffect(() => {
     if ((context && blockInfo?.isPure) || blockInfo?.traceOptional) {
-      void debouncedRun(blockConfig, context as unknown as BlockArgContext);
+      void debouncedRun(blockConfig, context as unknown as BrickArgsContext);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
@@ -257,7 +262,7 @@ const BlockPreview: React.FunctionComponent<{
           size="sm"
           disabled={!traceRecord}
           onClick={() => {
-            void debouncedRun(blockConfig, context as BlockArgContext);
+            void debouncedRun(blockConfig, context as BrickArgsContext);
           }}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh Preview

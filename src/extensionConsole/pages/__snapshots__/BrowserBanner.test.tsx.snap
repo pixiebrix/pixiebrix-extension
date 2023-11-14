@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BrowserBanner renders warning for jest environment 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="root warning"
+    >
+      <div
+        class="mx-auto d-flex"
+      >
+        <div
+          class="flex-grow-1"
+        />
+        <div
+          class="align-self-center"
+        >
+          PixieBrix officially supports Google Chrome. Some functionality may not be available on your browser.
+          <button
+            class="info ml-3 btn btn-primary btn-sm"
+            type="button"
+          >
+            OK
+          </button>
+        </div>
+        <div
+          class="flex-grow-1"
+        />
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`BrowserBanner suppress with managed storage 1`] = `
+<DocumentFragment>
+  <div />
+</DocumentFragment>
+`;

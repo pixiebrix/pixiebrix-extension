@@ -24,27 +24,34 @@ const rootDir = path.resolve(__dirname, "../");
 
 module.exports = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
-  addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
-  core: {
-    builder: "webpack5",
+
+  addons: [
+    "storybook-addon-swc",
+    "@storybook/addon-links",
+    "@storybook/addon-essentials",
+  ],
+
+  framework: "@storybook/react-webpack5",
+
+  docs: {
+    autodocs: true,
   },
+
   features: {
     // Not currently compatible with Storyshots: https://github.com/storybookjs/storybook/issues/18994
     // Enable for Storybook since it has significant performance benefits
     storyStoreV7: process.env.NODE_ENV !== "test",
   },
+
   // https://storybook.js.org/docs/react/builders/webpack#extending-storybooks-webpack-config
   webpackFinal: async (config) => {
     const mergedConfig = mergeWithShared(config, {
+      // Auto-mocks. See documentation in ../src/__mocks__/readme.md
       resolve: {
-        // Mock any modules that appear in __mocks__
-        // e.g. src/__mocks__/webextension-polyfill.js
         // https://webpack.js.org/configuration/resolve/#resolvemodules
         modules: [path.resolve(rootDir, "src/__mocks__"), "node_modules"],
 
         alias: {
-          // Mock any LOCAL modules that appear in __mocks__
-          // e.g. src/__mocks__/@/telemetry/reportErrors.ts
           "@": [
             path.resolve(rootDir, "src/__mocks__/@"),
             path.resolve(rootDir, "src"),
@@ -88,13 +95,6 @@ module.exports = {
         }),
       ],
     });
-
-    mergedConfig.resolve.alias = {
-      // For some reason, during the merge this alias gets placed toward the bottom of the object keys
-      // so wasn't taking effect vs. the "@" alias
-      "@/services/apiClient": path.resolve(rootDir, "__mocks__/apiClient.mjs"),
-      ...mergedConfig.resolve.alias,
-    };
 
     // Storybook has a default rule that matches all static resources, so we need to block that
     // to avoid conflicts that appear at runtime.

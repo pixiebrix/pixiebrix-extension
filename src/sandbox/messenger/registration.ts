@@ -19,14 +19,14 @@
 
 import { addPostMessageListener } from "@/utils/postMessage";
 import {
-  applyJq,
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
+  runUserJs,
 } from "./executor";
 
 export default function registerMessenger(): void {
-  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
   addPostMessageListener("RENDER_NUNJUCKS", renderNunjucksTemplate);
   addPostMessageListener("RENDER_HANDLEBARS", renderHandlebarsTemplate);
-  addPostMessageListener("APPLY_JQ", applyJq);
+  addPostMessageListener("RUN_USER_JS", runUserJs);
+  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
 }

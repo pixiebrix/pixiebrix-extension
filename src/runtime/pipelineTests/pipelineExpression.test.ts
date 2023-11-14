@@ -15,34 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/blocks/registry";
+import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
-  identityBlock,
-  pipelineBlock,
+  identityBrick,
+  pipelineBrick,
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
 
-jest.mock("@/telemetry/logging", () => {
-  const actual = jest.requireActual("@/telemetry/logging");
-  return {
-    ...actual,
-    getLoggingConfig: jest.fn().mockResolvedValue({
-      logValues: true,
-    }),
-  };
-});
-
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([pipelineBlock, identityBlock]);
+  blockRegistry.register([pipelineBrick, identityBrick]);
 });
 
 describe("apiVersion: v3", () => {
   test("run block with pipeline arg", async () => {
     const pipeline = {
-      id: pipelineBlock.id,
+      id: pipelineBrick.id,
       config: {
         pipeline: {
           __type__: "pipeline",
@@ -60,7 +50,7 @@ describe("apiVersion: v3", () => {
 
   test("keep pipeline expression", async () => {
     const pipeline = {
-      id: identityBlock.id,
+      id: identityBrick.id,
       config: {
         data: {
           __type__: "pipeline",

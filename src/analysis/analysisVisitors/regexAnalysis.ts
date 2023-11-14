@@ -15,51 +15,64 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitor } from "./baseAnalysisVisitors";
-import { type BlockConfig, type BlockPosition } from "@/blocks/types";
-import { type VisitBlockExtra } from "@/blocks/PipelineVisitor";
+import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { validateRegistryId } from "@/types/helpers";
-import { isTemplateExpression } from "@/runtime/mapArgs";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { joinPathParts } from "@/utils";
-import { AnnotationType } from "@/types";
+import { AnnotationType } from "@/types/annotationTypes";
+import {
+  containsTemplateExpression,
+  isTemplateExpression,
+} from "@/utils/expressionUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
-function containsTemplateExpression(literalOrTemplate: string): boolean {
-  return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
+/**
+ * Returns the regex literal pattern, or null if the regex is a variable or template expression
+ * @param blockConfig
+ */
+export function extractRegexLiteral(blockConfig: BrickConfig): string | null {
+  const { regex: rawRegex = "" } = blockConfig.config;
+  if (typeof rawRegex === "string") {
+    return rawRegex;
+  }
+
+  if (
+    isTemplateExpression(rawRegex) &&
+    rawRegex.__type__ === "nunjucks" &&
+    !containsTemplateExpression(rawRegex.__value__)
+  ) {
+    return rawRegex.__value__;
+  }
+
+  // Skip variables and dynamic expressions
+  return null;
 }
 
-class RegexAnalysis extends AnalysisVisitor {
+class RegexAnalysis extends AnalysisVisitorABC {
   get id() {
     return "regex";
   }
 
-  override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+  override visitBrick(
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ) {
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
 
     if (blockConfig.id !== validateRegistryId("@pixiebrix/regex")) {
       return;
     }
 
-    const { regex: rawRegex = "" } = blockConfig.config;
-    let pattern: string;
-    if (typeof rawRegex === "string") {
-      pattern = rawRegex;
-    } else if (
-      isTemplateExpression(rawRegex) &&
-      rawRegex.__type__ === "nunjucks" &&
-      !containsTemplateExpression(rawRegex.__value__)
-    ) {
-      pattern = rawRegex.__value__;
-    } else {
+    let compileError;
+
+    const pattern = extractRegexLiteral(blockConfig);
+
+    if (!pattern) {
       // Skip variables and dynamic expressions
       return;
     }
-
-    let compileError;
 
     try {
       // eslint-disable-next-line no-new -- evaluating for type error
@@ -67,9 +80,6 @@ class RegexAnalysis extends AnalysisVisitor {
     } catch (error) {
       compileError = error;
     }
-
-    // Create new regex on each analysis call to avoid state issues with test
-    const namedCapturedGroupRegex = /\(\?<\S+>.*?\)/g;
 
     if (compileError) {
       this.annotations.push({
@@ -79,16 +89,6 @@ class RegexAnalysis extends AnalysisVisitor {
         message: getErrorMessage(compileError),
         analysisId: this.id,
         type: AnnotationType.Error,
-      });
-    } else if (!namedCapturedGroupRegex.test(pattern)) {
-      this.annotations.push({
-        position: {
-          path: joinPathParts(position.path, "config", "regex"),
-        },
-        message:
-          "Expected regular expression to contain at least one named capture group: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Groups_and_Backreferences",
-        analysisId: this.id,
-        type: AnnotationType.Warning,
       });
     }
   }

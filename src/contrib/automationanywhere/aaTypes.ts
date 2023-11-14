@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SanitizedServiceConfiguration } from "@/core";
-import { type UnknownObject } from "@/types";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 export type CommunityBotArgs = {
-  service: SanitizedServiceConfiguration;
+  service: SanitizedIntegrationConfig;
   fileId: string;
   deviceId: string;
   data: UnknownObject;
 };
 
 export type EnterpriseBotArgs = {
-  service: SanitizedServiceConfiguration;
+  service: SanitizedIntegrationConfig;
   fileId: string;
 
   /**

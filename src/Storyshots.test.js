@@ -26,4 +26,4 @@ jest.mock("react-dom", () => {
   };
 });
 
-initStoryshots({});
+initStoryshots();

@@ -16,64 +16,65 @@
  */
 
 import React from "react";
-import { menuItemFormStateFactory } from "@/testUtils/factories";
-import { type IService, type OutputKey } from "@/core";
-import { type FormState } from "@/pageEditor/extensionPoints/formStateTypes";
-import { render } from "@/options/testHelpers";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { CONTROL_ROOM_SERVICE_ID } from "@/services/constants";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
-import useDependency from "@/services/useDependency";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
-import { uuidv4 } from "@/types/helpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { type SanitizedConfig } from "@/integrations/integrationTypes";
+import { useAuthOptions } from "@/hooks/auth";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  integrationDependencyFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
-jest.mock("webext-detect-page", () => ({
-  isDevToolsPage: () => true,
-  isExtensionContext: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
 
-jest.mock("@/services/useDependency", () =>
-  jest.fn().mockReturnValue({
-    // Pass minimal arguments
-    config: undefined,
-    service: undefined,
-    hasPermissions: true,
-    requestPermissions: jest.fn(),
-  })
+const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
+  useSanitizedIntegrationConfigFormikAdapter
 );
+
 jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn().mockReturnValue([[], jest.fn()]),
+  useAuthOptions: jest.fn(),
 }));
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
 
 function makeBaseState() {
-  const baseFormState = menuItemFormStateFactory();
-  baseFormState.services = [
+  return menuItemFormStateFactory(
     {
-      id: CONTROL_ROOM_SERVICE_ID,
-      outputKey: "automationAnywhere" as OutputKey,
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+          outputKey: validateOutputKey("automationAnywhere"),
+        }),
+      ],
     },
-  ];
-  baseFormState.extension.blockPipeline = [
-    {
-      id: AUTOMATION_ANYWHERE_RUN_BOT_ID,
-      config: {
-        service: null,
-        fileId: null,
-        data: {},
+    [
+      {
+        id: AUTOMATION_ANYWHERE_RUN_BOT_ID,
+        config: {
+          service: null,
+          fileId: null,
+          data: {},
+        },
       },
-    },
-  ];
-  return baseFormState;
+    ]
+  );
 }
 
-function renderOptions(formState: FormState = makeBaseState()) {
+function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <BotOptions name="extension.blockPipeline.0" configKey="config" />
@@ -83,92 +84,93 @@ function renderOptions(formState: FormState = makeBaseState()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
+  jest.mocked(useAuthOptions).mockReturnValue(valueToAsyncState([]));
+});
+
+beforeEach(() => {
+  useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+    valueToAsyncState(null)
+  );
 });
 
 describe("BotOptions", () => {
   it("should require selected integration", async () => {
-    const result = renderOptions();
+    const { asFragment } = renderOptions();
 
-    expect(result.queryByText("Workspace")).toBeNull();
-    expect(result.container).toMatchSnapshot();
+    expect(screen.queryByText("Workspace")).not.toBeInTheDocument();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("should render default enterprise fields for private workspace", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl: "https://control.room.com",
-        },
-      },
-      service: {} as IService,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://control.room.com",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
-    expect(result.queryByText("Workspace")).not.toBeNull();
-    expect(result.queryByText("Bot")).not.toBeNull();
-    expect(result.queryByText("Run as Users")).toBeNull();
-    expect(result.queryByText("Device Pools")).toBeNull();
-    expect(result.queryByText("Await Result")).not.toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(screen.getByText("Workspace")).toBeInTheDocument();
+    expect(screen.getByText("Bot")).toBeInTheDocument();
+    expect(screen.queryByText("Run as Users")).not.toBeInTheDocument();
+    expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)")
+    ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
     // expect(result.container).toMatchSnapshot();
   });
 
   it("should render community fields", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl:
-            "https://community2.cloud-2.automationanywhere.digital",
-        },
-      },
-      service: {} as IService,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://community2.cloud-2.automationanywhere.digital",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
     // Community only supports private workspace, so we don't show the field
-    expect(result.queryByText("Workspace")).toBeNull();
-    expect(result.queryByText("Bot")).not.toBeNull();
-    expect(result.queryByText("Run as Users")).toBeNull();
-    expect(result.queryByText("Device Pools")).toBeNull();
-    expect(result.queryByText("Await Result")).toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(screen.queryByText("Workspace")).not.toBeInTheDocument();
+    expect(screen.getByText("Bot")).toBeInTheDocument();
+    expect(screen.queryByText("Run as Users")).not.toBeInTheDocument();
+    expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
+    expect(screen.queryByText("Await Result")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)")
+    ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
     // expect(result.container).toMatchSnapshot();
   });
 
   it("should render default enterprise fields for public workspace", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl: "https://control.room.com",
-        },
-      },
-      service: {} as IService,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://control.room.com",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.workspaceType = "public";
@@ -176,32 +178,31 @@ describe("BotOptions", () => {
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
-    expect(result.queryByText("Workspace")).not.toBeNull();
-    expect(result.queryByText("Bot")).not.toBeNull();
-    expect(result.queryByText("Attended")).not.toBeNull();
-    expect(result.queryByText("Run as Users")).not.toBeNull();
-    expect(result.queryByText("Device Pools")).not.toBeNull();
-    expect(result.queryByText("Await Result")).not.toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(screen.getByText("Workspace")).toBeInTheDocument();
+    expect(screen.getByText("Bot")).toBeInTheDocument();
+    expect(screen.getByText("Attended")).toBeInTheDocument();
+    expect(screen.getByText("Run as Users")).toBeInTheDocument();
+    expect(screen.getByText("Device Pools")).toBeInTheDocument();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)")
+    ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
     // expect(result.container).toMatchSnapshot();
   });
 
   it("should render attended enterprise fields for public workspace", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl: "https://control.room.com",
-        },
-      },
-      service: {} as IService,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://control.room.com",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.workspaceType = "public";
@@ -210,32 +211,31 @@ describe("BotOptions", () => {
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
-    expect(result.queryByText("Workspace")).not.toBeNull();
-    expect(result.queryByText("Bot")).not.toBeNull();
-    expect(result.queryByText("Attended")).not.toBeNull();
-    expect(result.queryByText("Run as Users")).toBeNull();
-    expect(result.queryByText("Device Pools")).toBeNull();
-    expect(result.queryByText("Await Result")).not.toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).toBeNull();
+    expect(screen.getByText("Workspace")).toBeInTheDocument();
+    expect(screen.getByText("Bot")).toBeInTheDocument();
+    expect(screen.getByText("Attended")).toBeInTheDocument();
+    expect(screen.queryByText("Run as Users")).not.toBeInTheDocument();
+    expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Result Timeout (Milliseconds)")
+    ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
     // expect(result.container).toMatchSnapshot();
   });
 
   it("should render result timeout", async () => {
-    (useDependency as jest.Mock).mockReturnValue({
+    const sanitizedConfig = sanitizedIntegrationConfigFactory({
       config: {
-        id: uuidv4(),
-        config: {
-          controlRoomUrl: "https://control.room.com",
-        },
-      },
-      service: {} as IService,
-      hasPermissions: true,
-      requestPermissions: jest.fn(),
+        controlRoomUrl: "https://control.room.com",
+      } as unknown as SanitizedConfig,
     });
+    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
+      valueToAsyncState(sanitizedConfig)
+    );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.awaitResult = true;
@@ -243,9 +243,11 @@ describe("BotOptions", () => {
       "@automationAnywhere"
     );
 
-    const result = renderOptions(base);
+    renderOptions(base);
 
-    expect(result.queryByText("Await Result")).not.toBeNull();
-    expect(result.queryByText("Result Timeout (Milliseconds)")).not.toBeNull();
+    expect(screen.getByText("Await Result")).toBeInTheDocument();
+    expect(
+      screen.getByText("Result Timeout (Milliseconds)")
+    ).toBeInTheDocument();
   });
 });

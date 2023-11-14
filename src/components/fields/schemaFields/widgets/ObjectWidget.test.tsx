@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions"] }] */
+
 import React from "react";
-import { type Schema } from "@/core";
-import { render, screen } from "@/pageEditor/testHelpers";
+import { type Schema } from "@/types/schemaTypes";
+import { render, screen, within } from "@/pageEditor/testHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import userEvent from "@testing-library/user-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { stringToExpression } from "@/pageEditor/extensionPoints/upgrade";
+import { stringToExpression } from "@/pageEditor/starterBricks/upgrade";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 
 const fieldName = "testField";
@@ -117,9 +119,7 @@ describe("ObjectWidget", () => {
     // Blur the value input to set the value
     await userEvent.click(nameInput);
 
-    const formState = await getFormState();
-
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: {
         myProp: stringToExpression("myValue", "nunjucks"),
       },
@@ -153,16 +153,16 @@ describe("ObjectWidget", () => {
 
     // Open the field type toggle
     await userEvent.click(
-      screen.getByTestId(`toggle-${fieldName}.myField`).querySelector("button")
+      within(screen.getByTestId(`toggle-${fieldName}.myField`)).getByRole(
+        "button"
+      )
     );
 
     // Select "Exclude"
     await userEvent.click(screen.getByText("Exclude"));
 
-    const formState = await getFormState();
-
     // Expect excluded property to be removed from the state
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: {
         foo: "bar",
       },
@@ -201,16 +201,14 @@ describe("ObjectWidget", () => {
 
     // Open the field type toggle
     await userEvent.click(
-      screen.getByTestId(`toggle-${fieldName}.bar`).querySelector("button")
+      within(screen.getByTestId(`toggle-${fieldName}.bar`)).getByRole("button")
     );
 
     // Select "Exclude"
     await userEvent.click(screen.getByText("Exclude"));
 
-    const formState = await getFormState();
-
     // Expect excluded property to be removed from the state
-    expect(formState).toStrictEqual({
+    expect(getFormState()).toStrictEqual({
       [fieldName]: {
         foo: "fooValue",
       },
@@ -233,7 +231,7 @@ describe("ObjectWidget", () => {
       },
       required: ["foo"],
     };
-    const { container } = render(
+    render(
       <ObjectWidget
         name={fieldName}
         schema={schema}
@@ -252,18 +250,18 @@ describe("ObjectWidget", () => {
     );
 
     // Find the field type toggles
-    const fooToggle = screen
-      .getByTestId(`toggle-${fieldName}.foo`)
-      .querySelector("button");
-    const barToggle = screen
-      .getByTestId(`toggle-${fieldName}.bar`)
-      .querySelector("button");
+    const fooToggle = within(
+      screen.getByTestId(`toggle-${fieldName}.foo`)
+    ).getByRole("button");
+    const barToggle = within(
+      screen.getByTestId(`toggle-${fieldName}.bar`)
+    ).getByRole("button");
 
     // Open foo's field type toggle
     await userEvent.click(fooToggle);
 
     // Expect not to find "Exclude" for a required field
-    await expectToggleOptions(container, ["string", "var"]);
+    await expectToggleOptions("toggle-testField.foo", ["string", "var"]);
 
     // Close foo's toggle
     await userEvent.click(fooToggle);
@@ -272,6 +270,10 @@ describe("ObjectWidget", () => {
     await userEvent.click(barToggle);
 
     // Expect to find the "Exclude" (omit) option
-    await expectToggleOptions(container, ["string", "var", "omit"]);
+    await expectToggleOptions("toggle-testField.bar", [
+      "string",
+      "var",
+      "omit",
+    ]);
   });
 });

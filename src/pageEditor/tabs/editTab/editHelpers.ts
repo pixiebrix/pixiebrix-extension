@@ -15,21 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock, type OutputKey, type SafeString } from "@/core";
-import { freshIdentifier } from "@/utils";
 import getType from "@/runtime/getType";
-import { type BlockType } from "@/runtime/runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import {
-  type BlockConfig,
-  type BlockPipeline,
-  type BlockPosition,
-} from "@/blocks/types";
+  type BrickConfig,
+  type BrickPipeline,
+  type BrickPosition,
+} from "@/bricks/types";
 import { type PipelineMap } from "@/pageEditor/uiState/uiStateTypes";
 import PipelineVisitor, {
   type VisitBlockExtra,
-} from "@/blocks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { freshIdentifier } from "@/utils/variableUtils";
 
-export function showOutputKey(blockType: BlockType): boolean {
+export function showOutputKey(blockType: BrickType): boolean {
   return blockType !== "effect" && blockType !== "renderer";
 }
 
@@ -39,7 +41,7 @@ export function showOutputKey(blockType: BlockType): boolean {
  * @param outputKeys existing outputKeys already being used
  */
 export async function generateFreshOutputKey(
-  block: IBlock,
+  block: Brick,
   outputKeys: OutputKey[]
 ): Promise<OutputKey | undefined> {
   const type = await getType(block);
@@ -76,9 +78,9 @@ class PipelineMapVisitor extends PipelineVisitor {
     return this.map;
   }
 
-  override visitBlock(
-    position: BlockPosition,
-    blockConfig: BlockConfig,
+  override visitBrick(
+    position: BrickPosition,
+    blockConfig: BrickConfig,
     extra: VisitBlockExtra
   ): void {
     this.pipelineMap[blockConfig.instanceId] = {
@@ -91,11 +93,11 @@ class PipelineMapVisitor extends PipelineVisitor {
       parentNodeId: extra.parentNodeId,
     };
 
-    super.visitBlock(position, blockConfig, extra);
+    super.visitBrick(position, blockConfig, extra);
   }
 }
 
-export function getPipelineMap(pipeline: BlockPipeline): PipelineMap {
+export function getPipelineMap(pipeline: BrickPipeline): PipelineMap {
   const visitor = new PipelineMapVisitor();
   visitor.visitRootPipeline(pipeline);
   return visitor.pipelineMap;

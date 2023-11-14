@@ -17,20 +17,25 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { Card } from "react-bootstrap";
-import FieldSection from "@/pageEditor/fields/FieldSection";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import { contextOptions } from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import { useField } from "formik";
+import { splitStartingEmoji } from "@/utils/stringUtils";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
-}> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
+}> = ({ isLocked = false }) => {
+  const [{ value: actionTitle }] = useField<string>("extension.title");
+  const emojiFirstCharacter =
+    splitStartingEmoji(actionTitle).startingEmoji !== undefined;
+
+  return (
+    <>
       <ConnectedFieldTemplate
         name="extension.title"
         label="Action Title"
@@ -68,50 +73,51 @@ const QuickBarConfiguration: React.FC<{
           </span>
         }
       />
-    </FieldSection>
+      <ConnectedCollapsibleFieldSection title="Advanced">
+        <ConnectedFieldTemplate
+          name="extension.icon"
+          as={IconWidget}
+          description="Icon to show in the menu"
+          {...makeLockableFieldProps(
+            "Icon",
+            emojiFirstCharacter,
+            "If the first character in the action title is an emoji we will use that in the place of an icon."
+          )}
+        />
+        <ConnectedFieldTemplate
+          name="extensionPoint.definition.targetMode"
+          as="select"
+          title="Target Mode"
+          blankValue="eventTarget"
+          description={
+            <p>
+              Use&nbsp;<code>eventTarget</code> to pass the focused element as
+              the action root. Use&nbsp;
+              <code>document</code> to pass the document as the action root.
+            </p>
+          }
+          {...makeLockableFieldProps("Target Mode", isLocked)}
+        >
+          <option value="eventTarget">eventTarget</option>
+          <option value="document">document</option>
+        </ConnectedFieldTemplate>
+        <UrlMatchPatternField
+          name="extensionPoint.definition.isAvailable.matchPatterns"
+          description={
+            <span>
+              URL match patterns give PixieBrix access to a page without you
+              first clicking the context menu. Including URLs here helps
+              PixieBrix run you action quicker, and accurately detect which page
+              element you clicked to invoke the context menu.
+            </span>
+          }
+          {...makeLockableFieldProps("Automatic Permissions", isLocked)}
+        />
+      </ConnectedCollapsibleFieldSection>
 
-    <FieldSection title="Advanced">
-      <ConnectedFieldTemplate
-        name="extension.icon"
-        label="Icon"
-        as={IconWidget}
-        description="Icon to show in the menu"
-      />
-
-      <ConnectedFieldTemplate
-        name="extensionPoint.definition.targetMode"
-        as="select"
-        title="Target Mode"
-        blankValue="eventTarget"
-        description={
-          <p>
-            Use&nbsp;<code>eventTarget</code> to pass the focused element as the
-            action root. Use&nbsp;
-            <code>document</code> to pass the document as the action root.
-          </p>
-        }
-        {...makeLockableFieldProps("Target Mode", isLocked)}
-      >
-        <option value="eventTarget">eventTarget</option>
-        <option value="document">document</option>
-      </ConnectedFieldTemplate>
-
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        description={
-          <span>
-            URL match patterns give PixieBrix access to a page without you first
-            clicking the context menu. Including URLs here helps PixieBrix run
-            you action quicker, and accurately detect which page element you
-            clicked to invoke the context menu.
-          </span>
-        }
-        {...makeLockableFieldProps("Automatic Permissions", isLocked)}
-      />
-    </FieldSection>
-
-    <ExtraPermissionsSection />
-  </Card>
-);
+      <ExtraPermissionsSection />
+    </>
+  );
+};
 
 export default QuickBarConfiguration;

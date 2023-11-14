@@ -33,6 +33,6 @@ describe("removeField", () => {
   test("try to remove field from non-object", () => {
     const foo = 42;
     removeField(foo, "bar");
-    expect(foo).toStrictEqual(42);
+    expect(foo).toBe(42);
   });
 });

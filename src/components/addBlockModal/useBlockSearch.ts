@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IBlock } from "@/core";
+import { type Brick } from "@/types/brickTypes";
 import { useMemo } from "react";
 import { isEmpty, sortBy } from "lodash";
 import Fuse from "fuse.js";
-import { isNullOrBlank } from "@/utils";
 import {
   type BlockOption,
   type BlockResult,
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { TAG_ALL } from "@/components/addBlockModal/addBlockModalConstants";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
-function makeBlockOption(block: IBlock): BlockOption {
+function makeBlockOption(block: Brick): BlockOption {
   return {
     value: block.id,
     label: block.name,
@@ -37,7 +37,7 @@ function makeBlockOption(block: IBlock): BlockOption {
 const EMPTY_BLOCK_RESULTS: BlockOption[] = [];
 
 function useBlockSearch(
-  blocks: IBlock[],
+  blocks: Brick[],
   taggedBrickIds: Record<string, Set<string>>,
   query: string,
   searchTag: string | null
@@ -50,7 +50,7 @@ function useBlockSearch(
       };
     }
 
-    function blockHasTag(block: IBlock): boolean {
+    function blockHasTag(block: Brick): boolean {
       if (searchTag == null || searchTag === TAG_ALL) {
         return true;
       }
@@ -68,6 +68,13 @@ function useBlockSearch(
     );
     const fuse = new Fuse<BlockOption>(blockOptions, {
       keys: ["label", "blockResult.description", "value"],
+      // Arbitrary threshold that seems strict enough to avoid search results that are unrelated to the query.
+      threshold: 0.2,
+      // If ignoreLocation is false (which it is, by default), Fuse will only consider the first threshold * distance
+      // number of characters while scoring (assuming location is 0).
+      // We want to match on any part of the string, so we set ignoreLocation to true.
+      // See https://fusejs.io/concepts/scoring-theory.html#scoring-theory for more information.
+      ignoreLocation: true,
     });
 
     return { blockOptions, fuse };

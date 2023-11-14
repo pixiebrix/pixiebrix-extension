@@ -17,22 +17,23 @@
 
 import { locator as serviceLocator } from "@/background/locator";
 import { type Runtime } from "webextension-polyfill";
-import { reportEvent } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
 import { initTelemetry } from "@/background/telemetry";
 import { getUID } from "@/background/messenger/api";
-import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
+import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
-import { AUTOMATION_ANYWHERE_SERVICE_ID } from "@/contrib/automationanywhere/contract";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import { Events } from "@/telemetry/events";
 
-const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
+import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
 
-// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
-const SERVICE_URL = process.env.SERVICE_URL;
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -54,8 +55,8 @@ export async function openInstallPage() {
       // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
       // invalid URL match pattern
       url: [
-        new URL("setup", SERVICE_URL).href,
-        `${new URL("start", SERVICE_URL).href}?*`,
+        new URL("setup", DEFAULT_SERVICE_URL).href,
+        `${new URL("start", DEFAULT_SERVICE_URL).href}?*`,
       ],
     }),
   ]);
@@ -84,13 +85,12 @@ export async function openInstallPage() {
         // Show the Extension Console /start page, where the user will be prompted to use OAuth2 to connect their
         // AARI account. Include the Control Room hostname in the URL so that the ControlRoomOAuthForm can pre-fill
         // the URL
-        const extensionStartUrl = new URL(
-          browser.runtime.getURL("options.html")
+        const extensionStartUrl = getExtensionConsoleUrl(
+          `start${appOnboardingTabUrl.search}`
         );
-        extensionStartUrl.hash = `/start${appOnboardingTabUrl.search}`;
 
         await browser.tabs.update(appOnboardingTab.id, {
-          url: extensionStartUrl.href,
+          url: extensionStartUrl,
           active: true,
         });
 
@@ -155,17 +155,17 @@ export async function requirePartnerAuth(): Promise<void> {
 
     if (userData.partner?.theme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
-        AUTOMATION_ANYWHERE_SERVICE_ID
+        CONTROL_ROOM_TOKEN_INTEGRATION_ID
       );
 
       if (!configs.some((x) => !x.proxy)) {
-        const extensionConsoleUrl = browser.runtime.getURL("options.html");
+        const extensionConsoleUrl = getExtensionConsoleUrl();
 
         // Replace the Admin Console tab, if available. The Admin Console tab will be available during openInstallPage
         const [adminConsoleTab] = await browser.tabs.query({
           // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
           // invalid URL match pattern
-          url: [new URL(SERVICE_URL).href],
+          url: [new URL(DEFAULT_SERVICE_URL).href],
         });
 
         if (adminConsoleTab) {
@@ -187,17 +187,30 @@ async function install({
 }: Runtime.OnInstalledDetailsType) {
   // https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
   // https://developer.chrome.com/docs/extensions/reference/runtime/#type-OnInstalledReason
-
   console.debug("onInstalled", { reason, previousVersion });
   const { version } = browser.runtime.getManifest();
 
   if (reason === "install") {
-    reportEvent("PixieBrixInstall", {
+    reportEvent(Events.PIXIEBRIX_INSTALL, {
       version,
     });
 
-    // XXX: under what conditions could onInstalled fire, but the extension is already linked?
+    // XXX: under what conditions could onInstalled fire, but the extension is already linked? Is this the case during
+    // development/loading an update of the extension from the file system?
     if (!(await isLinked())) {
+      // PERFORMANCE: readManagedStorageByKey waits up to 2 seconds for managed storage to be available. Shouldn't be
+      // notice-able for end-user relative to the extension download/install time
+      const { ssoUrl, partnerId, controlRoomUrl } = await readManagedStorage();
+      if (ssoUrl) {
+        // Don't launch the SSO page automatically. The SSO flow will be launched by deploymentUpdater.ts:updateDeployments
+        return;
+      }
+
+      if (partnerId === "automation-anywhere" && isEmpty(controlRoomUrl)) {
+        // Don't launch the install page automatically if only the partner id is specified
+        return;
+      }
+
       void openInstallPage();
     }
   } else if (reason === "update") {
@@ -205,11 +218,11 @@ async function install({
     void requirePartnerAuth();
 
     if (version === previousVersion) {
-      reportEvent("PixieBrixReload", {
+      reportEvent(Events.PIXIEBRIX_RELOAD, {
         version,
       });
     } else {
-      reportEvent("PixieBrixUpdate", {
+      reportEvent(Events.PIXIEBRIX_UPDATE, {
         version,
         previousVersion,
       });
@@ -250,10 +263,8 @@ function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
   browser.runtime.onInstalled.addListener(install);
   browser.runtime.onStartup.addListener(initTelemetry);
-  browser.storage.onChanged.addListener((changes) => {
-    if (DNT_STORAGE_KEY in changes) {
-      void setUninstallURL();
-    }
+  dntConfig.onChanged(() => {
+    void setUninstallURL();
   });
 
   void setUninstallURL();

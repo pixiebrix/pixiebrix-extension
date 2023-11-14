@@ -30,10 +30,13 @@ import UnsupportedWidget from "./UnsupportedWidget";
 import widgetsRegistry from "./widgetsRegistry";
 import WorkshopMessageWidget from "./WorkshopMessageWidget";
 import SelectorMatchWidget from "@/pageEditor/components/SelectorMatchWidget";
-import CssClassWidget from "./CssClassWidget";
+import CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 import DatabaseWidget from "./DatabaseWidget";
 import PasswordWidget from "./PasswordWidget";
 import IconWidget from "@/components/fields/IconWidget";
+import IntegrationDependencyWidget from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
+import SheetsFileWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
+import FixedInnerObjectWidget from "@/components/fields/schemaFields/widgets/FixedInnerObjectWidget";
 
 const defaultWidgets = {
   ArrayWidget,
@@ -41,6 +44,7 @@ const defaultWidgets = {
   IntegerWidget,
   NumberWidget,
   ObjectWidget,
+  FixedInnerObjectWidget,
   OmitFieldWidget,
   SchemaSelectWidget,
   TemplateToggleWidget,
@@ -54,6 +58,8 @@ const defaultWidgets = {
   DatabaseWidget,
   IconWidget,
   PasswordWidget,
+  ServiceWidget: IntegrationDependencyWidget,
+  SheetsFileWidget,
 } as const;
 
 function registerDefaultWidgets() {

@@ -25,7 +25,7 @@ import * as local from "@/background/messenger/external/_implementation";
 // eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
 import { liftExternalToContentScript } from "@/contentScript/externalProtocol";
 import { isChrome } from "webext-detect-page";
-import { type SerializableResponse } from "@/pageScript/messenger/pigeon";
+import { type SerializableResponse } from "@/types/messengerTypes";
 import { readPartnerAuthData } from "@/auth/token";
 
 const liftExternal = isChrome()
@@ -49,9 +49,10 @@ export const setExtensionAuth = liftExternal(
   local.setExtensionAuth
 );
 
-export const setActivatingBlueprint = liftExternal(
+export const setActivatingMods = liftExternal(
+  // Can't change SET_ACTIVATING_BLUEPRINT constant due to backward compatability.
   "SET_ACTIVATING_BLUEPRINT",
-  local.setActivatingBlueprint
+  local.setActivatingMods
 );
 
 export const openMarketplace = liftExternal(
@@ -61,15 +62,20 @@ export const openMarketplace = liftExternal(
 
 export const openActivateBlueprint = liftExternal(
   "OPEN_ACTIVATE_BLUEPRINT",
-  local.openActivateBlueprint
+  local.openActivateModPage
 );
 
 export const openExtensionOptions = liftExternal(
   "OPEN_OPTIONS",
-  local.openExtensionOptions
+  local.openExtensionConsole
 );
 
 export const getPartnerToken = liftExternal(
   "GET_PARTNER_TOKEN",
   readPartnerAuthData
+);
+
+export const installStarterBlueprints = liftExternal(
+  "INSTALL_STARTER_BLUEPRINTS",
+  local.activateStarterMods
 );

@@ -22,6 +22,9 @@ import "@/extensionContext";
 
 import React from "react";
 import { render } from "react-dom";
-import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
+import EphemeralForm from "@/bricks/transformers/ephemeralForm/EphemeralForm";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
+
+void initRuntimeLogging();
 
 render(<EphemeralForm />, document.querySelector("#container"));

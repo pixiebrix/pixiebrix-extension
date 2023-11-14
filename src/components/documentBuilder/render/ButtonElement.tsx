@@ -16,9 +16,9 @@
  */
 
 import React, { useContext, useState } from "react";
-import { type BlockPipeline } from "@/blocks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import AsyncButton, { type AsyncButtonProps } from "@/components/AsyncButton";
-import { runEffectPipeline } from "@/contentScript/messenger/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { type Except } from "type-fest";
@@ -26,17 +26,26 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { getTopLevelFrame } from "webext-messenger";
 import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
-import { SubmitPanelAction } from "@/blocks/errors";
+import { SubmitPanelAction } from "@/bricks/errors";
+import cx from "classnames";
+import { boolean } from "@/utils/typeUtils";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
-  onClick: BlockPipeline;
+  onClick: BrickPipeline;
   elementName: string;
   tracePath: DynamicPath;
+  /**
+   * True to expand the button to the full width of the container.
+   */
+  fullWidth?: boolean;
 };
 
 const ButtonElement: React.FC<ButtonElementProps> = ({
   onClick,
   tracePath,
+  disabled: rawDisabled,
+  fullWidth = false,
+  className,
   ...restProps
 }) => {
   const {
@@ -44,6 +53,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     meta,
     options: { ctxt, logger },
   } = useContext(DocumentContext);
+
   const [counter, setCounter] = useState(0);
 
   if (!meta.extensionId) {
@@ -58,7 +68,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     const topLevelFrame = await getTopLevelFrame();
 
     try {
-      await runEffectPipeline(topLevelFrame, {
+      await runHeadlessPipeline(topLevelFrame, {
         nonce: uuidv4(),
         context: ctxt,
         pipeline: onClick,
@@ -87,7 +97,16 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     }
   };
 
-  return <AsyncButton onClick={handler} {...restProps} />;
+  return (
+    <AsyncButton
+      onClick={handler}
+      disabled={boolean(rawDisabled)}
+      // `btn-block` is the classname in Bootstrap 4
+      // Discussion: https://stackoverflow.com/questions/23183343/bootstrap-btn-block-not-working
+      className={cx(className, { "btn-block": fullWidth })}
+      {...restProps}
+    />
+  );
 };
 
 export default ButtonElement;

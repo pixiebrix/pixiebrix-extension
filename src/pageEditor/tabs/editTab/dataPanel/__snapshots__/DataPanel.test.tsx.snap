@@ -31,6 +31,19 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
           <a
             aria-selected="false"
             class="nav-link"
+            data-rb-event-key="pageState"
+            href="#"
+            role="tab"
+          >
+            Page State
+          </a>
+        </div>
+        <div
+          class="tabNav nav-item"
+        >
+          <a
+            aria-selected="false"
+            class="nav-link"
             data-rb-event-key="rendered"
             href="#"
             role="tab"
@@ -79,6 +92,13 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
             <div
               class="formGroup form-group row"
             >
+              <div
+                class="mb-2 collapse col-12"
+              >
+                <div
+                  class="annotationPlaceholder"
+                />
+              </div>
               <label
                 class="label form-label col-form-label col-lg-auto"
                 for="traceSearch"
@@ -123,7 +143,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
               </a>
             </span>
             <ul
-              style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(253, 255, 255);"
+              style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
             >
               <li
                 style="padding: 0px; margin: 0px;"
@@ -135,7 +155,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                     style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                   >
                     <label
-                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                      style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                     >
                       <div>
                         <span>
@@ -167,7 +187,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                       </div>
                     </label>
                     <span
-                      style="color: rgb(64, 175, 108);"
+                      style="color: rgb(0, 113, 36);"
                     >
                       "bar number 0"
                     </span>
@@ -176,7 +196,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                     style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.875em; word-wrap: break-word; padding-left: 1.25em; text-indent: -0.5em; word-break: break-all; white-space: pre-wrap;"
                   >
                     <label
-                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px 0.5em 0px 0px;"
+                      style="display: inline-block; color: rgb(57, 113, 237); margin: 0px 0.5em 0px 0px;"
                     >
                       <div>
                         <span>
@@ -208,7 +228,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                       </div>
                     </label>
                     <span
-                      style="color: rgb(243, 100, 51);"
+                      style="color: rgb(249, 106, 56);"
                     >
                       0
                     </span>
@@ -220,13 +240,13 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                       style="display: inline-block; padding-right: 0.5em; padding-left: 0px; cursor: pointer;"
                     >
                       <div
-                        style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(66, 122, 245);"
+                        style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; color: rgb(57, 113, 237);"
                       >
                         ▶
                       </div>
                     </div>
                     <label
-                      style="display: inline-block; color: rgb(66, 122, 245); margin: 0px; padding: 0px; cursor: pointer;"
+                      style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: pointer;"
                     >
                       <div>
                         <span>
@@ -258,7 +278,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                       </div>
                     </label>
                     <span
-                      style="padding-left: 0.5em; cursor: default; color: rgb(64, 175, 108);"
+                      style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
                     >
                       <span>
                         <span
@@ -267,6 +287,57 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                           {}
                         </span>
                          2 keys
+                      </span>
+                    </span>
+                    <ul
+                      style="padding: 0px; margin: 0px; list-style: none; display: block;"
+                    />
+                  </li>
+                  <li
+                    style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 1.125em;"
+                  >
+                    <label
+                      style="display: inline-block; color: rgb(57, 113, 237); margin: 0px; padding: 0px; cursor: default;"
+                    >
+                      <div>
+                        <span>
+                          @mod
+                        </span>
+                        : 
+                        <a
+                          aria-label="Copy path"
+                          class="copyPath p-0 btn btn-text"
+                          href="#"
+                          role="button"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="svg-inline--fa fa-copy fa-w-14 "
+                            data-icon="copy"
+                            data-prefix="fas"
+                            focusable="false"
+                            role="img"
+                            viewBox="0 0 448 512"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                        </a>
+                      </div>
+                    </label>
+                    <span
+                      style="padding-left: 0.5em; cursor: default; color: rgb(0, 113, 36);"
+                    >
+                      <span>
+                        <span
+                          style="margin-left: 0.3em; margin-right: 0.3em;"
+                        >
+                          {}
+                        </span>
+                         0 keys
                       </span>
                     </span>
                     <ul

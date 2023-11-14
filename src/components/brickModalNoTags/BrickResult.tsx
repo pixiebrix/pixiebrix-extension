@@ -16,22 +16,30 @@
  */
 
 import React from "react";
-import { type IBrick } from "@/core";
 import { Button, ListGroup } from "react-bootstrap";
 import cx from "classnames";
 // TODO: Refactor to properly share styles across components (e.g. full component inheritance);
 //   the "brickEditor/referenceTab/BlockResult" component probably doesn't expect to also affect a global component
-import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
+import styles from "@/extensionConsole/pages/brickEditor/referenceTab/BlockResult.module.scss";
 import BrickIcon from "@/components/BrickIcon";
 import { OfficialBadge } from "@/components/OfficialBadge";
+import { type Metadata } from "@/types/registryTypes";
 
-const BrickResult: React.FunctionComponent<{
-  brick: IBrick;
+type BrickResultProps<T extends Metadata> = {
+  brick: T;
   onSelect: () => void;
   onShowDetail: () => void;
   active?: boolean;
   selectCaption: React.ReactNode;
-}> = ({ brick, onSelect, onShowDetail, selectCaption, active }) => (
+};
+
+const BrickResult = <T extends Metadata>({
+  brick,
+  onSelect,
+  onShowDetail,
+  selectCaption,
+  active,
+}: BrickResultProps<T>) => (
   <ListGroup.Item
     onClick={onShowDetail}
     className={cx(styles.root, { [styles.active]: active, active })}

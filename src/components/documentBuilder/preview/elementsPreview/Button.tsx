@@ -25,7 +25,8 @@ import cx from "classnames";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
 import { Button as BsButton } from "react-bootstrap";
-import { isExpression } from "@/runtime/mapArgs";
+
+import { isExpression } from "@/utils/expressionUtils";
 
 type ButtonProps = PreviewComponentProps & {
   element: ButtonDocumentElement;
@@ -41,14 +42,25 @@ const Button: React.FunctionComponent<ButtonProps> = ({
   isHovered,
   isActive,
   buttonProps,
+  elementRef,
   ...restPreviewProps
 }) => {
-  const { title, variant, size, className: buttonClassName } = buttonProps;
+  // NOTE: not passing through "disabled" prop because that prevents the user from clicking the button in the preview
+  // to select the element in the Document Builder.
+  const {
+    title,
+    variant,
+    size,
+    fullWidth,
+    className: buttonClassName,
+  } = buttonProps;
+
   return (
     <div>
       <div
         className={cx(className, documentTreeStyles.inlineWrapper)}
         {...restPreviewProps}
+        ref={elementRef}
       >
         <Flaps
           className={documentTreeStyles.flapShiftRight}
@@ -61,9 +73,10 @@ const Button: React.FunctionComponent<ButtonProps> = ({
         <BsButton
           onClick={() => {}}
           // Not resolving expressions in Preview
-          className={
-            isExpression(buttonClassName) ? undefined : buttonClassName
-          }
+          className={cx(
+            isExpression(buttonClassName) ? undefined : buttonClassName,
+            { "btn-block": fullWidth }
+          )}
           variant={isExpression(variant) ? undefined : variant}
           size={isExpression(size) ? undefined : size}
         >

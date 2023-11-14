@@ -17,7 +17,7 @@
 
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import React from "react";
-import { type Schema } from "@/core";
+import { type Schema } from "@/types/schemaTypes";
 import FormBuilder from "./FormBuilder";
 import { action } from "@storybook/addon-actions";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time

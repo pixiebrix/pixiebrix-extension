@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import MockAdapter from "axios-mock-adapter";
-import axios, { type AxiosError } from "axios";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { type AxiosError } from "axios";
 import { configureStore } from "@reduxjs/toolkit";
 import {
   appApi,
-  useUpdatePackageMutation,
+  useGetMarketplaceListingsQuery,
   useGetPackageQuery,
+  useUpdatePackageMutation,
 } from "@/services/api";
 import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
@@ -32,16 +31,8 @@ import { uuidv4 } from "@/types/helpers";
 import { act } from "react-dom/test-utils";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { isPlainObject } from "lodash";
-
-const axiosMock = new MockAdapter(axios);
-
-jest.mock("@/services/apiClient", () => ({
-  getLinkedApiClient: jest.fn(),
-}));
-
-const getLinkedApiClientMock = getLinkedApiClient as jest.Mock;
-
-getLinkedApiClientMock.mockResolvedValue(axios.create());
+import { appApiMock } from "@/testUtils/appApiMock";
+import { type RegistryId } from "@/types/registryTypes";
 
 function testStore() {
   return configureStore({
@@ -49,16 +40,19 @@ function testStore() {
       [appApi.reducerPath]: appApi.reducer,
     },
     middleware(getDefaultMiddleware) {
-      // eslint-disable-next-line unicorn/prefer-spread -- use concat for proper type inference
       return getDefaultMiddleware().concat(appApi.middleware);
     },
     preloadedState: {},
   });
 }
 
-describe("appBaseQuery", () => {
+describe("baseQuery", () => {
+  beforeEach(() => {
+    appApiMock.reset();
+  });
+
   test("RTK preserves AxiosError information", async () => {
-    axiosMock.onPut().reply(400, { config: ["Field error."] });
+    appApiMock.onPut().reply(400, { config: ["Field error."] });
 
     const store = testStore();
 
@@ -70,7 +64,7 @@ describe("appBaseQuery", () => {
 
     try {
       await act(async () => {
-        await update({ id: uuidv4() } as any).unwrap();
+        await update({ id: uuidv4() }).unwrap();
       });
 
       expect.fail("Expected error");
@@ -82,7 +76,7 @@ describe("appBaseQuery", () => {
   });
 
   test("RTK preserves response on 404", async () => {
-    axiosMock.onGet().reply(404);
+    appApiMock.onGet().reply(404);
 
     const store = testStore();
 
@@ -108,5 +102,27 @@ describe("appBaseQuery", () => {
     expect(axiosError.response.status).toBe(404);
     // The type definition is incorrect: https://github.com/axios/axios/pull/5331
     expect(axiosError.status).toBeUndefined();
+  });
+
+  test("RTK forwards params to axios", async () => {
+    appApiMock.onGet("/test", { params: { package__name: "bar" } }).reply(200);
+
+    const store = testStore();
+
+    renderHook(
+      () =>
+        useGetMarketplaceListingsQuery({ package__name: "bar" as RegistryId }),
+      {
+        wrapper: ({ children }) => (
+          <Provider store={store}>{children}</Provider>
+        ),
+      }
+    );
+
+    await waitForEffect();
+
+    expect(appApiMock.history.get[0].params).toStrictEqual({
+      package__name: "bar",
+    });
   });
 });

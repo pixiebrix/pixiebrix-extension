@@ -20,7 +20,6 @@ import {
   render,
   type RenderOptions,
   type RenderResult,
-  screen,
 } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
@@ -35,16 +34,33 @@ import {
   type ReducersMapObject,
   type ThunkDispatch,
 } from "@reduxjs/toolkit";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Form, Formik, type FormikValues } from "formik";
+
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Form,
+  // eslint-disable-next-line no-restricted-imports
+  Formik,
+  type FormikHelpers,
+  type FormikErrors,
+  type FormikValues,
+} from "formik";
 import { type Middleware } from "redux";
-import userEvent from "@testing-library/user-event";
-import { type Expression, type ExpressionType } from "@/core";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
-import { type UnknownObject } from "@/types";
-import { type PipelineExpression } from "@/runtime/mapArgs";
-import { type BlockPipeline } from "@/blocks/types";
+import { type UnknownObject } from "@/types/objectTypes";
+import {
+  type Expression,
+  type ExpressionType,
+  type PipelineExpression,
+} from "@/types/runtimeTypes";
+import { type BrickPipeline } from "@/bricks/types";
+import {
+  act as actHook,
+  renderHook,
+  type RenderHookOptions,
+  type RenderHookResult,
+  type WrapperComponent,
+} from "@testing-library/react-hooks";
 
 export const neverPromise = async (...args: unknown[]): Promise<never> => {
   console.error("This method should not have been called", { args });
@@ -62,7 +78,14 @@ export const getChromeEventMocks = () => ({
   hasListeners: jest.fn(),
 });
 
+/**
+ * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
+ *
+ * NOTE: this assumes you're using "react-dom/test-utils". For hooks you have to use act from
+ * "@testing-library/react-hooks"
+ */
 export const waitForEffect = async () =>
+  // eslint-disable-next-line testing-library/no-unnecessary-act
   act(async () => {
     // Awaiting the async state update
   });
@@ -76,7 +99,6 @@ export const runPendingTimers = async () =>
   });
 
 // NoInfer is internal type of @reduxjs/toolkit tsHelpers
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from @reduxjs/toolkit typings
 declare type NoInfer<T> = [T][T extends any ? 0 : never];
 type CreateRenderFunctionOptions<TState, TAction extends Action, TProps> = {
   reducer: Reducer<TState, TAction> | ReducersMapObject<TState, TAction>;
@@ -87,7 +109,6 @@ type CreateRenderFunctionOptions<TState, TAction extends Action, TProps> = {
 };
 
 export type RenderFunctionWithRedux<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
   P = {}
@@ -100,7 +121,6 @@ export type RenderFunctionWithRedux<
  * @deprecated Prefer using `createRenderWithWrappers` instead
  */
 export function createRenderFunctionWithRedux<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   A extends Action = AnyAction,
   // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
@@ -137,12 +157,20 @@ export function createRenderFunctionWithRedux<
 }
 
 type SetupRedux = (
-  dispatch: ThunkDispatch<unknown, unknown, AnyAction>
+  dispatch: ThunkDispatch<unknown, unknown, AnyAction>,
+  extra: {
+    store: EnhancedStore;
+  }
 ) => void;
 
-type WrapperOptions = Omit<RenderOptions, "wrapper"> & {
+type WrapperOptions = RenderOptions & {
   initialValues?: FormikValues;
+  initialErrors?: FormikErrors<FormikValues>;
   setupRedux?: SetupRedux;
+  onSubmit?: (
+    values: FormikValues,
+    formikHelpers: FormikHelpers<FormikValues>
+  ) => void | Promise<unknown>;
 };
 
 type WrapperResult<
@@ -152,8 +180,22 @@ type WrapperResult<
     ThunkMiddlewareFor<S>
   ]
 > = RenderResult & {
-  getReduxStore: () => EnhancedStore<S, A, M>;
-  getFormState: () => Promise<FormikValues>;
+  getReduxStore(): EnhancedStore<S, A, M>;
+
+  /**
+   * Get the current form values
+   */
+  getFormState(): FormikValues;
+
+  /**
+   * Update the formik state without interacting with the UI
+   * @param newValues the new FormikValues to override the current form state
+   * @param shouldValidate whether or not to run validation on the new values
+   */
+  updateFormState(
+    newValues: React.SetStateAction<FormikValues>,
+    shouldValidate?: boolean
+  ): void;
 };
 
 type ConfigureStore<
@@ -164,52 +206,163 @@ type ConfigureStore<
 export function createRenderWithWrappers(configureStore: ConfigureStore) {
   return (
     ui: React.ReactElement,
-    { initialValues, setupRedux = noop, ...renderOptions }: WrapperOptions = {}
+    {
+      initialValues,
+      initialErrors,
+      setupRedux = noop,
+      onSubmit = jest.fn(),
+      wrapper,
+      ...renderOptions
+    }: WrapperOptions = {}
   ): WrapperResult => {
-    let submitHandler: (values: FormikValues) => void = jest.fn();
-
     const store = configureStore();
 
-    setupRedux(store.dispatch);
+    setupRedux(store.dispatch, { store });
 
-    const Wrapper: React.FC = initialValues
+    let formValues: FormikValues = null;
+
+    let updateFormState: (
+      newValues: React.SetStateAction<FormikValues>,
+      shouldValidate?: boolean
+    ) => void = noop;
+
+    const ExtraWrapper = wrapper ?? (({ children }) => <>{children}</>);
+
+    const Wrapper: React.FC<{ children: React.ReactElement }> = initialValues
       ? ({ children }) => (
           <Provider store={store}>
             <Formik
               initialValues={initialValues}
-              onSubmit={(values) => {
-                submitHandler?.(values);
-              }}
+              initialErrors={initialErrors}
+              onSubmit={onSubmit}
             >
-              {({ handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
-                  {children}
-                  <button type="submit">Submit</button>
-                </Form>
-              )}
+              {({ handleSubmit, values, setValues }) => {
+                formValues = values;
+                updateFormState = setValues;
+                return (
+                  <Form onSubmit={handleSubmit}>
+                    <ExtraWrapper>{children}</ExtraWrapper>
+                    <button type="submit">Submit</button>
+                  </Form>
+                );
+              }}
             </Formik>
           </Provider>
         )
       : ({ children }) => <Provider store={store}>{children}</Provider>;
 
-    const renderResult = render(ui, { wrapper: Wrapper, ...renderOptions });
+    const utils = render(ui, { wrapper: Wrapper, ...renderOptions });
 
     return {
-      ...renderResult,
+      ...utils,
       getReduxStore() {
         return store;
       },
-      async getFormState() {
-        // Wire-up a handler to grab the form state
-        let formState: FormikValues = null;
-        submitHandler = (values) => {
-          formState = values;
-        };
+      getFormState() {
+        return formValues;
+      },
+      updateFormState,
+    };
+  };
+}
 
-        // Submit the form
-        await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+type HookWrapperOptions<TProps> = RenderHookOptions<TProps> & {
+  /**
+   * Initial Formik values.
+   */
+  initialValues?: FormikValues;
+  /**
+   * Callback to setup Redux state by dispatching actions.
+   */
+  setupRedux?: SetupRedux;
+};
 
-        return formState;
+type HookWrapperResult<
+  TProps,
+  TResult,
+  S = UnknownObject,
+  A extends Action = AnyAction,
+  M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
+    ThunkMiddlewareFor<S>
+  ]
+> = RenderHookResult<TProps, TResult> & {
+  getReduxStore(): EnhancedStore<S, A, M>;
+
+  /**
+   * The act function which should be used with the renderHook
+   */
+  act(callback: () => Promise<void>): Promise<undefined>;
+
+  /**
+   * Await all async side effects
+   */
+  waitForEffect(): Promise<void>;
+
+  /**
+   * Get the current form values
+   */
+  getFormState(): FormikValues;
+};
+
+export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
+  return <TProps, TResult>(
+    hook: (props: TProps) => TResult,
+    {
+      initialValues,
+      setupRedux = noop,
+      wrapper,
+      ...renderOptions
+    }: HookWrapperOptions<TProps> = {}
+  ): HookWrapperResult<TProps, TResult> => {
+    const store = configureStore();
+
+    setupRedux(store.dispatch, { store });
+
+    let formValues: FormikValues = null;
+
+    const ExtraWrapper: WrapperComponent<TProps> =
+      wrapper ?? (({ children }) => <>{children}</>);
+
+    const Wrapper: WrapperComponent<TProps> = initialValues
+      ? (props) => (
+          <Provider store={store}>
+            <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+              {({ handleSubmit, values }) => {
+                formValues = values;
+                return (
+                  <Form onSubmit={handleSubmit}>
+                    <ExtraWrapper {...props} />
+                    <button type="submit">Submit</button>
+                  </Form>
+                );
+              }}
+            </Formik>
+          </Provider>
+        )
+      : (props) => (
+          <Provider store={store}>
+            <ExtraWrapper {...props} />
+          </Provider>
+        );
+
+    const utils = renderHook(hook, {
+      wrapper: Wrapper,
+      ...renderOptions,
+    });
+
+    return {
+      ...utils,
+      getReduxStore() {
+        return store;
+      },
+      act: actHook,
+      async waitForEffect() {
+        await actHook(async () => {
+          // Awaiting the async state update
+        });
+      },
+      getFormState() {
+        return formValues;
       },
     };
   };
@@ -229,5 +382,5 @@ export function toExpression<
 }
 
 export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
-  toExpression("pipeline", [] as BlockPipeline)
+  toExpression("pipeline", [] as BrickPipeline)
 );
