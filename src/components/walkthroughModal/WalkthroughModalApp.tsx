@@ -20,16 +20,12 @@ import React from "react";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import { Stylesheets } from "@/components/Stylesheets";
 
 export const WalkthroughModalApp: React.FunctionComponent = () => (
-  <Stylesheets href={[bootstrap]}>
-    <Modal show={true}>
-      <Modal.Header closeButton />
-      <Modal.Body>hello world!</Modal.Body>
-    </Modal>
-  </Stylesheets>
+  <Modal.Dialog>
+    <Modal.Header closeButton />
+    <Modal.Body>hello world!</Modal.Body>
+  </Modal.Dialog>
 );
 
 const initWalkthroughModalApp = async () => {
