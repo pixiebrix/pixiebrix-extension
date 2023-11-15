@@ -31,7 +31,7 @@ import { revertAll } from "@/store/commonActions";
 
 export const initialSettingsState: SettingsState = {
   mode: "remote",
-  nextUpdate: null as number,
+  nextUpdate: null,
   suggestElements: false,
   browserWarningDismissed: false,
   varAutosuggest: false,

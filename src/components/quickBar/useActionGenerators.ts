@@ -41,7 +41,7 @@ function useActionGenerators(): void {
     () => {
       void quickBarRegistry.generateActions({
         query: searchQuery,
-        rootActionId: currentRootActionId,
+        rootActionId: currentRootActionId ?? null,
       });
     },
     // eslint-disable-next-line -- generate immediately on mount, and when root changes (because some actions only show when their parent is active)
@@ -59,7 +59,7 @@ function useActionGenerators(): void {
 
       await quickBarRegistry.generateActions({
         query: values.searchQuery,
-        rootActionId: values.currentRootActionId,
+        rootActionId: values.currentRootActionId ?? null,
       });
     },
     {

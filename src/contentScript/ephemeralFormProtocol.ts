@@ -47,7 +47,7 @@ export function getFormPanelSidebarEntries(): FormPanelEntry[] {
       type: "form",
       nonce,
       extensionId: form.extensionId,
-      blueprintId: form.blueprintId,
+      blueprintId: form.blueprintId ?? undefined,
       form: form.definition,
     }));
 }
@@ -97,10 +97,17 @@ function unregisterForm(formNonce: UUID) {
   forms.delete(formNonce);
 }
 
-export async function getFormDefinition(nonce: UUID): Promise<FormDefinition> {
+export async function getFormDefinition(
+  formNonce: UUID
+): Promise<FormDefinition> {
   expectContext("contentScript");
 
-  return forms.get(nonce).definition;
+  const form = forms.get(formNonce);
+  if (!form) {
+    throw new Error(`Form not registered: ${formNonce}`);
+  }
+
+  return form.definition;
 }
 
 export async function resolveForm(

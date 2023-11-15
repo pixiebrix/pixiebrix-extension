@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { remove, reverse } from "lodash";
+import { reverse } from "lodash";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
@@ -91,7 +91,7 @@ export function cancelAllTours(): void {
   }
 
   // Explicitly clear the stack. The tours should clean themselves up on abort, but this is a failsafe
-  remove(tourStack, () => true);
+  tourStack.length = 0;
 }
 
 /**
@@ -104,7 +104,7 @@ export function isTourInProgress(): boolean {
 /**
  * Return the currently executing tour, or none if no tour is in progress.
  */
-export function getCurrentTour(): TourRun | null {
+export function getCurrentTour(): TourRun | undefined {
   return tourStack.at(-1);
 }
 
@@ -121,8 +121,8 @@ export function markTourStart(
   nonce: UUID,
   extension: {
     id: ResolvedModComponent["id"];
-    label: ResolvedModComponent["label"];
-    _recipe?: Pick<ResolvedModComponent["_recipe"], "id">;
+    label: NonNullable<ResolvedModComponent["label"]>;
+    _recipe?: Pick<NonNullable<ResolvedModComponent["_recipe"]>, "id">;
   },
   {
     promise,
@@ -149,7 +149,7 @@ export function markTourStart(
     id: nonce,
     extensionId: extension.id,
     tourName: extension.label,
-    packageId: extension._recipe?.id,
+    packageId: extension._recipe?.id ?? null,
   });
 
   reportEvent(Events.TOUR_START, {
@@ -214,9 +214,9 @@ export function markTourEnd(
     });
 
     // Cancel other tours nested within this tour
-    let otherTour: TourRun;
+    let otherTour: TourRun | undefined;
     while ((otherTour = tourStack.pop())?.nonce !== nonce) {
-      otherTour.abortController.abort();
+      otherTour?.abortController.abort();
     }
   }
 }
@@ -256,11 +256,10 @@ export async function registerTour({
   allowUserRun?: boolean;
   run: () => { promise: Promise<void>; abortController: AbortController };
 }): Promise<RegisteredTour> {
-  if (!blueprintTourRegistry.has(blueprintId)) {
-    blueprintTourRegistry.set(blueprintId, new Map());
-  }
+  const blueprintTours =
+    blueprintTourRegistry.get(blueprintId) ?? new Map<string, RegisteredTour>();
+  blueprintTourRegistry.set(blueprintId, blueprintTours); // Insert if just created
 
-  const blueprintTours = blueprintTourRegistry.get(blueprintId);
   const context = selectEventData(extension);
 
   const tour: RegisteredTour = {

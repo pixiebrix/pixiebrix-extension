@@ -70,7 +70,7 @@ function dispatchStageChangeEventOnChange({
   next: unknown;
   namespace: string;
   extensionId: UUID;
-  blueprintId: RegistryId;
+  blueprintId: RegistryId | null;
 }) {
   if (!isEqual(previous, next)) {
     // For now, leave off the event data because we're using a public channel
