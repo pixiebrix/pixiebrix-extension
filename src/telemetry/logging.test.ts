@@ -24,7 +24,6 @@ import {
   reportToRollbar,
 } from "@/telemetry/logging";
 import type Rollbar from "rollbar";
-import { flagOn } from "@/auth/token";
 import { getRollbar } from "@/telemetry/initRollbar";
 import {
   logEntryFactory,
@@ -32,11 +31,12 @@ import {
 } from "@/testUtils/factories/logFactories";
 import { array } from "cooky-cutter";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { flagOn } from "@/auth/authUtils";
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authUtils", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 

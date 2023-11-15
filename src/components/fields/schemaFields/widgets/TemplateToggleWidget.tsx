@@ -17,7 +17,13 @@
 
 import styles from "./TemplateToggleWidget.module.scss";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
@@ -62,7 +68,10 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
 
   const defaultInputRef = useRef<HTMLElement>();
   const inputRef = inputRefProp ?? defaultInputRef;
-  const selectedOption = getOptionForInputMode(inputModeOptions, inputMode);
+  const selectedOption = useMemo(
+    () => getOptionForInputMode(inputModeOptions, inputMode),
+    [inputMode, inputModeOptions]
+  );
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
   const [focusInput, setFocusInput] = useState(false);
 
@@ -137,24 +146,31 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   }
 
   const stringValue = isTemplateExpression(value) ? value.__value__ : "";
-  const setNewValueFromString = async (newValue: string) => {
-    if (inputMode !== "var" && inputMode !== "string") {
-      return;
-    }
+  const setNewValueFromString = useCallback(
+    async (newValue: string) => {
+      if (inputMode !== "var" && inputMode !== "string") {
+        return;
+      }
 
-    await setValue(selectedOption.interpretValue(newValue));
-  };
+      await setValue(selectedOption.interpretValue(newValue));
+    },
+    [inputMode, selectedOption, setValue]
+  );
+
+  const renderVarPopup = inputMode === "var" || inputMode === "string";
 
   return (
     <div className={styles.root}>
       <div className={styles.field}>
         <Widget {...widgetProps} />
-        <VarPopup
-          inputMode={inputMode}
-          inputElementRef={inputRef}
-          value={stringValue}
-          setValue={setNewValueFromString}
-        />
+        {renderVarPopup ? (
+          <VarPopup
+            inputMode={inputMode}
+            inputElementRef={inputRef}
+            value={stringValue}
+            setValue={setNewValueFromString}
+          />
+        ) : null}
       </div>
       <DropdownButton
         title={

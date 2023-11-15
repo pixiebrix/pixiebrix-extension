@@ -20,12 +20,15 @@ import { type Action, Priority } from "kbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAppleAlt,
+  faBook,
   faInfoCircle,
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { faSlack } from "@fortawesome/free-brands-svg-icons";
 import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
+import { Events } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
 
 const PIXIEBRIX_SECTION = "PixieBrix";
 
@@ -86,5 +89,20 @@ const defaultActions: Action[] = [
     },
   },
 ];
+
+export const pageEditorAction: Action = {
+  id: "page-editor",
+  name: "Learn: Open the Page Editor",
+  keywords: "mod, edit, page, page editor, editor, how to, open, learn",
+  section: PIXIEBRIX_SECTION,
+  priority: Priority.LOW,
+  icon: <FontAwesomeIcon icon={faBook} fixedWidth />,
+  perform() {
+    reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_LINK_CLICK, {
+      source: "quick bar",
+    });
+    window.location.href = "https://pixiebrix.com/developers-welcome";
+  },
+};
 
 export default defaultActions;
