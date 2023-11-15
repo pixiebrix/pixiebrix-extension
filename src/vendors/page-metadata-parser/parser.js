@@ -1,4 +1,7 @@
 // Source: https://github.com/mozilla/page-metadata-parser/blob/master/parser.js
+// Changes: Handles undefined maxValues
+// See: https://github.com/pixiebrix/pixiebrix-extension/issues/6889
+
 const { makeUrlAbsolute, parseUrl } = require("./url-utils");
 
 function getProvider(host) {
