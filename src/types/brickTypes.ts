@@ -80,17 +80,12 @@ export interface Brick extends Metadata {
    * Defined as a promise to support bricks that refer to other bricks (and therefore need to look up the status of
    * the other bricks to resolve their purity).
    *
-   * FIXME: isPure is marked as optional because we're using Brick to represent packages/bricks in some places, e.g.,
-   *  the BrickModal. We need to make this require and fix the types in the places that break. For example, some places
-   *  take advantages the StarterBrick is compatible with the the Brick interface even though they represent two
-   *  different concepts
-   *
    * Examples of impure actions:
    * - Calling an API
    * - Showing a prompt
    * - Writing to the session state
    */
-  isPure?: () => Promise<boolean>;
+  isPure: () => Promise<boolean>;
 
   /**
    * Returns `true` if the brick can use the reader root from the brick options
@@ -101,7 +96,7 @@ export interface Brick extends Metadata {
    * @see BrickOptions.root
    * @since 1.4.0
    */
-  isRootAware?: () => Promise<boolean>;
+  isRootAware: () => Promise<boolean>;
 
   /**
    * Returns `true` if the brick may read from or write to the page state.

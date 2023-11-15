@@ -23,7 +23,7 @@ function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled
 
   const { query } = useKBar();
-  const uninstallActionsRef = React.useRef<() => void | null>(null);
+  const uninstallActionsRef = React.useRef<(() => void) | null>(null);
 
   // Listen for changes while the kbar is mounted:
   // - The user is making edits in the Page Editor

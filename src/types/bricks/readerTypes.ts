@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject } from "type-fest";
+import { type SetRequired, type JsonObject } from "type-fest";
 import { BrickABC, type Brick } from "@/types/brickTypes";
 import { type BrickArgs, type SelectorRoot } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -23,7 +23,7 @@ import { type Schema } from "@/types/schemaTypes";
 /**
  * A block that can read data from a page or part of the page.
  */
-export interface Reader extends Brick {
+export interface Reader extends SetRequired<Brick, "outputSchema"> {
   /** Return true if the Reader is for a page/element. */
   isAvailable: ($elements?: JQuery) => Promise<boolean>;
 
@@ -36,7 +36,7 @@ export interface Reader extends Brick {
 export abstract class ReaderABC extends BrickABC implements Reader {
   readonly inputSchema: Schema = {};
 
-  override outputSchema: Schema | undefined = undefined;
+  override outputSchema: Schema = {};
 
   override async isRootAware(): Promise<boolean> {
     // Most readers use the root, so have them opt-out if they don't

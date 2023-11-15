@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -60,14 +59,14 @@ export function $safeFindElementsWithRootMode({
   selectorProp?: string;
 }): JQuery<HTMLElement | Document> {
   if (isRootAware) {
-    if (isEmpty(selector)) {
+    if (!selector) {
       return $(root);
     }
 
     return $safeFind(selector, root);
   }
 
-  if (isEmpty(selector)) {
+  if (!selector) {
     throw new PropError(
       "Selector is required",
       blockId,

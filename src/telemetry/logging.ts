@@ -379,7 +379,7 @@ export async function reportToRollbar(
   rollbar.error(message, error, { ...flatContext, ...details });
 }
 
-/** @deprecated Use `reportError` instead: `import reportError from "@/telemetry/reportError"` */
+/** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
 export async function recordError(
   this: MessengerMeta, // Enforce usage via Messenger only
   serializedError: SerializedError,
