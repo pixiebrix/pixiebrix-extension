@@ -15,21 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import React from "react";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
+import { registerModal } from "@/contentScript/walkthroughModalProtocol";
+import { closeWalkthroughModal } from "@/contentScript/messenger/api";
+import { Target } from "@/types/messengerTypes";
 
-export const WalkthroughModalApp: React.FunctionComponent = () => (
-  <Modal.Dialog>
-    <Modal.Header closeButton />
-    <Modal.Body>hello world!</Modal.Body>
-  </Modal.Dialog>
-);
+let controller: AbortController;
+export const WalkthroughModalApp: React.FunctionComponent = () => {
+  const params = new URLSearchParams(location.search);
+  const opener = JSON.parse(params.get("opener")) as Target;
 
-const initWalkthroughModalApp = async () => {
+  return (
+    <Modal.Dialog>
+      <Modal.Header closeButton />
+      <Modal.Body>hello world!</Modal.Body>
+      <Button
+        onClick={() => {
+          closeWalkthroughModal(opener);
+        }}
+      >
+        Hide me
+      </Button>
+    </Modal.Dialog>
+  );
+};
+
+export const showWalkthroughModal = async () => {
   expectContext("contentScript");
+
+  controller = new AbortController();
 
   const target = await getThisFrame();
 
@@ -37,11 +55,10 @@ const initWalkthroughModalApp = async () => {
   frameSource.searchParams.set("nonce", "page-editor-walkthrough");
   frameSource.searchParams.set("opener", JSON.stringify(target));
   frameSource.searchParams.set("mode", "modal");
-  const controller = new AbortController();
 
+  const modal = registerModal();
   showModal({ url: frameSource, controller });
-};
 
-export const showWalkthroughModal = async () => {
-  await initWalkthroughModalApp();
+  await modal;
+  controller.abort();
 };

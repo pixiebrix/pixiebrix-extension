@@ -71,9 +71,11 @@ export function showModal({
     shadowRoot
   );
 
+  console.log("*** controller in modal utils", controller);
   controller.signal.addEventListener("abort", () => {
     unmountComponentAtNode(container);
     style.remove();
     container.remove();
   });
+  console.log("*** controller after add event listener", controller);
 }
