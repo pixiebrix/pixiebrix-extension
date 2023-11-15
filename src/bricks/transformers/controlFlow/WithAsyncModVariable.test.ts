@@ -36,13 +36,14 @@ import {
 } from "@/testUtils/factories/stringFactories";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { type Expression } from "@/types/runtimeTypes";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
 const makeAsyncModVariablePipeline = (
   brick: Brick,
   message: string,
-  stateKey: string
+  stateKey: string | Expression
 ) => ({
   id: withAsyncModVariableBrick.id,
   config: {
@@ -277,6 +278,49 @@ describe("WithAsyncModVariable", () => {
         requestId: (secondOutput as { requestId: UUID }).requestId,
         error: null,
       },
+    });
+  });
+
+  describe("getModVariableSchema", () => {
+    test("with mod variable name set", async () => {
+      const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", {
+        __type__: "nunjucks",
+        __value__: "foo",
+      });
+
+      const withAsyncModVariableBrick = new WithAsyncModVariable();
+
+      const actual = await withAsyncModVariableBrick.getModVariableSchema(
+        pipeline
+      );
+
+      expect(actual).toStrictEqual({
+        type: "object",
+        properties: {
+          // For now, only provide existence information for the variable
+          foo: true,
+        },
+        additionalProperties: false,
+        required: ["foo"],
+      });
+    });
+
+    test("with mod variable name unset", async () => {
+      const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", {
+        __type__: "nunjucks",
+        __value__: "",
+      });
+
+      const withAsyncModVariableBrick = new WithAsyncModVariable();
+
+      const actual = await withAsyncModVariableBrick.getModVariableSchema(
+        pipeline
+      );
+
+      expect(actual).toStrictEqual({
+        type: "object",
+        additionalProperties: true,
+      });
     });
   });
 });
