@@ -290,6 +290,7 @@ module.exports = (env, options) =>
         "sandbox/sandbox",
 
         "tinyPages/ephemeralForm",
+        "tinyPages/walkthroughModal",
         "tinyPages/ephemeralPanel",
         "tinyPages/permissionsPopup",
 

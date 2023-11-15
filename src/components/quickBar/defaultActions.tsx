@@ -29,6 +29,7 @@ import { faSlack } from "@fortawesome/free-brands-svg-icons";
 import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
+import { showWalkthroughModal } from "@/components/walkthroughModal/WalkthroughModalApp";
 
 const PIXIEBRIX_SECTION = "PixieBrix";
 
@@ -101,7 +102,7 @@ export const pageEditorAction: Action = {
     reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_LINK_CLICK, {
       source: "quick bar",
     });
-    window.location.href = "https://pixiebrix.com/developers-welcome";
+    showWalkthroughModal();
   },
 };
 
