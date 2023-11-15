@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Modal } from "react-bootstrap";
+import { Carousel, Modal } from "react-bootstrap";
 import React from "react";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
@@ -30,17 +30,19 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
   const opener = JSON.parse(params.get("opener")) as Target;
 
   return (
-    <Modal.Dialog>
+    <Modal
+      backdrop={false}
+      animation={false}
+      show={true}
+      onHide={() => {
+        closeWalkthroughModal(opener);
+      }}
+    >
       <Modal.Header closeButton />
-      <Modal.Body>hello world!</Modal.Body>
-      <Button
-        onClick={() => {
-          closeWalkthroughModal(opener);
-        }}
-      >
-        Hide me
-      </Button>
-    </Modal.Dialog>
+      <Carousel>
+        <Modal.Body>hello world!</Modal.Body>
+      </Carousel>
+    </Modal>
   );
 };
 
