@@ -28,10 +28,10 @@ import { type Target } from "@/types/messengerTypes";
 import inspectContextMenuImage from "@img/inspect-context-menu.svg";
 import devtoolsShortcutWindowsImage from "@img/devtools-shortcut-windows.svg";
 import devtoolsShortcutMacImage from "@img/devtools-shortcut-mac.svg";
-import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.svg";
+import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.webp";
 import devtoolsToolbarScreenshot from "@img/devtools-toolbar-screenshot.svg";
-import devtoolsPixieBrixToolbarTab from "@img/devtools-pixiebrix-toolbar-tab.svg";
-import devtoolsPixieBrixToolbarTabHidden from "@img/devtools-pixiebrix-toolbar-tab-hidden.svg";
+import devtoolsPixieBrixToolbarTab from "@img/devtools-pixiebrix-toolbar-tab.png";
+import devtoolsPixieBrixToolbarTabHidden from "@img/devtools-pixiebrix-toolbar-tab-hidden.webp";
 import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
 
 import cx from "classnames";
@@ -103,6 +103,7 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
               <img
                 src={devtoolsDockingContextMenu}
                 alt="The context menu that will show after clicking the DevTools three-dot menu, with 'Dock Side' option included"
+                className="img-fluid"
               />
             </Col>
           </Row>
@@ -138,11 +139,12 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
           <img
             src={devtoolsPixieBrixToolbarTab}
             alt="DevTools toolbar with the PixieBrix tab included"
-            className="mb-3"
+            className="mb-3 img-fluid"
           />
           <img
             src={devtoolsPixieBrixToolbarTabHidden}
             alt="DevTools toolbar with the PixieBrix tab included under the chevron icon"
+            className="img-fluid"
           />
           <p className="mt-3 mb-0">
             Last step is to select the PixieBrix tab from the tab bar. If you
