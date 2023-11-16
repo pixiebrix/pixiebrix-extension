@@ -45,7 +45,11 @@ const ModLauncher: React.FunctionComponent = () => {
       {permit("page-editor") && (
         <Navbar className={styles.footer}>
           <a
-            onClick={async () => {
+            href="#"
+            role="button"
+            onClick={async (event) => {
+              event.preventDefault();
+
               reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_LINK_CLICK, {
                 source: "ModLauncher",
               });
