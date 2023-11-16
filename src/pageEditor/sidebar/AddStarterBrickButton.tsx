@@ -110,7 +110,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
             sessionId,
           });
           navigateTab(thisTab, {
-            url: "https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor",
+            url: "https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=starter_brick_menu",
           });
         }}
       >
