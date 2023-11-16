@@ -158,7 +158,7 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
   const opener = JSON.parse(params.get("opener")) as Target;
 
   useEffect(() => {
-    reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_STEP_VIEW, {
+    reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_MODAL_VIEW, {
       stepIndex,
       // eslint-disable-next-line security/detect-object-injection -- steps are constants defined in this file
       stepTitle: steps[stepIndex].title,
@@ -266,6 +266,7 @@ export const showWalkthroughModal = async () => {
   try {
     await modal;
   } finally {
+    reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_MODAL_CLOSE);
     controller.abort();
   }
 };
