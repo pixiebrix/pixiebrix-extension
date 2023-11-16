@@ -29,6 +29,9 @@ import { flagOn } from "@/auth/authUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { navigateTab } from "@/contentScript/messenger/api";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 const sortedStarterBricks = sortBy(
   [...ADAPTERS.values()],
@@ -57,6 +60,7 @@ const DropdownEntry: React.FunctionComponent<{
 
 const AddStarterBrickButton: React.FunctionComponent = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
+  const sessionId = useSelector(selectSessionId);
 
   const addElement = useAddElement();
 
@@ -102,6 +106,9 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
       <Dropdown.Divider />
       <Dropdown.Item
         onClick={() => {
+          reportEvent(Events.PAGE_EDITOR_VIEW_TEMPLATES, {
+            sessionId,
+          });
           navigateTab(thisTab, {
             url: "https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor",
           });
