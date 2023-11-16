@@ -22,7 +22,7 @@ import React, { useState } from "react";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
-import { registerModal } from "@/contentScript/walkthroughModalProtocol";
+import { registerWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import { closeWalkthroughModal } from "@/contentScript/messenger/api";
 import { Target } from "@/types/messengerTypes";
 import inspectContextMenuImage from "@img/inspect-context-menu.svg";
@@ -53,8 +53,10 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       title: "Opening the Chrome DevTools",
       body: (
         <>
-          The Page Editor lives in the Chrome Dev tools. So the first step is to
-          open them. You can open it in two different ways.
+          <p>
+            The Page Editor lives in the Chrome Dev tools. So the first step is
+            to open them. You can open it in two different ways.
+          </p>
           <Row>
             <Col>
               <img src={inspectContextMenuImage} alt="" />
@@ -68,8 +70,16 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
             </Col>
           </Row>
           <Row>
-            <Col>Right click anywhere on the page and select “Inspect”</Col>
-            <Col>Or Utilize the keyboard shortcut for your system</Col>
+            <Col>
+              <p className="mt-3 mb-0">
+                Right click anywhere on the page and select “Inspect”
+              </p>
+            </Col>
+            <Col>
+              <p className="mt-3 mb-0">
+                Or Utilize the keyboard shortcut for your system
+              </p>
+            </Col>
           </Row>
         </>
       ),
@@ -78,8 +88,11 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       title: "Docking the DevTools",
       body: (
         <>
-          Dock the dev tools to the bottom of the screen, if necessary. The Page
-          Editor is a powerful tool that needs a bit of room to work its magic.
+          <p>
+            Dock the dev tools to the bottom of the screen, if necessary. The
+            Page Editor is a powerful tool that needs a bit of room to work its
+            magic.
+          </p>
           <Row>
             <Col>
               <img src={devtoolsToolbarScreenshot} alt="" />
@@ -88,8 +101,10 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
               <img src={devtoolsDockingContextMenu} alt="" />
             </Col>
           </Row>
-          Click the TODO menu in the top right of the dev tools Select the TODO
-          (third option) under ‘Dock side’
+          <p className="mt-3 mb-0">
+            Click the TODO menu in the top right of the dev tools Select the
+            TODO (third option) under ‘Dock side’
+          </p>
         </>
       ),
     },
@@ -97,10 +112,12 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       title: "Opening the Page Editor",
       body: (
         <>
-          <img src={devtoolsPixieBrixToolbarTab} alt="" />
+          <img src={devtoolsPixieBrixToolbarTab} alt="" className="mb-3" />
           <img src={devtoolsPixieBrixToolbarTabHidden} alt="" />
-          Last step is to select the PixieBrix tab from the tab bar. If you
-          don’t see the tab, it's probably behind the double-chevron menu.
+          <p className="mt-3 mb-0">
+            Last step is to select the PixieBrix tab from the tab bar. If you
+            don’t see the tab, it's probably behind the double-chevron menu.
+          </p>
         </>
       ),
     },
@@ -114,14 +131,15 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       onHide={() => {
         closeWalkthroughModal(opener);
       }}
+      className={styles.root}
     >
       <Modal.Header closeButton>
-        <div>
+        <Container>
           <small>
             Step {stepIndex + 1} of {steps.length}
           </small>
           <Modal.Title>{steps[stepIndex].title}</Modal.Title>
-        </div>
+        </Container>
       </Modal.Header>
       <Carousel
         activeIndex={stepIndex}
@@ -133,14 +151,14 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
         {steps.map((step, index) => {
           return (
             <Carousel.Item key={index}>
-              <Modal.Body className={cx("show-grid", styles.root)}>
+              <Modal.Body className="show-grid">
                 <Container>{step.body}</Container>
               </Modal.Body>
             </Carousel.Item>
           );
         })}
       </Carousel>
-      <Modal.Body className="show-grid">
+      <Modal.Body className={cx("show-grid", styles.modalFooter)}>
         <Row>
           <Col>
             {stepIndex > 0 && (
@@ -203,7 +221,7 @@ export const showWalkthroughModal = async () => {
   const frameSource = new URL(browser.runtime.getURL("walkthroughModal.html"));
   frameSource.searchParams.set("opener", JSON.stringify(target));
 
-  const modal = registerModal();
+  const modal = registerWalkthroughModal();
   showModal({ url: frameSource, controller });
 
   try {
