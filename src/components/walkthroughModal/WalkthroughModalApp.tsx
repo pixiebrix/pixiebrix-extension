@@ -62,13 +62,22 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
           </p>
           <Row>
             <Col>
-              <img src={inspectContextMenuImage} alt="" />
+              <img
+                src={inspectContextMenuImage}
+                alt="The right-click browser context menu with the 'Inspect' option included"
+              />
             </Col>
             <Col>
               {isMac() ? (
-                <img src={devtoolsShortcutMacImage} alt="" />
+                <img
+                  src={devtoolsShortcutMacImage}
+                  alt="Keyboard shortcut to open devtools on Mac systems: Command + Option + I"
+                />
               ) : (
-                <img src={devtoolsShortcutWindowsImage} alt="" />
+                <img
+                  src={devtoolsShortcutWindowsImage}
+                  alt="Keyboard shortcut to open devtools on Windows systems: Control + Shift + I"
+                />
               )}
             </Col>
           </Row>
@@ -100,19 +109,24 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
             <Col>
               <img
                 src={devtoolsToolbarScreenshot}
-                alt="Screenshot of DevTools toolbar with three-dot menu icon"
+                alt="DevTools toolbar with three-dot menu icon included"
               />
             </Col>
             <Col>
               <img
                 src={devtoolsDockingContextMenu}
-                alt="Screenshot of the context menu that will show after clicking the DevTools three-dot menu, with 'Dock Side' option included"
+                alt="The context menu that will show after clicking the DevTools three-dot menu, with 'Dock Side' option included"
               />
             </Col>
           </Row>
           <p className="mt-3 mb-0">
-            Click the ‘<FontAwesomeIcon icon={faEllipsisV} className="mx-1" />’
-            menu in the top right of the DevTools
+            Click the ‘
+            <FontAwesomeIcon
+              icon={faEllipsisV}
+              className="mx-1"
+              title="Three-dot menu icon"
+            />
+            ’ menu in the top right of the DevTools
           </p>{" "}
           <p>
             Select the ‘
@@ -130,8 +144,15 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       title: "Opening the Page Editor",
       body: (
         <>
-          <img src={devtoolsPixieBrixToolbarTab} alt="" className="mb-3" />
-          <img src={devtoolsPixieBrixToolbarTabHidden} alt="" />
+          <img
+            src={devtoolsPixieBrixToolbarTab}
+            alt="DevTools toolbar with the PixieBrix tab included"
+            className="mb-3"
+          />
+          <img
+            src={devtoolsPixieBrixToolbarTabHidden}
+            alt="DevTools toolbar with the PixieBrix tab included under the chevron icon"
+          />
           <p className="mt-3 mb-0">
             Last step is to select the PixieBrix tab from the tab bar. If you
             don’t see the tab, it's probably behind the double-chevron menu.
