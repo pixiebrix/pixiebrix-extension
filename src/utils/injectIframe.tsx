@@ -29,12 +29,17 @@ export const hiddenIframeStyle: Partial<CSSStyleDeclaration> = {
   visibility: "hidden",
 } as const;
 
+export type LoadedFrame = HTMLIFrameElement & {
+  contentDocument: Document;
+  contentWindow: Window;
+};
+
 /** Injects an iframe into the host page via ShadowDom */
 async function _injectIframe(
   url: string,
   /** The style is required because you never want an unstyled iframe */
   style: Partial<CSSStyleDeclaration>
-): Promise<HTMLIFrameElement> {
+): Promise<LoadedFrame> {
   const iframe = document.createElement("iframe");
   const { promise: iframeLoad, resolve } = pDefer();
   iframe.addEventListener("load", resolve);
@@ -47,7 +52,7 @@ async function _injectIframe(
 
   await iframeLoad;
 
-  return iframe;
+  return iframe as LoadedFrame;
 }
 
 const injectIframe: typeof _injectIframe = async (url, style) =>

@@ -114,11 +114,12 @@ export const performConfiguredRequestInBackground = getMethod(
 
 // Use this instead: `import reportError from "@/telemetry/reportError"`
 // export const recordError = getNotifier("RECORD_ERROR", bg);
+// Use this instead: `import reportEvent from "@/telemetry/reportEvent"`
+// export const recordEvent = getNotifier("RECORD_EVENT", bg);
 
 export const recordLog = getNotifier("RECORD_LOG", bg);
 export const recordWarning = getNotifier("RECORD_WARNING", bg);
 export const recordBrickRun = getNotifier("RECORD_BRICK_RUN", bg);
-export const recordEvent = getNotifier("RECORD_EVENT", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(

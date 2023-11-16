@@ -15,16 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentDefinition } from "@/types/modDefinitionTypes";
-import { type Schema } from "@/types/schemaTypes";
+import React from "react";
 
-export function isSchemaServicesFormat(
-  services: NonNullable<ModComponentDefinition["services"]>
-): services is Schema {
-  return (
-    "properties" in services &&
-    typeof services.properties === "object" &&
-    "required" in services &&
-    Array.isArray(services.required)
-  );
-}
+const RjsfSubmitContext = React.createContext<{
+  submitForm: () => Promise<void>;
+}>({
+  async submitForm() {},
+});
+
+export default RjsfSubmitContext;

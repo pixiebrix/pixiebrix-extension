@@ -394,8 +394,14 @@ export async function pollEnterpriseResult({
   logger: Logger;
   maxWaitMillis?: number;
 }) {
+  const maxWaitSeconds = Math.round(maxWaitMillis / 1000);
+
+  // Whether we've found any activity record (regardless of state)
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/6900
+  let activityFound = false;
+
   const poll = async () => {
-    // Sleep first because it's unlikely it will be completed immediately after the running the bot
+    // Sleep first because it's unlikely activity will be available/completed immediately after the running the bot
     await sleep(POLL_MILLIS);
 
     // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
@@ -413,6 +419,14 @@ export async function pollEnterpriseResult({
       },
     });
 
+    if (activityList.list.length === 0) {
+      // Don't fail immediately. There may be a race-condition where the activity isn't available immediately
+      // See https://github.com/pixiebrix/pixiebrix-extension/issues/6900
+      return;
+    }
+
+    activityFound = true;
+
     if (activityList.list.length > 1) {
       logger.error(
         `Multiple activities found for deployment: ${deploymentId}`,
@@ -422,15 +436,8 @@ export async function pollEnterpriseResult({
         }
       );
       throw new BusinessError(
-        "Multiple activity instances found for automation"
+        "Multiple activity instances found for bot deployment"
       );
-    }
-
-    if (activityList.list.length === 0) {
-      logger.error(`Activity not found for deployment: ${deploymentId}`, {
-        deploymentId,
-      });
-      throw new BusinessError("Activity not found for deployment");
     }
 
     const activity = activityList.list[0];
@@ -452,6 +459,15 @@ export async function pollEnterpriseResult({
     maxWaitMillis,
   });
 
+  if (!activityFound) {
+    logger.error(`Activity not found for deployment: ${deploymentId}`, {
+      deploymentId,
+    });
+    throw new BusinessError(
+      `Activity not found for deployment in ${maxWaitSeconds} seconds`
+    );
+  }
+
   if (completedActivity) {
     const { data: execution } =
       await performConfiguredRequestInBackground<Execution>(service, {
@@ -462,7 +478,5 @@ export async function pollEnterpriseResult({
     return selectBotOutput(execution);
   }
 
-  throw new BusinessError(
-    `Bot did not finish in ${Math.round(maxWaitMillis / 1000)} seconds`
-  );
+  throw new BusinessError(`Bot did not finish in ${maxWaitSeconds} seconds`);
 }
