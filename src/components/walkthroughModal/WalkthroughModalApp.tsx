@@ -56,10 +56,6 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       title: "Opening the Chrome DevTools",
       body: (
         <>
-          <p>
-            The Page Editor lives in the Chrome DevTools. You can open the
-            DevTools in two different ways.
-          </p>
           <Row>
             <Col>
               <img
@@ -81,18 +77,14 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
               )}
             </Col>
           </Row>
-          <Row>
-            <Col>
-              <p className="mt-3 mb-0">
-                Right click anywhere on the page and select “Inspect”
-              </p>
-            </Col>
-            <Col>
-              <p className="mt-3 mb-0">
-                Or, utilize the keyboard shortcut for your system
-              </p>
-            </Col>
-          </Row>
+          <p className="mt-3">
+            The Page Editor lives in the Chrome DevTools. You can open the
+            DevTools in two different ways.
+          </p>
+          <ul className="mb-0">
+            <li>Right click anywhere on the page and select “Inspect”</li>
+            <li>Or, utilize the keyboard shortcut for your system</li>
+          </ul>
         </>
       ),
     },
@@ -100,11 +92,6 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       title: "Docking the DevTools",
       body: (
         <>
-          <p>
-            Dock the DevTools to the bottom of the screen, if necessary. The
-            Page Editor is a powerful tool that needs a bit of room to work its
-            magic.
-          </p>
           <Row>
             <Col>
               <img
@@ -119,7 +106,12 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
               />
             </Col>
           </Row>
-          <p className="mt-3 mb-0">
+          <p className="mt-3">
+            Dock the DevTools to the bottom of the screen, if necessary. The
+            Page Editor is a powerful tool that needs a bit of room to work its
+            magic.
+          </p>
+          <p className="mb-0">
             Click the ‘
             <FontAwesomeIcon
               icon={faEllipsisV}
@@ -127,8 +119,7 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
               title="Three-dot menu icon"
             />
             ’ menu in the top right of the DevTools
-          </p>{" "}
-          <p>
+            <br />
             Select the ‘
             <img
               src={devtoolsDockBottomIcon}

@@ -20,6 +20,11 @@
   color: $S800;
   font-weight: 400;
 
+  p,
+  li {
+    font-size: 15px;
+  }
+
   :global(.modal-title) {
     color: $S700;
     font-size: 24px;
