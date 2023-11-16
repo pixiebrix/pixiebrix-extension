@@ -93,7 +93,7 @@ declare module "@pixiebrix/jq-web";
 declare module "canvas-confetti";
 
 // From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
-declare module "page-metadata-parser" {
+declare module "@/vendors/page-metadata-parser/parser" {
   export type IPageMetadata = Record<string, string | string[]>;
 
   export type PageMetadataRule = [
