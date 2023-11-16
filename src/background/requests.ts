@@ -41,7 +41,7 @@ import {
   ProxiedRemoteServiceError,
 } from "@/errors/businessErrors";
 import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
-import { assertUrlProtocol } from "@/errors/assertUrlProtocol";
+import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import {
   isAxiosError,
   safeGuessStatusText,
@@ -125,7 +125,7 @@ export async function serializableAxiosRequest<T>(
   );
 
   // Axios does not perform validation, so call before the axios call.
-  assertUrlProtocol(config.url, ["https:", "http:"], {
+  assertProtocolUrl(config.url, ["https:", "http:"], {
     baseUrl: config.baseURL,
   });
 

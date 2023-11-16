@@ -23,7 +23,7 @@ import {
   ClientNetworkPermissionError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
-import { assertUrlProtocol } from "@/errors/assertUrlProtocol";
+import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import {
   isAxiosError,
   NO_INTERNET_MESSAGE,
@@ -50,7 +50,7 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   console.trace("enrichBusinessRequestError", { error });
 
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs
-  const url = assertUrlProtocol(error.config.url, ["https:", "http:"], {
+  const url = assertProtocolUrl(error.config.url, ["https:", "http:"], {
     baseUrl: error.config.baseURL,
   });
 

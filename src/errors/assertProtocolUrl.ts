@@ -28,7 +28,7 @@ import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
  * @return the URL instance
  * @throws BusinessError if the URL is invalid
  */
-export function assertUrlProtocol(
+export function assertProtocolUrl(
   url: string,
   allowedProtocols: string[],
   {
