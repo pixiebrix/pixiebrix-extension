@@ -25,13 +25,13 @@ import { getThisFrame } from "webext-messenger";
 import { registerWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import { closeWalkthroughModal } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
-import inspectContextMenuImage from "@img/inspect-context-menu.svg";
+import inspectContextMenuImage from "@img/inspect-context-menu.png";
 import devtoolsShortcutWindowsImage from "@img/devtools-shortcut-windows.svg";
 import devtoolsShortcutMacImage from "@img/devtools-shortcut-mac.svg";
-import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.webp";
-import devtoolsToolbarScreenshot from "@img/devtools-toolbar-screenshot.svg";
+import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.png";
+import devtoolsToolbarScreenshot from "@img/devtools-pixiebrix-toolbar-screenshot.png";
 import devtoolsPixieBrixToolbarTab from "@img/devtools-pixiebrix-toolbar-tab.png";
-import devtoolsPixieBrixToolbarTabHidden from "@img/devtools-pixiebrix-toolbar-tab-hidden.webp";
+import devtoolsPixieBrixToolbarTabHidden from "@img/devtools-pixiebrix-toolbar-hidden.png";
 import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
 
 import cx from "classnames";
@@ -61,6 +61,7 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
               <img
                 src={inspectContextMenuImage}
                 alt="The right-click browser context menu with the 'Inspect' option included"
+                className="img-fluid"
               />
             </Col>
             <Col>
@@ -97,6 +98,7 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
               <img
                 src={devtoolsToolbarScreenshot}
                 alt="DevTools toolbar with three-dot menu icon included"
+                className="img-fluid"
               />
             </Col>
             <Col>
