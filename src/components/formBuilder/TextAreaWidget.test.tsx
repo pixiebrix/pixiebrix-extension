@@ -19,51 +19,51 @@ import React from "react";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import { render, screen } from "@/sidebar/testHelpers";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
+import { type WidgetProps } from "@rjsf/core";
 
 describe("TextAreaWidget", () => {
+  const defaultProps: WidgetProps = {
+    id: "rjsf-textarea",
+    label: "RJSF Textarea",
+    placeholder: "",
+    value: "",
+    options: {},
+    schema: {},
+    uiSchema: {},
+    required: false,
+    disabled: false,
+    readonly: false,
+    autofocus: false,
+    multiple: false,
+    onChange: jest.fn(),
+    onBlur: jest.fn(),
+    onFocus: jest.fn(),
+    rawErrors: [],
+    WidgetProps: {},
+    formContext: {},
+    registry: {
+      fields: {},
+      widgets: {},
+      definitions: {},
+      formContext: {},
+      rootSchema: {},
+    },
+  };
+
   test("renders the textarea with a label", () => {
-    render(
-      <TextAreaWidget
-        id="rjsf-textarea"
-        label="RJSF Textarea"
-        placeholder=""
-        value=""
-        options={{}}
-        schema={{}}
-        uiSchema={{}}
-        required={false}
-        disabled={false}
-        readonly={false}
-        autofocus={false}
-        multiple={false}
-        onChange={jest.fn()}
-        onBlur={jest.fn()}
-        onFocus={jest.fn()}
-        rawErrors={[]}
-        WidgetProps={{}}
-        formContext={{}}
-        registry={{
-          fields: {},
-          widgets: {},
-          definitions: {},
-          formContext: {},
-          rootSchema: {},
-        }}
-      />,
-      {
-        wrapper: ({ children }) => (
-          <RjsfSubmitContext.Provider
-            value={{
-              async submitForm() {
-                jest.fn();
-              },
-            }}
-          >
-            {children}
-          </RjsfSubmitContext.Provider>
-        ),
-      }
-    );
+    render(<TextAreaWidget {...defaultProps} />, {
+      wrapper: ({ children }) => (
+        <RjsfSubmitContext.Provider
+          value={{
+            async submitForm() {
+              jest.fn();
+            },
+          }}
+        >
+          {children}
+        </RjsfSubmitContext.Provider>
+      ),
+    });
 
     expect(screen.getByLabelText("RJSF Textarea")).toBeInTheDocument();
   });

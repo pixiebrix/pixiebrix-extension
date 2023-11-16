@@ -76,8 +76,8 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
 
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
   return (
-    <FormGroup controlId={id}>
-      <FormLabel>{label}</FormLabel>
+    <>
+      <FormLabel htmlFor={id}>{label}</FormLabel>
       <textarea
         id={id}
         className="form-control"
@@ -92,7 +92,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
         onFocus={onFocusHandler}
         onBlur={onBlurHandler}
       />
-    </FormGroup>
+    </>
   );
 };
 
