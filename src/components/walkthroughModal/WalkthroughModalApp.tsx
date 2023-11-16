@@ -32,9 +32,12 @@ import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.svg";
 import devtoolsToolbarScreenshot from "@img/devtools-toolbar-screenshot.svg";
 import devtoolsPixieBrixToolbarTab from "@img/devtools-pixiebrix-toolbar-tab.svg";
 import devtoolsPixieBrixToolbarTabHidden from "@img/devtools-pixiebrix-toolbar-tab-hidden.svg";
+import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
 
 import cx from "classnames";
 import { isMac } from "@/utils/browserUtils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 
 let controller: AbortController;
 
@@ -54,8 +57,8 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       body: (
         <>
           <p>
-            The Page Editor lives in the Chrome Dev tools. So the first step is
-            to open them. You can open it in two different ways.
+            The Page Editor lives in the Chrome DevTools. You can open the
+            DevTools in two different ways.
           </p>
           <Row>
             <Col>
@@ -77,7 +80,7 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
             </Col>
             <Col>
               <p className="mt-3 mb-0">
-                Or Utilize the keyboard shortcut for your system
+                Or, utilize the keyboard shortcut for your system
               </p>
             </Col>
           </Row>
@@ -89,21 +92,36 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       body: (
         <>
           <p>
-            Dock the dev tools to the bottom of the screen, if necessary. The
+            Dock the DevTools to the bottom of the screen, if necessary. The
             Page Editor is a powerful tool that needs a bit of room to work its
             magic.
           </p>
           <Row>
             <Col>
-              <img src={devtoolsToolbarScreenshot} alt="" />
+              <img
+                src={devtoolsToolbarScreenshot}
+                alt="Screenshot of DevTools toolbar with three-dot menu icon"
+              />
             </Col>
             <Col>
-              <img src={devtoolsDockingContextMenu} alt="" />
+              <img
+                src={devtoolsDockingContextMenu}
+                alt="Screenshot of the context menu that will show after clicking the DevTools three-dot menu, with 'Dock Side' option included"
+              />
             </Col>
           </Row>
           <p className="mt-3 mb-0">
-            Click the TODO menu in the top right of the dev tools Select the
-            TODO (third option) under ‘Dock side’
+            Click the ‘<FontAwesomeIcon icon={faEllipsisV} className="mx-1" />’
+            menu in the top right of the DevTools
+          </p>{" "}
+          <p>
+            Select the ‘
+            <img
+              src={devtoolsDockBottomIcon}
+              alt="DevTools dock bottom icon"
+              width="16px"
+            />
+            ’ (third option) under ‘Dock side’
           </p>
         </>
       ),
