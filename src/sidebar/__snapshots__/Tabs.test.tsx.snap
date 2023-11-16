@@ -131,7 +131,8 @@ exports[`Tabs Mod Launcher renders with mod launcher 1`] = `
             class="footer navbar navbar-expand navbar-light"
           >
             <a
-              href="https://pixiebrix.com/developers-welcome"
+              href="#"
+              role="button"
             >
               Learn: Open the Page Editor
             </a>
