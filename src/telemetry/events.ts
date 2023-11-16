@@ -98,6 +98,7 @@ export const Events = {
   PAGE_EDITOR_SESSION_END: "PageEditorSessionEnd",
 
   PAGE_EDITOR_WALKTHROUGH_LINK_CLICK: "PageEditorWalkthroughLinkClick",
+  PAGE_EDITOR_WALKTHROUGH_STEP_VIEW: "PageEditorWalkthroughStepView",
 
   VAR_POPOVER_SHOW: "VarPopoverShow",
   VAR_POPOVER_SELECT: "VarPopoverSelect",

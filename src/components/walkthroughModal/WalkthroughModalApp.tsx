@@ -18,13 +18,14 @@
 import styles from "./WalkthroughModal.module.scss";
 
 import { Button, Carousel, Col, Container, Modal, Row } from "react-bootstrap";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
 import { registerWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import { closeWalkthroughModal } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
+import { Events } from "@/telemetry/events";
 import inspectContextMenuImage from "@img/inspect-context-menu.png";
 import devtoolsShortcutWindowsImage from "@img/devtools-shortcut-windows.svg";
 import devtoolsShortcutMacImage from "@img/devtools-shortcut-mac.svg";
@@ -33,11 +34,11 @@ import devtoolsToolbarScreenshot from "@img/devtools-pixiebrix-toolbar-screensho
 import devtoolsPixieBrixToolbarTab from "@img/devtools-pixiebrix-toolbar-tab.png";
 import devtoolsPixieBrixToolbarTabHidden from "@img/devtools-pixiebrix-toolbar-hidden.png";
 import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
-
 import cx from "classnames";
 import { isMac } from "@/utils/browserUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import reportEvent from "@/telemetry/reportEvent";
 
 let controller: AbortController;
 
@@ -46,116 +47,123 @@ type WalkthroughModalStep = {
   body: React.ReactNode;
 };
 
+const steps: WalkthroughModalStep[] = [
+  {
+    title: "Opening the Chrome DevTools",
+    body: (
+      <>
+        <Row>
+          <Col>
+            <img
+              src={inspectContextMenuImage}
+              alt="The right-click browser context menu with the 'Inspect' option included"
+              className="img-fluid"
+            />
+          </Col>
+          <Col>
+            {isMac() ? (
+              <img
+                src={devtoolsShortcutMacImage}
+                alt="Keyboard shortcut to open devtools on Mac systems: Command + Option + I"
+              />
+            ) : (
+              <img
+                src={devtoolsShortcutWindowsImage}
+                alt="Keyboard shortcut to open devtools on Windows systems: Control + Shift + I"
+              />
+            )}
+          </Col>
+        </Row>
+        <p className="mt-3">
+          The Page Editor lives in the Chrome DevTools. You can open the
+          DevTools in two different ways.
+        </p>
+        <ul className="mb-0">
+          <li>Right click anywhere on the page and select “Inspect”</li>
+          <li>Or, utilize the keyboard shortcut for your system</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    title: "Docking the DevTools",
+    body: (
+      <>
+        <Row>
+          <Col>
+            <img
+              src={devtoolsToolbarScreenshot}
+              alt="DevTools toolbar with three-dot menu icon included"
+              className="img-fluid"
+            />
+          </Col>
+          <Col>
+            <img
+              src={devtoolsDockingContextMenu}
+              alt="The context menu that will show after clicking the DevTools three-dot menu, with 'Dock Side' option included"
+              className="img-fluid"
+            />
+          </Col>
+        </Row>
+        <p className="mt-3">
+          Dock the DevTools to the bottom of the screen, if necessary. The Page
+          Editor is a powerful tool that needs a bit of room to work its magic.
+        </p>
+        <p className="mb-0">
+          Click the ‘
+          <FontAwesomeIcon
+            icon={faEllipsisV}
+            className="mx-1"
+            title="Three-dot menu icon"
+          />
+          ’ menu in the top right of the DevTools
+          <br />
+          Select the ‘
+          <img
+            src={devtoolsDockBottomIcon}
+            alt="DevTools dock bottom icon"
+            width="16px"
+          />
+          ’ (third option) under ‘Dock side’
+        </p>
+      </>
+    ),
+  },
+  {
+    title: "Opening the Page Editor",
+    body: (
+      <>
+        <img
+          src={devtoolsPixieBrixToolbarTab}
+          alt="DevTools toolbar with the PixieBrix tab included"
+          className="mb-3 img-fluid"
+        />
+        <img
+          src={devtoolsPixieBrixToolbarTabHidden}
+          alt="DevTools toolbar with the PixieBrix tab included under the chevron icon"
+          className="img-fluid"
+        />
+        <p className="mt-3 mb-0">
+          Last step is to select the PixieBrix tab from the tab bar. If you
+          don’t see the tab, it’s probably behind the double-chevron menu.
+        </p>
+      </>
+    ),
+  },
+];
+
 export const WalkthroughModalApp: React.FunctionComponent = () => {
   const [stepIndex, setStepIndex] = useState(0);
   const params = new URLSearchParams(location.search);
   const opener = JSON.parse(params.get("opener")) as Target;
 
-  const steps: WalkthroughModalStep[] = [
-    {
-      title: "Opening the Chrome DevTools",
-      body: (
-        <>
-          <Row>
-            <Col>
-              <img
-                src={inspectContextMenuImage}
-                alt="The right-click browser context menu with the 'Inspect' option included"
-                className="img-fluid"
-              />
-            </Col>
-            <Col>
-              {isMac() ? (
-                <img
-                  src={devtoolsShortcutMacImage}
-                  alt="Keyboard shortcut to open devtools on Mac systems: Command + Option + I"
-                />
-              ) : (
-                <img
-                  src={devtoolsShortcutWindowsImage}
-                  alt="Keyboard shortcut to open devtools on Windows systems: Control + Shift + I"
-                />
-              )}
-            </Col>
-          </Row>
-          <p className="mt-3">
-            The Page Editor lives in the Chrome DevTools. You can open the
-            DevTools in two different ways.
-          </p>
-          <ul className="mb-0">
-            <li>Right click anywhere on the page and select “Inspect”</li>
-            <li>Or, utilize the keyboard shortcut for your system</li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      title: "Docking the DevTools",
-      body: (
-        <>
-          <Row>
-            <Col>
-              <img
-                src={devtoolsToolbarScreenshot}
-                alt="DevTools toolbar with three-dot menu icon included"
-                className="img-fluid"
-              />
-            </Col>
-            <Col>
-              <img
-                src={devtoolsDockingContextMenu}
-                alt="The context menu that will show after clicking the DevTools three-dot menu, with 'Dock Side' option included"
-                className="img-fluid"
-              />
-            </Col>
-          </Row>
-          <p className="mt-3">
-            Dock the DevTools to the bottom of the screen, if necessary. The
-            Page Editor is a powerful tool that needs a bit of room to work its
-            magic.
-          </p>
-          <p className="mb-0">
-            Click the ‘
-            <FontAwesomeIcon
-              icon={faEllipsisV}
-              className="mx-1"
-              title="Three-dot menu icon"
-            />
-            ’ menu in the top right of the DevTools
-            <br />
-            Select the ‘
-            <img
-              src={devtoolsDockBottomIcon}
-              alt="DevTools dock bottom icon"
-              width="16px"
-            />
-            ’ (third option) under ‘Dock side’
-          </p>
-        </>
-      ),
-    },
-    {
-      title: "Opening the Page Editor",
-      body: (
-        <>
-          <img
-            src={devtoolsPixieBrixToolbarTab}
-            alt="DevTools toolbar with the PixieBrix tab included"
-            className="mb-3 img-fluid"
-          />
-          <img
-            src={devtoolsPixieBrixToolbarTabHidden}
-            alt="DevTools toolbar with the PixieBrix tab included under the chevron icon"
-            className="img-fluid"
-          />
-          <p className="mt-3 mb-0">
-            Last step is to select the PixieBrix tab from the tab bar. If you
-            don’t see the tab, it’s probably behind the double-chevron menu.
-          </p>
-        </>
-      ),
-    },
-  ];
+  useEffect(() => {
+    reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_STEP_VIEW, {
+      stepIndex,
+      // eslint-disable-next-line security/detect-object-injection -- steps are constants defined in this file
+      stepTitle: steps[stepIndex].title,
+    });
+  }, [stepIndex]);
 
   return (
     <Modal
