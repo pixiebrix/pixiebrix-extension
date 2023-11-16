@@ -25,6 +25,7 @@ import React, {
 import { type WidgetProps } from "@rjsf/core";
 import { isNumber } from "lodash";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
+import { FormGroup, FormLabel } from "react-bootstrap";
 
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,
@@ -37,6 +38,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   onChange,
   onFocus,
   onBlur,
+  label,
 }) => {
   const { submitForm } = useContext(RjsfSubmitContext);
 
@@ -74,20 +76,23 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
 
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
   return (
-    <textarea
-      id={id}
-      className="form-control"
-      value={String(value ?? "")}
-      placeholder={placeholder}
-      required={required}
-      disabled={disabled}
-      readOnly={readonly}
-      rows={isNumber(options.rows) ? options.rows : undefined}
-      onKeyPress={onKeyPress}
-      onChange={onChangeHandler}
-      onFocus={onFocusHandler}
-      onBlur={onBlurHandler}
-    />
+    <FormGroup controlId={id}>
+      <FormLabel>{label}</FormLabel>
+      <textarea
+        id={id}
+        className="form-control"
+        value={String(value ?? "")}
+        placeholder={placeholder}
+        required={required}
+        disabled={disabled}
+        readOnly={readonly}
+        rows={isNumber(options.rows) ? options.rows : undefined}
+        onKeyPress={onKeyPress}
+        onChange={onChangeHandler}
+        onFocus={onFocusHandler}
+        onBlur={onBlurHandler}
+      />
+    </FormGroup>
   );
 };
 
