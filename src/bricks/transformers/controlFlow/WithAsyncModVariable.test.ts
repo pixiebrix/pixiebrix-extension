@@ -297,8 +297,47 @@ describe("WithAsyncModVariable", () => {
       expect(actual).toStrictEqual({
         type: "object",
         properties: {
-          // For now, only provide existence information for the variable
-          foo: true,
+          foo: {
+            type: "object",
+            properties: {
+              isLoading: {
+                type: "boolean",
+              },
+              isFetching: {
+                type: "boolean",
+              },
+              isSuccess: {
+                type: "boolean",
+              },
+              isError: {
+                type: "boolean",
+              },
+              currentData: {
+                type: "object",
+              },
+              data: {
+                type: "object",
+              },
+              requestId: {
+                type: "string",
+                format: "uuid",
+              },
+              error: {
+                type: "object",
+              },
+            },
+            additionalProperties: false,
+            required: [
+              "isLoading",
+              "isFetching",
+              "isSuccess",
+              "isError",
+              "currentData",
+              "data",
+              "requestId",
+              "error",
+            ],
+          },
         },
         additionalProperties: false,
         required: ["foo"],
