@@ -25,7 +25,7 @@ import React, {
 import { type WidgetProps } from "@rjsf/core";
 import { isNumber } from "lodash";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
-import { FormGroup, FormLabel } from "react-bootstrap";
+import { FormLabel } from "react-bootstrap";
 
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,
@@ -75,6 +75,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   );
 
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
+  // @see https://github.com/pixiebrix/pixiebrix-extension/pull/6899 for why we added the label
   return (
     <>
       <FormLabel htmlFor={id}>{label}</FormLabel>
