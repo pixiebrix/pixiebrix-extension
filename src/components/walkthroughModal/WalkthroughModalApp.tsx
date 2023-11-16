@@ -173,13 +173,10 @@ export const showWalkthroughModal = async () => {
   expectContext("contentScript");
 
   controller = new AbortController();
-
   const target = await getThisFrame();
 
   const frameSource = new URL(browser.runtime.getURL("walkthroughModal.html"));
-  frameSource.searchParams.set("nonce", "page-editor-walkthrough");
   frameSource.searchParams.set("opener", JSON.stringify(target));
-  frameSource.searchParams.set("mode", "modal");
 
   const modal = registerModal();
   showModal({ url: frameSource, controller });

@@ -33,7 +33,7 @@
     opacity: 1;
 
     &:global(.active) {
-      background-color: #5217c6;
+      background-color: $primary-bg;
     }
   }
 }
