@@ -102,7 +102,7 @@ export const pageEditorAction: Action = {
     reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_LINK_CLICK, {
       source: "quick bar",
     });
-    showWalkthroughModal();
+    void showWalkthroughModal();
   },
 };
 

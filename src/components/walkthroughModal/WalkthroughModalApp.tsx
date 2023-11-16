@@ -24,7 +24,7 @@ import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
 import { registerWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import { closeWalkthroughModal } from "@/contentScript/messenger/api";
-import { Target } from "@/types/messengerTypes";
+import { type Target } from "@/types/messengerTypes";
 import inspectContextMenuImage from "@img/inspect-context-menu.svg";
 import devtoolsShortcutWindowsImage from "@img/devtools-shortcut-windows.svg";
 import devtoolsShortcutMacImage from "@img/devtools-shortcut-mac.svg";
@@ -155,7 +155,7 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
           />
           <p className="mt-3 mb-0">
             Last step is to select the PixieBrix tab from the tab bar. If you
-            don’t see the tab, it's probably behind the double-chevron menu.
+            don’t see the tab, it’s probably behind the double-chevron menu.
           </p>
         </>
       ),
@@ -187,15 +187,13 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
         controls={false}
         indicators={false}
       >
-        {steps.map((step, index) => {
-          return (
-            <Carousel.Item key={index}>
-              <Modal.Body className="show-grid">
-                <Container>{step.body}</Container>
-              </Modal.Body>
-            </Carousel.Item>
-          );
-        })}
+        {steps.map((step, index) => (
+          <Carousel.Item key={index}>
+            <Modal.Body className="show-grid">
+              <Container>{step.body}</Container>
+            </Modal.Body>
+          </Carousel.Item>
+        ))}
       </Carousel>
       <Modal.Body className={cx("show-grid", styles.modalFooter)}>
         <Row>
@@ -218,17 +216,16 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
             <ol
               className={cx(styles.carouselIndicators, "carousel-indicators")}
             >
-              {steps.map((_, index) => {
-                return (
-                  <li
-                    key={index}
-                    className={cx({ active: index === stepIndex })}
-                    onClick={() => {
-                      setStepIndex(index);
-                    }}
-                  />
-                );
-              })}
+              {steps.map((_, index) => (
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- Navigation can be done via prev/next buttons
+                <li
+                  key={index}
+                  className={cx({ active: index === stepIndex })}
+                  onClick={() => {
+                    setStepIndex(index);
+                  }}
+                />
+              ))}
             </ol>
           </Col>
           <Col className="d-flex justify-content-end">

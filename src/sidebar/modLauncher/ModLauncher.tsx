@@ -44,9 +44,7 @@ const ModLauncher: React.FunctionComponent = () => {
       </div>
       {permit("page-editor") && (
         <Navbar className={styles.footer}>
-          <a
-            href="#"
-            role="button"
+          <button
             onClick={async (event) => {
               event.preventDefault();
 
@@ -60,7 +58,7 @@ const ModLauncher: React.FunctionComponent = () => {
             }}
           >
             Learn: Open the Page Editor
-          </a>
+          </button>
           <span className="mx-2">•</span>{" "}
           <a href="https://docs.pixiebrix.com/">Documentation</a>
         </Navbar>

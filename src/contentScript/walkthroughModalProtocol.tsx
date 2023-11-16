@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pDefer, { DeferredPromise } from "p-defer";
+import pDefer, { type DeferredPromise } from "p-defer";
 
 let modal: DeferredPromise<unknown> | null = null;
 
-export function registerWalkthroughModal() {
+export async function registerWalkthroughModal() {
   if (!modal) {
     modal = pDefer();
   }

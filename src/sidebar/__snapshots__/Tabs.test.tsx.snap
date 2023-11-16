@@ -130,12 +130,9 @@ exports[`Tabs Mod Launcher renders with mod launcher 1`] = `
           <nav
             class="footer navbar navbar-expand navbar-light"
           >
-            <a
-              href="#"
-              role="button"
-            >
+            <button>
               Learn: Open the Page Editor
-            </a>
+            </button>
             <span
               class="mx-2"
             >
