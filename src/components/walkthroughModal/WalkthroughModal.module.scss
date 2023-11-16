@@ -14,7 +14,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors";
 
 .root {
   height: 467px;
+}
+
+.carouselIndicators {
+  position: inherit;
+  margin: 0;
+
+  li {
+    width: 8px;
+    height: 8px;
+    margin: 4px;
+    border-radius: 50%;
+    background-color: $S4;
+    opacity: 1;
+
+    &:global(.active) {
+      background-color: #5217c6;
+    }
+  }
 }

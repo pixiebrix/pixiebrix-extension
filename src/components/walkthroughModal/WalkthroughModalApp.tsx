@@ -29,7 +29,10 @@ import inspectContextMenuImage from "@img/inspect-context-menu.svg";
 import devtoolsShortcutWindowsImage from "@img/devtools-shortcut-windows.svg";
 import devtoolsShortcutMacImage from "@img/devtools-shortcut-mac.svg";
 import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.svg";
-import devtoolsToolbarScreenshot from "@img/devtools-toolbar-screenshot.png";
+import devtoolsToolbarScreenshot from "@img/devtools-toolbar-screenshot.svg";
+import devtoolsPixieBrixToolbarTab from "@img/devtools-pixiebrix-toolbar-tab.svg";
+import devtoolsPixieBrixToolbarTabHidden from "@img/devtools-pixiebrix-toolbar-tab-hidden.svg";
+
 import cx from "classnames";
 
 let controller: AbortController;
@@ -40,13 +43,9 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
 
   const steps = [
     <>
-      <Row>
-        <Modal.Title>Opening the Chrome dev tools</Modal.Title>
-      </Row>
-      <Row>
-        The Page Editor lives in the Chrome Dev tools. So the first step is to
-        open them. You can open it in two different ways.
-      </Row>
+      <Modal.Title>Opening the Chrome dev tools</Modal.Title>
+      The Page Editor lives in the Chrome Dev tools. So the first step is to
+      open them. You can open it in two different ways.
       <Row>
         <Col>
           <img src={inspectContextMenuImage} alt="" />
@@ -62,13 +61,9 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       </Row>
     </>,
     <>
-      <Row>
-        <Modal.Title>Docking the dev tools</Modal.Title>
-      </Row>
-      <Row>
-        Dock the dev tools to the bottom of the screen, if necessary. The Page
-        Editor is a powerful tool that needs a bit of room to work it’s magic.
-      </Row>
+      <Modal.Title>Docking the dev tools</Modal.Title>
+      Dock the dev tools to the bottom of the screen, if necessary. The Page
+      Editor is a powerful tool that needs a bit of room to work it’s magic.
       <Row>
         <Col>
           <img src={devtoolsToolbarScreenshot} alt="" />
@@ -77,19 +72,15 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
           <img src={devtoolsDockingContextMenu} alt="" />
         </Col>
       </Row>
-      <Row>
-        Click the TODO menu in the top right of the dev tools Select the TODO
-        (third option) under ‘Dock side’
-      </Row>
+      Click the TODO menu in the top right of the dev tools Select the TODO
+      (third option) under ‘Dock side’
     </>,
     <>
-      <Row>
-        <Modal.Title>Opening the Page Editor</Modal.Title>
-      </Row>
-      <Row>
-        Last step is to select the PixieBrix tab from the tab bar. If you don’t
-        see the tab, it’s probably behind the double-chevron menu.
-      </Row>
+      <Modal.Title>Opening the Page Editor</Modal.Title>
+      <img src={devtoolsPixieBrixToolbarTab} alt="" />
+      <img src={devtoolsPixieBrixToolbarTabHidden} alt="" />
+      Last step is to select the PixieBrix tab from the tab bar. If you don’t
+      see the tab, it’s probably behind the double-chevron menu.
     </>,
   ];
 
@@ -124,33 +115,56 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
           );
         })}
       </Carousel>
-      <Modal.Footer className={stepIndex > 0 ? "justify-content-between" : ""}>
-        {stepIndex > 0 && (
-          <Button
-            size="sm"
-            variant="link"
-            onClick={() => {
-              if (stepIndex > 0) {
-                setStepIndex(stepIndex - 1);
-              }
-            }}
-          >
-            Prev
-          </Button>
-        )}
-        <Button
-          size="sm"
-          onClick={() => {
-            if (stepIndex < steps.length - 1) {
-              setStepIndex(stepIndex + 1);
-            } else {
-              closeWalkthroughModal(opener);
-            }
-          }}
-        >
-          {stepIndex < steps.length - 1 ? "Next" : "Close"}
-        </Button>
-      </Modal.Footer>
+      <Modal.Body className="show-grid">
+        <Row>
+          <Col>
+            {stepIndex > 0 && (
+              <Button
+                size="sm"
+                variant="link"
+                onClick={() => {
+                  if (stepIndex > 0) {
+                    setStepIndex(stepIndex - 1);
+                  }
+                }}
+              >
+                Prev
+              </Button>
+            )}
+          </Col>
+          <Col>
+            <ol
+              className={cx(styles.carouselIndicators, "carousel-indicators")}
+            >
+              {steps.map((_, index) => {
+                return (
+                  <li
+                    key={index}
+                    className={cx({ active: index === stepIndex })}
+                    onClick={() => {
+                      setStepIndex(index);
+                    }}
+                  />
+                );
+              })}
+            </ol>
+          </Col>
+          <Col className="d-flex justify-content-end">
+            <Button
+              size="sm"
+              onClick={() => {
+                if (stepIndex < steps.length - 1) {
+                  setStepIndex(stepIndex + 1);
+                } else {
+                  closeWalkthroughModal(opener);
+                }
+              }}
+            >
+              {stepIndex < steps.length - 1 ? "Next" : "Close"}
+            </Button>
+          </Col>
+        </Row>
+      </Modal.Body>
     </Modal>
   );
 };
