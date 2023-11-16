@@ -18,9 +18,11 @@
 // WARNING: this file MUST NOT directly or transitively import webext-messenger because it does not support being
 // imported multiple times in the same contentScript. It's only safe to import webext-messenger in contentScriptCore.ts
 // which is behind a guarded dynamic import.
+// https://github.com/pixiebrix/webext-messenger/issues/88
 
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { loadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
+
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
 
