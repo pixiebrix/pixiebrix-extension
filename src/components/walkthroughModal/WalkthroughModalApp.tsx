@@ -34,54 +34,76 @@ import devtoolsPixieBrixToolbarTab from "@img/devtools-pixiebrix-toolbar-tab.svg
 import devtoolsPixieBrixToolbarTabHidden from "@img/devtools-pixiebrix-toolbar-tab-hidden.svg";
 
 import cx from "classnames";
+import { isMac } from "@/utils/browserUtils";
 
 let controller: AbortController;
+
+type WalkthroughModalStep = {
+  title: string;
+  body: React.ReactNode;
+};
+
 export const WalkthroughModalApp: React.FunctionComponent = () => {
   const [stepIndex, setStepIndex] = useState(0);
   const params = new URLSearchParams(location.search);
   const opener = JSON.parse(params.get("opener")) as Target;
 
-  const steps = [
-    <>
-      <Modal.Title>Opening the Chrome dev tools</Modal.Title>
-      The Page Editor lives in the Chrome Dev tools. So the first step is to
-      open them. You can open it in two different ways.
-      <Row>
-        <Col>
-          <img src={inspectContextMenuImage} alt="" />
-        </Col>
-        <Col>
-          <img src={devtoolsShortcutMacImage} alt="" />
-          <img src={devtoolsShortcutWindowsImage} alt="" />
-        </Col>
-      </Row>
-      <Row>
-        <Col>Right click anywhere on the page and select “Inspect”</Col>
-        <Col>Or Utilize the keyboard shortcut for your system</Col>
-      </Row>
-    </>,
-    <>
-      <Modal.Title>Docking the dev tools</Modal.Title>
-      Dock the dev tools to the bottom of the screen, if necessary. The Page
-      Editor is a powerful tool that needs a bit of room to work it’s magic.
-      <Row>
-        <Col>
-          <img src={devtoolsToolbarScreenshot} alt="" />
-        </Col>
-        <Col>
-          <img src={devtoolsDockingContextMenu} alt="" />
-        </Col>
-      </Row>
-      Click the TODO menu in the top right of the dev tools Select the TODO
-      (third option) under ‘Dock side’
-    </>,
-    <>
-      <Modal.Title>Opening the Page Editor</Modal.Title>
-      <img src={devtoolsPixieBrixToolbarTab} alt="" />
-      <img src={devtoolsPixieBrixToolbarTabHidden} alt="" />
-      Last step is to select the PixieBrix tab from the tab bar. If you don’t
-      see the tab, it’s probably behind the double-chevron menu.
-    </>,
+  const steps: WalkthroughModalStep[] = [
+    {
+      title: "Opening the Chrome DevTools",
+      body: (
+        <>
+          The Page Editor lives in the Chrome Dev tools. So the first step is to
+          open them. You can open it in two different ways.
+          <Row>
+            <Col>
+              <img src={inspectContextMenuImage} alt="" />
+            </Col>
+            <Col>
+              {isMac() ? (
+                <img src={devtoolsShortcutMacImage} alt="" />
+              ) : (
+                <img src={devtoolsShortcutWindowsImage} alt="" />
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col>Right click anywhere on the page and select “Inspect”</Col>
+            <Col>Or Utilize the keyboard shortcut for your system</Col>
+          </Row>
+        </>
+      ),
+    },
+    {
+      title: "Docking the DevTools",
+      body: (
+        <>
+          Dock the dev tools to the bottom of the screen, if necessary. The Page
+          Editor is a powerful tool that needs a bit of room to work its magic.
+          <Row>
+            <Col>
+              <img src={devtoolsToolbarScreenshot} alt="" />
+            </Col>
+            <Col>
+              <img src={devtoolsDockingContextMenu} alt="" />
+            </Col>
+          </Row>
+          Click the TODO menu in the top right of the dev tools Select the TODO
+          (third option) under ‘Dock side’
+        </>
+      ),
+    },
+    {
+      title: "Opening the Page Editor",
+      body: (
+        <>
+          <img src={devtoolsPixieBrixToolbarTab} alt="" />
+          <img src={devtoolsPixieBrixToolbarTabHidden} alt="" />
+          Last step is to select the PixieBrix tab from the tab bar. If you
+          don’t see the tab, it's probably behind the double-chevron menu.
+        </>
+      ),
+    },
   ];
 
   return (
@@ -94,9 +116,12 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
       }}
     >
       <Modal.Header closeButton>
-        <small>
-          Step {stepIndex + 1} of {steps.length}
-        </small>
+        <div>
+          <small>
+            Step {stepIndex + 1} of {steps.length}
+          </small>
+          <Modal.Title>{steps[stepIndex].title}</Modal.Title>
+        </div>
       </Modal.Header>
       <Carousel
         activeIndex={stepIndex}
@@ -105,11 +130,11 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
         controls={false}
         indicators={false}
       >
-        {steps.map((step) => {
+        {steps.map((step, index) => {
           return (
-            <Carousel.Item>
+            <Carousel.Item key={index}>
               <Modal.Body className={cx("show-grid", styles.root)}>
-                <Container>{step}</Container>
+                <Container>{step.body}</Container>
               </Modal.Body>
             </Carousel.Item>
           );
@@ -181,6 +206,9 @@ export const showWalkthroughModal = async () => {
   const modal = registerModal();
   showModal({ url: frameSource, controller });
 
-  await modal;
-  controller.abort();
+  try {
+    await modal;
+  } finally {
+    controller.abort();
+  }
 };

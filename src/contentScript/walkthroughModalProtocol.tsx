@@ -17,13 +17,17 @@
 
 import pDefer, { DeferredPromise } from "p-defer";
 
-let modal: DeferredPromise<unknown>;
+let modal: DeferredPromise<unknown> | null = null;
 
 export function registerModal() {
-  modal = pDefer();
+  if (!modal) {
+    modal = pDefer();
+  }
+
   return modal.promise;
 }
 
 export function closeWalkthroughModal() {
   modal.resolve();
+  modal = null;
 }
