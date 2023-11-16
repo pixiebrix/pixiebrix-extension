@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
+
 import "./ephemeralModal.scss";
 
 import "@/extensionContext";

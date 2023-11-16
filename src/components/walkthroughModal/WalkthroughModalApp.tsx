@@ -26,6 +26,8 @@ import { Target } from "@/types/messengerTypes";
 import inspectContextMenuImage from "@img/inspect-context-menu.svg";
 import devtoolsShortcutWindowsImage from "@img/devtools-shortcut-windows.svg";
 import devtoolsShortcutMacImage from "@img/devtools-shortcut-mac.svg";
+import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.svg";
+import devtoolsToolbarScreenshot from "@img/devtools-toolbar-screenshot.png";
 
 let controller: AbortController;
 export const WalkthroughModalApp: React.FunctionComponent = () => {
@@ -58,6 +60,40 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
         </Row>
       </Container>
     </Modal.Body>,
+    <Modal.Body className="show-grid">
+      <Container>
+        <Row>
+          <Modal.Title>Docking the dev tools</Modal.Title>
+        </Row>
+        <Row>
+          Dock the dev tools to the bottom of the screen, if necessary. The Page
+          Editor is a powerful tool that needs a bit of room to work it’s magic.
+        </Row>
+        <Row>
+          <Col>
+            <img src={devtoolsToolbarScreenshot} alt="" />
+          </Col>
+          <Col>
+            <img src={devtoolsDockingContextMenu} alt="" />
+          </Col>
+        </Row>
+        <Row>
+          Click the TODO menu in the top right of the dev tools Select the TODO
+          (third option) under ‘Dock side’
+        </Row>
+      </Container>
+    </Modal.Body>,
+    <Modal.Body className="show-grid">
+      <Container>
+        <Row>
+          <Modal.Title>Opening the Page Editor</Modal.Title>
+        </Row>
+        <Row>
+          Last step is to select the PixieBrix tab from the tab bar. If you
+          don’t see the tab, it’s probably behind the double-chevron menu.
+        </Row>
+      </Container>
+    </Modal.Body>,
   ];
 
   return (
@@ -69,7 +105,11 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
         closeWalkthroughModal(opener);
       }}
     >
-      <Modal.Header closeButton />
+      <Modal.Header closeButton>
+        <small>
+          Step {stepIndex + 1} of {steps.length}
+        </small>
+      </Modal.Header>
       <Carousel
         activeIndex={stepIndex}
         interval={null}
@@ -81,24 +121,28 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
           return <Carousel.Item>{step}</Carousel.Item>;
         })}
       </Carousel>
-      <Modal.Footer>
-        <Button
-          onClick={() => {
-            if (stepIndex > 0) {
-              setStepIndex(stepIndex - 1);
-            }
-          }}
-        >
-          Prev
-        </Button>
+      <Modal.Footer className={stepIndex > 0 ? "justify-content-between" : ""}>
+        {stepIndex > 0 && (
+          <Button
+            onClick={() => {
+              if (stepIndex > 0) {
+                setStepIndex(stepIndex - 1);
+              }
+            }}
+          >
+            Prev
+          </Button>
+        )}
         <Button
           onClick={() => {
             if (stepIndex < steps.length - 1) {
               setStepIndex(stepIndex + 1);
+            } else {
+              closeWalkthroughModal(opener);
             }
           }}
         >
-          Next
+          {stepIndex < steps.length - 1 ? "Next" : "Close"}
         </Button>
       </Modal.Footer>
     </Modal>
