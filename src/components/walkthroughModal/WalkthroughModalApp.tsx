@@ -169,7 +169,7 @@ const WalkthroughModalApp: React.FunctionComponent = () => {
       }}
       className={styles.root}
     >
-      <Modal.Header closeButton>
+      <Modal.Header className={styles.modalHeader} closeButton>
         <Container>
           <small>
             Step {stepIndex + 1} of {steps.length}

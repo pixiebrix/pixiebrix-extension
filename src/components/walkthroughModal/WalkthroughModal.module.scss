@@ -79,3 +79,14 @@
     rgb(255, 255, 255) 33%
   );
 }
+
+.modalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-image: linear-gradient(
+    to top,
+    rgba(255, 0, 0, 0),
+    rgb(255, 255, 255) 10%
+  );
+}
