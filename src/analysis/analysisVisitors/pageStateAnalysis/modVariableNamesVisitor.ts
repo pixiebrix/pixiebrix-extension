@@ -35,7 +35,7 @@ export type ModVariableNameResult = {
  * Visitor to collect all events fired by a single FormState.
  * @since 1.7.34
  */
-class CollectNamesVisitor extends PipelineVisitor {
+class ModVariableNamesVisitor extends PipelineVisitor {
   readonly schemaPromises: Array<Promise<Schema>> = [];
 
   constructor(readonly allBlocks: TypedBlockMap) {
@@ -60,7 +60,7 @@ class CollectNamesVisitor extends PipelineVisitor {
     formStates: ModComponentFormState[]
   ): Promise<ModVariableNameResult> {
     const allBlocks = await blockRegistry.allTyped();
-    const visitor = new CollectNamesVisitor(allBlocks);
+    const visitor = new ModVariableNamesVisitor(allBlocks);
 
     for (const formState of formStates) {
       visitor.visitRootPipeline(formState.extension.blockPipeline);
@@ -85,4 +85,4 @@ class CollectNamesVisitor extends PipelineVisitor {
   }
 }
 
-export default CollectNamesVisitor;
+export default ModVariableNamesVisitor;

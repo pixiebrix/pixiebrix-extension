@@ -16,7 +16,7 @@
  */
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import CollectNamesVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableNamesVisitor";
+import ModVariableNamesVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableNamesVisitor";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
@@ -35,7 +35,7 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames([formState]);
+    const result = ModVariableNamesVisitor.collectNames([formState]);
 
     await expect(result).resolves.toEqual({
       knownNames: ["foo"],
@@ -59,7 +59,7 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames([
+    const result = ModVariableNamesVisitor.collectNames([
       formState,
       otherFormState,
     ]);
@@ -86,7 +86,7 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames([
+    const result = ModVariableNamesVisitor.collectNames([
       formState,
       otherFormState,
     ]);
