@@ -21,6 +21,10 @@ import { getMethod, getNotifier } from "webext-messenger";
 export const getFormDefinition = getMethod("FORM_GET_DEFINITION");
 export const resolveForm = getMethod("FORM_RESOLVE");
 export const cancelForm = getNotifier("FORM_CANCEL");
+
+export const closeWalkthroughModal = getNotifier("WALKTHROUGH_MODAL_CLOSE");
+export const showWalkthroughModal = getNotifier("WALKTHROUGH_MODAL_SHOW");
+
 export const getPanelDefinition = getMethod("PANEL_GET_DEFINITION");
 export const cancelTemporaryPanel = getNotifier("TEMPORARY_PANEL_CANCEL");
 export const closeTemporaryPanel = getNotifier("TEMPORARY_PANEL_CLOSE");

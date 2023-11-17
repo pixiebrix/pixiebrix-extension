@@ -78,6 +78,8 @@ import {
 } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
+import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
+import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 
 expectContext("contentScript");
 
@@ -86,6 +88,8 @@ declare global {
     FORM_GET_DEFINITION: typeof getFormDefinition;
     FORM_RESOLVE: typeof resolveForm;
     FORM_CANCEL: typeof cancelForm;
+    WALKTHROUGH_MODAL_CLOSE: typeof closeWalkthroughModal;
+    WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
     TEMPORARY_PANEL_CLOSE: typeof stopWaitingForTemporaryPanels;
     TEMPORARY_PANEL_CANCEL: typeof cancelTemporaryPanels;
     PANEL_GET_DEFINITION: typeof getPanelDefinition;
@@ -149,6 +153,9 @@ export default function registerMessenger(): void {
     FORM_GET_DEFINITION: getFormDefinition,
     FORM_RESOLVE: resolveForm,
     FORM_CANCEL: cancelForm,
+
+    WALKTHROUGH_MODAL_CLOSE: closeWalkthroughModal,
+    WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
 
     TEMPORARY_PANEL_CLOSE: stopWaitingForTemporaryPanels,
     TEMPORARY_PANEL_CANCEL: cancelTemporaryPanels,
