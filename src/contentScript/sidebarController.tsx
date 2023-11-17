@@ -59,7 +59,7 @@ export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
 const panels: PanelEntry[] = [];
 
-let modActivationPanelEntry: ModActivationPanelEntry = null;
+let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.

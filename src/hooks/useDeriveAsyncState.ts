@@ -109,7 +109,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
 ): AsyncState<Result> {
   // Ref to track if this is the initial mount
   const initialMountRef = useRef(true);
-  const promiseNonce = useRef<UUID>(null);
+  const promiseNonce = useRef<UUID | null>(null);
 
   // Callback to check if the component is still mounted, to avoid updating state on unmounted React components
   const checkIsMounted = useIsMounted();

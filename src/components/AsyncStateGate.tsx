@@ -76,9 +76,9 @@ type AsyncStateGateProps<Data> = PropsWithoutRef<{
  * Renders the children if the state is not loading or errored
  * @see useAsyncState
  */
-const AsyncStateGate = <Data,>(
+function AsyncStateGate<Data>(
   props: AsyncStateGateProps<Data>
-): React.ReactElement => {
+): React.ReactElement {
   const { children, state, renderError, renderLoader } = props;
   const { data, isLoading, isUninitialized, isFetching, isError, error } =
     state;
@@ -97,7 +97,8 @@ const AsyncStateGate = <Data,>(
     throw error;
   }
 
-  return <>{children({ data })}</>;
-};
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Verified via isLoading/isError
+  return <>{children({ data: data! })}</>;
+}
 
 export default AsyncStateGate;
