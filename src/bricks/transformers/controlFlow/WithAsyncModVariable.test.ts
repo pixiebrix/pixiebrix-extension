@@ -312,12 +312,8 @@ describe("WithAsyncModVariable", () => {
               isError: {
                 type: "boolean",
               },
-              currentData: {
-                type: "object",
-              },
-              data: {
-                type: "object",
-              },
+              currentData: {},
+              data: {},
               requestId: {
                 type: "string",
                 format: "uuid",
