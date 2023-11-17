@@ -20,10 +20,8 @@
 // https://github.com/archersado/nunjucks-variable-parser
 
 import { addPathPart } from "@/runtime/pathHelpers";
-import * as nunjucks from "nunjucks";
-
 // @ts-expect-error -- The typings of nunjucks do not expose parser and nodes
-const { parser, nodes } = nunjucks;
+import { parser, nodes } from "nunjucks";
 
 const VARIABLE_PARENT_SYMBOL = Symbol("#Variable_parent");
 const VARIABLE_CHILDREN_SYMBOL = Symbol("#Variable_children");

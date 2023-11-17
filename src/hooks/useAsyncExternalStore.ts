@@ -24,7 +24,7 @@ import {
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateUUID } from "@/types/helpers";
 import deepEquals from "fast-deep-equal";
 
 type Subscribe = (callback: () => void) => () => void;
@@ -32,15 +32,13 @@ type Subscribe = (callback: () => void) => () => void;
 class StateController<T = unknown> {
   private readonly stateListeners = new Set<() => void>();
   private state: AsyncState<T> = uninitializedAsyncStateFactory();
-
-  // @ts-expect-error "Property 'nonce' has no initializer and is not definitely assigned in the constructor." -- But it is!
-  private nonce: UUID;
+  private nonce: UUID = validateUUID(null); // TODO: Drop after strictNullCheck transition; Silences TS bug
 
   constructor(
     readonly externalSubscribe: Subscribe,
     readonly factory: () => Promise<T>
   ) {
-    externalSubscribe(this.updateSnapshot.bind(this));
+    externalSubscribe(this.updateSnapshot);
     void this.updateSnapshot();
   }
 
@@ -59,6 +57,8 @@ class StateController<T = unknown> {
       listener();
     }
   }
+
+  getSnapshot = (): AsyncState<T> => this.state;
 
   updateSnapshot = async (): Promise<void> => {
     this.state = this.state.isUninitialized
@@ -99,10 +99,6 @@ class StateController<T = unknown> {
 
     this.notifyAll();
   };
-
-  getSnapshot(): AsyncState<T> {
-    return this.state;
-  }
 }
 
 const stateControllerMap = new Map<Subscribe, StateController>();
