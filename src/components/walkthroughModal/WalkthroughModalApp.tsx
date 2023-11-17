@@ -19,10 +19,6 @@ import styles from "./WalkthroughModal.module.scss";
 
 import { Button, Carousel, Col, Container, Modal, Row } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import { expectContext } from "@/utils/expectContext";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { getThisFrame } from "webext-messenger";
-import { registerWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import { closeWalkthroughModal } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import { Events } from "@/telemetry/events";
@@ -39,8 +35,6 @@ import { isMac } from "@/utils/browserUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import reportEvent from "@/telemetry/reportEvent";
-
-let controller: AbortController;
 
 type WalkthroughModalStep = {
   title: string;
@@ -152,14 +146,14 @@ const steps: WalkthroughModalStep[] = [
   },
 ];
 
-export const WalkthroughModalApp: React.FunctionComponent = () => {
+const WalkthroughModalApp: React.FunctionComponent = () => {
   const [stepIndex, setStepIndex] = useState(0);
   const params = new URLSearchParams(location.search);
   const opener = JSON.parse(params.get("opener")) as Target;
 
   useEffect(() => {
     reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_MODAL_VIEW, {
-      stepIndex,
+      stepNumber: stepIndex + 1,
       // eslint-disable-next-line security/detect-object-injection -- steps are constants defined in this file
       stepTitle: steps[stepIndex].title,
     });
@@ -251,22 +245,4 @@ export const WalkthroughModalApp: React.FunctionComponent = () => {
   );
 };
 
-export const showWalkthroughModal = async () => {
-  expectContext("contentScript");
-
-  controller = new AbortController();
-  const target = await getThisFrame();
-
-  const frameSource = new URL(browser.runtime.getURL("walkthroughModal.html"));
-  frameSource.searchParams.set("opener", JSON.stringify(target));
-
-  const modal = registerWalkthroughModal();
-  showModal({ url: frameSource, controller });
-
-  try {
-    await modal;
-  } finally {
-    reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_MODAL_CLOSE);
-    controller.abort();
-  }
-};
+export default WalkthroughModalApp;

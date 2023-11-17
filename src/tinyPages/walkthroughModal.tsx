@@ -26,7 +26,7 @@ import "@/extensionContext";
 import React from "react";
 import { render } from "react-dom";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
-import { WalkthroughModalApp } from "@/components/walkthroughModal/WalkthroughModalApp";
+import WalkthroughModalApp from "@/components/walkthroughModal/WalkthroughModalApp";
 
 void initRuntimeLogging();
 

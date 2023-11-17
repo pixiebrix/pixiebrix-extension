@@ -78,7 +78,7 @@ import {
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
-import { showWalkthroughModal } from "@/components/walkthroughModal/WalkthroughModalApp";
+import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 
 expectContext("contentScript");
 
