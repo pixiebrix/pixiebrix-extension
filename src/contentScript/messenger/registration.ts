@@ -54,6 +54,7 @@ import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
+  navigateTab,
 } from "@/contentScript/pageEditor";
 import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
@@ -97,6 +98,7 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
 
+    NAVIGATE_TAB: typeof navigateTab;
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -165,6 +167,7 @@ export default function registerMessenger(): void {
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     GET_RESERVED_SIDEBAR_ENTRIES: getReservedPanelEntries,
     RESET_TAB: resetTab,
+    NAVIGATE_TAB: navigateTab,
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
     HANDLE_MENU_ACTION: handleMenuAction,
