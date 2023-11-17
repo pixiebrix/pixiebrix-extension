@@ -17,7 +17,7 @@
 
 import pDefer, { type DeferredPromise } from "p-defer";
 
-let modal: DeferredPromise<unknown> | null = null;
+let modal: DeferredPromise<void> | null = null;
 
 export async function registerWalkthroughModal() {
   if (!modal) {
