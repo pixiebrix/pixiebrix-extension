@@ -26,6 +26,7 @@ export const cancelTemporaryPanel = getNotifier("TEMPORARY_PANEL_CANCEL");
 export const closeTemporaryPanel = getNotifier("TEMPORARY_PANEL_CLOSE");
 export const resolveTemporaryPanel = getNotifier("TEMPORARY_PANEL_RESOLVE");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
+export const navigateTab = getNotifier("NAVIGATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
 export const ensureExtensionPointsInstalled = getMethod(
   "ENSURE_EXTENSION_POINTS_INSTALLED"
