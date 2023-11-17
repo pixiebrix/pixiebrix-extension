@@ -15,38 +15,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
+import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import { BusinessError } from "@/errors/businessErrors";
 import { makeURL } from "@/utils/urlUtils";
 
 describe("assertHttpsUrl", () => {
   test("parses HTTPS URLs", () => {
-    expect(assertHttpsUrl("https://example.com")).toStrictEqual(
+    expect(assertProtocolUrl("https://example.com", ["https:"])).toStrictEqual(
       new URL("https://example.com")
     );
   });
-  test("rejects HTTP URLs", () => {
-    expect(() => assertHttpsUrl("http://example.com")).toThrow(
+  test("rejects HTTP URLs if not specified", () => {
+    expect(() => assertProtocolUrl("http://example.com", ["https:"])).toThrow(
       new BusinessError("Unsupported protocol: http:. Use https:")
     );
   });
+  test("allows HTTP URLs if specified", () => {
+    expect(assertProtocolUrl("https://example.com", ["https:"])).toStrictEqual(
+      new URL("http://example.com")
+    );
+  });
+  test("rejects unsupported protocol", () => {
+    expect(() =>
+      assertProtocolUrl("file://foo.txt", ["http:", "https:"])
+    ).toThrow(
+      new BusinessError("Unsupported protocol: file:. Use http:, https:")
+    );
+  });
   test("rejects invalid URLs", () => {
-    expect(() => assertHttpsUrl("https::/example.com")).toThrow(
+    expect(() => assertProtocolUrl("https::/example.com", ["https:"])).toThrow(
       new BusinessError("Invalid URL: https::/example.com")
     );
   });
   test("parses relative URLs with a base", () => {
     expect(
-      assertHttpsUrl("/cool/path", "https://example.com/page")
+      assertProtocolUrl("/cool/path", ["https:"], {
+        baseUrl: "https://example.com/page",
+      })
     ).toStrictEqual(new URL("https://example.com/cool/path"));
   });
   test("rejects relative HTTP URLs", () => {
     expect(() =>
-      assertHttpsUrl("/cool/path", "http://example.com/page")
+      assertProtocolUrl("/cool/path", ["https:"], {
+        baseUrl: "http://example.com/page",
+      })
     ).toThrow(new BusinessError("Unsupported protocol: http:. Use https:"));
   });
   test("rejects invalid base URLs", () => {
-    expect(() => assertHttpsUrl("/cool/path", "https::/example.com")).toThrow(
+    expect(() =>
+      assertProtocolUrl("/cool/path", ["http:"], {
+        baseUrl: "https::/example.com",
+      })
+    ).toThrow(
       new BusinessError(
         "Invalid URL: /cool/path (base URL: https::/example.com)"
       )
