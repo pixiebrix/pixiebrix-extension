@@ -22,7 +22,7 @@ import PipelineVisitor, {
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { type Schema } from "@/types/schemaTypes";
-import { compact } from "lodash";
+import { compact, isEqual, uniqWith } from "lodash";
 
 export type ModVariableNameResult = {
   /**
@@ -71,14 +71,14 @@ class ModVariableNamesVisitor extends PipelineVisitor {
       visitor.schemaPromises
     );
 
-    const variableSchemas = new Set<Schema["properties"]>();
+    const variableSchemas: Array<Schema["properties"]> = [];
 
     for (const schema of compact(schemas)) {
-      variableSchemas.add(schema.properties ?? {});
+      variableSchemas.push(schema.properties ?? {});
     }
 
     return {
-      knownSchemas: [...variableSchemas],
+      knownSchemas: uniqWith<Schema["properties"]>(variableSchemas, isEqual),
     };
   }
 }

@@ -225,6 +225,40 @@ describe("Collecting available vars", () => {
       expect(foundationKnownVars.isVariableDefined("@mod.bar")).toBeFalse();
     });
 
+    it("collects nested mod variables", async () => {
+      const analysis = new VarAnalysis({
+        modState: {
+          foo: { data: 42, cachedData: 41, isLoading: true, isFetching: false },
+        },
+      });
+
+      const extension = formStateFactory({}, [brickConfigFactory()]);
+
+      await analysis.run(extension);
+
+      const foundationKnownVars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0");
+
+      console.log(JSON.stringify(foundationKnownVars));
+
+      expect(foundationKnownVars.isVariableDefined("@mod")).toBeTrue();
+      expect(foundationKnownVars.isVariableDefined("@mod.foo")).toBeTrue();
+      expect(foundationKnownVars.isVariableDefined("@mod.foo.data")).toBeTrue();
+      expect(
+        foundationKnownVars.isVariableDefined("@mod.foo.cachedData")
+      ).toBeTrue();
+      expect(
+        foundationKnownVars.isVariableDefined("@mod.foo.isLoading")
+      ).toBeTrue();
+      expect(
+        foundationKnownVars.isVariableDefined("@mod.foo.isFetching")
+      ).toBeTrue();
+      expect(
+        foundationKnownVars.isVariableDefined("@mod.foo.error")
+      ).toBeFalse();
+    });
+
     it("handles inferred mod variables", async () => {
       const analysis = new VarAnalysis({ modVariables: [{ foo: {} }] });
 
