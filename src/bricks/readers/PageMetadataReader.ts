@@ -39,7 +39,7 @@ export class PageMetadataReader extends ReaderABC {
 
   async read() {
     const { getMetadata } = await import(
-      /* webpackChunkName: "page-metadata-parser" */ "page-metadata-parser"
+      /* webpackChunkName: "page-metadata-parser" */ "@/vendors/page-metadata-parser/parser"
     );
     return getMetadata(document, location.href);
   }

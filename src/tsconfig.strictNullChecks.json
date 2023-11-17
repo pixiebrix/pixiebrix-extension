@@ -203,7 +203,7 @@
     "./development/useMessengerLogging.ts",
     "./development/visualInjection.ts",
     "./domConstants.ts",
-    "./errors/assertHttpsUrl.ts",
+    "./errors/assertProtocolUrl.ts",
     "./errors/businessErrors.ts",
     "./errors/clientRequestErrors.ts",
     "./errors/contextInvalidated.ts",

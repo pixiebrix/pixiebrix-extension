@@ -53,7 +53,7 @@ import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import Logo from "./Logo";
 import ReloadButton from "./ReloadButton";
-import AddExtensionPointButton from "./AddExtensionPointButton";
+import AddStarterBrickButton from "./AddStarterBrickButton";
 import ExtensionEntry from "./ExtensionEntry";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
@@ -214,7 +214,7 @@ const SidebarExpanded: React.FunctionComponent<{
               <Logo />
             </a>
 
-            <AddExtensionPointButton />
+            <AddStarterBrickButton />
 
             {showDeveloperUI && <ReloadButton />}
           </div>
