@@ -39,7 +39,7 @@ export function sanitizeIntegrationConfig(
       (!type.$ref || !REF_SECRETS.includes(type.$ref))
     ) {
       // Safe because we're getting from Object.entries
-      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion
+      // eslint-disable-next-line security/detect-object-injection
       result[key] = config[key] ?? null;
     }
   }

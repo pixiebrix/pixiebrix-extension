@@ -36,7 +36,8 @@ if (
   // Chrome only calls this function if the extension is reloaded
   browser.runtime.onInstalled.addListener(({ reason }) => {
     if (reason === "update") {
-      localStorage.setItem("dev:last-version", version_name);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Our manifest has it
+      localStorage.setItem("dev:last-version", version_name!);
     }
   });
 }

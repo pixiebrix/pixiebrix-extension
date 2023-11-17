@@ -21,6 +21,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 import { Button } from "react-bootstrap";
 import { isFetchableAsyncState } from "@/utils/asyncStateUtils";
+import { assert } from "@/utils/typeUtils";
 
 /**
  *  A standard error display for use with AsyncStateGate
@@ -97,8 +98,8 @@ function AsyncStateGate<Data>(
     throw error;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Verified via isLoading/isError
-  return <>{children({ data: data! })}</>;
+  assert(data, "data should be defined"); // Type-only check
+  return <>{children({ data })}</>;
 }
 
 export default AsyncStateGate;

@@ -84,7 +84,7 @@ export const RequireGoogleApi: React.FC = ({ children }) => {
   return <>{children}</>;
 };
 
-export function requireGoogleHOC<P>(
+export function requireGoogleHOC<P extends JSX.IntrinsicAttributes>(
   Component: React.FunctionComponent<P>
 ): React.FunctionComponent<P> {
   const WrappedComponent = (props: P) => (
