@@ -181,7 +181,7 @@ async function varAnalysisFactory(
 
   // The potential mod known mod variables
   const formStates = await selectActiveModFormStates(state);
-  const variables = await ModVariableNames.collectNames(formStates);
+  const variables = await ModVariableNames.collectSchemas(formStates);
 
   // The actual mod variables
   const modState = await getPageState(thisTab, {
@@ -193,7 +193,7 @@ async function varAnalysisFactory(
   return new VarAnalysis({
     trace,
     modState,
-    modVariables: variables.knownNames,
+    modVariables: variables.knownSchemas,
   });
 }
 

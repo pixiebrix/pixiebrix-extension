@@ -226,7 +226,7 @@ describe("Collecting available vars", () => {
     });
 
     it("handles inferred mod variables", async () => {
-      const analysis = new VarAnalysis({ modVariables: ["foo"] });
+      const analysis = new VarAnalysis({ modVariables: [{ foo: {} }] });
 
       const extension = formStateFactory({}, [brickConfigFactory()]);
 

@@ -26,9 +26,9 @@ import { compact } from "lodash";
 
 export type ModVariableNameResult = {
   /**
-   * Statically known mod variable names.
+   * Statically known mod variable schemas.
    */
-  knownNames: string[];
+  knownSchemas: Array<Schema["properties"]>;
 };
 
 /**
@@ -56,7 +56,7 @@ class ModVariableNamesVisitor extends PipelineVisitor {
     }
   }
 
-  static async collectNames(
+  static async collectSchemas(
     formStates: ModComponentFormState[]
   ): Promise<ModVariableNameResult> {
     const allBlocks = await blockRegistry.allTyped();
@@ -71,16 +71,14 @@ class ModVariableNamesVisitor extends PipelineVisitor {
       visitor.schemaPromises
     );
 
-    const variableNames = new Set<string>();
+    const variableSchemas = new Set<Schema["properties"]>();
 
     for (const schema of compact(schemas)) {
-      for (const variableName of Object.keys(schema.properties ?? {})) {
-        variableNames.add(variableName);
-      }
+      variableSchemas.add(schema.properties ?? {});
     }
 
     return {
-      knownNames: [...variableNames],
+      knownSchemas: [...variableSchemas],
     };
   }
 }

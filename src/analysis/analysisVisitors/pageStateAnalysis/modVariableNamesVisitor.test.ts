@@ -35,7 +35,7 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = ModVariableNamesVisitor.collectNames([formState]);
+    const result = ModVariableNamesVisitor.collectSchemas([formState]);
 
     await expect(result).resolves.toEqual({
       knownNames: ["foo"],
@@ -59,7 +59,7 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = ModVariableNamesVisitor.collectNames([
+    const result = ModVariableNamesVisitor.collectSchemas([
       formState,
       otherFormState,
     ]);
@@ -86,7 +86,7 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = ModVariableNamesVisitor.collectNames([
+    const result = ModVariableNamesVisitor.collectSchemas([
       formState,
       otherFormState,
     ]);
