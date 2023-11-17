@@ -16,7 +16,7 @@
  */
 
 import { getFormDefinition } from "@/contentScript/messenger/api";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 import EphemeralForm from "./EphemeralForm";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -47,13 +47,13 @@ describe("EphemeralForm", () => {
       location: "modal",
     });
 
-    const result = render(<EphemeralForm />);
+    const { asFragment } = render(<EphemeralForm />);
 
     await waitForEffect();
 
     // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
-    expect(result.queryByLabelText("foo")).not.toBeNull();
-    expect(result).toMatchSnapshot();
+    expect(screen.getByLabelText("foo")).not.toBeNull();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it("supports markdown in field descriptions", async () => {
@@ -75,13 +75,13 @@ describe("EphemeralForm", () => {
       location: "modal",
     });
 
-    const result = render(<EphemeralForm />);
+    const { asFragment } = render(<EphemeralForm />);
 
     await waitForEffect();
 
     // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
-    expect(result).toMatchSnapshot();
-    expect(result.container.querySelector("strong")).not.toBeNull();
+    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByRole("strong")).not.toBeNull();
   });
 
   it("supports markdown in form description", async () => {
@@ -98,13 +98,13 @@ describe("EphemeralForm", () => {
       location: "modal",
     });
 
-    const result = render(<EphemeralForm />);
+    const { asFragment } = render(<EphemeralForm />);
 
     await waitForEffect();
     await waitForEffect();
 
     // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
-    expect(result).toMatchSnapshot();
-    expect(result.container.querySelector("strong")).not.toBeNull();
+    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByRole("strong")).not.toBeNull();
   });
 });
