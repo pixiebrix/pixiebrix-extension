@@ -36,7 +36,7 @@ if (
   // Chrome only calls this function if the extension is reloaded
   browser.runtime.onInstalled.addListener(({ reason }) => {
     if (reason === "update") {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Our manifest has it
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Our manifest has it
       localStorage.setItem("dev:last-version", version_name!);
     }
   });
