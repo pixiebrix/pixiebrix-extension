@@ -60,6 +60,7 @@ function monkeyPatchFormWidgets() {
   const registry = getDefaultRegistry();
   // Use default widget instead of bs4 widget because the bs4 file widget is broken
   // https://github.com/rjsf-team/react-jsonschema-form/issues/2095#issuecomment-844309622
+  // TODO: Remove this monkeypatch since it was fixed in March 2023
   Theme.widgets.FileWidget = registry.widgets.FileWidget;
   return withTheme(Theme);
 }
