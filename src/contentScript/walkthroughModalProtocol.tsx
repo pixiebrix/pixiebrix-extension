@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,29 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.footer {
-  justify-content: center;
-  padding: 16px;
-  color: #675c7c;
-  font-size: 12px;
-  font-weight: 500;
+import pDefer, { type DeferredPromise } from "p-defer";
 
-  a,
-  button {
-    color: #675c7c;
+let modal: DeferredPromise<void> | null = null;
+
+export async function registerWalkthroughModal() {
+  if (!modal) {
+    modal = pDefer();
   }
 
-  button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    display: inline;
-    margin: 0;
-    padding: 0;
-    font-weight: 500;
+  return modal.promise;
+}
 
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+export function closeWalkthroughModal() {
+  modal.resolve();
+  modal = null;
 }

@@ -24,6 +24,8 @@ import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsLi
 import useFlags from "@/hooks/useFlags";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { showWalkthroughModal } from "@/contentScript/messenger/api";
+import { getTopLevelFrame } from "webext-messenger";
 
 const ModLauncher: React.FunctionComponent = () => {
   const { mods, error } = useMods();
@@ -42,16 +44,21 @@ const ModLauncher: React.FunctionComponent = () => {
       </div>
       {permit("page-editor") && (
         <Navbar className={styles.footer}>
-          <a
-            href="https://pixiebrix.com/developers-welcome"
-            onClick={() => {
+          <button
+            onClick={async (event) => {
+              event.preventDefault();
+
               reportEvent(Events.PAGE_EDITOR_WALKTHROUGH_LINK_CLICK, {
                 source: "ModLauncher",
               });
+
+              const frame = await getTopLevelFrame();
+
+              showWalkthroughModal(frame);
             }}
           >
             Learn: Open the Page Editor
-          </a>
+          </button>
           <span className="mx-2">•</span>{" "}
           <a href="https://docs.pixiebrix.com/">Documentation</a>
         </Navbar>

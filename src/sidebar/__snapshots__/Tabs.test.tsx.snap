@@ -130,11 +130,9 @@ exports[`Tabs Mod Launcher renders with mod launcher visible if there are no oth
           <nav
             class="footer navbar navbar-expand navbar-light"
           >
-            <a
-              href="https://pixiebrix.com/developers-welcome"
-            >
+            <button>
               Learn: Open the Page Editor
-            </a>
+            </button>
             <span
               class="mx-2"
             >
