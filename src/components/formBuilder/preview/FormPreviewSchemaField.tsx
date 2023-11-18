@@ -20,7 +20,8 @@ import React from "react";
 import { type FormPreviewFieldProps } from "./FormPreviewFieldTemplate";
 import { type SchemaDefinition } from "@/types/schemaTypes";
 
-const RjsfSchemaField = getDefaultRegistry().fields.SchemaField;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Loose types
+const RjsfSchemaField = getDefaultRegistry().fields.SchemaField!;
 
 /**
  * A base field used by RJSF to render a field preview.

@@ -65,11 +65,19 @@ describe("EphemeralForm", () => {
           foo: {
             title: "Foo",
             type: "string",
-            description: "I am **bold**",
           },
         },
       },
-      uiSchema: {},
+      uiSchema: {
+        foo: {
+          // TODO: It should work but it does not
+          // https://github.com/dejanbelusic/react-jsonschema-form/blob/ac839a35e37fd8b4535bbae30ee06757c280abdb/packages/core/test/SchemaField.test.jsx#L657-L672
+          // https://github.com/rjsf-team/react-jsonschema-form/pull/3665
+          // https://rjsf-team.github.io/react-jsonschema-form/docs/usage/single/#titles-and-descriptions
+          "ui:description": "I am **bold**",
+          "ui:enableMarkdownInDescription": true,
+        },
+      },
       cancelable: false,
       submitCaption: "Submit",
       location: "modal",

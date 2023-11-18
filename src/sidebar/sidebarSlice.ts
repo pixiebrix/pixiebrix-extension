@@ -172,9 +172,6 @@ export function fixActiveTabOnRemove(
     );
 
     if (matchingExtension) {
-      // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
-      // See: https://github.com/immerjs/immer/issues/839
-      // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
       state.activeKey = eventKeyForEntry(matchingExtension);
     } else {
       const matchingMod = panels.find(
@@ -232,7 +229,10 @@ const sidebarSlice = createSlice({
       state.activeKey =
         visiblePanelCount === 0
           ? eventKeyForEntry(MOD_LAUNCHER)
-          : defaultEventKey(state, state.closedTabs);
+          : // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
+            // See: https://github.com/immerjs/immer/issues/839
+            // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+            defaultEventKey(state, state.closedTabs);
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...

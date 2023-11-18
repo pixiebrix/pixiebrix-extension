@@ -22,7 +22,7 @@ import React, {
   useCallback,
   useContext,
 } from "react";
-import { type WidgetProps } from "@rjsf/core";
+import { type WidgetProps } from "@rjsf/utils";
 import { isNumber } from "lodash";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { FormLabel } from "react-bootstrap";

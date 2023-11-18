@@ -90,7 +90,7 @@ const CustomFormComponent: React.FunctionComponent<{
                 await onSubmit(formData);
               }
             }}
-            onSubmit={async ({ formData }: ISubmitEvent<JsonObject>) => {
+            onSubmit={async ({ formData }: IChangeEvent<JsonObject>) => {
               await onSubmit(formData);
             }}
           >

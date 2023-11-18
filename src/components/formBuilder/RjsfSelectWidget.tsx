@@ -63,7 +63,7 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
 
   return (
     <FormGroup>
-      <FormLabel className={rawErrors?.length > 0 ? "text-danger" : ""}>
+      <FormLabel className={rawErrors?.length ? "text-danger" : ""}>
         {label || schema.title}
         {(label || schema.title) && required ? "*" : null}
       </FormLabel>
