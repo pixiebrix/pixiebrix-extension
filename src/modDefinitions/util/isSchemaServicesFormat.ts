@@ -19,7 +19,7 @@ import { type ModComponentDefinition } from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 export function isSchemaServicesFormat(
-  services: ModComponentDefinition["services"]
+  services: NonNullable<ModComponentDefinition["services"]>
 ): services is Schema {
   return (
     "properties" in services &&

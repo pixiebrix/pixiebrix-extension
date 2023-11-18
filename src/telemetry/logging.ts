@@ -31,7 +31,6 @@ import {
   reportToErrorService,
   selectExtraContext,
 } from "@/services/errorService";
-import { flagOn } from "@/auth/token";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
@@ -42,6 +41,7 @@ import { type UUID } from "@/types/stringTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
+import { flagOn } from "@/auth/authUtils";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -379,7 +379,7 @@ export async function reportToRollbar(
   rollbar.error(message, error, { ...flatContext, ...details });
 }
 
-/** @deprecated Use `reportError` instead: `import reportError from "@/telemetry/reportError"` */
+/** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
 export async function recordError(
   this: MessengerMeta, // Enforce usage via Messenger only
   serializedError: SerializedError,

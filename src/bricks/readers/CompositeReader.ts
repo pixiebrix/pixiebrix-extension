@@ -23,7 +23,11 @@ class CompositeReader extends ReaderABC {
   private readonly _readers: Record<string, Reader>;
 
   constructor(readers: Record<string, Reader>) {
-    super(undefined, "Composite Reader", "Combination of multiple readers");
+    super(
+      "@pixiebrix/composite-reader",
+      "Composite Reader",
+      "Combination of multiple readers"
+    );
     this._readers = readers;
     this.outputSchema = {
       $schema: "https://json-schema.org/draft/2019-09/schema#",

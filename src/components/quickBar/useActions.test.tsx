@@ -19,14 +19,27 @@ import React from "react";
 import { act, renderHook } from "@testing-library/react-hooks";
 import useActions from "@/components/quickBar/useActions";
 import { KBarProvider, useKBar } from "kbar";
-import defaultActions from "@/components/quickBar/defaultActions";
+import defaultActions, {
+  pageEditorAction,
+} from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 
-beforeAll(() => {
+jest.mock("@/auth/token", () => ({
+  __esModule: true,
+  ...jest.requireActual("@/auth/token"),
+  readAuthData: jest.fn().mockResolvedValue({
+    flags: [],
+  }),
+}));
+
+beforeAll(async () => {
   // Ensure default actions are registered
-  initQuickBarApp();
+  await initQuickBarApp();
 });
+
+const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
+  .length;
 
 describe("useActions", () => {
   test("should return the default actions", () => {
@@ -41,7 +54,7 @@ describe("useActions", () => {
     );
 
     expect(Object.keys(result.current.actions)).toHaveLength(
-      defaultActions.length
+      NUM_DEFAULT_QUICKBAR_ACTIONS
     );
   });
 
@@ -64,7 +77,7 @@ describe("useActions", () => {
     });
 
     expect(Object.keys(result.current.actions)).toHaveLength(
-      defaultActions.length + 1
+      NUM_DEFAULT_QUICKBAR_ACTIONS + 1
     );
 
     await act(async () => {
@@ -72,7 +85,7 @@ describe("useActions", () => {
     });
 
     expect(Object.keys(result.current.actions)).toHaveLength(
-      defaultActions.length
+      NUM_DEFAULT_QUICKBAR_ACTIONS
     );
   });
 });

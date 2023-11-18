@@ -16,7 +16,7 @@
  */
 
 import { type MessageContext } from "@/types/loggerTypes";
-import { backgroundTarget as bg, messenger } from "webext-messenger";
+import { backgroundTarget as bg, getNotifier } from "webext-messenger";
 import { serializeError } from "serialize-error";
 import { selectError, shouldErrorBeIgnored } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
@@ -26,6 +26,9 @@ expectContext(
   "extension",
   "reportError requires access background messenger API"
 );
+
+// Private method. Do not move to api.ts
+const _record = getNotifier("RECORD_ERROR", bg);
 
 interface ErrorReportOptions {
   /** Optional context for error telemetry */
@@ -58,18 +61,11 @@ export default function reportError(
   }
 
   try {
-    messenger(
-      // Low-level direct API call to avoid calls outside reportError
-      "RECORD_ERROR",
-      { isNotification: true },
-      bg,
-      serializeError(selectError(errorLike)),
-      {
-        ...context,
-        // Add on the reporter side of the message. On the receiving side it would always be `background`
-        pageName: getContextName(),
-      }
-    );
+    _record(serializeError(selectError(errorLike)), {
+      ...context,
+      // Add on the reporter side of the message. On the receiving side it would always be `background`
+      pageName: getContextName(),
+    });
   } catch (reportingError) {
     // The messenger does not throw async errors on "notifiers" but if this is
     // called in the background the call will be executed directly and it could

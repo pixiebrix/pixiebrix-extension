@@ -167,7 +167,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       "@/components/quickBar/QuickBarApp"
     );
 
-    initQuickBarApp();
+    await initQuickBarApp();
 
     // Like for context menus, the match patterns for quick bar control which pages the extension point requires early
     // access to (so PixieBrix will ask for permissions). Whether a quick bar item actually appears is controlled by the

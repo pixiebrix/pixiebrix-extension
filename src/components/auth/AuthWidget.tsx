@@ -52,8 +52,8 @@ const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
 
 const RefreshButton: React.VFC<{
-  buttonText: string;
   onRefresh: () => void;
+  buttonText?: string;
 }> = ({ buttonText = "", onRefresh }) => {
   const refreshAuthOptions = () => {
     // `onRefresh` is not awaitable. Indicate that clicking the button did something
@@ -72,7 +72,8 @@ const RefreshButton: React.VFC<{
       }}
       title="Refresh integration configurations"
     >
-      <FontAwesomeIcon icon={faSync} /> {buttonText}
+      <FontAwesomeIcon icon={faSync} />
+      {buttonText ? ` ${buttonText}` : ""}
     </Button>
   );
 };
@@ -86,13 +87,15 @@ const AuthWidget: React.FunctionComponent<{
 
   integrationId: RegistryId;
 
+  isOptional?: boolean;
+
   authOptions: AuthOption[];
 
   /**
    * Callback to refresh the authOptions.
    */
   onRefresh: () => void;
-}> = ({ name, integrationId, authOptions, onRefresh }) => {
+}> = ({ name, integrationId, isOptional, authOptions, onRefresh }) => {
   const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
 
@@ -255,6 +258,7 @@ const AuthWidget: React.FunctionComponent<{
               <IntegrationAuthSelector
                 name={name}
                 serviceId={integrationId}
+                isOptional={isOptional}
                 authOptions={options}
                 CustomMenuList={CustomMenuList}
                 sanitizeConfigArgs={sanitizeConfigArgs}
@@ -262,7 +266,7 @@ const AuthWidget: React.FunctionComponent<{
             </div>
             <div>
               {" "}
-              <RefreshButton onRefresh={onRefresh} buttonText="Refresh" />
+              <RefreshButton onRefresh={onRefresh} />
             </div>
           </>
         ) : (

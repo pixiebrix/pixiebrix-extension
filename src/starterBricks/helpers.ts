@@ -106,7 +106,9 @@ export function awaitElementOnce(
     throw new Error("awaitElementOnce expected selector");
   }
 
-  const selectors = castArray(selector);
+  // Clone the array so we don't mutate the original if selector is already an array
+  const selectors = [...castArray(selector)];
+
   const nextSelector = selectors.shift();
 
   if (!nextSelector) {

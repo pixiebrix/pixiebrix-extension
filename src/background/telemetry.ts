@@ -37,6 +37,7 @@ import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
 import { StorageItem } from "webext-storage";
 import { getTabsWithAccess } from "@/utils/extensionUtils";
+import { type Event } from "@/telemetry/events";
 
 const uidStorage = new StorageItem<UUID>("USER_UUID");
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
@@ -400,11 +401,12 @@ export async function recordBrickRun({
   await debouncedFlush();
 }
 
+/** @deprecated Use instead: `import reportEvent from "@/telemetry/reportEvent"` */
 export async function recordEvent({
   event,
   data = {},
 }: {
-  event: string;
+  event: Event;
   data: JsonObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {

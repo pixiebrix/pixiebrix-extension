@@ -45,6 +45,7 @@ interface OwnProps {
 type ValueField = {
   serviceId: RegistryId;
   index: number;
+  isOptional?: boolean;
 };
 
 const emptyAuthOptions: readonly AuthOption[] = Object.freeze([]);
@@ -99,7 +100,11 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     // We need to grab the index before filtering, because the index used
     // in the field name for AuthWidget needs to be consistent with the
     // index in field.value
-    .map(({ integrationId: serviceId }, index) => ({ serviceId, index }))
+    .map(({ integrationId: serviceId, isOptional }, index) => ({
+      serviceId,
+      index,
+      isOptional,
+    }))
     .filter(({ serviceId }) => shouldShowField(serviceId));
 
   return (
@@ -115,7 +120,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
           <h4>Integrations</h4>
         </div>
       )}
-      {fieldsToShow.map(({ serviceId, index }) => (
+      {fieldsToShow.map(({ serviceId, index, isOptional }) => (
         <div key={serviceId}>
           <ServiceFieldError
             servicesError={integrationDependenciesFieldError}
@@ -129,6 +134,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
             <AuthWidget
               authOptions={authOptions}
               integrationId={serviceId}
+              isOptional={isOptional}
               name={joinName(
                 integrationDependenciesField.name,
                 String(index),

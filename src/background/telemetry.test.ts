@@ -24,6 +24,7 @@ import {
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { syncFlagOn } from "@/store/syncFlags";
+import { type Event } from "@/telemetry/events";
 
 jest.mock("@/store/syncFlags", () => ({
   syncFlagOn: jest.fn().mockResolvedValue(true),
@@ -41,7 +42,7 @@ beforeEach(async () => {
 
 describe("recordEvent", () => {
   test("runs", async () => {
-    await recordEvent({ event: "TestEvent", data: {} });
+    await recordEvent({ event: "TestEvent" as Event, data: {} });
     const events = await flushEvents();
     expect(events).toHaveLength(1);
   });
@@ -49,7 +50,7 @@ describe("recordEvent", () => {
   test("successfully persists concurrent telemetry events to local storage", async () => {
     // Easiest way to test race condition without having to mock
     const recordTestEvents = Array.from({ length: 100 }, async () =>
-      recordEvent({ event: "TestEvent", data: {} })
+      recordEvent({ event: "TestEvent" as Event, data: {} })
     );
     await Promise.all(recordTestEvents);
 

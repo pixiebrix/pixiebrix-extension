@@ -30,6 +30,7 @@ import { selectExtensionFromEventKey } from "@/sidebar/sidebarSelectors";
 import { Events } from "@/telemetry/events";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import cx from "classnames";
+import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 
 export const ActiveSidebarModsListItem: React.FunctionComponent<{
   mod?: Mod;
@@ -47,6 +48,7 @@ export const ActiveSidebarModsListItem: React.FunctionComponent<{
       source: "modLauncher",
     });
     dispatch(sidebarSlice.actions.selectTab(eventKey));
+    dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(MOD_LAUNCHER)));
   };
 
   return (

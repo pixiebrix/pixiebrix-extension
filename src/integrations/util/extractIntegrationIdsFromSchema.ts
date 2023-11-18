@@ -37,12 +37,13 @@ export default function extractIntegrationIdsFromSchema(
     suppressNotFoundError?: boolean;
   }
 ): RegistryId[] {
-  if ("$ref" in schema) {
-    const match = INTEGRATION_ID_URL_REGEX.exec(schema.$ref ?? "");
-    return match ? [match.groups.id as RegistryId] : [];
+  if (schema.$ref) {
+    const match = INTEGRATION_ID_URL_REGEX.exec(schema.$ref);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Guaranteed by regex
+    return match ? [match.groups!.id as RegistryId] : [];
   }
 
-  if ("anyOf" in schema) {
+  if (schema.anyOf) {
     return schema.anyOf
       .filter((x) => x !== false)
       .flatMap((x) =>
@@ -52,7 +53,7 @@ export default function extractIntegrationIdsFromSchema(
       );
   }
 
-  if ("oneOf" in schema) {
+  if (schema.oneOf) {
     return schema.oneOf
       .filter((x) => x !== false)
       .flatMap((x) =>
@@ -62,7 +63,7 @@ export default function extractIntegrationIdsFromSchema(
       );
   }
 
-  if (options.suppressNotFoundError) {
+  if (options?.suppressNotFoundError) {
     return [];
   }
 

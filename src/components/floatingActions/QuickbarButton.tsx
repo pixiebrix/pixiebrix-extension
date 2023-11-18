@@ -59,7 +59,7 @@ export function QuickbarButton() {
           className="quickbar-button"
           onClick={() => {
             reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_CLICK);
-            toggleQuickBar();
+            void toggleQuickBar();
           }}
         >
           {/* <img> tag since we're using a different svg than the <Logo> component and it overrides all the styles

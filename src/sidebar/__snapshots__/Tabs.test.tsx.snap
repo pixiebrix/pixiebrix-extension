@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Tabs Mod Launcher renders with mod launcher 1`] = `
+exports[`Tabs Mod Launcher renders with mod launcher visible if there are no other visible mods 1`] = `
 <DocumentFragment>
   <div
     class="full-height"
@@ -80,49 +80,71 @@ exports[`Tabs Mod Launcher renders with mod launcher 1`] = `
         role="tabpanel"
       >
         <div
-          class="full-height h-100"
+          class="d-flex flex-column h-100"
         >
           <div
-            class="scrollable-area container"
+            class="full-height flex-grow"
           >
             <div
-              class="emptyViewRoot"
+              class="scrollable-area container"
             >
-              <div>
+              <div
+                class="emptyViewRoot"
+              >
+                <div>
+                  <p>
+                    We didn't find any mods to run
+                  </p>
+                  <h4>
+                    Don't worry, there's a solution
+                  </h4>
+                  <img
+                    alt="Workshop"
+                    class="illustration"
+                    src="test-file-stub"
+                  />
+                  <p>
+                    Some mods don't run on every page.
+                    <br />
+                    And other mods don't run in the Sidebar.
+                    <br />
+                    <br />
+                    Check that the mod is configured correctly.
+                  </p>
+                </div>
                 <p>
-                  We didn't find any mods to run
-                </p>
-                <h4>
-                  Don't worry, there's a solution
-                </h4>
-                <img
-                  alt="Workshop"
-                  class="illustration"
-                  src="test-file-stub"
-                />
-                <p>
-                  Some mods don't run on every page.
+                  Looking for new mods?
                   <br />
-                  And other mods don't run in the Sidebar.
-                  <br />
-                  <br />
-                  Check that the mod is configured correctly.
+                  Check out the 
+                  <a
+                    href="https://www.pixiebrix.com/marketplace/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    PixieBrix Marketplace
+                  </a>
                 </p>
               </div>
-              <p>
-                Looking for new mods?
-                <br />
-                Check out the 
-                <a
-                  href="https://www.pixiebrix.com/marketplace/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  PixieBrix Marketplace
-                </a>
-              </p>
             </div>
           </div>
+          <nav
+            class="footer navbar navbar-expand navbar-light"
+          >
+            <button>
+              Learn: Open the Page Editor
+            </button>
+            <span
+              class="mx-2"
+            >
+              •
+            </span>
+             
+            <a
+              href="https://docs.pixiebrix.com/"
+            >
+              Documentation
+            </a>
+          </nav>
         </div>
       </div>
     </div>
