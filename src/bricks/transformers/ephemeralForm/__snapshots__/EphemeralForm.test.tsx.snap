@@ -1,0 +1,148 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EphemeralForm supports markdown in field descriptions 1`] = `
+<DocumentFragment>
+  <div
+    class="modal-content"
+  >
+    <div
+      class="modal-body"
+    >
+      <form
+        class="rjsf"
+      >
+        <div
+          class="form-group"
+        >
+          <div
+            class="my-1"
+          >
+            <h5>
+              Test Form
+            </h5>
+            <hr
+              class="border-0 bg-secondary"
+              style="height: 1px;"
+            />
+          </div>
+          <div
+            class="p-0 container-fluid"
+          >
+            <div
+              class="row"
+              style="margin-bottom: 10px;"
+            >
+              <div
+                class="col-12"
+              >
+                 
+                <div
+                  class="form-group"
+                >
+                  <div
+                    class="mb-0 form-group"
+                  >
+                    <label
+                      class="form-label"
+                    >
+                      Foo
+                    </label>
+                    <input
+                      class="form-control"
+                      id="root_foo"
+                      placeholder=""
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                  <div
+                    class="field-description text-muted"
+                    id="root_foo"
+                  >
+                    <div>
+                      <p>
+                        I am 
+                        <strong>
+                          bold
+                        </strong>
+                      </p>
+                      
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button
+            class="btn btn-primary"
+            type="submit"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`EphemeralForm supports markdown in form description 1`] = `
+<DocumentFragment>
+  <div
+    class="modal-content"
+  >
+    <div
+      class="modal-body"
+    >
+      <form
+        class="rjsf"
+      >
+        <div
+          class="form-group"
+        >
+          <div
+            class="my-1"
+          >
+            <h5>
+              Test Form
+            </h5>
+            <hr
+              class="border-0 bg-secondary"
+              style="height: 1px;"
+            />
+          </div>
+          <div
+            class="field-description"
+            id="root-description"
+          >
+            <div>
+              <p>
+                I am 
+                <strong>
+                  bold
+                </strong>
+              </p>
+              
+
+            </div>
+          </div>
+          <div
+            class="p-0 container-fluid"
+          />
+        </div>
+        <div>
+          <button
+            class="btn btn-primary"
+            type="submit"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</DocumentFragment>
+`;
