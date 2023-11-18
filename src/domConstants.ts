@@ -29,6 +29,8 @@ export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 
 export const PIXIEBRIX_QUICK_BAR_CONTAINER_ID = "pixiebrix-quickbar-container";
 
+export const PIXIEBRIX_WALKTHROUGH_MODAL_ID = "pixiebrix-walkthrough-modal";
+
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
 /**

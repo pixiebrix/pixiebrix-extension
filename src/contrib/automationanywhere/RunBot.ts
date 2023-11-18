@@ -256,6 +256,12 @@ export class RunBot extends TransformerABC {
       return deployment;
     }
 
+    if (deployment.deploymentId == null) {
+      throw new BusinessError(
+        "Bot Deployment ID not found in Control Room response"
+      );
+    }
+
     return pollEnterpriseResult({
       service,
       deploymentId: deployment.deploymentId,

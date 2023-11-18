@@ -79,4 +79,18 @@ describe("awaitElementOnce", () => {
 
     await expect(promise).resolves.toHaveLength(1);
   });
+
+  it("ensure the passed in selector is never mutated", async () => {
+    const selectors = [".table-actions"];
+    document.body.innerHTML = getDocument(
+      '<div class="table-actions"></div>'
+    ).body.innerHTML;
+
+    awaitElementOnce(selectors);
+
+    requestIdleCallback.runIdleCallbacks();
+    await tick();
+
+    expect(selectors).toHaveLength(1);
+  });
 });

@@ -31,6 +31,8 @@ import { type IChangeEvent } from "@rjsf/core";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
+import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
+import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 
 const fields = {
   DescriptionField,
@@ -39,6 +41,7 @@ const fields = {
 const uiWidgets = {
   imageCrop: ImageCropWidget,
   SelectWidget: RjsfSelectWidget,
+  TextareaWidget: TextAreaWidget,
 };
 
 const CustomFormComponent: React.FunctionComponent<{
@@ -67,33 +70,41 @@ const CustomFormComponent: React.FunctionComponent<{
   >
     <ErrorBoundary>
       <Stylesheets href={[bootstrap, bootstrapOverrides, custom]}>
-        <JsonSchemaForm
-          schema={schema}
-          uiSchema={uiSchema}
-          formData={formData}
-          fields={fields}
-          widgets={uiWidgets}
-          validator={validator}
-          templates={{ FieldTemplate }}
-          onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
-            if (autoSave) {
+        <RjsfSubmitContext.Provider
+          value={{
+            async submitForm() {
               await onSubmit(formData);
-            }
-          }}
-          onSubmit={async ({ formData }: IChangeEvent<JsonObject>) => {
-            await onSubmit(formData);
+            },
           }}
         >
-          {autoSave ? (
-            <div />
-          ) : (
-            <div>
-              <button className="btn btn-primary" type="submit">
-                {submitCaption}
-              </button>
-            </div>
-          )}
-        </JsonSchemaForm>
+          <JsonSchemaForm
+            schema={schema}
+            uiSchema={uiSchema}
+            formData={formData}
+            fields={fields}
+            widgets={uiWidgets}
+            validator={validator}
+            templates={{ FieldTemplate }}
+            onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
+              if (autoSave) {
+                await onSubmit(formData);
+              }
+            }}
+            onSubmit={async ({ formData }: ISubmitEvent<JsonObject>) => {
+              await onSubmit(formData);
+            }}
+          >
+            {autoSave || uiSchema["ui:submitButtonOptions"]?.norender ? (
+              <div />
+            ) : (
+              <div>
+                <button className="btn btn-primary" type="submit">
+                  {submitCaption}
+                </button>
+              </div>
+            )}
+          </JsonSchemaForm>
+        </RjsfSubmitContext.Provider>
       </Stylesheets>
     </ErrorBoundary>
   </div>
