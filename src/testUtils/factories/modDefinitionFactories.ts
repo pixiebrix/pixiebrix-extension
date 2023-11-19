@@ -23,7 +23,6 @@ import {
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
-  type Metadata,
   type RegistryId,
 } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
@@ -31,11 +30,7 @@ import { type Permissions } from "webextension-polyfill";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type BrickPipeline } from "@/bricks/types";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import {
-  validateRegistryId,
-  validateSemVerString,
-  validateTimestamp,
-} from "@/types/helpers";
+import { validateRegistryId, validateTimestamp } from "@/types/helpers";
 import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
@@ -49,13 +44,7 @@ import {
   remoteIntegrationServiceFactory,
 } from "@/testUtils/factories/integrationFactories";
 import { freshIdentifier } from "@/utils/variableUtils";
-
-export const metadataFactory = define<Metadata>({
-  id: (n: number) => validateRegistryId(`test/mod-${n}`),
-  name: (n: number) => `Mod ${n}`,
-  description: "Mod generated from factory",
-  version: validateSemVerString("1.0.0"),
-});
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
 export const modComponentDefinitionFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,

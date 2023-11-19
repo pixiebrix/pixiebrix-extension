@@ -30,10 +30,10 @@ import { CONTEXT_INVALIDATED_ERROR } from "@/errors/knownErrorMessages";
  *
  * (Technically: this is designed to resolve on the next macrotask)
  */
-export async function tick(): Promise<void> {
+export async function tick(timeout = 0): Promise<void> {
   // Copied from https://stackoverflow.com/questions/37408834/testing-with-reacts-jest-and-enzyme-when-simulated-clicks-call-a-function-that
   return new Promise((resolve) => {
-    setTimeout(resolve, 0);
+    setTimeout(resolve, timeout);
   });
 }
 

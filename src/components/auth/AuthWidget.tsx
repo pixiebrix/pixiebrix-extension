@@ -47,6 +47,8 @@ import {
 } from "@/integrations/autoConfigure";
 import { freshIdentifier } from "@/utils/variableUtils";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import { UnknownObject } from "@/types/objectTypes";
+import { Schema } from "@/types/schemaTypes";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
@@ -77,6 +79,23 @@ const RefreshButton: React.VFC<{
     </Button>
   );
 };
+
+function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
+  const result: UnknownObject = {};
+  for (const [key, value] of Object.entries(inputSchema.properties)) {
+    if (typeof value === "boolean") {
+      continue;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection -- keys come from Schema
+    result[key] =
+      value.type === "object"
+        ? convertSchemaToConfigState(value.properties)
+        : value.default ?? "";
+  }
+
+  return result;
+}
 
 const AuthWidget: React.FunctionComponent<{
   /**
@@ -233,10 +252,10 @@ const AuthWidget: React.FunctionComponent<{
         ? ({
             integrationId,
             label: "New Configuration",
-            config: {},
+            config: convertSchemaToConfigState(serviceDefinition.schema),
           } as IntegrationConfig)
         : null,
-    [integrationId, showServiceEditorModal]
+    [integrationId, serviceDefinition?.schema, showServiceEditorModal]
   );
 
   return (

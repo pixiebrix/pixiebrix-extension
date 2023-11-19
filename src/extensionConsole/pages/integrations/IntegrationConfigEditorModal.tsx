@@ -19,7 +19,7 @@ import styles from "./IntegrationConfigEditorModal.module.scss";
 
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, truncate } from "lodash";
@@ -31,7 +31,6 @@ import * as Yup from "yup";
 import reportError from "@/telemetry/reportError";
 import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import FieldTemplate from "@/components/form/FieldTemplate";
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
@@ -167,13 +166,12 @@ const ModalContent: React.FC<ContentProps> = ({
           description="A label to help identify this integration"
           blankValue=""
         />
-        <FieldTemplate
+        <ConnectedFieldTemplate
           label="Integration"
-          name="service"
+          name="integrationId"
           type="text"
           plaintext
           readOnly
-          value={integration.id}
         />
         {Editor && <Editor name="config" />}
       </FieldRuntimeContext.Provider>
