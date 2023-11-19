@@ -204,7 +204,7 @@
     "@types/html-to-text": "^9.0.3",
     "@types/iframe-resizer": "^3.5.11",
     "@types/intro.js": "^5.1.4",
-    "@types/jest": "^29.5.7",
+    "@types/jest": "^29.5.8",
     "@types/jquery": "^3.5.25",
     "@types/js-beautify": "^1.14.3",
     "@types/js-cookie": "^3.0.5",
