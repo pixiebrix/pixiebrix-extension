@@ -47,8 +47,8 @@ import {
 } from "@/integrations/autoConfigure";
 import { freshIdentifier } from "@/utils/variableUtils";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
-import { UnknownObject } from "@/types/objectTypes";
-import { Schema } from "@/types/schemaTypes";
+import { type UnknownObject } from "@/types/objectTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
@@ -80,7 +80,7 @@ const RefreshButton: React.VFC<{
   );
 };
 
-function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
+export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
   for (const [key, value] of Object.entries(inputSchema.properties)) {
     if (typeof value === "boolean") {
