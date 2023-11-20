@@ -28,7 +28,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 import { validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { metadataFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type StandaloneModDefinition } from "@/types/contract";
 import { type Metadata } from "@/types/registryTypes";
 
