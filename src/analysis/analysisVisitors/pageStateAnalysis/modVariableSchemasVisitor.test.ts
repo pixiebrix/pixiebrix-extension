@@ -16,7 +16,7 @@
  */
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import ModVariableNamesVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableNamesVisitor";
+import ModVariableSchemasVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
@@ -25,7 +25,7 @@ beforeAll(() => {
   registerBuiltinBlocks();
 });
 
-describe("ModVariableNamesVisitor", () => {
+describe("ModVariableSchemasVisitor", () => {
   it("collects event schema from a template literal", async () => {
     const formState = formStateFactory();
     formState.extension.blockPipeline[0] = {
@@ -35,7 +35,7 @@ describe("ModVariableNamesVisitor", () => {
       },
     };
 
-    const result = ModVariableNamesVisitor.collectSchemas([formState]);
+    const result = ModVariableSchemasVisitor.collectSchemas([formState]);
 
     await expect(result).resolves.toEqual({
       knownSchemas: [{ foo: true }],
@@ -59,7 +59,7 @@ describe("ModVariableNamesVisitor", () => {
       },
     };
 
-    const result = ModVariableNamesVisitor.collectSchemas([
+    const result = ModVariableSchemasVisitor.collectSchemas([
       formState,
       otherFormState,
     ]);
@@ -86,7 +86,7 @@ describe("ModVariableNamesVisitor", () => {
       },
     };
 
-    const result = ModVariableNamesVisitor.collectSchemas([
+    const result = ModVariableSchemasVisitor.collectSchemas([
       formState,
       otherFormState,
     ]);

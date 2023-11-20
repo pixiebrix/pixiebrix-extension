@@ -43,7 +43,7 @@ import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
-import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableNamesVisitor";
+import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 
 const runtimeActions = runtimeSlice.actions;
 

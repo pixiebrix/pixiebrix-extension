@@ -24,7 +24,7 @@ import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { type Schema } from "@/types/schemaTypes";
 import { compact, isEqual, uniqWith } from "lodash";
 
-export type ModVariableNameResult = {
+export type ModVariableSchemaResult = {
   /**
    * Statically known mod variable schemas.
    */
@@ -35,7 +35,7 @@ export type ModVariableNameResult = {
  * Visitor to collect all events fired by a single FormState.
  * @since 1.7.34
  */
-class ModVariableNamesVisitor extends PipelineVisitor {
+class ModVariableSchemasVisitor extends PipelineVisitor {
   readonly schemaPromises: Array<Promise<Schema>> = [];
 
   constructor(readonly allBlocks: TypedBlockMap) {
@@ -58,9 +58,9 @@ class ModVariableNamesVisitor extends PipelineVisitor {
 
   static async collectSchemas(
     formStates: ModComponentFormState[]
-  ): Promise<ModVariableNameResult> {
+  ): Promise<ModVariableSchemaResult> {
     const allBlocks = await blockRegistry.allTyped();
-    const visitor = new ModVariableNamesVisitor(allBlocks);
+    const visitor = new ModVariableSchemasVisitor(allBlocks);
 
     for (const formState of formStates) {
       visitor.visitRootPipeline(formState.extension.blockPipeline);
@@ -83,4 +83,4 @@ class ModVariableNamesVisitor extends PipelineVisitor {
   }
 }
 
-export default ModVariableNamesVisitor;
+export default ModVariableSchemasVisitor;
