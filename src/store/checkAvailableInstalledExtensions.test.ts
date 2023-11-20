@@ -34,11 +34,9 @@ import {
   type QuickBarDefinition,
   RemoteQuickBarExtensionPoint,
 } from "@/starterBricks/quickBarExtension";
-import {
-  starterBrickConfigFactory,
-  metadataFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getInstalledExtensionPoints: jest.fn(),
