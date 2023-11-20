@@ -48,7 +48,7 @@ export type EventNameAnalysisResult = {
  * Visitor to collect all events fired by a single FormState.
  * @since 1.7.34
  */
-class CollectNamesVisitor extends PipelineVisitor {
+class CollectEventNamesVisitor extends PipelineVisitor {
   readonly _eventNames = new Set<string>();
   readonly _triggerNames = new Set<string>();
   private _hasDynamicEventName = false;
@@ -96,7 +96,7 @@ class CollectNamesVisitor extends PipelineVisitor {
   static collectNames(
     formState: ModComponentFormState
   ): EventNameAnalysisResult {
-    const visitor = new CollectNamesVisitor();
+    const visitor = new CollectEventNamesVisitor();
 
     visitor.visitRootPipeline(formState.extension.blockPipeline);
     visitor.visitStarterBrick(formState.extensionPoint);
@@ -105,4 +105,4 @@ class CollectNamesVisitor extends PipelineVisitor {
   }
 }
 
-export default CollectNamesVisitor;
+export default CollectEventNamesVisitor;

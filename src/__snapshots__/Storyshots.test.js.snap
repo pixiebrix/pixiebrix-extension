@@ -4162,6 +4162,7 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
               aria-live="polite"
               aria-relevant="additions text"
               className="css-1f43avz-a11yText-A11yText"
+              role="log"
             />
             <div
               className=" css-13cymwt-control"
@@ -4179,6 +4180,7 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
                   data-value=""
                 >
                   <input
+                    aria-activedescendant=""
                     aria-autocomplete="list"
                     aria-expanded={false}
                     aria-haspopup={true}
@@ -5244,6 +5246,7 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
               aria-live="polite"
               aria-relevant="additions text"
               className="css-1f43avz-a11yText-A11yText"
+              role="log"
             />
             <div
               className=" css-13cymwt-control"
@@ -5261,6 +5264,7 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
                   data-value=""
                 >
                   <input
+                    aria-activedescendant=""
                     aria-autocomplete="list"
                     aria-expanded={false}
                     aria-haspopup={true}
@@ -6109,6 +6113,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 aria-live="polite"
                 aria-relevant="additions text"
                 className="css-1f43avz-a11yText-A11yText"
+                role="log"
               />
               <div
                 className=" css-13cymwt-control"
@@ -6128,6 +6133,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     data-value=""
                   >
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
                       aria-expanded={false}
                       aria-haspopup={true}
@@ -6963,6 +6969,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           aria-live="polite"
           aria-relevant="additions text"
           className="css-1f43avz-a11yText-A11yText"
+          role="log"
         />
         <div
           className=" css-13cymwt-control"
@@ -6983,6 +6990,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
               data-value=""
             >
               <input
+                aria-activedescendant=""
                 aria-autocomplete="list"
                 aria-describedby="react-select-8-placeholder"
                 aria-expanded={false}
@@ -7099,6 +7107,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           aria-live="polite"
           aria-relevant="additions text"
           className="css-1f43avz-a11yText-A11yText"
+          role="log"
         />
         <div
           className=" css-13cymwt-control"
@@ -7119,6 +7128,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
               data-value=""
             >
               <input
+                aria-activedescendant=""
                 aria-autocomplete="list"
                 aria-describedby="react-select-9-placeholder"
                 aria-expanded={false}
@@ -10907,6 +10917,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                 aria-live="polite"
                 aria-relevant="additions text"
                 className="css-1f43avz-a11yText-A11yText"
+                role="log"
               />
               <div
                 className=" css-13cymwt-control"
@@ -10927,6 +10938,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                     data-value=""
                   >
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
                       aria-describedby="react-select-6-placeholder"
                       aria-expanded={false}
@@ -11043,6 +11055,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                 aria-live="polite"
                 aria-relevant="additions text"
                 className="css-1f43avz-a11yText-A11yText"
+                role="log"
               />
               <div
                 className=" css-13cymwt-control"
@@ -11063,6 +11076,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                     data-value=""
                   >
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
                       aria-describedby="react-select-7-placeholder"
                       aria-expanded={false}
@@ -11156,6 +11170,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
         aria-live="polite"
         aria-relevant="additions text"
         className="css-1f43avz-a11yText-A11yText"
+        role="log"
       />
       <div
         className=" css-13cymwt-control"
@@ -11176,6 +11191,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
             data-value=""
           >
             <input
+              aria-activedescendant=""
               aria-autocomplete="list"
               aria-describedby="react-select-4-placeholder"
               aria-expanded={false}
@@ -11297,6 +11313,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
         aria-live="polite"
         aria-relevant="additions text"
         className="css-1f43avz-a11yText-A11yText"
+        role="log"
       />
       <div
         className=" css-13cymwt-control"
@@ -11317,6 +11334,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
             data-value=""
           >
             <input
+              aria-activedescendant=""
               aria-autocomplete="list"
               aria-describedby="react-select-5-placeholder"
               aria-expanded={false}
