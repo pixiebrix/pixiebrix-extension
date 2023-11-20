@@ -23,7 +23,7 @@ import integrationsSlice from "@/integrations/store/integrationsSlice";
 import Page from "@/layout/Page";
 import { Card, Col, Row } from "react-bootstrap";
 import { push } from "connected-react-router";
-import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
+import IntegrationConfigEditorModal from "../../../components/integrations/IntegrationConfigEditorModal";
 import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";

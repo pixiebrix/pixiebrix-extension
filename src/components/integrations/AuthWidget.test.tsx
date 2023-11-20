@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
-import AuthWidget from "@/components/auth/AuthWidget";
+import AuthWidget from "@/components/integrations/AuthWidget";
 import {
   keyAuthIntegrationDefinitionFactory,
   remoteIntegrationConfigurationFactory,

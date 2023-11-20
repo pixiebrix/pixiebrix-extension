@@ -25,7 +25,7 @@ import registry from "@/integrations/registry";
 import { uuidv4 } from "@/types/helpers";
 import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
-import IntegrationConfigEditorModal from "@/extensionConsole/pages/integrations/IntegrationConfigEditorModal";
+import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
