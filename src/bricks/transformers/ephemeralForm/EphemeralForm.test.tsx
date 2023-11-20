@@ -25,9 +25,7 @@ jest.mock("@/contentScript/messenger/api", () => ({
   getFormDefinition: jest.fn(),
 }));
 
-const getFormDefinitionMock = getFormDefinition as jest.MockedFunction<
-  typeof getFormDefinition
->;
+const getFormDefinitionMock = jest.mocked(getFormDefinition);
 
 describe("EphemeralForm", () => {
   it("shows field titles", async () => {
