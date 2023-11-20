@@ -20,7 +20,6 @@ import IntegrationAuthSelector from "@/integrations/components/IntegrationAuthSe
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { useAsyncState } from "@/hooks/common";
 import registry from "@/integrations/registry";
 import { uuidv4 } from "@/types/helpers";
 import { services } from "@/background/messenger/api";
@@ -36,7 +35,10 @@ import styles from "./AuthWidget.module.scss";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
-import { type IntegrationConfig } from "@/integrations/integrationTypes";
+import {
+  type Integration,
+  type IntegrationConfig,
+} from "@/integrations/integrationTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
@@ -49,6 +51,8 @@ import { freshIdentifier } from "@/utils/variableUtils";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
+import useAsyncState from "@/hooks/useAsyncState";
+import AsyncStateGate from "@/components/AsyncStateGate";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
@@ -119,41 +123,31 @@ export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   return result;
 }
 
-const AuthWidget: React.FunctionComponent<{
-  /**
-   * The field name. WARNING: do not use `serviceId`s as part of a field name because they can contain periods which
-   * break Formik's nested field naming.
-   */
+type AuthWidgetContentProps = {
   name: string;
-
-  integrationId: RegistryId;
-
-  isOptional?: boolean;
-
+  integration: Integration;
   authOptions: AuthOption[];
-
-  /**
-   * Callback to refresh the authOptions.
-   */
   onRefresh: () => void;
-}> = ({ name, integrationId, isOptional, authOptions, onRefresh }) => {
+  isOptional?: boolean;
+};
+
+const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
+  name,
+  integration,
+  authOptions,
+  onRefresh,
+  isOptional,
+}) => {
   const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
 
-  const [showServiceEditorModal, setShowServiceEditorModal] = useState(false);
+  const [showEditorModal, setShowEditorModal] = useState(false);
 
-  const [serviceDefinition, isFetching, error] = useAsyncState(async () => {
-    const serviceDefinitions = await registry.all();
-    return serviceDefinitions.find(({ id }) => id === integrationId);
-  }, [integrationId]);
-
-  const sanitizeConfigArgs = curry(sanitizeIntegrationConfig)(
-    serviceDefinition
-  );
+  const sanitizeConfigArgs = curry(sanitizeIntegrationConfig)(integration);
 
   const options = useMemo(
-    () => authOptions.filter((x) => x.serviceId === integrationId),
-    [authOptions, integrationId]
+    () => authOptions.filter((x) => x.serviceId === integration.id),
+    [authOptions, integration.id]
   );
 
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
@@ -162,7 +156,7 @@ const AuthWidget: React.FunctionComponent<{
     // Need to write the current Redux options to storage so the locator can read them during checks
     await flushReduxPersistence();
     try {
-      // Also refresh the service locator on the background so the new auth works immediately
+      // Also refresh the integration config locator on the background so the new auth works immediately
       await services.refresh({ remote: false, local: true });
     } catch (error) {
       notify.error({
@@ -182,7 +176,7 @@ const AuthWidget: React.FunctionComponent<{
       dispatch(
         upsertIntegrationConfig({
           ...values,
-          integrationId,
+          integrationId: integration.id,
           id,
         })
       );
@@ -197,7 +191,7 @@ const AuthWidget: React.FunctionComponent<{
       await helpers.setValue(id);
 
       reportEvent(Events.AUTH_WIDGET_SELECT, {
-        integration_id: integrationId,
+        integration_id: integration.id,
         is_user_action: true,
         is_create: true,
         auth_label: values.label,
@@ -209,26 +203,26 @@ const AuthWidget: React.FunctionComponent<{
       // The IntegrationEditorModal will call the onClose function after
       // calling onSave, so we don't need to close anything manually here.
     },
-    [dispatch, integrationId, syncIntegrations, helpers, sanitizeConfigArgs]
+    [dispatch, integration.id, syncIntegrations, helpers, sanitizeConfigArgs]
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
   const integrationConfigs = useSelector(selectIntegrationConfigs);
 
   const onClickNew = useCallback(() => {
-    if (serviceDefinition.isAuthorizationGrant) {
-      void launchAuthorizationGrantFlow(serviceDefinition, {
+    if (integration.isAuthorizationGrant) {
+      void launchAuthorizationGrantFlow(integration, {
         target: "_self",
       });
       return;
     }
 
-    if (integrationId in autoConfigurations) {
+    if (integration.id in autoConfigurations) {
       const label = freshIdentifier(
-        `${serviceDefinition.name} Config` as SafeString,
+        `${integration.name} Config` as SafeString,
         integrationConfigs.map(({ label }) => label)
       );
-      void autoConfigureIntegration(serviceDefinition, label, {
+      void autoConfigureIntegration(integration, label, {
         upsertIntegrationConfig(config: IntegrationConfig) {
           dispatch(upsertIntegrationConfig(config));
           void helpers.setValue(config.id);
@@ -250,16 +244,15 @@ const AuthWidget: React.FunctionComponent<{
       return;
     }
 
-    setShowServiceEditorModal(true);
+    setShowEditorModal(true);
     reportEvent(Events.AUTH_WIDGET_SHOW_ADD_NEW);
   }, [
     dispatch,
     helpers,
+    integration,
     integrationConfigs,
-    integrationId,
     launchAuthorizationGrantFlow,
     sanitizeConfigArgs,
-    serviceDefinition,
     syncIntegrations,
   ]);
 
@@ -270,23 +263,23 @@ const AuthWidget: React.FunctionComponent<{
 
   const initialConfiguration = useMemo<IntegrationConfig | null>(
     () =>
-      showServiceEditorModal
+      showEditorModal
         ? ({
-            integrationId,
+            integrationId: integration.id,
             label: "New Configuration",
-            config: convertSchemaToConfigState(serviceDefinition.schema),
+            config: convertSchemaToConfigState(integration.schema),
           } as IntegrationConfig)
         : null,
-    [integrationId, serviceDefinition?.schema, showServiceEditorModal]
+    [integration.id, integration.schema, showEditorModal]
   );
 
   return (
     <>
       <IntegrationConfigEditorModal
         initialValues={initialConfiguration}
-        integration={serviceDefinition}
+        integration={integration}
         onClose={() => {
-          setShowServiceEditorModal(false);
+          setShowEditorModal(false);
           reportEvent(Events.AUTH_WIDGET_HIDE_ADD_NEW);
         }}
         onSave={save}
@@ -298,7 +291,7 @@ const AuthWidget: React.FunctionComponent<{
             <div className={styles.selector}>
               <IntegrationAuthSelector
                 name={name}
-                serviceId={integrationId}
+                serviceId={integration.id}
                 isOptional={isOptional}
                 authOptions={options}
                 CustomMenuList={CustomMenuList}
@@ -317,7 +310,6 @@ const AuthWidget: React.FunctionComponent<{
               size="sm"
               className={styles.actionButton}
               onClick={onClickNew}
-              disabled={isFetching || error != null}
             >
               <FontAwesomeIcon icon={faPlus} /> Configure
             </Button>
@@ -326,6 +318,44 @@ const AuthWidget: React.FunctionComponent<{
         )}
       </div>
     </>
+  );
+};
+
+const AuthWidget: React.FunctionComponent<{
+  /**
+   * The field name. WARNING: do not use `serviceId`s as part of a field name because they can contain periods which
+   * break Formik's nested field naming.
+   */
+  name: string;
+
+  integrationId: RegistryId;
+
+  isOptional?: boolean;
+
+  authOptions: AuthOption[];
+
+  /**
+   * Callback to refresh the authOptions.
+   */
+  onRefresh: () => void;
+}> = ({ name, integrationId, isOptional, authOptions, onRefresh }) => {
+  const definitionAsyncState = useAsyncState(
+    async () => registry.lookup(integrationId),
+    []
+  );
+
+  return (
+    <AsyncStateGate state={definitionAsyncState}>
+      {({ data: integration }) => (
+        <AuthWidgetContent
+          name={name}
+          integration={integration}
+          authOptions={authOptions}
+          onRefresh={onRefresh}
+          isOptional={isOptional}
+        />
+      )}
+    </AsyncStateGate>
   );
 };
 

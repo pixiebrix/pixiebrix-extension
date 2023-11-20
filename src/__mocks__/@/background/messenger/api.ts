@@ -112,7 +112,7 @@ export const services = {
   locate: jest
     .fn()
     .mockRejectedValue(new Error("Locate not implemented in mock")),
-  refresh: getMethod("REFRESH_SERVICES", bg),
+  refresh: jest.fn(),
   refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
 };
 
