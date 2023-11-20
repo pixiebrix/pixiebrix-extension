@@ -80,6 +80,22 @@ const RefreshButton: React.VFC<{
   );
 };
 
+function getTypeDefault(schema: Schema): boolean | number | string | unknown[] {
+  if (schema.type === "boolean") {
+    return false;
+  }
+
+  if (schema.type === "number" || schema.type === "integer") {
+    return 0;
+  }
+
+  if (schema.type === "array") {
+    return [];
+  }
+
+  return "";
+}
+
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
   for (const [key, value] of Object.entries(inputSchema.properties)) {
@@ -91,7 +107,7 @@ export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
     result[key] =
       value.type === "object"
         ? convertSchemaToConfigState(value.properties)
-        : value.default ?? "";
+        : value.default ?? getTypeDefault(value);
   }
 
   return result;

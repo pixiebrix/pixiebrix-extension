@@ -28,7 +28,6 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type AuthOption } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
