@@ -23,7 +23,11 @@ import {
   remoteIntegrationConfigurationFactory,
 } from "@/testUtils/factories/integrationFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { act, screen, within } from "@testing-library/react";
+import {
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type AuthOption } from "@/auth/authTypes";
@@ -40,7 +44,6 @@ import { refreshServices } from "@/background/locator";
 import Loader from "@/components/Loader";
 import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { tick } from "@/starterBricks/starterBrickTestUtils";
 
 const remoteConfig = remoteIntegrationConfigurationFactory();
 
@@ -99,9 +102,9 @@ describe("AuthWidget", () => {
       }
     );
 
-    await waitForEffect();
-
-    expect(screen.getByRole("button", { name: "Configure" })).toBeVisible();
+    expect(
+      await screen.findByRole("button", { name: "Configure" })
+    ).toBeVisible();
     expect(
       screen.getByRole("button", { name: /refresh/i, exact: false })
     ).toBeVisible();
@@ -122,12 +125,10 @@ describe("AuthWidget", () => {
       }
     );
 
-    await waitForEffect();
-
+    expect(await screen.findByText("Test Option 1")).toBeVisible();
     expect(
       screen.queryByRole("button", { name: "Configure" })
     ).not.toBeInTheDocument();
-    expect(screen.getByText("Test Option 1")).toBeVisible();
   });
 
   test("given multiple auth options, when rendered, then shows select dropdown but does not select an option automatically", async () => {
@@ -145,14 +146,12 @@ describe("AuthWidget", () => {
       }
     );
 
-    await waitForEffect();
-
+    expect(await screen.findByText("Select configuration...")).toBeVisible();
     expect(
       screen.queryByRole("button", { name: "Configure" })
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Test Option 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Test Option 2")).not.toBeInTheDocument();
-    expect(screen.getByText("Select configuration...")).toBeVisible();
   });
 
   test("given multiple auth options, when select add new, then shows integration config modal", async () => {
@@ -179,14 +178,9 @@ describe("AuthWidget", () => {
       },
     });
 
-    await waitForEffect();
+    expect(await screen.findByTestId("loader")).toBeVisible();
 
-    expect(screen.getByTestId("loader")).toBeVisible();
-
-    await act(async () => {
-      // This is needed to allow the registry refresh to complete
-      await tick(100);
-    });
+    await waitForElementToBeRemoved(() => screen.queryByTestId("loader"));
 
     const configSelect = screen.getByRole("combobox");
 
