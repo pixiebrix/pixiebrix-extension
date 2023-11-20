@@ -80,34 +80,40 @@ const RefreshButton: React.VFC<{
   );
 };
 
-function getTypeDefault(schema: Schema): boolean | number | string | unknown[] {
-  if (schema.type === "boolean") {
-    return false;
-  }
-
-  if (schema.type === "number" || schema.type === "integer") {
-    return 0;
-  }
-
-  if (schema.type === "array") {
-    return [];
-  }
-
-  return "";
-}
-
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
   for (const [key, value] of Object.entries(inputSchema.properties)) {
-    if (typeof value === "boolean") {
+    if (typeof value === "boolean" || value.type === "null") {
       continue;
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- keys come from Schema
-    result[key] =
-      value.type === "object"
-        ? convertSchemaToConfigState(value.properties)
-        : value.default ?? getTypeDefault(value);
+    if (value.type === "object") {
+      // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+      result[key] = convertSchemaToConfigState(value);
+    } else {
+      if (value.default !== undefined) {
+        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+        result[key] = value.default;
+      }
+
+      if (value.type === "boolean") {
+        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+        result[key] = false;
+      }
+
+      if (value.type === "number" || value.type === "integer") {
+        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+        result[key] = 0;
+      }
+
+      if (value.type === "array") {
+        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+        result[key] = [];
+      }
+
+      // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+      result[key] = "";
+    }
   }
 
   return result;
