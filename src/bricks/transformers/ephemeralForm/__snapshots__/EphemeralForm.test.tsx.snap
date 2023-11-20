@@ -1,5 +1,91 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`EphemeralForm shows field titles 1`] = `
+<DocumentFragment>
+  <div
+    class="modal-content"
+  >
+    <div
+      class="modal-body"
+    >
+      <form
+        class="rjsf"
+      >
+        <div
+          class="form-group"
+        >
+          <label
+            class="form-label"
+            for="root"
+          >
+            Test Form
+          </label>
+          <div
+            class="my-1"
+          >
+            <h5>
+              Test Form
+            </h5>
+            <hr
+              class="border-0 bg-secondary"
+              style="height: 1px;"
+            />
+          </div>
+          <div
+            class="p-0 container-fluid"
+          >
+            <div
+              class="row"
+              style="margin-bottom: 10px;"
+            >
+              <div
+                class="col-12"
+              >
+                 
+                <div
+                  class="form-group"
+                >
+                  <label
+                    class="form-label"
+                    for="root_foo"
+                  >
+                    foo
+                  </label>
+                  <div
+                    class="mb-0 form-group"
+                  >
+                    <label
+                      class="form-label"
+                    >
+                      foo
+                    </label>
+                    <input
+                      class="form-control"
+                      id="root_foo"
+                      placeholder=""
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button
+            class="btn btn-primary"
+            type="submit"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`EphemeralForm supports markdown in field descriptions 1`] = `
 <DocumentFragment>
   <div

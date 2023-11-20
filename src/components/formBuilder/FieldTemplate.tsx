@@ -35,7 +35,10 @@ const FieldTemplate = ({
   rawDescription,
 }: FieldTemplateProps) => (
   <Form.Group>
-    <FormLabel className={rawErrors?.length > 0 ? "text-danger" : ""}>
+    <FormLabel
+      htmlFor={id}
+      className={rawErrors?.length > 0 ? "text-danger" : ""}
+    >
       {label || schema.title}
       {(label || schema.title) && required ? "*" : null}
     </FormLabel>
