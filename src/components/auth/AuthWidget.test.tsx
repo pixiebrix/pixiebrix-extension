@@ -185,7 +185,7 @@ describe("AuthWidget", () => {
 
     await act(async () => {
       // This is needed to allow the registry refresh to complete
-      await tick(10);
+      await tick(100);
     });
 
     const configSelect = screen.getByRole("combobox");
