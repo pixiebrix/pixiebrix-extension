@@ -192,9 +192,7 @@ describe("AuthWidget", () => {
 
     await selectEvent.select(configSelect, "+ Add new");
 
-    await waitForEffect();
-
-    const modal = screen.getByRole("dialog");
+    const modal = await screen.findByRole("dialog");
     expect(modal).toBeVisible();
     expect(within(modal).getByLabelText("API Key")).toBeVisible();
   });
