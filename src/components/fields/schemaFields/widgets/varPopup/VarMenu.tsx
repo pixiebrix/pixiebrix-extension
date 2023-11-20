@@ -135,11 +135,6 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
           }),
           size({
             padding: 8,
-            apply({ availableHeight, elements }) {
-              Object.assign(elements.floating.style, {
-                maxHeight: `${availableHeight}px`,
-              });
-            },
           }),
         ],
       }
