@@ -43,7 +43,7 @@ import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
-import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableNamesVisitor";
+import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -181,7 +181,7 @@ async function varAnalysisFactory(
 
   // The potential mod known mod variables
   const formStates = await selectActiveModFormStates(state);
-  const variables = await ModVariableNames.collectNames(formStates);
+  const variables = await ModVariableNames.collectSchemas(formStates);
 
   // The actual mod variables
   const modState = await getPageState(thisTab, {
@@ -193,7 +193,7 @@ async function varAnalysisFactory(
   return new VarAnalysis({
     trace,
     modState,
-    modVariables: variables.knownNames,
+    modVariables: variables.knownSchemas,
   });
 }
 

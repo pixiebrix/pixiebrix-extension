@@ -31,6 +31,8 @@ import { type UUID } from "@/types/stringTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
+import { type BrickConfig } from "@/bricks/types";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -96,6 +98,71 @@ export class WithAsyncModVariable extends TransformerABC {
     required: ["requestId"],
     additionalProperties: false,
   };
+
+  override async getModVariableSchema(
+    _config: BrickConfig
+  ): Promise<Schema | undefined> {
+    const { stateKey } = _config.config;
+
+    let name = "";
+    try {
+      name = castTextLiteralOrThrow(stateKey);
+    } catch {
+      return;
+    }
+
+    if (name) {
+      return {
+        type: "object",
+        properties: {
+          [name]: {
+            type: "object",
+            properties: {
+              isLoading: {
+                type: "boolean",
+              },
+              isFetching: {
+                type: "boolean",
+              },
+              isSuccess: {
+                type: "boolean",
+              },
+              isError: {
+                type: "boolean",
+              },
+              currentData: {},
+              data: {},
+              requestId: {
+                type: "string",
+                format: "uuid",
+              },
+              error: {
+                type: "object",
+              },
+            },
+            additionalProperties: false,
+            required: [
+              "isLoading",
+              "isFetching",
+              "isSuccess",
+              "isError",
+              "currentData",
+              "data",
+              "requestId",
+              "error",
+            ],
+          },
+        },
+        additionalProperties: false,
+        required: [name],
+      };
+    }
+
+    return {
+      type: "object",
+      additionalProperties: true,
+    };
+  }
 
   async transform(
     {

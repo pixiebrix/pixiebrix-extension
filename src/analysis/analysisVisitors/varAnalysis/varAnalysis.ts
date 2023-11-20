@@ -332,7 +332,7 @@ async function setOptionsVars(
 }
 
 async function setModVariables(
-  modVariableNames: string[],
+  modVariableSchemas: Array<Schema["properties"]>,
   modState: UnknownObject,
   contextVars: VarMap
 ): Promise<void> {
@@ -340,7 +340,7 @@ async function setModVariables(
     schema: {
       type: "object",
       properties: Object.fromEntries(
-        modVariableNames.map((name) => [name, {}])
+        modVariableSchemas.flatMap((schema) => Object.entries(schema))
       ),
       additionalProperties: true,
     },
@@ -373,7 +373,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * Statically-inferred mod variable names.
    * @since 1.7.36
    */
-  private readonly modVariables: string[];
+  private readonly modVariables: Array<Schema["properties"]>;
 
   /**
    * Accumulator for known variables at each block visited. Mapping from block path to VarMap.
@@ -459,7 +459,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }: {
     trace?: TraceRecord[];
     modState?: UnknownObject;
-    modVariables?: string[];
+    modVariables?: Array<Schema["properties"]>;
   } = {}) {
     super();
     this.trace = trace;
