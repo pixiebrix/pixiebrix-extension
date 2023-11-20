@@ -385,6 +385,7 @@
     "./testUtils/appApiMock.ts",
     "./testUtils/detectPageMock.ts",
     "./testUtils/factories/databaseFactories.ts",
+    "./testUtils/factories/metadataFactory.ts",
     "./testUtils/factories/sidebarEntryFactories.ts",
     "./testUtils/factories/stringFactories.ts",
     "./testUtils/factories/traceFactories.ts",

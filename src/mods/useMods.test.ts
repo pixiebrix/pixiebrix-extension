@@ -26,12 +26,10 @@ import {
   standaloneModDefinitionFactory,
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import {
-  defaultModDefinitionFactory,
-  metadataFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn(),

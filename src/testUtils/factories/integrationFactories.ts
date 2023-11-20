@@ -18,7 +18,9 @@
 import { define } from "cooky-cutter";
 import {
   type IntegrationConfig,
+  type IntegrationDefinition,
   type IntegrationDependency,
+  type KeyAuthenticationDefinition,
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
@@ -27,6 +29,8 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
 export const sanitizedIntegrationConfigFactory =
   define<SanitizedIntegrationConfig>({
@@ -83,4 +87,32 @@ export const integrationDependencyFactory = define<IntegrationDependency>({
   },
   isOptional: false,
   apiVersion: "v1",
+});
+
+export const keyAuthIntegrationDefinitionFactory = define<
+  IntegrationDefinition<KeyAuthenticationDefinition>
+>({
+  metadata: metadataFactory,
+  inputSchema(): Schema {
+    return {
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {
+        apiKey: {
+          $ref: "https://app.pixiebrix.com/schemas/key#",
+          title: "API Key",
+        },
+      },
+      required: ["apiKey"],
+    };
+  },
+  authentication(): KeyAuthenticationDefinition {
+    return {
+      baseURL: "https://api.test.com",
+      headers: {
+        Accept: "application/json",
+        Authorization: "Token {{{ apiKey }}}",
+      },
+    };
+  },
 });

@@ -43,10 +43,8 @@ import {
   formStateFactory,
   menuItemFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
-import {
-  defaultModDefinitionFactory,
-  metadataFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
 jest.mock("@/pageEditor/hooks/useUpsertFormElement");
 jest.mock("@/pageEditor/hooks/useResetExtension");
