@@ -57,7 +57,7 @@
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.11.1",
     "bootstrap-switch-button-react": "^1.2.0",
-    "canvas-confetti": "^1.9.0",
+    "canvas-confetti": "^1.9.1",
     "chrono-node": "^2.7.0",
     "classnames": "^2.3.1",
     "code-tag": "^1.1.0",
