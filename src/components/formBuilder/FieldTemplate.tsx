@@ -18,20 +18,27 @@
 import React from "react";
 import { type FieldTemplateProps } from "@rjsf/core";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Form, ListGroup } from "react-bootstrap";
+import { Form, FormLabel, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";
 
 // RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
 const FieldTemplate = ({
   id,
+  schema,
+  required,
   children,
+  label,
   displayLabel,
   rawErrors = [],
   rawHelp,
   rawDescription,
 }: FieldTemplateProps) => (
   <Form.Group>
+    <FormLabel className={rawErrors?.length > 0 ? "text-danger" : ""}>
+      {label || schema.title}
+      {(label || schema.title) && required ? "*" : null}
+    </FormLabel>
     {children}
     {displayLabel && (
       <DescriptionField

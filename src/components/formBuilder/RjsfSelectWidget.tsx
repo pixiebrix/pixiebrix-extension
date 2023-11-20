@@ -17,7 +17,6 @@
 import React from "react";
 import { type WidgetProps } from "@rjsf/core";
 import Select from "react-select";
-import { FormLabel, FormGroup } from "react-bootstrap";
 
 type OptionType = { label: string; value: string };
 
@@ -62,25 +61,19 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
     })) ?? [];
 
   return (
-    <FormGroup>
-      <FormLabel className={rawErrors?.length > 0 ? "text-danger" : ""}>
-        {label || schema.title}
-        {(label || schema.title) && required ? "*" : null}
-      </FormLabel>
-      <div data-testid="formbuilder-select-wrapper">
-        <Select
-          id={id}
-          options={selectOptions}
-          isDisabled={disabled || readonly}
-          isMulti={multiple}
-          menuPlacement="auto"
-          value={selectOptions.find((option) => option.value === value)}
-          onChange={_onChange}
-          onBlur={_onBlur}
-          onFocus={_onFocus}
-        />
-      </div>
-    </FormGroup>
+    <div data-testid="formbuilder-select-wrapper">
+      <Select
+        id={id}
+        options={selectOptions}
+        isDisabled={disabled || readonly}
+        isMulti={multiple}
+        menuPlacement="auto"
+        value={selectOptions.find((option) => option.value === value)}
+        onChange={_onChange}
+        onBlur={_onBlur}
+        onFocus={_onFocus}
+      />
+    </div>
   );
 };
 
