@@ -229,7 +229,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.2",
     "@types/react-window": "^1.8.5",
     "@types/redux-logger": "^3.0.11",
-    "@types/redux-persist-webextension-storage": "^1.0.2",
+    "@types/redux-persist-webextension-storage": "^1.0.3",
     "@types/redux-state-sync": "^3.1.9",
     "@types/semver": "^7.5.4",
     "@types/sinonjs__fake-timers": "^8.1.5",
