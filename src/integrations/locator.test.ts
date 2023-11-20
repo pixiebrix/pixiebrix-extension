@@ -19,7 +19,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 import LazyLocatorFactory from "@/integrations/locator";
 import controlRoomTokenService from "@contrib/integrations/automation-anywhere.yaml";
-import { fromJS } from "@/services/factory";
+import { fromJS } from "@/integrations/LocalDefinedIntegration";
 import serviceRegistry from "@/integrations/registry";
 
 const integration = fromJS(controlRoomTokenService as any);

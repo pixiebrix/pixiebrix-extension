@@ -28,7 +28,7 @@ import { performConfiguredRequestInBackground as apiProxyService } from "@/backg
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { locator } from "@/background/locator";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";
-import { fromJS } from "@/services/factory";
+import { fromJS } from "@/integrations/LocalDefinedIntegration";
 import { readRawConfigurations } from "@/integrations/registry";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
 

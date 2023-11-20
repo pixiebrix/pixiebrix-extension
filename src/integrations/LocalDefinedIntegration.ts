@@ -46,7 +46,7 @@ import { missingProperties } from "@/utils/schemaUtils";
  * A service created from a local definition. Has the ability to authenticate requests because it has
  * access to authenticate secrets.
  */
-export class LocalDefinedService<
+export class LocalDefinedIntegration<
   TDefinition extends IntegrationDefinition = IntegrationDefinition
 > extends IntegrationABC {
   private readonly _definition: TDefinition;
@@ -373,6 +373,8 @@ export class LocalDefinedService<
   }
 }
 
-export function fromJS(component: IntegrationDefinition): LocalDefinedService {
-  return new LocalDefinedService(component);
+export function fromJS(
+  component: IntegrationDefinition
+): LocalDefinedIntegration {
+  return new LocalDefinedIntegration(component);
 }
