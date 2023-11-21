@@ -18,18 +18,17 @@
 import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
-import { notify } from "@/extensionConsole/messenger/api";
 import { browserAction, type Tab } from "@/mv3/api";
 import { isScriptableUrl } from "@/permissions/permissionsUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import { isMac } from "@/utils/browserUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import {
+  DISPLAY_REASON_EXTENSION_CONSOLE,
+  DISPLAY_REASON_RESTRICTED_URL,
+} from "@/tinyPages/restrictedUrlPopupConstants";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
-
-const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
-const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to create a new mod, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`;
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
@@ -80,20 +79,7 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const url = String(tab.url);
-
-  const optionsPage = getExtensionConsoleUrl();
-
-  if (url.startsWith(optionsPage)) {
-    notify.info(
-      { tabId: tab.id, page: "/options.html" },
-      {
-        id: "MSG_NO_SIDEBAR_ON_OPTIONS_PAGE",
-        message: MSG_NO_SIDEBAR_ON_OPTIONS_PAGE,
-      }
-    );
-  } else {
-    await toggleSidebar(tab.id, url);
-  }
+  await toggleSidebar(tab.id, url);
 }
 
 /**
@@ -102,8 +88,18 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
  * other pages.
  * @param url the url of the tab, or null if not accessible
  */
-async function updatePopover(url: string): Promise<void> {
-  if (isScriptableUrl(url)) {
+async function updatePopover(url: string | null): Promise<void> {
+  // The URL might not be available in certain circumstances. This silences these
+  // cases and just treats them as "not allowed on this page"
+  const normalizedUrl = String(url);
+
+  const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
+
+  if (normalizedUrl.startsWith(getExtensionConsoleUrl())) {
+    await browser.browserAction.setPopup({
+      popup: `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`,
+    });
+  } else if (isScriptableUrl(normalizedUrl)) {
     await browser.browserAction.setPopup({
       // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
       // If an empty string ("") is passed here, the popup is disabled, and the extension will receive browserAction.onClicked events.
@@ -111,7 +107,7 @@ async function updatePopover(url: string): Promise<void> {
     });
   } else {
     await browser.browserAction.setPopup({
-      popup: browser.runtime.getURL("restrictedUrlPopup.html"),
+      popup: `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`,
     });
   }
 }
