@@ -8735,11 +8735,12 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           onClick={[Function]}
           style={
             {
-              "backgroundColor": "#f0eff2",
+              "backgroundColor": "#efeef1",
               "borderRadius": "2px",
               "cursor": "pointer",
               "display": "inline-block",
-              "marginRight": "10px",
+              "marginBottom": "2px",
+              "marginRight": "8px",
               "padding": "4px",
               "paddingLeft": 0,
               "paddingRight": "0.5em",
