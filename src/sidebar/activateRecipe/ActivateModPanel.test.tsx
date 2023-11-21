@@ -30,8 +30,8 @@ import { validateRegistryId } from "@/types/helpers";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
-  getModDefinitionWithBuiltInIntegrationConfigs,
   defaultModDefinitionFactory,
+  getModDefinitionWithBuiltInIntegrationConfigs,
   modComponentDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
@@ -44,6 +44,16 @@ import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultiple
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
+import { registry, services } from "@/background/messenger/api";
+import { clear, find, syncPackages } from "@/registry/packageRegistry";
+import useRefreshRegistries from "@/hooks/useRefreshRegistries";
+import Loader from "@/components/Loader";
+import { refreshServices } from "@/background/locator";
+import { type WizardValues } from "@/activation/wizardTypes";
+import useActivateRecipe, {
+  type ActivateResult,
+} from "@/activation/useActivateRecipe";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useRequiredModDefinitions: jest.fn(),
@@ -90,15 +100,48 @@ jest.mock("@/activation/useActivateRecipe", () => ({
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));
 
+const useActivateRecipeMock = jest.mocked(useActivateRecipe);
+let activateRecipeSpy: jest.MockedFunction<
+  (formValues: WizardValues, recipe: ModDefinition) => Promise<ActivateResult>
+>;
+
 beforeAll(() => {
   registerDefaultWidgets();
+  // Wire up registry for integrated testing
+  jest.mocked(services.refresh).mockImplementation(refreshServices);
+  jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
+  jest.mocked(registry.find).mockImplementation(find);
+  jest.mocked(registry.clear).mockImplementation(clear);
+
+  activateRecipeSpy = jest.fn(async (formValues, recipeDefinition) => ({
+    success: true,
+  }));
 });
+
+beforeEach(() => {
+  activateRecipeSpy.mockReset();
+  activateRecipeSpy.mockResolvedValue({ success: true });
+  useActivateRecipeMock.mockReturnValue(activateRecipeSpy);
+});
+
+afterEach(async () => {
+  await registry.clear();
+  appApiMock.reset();
+});
+
+let modDefinition: ModDefinition;
 
 function setupMocksAndRender(
   modDefinitionOverride?: Partial<ModDefinition>,
-  { componentOverride }: { componentOverride?: React.ReactElement } = {},
+  {
+    componentOverride,
+    Wrapper,
+  }: {
+    componentOverride?: React.ReactElement;
+    Wrapper?: React.ComponentType;
+  } = {}
 ) {
-  const modDefinition = defaultModDefinitionFactory({
+  modDefinition = defaultModDefinitionFactory({
     ...modDefinitionOverride,
     metadata: {
       id: validateRegistryId("test-mod"),
@@ -126,7 +169,9 @@ function setupMocksAndRender(
     <ActivateModPanel modId={modDefinition.metadata.id} />
   );
 
-  return render(element, {
+  const content = Wrapper ? <Wrapper>{element}</Wrapper> : element;
+
+  return render(content, {
     setupRedux(dispatch) {
       dispatch(sidebarSlice.actions.showModActivationPanel(entry));
     },
@@ -149,6 +194,16 @@ beforeEach(() => {
     permissions: {},
   });
 });
+
+const ServicesWrapper: React.FC = ({ children }) => {
+  const [loaded] = useRefreshRegistries();
+
+  if (!loaded) {
+    return <Loader />;
+  }
+
+  return <>{children}</>;
+};
 
 describe("ActivateRecipePanel", () => {
   it("renders with options, permissions info", async () => {
@@ -217,54 +272,244 @@ describe("ActivateRecipePanel", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it("activates recipe with optional integration dependency automatically and renders well-done page", async () => {
-    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
-    setupMocksAndRender({
-      extensionPoints: [
-        modComponentDefinitionFactory({
-          services: {
-            properties: {
-              service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+  it("activates recipe automatically with optional integration dependency and no auth options and renders well-done page", async () => {
+    const { integrationDefinition } = generateIntegrationAndRemoteConfig();
+    // Don't include a remote auth option
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
+    appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [integrationDefinition]);
+
+    setupMocksAndRender(
+      {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              properties: {
+                service1: {
+                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                },
               },
+              required: [],
             },
-            required: [],
-          },
-        }),
-      ],
-    });
+          }),
+        ],
+      },
+      {
+        Wrapper: ServicesWrapper,
+      }
+    );
 
-    await waitForEffect();
-
-    expect(screen.getByText("Well done", { exact: false })).toBeVisible();
+    expect(
+      await screen.findByText("Well done", { exact: false })
+    ).toBeVisible();
     expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
+    expect(activateRecipeSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        integrationDependencies: expect.arrayContaining([
+          expect.objectContaining({
+            integrationId: integrationDefinition.metadata.id,
+            // Should activate without configuring the optional integration
+            configId: expect.toBeNil(),
+          }),
+        ]),
+      }),
+      expect.toBeObject()
+    );
+  });
+
+  it("activates recipe automatically with required integration dependency and built-in auth option and renders well-done page", async () => {
+    const { remoteConfig, integrationDefinition } =
+      generateIntegrationAndRemoteConfig();
+    appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
+    appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [integrationDefinition]);
+
+    setupMocksAndRender(
+      {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              properties: {
+                service1: {
+                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                },
+              },
+              required: ["service1"],
+            },
+          }),
+        ],
+      },
+      {
+        Wrapper: ServicesWrapper,
+      }
+    );
+
+    expect(
+      await screen.findByText("Well done", { exact: false })
+    ).toBeVisible();
+    expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
+    expect(activateRecipeSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        integrationDependencies: expect.arrayContaining([
+          expect.objectContaining({
+            integrationId: integrationDefinition.metadata.id,
+            // Should activate with the built-in configuration
+            configId: remoteConfig.id,
+          }),
+        ]),
+      }),
+      expect.toBeObject()
+    );
+  });
+
+  it("activates recipe automatically with optional integration dependency and built-in auth option and renders well-done page", async () => {
+    const { remoteConfig, integrationDefinition } =
+      generateIntegrationAndRemoteConfig();
+    // Include the remote auth option
+    appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
+    appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [integrationDefinition]);
+
+    const activateRecipeSpy = jest.fn(async () => ({ success: true }));
+    useActivateRecipeMock.mockReturnValue(activateRecipeSpy);
+
+    setupMocksAndRender(
+      {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              properties: {
+                service1: {
+                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                },
+              },
+              required: [],
+            },
+          }),
+        ],
+      },
+      {
+        Wrapper: ServicesWrapper,
+      }
+    );
+
+    expect(
+      await screen.findByText("Well done", { exact: false })
+    ).toBeVisible();
+    expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
+    expect(activateRecipeSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        integrationDependencies: expect.arrayContaining([
+          expect.objectContaining({
+            integrationId: integrationDefinition.metadata.id,
+            // Should activate with the built-in configuration
+            configId: remoteConfig.id,
+          }),
+        ]),
+      }),
+      expect.toBeObject()
+    );
+  });
+
+  it("does not activate recipe automatically when required integration does not have built-in config available", async () => {
+    const { integrationDefinition } = generateIntegrationAndRemoteConfig();
+    // Don't include the remote auth option
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
+    appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [integrationDefinition]);
+
+    const ServicesWrapper2: React.FC = ({ children }) => {
+      const [loaded] = useRefreshRegistries();
+
+      if (!loaded) {
+        console.log("*** Wrapper2 not loaded");
+        return <Loader />;
+      }
+
+      console.log("*** Wrapper2 loaded");
+
+      return <>{children}</>;
+    };
+
+    setupMocksAndRender(
+      {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              properties: {
+                service1: {
+                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                },
+              },
+              required: ["service1"],
+            },
+          }),
+        ],
+      },
+      {
+        Wrapper: ServicesWrapper2,
+      }
+    );
+
+    expect(
+      await screen.findByText(
+        "We're almost there. This mod has a few settings to configure before using.",
+        { exact: false }
+      )
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Finish Activating" })
+    ).toBeVisible();
+    expect(activateRecipeSpy).not.toHaveBeenCalled();
   });
 
   it("does not activate recipe automatically when one integration is required and one is not", async () => {
-    const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
-    const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
-    setupMocksAndRender({
-      extensionPoints: [
-        modComponentDefinitionFactory({
-          services: {
-            properties: {
-              service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
-              },
-              service2: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
-              },
-            },
-            required: ["service1"],
-          },
-        }),
-      ],
-    });
+    const { integrationDefinition: integrationDefinition1 } =
+      generateIntegrationAndRemoteConfig();
+    const { integrationDefinition: integrationDefinition2 } =
+      generateIntegrationAndRemoteConfig();
+    // Don't include the remote configs
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
+    appApiMock
+      .onGet("/api/services/")
+      .reply(200, [integrationDefinition1, integrationDefinition2]);
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [integrationDefinition1, integrationDefinition2]);
 
-    await waitForEffect();
+    setupMocksAndRender(
+      {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              properties: {
+                service1: {
+                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition1.metadata.id}`,
+                },
+                service2: {
+                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition2.metadata.id}`,
+                },
+              },
+              required: ["service1"],
+            },
+          }),
+        ],
+      },
+      {
+        Wrapper: ServicesWrapper,
+      }
+    );
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         "We're almost there. This mod has a few settings to configure before using.",
         { exact: false },
       ),
@@ -272,6 +517,7 @@ describe("ActivateRecipePanel", () => {
     expect(
       screen.getByRole("button", { name: "Finish Activating" }),
     ).toBeVisible();
+    expect(activateRecipeSpy).not.toHaveBeenCalled();
   });
 
   it("renders well-done page for quick bar mod shortcut not configured", async () => {

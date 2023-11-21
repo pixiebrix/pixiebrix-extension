@@ -18,43 +18,25 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import AuthWidget from "@/components/integrations/AuthWidget";
-import {
-  keyAuthIntegrationDefinitionFactory,
-  remoteIntegrationConfigurationFactory,
-} from "@/testUtils/factories/integrationFactories";
+import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
   screen,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type AuthOption } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import {
-  clear,
-  find,
-  type Kind,
-  syncPackages,
-} from "@/registry/packageRegistry";
+import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { registry, services } from "@/background/messenger/api";
 import { refreshServices } from "@/background/locator";
 import Loader from "@/components/Loader";
-import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
-const remoteConfig = remoteIntegrationConfigurationFactory();
-
-const integrationDefinition: IntegrationDefinition & { kind: Kind } = {
-  ...keyAuthIntegrationDefinitionFactory({
-    metadata: metadataFactory({
-      id: remoteConfig.service.config.metadata.id,
-    }),
-  }),
-  kind: "service" as Kind,
-};
+const { remoteConfig, integrationDefinition } =
+  generateIntegrationAndRemoteConfig();
 
 const authOption1: AuthOption = {
   label: "Test Option 1",
@@ -77,11 +59,15 @@ beforeAll(() => {
   appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
   appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
   appApiMock.onGet("/api/registry/bricks/").reply(200, [integrationDefinition]);
-  jest.mocked(services.refresh).mockImplementation(refreshServices);
   // Wire up directly to the background implementations for integration testing
+  jest.mocked(services.refresh).mockImplementation(refreshServices);
   jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
   jest.mocked(registry.find).mockImplementation(find);
   jest.mocked(registry.clear).mockImplementation(clear);
+});
+
+afterAll(() => {
+  appApiMock.reset();
 });
 
 const Content: React.FC<{ authOptions: AuthOption[] }> = ({ authOptions }) => {

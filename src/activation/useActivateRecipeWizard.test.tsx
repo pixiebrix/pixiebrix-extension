@@ -27,7 +27,7 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("@/components/auth/AuthWidget", () => {});
+jest.mock("@/components/integrations/AuthWidget", () => {});
 jest.mock("react-redux");
 jest.mock("@/services/api", () => ({
   useGetServiceAuthsQuery: jest.fn().mockReturnValue({
