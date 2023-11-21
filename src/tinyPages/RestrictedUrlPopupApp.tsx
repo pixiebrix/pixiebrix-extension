@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid -- options page behaves like a link */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -28,8 +29,8 @@ const RestrictedUrlPopupApp: React.FC = () => {
       <div className="mt-2">PixieBrix cannot access this page.</div>
 
       <div className="mt-2">
-        To open the PixieBrix Sidebar, navigate to a website and then click
-        PixieBrix toolbar button again.
+        To open the PixieBrix Sidebar, navigate to a website and then click the
+        PixieBrix toolbar icon again.
       </div>
 
       <div className="mt-2">

@@ -119,6 +119,8 @@ async function updatePopover(url: string): Promise<void> {
 export default function initBrowserAction(): void {
   browserAction.onClicked.addListener(handleBrowserAction);
 
+  // Track the active tab URL. MV2 doesn't support setting popover on a per-tab basis, so we need to update the popover
+  // every time status the active tab/active URL changes.
   // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
 
   chrome.tabs.onActivated.addListener(async (activeInfo) => {
@@ -126,7 +128,7 @@ export default function initBrowserAction(): void {
     await updatePopover(tab.url);
   });
 
-  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  browser.tabs.onUpdated.addListener(async (_tabId, _changeInfo, tab) => {
     if (tab.active) {
       await updatePopover(tab.url);
     }
