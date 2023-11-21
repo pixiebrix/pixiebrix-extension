@@ -40,12 +40,6 @@ const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
 async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   console.debug("browserAction:toggleSidebar", tabId, tabUrl);
 
-  if (!isScriptableUrl(tabUrl)) {
-    // Page not supported. Open the options page instead
-    void browser.runtime.openOptionsPage();
-    return;
-  }
-
   // Load the raw toggle script first, then the content script. The browser executes them
   // in order, but we don't need to use `Promise.all` to await them at the same time as we
   // want to catch each error separately.
@@ -102,6 +96,39 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
   }
 }
 
-export default function initBrowserAction() {
+/**
+ * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
+ * the Extension Console, but that was confusing because the action was inconsistent with how the button behaves
+ * other pages.
+ * @param url the url of the tab, or null if not accessible
+ */
+async function updatePopover(url: string): Promise<void> {
+  if (isScriptableUrl(url)) {
+    await browser.browserAction.setPopup({
+      // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
+      // If an empty string ("") is passed here, the popup is disabled, and the extension will receive browserAction.onClicked events.
+      popup: "",
+    });
+  } else {
+    await browser.browserAction.setPopup({
+      popup: browser.runtime.getURL("restrictedUrlPopup.html"),
+    });
+  }
+}
+
+export default function initBrowserAction(): void {
   browserAction.onClicked.addListener(handleBrowserAction);
+
+  // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
+
+  chrome.tabs.onActivated.addListener(async (activeInfo) => {
+    const tab = await browser.tabs.get(activeInfo.tabId);
+    await updatePopover(tab.url);
+  });
+
+  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    if (tab.active) {
+      await updatePopover(tab.url);
+    }
+  });
 }
