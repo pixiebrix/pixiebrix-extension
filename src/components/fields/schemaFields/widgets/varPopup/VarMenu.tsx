@@ -85,7 +85,6 @@ function usePositionVarPopup({
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.contentBoxSize) {
-          console.log("VarMenu resize", entry.contentBoxSize[0].blockSize);
           setResize(entry.contentBoxSize[0].blockSize);
         }
       }
