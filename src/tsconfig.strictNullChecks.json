@@ -183,7 +183,6 @@
     "./contrib/automationanywhere/aaTypes.ts",
     "./contrib/automationanywhere/contract.ts",
     "./contrib/ckeditor.ts",
-    "./contrib/google/initGoogle.ts",
     "./contrib/google/sheets/core/getSheetIdIntegrationOutputKey.ts",
     "./contrib/google/sheets/core/schemas.ts",
     "./contrib/google/sheets/core/sheetsConstants.ts",

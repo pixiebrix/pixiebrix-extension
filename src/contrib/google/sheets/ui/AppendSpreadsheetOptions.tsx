@@ -24,7 +24,6 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { isEmpty } from "lodash";
-import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
@@ -173,4 +172,4 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 };
 
-export default requireGoogleHOC(AppendSpreadsheetOptions);
+export default AppendSpreadsheetOptions;

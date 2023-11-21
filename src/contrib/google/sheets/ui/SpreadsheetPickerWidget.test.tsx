@@ -26,12 +26,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
-import {
-  isGAPISupported,
-  isGoogleInitialized,
-} from "@/contrib/google/initGoogle";
-import userEvent from "@testing-library/user-event";
-import useGoogleSpreadsheetPicker from "@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker";
 import { act, screen } from "@testing-library/react";
 import { type FormikValues } from "formik";
 import { dereference } from "@/validators/generic";
@@ -47,26 +41,6 @@ import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store
 import selectEvent from "react-select-event";
 import useFlags from "@/hooks/useFlags";
 
-jest.mock("@/contrib/google/sheets/ui/useGoogleSpreadsheetPicker", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    showPicker: jest.fn(),
-    ensureSheetsTokenAction: jest.fn(),
-    hasRejectedPermissions: false,
-  })),
-}));
-
-jest.mock("@/contrib/google/initGoogle", () => ({
-  __esModule: true,
-  isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGAPISupported: jest.fn().mockReturnValue(true),
-  subscribe: jest.fn(() => () => {}),
-}));
-
-const useGoogleSpreadsheetPickerMock = jest.mocked(useGoogleSpreadsheetPicker);
-const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
-const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
-const isGAPISupportedMock = jest.mocked(isGAPISupported);
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 
 let idSequence = 0;
@@ -159,18 +133,11 @@ beforeAll(() => {
     async (serviceId) => servicesLookup[serviceId]
   );
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
-  getSheetPropertiesMock.mockImplementation(async (spreadsheetId: string) =>
-    spreadsheetId === TEST_SPREADSHEET_ID
-      ? { title: TEST_SPREADSHEET_NAME }
-      : { title: OTHER_TEST_SPREADSHEET_NAME }
-  );
 });
 
 describe("SpreadsheetPickerWidget", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    isGoogleInitializedMock.mockReturnValue(true);
-    isGAPISupportedMock.mockReturnValue(true);
     useFlagsMock.mockReturnValue({
       permit: jest.fn(),
       restrict: jest.fn(),
@@ -208,65 +175,7 @@ describe("SpreadsheetPickerWidget", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it("requires gapi", async () => {
-    isGoogleInitializedMock.mockReturnValue(false);
-
-    await renderWithValuesAndWait({ spreadsheetId: null });
-
-    expect(
-      screen.getByText(
-        "The Google API is not initialized. Please click the button to initialize it."
-      )
-    ).toBeVisible();
-  });
-
-  it("requires gapi support", async () => {
-    isGAPISupportedMock.mockReturnValue(false);
-
-    await renderWithValuesAndWait({ spreadsheetId: null });
-
-    // Text provided by the requireGoogleHOC
-    expect(
-      screen.getByText(
-        "The Google API is not supported in this browser. Please use Google Chrome."
-      )
-    ).toBeVisible();
-  });
-
-  it("selects from file picker", async () => {
-    const showPickerMock = jest.fn().mockResolvedValue({
-      id: TEST_SPREADSHEET_ID,
-      name: TEST_SPREADSHEET_NAME,
-    });
-
-    getSheetPropertiesMock.mockResolvedValue({
-      title: TEST_SPREADSHEET_NAME,
-    });
-
-    useGoogleSpreadsheetPickerMock.mockReturnValue({
-      showPicker: showPickerMock,
-      hasRejectedPermissions: false,
-      ensureSheetsTokenAction: jest.fn(),
-      startTimestamp: null,
-    });
-
-    const { asFragment } = await renderWithValuesAndWait({
-      spreadsheetId: null,
-    });
-
-    await userEvent.click(screen.getByText("Select"));
-
-    // Verify the widget fetches the information for the selected sheet to re-verify access to the sheet via the API
-    expect(getSheetPropertiesMock).toHaveBeenCalledOnce();
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
   it("renders valid sheet on load", async () => {
-    getSheetPropertiesMock.mockResolvedValue({
-      title: TEST_SPREADSHEET_NAME,
-    });
-
     await renderWithValuesAndWait({ spreadsheetId: TEST_SPREADSHEET_ID });
 
     // Verify it's showing the sheet title and not the sheet unique id
@@ -276,10 +185,6 @@ describe("SpreadsheetPickerWidget", () => {
   });
 
   it("falls back to spreadsheet id if fetching properties fails", async () => {
-    getSheetPropertiesMock.mockRejectedValue(
-      new Error("Error fetching sheet properties")
-    );
-
     await renderWithValuesAndWait({ spreadsheetId: TEST_SPREADSHEET_ID });
 
     expect(screen.getByRole("textbox")).toHaveDisplayValue(TEST_SPREADSHEET_ID);
@@ -296,10 +201,6 @@ describe("SpreadsheetPickerWidget", () => {
   });
 
   it("removes unused integration dependency on mount", async () => {
-    getSheetPropertiesMock.mockResolvedValue({
-      title: TEST_SPREADSHEET_NAME,
-    });
-
     const initialValues = formStateFactory(
       {
         integrationDependencies: [testSpreadsheetIntegrationDependency],
@@ -340,51 +241,6 @@ describe("SpreadsheetPickerWidget", () => {
     expect(formState.integrationDependencies[0]).toEqual(
       testSpreadsheetIntegrationDependency
     );
-  });
-
-  it("displays rejected permissions message", async () => {
-    useGoogleSpreadsheetPickerMock.mockReturnValue({
-      showPicker: jest.fn(),
-      hasRejectedPermissions: true,
-      ensureSheetsTokenAction: jest.fn(),
-      startTimestamp: null,
-    });
-
-    await renderWithValuesAndWait({ spreadsheetId: null });
-
-    expect(
-      screen.getByText(
-        "You did not approve access, or your company policy prevents access to Google Sheets.",
-        {
-          exact: false,
-        }
-      )
-    ).toBeVisible();
-  });
-
-  it("displays isEnsureSheetsHanging message", async () => {
-    jest.useFakeTimers();
-
-    useGoogleSpreadsheetPickerMock.mockReturnValue({
-      showPicker: jest.fn(),
-      hasRejectedPermissions: false,
-      ensureSheetsTokenAction: jest.fn(),
-      startTimestamp: Date.now(),
-    });
-
-    await renderWithValuesAndWait({ spreadsheetId: null });
-
-    act(() => {
-      jest.advanceTimersByTime(5000);
-    });
-
-    expect(
-      screen.getByText("If Chrome is not displaying an authentication popup", {
-        exact: false,
-      })
-    ).toBeVisible();
-
-    jest.useRealTimers();
   });
 
   it("shows working spreadsheet dropdown picker when using test google account PKCE", async () => {

@@ -37,13 +37,6 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn(),
 }));
 
-jest.mock("@/contrib/google/initGoogle", () => ({
-  __esModule: true,
-  isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGAPISupported: jest.fn().mockReturnValue(true),
-  subscribe: jest.fn(),
-}));
-
 function mockModDefinition(modDefinition: ModDefinition) {
   (useAllModDefinitions as jest.Mock).mockReturnValue(
     valueToAsyncCacheState([modDefinition])

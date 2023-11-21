@@ -57,8 +57,6 @@ export const sheets = {
   getUserEmail: getMethod("GOOGLE_DRIVE_GET_USER_EMAIL", bg),
   getAllSpreadsheets: getMethod("GOOGLE_SHEETS_GET_ALL_SPREADSHEETS", bg),
   getSpreadsheet: getMethod("GOOGLE_SHEETS_GET_SPREADSHEET", bg),
-  getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
-  getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES", bg),
   getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
   getAllRows: getMethod("GOOGLE_SHEETS_GET_ALL_ROWS", bg),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),

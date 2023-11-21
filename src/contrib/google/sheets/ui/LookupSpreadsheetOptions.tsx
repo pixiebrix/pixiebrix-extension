@@ -25,7 +25,6 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
 import { isEmpty } from "lodash";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
-import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
@@ -203,4 +202,4 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 };
 
-export default requireGoogleHOC(LookupSpreadsheetOptions);
+export default LookupSpreadsheetOptions;

@@ -42,10 +42,6 @@ import { useAuthOptions } from "@/hooks/auth";
 import { type AuthOption } from "@/auth/authTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
-import {
-  isGAPISupported,
-  isGoogleInitialized,
-} from "@/contrib/google/initGoogle";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import useFlags from "@/hooks/useFlags";
@@ -57,15 +53,6 @@ function newId(): UUID {
 
 const servicesLocateMock = jest.mocked(services.locate);
 
-jest.mock("@/contrib/google/initGoogle", () => ({
-  isGoogleInitialized: jest.fn(),
-  isGAPISupported: jest.fn(),
-  subscribe: jest.fn().mockImplementation(() => () => {}),
-}));
-
-const isGAPISupportedMock = jest.mocked(isGAPISupported);
-const isGoogleInitializedMock = jest.mocked(isGoogleInitialized);
-
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
 }));
@@ -75,8 +62,6 @@ const useAuthOptionsMock = jest.mocked(useAuthOptions);
 const isLoggedInMock = jest.mocked(sheets.isLoggedIn);
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
-const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
-const getTabNamesMock = jest.mocked(sheets.getTabNames);
 const getHeadersMock = jest.mocked(sheets.getHeaders);
 
 const TEST_SPREADSHEET_ID = newId();
@@ -210,8 +195,6 @@ beforeAll(() => {
   isLoggedInMock.mockResolvedValue(true);
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
   getSpreadsheetMock.mockResolvedValue(testSpreadsheet);
-  getSheetPropertiesMock.mockResolvedValue({ title: TEST_SPREADSHEET_NAME });
-  getTabNamesMock.mockResolvedValue(["Tab1", "Tab2"]);
   getHeadersMock.mockImplementation(async ({ tabName }) => {
     if (tabName === "Tab1") {
       return ["Column1", "Column2"];
@@ -222,8 +205,6 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  isGoogleInitializedMock.mockReturnValue(true);
-  isGAPISupportedMock.mockReturnValue(true);
   useFlagsMock.mockReturnValue({
     permit: jest.fn(),
     restrict: jest.fn(),
@@ -539,41 +520,5 @@ describe("LookupSpreadsheetOptions", () => {
     expect(screen.getByDisplayValue("@myTab")).toBeVisible();
     expect(screen.getByDisplayValue("@myHeader")).toBeVisible();
     expect(screen.getByDisplayValue("@query")).toBeVisible();
-  });
-
-  /**
-   * Require Google HOC Tests
-   */
-
-  it("should require GAPI support", async () => {
-    isGoogleInitializedMock.mockReturnValue(false);
-    isGAPISupportedMock.mockReturnValue(false);
-
-    const { asFragment } = render(
-      <LookupSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: { config: {} },
-      }
-    );
-
-    await waitForEffect();
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it("should require GAPI loaded", async () => {
-    isGoogleInitializedMock.mockReturnValue(false);
-    isGAPISupportedMock.mockReturnValue(true);
-
-    const { asFragment } = render(
-      <LookupSpreadsheetOptions name="" configKey="config" />,
-      {
-        initialValues: { config: {} },
-      }
-    );
-
-    await waitForEffect();
-
-    expect(asFragment()).toMatchSnapshot();
   });
 });

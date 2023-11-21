@@ -91,8 +91,6 @@ declare global {
 
     GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: typeof sheets.getAllSpreadsheets;
     GOOGLE_SHEETS_GET_SPREADSHEET: typeof sheets.getSpreadsheet;
-    GOOGLE_SHEETS_GET_TAB_NAMES: typeof sheets.getTabNames;
-    GOOGLE_SHEETS_GET_SHEET_PROPERTIES: typeof sheets.getSheetProperties;
     GOOGLE_SHEETS_GET_HEADERS: typeof sheets.getHeaders;
     GOOGLE_SHEETS_GET_ALL_ROWS: typeof sheets.getAllRows;
     GOOGLE_SHEETS_CREATE_TAB: typeof sheets.createTab;
@@ -175,8 +173,6 @@ export default function registerMessenger(): void {
 
     GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: sheets.getAllSpreadsheets,
     GOOGLE_SHEETS_GET_SPREADSHEET: sheets.getSpreadsheet,
-    GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,
-    GOOGLE_SHEETS_GET_SHEET_PROPERTIES: sheets.getSheetProperties,
     GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
     GOOGLE_SHEETS_GET_ALL_ROWS: sheets.getAllRows,
     GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,

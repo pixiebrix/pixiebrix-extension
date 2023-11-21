@@ -64,12 +64,6 @@ const servicesLocateMock = services.locate as jest.MockedFunction<
   typeof services.locate
 >;
 
-jest.mock("@/contrib/google/initGoogle", () => ({
-  isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGAPISupported: jest.fn().mockReturnValue(true),
-  subscribe: jest.fn().mockImplementation(() => () => {}),
-}));
-
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
 }));
@@ -79,8 +73,6 @@ const useAuthOptionsMock = jest.mocked(useAuthOptions);
 const isLoggedInMock = jest.mocked(sheets.isLoggedIn);
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
-const getSheetPropertiesMock = jest.mocked(sheets.getSheetProperties);
-const getTabNamesMock = jest.mocked(sheets.getTabNames);
 const getHeadersMock = jest.mocked(sheets.getHeaders);
 
 const TEST_SPREADSHEET_ID = newId();
@@ -217,16 +209,6 @@ beforeAll(() => {
       spreadsheetId === TEST_SPREADSHEET_ID
         ? testSpreadsheet
         : otherTestSpreadsheet
-  );
-  getSheetPropertiesMock.mockImplementation(async (spreadsheetId: string) =>
-    spreadsheetId === TEST_SPREADSHEET_ID
-      ? { title: TEST_SPREADSHEET_NAME }
-      : { title: OTHER_TEST_SPREADSHEET_NAME }
-  );
-  getTabNamesMock.mockImplementation(async (spreadsheetId: string) =>
-    spreadsheetId === TEST_SPREADSHEET_ID
-      ? ["Tab1", "Tab2"]
-      : ["OtherTab1", "OtherTab2"]
   );
   getHeadersMock.mockImplementation(async ({ tabName }) => {
     switch (tabName) {
