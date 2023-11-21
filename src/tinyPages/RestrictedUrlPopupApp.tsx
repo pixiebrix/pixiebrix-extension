@@ -33,6 +33,8 @@ const RestrictedUrlPopupApp: React.FC = () => {
         PixieBrix toolbar icon again.
       </div>
 
+      <hr />
+
       <div className="mt-2">
         Looking for the Extension Console?{" "}
         <a
@@ -42,6 +44,21 @@ const RestrictedUrlPopupApp: React.FC = () => {
           }}
         >
           Open the Extension Console
+        </a>
+      </div>
+
+      <div className="mt-2">
+        Looking for the Page Editor?{" "}
+        <a
+          href="#"
+          onClick={async () => {
+            await browser.tabs.update({
+              url: "https://www.pixiebrix.com/developers-welcome",
+            });
+            window.close();
+          }}
+        >
+          View the Developer Welcome Page
         </a>
       </div>
     </div>
