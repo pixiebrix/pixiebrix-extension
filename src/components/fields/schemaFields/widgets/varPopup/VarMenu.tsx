@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./VarMenu.module.scss";
 import { selectKnownVarsForActiveNode } from "./varSelectors";
@@ -77,6 +77,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const activeElement = useSelector(selectActiveElement);
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
   const { allBlocks } = useAllBricks();
+  const [resize, setResize] = useState(0);
 
   const knownVars = useSelector(selectKnownVarsForActiveNode);
   const trace = useSelector(selectActiveNodeTrace);
@@ -112,6 +113,25 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     };
   }, [dispatch]);
 
+  useEffect(() => {
+    const element = rootElementRef.current;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentBoxSize) {
+          console.log("VarMenu resize", entry.contentBoxSize[0].blockSize);
+          setResize(entry.contentBoxSize[0].blockSize);
+        }
+      }
+    });
+
+    resizeObserver.observe(element);
+
+    return () => {
+      resizeObserver.unobserve(element);
+    };
+  }, []);
+
   useAsyncEffect(async () => {
     if (!inputElementRef.current || !rootElementRef.current) {
       return;
@@ -141,7 +161,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     );
 
     rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
-  }, [knownVars, dispatch]);
+  }, [knownVars, dispatch, resize]);
 
   const extensionPointLabel = activeElement?.type
     ? ADAPTERS.get(activeElement.type).label
