@@ -50,7 +50,11 @@ describe("EphemeralForm", () => {
     await waitForEffect();
 
     // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
-    expect(screen.getByLabelText("foo")).not.toBeNull();
+    // TODO: replace with getByLabelText after the upgrade to rjsf5
+    // Caused by bug in the default TextWidget in rjsf4:
+    // https://github.com/rjsf-team/react-jsonschema-form/blob/v4.2.3/packages/bootstrap-4/src/TextWidget/TextWidget.tsx
+    expect(screen.getByText("foo")).toBeVisible();
+    expect(screen.getByRole("textbox")).toBeVisible();
     expect(asFragment()).toMatchSnapshot();
   });
 

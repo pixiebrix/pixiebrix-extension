@@ -25,6 +25,7 @@ import React, {
 import { type WidgetProps } from "@rjsf/core";
 import { isNumber } from "lodash";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
+import { FormLabel } from "react-bootstrap";
 
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,
@@ -76,20 +77,23 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
   // @see https://github.com/pixiebrix/pixiebrix-extension/pull/6899 for why we added the label
   return (
-    <textarea
-      id={id}
-      className="form-control"
-      value={String(value ?? "")}
-      placeholder={placeholder}
-      required={required}
-      disabled={disabled}
-      readOnly={readonly}
-      rows={isNumber(options.rows) ? options.rows : undefined}
-      onKeyPress={onKeyPress}
-      onChange={onChangeHandler}
-      onFocus={onFocusHandler}
-      onBlur={onBlurHandler}
-    />
+    <>
+      <FormLabel htmlFor={id}>{label}</FormLabel>
+      <textarea
+        id={id}
+        className="form-control"
+        value={String(value ?? "")}
+        placeholder={placeholder}
+        required={required}
+        disabled={disabled}
+        readOnly={readonly}
+        rows={isNumber(options.rows) ? options.rows : undefined}
+        onKeyPress={onKeyPress}
+        onChange={onChangeHandler}
+        onFocus={onFocusHandler}
+        onBlur={onBlurHandler}
+      />
+    </>
   );
 };
 

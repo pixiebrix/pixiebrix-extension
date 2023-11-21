@@ -14,12 +14,6 @@ exports[`EphemeralForm shows field titles 1`] = `
         <div
           class="form-group"
         >
-          <label
-            class="form-label"
-            for="root"
-          >
-            Test Form
-          </label>
           <div
             class="my-1"
           >
@@ -45,12 +39,6 @@ exports[`EphemeralForm shows field titles 1`] = `
                 <div
                   class="form-group"
                 >
-                  <label
-                    class="form-label"
-                    for="root_foo"
-                  >
-                    foo
-                  </label>
                   <div
                     class="mb-0 form-group"
                   >
