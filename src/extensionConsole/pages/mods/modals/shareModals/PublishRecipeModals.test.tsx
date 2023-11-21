@@ -26,10 +26,8 @@ import { validateRegistryId } from "@/types/helpers";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
-import {
-  defaultModDefinitionFactory,
-  metadataFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 
 let blueprint: ModDefinition;

@@ -34,8 +34,8 @@ import {
   modComponentDefinitionFactory,
   starterBrickConfigFactory,
   defaultModDefinitionFactory,
-  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 
