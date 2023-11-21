@@ -93,7 +93,7 @@ function usePositionVarPopup({
     resizeObserver.observe(element);
 
     return () => {
-      resizeObserver.unobserve(element);
+      resizeObserver.disconnect();
     };
   }, []);
 
