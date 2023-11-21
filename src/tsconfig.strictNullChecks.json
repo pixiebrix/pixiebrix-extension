@@ -396,7 +396,7 @@
     "./themes/themeUtils.ts",
     "./tinyPages/devtools.ts",
     "./tinyPages/restrictedUrlPopup.tsx",
-    "./tinyPages/restrictedUrlPopupApp.tsx",
+    "./tinyPages/RestrictedUrlPopupApp.tsx",
     "./tours/tourRunDatabase.ts",
     "./types/annotationTypes.ts",
     "./types/brickTypes.ts",
