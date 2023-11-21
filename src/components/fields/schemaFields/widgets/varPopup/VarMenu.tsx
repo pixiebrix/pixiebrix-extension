@@ -66,53 +66,19 @@ type VarMenuProps = {
   onVarSelect: (selectedPath: string[]) => void;
 };
 
-const VarMenu: React.FunctionComponent<VarMenuProps> = ({
+function usePositionVarPopup({
+  knownVars,
   inputElementRef,
-  onClose,
-  onVarSelect,
-  likelyVariable,
-}) => {
+}: {
+  knownVars: VarMap;
+  inputElementRef: VarMenuProps["inputElementRef"];
+}) {
   const dispatch = useDispatch();
   const rootElementRef = useRef<HTMLDivElement>(null);
-  const activeElement = useSelector(selectActiveElement);
-  const pipelineMap = useSelector(selectPipelineMap) ?? {};
-  const { allBlocks } = useAllBricks();
   const [resize, setResize] = useState(0);
 
-  const knownVars = useSelector(selectKnownVarsForActiveNode);
-  const trace = useSelector(selectActiveNodeTrace);
-  const { data: modVariables } = useAsyncState(
-    async () =>
-      getPageState(thisTab, {
-        namespace: "blueprint",
-        extensionId: null,
-        blueprintId: activeElement.recipe?.id,
-      }),
-    []
-  );
-
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      const parent = rootElementRef.current?.parentElement;
-      if (parent && !parent.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("click", handleClick);
-    return () => {
-      document.removeEventListener("click", handleClick);
-    };
-  }, [onClose]);
-
-  useEffect(() => {
-    dispatch(editorActions.showVariablePopover());
-
-    return () => {
-      dispatch(editorActions.hideVariablePopover());
-    };
-  }, [dispatch]);
-
+  // Use ResizeObserver to detect changes in the height of the menu
+  // This is especially important when the menu is above the textarea
   useEffect(() => {
     const element = rootElementRef.current;
 
@@ -161,7 +127,63 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     );
 
     rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
+
+    // While the position does not rely on the knownVars or the resize state,
+    // we need to recompute the position when either of these change.
   }, [knownVars, dispatch, resize]);
+
+  return { rootElementRef };
+}
+
+const VarMenu: React.FunctionComponent<VarMenuProps> = ({
+  inputElementRef,
+  onClose,
+  onVarSelect,
+  likelyVariable,
+}) => {
+  const dispatch = useDispatch();
+  const activeElement = useSelector(selectActiveElement);
+  const pipelineMap = useSelector(selectPipelineMap) ?? {};
+  const { allBlocks } = useAllBricks();
+
+  const knownVars = useSelector(selectKnownVarsForActiveNode);
+  const { rootElementRef } = usePositionVarPopup({
+    knownVars,
+    inputElementRef,
+  });
+
+  const trace = useSelector(selectActiveNodeTrace);
+  const { data: modVariables } = useAsyncState(
+    async () =>
+      getPageState(thisTab, {
+        namespace: "blueprint",
+        extensionId: null,
+        blueprintId: activeElement.recipe?.id,
+      }),
+    []
+  );
+
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      const parent = rootElementRef.current?.parentElement;
+      if (parent && !parent.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, [onClose, rootElementRef]);
+
+  useEffect(() => {
+    dispatch(editorActions.showVariablePopover());
+
+    return () => {
+      dispatch(editorActions.hideVariablePopover());
+    };
+  }, [dispatch]);
 
   const extensionPointLabel = activeElement?.type
     ? ADAPTERS.get(activeElement.type).label
