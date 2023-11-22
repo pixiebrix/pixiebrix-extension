@@ -19,28 +19,85 @@ import React from "react";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { selectIsDimensionsWarningDismissed } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import devtoolsToolbarScreenshot from "@img/devtools-pixiebrix-toolbar-screenshot.png";
+import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
 
 const GatePanel: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
   return (
     <div className="p-3">
-      <div>
-        The Page Editor is designed to work with a horizontal orientation.
-      </div>
+      <Row>
+        <Col>
+          <h3>
+            The Page Editor is designed to work with a horizontal orientation.
+          </h3>
+        </Col>
+      </Row>
 
-      <div>We recommend docking the DevTools to the bottom of the window.</div>
+      <Row>
+        <Col>
+          We recommend docking the DevTools to the bottom of the window.
+        </Col>
+      </Row>
+      <Row className="mt-3">
+        <Col>
+          <img
+            src={devtoolsToolbarScreenshot}
+            alt="DevTools toolbar with three-dot menu icon included"
+            className="img-fluid"
+          />
+        </Col>
+        <Col>
+          <img
+            src={devtoolsDockingContextMenu}
+            alt="The context menu that will show after clicking the DevTools three-dot menu, with 'Dock Side' option included"
+            className="img-fluid"
+          />
+        </Col>
+      </Row>
 
-      <Button
-        variant="warning"
-        onClick={() => {
-          dispatch(editorSlice.actions.dismissDimensionsWarning());
-        }}
-      >
-        Dismiss Warning
-      </Button>
+      <Row className="mt-3">
+        <Col>
+          <p>
+            Click the ‘
+            <FontAwesomeIcon
+              icon={faEllipsisV}
+              className="mx-1"
+              title="Three-dot menu icon"
+            />
+            ’ menu in the top right of the DevTools
+          </p>
+          <p>
+            Select the ‘
+            <img
+              src={devtoolsDockBottomIcon}
+              alt="DevTools dock bottom icon"
+              width="16px"
+            />
+            ’ (third option) under ‘Dock side’
+          </p>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <hr />
+
+          <Button
+            variant="warning"
+            onClick={() => {
+              dispatch(editorSlice.actions.dismissDimensionsWarning());
+            }}
+          >
+            Dismiss Warning
+          </Button>
+        </Col>
+      </Row>
     </div>
   );
 };

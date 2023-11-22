@@ -277,7 +277,6 @@
     "./pageEditor/baseFormStateTypes.ts",
     "./pageEditor/components/LoginCard.tsx",
     "./pageEditor/components/ToggleField.tsx",
-    "./pageEditor/components/DimensionGate.tsx",
     "./pageEditor/consts.ts",
     "./pageEditor/events.ts",
     "./pageEditor/fields/CollapsibleFieldSection.tsx",
