@@ -71,7 +71,12 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
 
   if (isLoading) {
     return (
-      <PanelBody payload={null} context={panelContext} onAction={onAction} />
+      <PanelBody
+        payload={null}
+        context={panelContext}
+        tracePath={tracePath}
+        onAction={onAction}
+      />
     );
   }
 
@@ -80,6 +85,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
       <PanelBody
         context={panelContext}
         onAction={onAction}
+        tracePath={tracePath}
         payload={{
           key: `error-${getErrorMessage(error)}`,
           error: serializeError(error),
@@ -90,7 +96,12 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   }
 
   return (
-    <PanelBody context={panelContext} payload={payload} onAction={onAction} />
+    <PanelBody
+      context={panelContext}
+      payload={payload}
+      tracePath={tracePath}
+      onAction={onAction}
+    />
   );
 };
 

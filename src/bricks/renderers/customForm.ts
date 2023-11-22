@@ -40,6 +40,7 @@ import {
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { namespaceOptions } from "@/bricks/effects/pageState";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 interface DatabaseResult {
   success: boolean;
@@ -168,6 +169,9 @@ export const customFormRendererSchema = {
 
 export class CustomFormRenderer extends RendererABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
+
+  static ON_SUBMIT_VARIABLE_NAME = validateOutputKey("values");
+
   constructor() {
     super(
       CustomFormRenderer.BLOCK_ID,
@@ -260,10 +264,6 @@ export class CustomFormRenderer extends RendererABC {
               extensionId,
             });
 
-            if (!isEmpty(successMessage)) {
-              notify.success(successMessage);
-            }
-
             if (onSubmit) {
               await runPipeline(
                 onSubmit,
@@ -272,9 +272,14 @@ export class CustomFormRenderer extends RendererABC {
                   counter: 0,
                 },
                 {
-                  form: normalizedValues,
+                  ["@" + CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME]:
+                    normalizedValues,
                 }
               );
+            }
+
+            if (!isEmpty(successMessage)) {
+              notify.success(successMessage);
             }
           } catch (error) {
             notify.error({

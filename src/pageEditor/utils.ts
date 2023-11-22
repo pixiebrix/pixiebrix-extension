@@ -166,6 +166,13 @@ export function getVariableKeyForSubPipeline(
     keyPropName = "errorKey";
   }
 
+  if (
+    blockConfig.id === CustomFormRenderer.BLOCK_ID &&
+    pipelinePropName === "onSubmit"
+  ) {
+    return CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME;
+  }
+
   if (!keyPropName) {
     return null;
   }
