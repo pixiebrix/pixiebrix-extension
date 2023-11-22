@@ -87,16 +87,16 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
  * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
  * the Extension Console, but that was confusing because the action was inconsistent with how the button behaves
  * other pages.
- * @param url the url of the tab, or null if not accessible
+ * @param tabUrl the url of the tab, or null if not accessible
  */
-function getPopover(url: string | null): string | null {
+function getPopoverUrl(tabUrl: string | null): string | null {
   const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
 
-  if (url && url.startsWith(getExtensionConsoleUrl())) {
+  if (tabUrl?.startsWith(getExtensionConsoleUrl())) {
     return `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`;
   }
 
-  if (!isScriptableUrl(url)) {
+  if (!isScriptableUrl(tabUrl)) {
     return `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`;
   }
 
@@ -110,5 +110,5 @@ export default function initBrowserAction(): void {
 
   // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
   // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
-  setActionPopup(getPopover);
+  setActionPopup(getPopoverUrl);
 }
