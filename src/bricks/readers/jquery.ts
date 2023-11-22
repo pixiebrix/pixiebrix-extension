@@ -134,10 +134,10 @@ async function processFind(
   );
 }
 
-const CONTENT_TYPES: Record<string, number | undefined> = {
-  text: Node.TEXT_NODE,
-  comment: Node.COMMENT_NODE,
-};
+const CONTENT_TYPES = {
+  text: globalThis.Node?.TEXT_NODE,
+  comment: globalThis.Node?.COMMENT_NODE,
+} as const;
 
 function processElement($elements: JQuery, selector: SingleSelector) {
   let value;
