@@ -64,13 +64,13 @@ export async function getBuiltInIntegrationConfigs(): Promise<
 
 function installModInOptionsState(
   state: ModComponentState,
-  blueprint: ModDefinition,
+  modDefinition: ModDefinition,
   configuredDependencies: IntegrationDependency[]
 ): ModComponentState {
   return reducer(
     state,
     actions.installMod({
-      modDefinition: blueprint,
+      modDefinition,
       configuredDependencies,
       screen: "starterMod",
       isReinstall: false,
@@ -119,7 +119,7 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   for (const modDefinition of modDefinitions) {
     const modAlreadyInstalled = optionsState.extensions.some(
-      (extension) => extension._recipe?.id === modDefinition.metadata.id
+      (mod) => mod._recipe?.id === modDefinition.metadata.id
     );
 
     if (!modAlreadyInstalled) {
@@ -141,7 +141,7 @@ async function getStarterMods(): Promise<ModDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping starter blueprint installation because the extension is not linked to the PixieBrix service"
+      "Skipping starter mod installation because the mod is not linked to the PixieBrix service"
     );
     return [];
   }
@@ -166,8 +166,8 @@ const _installStarterMods = async (): Promise<boolean> => {
   const starterMods = await getStarterMods();
 
   try {
-    // Installing Starter Blueprints and pulling the updates from remote registries to make sure
-    // that all the bricks used in starter blueprints are available
+    // Installing Starter Mods and pulling the updates from remote registries to make sure
+    // that all the bricks used in starter mods are available
     const [installed] = await Promise.all([
       installMods(starterMods),
       refreshRegistries(),
