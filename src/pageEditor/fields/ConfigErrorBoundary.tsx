@@ -15,39 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Component } from "react";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import React from "react";
 import reportError from "@/telemetry/reportError";
-import { type UnknownObject } from "@/types/objectTypes";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isEmpty } from "lodash";
+import GenericErrorBoundary from "@/components/ErrorBoundary";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
 
-interface State {
-  hasError: boolean;
-  errorMessage: string | undefined;
-  stack: string | undefined;
-}
-
-class ConfigErrorBoundary extends Component<UnknownObject, State> {
-  override state: State = {
-    hasError: false,
-    errorMessage: undefined,
-    stack: undefined,
-  };
-
-  static getDerivedStateFromError(error: Error) {
-    // Update state so the next render will show the fallback UI.
-    return {
-      hasError: true,
-      errorMessage: getErrorMessage(error),
-      stack: error.stack,
-    };
-  }
-
+class ConfigErrorBoundary extends GenericErrorBoundary {
   override componentDidCatch(error: Error): void {
     reportError(error);
   }
