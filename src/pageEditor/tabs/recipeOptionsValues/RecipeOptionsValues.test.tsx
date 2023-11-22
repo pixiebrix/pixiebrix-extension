@@ -19,7 +19,6 @@ import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
 import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
-import extensionsSlice from "@/store/extensionsSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import {
@@ -29,13 +28,38 @@ import {
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import databaseSchema from "@schemas/database.json";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
-import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
+import {
+  valueToAsyncCacheState,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import selectEvent from "react-select-event";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { validateRegistryId } from "@/types/helpers";
+import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
+import { sheets } from "@/background/messenger/api";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useOptionalModDefinition: jest.fn(),
   useAllModDefinitions: jest.fn(),
 }));
+
+jest.mock("@/hooks/useFlags", () => ({
+  __esModule: true,
+  default: () => ({
+    flagOff: () => false,
+  }),
+}));
+
+jest.mock("@/contrib/google/sheets/core/useGoogleAccount", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useGoogleAccountMock = jest.mocked(useGoogleAccount);
+
+const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 
 function mockModDefinition(modDefinition: ModDefinition) {
   (useAllModDefinitions as jest.Mock).mockReturnValue(
@@ -46,6 +70,8 @@ function mockModDefinition(modDefinition: ModDefinition) {
   );
 }
 
+const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");
+
 beforeEach(() => {
   registerDefaultWidgets();
 });
@@ -54,15 +80,7 @@ describe("ActivationOptions", () => {
   test("renders empty options", async () => {
     const modDefinition = defaultModDefinitionFactory();
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<RecipeOptionsValues />, {
-      setupRedux(dispatch) {
-        extensionsSlice.actions.installMod({
-          modDefinition,
-          screen: "pageEditor",
-          isReinstall: false,
-        });
-      },
-    });
+    const { asFragment } = render(<RecipeOptionsValues />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -112,15 +130,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<RecipeOptionsValues />, {
-      setupRedux(dispatch) {
-        extensionsSlice.actions.installMod({
-          modDefinition,
-          screen: "pageEditor",
-          isReinstall: false,
-        });
-      },
-    });
+    const { asFragment } = render(<RecipeOptionsValues />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -137,15 +147,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<RecipeOptionsValues />, {
-      setupRedux(dispatch) {
-        extensionsSlice.actions.installMod({
-          modDefinition,
-          screen: "pageEditor",
-          isReinstall: false,
-        });
-      },
-    });
+    const { asFragment } = render(<RecipeOptionsValues />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -176,15 +178,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    render(<RecipeOptionsValues />, {
-      setupRedux(dispatch) {
-        extensionsSlice.actions.installMod({
-          modDefinition,
-          screen: "pageEditor",
-          isReinstall: false,
-        });
-      },
-    });
+    render(<RecipeOptionsValues />);
 
     await waitForEffect();
 
@@ -196,7 +190,7 @@ describe("ActivationOptions", () => {
     expect(allInputs).toStrictEqual([numInput, boolInput, strInput]);
   });
 
-  it("renders google sheets field type option if gapi is loaded", async () => {
+  it("renders empty google sheet field", async () => {
     const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
@@ -211,25 +205,93 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    render(<RecipeOptionsValues />, {
-      setupRedux(dispatch) {
-        extensionsSlice.actions.installMod({
-          modDefinition,
-          screen: "pageEditor",
-          isReinstall: false,
-        });
-      },
+
+    useGoogleAccountMock.mockReturnValue(
+      valueToAsyncState(
+        sanitizedIntegrationConfigFactory({
+          serviceId: GOOGLE_PKCE_INTEGRATION_ID,
+        })
+      )
+    );
+
+    getAllSpreadsheetsMock.mockResolvedValue({
+      kind: "drive#fileList",
+      incompleteSearch: false,
+      files: [],
     });
 
-    await waitForEffect();
+    render(<RecipeOptionsValues />);
 
-    screen.debug(undefined, 100_000);
+    const selectInput = await screen.findByRole("combobox", {
+      name: "mySheet",
+    });
+    expect(selectInput).toBeVisible();
 
-    const input = screen.getByLabelText("mySheet");
-    expect(input).toBeInTheDocument();
-    const selectButton = screen.getByRole("button", { name: "Select" });
-    expect(selectButton).toBeInTheDocument();
-    // eslint-disable-next-line testing-library/no-node-access -- TODO: find better query
-    expect(input.parentElement).toContainElement(selectButton);
+    selectEvent.openMenu(selectInput);
+
+    expect(await screen.findByText("No options")).toBeVisible();
+  });
+
+  it("renders google sheet field with options", async () => {
+    const modDefinition = defaultModDefinitionFactory({
+      options: {
+        schema: {
+          type: "object",
+          properties: {
+            mySheet: {
+              $ref: googleSheetIdSchema.$id,
+            },
+          },
+          required: ["mySheet"],
+        },
+      },
+    });
+    mockModDefinition(modDefinition);
+
+    useGoogleAccountMock.mockReturnValue(
+      valueToAsyncState(
+        sanitizedIntegrationConfigFactory({
+          serviceId: GOOGLE_PKCE_INTEGRATION_ID,
+        })
+      )
+    );
+
+    getAllSpreadsheetsMock.mockResolvedValue({
+      kind: "drive#fileList",
+      incompleteSearch: false,
+      files: [
+        {
+          kind: "drive#file",
+          id: uuidSequence(1),
+          name: "Spreadsheet1",
+          mimeType: "application/vnd.google-apps.spreadsheet",
+        },
+        {
+          kind: "drive#file",
+          id: uuidSequence(2),
+          name: "AnotherSpreadsheet",
+          mimeType: "application/vnd.google-apps.spreadsheet",
+        },
+        {
+          kind: "drive#file",
+          id: uuidSequence(3),
+          name: "One More Spreadsheet",
+          mimeType: "application/vnd.google-apps.spreadsheet",
+        },
+      ],
+    });
+
+    render(<RecipeOptionsValues />);
+
+    const selectInput = await screen.findByRole("combobox", {
+      name: "mySheet",
+    });
+    expect(selectInput).toBeVisible();
+
+    selectEvent.openMenu(selectInput);
+
+    expect(await screen.findByText("Spreadsheet1")).toBeVisible();
+    expect(await screen.findByText("AnotherSpreadsheet")).toBeVisible();
+    expect(await screen.findByText("One More Spreadsheet")).toBeVisible();
   });
 });
