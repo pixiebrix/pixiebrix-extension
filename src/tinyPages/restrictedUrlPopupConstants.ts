@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/themes/colors";
-
-.label {
-  padding: 0 0.5rem;
-  color: $N400;
-}
+export const DISPLAY_REASON_UNKNOWN = "unknown";
+export const DISPLAY_REASON_RESTRICTED_URL = "restricted-url";
+export const DISPLAY_REASON_EXTENSION_CONSOLE = "extension-console";

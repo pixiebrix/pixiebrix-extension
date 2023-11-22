@@ -291,6 +291,7 @@ module.exports = (env, options) =>
         "tinyPages/walkthroughModal",
         "tinyPages/ephemeralPanel",
         "tinyPages/permissionsPopup",
+        "tinyPages/restrictedUrlPopup",
 
         // Tiny files without imports
         "tinyPages/frame",
