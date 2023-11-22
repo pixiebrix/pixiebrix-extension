@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./SheetsFileWidget.module.scss";
+import "./SpreadsheetPickerWidget.module.scss";
 
 import React, { useCallback, useState } from "react";
 import { sheets } from "@/background/messenger/api";

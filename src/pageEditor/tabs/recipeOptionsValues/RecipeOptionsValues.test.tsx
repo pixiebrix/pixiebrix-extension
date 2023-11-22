@@ -223,6 +223,8 @@ describe("ActivationOptions", () => {
 
     await waitForEffect();
 
+    screen.debug(undefined, 100_000);
+
     const input = screen.getByLabelText("mySheet");
     expect(input).toBeInTheDocument();
     const selectButton = screen.getByRole("button", { name: "Select" });
