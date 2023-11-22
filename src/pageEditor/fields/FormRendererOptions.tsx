@@ -17,7 +17,7 @@
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
-import React, { ChangeEvent, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
@@ -41,10 +41,7 @@ import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import { Card } from "react-bootstrap";
 import styles from "@/bricks/transformers/tourStep/TourStepOptions.module.scss";
-import SwitchButtonWidget, {
-  type CheckBoxLike,
-} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import { type PipelineExpression } from "@/types/runtimeTypes";
+import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -105,11 +102,7 @@ const FormRendererOptions: React.FC<{
     editorActions.setNodePreviewActiveElement
   );
 
-  const { setFieldValue } = useFormikContext<ModComponentFormState>();
   const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
-  const [{ value: onSubmit }] = useField<PipelineExpression>(
-    makeName("onSubmit")
-  );
   const hideSubmitButtonName = makeName(
     "uiSchema",
     "ui:submitButtonOptions",
@@ -242,22 +235,10 @@ const FormRendererOptions: React.FC<{
           schema={customFormRendererSchema.properties.successMessage as Schema}
         />
 
-        <FieldTemplate
-          as={SwitchButtonWidget}
+        <PipelineToggleField
           label="Submit Handler"
           description="Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel"
           name={makeName("onSubmit")}
-          value={onSubmit != null}
-          onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
-            if (target.value) {
-              await setFieldValue(makeName("onSubmit"), {
-                __type__: "pipeline",
-                __value__: [],
-              });
-            } else {
-              await setFieldValue(makeName("onSubmit"), null);
-            }
-          }}
         />
       </Section>
 
