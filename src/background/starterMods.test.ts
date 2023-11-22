@@ -238,11 +238,6 @@ describe("installStarterBlueprints", () => {
     expect(extensions).toHaveLength(1);
     const installedComponent = extensions[0];
 
-    console.log(
-      "installedComponent",
-      JSON.stringify(installedComponent, null, 2)
-    );
-
-    // TODO: Add additional assertions
+    expect(installedComponent.integrationDependencies).toBeArrayOfSize(0);
   });
 });
