@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import pDefer, { type DeferredPromise } from "p-defer";
 
-// Re-export utility methods directly
-export const { absoluteApiUrl } = jest.requireActual("@/services/apiClient");
+let modal: DeferredPromise<void> | null = null;
 
-export async function getLinkedApiClient() {
-  return axios.create();
+export async function registerWalkthroughModal() {
+  if (!modal) {
+    modal = pDefer();
+  }
+
+  return modal.promise;
 }
 
-export async function getApiClient() {
-  return axios.create();
-}
-
-export async function maybeGetLinkedApiClient() {
-  return axios.create();
+export function closeWalkthroughModal() {
+  modal.resolve();
+  modal = null;
 }

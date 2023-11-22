@@ -24,6 +24,8 @@ export const Events = {
   BRICK_ADD: "BrickAdd",
   BRICK_DELETE: "BrickDelete",
 
+  BROWSER_ACTION_RESTRICTED_URL: "BrowserActionRestrictedUrl",
+
   CUSTOM_USER_EVENT: "CustomUserEvent",
 
   DEPLOYMENT_ACTIVATE: "DeploymentActivate",
@@ -93,9 +95,14 @@ export const Events = {
   PAGE_EDITOR_RESET: "PageEditorReset",
   PAGE_EDITOR_SAVE: "PageEditorSave",
   PAGE_EDITOR_START: "PageEditorStart",
+  PAGE_EDITOR_VIEW_TEMPLATES: "PageEditorViewTemplates",
 
   PAGE_EDITOR_SESSION_START: "PageEditorSessionStart",
   PAGE_EDITOR_SESSION_END: "PageEditorSessionEnd",
+
+  PAGE_EDITOR_WALKTHROUGH_LINK_CLICK: "PageEditorWalkthroughLinkClick",
+  PAGE_EDITOR_WALKTHROUGH_MODAL_VIEW: "PageEditorWalkthroughModalView",
+  PAGE_EDITOR_WALKTHROUGH_MODAL_CLOSE: "PageEditorWalkthroughModalClose",
 
   VAR_POPOVER_SHOW: "VarPopoverShow",
   VAR_POPOVER_SELECT: "VarPopoverSelect",

@@ -20,7 +20,7 @@ import { type Runtime } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { initTelemetry } from "@/background/telemetry";
 import { getUID } from "@/background/messenger/api";
-import { allowsTrack, DNT_STORAGE_KEY } from "@/telemetry/dnt";
+import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
@@ -33,6 +33,7 @@ import { Events } from "@/telemetry/events";
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
 
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -84,13 +85,12 @@ export async function openInstallPage() {
         // Show the Extension Console /start page, where the user will be prompted to use OAuth2 to connect their
         // AARI account. Include the Control Room hostname in the URL so that the ControlRoomOAuthForm can pre-fill
         // the URL
-        const extensionStartUrl = new URL(
-          browser.runtime.getURL("options.html")
+        const extensionStartUrl = getExtensionConsoleUrl(
+          `start${appOnboardingTabUrl.search}`
         );
-        extensionStartUrl.hash = `/start${appOnboardingTabUrl.search}`;
 
         await browser.tabs.update(appOnboardingTab.id, {
-          url: extensionStartUrl.href,
+          url: extensionStartUrl,
           active: true,
         });
 
@@ -159,7 +159,7 @@ export async function requirePartnerAuth(): Promise<void> {
       );
 
       if (!configs.some((x) => !x.proxy)) {
-        const extensionConsoleUrl = browser.runtime.getURL("options.html");
+        const extensionConsoleUrl = getExtensionConsoleUrl();
 
         // Replace the Admin Console tab, if available. The Admin Console tab will be available during openInstallPage
         const [adminConsoleTab] = await browser.tabs.query({
@@ -263,10 +263,8 @@ function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
   browser.runtime.onInstalled.addListener(install);
   browser.runtime.onStartup.addListener(initTelemetry);
-  browser.storage.onChanged.addListener((changes) => {
-    if (DNT_STORAGE_KEY in changes) {
-      void setUninstallURL();
-    }
+  dntConfig.onChanged(() => {
+    void setUninstallURL();
   });
 
   void setUninstallURL();

@@ -36,7 +36,7 @@ const config = {
     "^.+\\.txt$": "<rootDir>/src/testUtils/rawJestTransformer.mjs",
   },
   transformIgnorePatterns: [
-    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard|linkify-urls|create-html-element|stringify-attributes|escape-goat|stemmer)",
+    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard|linkify-urls|create-html-element|stringify-attributes|escape-goat|stemmer|uint8array-extras)",
   ],
   setupFiles: [
     "dotenv/config",
@@ -63,6 +63,8 @@ const config = {
       "<rootDir>/src/__mocks__/stringMock.js",
     "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
     "^@schemas/(.*)": "<rootDir>/schemas/$1",
+
+    // Auto-mocks. See documentation in ./src/__mocks__/readme.md
     "^@/(.*)$": ["<rootDir>/src/__mocks__/@/$1", "<rootDir>/src/$1"],
   },
 };

@@ -34,8 +34,16 @@ import {
   type ReducersMapObject,
   type ThunkDispatch,
 } from "@reduxjs/toolkit";
-// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Form, Formik, type FormikErrors, type FormikValues } from "formik";
+
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Form,
+  // eslint-disable-next-line no-restricted-imports
+  Formik,
+  type FormikHelpers,
+  type FormikErrors,
+  type FormikValues,
+} from "formik";
 import { type Middleware } from "redux";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
@@ -159,6 +167,10 @@ type WrapperOptions = RenderOptions & {
   initialValues?: FormikValues;
   initialErrors?: FormikErrors<FormikValues>;
   setupRedux?: SetupRedux;
+  onSubmit?: (
+    values: FormikValues,
+    formikHelpers: FormikHelpers<FormikValues>
+  ) => void | Promise<unknown>;
 };
 
 type WrapperResult<
@@ -198,6 +210,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
       initialValues,
       initialErrors,
       setupRedux = noop,
+      onSubmit = jest.fn(),
       wrapper,
       ...renderOptions
     }: WrapperOptions = {}
@@ -221,7 +234,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
             <Formik
               initialValues={initialValues}
               initialErrors={initialErrors}
-              onSubmit={jest.fn()}
+              onSubmit={onSubmit}
             >
               {({ handleSubmit, values, setValues }) => {
                 formValues = values;

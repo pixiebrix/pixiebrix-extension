@@ -208,8 +208,6 @@ function customizeManifest(manifest, isProduction) {
 
   const policy = new Policy(manifest.content_security_policy);
 
-  policy.add("connect-src", process.env.SERVICE_URL);
-
   if (!isProduction) {
     // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Development-commands#react-dev-tools
     policy.add("script-src", "http://localhost:8097");
@@ -287,12 +285,13 @@ module.exports = (env, options) =>
         "pageEditor/pageEditor",
         "extensionConsole/options",
         "sidebar/sidebar",
-        // #5676 -- enable sandbox when ready to be used
-        // "sandbox/sandbox",
+        "sandbox/sandbox",
 
         "tinyPages/ephemeralForm",
+        "tinyPages/walkthroughModal",
         "tinyPages/ephemeralPanel",
         "tinyPages/permissionsPopup",
+        "tinyPages/restrictedUrlPopup",
 
         // Tiny files without imports
         "tinyPages/frame",

@@ -39,13 +39,6 @@ jest.mock("@/contentScript/messenger/api", () => ({
   updateDynamicElement: jest.fn(),
 }));
 
-// In the tests we don't render the PanelContent component, but testing the listeners
-// Hence mocking for the topmost component in PanelContent
-jest.mock("@/pageEditor/store", () => ({
-  __esModule: true,
-  persistor: {},
-}));
-
 jest.mock("redux-persist/integration/react", () => ({
   __esModule: true,
   PersistGate: () => <div>PanelContent</div>,

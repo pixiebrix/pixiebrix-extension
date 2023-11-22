@@ -20,7 +20,7 @@ import { connect, getIn } from "formik";
 import FieldTemplate, {
   type FieldProps,
 } from "@/components/form/FieldTemplate";
-import { type FormikContextType } from "formik/dist/types";
+import { type FormikContextType } from "formik";
 import useFieldAnnotations from "@/components/form/useFieldAnnotations";
 
 type ConnectedFieldProps<Values> = FieldProps & {

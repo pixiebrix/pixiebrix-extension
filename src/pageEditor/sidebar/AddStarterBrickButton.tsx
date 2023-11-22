@@ -18,16 +18,22 @@
 import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
-import { flagOn } from "@/auth/token";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
 import useAddElement from "@/pageEditor/hooks/useAddElement";
 import { useSelector } from "react-redux";
+import { thisTab } from "@/pageEditor/utils";
 import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors";
-import { useAsyncState } from "@/hooks/common";
+import { flagOn } from "@/auth/authUtils";
+import useAsyncState from "@/hooks/useAsyncState";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { navigateTab } from "@/contentScript/messenger/api";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
-const sortedExtensionPoints = sortBy(
+const sortedStarterBricks = sortBy(
   [...ADAPTERS.values()],
   (x) => x.displayOrder
 );
@@ -52,43 +58,40 @@ const DropdownEntry: React.FunctionComponent<{
   </Dropdown.Item>
 );
 
-const AddExtensionPointButton: React.FunctionComponent = () => {
+const AddStarterBrickButton: React.FunctionComponent = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
+  const sessionId = useSelector(selectSessionId);
 
   const addElement = useAddElement();
 
-  const [entries] = useAsyncState<React.ReactNode>(
-    async () => {
-      const results = await Promise.all(
-        sortedExtensionPoints.map(async (config) => {
-          if (!config.flag) {
-            return true;
-          }
+  const { data: entries = [] } = useAsyncState<React.ReactNode>(async () => {
+    const results = await Promise.all(
+      sortedStarterBricks.map(async (config) => {
+        if (!config.flag) {
+          return true;
+        }
 
-          return flagOn(config.flag);
-        })
-      );
+        return flagOn(config.flag);
+      })
+    );
 
-      return (
-        sortedExtensionPoints
-          // eslint-disable-next-line security/detect-object-injection -- array index
-          .filter((_, index) => results[index])
-          .map((config) => (
-            <DropdownEntry
-              key={config.elementType}
-              caption={config.label}
-              icon={config.icon}
-              beta={Boolean(config.flag)}
-              onClick={() => {
-                addElement(config);
-              }}
-            />
-          ))
-      );
-    },
-    [],
-    []
-  );
+    return (
+      sortedStarterBricks
+        // eslint-disable-next-line security/detect-object-injection -- array index
+        .filter((_, index) => results[index])
+        .map((config) => (
+          <DropdownEntry
+            key={config.elementType}
+            caption={config.label}
+            icon={config.icon}
+            beta={Boolean(config.flag)}
+            onClick={() => {
+              addElement(config);
+            }}
+          />
+        ))
+    );
+  }, []);
 
   return (
     <DropdownButton
@@ -96,11 +99,26 @@ const AddExtensionPointButton: React.FunctionComponent = () => {
       variant="info"
       size="sm"
       title="Add"
-      id="add-extension-point"
+      id="add-starter-brick"
     >
       {entries}
+
+      <Dropdown.Divider />
+      <Dropdown.Item
+        onClick={() => {
+          reportEvent(Events.PAGE_EDITOR_VIEW_TEMPLATES, {
+            sessionId,
+          });
+          navigateTab(thisTab, {
+            url: "https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=starter_brick_menu",
+          });
+        }}
+      >
+        <FontAwesomeIcon icon={faExternalLinkAlt} fixedWidth />
+        &nbsp;Start with a Template
+      </Dropdown.Item>
     </DropdownButton>
   );
 };
 
-export default AddExtensionPointButton;
+export default AddStarterBrickButton;

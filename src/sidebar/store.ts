@@ -18,7 +18,7 @@
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
-import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
+import { setupListeners } from "@reduxjs/toolkit/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import sidebarSlice, { persistSidebarConfig } from "@/sidebar/sidebarSlice";
@@ -31,7 +31,17 @@ import integrationsSlice, {
 } from "@/integrations/store/integrationsSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { boolean } from "@/utils/typeUtils";
-import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
+import defaultMiddlewareConfig, {
+  defaultCreateStateSyncMiddlewareConfig,
+} from "@/store/defaultMiddlewareConfig";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
+import { createStateSyncMiddleware } from "redux-state-sync";
+import {
+  persistSessionChangesConfig,
+  sessionChangesSlice,
+  sessionChangesStateSyncActions,
+} from "@/store/sessionChanges/sessionChangesSlice";
+import sessionSlice from "@/pageEditor/slices/sessionSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -56,6 +66,11 @@ const store = configureStore({
       persistIntegrationsConfig,
       integrationsSlice.reducer
     ),
+    session: sessionSlice.reducer,
+    sessionChanges: persistReducer(
+      persistSessionChangesConfig,
+      sessionChangesSlice.reducer
+    ),
     modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
@@ -63,7 +78,14 @@ const store = configureStore({
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
     return getDefaultMiddleware(defaultMiddlewareConfig)
       .concat(appApi.middleware)
-      .concat(conditionalMiddleware);
+      .concat(conditionalMiddleware)
+      .concat(sessionChangesMiddleware)
+      .concat(
+        createStateSyncMiddleware({
+          ...defaultCreateStateSyncMiddlewareConfig,
+          whitelist: sessionChangesStateSyncActions,
+        })
+      );
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,

@@ -683,10 +683,14 @@ exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
       className="py-2"
     >
       <div
-        className="text-muted"
-      >
-        Loading...
-      </div>
+        id="ace-editor"
+        style={
+          {
+            "height": "500px",
+            "width": "100%",
+          }
+        }
+      />
     </div>
   </div>
 </div>
@@ -3075,7 +3079,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               className="caret"
             />
             <td>
-              12/4/22, 12:12 AM
+              12/4/22, 12:12 AM
             </td>
             <td
               className="level"
@@ -3118,7 +3122,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/4/22, 12:12 AM
+              12/4/22, 12:12 AM
             </td>
             <td
               className="level"
@@ -3161,7 +3165,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/4/22, 12:12 AM
+              12/4/22, 12:12 AM
             </td>
             <td
               className="level"
@@ -3204,7 +3208,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               </span>
             </td>
             <td>
-              12/4/22, 12:12 AM
+              12/4/22, 12:12 AM
             </td>
             <td
               className="level"
@@ -4158,6 +4162,7 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
               aria-live="polite"
               aria-relevant="additions text"
               className="css-1f43avz-a11yText-A11yText"
+              role="log"
             />
             <div
               className=" css-13cymwt-control"
@@ -4175,6 +4180,7 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
                   data-value=""
                 >
                   <input
+                    aria-activedescendant=""
                     aria-autocomplete="list"
                     aria-expanded={false}
                     aria-haspopup={true}
@@ -5240,6 +5246,7 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
               aria-live="polite"
               aria-relevant="additions text"
               className="css-1f43avz-a11yText-A11yText"
+              role="log"
             />
             <div
               className=" css-13cymwt-control"
@@ -5257,6 +5264,7 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
                   data-value=""
                 >
                   <input
+                    aria-activedescendant=""
                     aria-autocomplete="list"
                     aria-expanded={false}
                     aria-haspopup={true}
@@ -6105,6 +6113,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 aria-live="polite"
                 aria-relevant="additions text"
                 className="css-1f43avz-a11yText-A11yText"
+                role="log"
               />
               <div
                 className=" css-13cymwt-control"
@@ -6124,6 +6133,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     data-value=""
                   >
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
                       aria-expanded={false}
                       aria-haspopup={true}
@@ -6959,6 +6969,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           aria-live="polite"
           aria-relevant="additions text"
           className="css-1f43avz-a11yText-A11yText"
+          role="log"
         />
         <div
           className=" css-13cymwt-control"
@@ -6979,6 +6990,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
               data-value=""
             >
               <input
+                aria-activedescendant=""
                 aria-autocomplete="list"
                 aria-describedby="react-select-8-placeholder"
                 aria-expanded={false}
@@ -7095,6 +7107,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
           aria-live="polite"
           aria-relevant="additions text"
           className="css-1f43avz-a11yText-A11yText"
+          role="log"
         />
         <div
           className=" css-13cymwt-control"
@@ -7115,6 +7128,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
               data-value=""
             >
               <input
+                aria-activedescendant=""
                 aria-autocomplete="list"
                 aria-describedby="react-select-9-placeholder"
                 aria-expanded={false}
@@ -8721,11 +8735,12 @@ exports[`Storyshots PageEditor/VariablesTree Default 1`] = `
           onClick={[Function]}
           style={
             {
-              "backgroundColor": "#f0eff2",
+              "backgroundColor": "#efeef1",
               "borderRadius": "2px",
               "cursor": "pointer",
               "display": "inline-block",
-              "marginRight": "10px",
+              "marginBottom": "2px",
+              "marginRight": "8px",
               "padding": "4px",
               "paddingLeft": 0,
               "paddingRight": "0.5em",
@@ -9447,6 +9462,20 @@ exports[`Storyshots Sidebar/SaveButton Default 1`] = `
     />
   </svg>
 </button>
+`;
+
+exports[`Storyshots Widgets/CodeEditorWidget Default Function 1`] = `
+<form
+  className=""
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <div
+    className="text-muted"
+  >
+    Loading...
+  </div>
+</form>
 `;
 
 exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
@@ -10889,6 +10918,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                 aria-live="polite"
                 aria-relevant="additions text"
                 className="css-1f43avz-a11yText-A11yText"
+                role="log"
               />
               <div
                 className=" css-13cymwt-control"
@@ -10909,6 +10939,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                     data-value=""
                   >
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
                       aria-describedby="react-select-6-placeholder"
                       aria-expanded={false}
@@ -11025,6 +11056,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                 aria-live="polite"
                 aria-relevant="additions text"
                 className="css-1f43avz-a11yText-A11yText"
+                role="log"
               />
               <div
                 className=" css-13cymwt-control"
@@ -11045,6 +11077,7 @@ exports[`Storyshots Widgets/CssSpacingWidget Blank Literal 1`] = `
                     data-value=""
                   >
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
                       aria-describedby="react-select-7-placeholder"
                       aria-expanded={false}
@@ -11138,6 +11171,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
         aria-live="polite"
         aria-relevant="additions text"
         className="css-1f43avz-a11yText-A11yText"
+        role="log"
       />
       <div
         className=" css-13cymwt-control"
@@ -11158,6 +11192,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Empty 1`] = `
             data-value=""
           >
             <input
+              aria-activedescendant=""
               aria-autocomplete="list"
               aria-describedby="react-select-4-placeholder"
               aria-expanded={false}
@@ -11279,6 +11314,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
         aria-live="polite"
         aria-relevant="additions text"
         className="css-1f43avz-a11yText-A11yText"
+        role="log"
       />
       <div
         className=" css-13cymwt-control"
@@ -11299,6 +11335,7 @@ exports[`Storyshots Widgets/ServiceSelectWidget Selected Option 1`] = `
             data-value=""
           >
             <input
+              aria-activedescendant=""
               aria-autocomplete="list"
               aria-describedby="react-select-5-placeholder"
               aria-expanded={false}

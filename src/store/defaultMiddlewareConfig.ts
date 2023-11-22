@@ -24,6 +24,12 @@ import {
   REHYDRATE,
 } from "redux-persist";
 
+// See https://github.com/aohua/redux-state-sync/blob/master/src/syncState.js#L9-L17
+// and https://github.com/aohua/redux-state-sync/issues/121
+export const defaultCreateStateSyncMiddlewareConfig = {
+  channel: "redux_state_sync",
+};
+
 // See https://redux-toolkit.js.org/api/getDefaultMiddleware#customizing-the-included-middleware
 const defaultMiddlewareConfig = {
   serializableCheck: {

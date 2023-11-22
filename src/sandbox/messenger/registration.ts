@@ -18,10 +18,15 @@
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
 import { addPostMessageListener } from "@/utils/postMessage";
-import { renderHandlebarsTemplate, renderNunjucksTemplate } from "./executor";
+import {
+  renderHandlebarsTemplate,
+  renderNunjucksTemplate,
+  runUserJs,
+} from "./executor";
 
 export default function registerMessenger(): void {
-  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
   addPostMessageListener("RENDER_NUNJUCKS", renderNunjucksTemplate);
   addPostMessageListener("RENDER_HANDLEBARS", renderHandlebarsTemplate);
+  addPostMessageListener("RUN_USER_JS", runUserJs);
+  addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
 }

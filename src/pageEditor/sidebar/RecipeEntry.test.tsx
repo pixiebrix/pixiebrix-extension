@@ -29,10 +29,8 @@ import RecipeEntry, { type RecipeEntryProps } from "./RecipeEntry";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
-import {
-  defaultModDefinitionFactory,
-  metadataFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { screen } from "@testing-library/react";
 
 let renderRecipeEntry: RenderFunctionWithRedux<

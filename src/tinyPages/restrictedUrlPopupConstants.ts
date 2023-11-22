@@ -15,12 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const logValues = true;
-
-export async function getLoggingConfig(): Promise<unknown> {
-  return {
-    logValues,
-  };
-}
-
-export const count = jest.fn().mockResolvedValue(0);
+export const DISPLAY_REASON_UNKNOWN = "unknown";
+export const DISPLAY_REASON_RESTRICTED_URL = "restricted-url";
+export const DISPLAY_REASON_EXTENSION_CONSOLE = "extension-console";

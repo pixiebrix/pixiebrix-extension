@@ -22,7 +22,6 @@ import { render, screen, waitFor, within } from "@/pageEditor/testHelpers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { createFormikTemplate } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
@@ -30,11 +29,9 @@ import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestU
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import databaseSchema from "@schemas/database.json";
 import { type Schema } from "@/types/schemaTypes";
-import {
-  type ApiVersion,
-  type Expression,
-  type TemplateEngine,
-} from "@/types/runtimeTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import { makeTemplateExpression } from "@/runtime/expressionCreators";
+import { type CustomWidgetRegistry } from "@/components/fields/schemaFields/schemaFieldTypes";
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,
@@ -190,16 +187,6 @@ const sampleSchemas: SchemaTestCase[] = [
 const schemaTestCases: ReadonlyArray<[name: string, schema: Schema]> =
   sampleSchemas.map(({ name, schema }) => [name, schema]);
 
-function expressionValue<T extends TemplateEngine>(
-  type: T,
-  value = ""
-): Expression<string, T> {
-  return {
-    __type__: type,
-    __value__: value,
-  };
-}
-
 beforeAll(() => {
   registerDefaultWidgets();
 });
@@ -232,19 +219,17 @@ describe("SchemaField", () => {
 
   test("string field options", async () => {
     render(
-      <Formik
-        onSubmit={() => {}}
-        initialValues={{ apiVersion: "v3", testField: "" }}
-      >
-        <SchemaField
-          name="testField"
-          schema={{
-            type: "string",
-            title: "Test Field",
-            description: "A test field",
-          }}
-        />
-      </Formik>
+      <SchemaField
+        name="testField"
+        schema={{
+          type: "string",
+          title: "Test Field",
+          description: "A test field",
+        }}
+      />,
+      {
+        initialValues: { apiVersion: "v3", testField: "" },
+      }
     );
 
     // Renders text entry HTML element
@@ -255,19 +240,15 @@ describe("SchemaField", () => {
 
   test("integer field options", async () => {
     render(
-      <Formik
-        onSubmit={() => {}}
-        initialValues={{ apiVersion: "v3", testField: 42 }}
-      >
-        <SchemaField
-          name="testField"
-          schema={{
-            type: "integer",
-            title: "Test Field",
-            description: "A test field",
-          }}
-        />
-      </Formik>
+      <SchemaField
+        name="testField"
+        schema={{
+          type: "integer",
+          title: "Test Field",
+          description: "A test field",
+        }}
+      />,
+      { initialValues: { apiVersion: "v3", testField: 42 } }
     );
 
     // Renders number entry HTML element
@@ -276,32 +257,29 @@ describe("SchemaField", () => {
   });
 
   test.each`
-    startValue                             | inputMode     | toggleOption  | expectedEndValue
-    ${{ foo: "bar" }}                      | ${"Object"}   | ${"Variable"} | ${expressionValue("var")}
-    ${1.23}                                | ${"Number"}   | ${"Text"}     | ${expressionValue("nunjucks", "1.23")}
-    ${1.23}                                | ${"Number"}   | ${"Variable"} | ${expressionValue("var", "1.23")}
-    ${expressionValue("var", "abc")}       | ${"Variable"} | ${"Text"}     | ${expressionValue("nunjucks", "abc")}
-    ${expressionValue("nunjucks", "abc")}  | ${"Text"}     | ${"Variable"} | ${expressionValue("var", "abc")}
-    ${expressionValue("nunjucks", "1.23")} | ${"Text"}     | ${"Number"}   | ${1.23}
-    ${expressionValue("var", "1.23")}      | ${"Variable"} | ${"Number"}   | ${1.23}
-    ${expressionValue("nunjucks", "def")}  | ${"Text"}     | ${"Array"}    | ${[]}
-    ${expressionValue("var", "abc")}       | ${"Variable"} | ${"Object"}   | ${{}}
+    startValue                                    | inputMode     | toggleOption  | expectedEndValue
+    ${{ foo: "bar" }}                             | ${"Object"}   | ${"Variable"} | ${makeTemplateExpression("var", "")}
+    ${1.23}                                       | ${"Number"}   | ${"Text"}     | ${makeTemplateExpression("nunjucks", "1.23")}
+    ${1.23}                                       | ${"Number"}   | ${"Variable"} | ${makeTemplateExpression("var", "1.23")}
+    ${makeTemplateExpression("var", "abc")}       | ${"Variable"} | ${"Text"}     | ${makeTemplateExpression("nunjucks", "abc")}
+    ${makeTemplateExpression("nunjucks", "abc")}  | ${"Text"}     | ${"Variable"} | ${makeTemplateExpression("var", "abc")}
+    ${makeTemplateExpression("nunjucks", "1.23")} | ${"Text"}     | ${"Number"}   | ${1.23}
+    ${makeTemplateExpression("var", "1.23")}      | ${"Variable"} | ${"Number"}   | ${1.23}
+    ${makeTemplateExpression("nunjucks", "def")}  | ${"Text"}     | ${"Array"}    | ${[]}
+    ${makeTemplateExpression("var", "abc")}       | ${"Variable"} | ${"Object"}   | ${{}}
   `(
     "field toggle transition from $inputMode to $toggleOption",
     async ({ startValue, toggleOption, expectedEndValue }) => {
-      const initialState = {
-        apiVersion: "v3",
-        myField: startValue,
-      };
       const onSubmit = jest.fn();
-      const FormikTemplate = createFormikTemplate(initialState, onSubmit);
 
       // Using an empty schema to allow anything, since we're testing toggling, not schema parsing
-      render(
-        <FormikTemplate>
-          <SchemaField name="myField" schema={{}} />
-        </FormikTemplate>
-      );
+      render(<SchemaField name="myField" schema={{}} />, {
+        initialValues: {
+          apiVersion: "v3",
+          myField: startValue,
+        },
+        onSubmit,
+      });
 
       await waitForEffect();
 
@@ -322,29 +300,28 @@ describe("SchemaField", () => {
       await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await waitFor(() => {
-        expect(onSubmit).toHaveBeenCalledWith({
-          apiVersion: "v3",
-          myField: expectedEndValue,
-        });
+        expect(onSubmit).toHaveBeenCalledWith(
+          {
+            apiVersion: "v3",
+            myField: expectedEndValue,
+          },
+          expect.anything()
+        );
       });
     }
   );
 
   test("string/integer field options", async () => {
     render(
-      <Formik
-        onSubmit={() => {}}
-        initialValues={{ apiVersion: "v3", testField: 42 }}
-      >
-        <SchemaField
-          name="testField"
-          schema={{
-            type: ["integer", "string"],
-            title: "Test Field",
-            description: "A test field",
-          }}
-        />
-      </Formik>
+      <SchemaField
+        name="testField"
+        schema={{
+          type: ["integer", "string"],
+          title: "Test Field",
+          description: "A test field",
+        }}
+      />,
+      { initialValues: { apiVersion: "v3", testField: 42 } }
     );
 
     // Renders number entry HTML element because current value is a number
@@ -361,12 +338,9 @@ describe("SchemaField", () => {
     "v3 field toggle doesn't show duplicate options - %s",
     async (_, schema) => {
       const fieldName = "aTestField";
-      const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
-      render(
-        <FormikTemplate>
-          <SchemaField name={fieldName} schema={schema} />
-        </FormikTemplate>
-      );
+      render(<SchemaField name={fieldName} schema={schema} />, {
+        initialValues: { apiVersion: "v3" },
+      });
 
       await waitForEffect();
 
@@ -394,12 +368,9 @@ describe("SchemaField", () => {
   test.each(schemaTestCases)(
     "v3 field toggle always renders 'omit' last - %s",
     async (_, schema) => {
-      const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
-      render(
-        <FormikTemplate>
-          <SchemaField name="aTestField" schema={schema} />
-        </FormikTemplate>
-      );
+      render(<SchemaField name="aTestField" schema={schema} />, {
+        initialValues: { apiVersion: "v3" },
+      });
 
       await waitForEffect();
 
@@ -437,18 +408,14 @@ describe("SchemaField", () => {
     "database field toggle options (required: $isRequired)",
     async ({ isRequired, expectedOptions }) => {
       render(
-        <Formik
-          onSubmit={() => {}}
-          initialValues={{ apiVersion: "v3", testField: null }}
-        >
-          <SchemaField
-            name="testField"
-            schema={{
-              $ref: databaseSchema.$id,
-            }}
-            isRequired={isRequired}
-          />
-        </Formik>
+        <SchemaField
+          name="testField"
+          schema={{
+            $ref: databaseSchema.$id,
+          }}
+          isRequired={isRequired}
+        />,
+        { initialValues: { apiVersion: "v3", testField: null } }
       );
 
       await expectToggleOptions("toggle-testField", expectedOptions);
@@ -457,17 +424,13 @@ describe("SchemaField", () => {
 
   test("don't render truthy root aware field", async () => {
     render(
-      <Formik
-        onSubmit={jest.fn()}
-        initialValues={{ apiVersion: "v3", config: { isRootAware: true } }}
-      >
-        <SchemaField
-          name="config.isRootAware"
-          schema={{
-            type: "boolean",
-          }}
-        />
-      </Formik>
+      <SchemaField
+        name="config.isRootAware"
+        schema={{
+          type: "boolean",
+        }}
+      />,
+      { initialValues: { apiVersion: "v3", config: { isRootAware: true } } }
     );
 
     // Renders no HTML element
@@ -479,18 +442,14 @@ describe("SchemaField", () => {
     "render root aware field with value %s",
     async (value) => {
       render(
-        <Formik
-          onSubmit={jest.fn()}
-          initialValues={{ apiVersion: "v3", config: { isRootAware: value } }}
-        >
-          <SchemaField
-            name="config.isRootAware"
-            isRequired
-            schema={{
-              type: "boolean",
-            }}
-          />
-        </Formik>
+        <SchemaField
+          name="config.isRootAware"
+          isRequired
+          schema={{
+            type: "boolean",
+          }}
+        />,
+        { initialValues: { apiVersion: "v3", config: { isRootAware: value } } }
       );
 
       // Renders switch HTML element
@@ -501,29 +460,65 @@ describe("SchemaField", () => {
 
   test("labelled enum field schema defaults to selection widget", async () => {
     render(
-      <Formik
-        onSubmit={() => {}}
-        initialValues={{ apiVersion: "v3", testField: "foo" }}
-      >
-        <SchemaField
-          name="testField"
-          isRequired
-          schema={{
-            type: "string",
-            title: "Test Field",
-            description: "A test field",
-            oneOf: [
-              { const: "foo", title: "Foo" },
-              { const: "bar", title: "Bar" },
-            ],
-          }}
-        />
-      </Formik>
+      <SchemaField
+        name="testField"
+        isRequired
+        schema={{
+          type: "string",
+          title: "Test Field",
+          description: "A test field",
+          oneOf: [
+            { const: "foo", title: "Foo" },
+            { const: "bar", title: "Bar" },
+          ],
+        }}
+      />,
+      { initialValues: { apiVersion: "v3", testField: "foo" } }
     );
 
     await expectToggleOptions("toggle-testField", ["select", "string", "var"]);
 
     expect(screen.queryByRole("textbox")).toBeNull();
     expect(screen.getByText("Foo")).toBeInTheDocument();
+  });
+
+  test.each<{
+    widget: keyof CustomWidgetRegistry;
+    schema: Schema;
+    assertion: () => unknown;
+  }>([
+    {
+      widget: "CodeEditorWidget",
+      schema: { type: "string" },
+      assertion: async () => screen.findByRole("textbox"),
+    },
+    {
+      widget: "SchemaButtonVariantWidget",
+      schema: {
+        type: "string",
+        oneOf: [
+          { const: "primary", title: "Primary" },
+          { const: "secondary", title: "Secondary" },
+        ],
+      },
+      assertion: () => screen.getByTestId("selected-variant"),
+    },
+    {
+      widget: "SchemaCustomEventWidget",
+      schema: {
+        type: "string",
+      },
+      assertion: () => screen.getByRole("combobox", { name: "testField" }),
+    },
+  ])("renders ui:widget $widget", async ({ widget, schema, assertion }) => {
+    render(
+      <SchemaField
+        name="testField"
+        schema={schema}
+        uiSchema={{ "ui:widget": widget }}
+      />,
+      { initialValues: {} }
+    );
+    expect(await assertion()).toBeInTheDocument();
   });
 });

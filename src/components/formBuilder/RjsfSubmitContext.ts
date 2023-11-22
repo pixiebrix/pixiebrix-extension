@@ -15,4 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default jest.fn();
+import React from "react";
+
+const RjsfSubmitContext = React.createContext<{
+  submitForm: () => Promise<void>;
+}>({
+  async submitForm() {},
+});
+
+export default RjsfSubmitContext;

@@ -16,8 +16,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { render } from "@/sidebar/testHelpers";
+import { screen, render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
 import { mockCachedUser } from "@/testUtils/userMock";
 

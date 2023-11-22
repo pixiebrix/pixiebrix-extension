@@ -17,6 +17,7 @@ exports[`SchemaSelectWidget renders creatable widget 1`] = `
         aria-live="polite"
         aria-relevant="additions text"
         class="css-1f43avz-a11yText-A11yText"
+        role="log"
       />
       <div
         class=" css-13cymwt-control"
@@ -32,6 +33,7 @@ exports[`SchemaSelectWidget renders creatable widget 1`] = `
             data-value=""
           >
             <input
+              aria-activedescendant=""
               aria-autocomplete="list"
               aria-expanded="false"
               aria-haspopup="true"
@@ -101,6 +103,7 @@ exports[`SchemaSelectWidget renders select widget 1`] = `
         aria-live="polite"
         aria-relevant="additions text"
         class="css-1f43avz-a11yText-A11yText"
+        role="log"
       />
       <div
         class=" css-13cymwt-control"
@@ -116,6 +119,7 @@ exports[`SchemaSelectWidget renders select widget 1`] = `
             data-value=""
           >
             <input
+              aria-activedescendant=""
               aria-autocomplete="list"
               aria-expanded="false"
               aria-haspopup="true"

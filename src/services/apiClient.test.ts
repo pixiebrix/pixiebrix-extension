@@ -16,7 +16,8 @@
  */
 import { absoluteApiUrl } from "@/services/apiClient";
 
-jest.unmock("@/services/apiClient");
+// Disable automatic __mocks__ resolution #6799
+jest.mock("@/services/apiClient", () => jest.requireActual("./apiClient.ts"));
 
 describe("absoluteApiUrl", () => {
   it("makes relative url absolute", async () => {

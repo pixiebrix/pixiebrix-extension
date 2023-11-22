@@ -18,20 +18,13 @@
 import SubmitPanelEffect from "@/bricks/effects/submitPanel";
 import { SubmitPanelAction } from "@/bricks/errors";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
-import { type JsonObject } from "type-fest";
 
 describe("SubmitPanelEffect", () => {
   test("defaults detail to empty object", async () => {
     const brick = new SubmitPanelEffect();
 
     try {
-      await brick.effect(
-        unsafeAssumeValidArg({ type: "submit" }) as BrickArgs<{
-          type: string;
-          detail: JsonObject;
-        }>
-      );
+      await brick.effect(unsafeAssumeValidArg({ type: "submit" }));
     } catch (error) {
       expect(error).toBeInstanceOf(SubmitPanelAction);
       expect((error as SubmitPanelAction).detail).toEqual({});

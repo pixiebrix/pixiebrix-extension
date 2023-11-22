@@ -63,35 +63,34 @@ module.exports = {
           "@/background/axiosFetch", // Must be run before other code
           "@/telemetry/reportUncaughtErrors",
           "@testing-library/jest-dom",
-          "jest-location-mock",
           "regenerator-runtime/runtime", // Automatic registration
           "@/vendors/hoverintent/hoverintent", // JQuery plugin
           "iframe-resizer/js/iframeResizer.contentWindow", // vendor library imported for side-effect
         ],
       },
     ],
-    // TODO: Move to shared config
-    "@typescript-eslint/no-explicit-any": [
-      "error",
-      {
-        fixToUnknown: true,
-        ignoreRestArgs: true,
-      },
-    ],
+    // TODO: Gradually fix and then drop https://github.com/pixiebrix/eslint-config-pixiebrix/pull/150
+    "@typescript-eslint/no-unsafe-assignment": "warn",
+    "@typescript-eslint/no-unsafe-member-access": "warn",
+    "@typescript-eslint/no-unsafe-return": "warn",
+    "@typescript-eslint/no-unsafe-call": "warn",
     "no-restricted-syntax": [
       "error",
       {
-        message: "Don't use randomUUID. It's not available in http: contexts",
+        message:
+          "Use the `uuid` module instead because crypto.randomUUID is not available in http: contexts",
         selector: 'MemberExpression > Identifier[name="randomUUID"]',
+      },
+      {
+        message:
+          'Use `getExtensionConsoleUrl` instead of `browser.runtime.getURL("options.html")` because it automatically handles paths/routes',
+        selector:
+          "CallExpression[callee.object.property.name='runtime'][callee.property.name='getURL'][arguments.0.value='options.html']",
       },
     ],
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/restrict-template-expressions": "warn",
-    "@typescript-eslint/no-non-null-assertion": "error", // TODO: Move to shared config
-
-    // Enabled for the IDE, but it's disabled in the `lint` script
-    "import/no-cycle": "warn",
   },
   overrides: [
     {
@@ -127,3 +126,12 @@ module.exports = {
     },
   ],
 };
+
+// `npm run lint:fast` will skip the (slow) import/* rules
+// Useful if you're trying to iterate fixes over other rules
+if (process.env.ESLINT_NO_IMPORTS) {
+  const importRules = Object.keys(require("eslint-plugin-import").rules);
+  for (const ruleName of importRules) {
+    module.exports.rules[`import/${ruleName}`] = "off";
+  }
+}

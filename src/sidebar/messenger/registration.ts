@@ -33,6 +33,7 @@ import { noop } from "lodash";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
+import { type Event } from "@/telemetry/events";
 
 expectContext("sidebar");
 
@@ -67,14 +68,19 @@ export default function registerMessenger(): void {
 }
 
 declare global {
+  // TODO: Remove once background/registration.ts and telemetry/logging.ts are in strictNullChecks
   interface MessengerMethods {
     // Temporary duplicate type for a background method used by the sidebar.
-    // We can't import background/registration.ts nor telemetry/reportError.ts because they're not strict
-    // TODO: Remove once ./background/registration.ts is in strictNullChecks
+    // NOTE: Changes to those functions must be reflected here.
     RECORD_ERROR: (
       serializedError: SerializedError,
       context: MessageContext,
       data?: JsonObject
     ) => Promise<void>;
+
+    RECORD_EVENT: (event: {
+      event: Event;
+      data: JsonObject | undefined;
+    }) => Promise<void>;
   }
 }

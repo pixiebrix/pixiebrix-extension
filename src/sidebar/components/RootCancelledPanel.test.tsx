@@ -17,7 +17,7 @@
 
 import React from "react";
 
-import { render } from "@testing-library/react";
+import { render } from "@/sidebar/testHelpers";
 import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import { CancelError } from "@/errors/businessErrors";
 

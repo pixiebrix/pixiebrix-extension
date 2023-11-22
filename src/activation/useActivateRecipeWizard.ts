@@ -179,7 +179,8 @@ export function wizardStateFactory({
         "Please select a configuration",
         (value) =>
           value.integrationId === PIXIEBRIX_INTEGRATION_ID ||
-          value.configId != null
+          value.configId != null ||
+          value.isOptional
       )
     ),
     optionsArgs: optionsValidationSchema,

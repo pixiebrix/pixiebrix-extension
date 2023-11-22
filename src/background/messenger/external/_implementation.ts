@@ -28,18 +28,17 @@ import { type RegistryId } from "@/types/registryTypes";
 import { castArray } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { StorageItem } from "webext-storage";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
 /**
  * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
  */
-const STORAGE_MOD_IDS_KEY = "activatingBlueprintId" as ManualStorageKey;
+const modIdsStorage = new StorageItem<RegistryId | RegistryId[]>(
+  "activatingBlueprintId"
+);
 
 /**
  * Set the user's credentials for the PixieBrix extension. Returns true if the data was updated.
@@ -83,9 +82,7 @@ type OpenMarketplaceOptions = {
 export async function openMarketplace({
   newTab = true,
 }: OpenMarketplaceOptions): Promise<boolean> {
-  const baseUrl = browser.runtime.getURL("options.html");
-
-  const url = `${baseUrl}#/marketplace`;
+  const url = getExtensionConsoleUrl("marketplace");
 
   if (newTab) {
     await browser.tabs.create({ url, active: true });
@@ -115,7 +112,7 @@ export async function setActivatingMods({
 }: SetActivatingModsOptions): Promise<void> {
   // Defensive check for syntactically valid registry ids
   const modIds = castArray(modIdOrIds).map((x) => validateRegistryId(x));
-  return setStorage(STORAGE_MOD_IDS_KEY, modIds);
+  return modIdsStorage.set(modIds);
 }
 
 /**
@@ -124,9 +121,7 @@ export async function setActivatingMods({
  * @see setActivatingMods
  */
 export async function getActivatingModIds(): Promise<RegistryId[] | null> {
-  const value = await readStorage<RegistryId | RegistryId[]>(
-    STORAGE_MOD_IDS_KEY
-  );
+  const value = await modIdsStorage.get();
 
   return value?.length > 0 ? castArray(value) : null;
 }
@@ -180,12 +175,12 @@ export async function openActivateModPage({
     );
   }
 
-  const baseConsoleUrl = browser.runtime.getURL("options.html");
-
   const url =
     redirectUrl ??
     // For extension console activation, only support a single mod id
-    `${baseConsoleUrl}#/marketplace/activate/${encodeURIComponent(modIds[0])}`;
+    getExtensionConsoleUrl(
+      `marketplace/activate/${encodeURIComponent(modIds[0])}`
+    );
 
   if (newTab) {
     await browser.tabs.create({ url });

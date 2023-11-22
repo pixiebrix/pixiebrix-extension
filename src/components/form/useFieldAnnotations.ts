@@ -20,7 +20,7 @@ import {
   type FieldAnnotationAction,
 } from "@/components/form/FieldAnnotation";
 import { useFormErrorSettings } from "@/components/form/FormErrorContext";
-import { useFormikContext } from "formik";
+import { useField, useFormikContext } from "formik";
 import { useSelector } from "react-redux";
 import { selectAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
 import {
@@ -28,11 +28,12 @@ import {
   AnalysisAnnotationActionType,
 } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type FormikContextType } from "formik/dist/types";
+import { type FormikContextType } from "formik";
 import { produce } from "immer";
 import { get, isEmpty, set } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { type Expression } from "@/types/runtimeTypes";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
@@ -80,21 +81,37 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
     const analysisAnnotations = useSelector(
       selectAnnotationsForPath(fieldPath)
     );
-    return analysisAnnotations
-      .filter((x) => !ignoreAnalysisIds.includes(x.analysisId))
-      .map(({ message, type, actions }) => {
-        const fieldAnnotation: FieldAnnotation = {
-          message,
-          type,
-        };
-        if (showFieldActions && !isEmpty(actions)) {
-          fieldAnnotation.actions = actions.map((action) =>
-            makeFieldActionForAnnotationAction(action, formik)
-          );
-        }
 
-        return fieldAnnotation;
-      });
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
+    const [{ value }] = useField<Expression>(fieldPath);
+
+    return (
+      analysisAnnotations
+        .filter((x) => !ignoreAnalysisIds.includes(x.analysisId))
+        // Annotations from redux can get out of sync with the current state of the field
+        // Check that the value from redux matches the current formik value before showing
+        // See: https://github.com/pixiebrix/pixiebrix-extension/pull/6846
+        .filter((x) => {
+          if (typeof x.detail === "object" && "expression" in x.detail) {
+            return x.detail.expression === value;
+          }
+
+          return x.detail === value;
+        })
+        .map(({ message, type, actions }) => {
+          const fieldAnnotation: FieldAnnotation = {
+            message,
+            type,
+          };
+          if (showFieldActions && !isEmpty(actions)) {
+            fieldAnnotation.actions = actions.map((action) =>
+              makeFieldActionForAnnotationAction(action, formik)
+            );
+          }
+
+          return fieldAnnotation;
+        })
+    );
   }
 
   const { error, touched } = formik.getFieldMeta(fieldPath);

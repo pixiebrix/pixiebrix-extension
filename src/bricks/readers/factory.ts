@@ -20,7 +20,7 @@ import { type Availability } from "@/bricks/types";
 import { Validator } from "@cfworker/json-schema";
 import { dereference } from "@/validators/generic";
 import readerSchema from "@schemas/reader.json";
-import { type Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
+import { type Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { cloneDeep } from "lodash";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { type ApiVersion, type SelectorRoot } from "@/types/runtimeTypes";

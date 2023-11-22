@@ -32,20 +32,18 @@
 
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
-import { type JsonValue } from "type-fest";
 import { type SerializedError } from "@/types/messengerTypes";
-import { getMessengerLogging } from "@/development/messengerLogging";
 import { assert } from "./typeUtils";
+import { type JsonValue } from "type-fest";
 
 const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
-// Disable logging by default
-let log = (...args: unknown[]) => {};
-void getMessengerLogging().then((setting) => {
-  log = console.debug;
-});
+// TODO: Allow toggling logging. This isn't possible via `getMessengerLogging`/`storage.get`
+// due to the sandbox. This might need to be done via an ENV, partially reverting:
+// https://github.com/pixiebrix/pixiebrix-extension/pull/6546
+const log = console.debug;
 
 export type RequestPacket = {
   type: string;

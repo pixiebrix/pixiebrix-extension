@@ -23,7 +23,7 @@ import {
   ClientNetworkPermissionError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
-import { assertHttpsUrl } from "@/errors/assertHttpsUrl";
+import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import {
   isAxiosError,
   NO_INTERNET_MESSAGE,
@@ -50,7 +50,9 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   console.trace("enrichBusinessRequestError", { error });
 
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs
-  const url = assertHttpsUrl(error.config.url, error.config.baseURL);
+  const url = assertProtocolUrl(error.config.url ?? "", ["https:", "http:"], {
+    baseUrl: error.config.baseURL,
+  });
 
   // In case of a CORS permission error, response.status can be 0. This case is handled below
   if (error.response != null && error.response.status !== 0) {
@@ -60,6 +62,7 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
       !url.pathname.startsWith("/api/proxy")
     ) {
       // TODO: Maybe handle app errors here too, like we do in `selectServerErrorMessage`
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal -- Duck-typed Error, still works
       throw error;
     }
 

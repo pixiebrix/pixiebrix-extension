@@ -18,134 +18,15 @@
 // WARNING: this file MUST NOT directly or transitively import webext-messenger because it does not support being
 // imported multiple times in the same contentScript. It's only safe to import webext-messenger in contentScriptCore.ts
 // which is behind a guarded dynamic import.
+// https://github.com/pixiebrix/webext-messenger/issues/88
 
-import { isEmpty, startsWith } from "lodash";
-import { getActivatedModIds } from "@/store/extensionsStorage";
-import { type RegistryId } from "@/types/registryTypes";
-import { isRegistryId } from "@/types/helpers";
-import { isReadyInThisDocument } from "@/contentScript/ready";
-import { pollUntilTruthy } from "@/utils/promiseUtils";
-import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
+import { loadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
 
-let enhancementsLoaded = false;
-
-function isMarketplacePage(): boolean {
-  return startsWith(window.location.href, MARKETPLACE_URL);
-}
-
-/**
- * Read all id search params from the URL. Handles both `id` and `id[]`.
- */
-export function extractIdsFromUrl(searchParams: URLSearchParams): RegistryId[] {
-  const rawIds = [...searchParams.getAll("id"), ...searchParams.getAll("id[]")];
-  return rawIds.filter((x) => isRegistryId(x)) as RegistryId[];
-}
-
-/**
- * Returns a node list of mod activation links currently on the page.
- *
- * Includes marketplace activation links and shared links (e.g., on landing pages and emails).
- */
-function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
-  // Include DEFAULT_SERVICE_URL for use during local/staging testing
-  return document.querySelectorAll<HTMLAnchorElement>(
-    `a[href*='.pixiebrix.com/activate'], a[href*='${DEFAULT_SERVICE_URL}/activate']`
-  );
-}
-
-function changeActivateButtonToActiveLabel(button: HTMLAnchorElement): void {
-  // Check if the button is already changed to an active label or if it isn't a special activate button that
-  // should be swapped to an active label
-  const isActivateButton = Object.hasOwn(button.dataset, "activateButton");
-  if (button.innerHTML.includes("Reactivate") || !isActivateButton) {
-    return;
-  }
-
-  button.className = "";
-  button.innerHTML = "Reactivate";
-
-  const activeLabel = $(
-    '<div class="d-flex flex-column"><span class="text-success"><i class="fas fa-check"></i> Active</span></div>'
-  );
-  $(button).replaceWith(activeLabel);
-
-  // Keeping the original button element in the dom so that the event listeners can be added in
-  // the loadPageEnhancements function
-  activeLabel.append(button);
-}
-
-export async function loadActivationEnhancements(): Promise<void> {
-  if (enhancementsLoaded) {
-    return;
-  }
-
-  enhancementsLoaded = true;
-
-  const activateButtonLinks = getActivateButtonLinks();
-  if (isEmpty(activateButtonLinks)) {
-    return;
-  }
-
-  // XXX: consider moving after the button event listener is added to avoid race with the user clicking on the link
-  const activatedModIds = await getActivatedModIds();
-
-  for (const button of activateButtonLinks) {
-    const url = new URL(button.href);
-    const modIds = extractIdsFromUrl(url.searchParams);
-    if (modIds.length === 0) {
-      continue;
-    }
-
-    // On Marketplace pages, check if the single mod / all mods in the pack already activated, and change button content
-    // to indicate active status
-    if (isMarketplacePage() && modIds.every((x) => activatedModIds.has(x))) {
-      changeActivateButtonToActiveLabel(button);
-    }
-
-    // Replace the default click handler with direct mod activation
-    button.addEventListener("click", async (event) => {
-      event.preventDefault();
-
-      const isContentScriptReady = await pollUntilTruthy(
-        isReadyInThisDocument,
-        {
-          maxWaitMillis: 2000,
-          intervalMillis: 100,
-        }
-      );
-
-      if (isContentScriptReady) {
-        window.dispatchEvent(
-          new CustomEvent("ActivateMods", {
-            // The button href may have changed since the listener was added, extract ids again
-            detail: {
-              modIds: extractIdsFromUrl(new URL(button.href).searchParams),
-              activateUrl: button.href,
-            },
-          })
-        );
-      } else {
-        // Something probably went wrong with the content script, so navigate to the `/activate` url
-        window.location.assign(button.href);
-      }
-    });
-  }
-}
-
-export async function reloadActivationEnhancements(): Promise<void> {
-  enhancementsLoaded = false;
-  await loadActivationEnhancements();
-}
-
-/**
- * Unset loaded state. For use in test cleanup.
- */
-export function TEST_unloadActivationEnhancements(): void {
-  enhancementsLoaded = false;
-}
+void initRuntimeLogging();
 
 if (location.protocol === "https:" || DEBUG) {
   void loadActivationEnhancements();

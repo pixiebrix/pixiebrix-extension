@@ -30,7 +30,7 @@ import {
   modModalsSlice,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/services/api";
-import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
+import { setupListeners } from "@reduxjs/toolkit/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import workshopSlice, {
@@ -61,7 +61,9 @@ import { createStateSyncMiddleware } from "redux-state-sync";
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { boolean } from "@/utils/typeUtils";
-import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
+import defaultMiddlewareConfig, {
+  defaultCreateStateSyncMiddlewareConfig,
+} from "@/store/defaultMiddlewareConfig";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -126,6 +128,7 @@ const store = configureStore({
       .concat(sessionChangesMiddleware)
       .concat(
         createStateSyncMiddleware({
+          ...defaultCreateStateSyncMiddlewareConfig,
           // In the future: concat whitelisted sync action lists here
           whitelist: sessionChangesStateSyncActions,
         })
