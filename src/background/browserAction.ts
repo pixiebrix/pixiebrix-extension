@@ -26,6 +26,7 @@ import {
   DISPLAY_REASON_EXTENSION_CONSOLE,
   DISPLAY_REASON_RESTRICTED_URL,
 } from "@/tinyPages/restrictedUrlPopupConstants";
+import { setActionPopup } from "webext-tools";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -88,34 +89,19 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
  * other pages.
  * @param url the url of the tab, or null if not accessible
  */
-async function updatePopover(
-  url: string | null,
-  tabId: number | null
-): Promise<void> {
-  // The URL might not be available in certain circumstances. This silences these
-  // cases and just treats them as "not allowed on this page"
-  const normalizedUrl = String(url);
-
+async function getPopover(url: string | null): Promise<string | undefined> {
   const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
 
-  if (normalizedUrl.startsWith(getExtensionConsoleUrl())) {
-    await browser.browserAction.setPopup({
-      popup: `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`,
-      tabId,
-    });
-  } else if (isScriptableUrl(normalizedUrl)) {
-    await browser.browserAction.setPopup({
-      // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
-      // If an empty string ("") is passed here, the popup is disabled, and the extension will receive browserAction.onClicked events.
-      popup: "",
-      tabId,
-    });
-  } else {
-    await browser.browserAction.setPopup({
-      popup: `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`,
-      tabId,
-    });
+  if (url && url.startsWith(getExtensionConsoleUrl())) {
+    return `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`;
   }
+
+  if (!isScriptableUrl(url)) {
+    return `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`;
+  }
+
+  // The popup is disabled, and the extension will receive browserAction.onClicked events.
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
 }
 
 export default function initBrowserAction(): void {
@@ -123,23 +109,5 @@ export default function initBrowserAction(): void {
 
   // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
   // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
-
-  chrome.tabs.onActivated.addListener(async (activeInfo) => {
-    const tab = await browser.tabs.get(activeInfo.tabId);
-    await updatePopover(tab.url, tab.id);
-  });
-
-  chrome.windows.onFocusChanged.addListener(async (windowId) => {
-    const [tab] = await browser.tabs.query({
-      active: true,
-      windowId,
-    });
-    await updatePopover(tab.url, tab.id);
-  });
-
-  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    if (tab.active && changeInfo.url) {
-      await updatePopover(changeInfo.url, tabId);
-    }
-  });
+  setActionPopup(getPopover);
 }
