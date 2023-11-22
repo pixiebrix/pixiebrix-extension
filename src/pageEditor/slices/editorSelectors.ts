@@ -37,6 +37,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
+import editor from "@/extensionConsole/pages/brickEditor/Editor";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -410,3 +411,6 @@ export const selectExtensionKnownEventNames = createSelector(
     // eslint-disable-next-line security/detect-object-injection -- is a UUID
     knownEventNameMap[activeElementId] ?? []
 );
+
+export const selectIsDimensionsWarningDismissed = (state: EditorRootState) =>
+  state.editor.isDimensionsWarningDismissed;
