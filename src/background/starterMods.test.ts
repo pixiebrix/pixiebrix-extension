@@ -238,6 +238,6 @@ describe("installStarterBlueprints", () => {
     expect(extensions).toHaveLength(1);
     const installedComponent = extensions[0];
 
-    expect(installedComponent.integrationDependencies).toBeArrayOfSize(0);
+    expect(installedComponent.integrationDependencies).toBeArrayOfSize(1);
   });
 });
