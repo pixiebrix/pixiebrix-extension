@@ -27,7 +27,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
 
-const GatePanel: React.FunctionComponent = () => {
+export const GatePanel: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
   return (

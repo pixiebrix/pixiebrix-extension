@@ -8633,6 +8633,124 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
 </div>
 `;
 
+exports[`Storyshots PageEditor/DimensionGatePanel Dimension Gate Panel 1`] = `
+<div
+  style={
+    {
+      "height": 600,
+      "width": 500,
+    }
+  }
+>
+  <div
+    className="p-3"
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="col"
+      >
+        <h3>
+          The Page Editor is designed to work with a horizontal orientation.
+        </h3>
+      </div>
+    </div>
+    <div
+      className="row"
+    >
+      <div
+        className="col"
+      >
+        We recommend docking the DevTools to the bottom of the window.
+      </div>
+    </div>
+    <div
+      className="mt-3 row"
+    >
+      <div
+        className="col"
+      >
+        <img
+          alt="DevTools toolbar with three-dot menu icon included"
+          className="img-fluid"
+          src="test-file-stub"
+        />
+      </div>
+      <div
+        className="col"
+      >
+        <img
+          alt="The context menu that will show after clicking the DevTools three-dot menu, with 'Dock Side' option included"
+          className="img-fluid"
+          src="test-file-stub"
+        />
+      </div>
+    </div>
+    <div
+      className="mt-3 row"
+    >
+      <div
+        className="col"
+      >
+        <p>
+          Click the ‘
+          <svg
+            aria-labelledby="svg-inline--fa-title-EcWXGz2dQDvz"
+            className="svg-inline--fa fa-ellipsis-v fa-w-6 mx-1"
+            data-icon="ellipsis-v"
+            data-prefix="fas"
+            role="img"
+            style={{}}
+            viewBox="0 0 192 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title
+              id="svg-inline--fa-title-EcWXGz2dQDvz"
+              style={{}}
+            >
+              Three-dot menu icon
+            </title>
+            <path
+              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+              fill="currentColor"
+              style={{}}
+            />
+          </svg>
+          ’ menu in the top right of the DevTools
+        </p>
+        <p>
+          Select the ‘
+          <img
+            alt="DevTools dock bottom icon"
+            src="test-file-stub"
+            width="16px"
+          />
+          ’ (third option) under ‘Dock side’
+        </p>
+      </div>
+    </div>
+    <div
+      className="row"
+    >
+      <div
+        className="col"
+      >
+        <hr />
+        <button
+          className="btn btn-warning"
+          disabled={false}
+          onClick={[Function]}
+          type="button"
+        >
+          Dismiss Warning
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Storyshots PageEditor/LoginCard Default 1`] = `
 <div
   className="d-flex flex-column mx-auto mt-4 pb-2 max-550 text-center h-100 justify-content-center"
