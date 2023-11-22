@@ -151,7 +151,7 @@ const Layout = () => {
         {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
         <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
           <RequireAuth LoginPage={SetupPage}>
-            <AuthenticatedContent />;
+            <AuthenticatedContent />
           </RequireAuth>
         </ErrorBoundary>
       </Container>

@@ -24,6 +24,8 @@ export const Events = {
   BRICK_ADD: "BrickAdd",
   BRICK_DELETE: "BrickDelete",
 
+  BROWSER_ACTION_RESTRICTED_URL: "BrowserActionRestrictedUrl",
+
   CUSTOM_USER_EVENT: "CustomUserEvent",
 
   DEPLOYMENT_ACTIVATE: "DeploymentActivate",
