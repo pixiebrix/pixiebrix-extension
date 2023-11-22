@@ -24,10 +24,8 @@ import {
   modComponentFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import {
-  defaultModDefinitionFactory,
-  metadataFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Recipes

@@ -46,7 +46,7 @@ import { missingProperties } from "@/utils/schemaUtils";
  * A service created from a local definition. Has the ability to authenticate requests because it has
  * access to authenticate secrets.
  */
-class LocalDefinedService<
+export class LocalDefinedService<
   TDefinition extends IntegrationDefinition = IntegrationDefinition
 > extends IntegrationABC {
   private readonly _definition: TDefinition;

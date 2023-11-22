@@ -15,9 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/themes/colors";
+import { define } from "cooky-cutter";
+import { type Metadata } from "@/types/registryTypes";
+import { validateRegistryId, validateSemVerString } from "@/types/helpers";
 
-.label {
-  padding: 0 0.5rem;
-  color: $N400;
-}
+export const metadataFactory = define<Metadata>({
+  id: (n: number) => validateRegistryId(`test/mod-${n}`),
+  name: (n: number) => `Mod ${n}`,
+  description: "Mod generated from factory",
+  version: validateSemVerString("1.0.0"),
+});

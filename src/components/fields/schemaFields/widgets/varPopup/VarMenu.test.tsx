@@ -39,8 +39,18 @@ const TestWrapper: React.FunctionComponent<{
   );
 };
 
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
 beforeAll(() => {
   registerBuiltinBlocks();
+});
+
+afterAll(() => {
+  jest.clearAllMocks();
 });
 
 describe("VarMenu", () => {

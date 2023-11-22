@@ -22,20 +22,20 @@ import PipelineVisitor, {
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
 import { type Schema } from "@/types/schemaTypes";
-import { compact } from "lodash";
+import { compact, isEqual, uniqWith } from "lodash";
 
-export type ModVariableNameResult = {
+export type ModVariableSchemaResult = {
   /**
-   * Statically known mod variable names.
+   * Statically known mod variable schemas.
    */
-  knownNames: string[];
+  knownSchemas: Array<Schema["properties"]>;
 };
 
 /**
  * Visitor to collect all events fired by a single FormState.
  * @since 1.7.34
  */
-class CollectNamesVisitor extends PipelineVisitor {
+class ModVariableSchemasVisitor extends PipelineVisitor {
   readonly schemaPromises: Array<Promise<Schema>> = [];
 
   constructor(readonly allBlocks: TypedBlockMap) {
@@ -56,11 +56,11 @@ class CollectNamesVisitor extends PipelineVisitor {
     }
   }
 
-  static async collectNames(
+  static async collectSchemas(
     formStates: ModComponentFormState[]
-  ): Promise<ModVariableNameResult> {
+  ): Promise<ModVariableSchemaResult> {
     const allBlocks = await blockRegistry.allTyped();
-    const visitor = new CollectNamesVisitor(allBlocks);
+    const visitor = new ModVariableSchemasVisitor(allBlocks);
 
     for (const formState of formStates) {
       visitor.visitRootPipeline(formState.extension.blockPipeline);
@@ -71,18 +71,16 @@ class CollectNamesVisitor extends PipelineVisitor {
       visitor.schemaPromises
     );
 
-    const variableNames = new Set<string>();
+    const variableSchemas: Array<Schema["properties"]> = [];
 
     for (const schema of compact(schemas)) {
-      for (const variableName of Object.keys(schema.properties ?? {})) {
-        variableNames.add(variableName);
-      }
+      variableSchemas.push(schema.properties ?? {});
     }
 
     return {
-      knownNames: [...variableNames],
+      knownSchemas: uniqWith<Schema["properties"]>(variableSchemas, isEqual),
     };
   }
 }
 
-export default CollectNamesVisitor;
+export default ModVariableSchemasVisitor;

@@ -15,9 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/themes/colors";
+import "@/extensionContext";
 
-.label {
-  padding: 0 0.5rem;
-  color: $N400;
-}
+import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
+
+import ReactDOM from "react-dom";
+import React from "react";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+
+ReactDOM.render(
+  <RestrictedUrlPopupApp />,
+  document.querySelector("#container")
+);
