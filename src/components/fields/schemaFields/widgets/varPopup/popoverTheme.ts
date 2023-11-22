@@ -23,8 +23,9 @@ export const popoverTheme: Theme = {
   base0D: "#2e2441", // Label and arrow color
   arrowContainer: {
     padding: "4px",
-    marginRight: "10px",
-    backgroundColor: "#f0eff2",
+    marginRight: "8px",
+    marginBottom: "2px",
+    backgroundColor: "#efeef1",
     borderRadius: "2px",
   },
   arrow: {
