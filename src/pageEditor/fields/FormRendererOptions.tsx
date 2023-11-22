@@ -17,7 +17,7 @@
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
-import React, { useCallback, useState } from "react";
+import React, { ChangeEvent, useCallback, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
@@ -39,6 +39,12 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import databaseSchema from "@schemas/database.json";
 import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
+import { Card } from "react-bootstrap";
+import styles from "@/bricks/transformers/tourStep/TourStepOptions.module.scss";
+import SwitchButtonWidget, {
+  type CheckBoxLike,
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -50,6 +56,16 @@ const recordIdSchema: Schema = {
 const databaseIdSchema: Schema = {
   $ref: databaseSchema.$id,
 };
+
+const Section: React.FunctionComponent<{ title: string }> = ({
+  title,
+  children,
+}) => (
+  <>
+    <Card.Header className={styles.sectionHeader}>{title}</Card.Header>
+    <Card.Body>{children}</Card.Body>
+  </>
+);
 
 function usePruneUnusedServiceDependencies() {
   const { values: formState, setValues: setFormState } =
@@ -89,7 +105,11 @@ const FormRendererOptions: React.FC<{
     editorActions.setNodePreviewActiveElement
   );
 
+  const { setFieldValue } = useFormikContext<ModComponentFormState>();
   const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
+  const [{ value: onSubmit }] = useField<PipelineExpression>(
+    makeName("onSubmit")
+  );
   const hideSubmitButtonName = makeName(
     "uiSchema",
     "ui:submitButtonOptions",
@@ -135,89 +155,111 @@ const FormRendererOptions: React.FC<{
 
   return (
     <div>
-      <FieldTemplate
-        name={makeName("storage", "type")}
-        label="Storage Location"
-        description="The location to submit/store the form data"
-        as={Select}
-        options={storageTypeOptions}
-        value={storageTypeOptions.find((x) => x.value === storageType)}
-        onChange={async ({ value: nextStorageType }: StringOption) => {
-          await changeStorageType(nextStorageType);
-        }}
-      />
-
-      {storageType === "database" && (
-        <>
-          <SchemaField
-            name={makeName("storage", "databaseId")}
-            label="Database"
-            isRequired
-            schema={databaseIdSchema}
-          />
-          <AppApiIntegrationDependencyField
-            name={makeName("storage", "service")}
-          />
-        </>
-      )}
-
-      {storageType === "state" && (
-        <SchemaField
-          name={makeName("storage", "namespace")}
-          label="State Namespace"
-          isRequired
-          schema={
-            customFormRendererSchema.properties.storage.oneOf[1].properties
-              .namespace as Schema
-          }
+      <Section title="Data Source">
+        <FieldTemplate
+          name={makeName("storage", "type")}
+          label="Storage Location"
+          description="The location to submit/store the form data"
+          as={Select}
+          options={storageTypeOptions}
+          value={storageTypeOptions.find((x) => x.value === storageType)}
+          onChange={async ({ value: nextStorageType }: StringOption) => {
+            await changeStorageType(nextStorageType);
+          }}
         />
-      )}
 
-      {["localStorage", "database"].includes(storageType) && (
-        <SchemaField
-          name={makeName("recordId")}
-          label="Record ID"
-          schema={recordIdSchema}
-          isRequired
-        />
-      )}
-
-      <SchemaField
-        name={makeName("autoSave")}
-        label="Auto Save"
-        schema={customFormRendererSchema.properties.autoSave as Schema}
-      />
-
-      {!autoSave && (
-        <>
-          <SchemaField
-            name={hideSubmitButtonName}
-            schema={{
-              type: "boolean",
-              title: "Hide Submit Button?",
-              description:
-                "Toggle on to hide the submit button. Caution: when using this option, you must also enable either autoSave or submit-on-enter so that the form can still be submitted.",
-              default: false,
-            }}
-          />
-
-          {!hideSubmitButton && (
+        {storageType === "database" && (
+          <>
             <SchemaField
-              name={makeName("submitCaption")}
-              label="Submit Caption"
-              schema={
-                customFormRendererSchema.properties.submitCaption as Schema
-              }
+              name={makeName("storage", "databaseId")}
+              label="Database"
+              isRequired
+              schema={databaseIdSchema}
             />
-          )}
-        </>
-      )}
+            <AppApiIntegrationDependencyField
+              name={makeName("storage", "service")}
+            />
+          </>
+        )}
 
-      <SchemaField
-        name={makeName("successMessage")}
-        label="Success Message"
-        schema={customFormRendererSchema.properties.successMessage as Schema}
-      />
+        {storageType === "state" && (
+          <SchemaField
+            name={makeName("storage", "namespace")}
+            label="State Namespace"
+            isRequired
+            schema={
+              customFormRendererSchema.properties.storage.oneOf[1].properties
+                .namespace as Schema
+            }
+          />
+        )}
+
+        {["localStorage", "database"].includes(storageType) && (
+          <SchemaField
+            name={makeName("recordId")}
+            label="Record ID"
+            schema={recordIdSchema}
+            isRequired
+          />
+        )}
+      </Section>
+
+      <Section title="Form Submission">
+        <SchemaField
+          name={makeName("autoSave")}
+          label="Auto Save"
+          schema={customFormRendererSchema.properties.autoSave as Schema}
+        />
+
+        {!autoSave && (
+          <>
+            <SchemaField
+              name={hideSubmitButtonName}
+              schema={{
+                type: "boolean",
+                title: "Hide Submit Button?",
+                description:
+                  "Toggle on to hide the submit button. Caution: when using this option, you must also enable either autoSave or submit-on-enter so that the form can still be submitted.",
+                default: false,
+              }}
+            />
+
+            {!hideSubmitButton && (
+              <SchemaField
+                name={makeName("submitCaption")}
+                label="Submit Caption"
+                schema={
+                  customFormRendererSchema.properties.submitCaption as Schema
+                }
+              />
+            )}
+          </>
+        )}
+
+        <SchemaField
+          name={makeName("successMessage")}
+          label="Success Message"
+          schema={customFormRendererSchema.properties.successMessage as Schema}
+        />
+
+        <FieldTemplate
+          as={SwitchButtonWidget}
+          label="Submit Handler"
+          description="Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel"
+          name={makeName("onSubmit")}
+          value={onSubmit != null}
+          onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
+            if (target.value) {
+              await setFieldValue(makeName("onSubmit"), {
+                __type__: "pipeline",
+                __value__: [],
+              });
+            } else {
+              await setFieldValue(makeName("onSubmit"), null);
+            }
+          }}
+        />
+      </Section>
 
       <ConfigErrorBoundary>
         <FormEditor

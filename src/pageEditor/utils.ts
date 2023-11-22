@@ -42,6 +42,7 @@ import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils"
 import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -111,6 +112,17 @@ export function getPipelinePropNames(
       // Only show onAfterShow if it's provided, to avoid cluttering the UI
       if (blockConfig.config.onAfterShow != null) {
         propNames.push("onAfterShow");
+      }
+
+      return propNames;
+    }
+
+    case CustomFormRenderer.BLOCK_ID: {
+      const propNames = [];
+
+      // Only show onSubmit if it's provided, to avoid cluttering the UI
+      if (blockConfig.config.onSubmit != null) {
+        propNames.push("onSubmit");
       }
 
       return propNames;

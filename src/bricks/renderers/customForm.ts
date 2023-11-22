@@ -35,6 +35,7 @@ import {
   type BrickArgs,
   type BrickOptions,
   type ComponentRef,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { namespaceOptions } from "@/bricks/effects/pageState";
@@ -133,6 +134,10 @@ export const customFormRendererSchema = {
       description: "The submit button caption (default='Submit')",
       default: "Submit",
     },
+    onSubmit: {
+      $ref: "https://app.pixiebrix.com/schemas/pipeline#",
+      description: "Action to perform when the form is submitted",
+    },
     successMessage: {
       type: "string",
       default: "Successfully submitted form",
@@ -187,17 +192,19 @@ export class CustomFormRenderer extends RendererABC {
       successMessage,
       submitCaption = "Submit",
       className,
+      onSubmit,
     }: BrickArgs<{
       storage?: Storage;
-      successMessage?: string;
       recordId?: string | null;
-      autoSave?: boolean;
-      submitCaption?: string;
       schema: Schema;
       uiSchema?: UiSchema;
       className?: string;
+      autoSave?: boolean;
+      onSubmit?: PipelineExpression;
+      submitCaption?: string;
+      successMessage?: string;
     }>,
-    { logger }: BrickOptions
+    { logger, runPipeline }: BrickOptions
   ): Promise<ComponentRef> {
     if (logger.context.extensionId == null) {
       throw new Error("extensionId is required");
@@ -252,8 +259,22 @@ export class CustomFormRenderer extends RendererABC {
               blueprintId,
               extensionId,
             });
+
             if (!isEmpty(successMessage)) {
               notify.success(successMessage);
+            }
+
+            if (onSubmit) {
+              await runPipeline(
+                onSubmit,
+                {
+                  key: "onSubmit",
+                  counter: 0,
+                },
+                {
+                  form: normalizedValues,
+                }
+              );
             }
           } catch (error) {
             notify.error({
