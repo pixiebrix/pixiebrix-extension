@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks";
-import { useWindowSize } from "@/hooks/useWindowSize";
+import React from "react";
+import { render } from "@/pageEditor/testHelpers";
+import DimensionGate from "@/pageEditor/components/DimensionGate";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 // Simulate window resize event: https://gist.github.com/javierarques/d95948ac7e9ddc8097612866ecc63a4b#file-jsdom-helper-js
 const resizeEvent = document.createEvent("Event");
@@ -28,20 +31,29 @@ global.window.resizeTo = (width, height) => {
   global.window.dispatchEvent(resizeEvent);
 };
 
-test("watch for resize", async () => {
-  const { result } = renderHook(() => useWindowSize());
-
-  expect(result.current).toStrictEqual({
-    height: 768,
-    width: 1024,
+describe("Dimension Gate", () => {
+  it("shows content in landscape mode", async () => {
+    render(
+      <DimensionGate>
+        <div>foo</div>
+      </DimensionGate>
+    );
+    expect(screen.getByText("foo")).toBeInTheDocument();
   });
 
-  await act(async () => {
-    window.resizeTo(100, 100);
-  });
+  it("shows dismissible warning in portrait mode", async () => {
+    window.resizeTo(400, 800);
 
-  expect(result.current).toStrictEqual({
-    height: 100,
-    width: 100,
+    render(
+      <DimensionGate>
+        <div>foo</div>
+      </DimensionGate>
+    );
+
+    expect(screen.queryByText("foo")).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByText("Dismiss Warning"));
+
+    expect(screen.getByText("foo")).toBeInTheDocument();
   });
 });

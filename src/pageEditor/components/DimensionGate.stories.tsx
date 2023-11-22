@@ -25,6 +25,10 @@ import { Provider } from "react-redux";
 export default {
   title: "PageEditor/DimensionGatePanel",
   component: GatePanel,
+  parameters: {
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/6962
+    storyshots: false,
+  },
 } as ComponentMeta<typeof GatePanel>;
 
 function optionsStore(initialState?: unknown) {
