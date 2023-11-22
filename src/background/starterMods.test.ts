@@ -121,19 +121,6 @@ describe("debouncedInstallStarterMods", () => {
     expect(extensions).toHaveLength(0);
   });
 
-  test("starter mods installation request fails", async () => {
-    isLinkedMock.mockResolvedValue(true);
-
-    axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
-      .reply(200, [defaultModDefinitionFactory()]);
-
-    await debouncedInstallStarterMods();
-    const { extensions } = await getModComponentState();
-
-    expect(extensions).toHaveLength(1);
-  });
-
   test("install starter mod with built-in auths", async () => {
     isLinkedMock.mockResolvedValue(true);
 

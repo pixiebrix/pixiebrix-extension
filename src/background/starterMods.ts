@@ -93,9 +93,9 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   const builtInDependencies = unconfiguredIntegrationDependencies.map(
     (unconfiguredDependency) => {
-      if (unconfiguredDependency.isOptional) {
-        return unconfiguredDependency;
-      }
+      // if (unconfiguredDependency.isOptional) {
+      //   return unconfiguredDependency;
+      // }
 
       const builtInConfig = builtInIntegrationConfigs.find(
         (config) =>
@@ -103,7 +103,7 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
           unconfiguredDependency.integrationId
       );
 
-      if (!builtInConfig) {
+      if (!builtInConfig && !unconfiguredDependency.isOptional) {
         throw new Error(
           `No built-in config found for integration ${unconfiguredDependency.integrationId}. Check that starter mods have built-in configuration options for all required integrations.`
         );
@@ -111,7 +111,7 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
       return {
         ...unconfiguredDependency,
-        configId: builtInConfig.id,
+        configId: builtInConfig?.id,
       };
     }
   );
