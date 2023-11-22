@@ -89,7 +89,7 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
  * other pages.
  * @param url the url of the tab, or null if not accessible
  */
-async function getPopover(url: string | null): Promise<string | undefined> {
+function getPopover(url: string | null): string | null {
   const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
 
   if (url && url.startsWith(getExtensionConsoleUrl())) {
@@ -102,6 +102,7 @@ async function getPopover(url: string | null): Promise<string | undefined> {
 
   // The popup is disabled, and the extension will receive browserAction.onClicked events.
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
+  return null;
 }
 
 export default function initBrowserAction(): void {
