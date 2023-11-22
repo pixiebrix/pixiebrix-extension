@@ -88,7 +88,10 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
  * other pages.
  * @param url the url of the tab, or null if not accessible
  */
-async function updatePopover(url: string | null): Promise<void> {
+async function updatePopover(
+  url: string | null,
+  tabId: number | null
+): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const normalizedUrl = String(url);
@@ -98,16 +101,19 @@ async function updatePopover(url: string | null): Promise<void> {
   if (normalizedUrl.startsWith(getExtensionConsoleUrl())) {
     await browser.browserAction.setPopup({
       popup: `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`,
+      tabId,
     });
   } else if (isScriptableUrl(normalizedUrl)) {
     await browser.browserAction.setPopup({
       // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
       // If an empty string ("") is passed here, the popup is disabled, and the extension will receive browserAction.onClicked events.
       popup: "",
+      tabId,
     });
   } else {
     await browser.browserAction.setPopup({
       popup: `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`,
+      tabId,
     });
   }
 }
@@ -115,18 +121,25 @@ async function updatePopover(url: string | null): Promise<void> {
 export default function initBrowserAction(): void {
   browserAction.onClicked.addListener(handleBrowserAction);
 
-  // Track the active tab URL. MV2 doesn't support setting popover on a per-tab basis, so we need to update the popover
-  // every time status the active tab/active URL changes.
+  // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
   // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
 
   chrome.tabs.onActivated.addListener(async (activeInfo) => {
     const tab = await browser.tabs.get(activeInfo.tabId);
-    await updatePopover(tab.url);
+    await updatePopover(tab.url, tab.id);
   });
 
-  browser.tabs.onUpdated.addListener(async (_tabId, _changeInfo, tab) => {
-    if (tab.active) {
-      await updatePopover(tab.url);
+  chrome.windows.onFocusChanged.addListener(async (windowId) => {
+    const [tab] = await browser.tabs.query({
+      active: true,
+      windowId,
+    });
+    await updatePopover(tab.url, tab.id);
+  });
+
+  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    if (tab.active && changeInfo.url) {
+      await updatePopover(changeInfo.url, tabId);
     }
   });
 }
