@@ -17,6 +17,7 @@
 
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 
+// Store as object - getSnapshot() must return reference to same object to avoid re-renders
 let windowSize = {
   width: 0,
   height: 0,
@@ -40,7 +41,6 @@ function getSnapshot(): WindowSize {
   const newHeight = window.innerHeight;
 
   if (newWidth !== windowSize.width || newHeight !== windowSize.height) {
-    // Return referentially equal object to avoid triggering re-renders
     windowSize = {
       width: newWidth,
       height: newHeight,
