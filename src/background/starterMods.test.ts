@@ -72,8 +72,8 @@ beforeEach(async () => {
   jest.clearAllMocks();
 });
 
-describe("installStarterBlueprints", () => {
-  test("user has starter blueprints available to install", async () => {
+describe("debouncedInstallStarterMods", () => {
+  test("user has starter mods available to install", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     axiosMock
@@ -110,7 +110,7 @@ describe("installStarterBlueprints", () => {
     expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
   });
 
-  test("starter blueprints request fails", async () => {
+  test("starter mods request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
@@ -121,7 +121,7 @@ describe("installStarterBlueprints", () => {
     expect(extensions).toHaveLength(0);
   });
 
-  test("starter blueprints installation request fails", async () => {
+  test("starter mods installation request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     axiosMock
@@ -134,7 +134,7 @@ describe("installStarterBlueprints", () => {
     expect(extensions).toHaveLength(1);
   });
 
-  test("install starter blueprint with built-in auths", async () => {
+  test("install starter mod with built-in auths", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition, builtInIntegrationConfigs } =
@@ -170,7 +170,7 @@ describe("installStarterBlueprints", () => {
     expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
   });
 
-  test("starter blueprint already installed", async () => {
+  test("starter mod already installed", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
@@ -215,7 +215,7 @@ describe("installStarterBlueprints", () => {
     expect(extensions).toHaveLength(2);
   });
 
-  test("install starter blueprint with optional integrations", async () => {
+  test("install starter mod with optional integrations", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
