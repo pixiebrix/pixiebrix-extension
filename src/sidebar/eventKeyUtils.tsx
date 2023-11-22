@@ -28,7 +28,9 @@ import {
 import hash from "object-hash";
 import { sortBy } from "lodash";
 
-export function eventKeyForEntry(entry: SidebarEntry | null): string | null {
+export function eventKeyForEntry(
+  entry: SidebarEntry | undefined
+): string | null {
   if (entry == null) {
     return null;
   }
@@ -96,5 +98,8 @@ function getOpenPanelEntries(
   entries: SidebarEntry[],
   closedTabs: SidebarState["closedTabs"]
 ): SidebarEntry[] {
-  return entries.filter((entry) => !closedTabs[eventKeyForEntry(entry)]);
+  return entries.filter((entry) => {
+    const key = eventKeyForEntry(entry);
+    return !key || !closedTabs[key];
+  });
 }

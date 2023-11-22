@@ -56,7 +56,7 @@ export function hostnameToUrl(hostname: string): string {
   return `https://${hostname}`;
 }
 
-function selectDefaultValue(variable: Variable): JSONSchema7Type {
+function selectDefaultValue(variable: Variable): JSONSchema7Type | undefined {
   if (!variable.defaultValue) {
     return undefined;
   }

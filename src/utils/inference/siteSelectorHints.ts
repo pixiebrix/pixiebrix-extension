@@ -50,7 +50,7 @@ export type SiteSelectorHint = {
    */
   siteValidator: (validatorProps: {
     element: HTMLElement;
-    location?: Location;
+    location: Location;
   }) => boolean;
 
   /**

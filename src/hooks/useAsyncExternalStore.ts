@@ -24,7 +24,7 @@ import {
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateUUID } from "@/types/helpers";
 import deepEquals from "fast-deep-equal";
 
 type Subscribe = (callback: () => void) => () => void;
@@ -32,23 +32,17 @@ type Subscribe = (callback: () => void) => () => void;
 class StateController<T = unknown> {
   private readonly stateListeners = new Set<() => void>();
   private state: AsyncState<T> = uninitializedAsyncStateFactory();
-  private nonce: UUID;
-
-  // Methods to pass to useSyncExternalStore
-  readonly boundSubscribe: Subscribe;
-  readonly boundGetSnapshot: () => AsyncState<T>;
+  private nonce: UUID = validateUUID(null); // TODO: Drop after strictNullCheck transition; Silences TS bug
 
   constructor(
     readonly externalSubscribe: Subscribe,
     readonly factory: () => Promise<T>
   ) {
-    this.boundSubscribe = this.internalSubscribe.bind(this);
-    this.boundGetSnapshot = this.getSnapshot.bind(this);
-    externalSubscribe(this.updateSnapshot.bind(this));
+    externalSubscribe(this.updateSnapshot);
     void this.updateSnapshot();
   }
 
-  internalSubscribe(callback: () => void): () => void {
+  subscribe = (callback: () => void): (() => void) => {
     this.stateListeners.add(callback);
 
     return () => {
@@ -56,7 +50,7 @@ class StateController<T = unknown> {
       // However, in practice that was causing some bugs with component lifecycle.
       this.stateListeners.delete(callback);
     };
-  }
+  };
 
   notifyAll(): void {
     for (const listener of this.stateListeners) {
@@ -64,7 +58,9 @@ class StateController<T = unknown> {
     }
   }
 
-  async updateSnapshot(): Promise<void> {
+  getSnapshot = (): AsyncState<T> => this.state;
+
+  updateSnapshot = async (): Promise<void> => {
     this.state = this.state.isUninitialized
       ? loadingAsyncStateFactory()
       : {
@@ -102,11 +98,7 @@ class StateController<T = unknown> {
     }
 
     this.notifyAll();
-  }
-
-  getSnapshot(): AsyncState<T> {
-    return this.state;
-  }
+  };
 }
 
 const stateControllerMap = new Map<Subscribe, StateController>();
@@ -129,15 +121,14 @@ function useAsyncExternalStore<T>(
   subscribe: Subscribe,
   factory: () => Promise<T>
 ): AsyncState<T> {
-  if (!stateControllerMap.has(subscribe)) {
-    stateControllerMap.set(subscribe, new StateController(subscribe, factory));
-  }
-
-  const controller = stateControllerMap.get(subscribe);
+  const controller =
+    stateControllerMap.get(subscribe) ??
+    new StateController(subscribe, factory);
+  stateControllerMap.set(subscribe, controller);
 
   return useSyncExternalStore(
-    controller.boundSubscribe,
-    controller.boundGetSnapshot
+    controller.subscribe,
+    controller.getSnapshot
   ) as AsyncState<T>;
 }
 
