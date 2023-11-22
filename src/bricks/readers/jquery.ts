@@ -134,12 +134,12 @@ async function processFind(
   );
 }
 
-function processElement($elements: JQuery, selector: SingleSelector) {
-  const CONTENT_TYPES: Record<string, number | undefined> = {
-    text: Node.TEXT_NODE,
-    comment: Node.COMMENT_NODE,
-  };
+const CONTENT_TYPES: Record<string, number | undefined> = {
+  text: Node.TEXT_NODE,
+  comment: Node.COMMENT_NODE,
+};
 
+function processElement($elements: JQuery, selector: SingleSelector) {
   let value;
   if (selector.attr) {
     value = $elements.attr(selector.attr);
