@@ -23,7 +23,7 @@ import { type Branch } from "@/bricks/types";
  * Given records for a single runId and blockInstanceId, return the latest call to a given blockInstanceId.
  * @param records the trace records
  */
-export function getLatestCall(records: TraceRecord[]): TraceRecord | null {
+export function getLatestCall(records: TraceRecord[]): TraceRecord | undefined {
   const ascending = sortBy(records, (x) =>
     x.branches.flatMap((branch) => [branch.key, branch.counter])
   );

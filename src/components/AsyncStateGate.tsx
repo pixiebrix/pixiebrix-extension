@@ -21,6 +21,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 import { Button } from "react-bootstrap";
 import { isFetchableAsyncState } from "@/utils/asyncStateUtils";
+import { assert } from "@/utils/typeUtils";
 
 /**
  *  A standard error display for use with AsyncStateGate
@@ -76,9 +77,9 @@ type AsyncStateGateProps<Data> = PropsWithoutRef<{
  * Renders the children if the state is not loading or errored
  * @see useAsyncState
  */
-const AsyncStateGate = <Data,>(
+function AsyncStateGate<Data>(
   props: AsyncStateGateProps<Data>
-): React.ReactElement => {
+): React.ReactElement {
   const { children, state, renderError, renderLoader } = props;
   const { data, isLoading, isUninitialized, isFetching, isError, error } =
     state;
@@ -97,7 +98,8 @@ const AsyncStateGate = <Data,>(
     throw error;
   }
 
+  assert(data, "data should be defined"); // Type-only check
   return <>{children({ data })}</>;
-};
+}
 
 export default AsyncStateGate;

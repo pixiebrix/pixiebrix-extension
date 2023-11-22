@@ -28,6 +28,6 @@ export async function registerWalkthroughModal() {
 }
 
 export function closeWalkthroughModal() {
-  modal.resolve();
+  modal?.resolve();
   modal = null;
 }
