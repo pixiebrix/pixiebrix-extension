@@ -22,8 +22,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 
-const DimensionGate: React.FunctionComponent = ({ children }) => {
+const GatePanel: React.FunctionComponent = () => {
   const dispatch = useDispatch();
+
+  return (
+    <div className="p-3">
+      <div>
+        The Page Editor is designed to work with a horizontal orientation.
+      </div>
+
+      <div>We recommend docking the DevTools to the bottom of the window.</div>
+
+      <Button
+        variant="warning"
+        onClick={() => {
+          dispatch(editorSlice.actions.dismissDimensionsWarning());
+        }}
+      >
+        Dismiss Warning
+      </Button>
+    </div>
+  );
+};
+
+const DimensionGate: React.FunctionComponent = ({ children }) => {
   const isDimensionsWarningDismissed = useSelector(
     selectIsDimensionsWarningDismissed
   );
@@ -31,26 +53,7 @@ const DimensionGate: React.FunctionComponent = ({ children }) => {
   const size = useWindowSize();
 
   if (!isDimensionsWarningDismissed && size.height > size.width) {
-    return (
-      <div className="p-3">
-        <div>
-          The Page Editor is designed to work with a horizontal orientation.
-        </div>
-
-        <div>
-          We recommend docking the DevTools to the bottom of the window.
-        </div>
-
-        <Button
-          variant="warning"
-          onClick={() => {
-            dispatch(editorSlice.actions.dismissDimensionsWarning());
-          }}
-        >
-          Dismiss Warning
-        </Button>
-      </div>
-    );
+    return <GatePanel />;
   }
 
   return <>{children}</>;
