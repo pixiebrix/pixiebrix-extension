@@ -214,4 +214,35 @@ describe("installStarterBlueprints", () => {
 
     expect(extensions).toHaveLength(2);
   });
+
+  test("install starter blueprint with optional integrations", async () => {
+    isLinkedMock.mockResolvedValue(true);
+
+    const modDefinition = defaultModDefinitionFactory();
+    modDefinition.extensionPoints[0].services = {
+      properties: {
+        google: {
+          $ref: "https://app.pixiebrix.com/schemas/services/google/oauth2-pkce",
+        },
+      },
+      required: [],
+    };
+
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/")
+      .reply(200, [modDefinition]);
+
+    await debouncedInstallStarterMods();
+    const { extensions } = await getModComponentState();
+
+    expect(extensions).toHaveLength(1);
+    const installedComponent = extensions[0];
+
+    console.log(
+      "installedComponent",
+      JSON.stringify(installedComponent, null, 2)
+    );
+
+    // TODO: Add additional assertions
+  });
 });
