@@ -323,7 +323,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
 
 const AuthWidget: React.FunctionComponent<{
   /**
-   * The field name. WARNING: do not use `serviceId`s as part of a field name because they can contain periods which
+   * The field name. WARNING: do not use `integrationId`s as part of a field name because they can contain periods which
    * break Formik's nested field naming.
    */
   name: string;
