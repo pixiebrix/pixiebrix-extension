@@ -93,10 +93,6 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   const builtInDependencies = unconfiguredIntegrationDependencies.map(
     (unconfiguredDependency) => {
-      // if (unconfiguredDependency.isOptional) {
-      //   return unconfiguredDependency;
-      // }
-
       const builtInConfig = builtInIntegrationConfigs.find(
         (config) =>
           config.service.config.metadata.id ===
