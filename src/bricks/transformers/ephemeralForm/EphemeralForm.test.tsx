@@ -53,6 +53,7 @@ describe("EphemeralForm", () => {
     // TODO: replace with getByLabelText after the upgrade to rjsf5
     // Caused by bug in the default TextWidget in rjsf4:
     // https://github.com/rjsf-team/react-jsonschema-form/blob/v4.2.3/packages/bootstrap-4/src/TextWidget/TextWidget.tsx
+    // expect(screen.getByLabelText("foo")).not.toBeNull();
     expect(screen.getByText("foo")).toBeVisible();
     expect(screen.getByRole("textbox")).toBeVisible();
     expect(asFragment()).toMatchSnapshot();
