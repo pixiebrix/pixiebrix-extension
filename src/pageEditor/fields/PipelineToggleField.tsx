@@ -44,7 +44,7 @@ const PipelineToggleField: React.VoidFunctionComponent<{
       label={label}
       description={description}
       name={name}
-      value={value}
+      value={Boolean(value)}
       onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
         if (target.value) {
           await setFieldValue(name, makePipelineExpression([]));

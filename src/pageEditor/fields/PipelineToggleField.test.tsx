@@ -46,4 +46,29 @@ describe("PipelineToggleField", () => {
 
     expect(getFormState().test).toBeNull();
   });
+
+  it("can start toggled", async () => {
+    const { getFormState } = render(
+      <PipelineToggleField
+        name="test"
+        label="Pipeline Field"
+        description="Test pipeline field"
+      />,
+      {
+        initialValues: {
+          test: makePipelineExpression([]),
+        },
+      }
+    );
+
+    // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
+    await userEvent.click(document.querySelector(".btn"));
+
+    expect(getFormState().test).toBeNull();
+
+    // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
+    await userEvent.click(document.querySelector(".btn"));
+
+    expect(getFormState().test).toStrictEqual(makePipelineExpression([]));
+  });
 });
