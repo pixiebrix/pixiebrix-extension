@@ -20,7 +20,7 @@ import { type Schema } from "@/types/schemaTypes";
 import React, { useCallback, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor, {
-  FormFields,
+  FormIntroFields,
 } from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
@@ -251,7 +251,7 @@ const FormRendererOptions: React.FC<{
         title="Form Title/Description"
         initialExpanded
       >
-        <FormFields formName={configName} />
+        <FormIntroFields formName={configName} />
       </ConnectedCollapsibleFieldSection>
 
       <ConnectedCollapsibleFieldSection title="Data Binding" initialExpanded>

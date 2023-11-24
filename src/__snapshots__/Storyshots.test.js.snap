@@ -6261,7 +6261,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.default"
           >
-            Default value
+            Default Value
           </label>
           <div
             className="col-xl-10 col-lg-9"

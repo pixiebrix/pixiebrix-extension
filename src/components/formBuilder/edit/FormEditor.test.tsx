@@ -361,7 +361,7 @@ describe("FormEditor", () => {
     );
 
     const defaultValue = "Initial default value";
-    const defaultValueInput = screen.getByLabelText("Default value");
+    const defaultValueInput = screen.getByLabelText("Default Value");
     expect(defaultValueInput).not.toBeNull();
     fireTextInput(defaultValueInput, defaultValue);
 

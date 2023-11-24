@@ -253,7 +253,7 @@ const FieldEditor: React.FC<{
               : {
                   type: uiType.propertyType,
                 },
-          label: "Default value",
+          label: "Default Value",
           description:
             uiType.extra === "selectWithLabels"
               ? 'Should match one of the "const" values from the "Options" field'

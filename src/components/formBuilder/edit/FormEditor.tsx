@@ -60,25 +60,29 @@ export type FormEditorProps = {
   fieldTypes?: SelectStringOption[];
 };
 
-export const FormFields: React.FunctionComponent<{ formName: string }> = ({
-  formName,
+/**
+ * Form fields for the form title and description.
+ * @constructor
+ */
+export const FormIntroFields: React.FunctionComponent<{ name: string }> = ({
+  name,
 }) => {
   const { titleFieldProps, descriptionFieldProps } = useMemo(() => {
     const titleFieldProps: SchemaFieldProps = {
-      name: joinName(formName, "schema", "title"),
+      name: joinName(name, "schema", "title"),
       schema: { type: "string" },
       label: "Form Title",
       description: "The form title to display",
     };
     const descriptionFieldProps: SchemaFieldProps = {
-      name: joinName(formName, "schema", "description"),
+      name: joinName(name, "schema", "description"),
       schema: { type: "string" },
       label: "Form Description",
       description: "Form description or instructions. Supports markdown.",
     };
 
     return { titleFieldProps, descriptionFieldProps };
-  }, [formName]);
+  }, [name]);
 
   return (
     <>
@@ -232,7 +236,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
     <>
       {showFormFields && (
         <>
-          <FormFields formName={name} />
+          <FormIntroFields name={name} />
           <hr />
         </>
       )}
