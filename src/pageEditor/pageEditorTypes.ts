@@ -190,11 +190,6 @@ export interface EditorState {
   availableInstalledIds: UUID[];
 
   /**
-   * How many installed extensions are not available on the current tab?
-   */
-  unavailableInstalledCount: number;
-
-  /**
    * The availableInstalledIds are being calculated
    */
   isPendingInstalledExtensions: boolean;
@@ -208,11 +203,6 @@ export interface EditorState {
    * The availableDynamicIds are being calculated
    */
   isPendingDynamicExtensions: boolean;
-
-  /**
-   * How many dynamic elements are not available on the current tab?
-   */
-  unavailableDynamicCount: number;
 
   /**
    * Is data panel expanded or collapsed

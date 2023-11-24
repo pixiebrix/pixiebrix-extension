@@ -143,13 +143,11 @@ describe("checkAvailableInstalledExtensions", () => {
 
     const state = store.getState();
 
-    const { availableInstalledIds, unavailableInstalledCount } =
-      selectExtensionAvailability(state);
+    const { availableInstalledIds } = selectExtensionAvailability(state);
 
     expect(availableInstalledIds).toStrictEqual([
       availableButton.id,
       availableQb.id,
     ]);
-    expect(unavailableInstalledCount).toBe(2);
   });
 });

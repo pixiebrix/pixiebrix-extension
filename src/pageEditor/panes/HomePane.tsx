@@ -1,0 +1,120 @@
+/*
+ * Copyright (C) 2023 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React from "react";
+import { Button } from "react-bootstrap";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { navigateTab } from "@/contentScript/messenger/api";
+import { thisTab } from "@/pageEditor/utils";
+import { useSelector } from "react-redux";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import paintbrush from "@img/paintbrush.svg";
+
+import styles from "@/pageEditor/panes/HomePane.module.scss";
+
+const TEMPLATE_TELEMETRY_SOURCE = "home_pane";
+
+const HomePane: React.FunctionComponent = () => {
+  const sessionId = useSelector(selectSessionId);
+  return (
+    <div className="h-100 overflow-auto">
+      <div className={styles.pane}>
+        <div className={styles.gutter}>
+          <img src={paintbrush} alt="Page Editor logo" />
+        </div>
+
+        <div>
+          <h1 className={styles.title}>Welcome to the Page Editor!</h1>
+          <div className={styles.lead}>
+            <div>You might recognize it from the video on the home page.</div>
+            <div>
+              Here, you can create mods that improve the UX of any web apps and
+              sites you visit.
+            </div>
+          </div>
+
+          <div>
+            <div className={styles.text}>
+              Not sure where to get started? Our Template Gallery has
+              customizable templates with guides for the most popular use cases.
+            </div>
+
+            <div>
+              <Button
+                variant="primary"
+                className={styles.button}
+                onClick={() => {
+                  reportEvent(Events.PAGE_EDITOR_VIEW_TEMPLATES, {
+                    sessionId,
+                    source: TEMPLATE_TELEMETRY_SOURCE,
+                  });
+                  navigateTab(thisTab, {
+                    url: `https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=${TEMPLATE_TELEMETRY_SOURCE}`,
+                  });
+                }}
+              >
+                Launch Template Gallery
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div className={styles.links}>
+            <ul>
+              <span className={styles.linkSectionHeader}>Support</span>
+              <li>
+                <a href="https://docs.pixiebrix.com/">Documentation</a>
+              </li>
+              <li>
+                <a href="https://pixiebrix.thinkific.com/collections">
+                  PixieBrix Certification
+                </a>
+              </li>
+              <li>
+                <a href="https://slack.pixiebrix.com/">
+                  Join the Community Slack
+                </a>
+              </li>
+            </ul>
+
+            <ul>
+              <span className={styles.linkSectionHeader}>Helpful Links</span>
+              <li>
+                <a
+                  href="#"
+                  onClick={async (event) => {
+                    event.preventDefault();
+                    await browser.runtime.openOptionsPage();
+                  }}
+                >
+                  Extension Console
+                </a>
+              </li>
+              <li>
+                <a href="https://app.pixiebrix.com/">Admin Console</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default HomePane;

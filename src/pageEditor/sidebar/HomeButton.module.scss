@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Sidebar.module.scss";
-import React from "react";
-import logoUrl from "@/icons/custom-icons/favicon.svg";
+@import "@/themes/colors.scss";
 
-const Logo: React.FunctionComponent = () => (
-  <img src={logoUrl} alt="PixieBrix logo" className={styles.logo} />
-);
+.button {
+  background-color: $P500;
+  border-color: $P500;
 
-export default Logo;
+  display: flex;
+  align-items: center;
+}

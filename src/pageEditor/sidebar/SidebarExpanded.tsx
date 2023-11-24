@@ -51,7 +51,7 @@ import {
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
-import Logo from "./Logo";
+import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
 import ExtensionEntry from "./ExtensionEntry";
@@ -206,13 +206,7 @@ const SidebarExpanded: React.FunctionComponent<{
       <div className={styles.header}>
         <div className={styles.actions}>
           <div className={styles.actionsLeft}>
-            <a
-              href="/options.html"
-              target="_blank"
-              title="Open PixieBrix Options"
-            >
-              <Logo />
-            </a>
+            <HomeButton />
 
             <AddStarterBrickButton />
 

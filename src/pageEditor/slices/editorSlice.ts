@@ -115,10 +115,8 @@ export const initialState: EditorState = {
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
   availableInstalledIds: [],
-  unavailableInstalledCount: 0,
   isPendingInstalledExtensions: false,
   availableDynamicIds: [],
-  unavailableDynamicCount: 0,
   isPendingDynamicExtensions: false,
   isModListExpanded: true,
   isDataPanelExpanded: true,
@@ -391,6 +389,14 @@ export const editorSlice = createSlice({
       void clearExtensionTraces(element.uuid);
 
       syncElementNodeUIStates(state, element);
+    },
+    showHomePane(state) {
+      state.activeElementId = null;
+      state.activeRecipeId = null;
+      state.expandedRecipeId = null;
+      state.error = null;
+      state.beta = false;
+      state.selectionSeq++;
     },
     selectElement(state, action: PayloadAction<UUID>) {
       const elementId = action.payload;
@@ -913,14 +919,12 @@ export const editorSlice = createSlice({
         (state, { payload: { availableInstalledIds, unavailableCount } }) => {
           state.isPendingInstalledExtensions = false;
           state.availableInstalledIds = availableInstalledIds;
-          state.unavailableInstalledCount = unavailableCount;
         }
       )
       .addCase(
         checkAvailableInstalledExtensions.rejected,
         (state, { error }) => {
           state.isPendingInstalledExtensions = false;
-          state.unavailableInstalledCount = 0;
           state.error = error;
           reportError(error);
         }
@@ -934,12 +938,10 @@ export const editorSlice = createSlice({
         (state, { payload: { availableDynamicIds, unavailableCount } }) => {
           state.isPendingDynamicExtensions = false;
           state.availableDynamicIds = availableDynamicIds;
-          state.unavailableDynamicCount = unavailableCount;
         }
       )
       .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
         state.isPendingDynamicExtensions = false;
-        state.unavailableDynamicCount = 0;
         state.error = error;
         reportError(error);
       })
