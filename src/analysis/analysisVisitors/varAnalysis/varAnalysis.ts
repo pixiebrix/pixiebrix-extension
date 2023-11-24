@@ -52,7 +52,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { getOutputReference } from "@/runtime/runtimeTypes";
+import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -628,7 +628,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
     const childPipelineVars = new VarMap();
 
-    if (childPipelineKey) {
+    if (childPipelineKey && isOutputKey(childPipelineKey)) {
       const variableName = getOutputReference(childPipelineKey);
 
       const block = this.allBlocks.get(extra.parentNode.id);

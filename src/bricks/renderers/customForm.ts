@@ -46,6 +46,7 @@ import { namespaceOptions } from "@/bricks/effects/pageState";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 import { getOutputReference, validateOutputKey } from "@/runtime/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
+import { isExpression } from "@/utils/expressionUtils";
 
 interface DatabaseResult {
   success: boolean;
@@ -196,7 +197,10 @@ export class CustomFormRenderer extends RendererABC {
     pipelineName: string
   ): Schema | undefined {
     if (pipelineName === "onSubmit") {
-      if (isPlainObject(_config.config.schema)) {
+      if (
+        isPlainObject(_config.config.schema) &&
+        !isExpression(_config.config.schema)
+      ) {
         return _config.config.schema;
       }
 

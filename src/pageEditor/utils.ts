@@ -39,11 +39,13 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
+import {
+  castTextLiteralOrThrow,
+  isPipelineExpression,
+} from "@/utils/expressionUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
-import { OutputKey } from "@/types/runtimeTypes";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -152,27 +154,35 @@ export function getPipelinePropNames(
   }
 }
 
+/**
+ * Returns the variable name passed to a pipeline.
+ * @param brickConfig the brick configuration
+ * @param pipelinePropName the query pipelinePropName
+ */
 export function getVariableKeyForSubPipeline(
-  blockConfig: BrickConfig,
+  brickConfig: BrickConfig,
   pipelinePropName: string
-): OutputKey | null {
+  // NOTE: does not return an OutputKey because a user-entered value may not be a valid OutputKey at this point
+): string | null {
   let keyPropName: string = null;
 
   if (
-    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID].includes(blockConfig.id) &&
+    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID].includes(brickConfig.id) &&
     pipelinePropName === "body"
   ) {
     keyPropName = "elementKey";
   }
 
-  if (blockConfig.id === TryExcept.BLOCK_ID && pipelinePropName === "except") {
+  if (brickConfig.id === TryExcept.BLOCK_ID && pipelinePropName === "except") {
     keyPropName = "errorKey";
   }
 
   if (
-    blockConfig.id === CustomFormRenderer.BLOCK_ID &&
+    brickConfig.id === CustomFormRenderer.BLOCK_ID &&
     pipelinePropName === "onSubmit"
   ) {
+    // We currently don't allow the user to rename the variable for the onSubmit pipeline because it'd add another
+    // option to an already cluttered UI.
     return CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME;
   }
 
@@ -180,17 +190,18 @@ export function getVariableKeyForSubPipeline(
     return null;
   }
 
-  // eslint-disable-next-line security/detect-object-injection -- not from user input
-  const keyValue = blockConfig.config[keyPropName];
+  // eslint-disable-next-line security/detect-object-injection -- is from user input, but extracting string
+  const keyValue = brickConfig.config[keyPropName];
 
   if (!keyValue) {
     return null;
   }
 
-  const realValue = isExpression(keyValue) ? keyValue.__value__ : keyValue;
-
-  // XXX: where is this enforced?
-  return realValue as OutputKey;
+  try {
+    return castTextLiteralOrThrow(keyValue);
+  } catch {
+    return null;
+  }
 }
 
 /**

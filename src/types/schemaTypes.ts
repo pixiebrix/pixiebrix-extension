@@ -28,6 +28,9 @@ import { type Except } from "type-fest";
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 
+/**
+ * A read-only JSON-Schema allowing any value to be provided.
+ */
 export const SCHEMA_ALLOW_ANY: Schema = Object.freeze({});
 
 /**

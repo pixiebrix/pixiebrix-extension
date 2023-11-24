@@ -56,6 +56,14 @@ export function validateOutputKey(key: string): OutputKey {
 }
 
 /**
+ * Type guard for OutputKey
+ * @param value the value to check
+ */
+export function isOutputKey(value: unknown): value is OutputKey {
+  return typeof value === "string" && OUTPUT_KEY_REGEX.test(value);
+}
+
+/**
  * Returns a reference to the given output key. Currently, this is just the output key prefixed with `@`.
  * @param outputKey the output key
  */

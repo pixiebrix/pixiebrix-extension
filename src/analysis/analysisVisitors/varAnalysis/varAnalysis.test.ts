@@ -1076,19 +1076,12 @@ describe("Collecting available vars", () => {
     });
 
     test("adds the form fields to the onsubmit handler", () => {
-      expect(
-        analysis
-          .getKnownVars()
-          .get("extension.blockPipeline.0.config.onSubmit.__value__.0")
-          .isVariableDefined("@values.foo")
-      ).toBeTrue();
+      const blockVars = analysis
+        .getKnownVars()
+        .get("extension.blockPipeline.0.config.onSubmit.__value__.0");
 
-      expect(
-        analysis
-          .getKnownVars()
-          .get("extension.blockPipeline.0.config.onSubmit.__value__.0")
-          .isVariableDefined("@values.bar")
-      ).toBeFalse();
+      expect(blockVars.isVariableDefined("@values.foo")).toBeTrue();
+      expect(blockVars.isVariableDefined("@values.bar")).toBeFalse();
     });
   });
 });
