@@ -22,14 +22,14 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import { flatten, isEmpty, uniq } from "lodash";
 import { AnnotationType } from "@/types/annotationTypes";
-import CollectNamesVisitor, {
+import CollectEventNamesVisitor, {
   type EventNameAnalysisResult,
 } from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
 import { DOM_EVENTS } from "@/types/browserTypes";
 
 /**
  * Analysis visitor to collect all events fired by a single ModComponentBase.
- * @see CollectNamesVisitor
+ * @see CollectEventNamesVisitor
  */
 class CheckEventNamesAnalysis extends AnalysisVisitorABC {
   private collectedEvents: EventNameAnalysisResult;
@@ -100,7 +100,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
 
   override async run(extension: ModComponentFormState) {
     const results = this.formStates.map((x) =>
-      CollectNamesVisitor.collectNames(x)
+      CollectEventNamesVisitor.collectNames(x)
     );
 
     this.collectedEvents = {

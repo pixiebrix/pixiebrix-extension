@@ -15,19 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pDefer, { type DeferredPromise } from "p-defer";
+import { define } from "cooky-cutter";
+import { type Metadata } from "@/types/registryTypes";
+import { validateRegistryId, validateSemVerString } from "@/types/helpers";
 
-let modal: DeferredPromise<void> | null = null;
-
-export async function registerWalkthroughModal() {
-  if (!modal) {
-    modal = pDefer();
-  }
-
-  return modal.promise;
-}
-
-export function closeWalkthroughModal() {
-  modal?.resolve();
-  modal = null;
-}
+export const metadataFactory = define<Metadata>({
+  id: (n: number) => validateRegistryId(`test/mod-${n}`),
+  name: (n: number) => `Mod ${n}`,
+  description: "Mod generated from factory",
+  version: validateSemVerString("1.0.0"),
+});

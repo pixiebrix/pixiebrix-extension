@@ -15,19 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pDefer, { type DeferredPromise } from "p-defer";
-
-let modal: DeferredPromise<void> | null = null;
-
-export async function registerWalkthroughModal() {
-  if (!modal) {
-    modal = pDefer();
-  }
-
-  return modal.promise;
-}
-
-export function closeWalkthroughModal() {
-  modal?.resolve();
-  modal = null;
-}
+export const DISPLAY_REASON_UNKNOWN = "unknown";
+export const DISPLAY_REASON_RESTRICTED_URL = "restricted-url";
+export const DISPLAY_REASON_EXTENSION_CONSOLE = "extension-console";

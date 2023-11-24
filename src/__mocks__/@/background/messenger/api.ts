@@ -59,7 +59,7 @@ export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
-export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
+export const clearServiceCache = jest.fn();
 export const sheets = {
   isLoggedIn: jest.fn().mockRejectedValue(new Error("Not implemented")),
   getAllSpreadsheets: jest.fn().mockRejectedValue(new Error("Not implemented")),
@@ -81,7 +81,7 @@ export const openTab = getMethod("OPEN_TAB", bg);
 
 export const registry = {
   fetch: jest.fn().mockResolvedValue(true),
-  syncRemote: getMethod("REGISTRY_SYNC", bg),
+  syncRemote: jest.fn(),
   getByKinds: jest.fn().mockResolvedValue([]),
   find: jest.fn().mockImplementation(async (id: RegistryId) => {
     throw new Error(

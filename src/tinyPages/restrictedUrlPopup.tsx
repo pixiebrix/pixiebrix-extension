@@ -15,19 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pDefer, { type DeferredPromise } from "p-defer";
+import "@/extensionContext";
 
-let modal: DeferredPromise<void> | null = null;
+import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
 
-export async function registerWalkthroughModal() {
-  if (!modal) {
-    modal = pDefer();
-  }
+import ReactDOM from "react-dom";
+import React from "react";
 
-  return modal.promise;
-}
+import "bootstrap/dist/css/bootstrap.min.css";
 
-export function closeWalkthroughModal() {
-  modal?.resolve();
-  modal = null;
-}
+ReactDOM.render(
+  <RestrictedUrlPopupApp />,
+  document.querySelector("#container")
+);

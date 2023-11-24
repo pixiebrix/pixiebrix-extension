@@ -28,15 +28,16 @@ const DEBUG = process.env.DEBUG;
 
 interface State {
   hasError: boolean;
-  errorMessage: string;
-  stack: string;
+  errorMessage: string | undefined;
+  stack: string | undefined;
 }
 
 class ConfigErrorBoundary extends Component<UnknownObject, State> {
-  constructor(props: UnknownObject) {
-    super(props);
-    this.state = { hasError: false, errorMessage: undefined, stack: undefined };
-  }
+  override state: State = {
+    hasError: false,
+    errorMessage: undefined,
+    stack: undefined,
+  };
 
   static getDerivedStateFromError(error: Error) {
     // Update state so the next render will show the fallback UI.

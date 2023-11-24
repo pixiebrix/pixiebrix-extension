@@ -24,7 +24,7 @@ export async function deleteDatabase(databaseName: string): Promise<void> {
   // connection is open and blocking the deletion. This is a workaround.
   const deferred = pDefer<void>();
   const deletePromise = deleteDB(databaseName, {
-    blocked(currentVersion, event) {
+    blocked() {
       deferred.reject(new Error(`Database ${databaseName} is in use`));
     },
   });

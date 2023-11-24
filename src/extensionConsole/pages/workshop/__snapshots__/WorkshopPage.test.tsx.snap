@@ -113,6 +113,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
               aria-live="polite"
               aria-relevant="additions text"
               class="css-1f43avz-a11yText-A11yText"
+              role="log"
             />
             <div
               class=" css-13cymwt-control"
@@ -131,6 +132,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
                   data-value=""
                 >
                   <input
+                    aria-activedescendant=""
                     aria-autocomplete="list"
                     aria-describedby="react-select-2-placeholder"
                     aria-expanded="false"
@@ -192,6 +194,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
               aria-live="polite"
               aria-relevant="additions text"
               class="css-1f43avz-a11yText-A11yText"
+              role="log"
             />
             <div
               class=" css-13cymwt-control"
@@ -210,6 +213,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
                   data-value=""
                 >
                   <input
+                    aria-activedescendant=""
                     aria-autocomplete="list"
                     aria-describedby="react-select-3-placeholder"
                     aria-expanded="false"
@@ -271,6 +275,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
               aria-live="polite"
               aria-relevant="additions text"
               class="css-1f43avz-a11yText-A11yText"
+              role="log"
             />
             <div
               class=" css-13cymwt-control"
@@ -289,6 +294,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
                   data-value=""
                 >
                   <input
+                    aria-activedescendant=""
                     aria-autocomplete="list"
                     aria-describedby="react-select-4-placeholder"
                     aria-expanded="false"

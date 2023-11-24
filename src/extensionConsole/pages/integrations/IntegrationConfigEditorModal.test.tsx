@@ -27,6 +27,8 @@ import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.ya
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
+import { convertSchemaToConfigState } from "@/components/auth/AuthWidget";
+import { within } from "@testing-library/react";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -38,7 +40,13 @@ describe("IntegrationConfigEditorModal", () => {
 
     render(
       <IntegrationConfigEditorModal
-        initialValues={{ label: "" } as IntegrationConfig}
+        initialValues={
+          {
+            label: "",
+            integrationId: service.id,
+            config: convertSchemaToConfigState(service.schema),
+          } as IntegrationConfig
+        }
         onDelete={jest.fn()}
         onSave={jest.fn()}
         onClose={jest.fn()}
@@ -54,7 +62,9 @@ describe("IntegrationConfigEditorModal", () => {
     expect(screen.getByText("Close")).not.toBeNull();
 
     const dialogRoot = screen.getByRole("dialog");
-    expect(dialogRoot).toMatchSnapshot();
+    for (const property of Object.keys(service.schema.properties)) {
+      expect(within(dialogRoot).getByLabelText(property)).toBeVisible();
+    }
   });
 
   test("displays user-friendly pattern validation message", async () => {

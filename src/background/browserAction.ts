@@ -18,18 +18,18 @@
 import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
-import { notify } from "@/extensionConsole/messenger/api";
 import { browserAction, type Tab } from "@/mv3/api";
 import { isScriptableUrl } from "@/permissions/permissionsUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import { isMac } from "@/utils/browserUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import {
+  DISPLAY_REASON_EXTENSION_CONSOLE,
+  DISPLAY_REASON_RESTRICTED_URL,
+} from "@/tinyPages/restrictedUrlPopupConstants";
+import { setActionPopup } from "webext-tools";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
-
-const keyboardShortcut = isMac() ? "Cmd+Opt+C" : "Ctrl+Shift+C";
-const MSG_NO_SIDEBAR_ON_OPTIONS_PAGE = `PixieBrix Tip 💜\n If you want to create a new mod, first navigate to the page you want to modify, then open PixieBrix in the DevTools (${keyboardShortcut}).`;
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
@@ -39,12 +39,6 @@ const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
 // Don't accept objects here as they're not easily memoizable
 async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   console.debug("browserAction:toggleSidebar", tabId, tabUrl);
-
-  if (!isScriptableUrl(tabUrl)) {
-    // Page not supported. Open the options page instead
-    void browser.runtime.openOptionsPage();
-    return;
-  }
 
   // Load the raw toggle script first, then the content script. The browser executes them
   // in order, but we don't need to use `Promise.all` to await them at the same time as we
@@ -86,22 +80,35 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
   // The URL might not be available in certain circumstances. This silences these
   // cases and just treats them as "not allowed on this page"
   const url = String(tab.url);
-
-  const optionsPage = getExtensionConsoleUrl();
-
-  if (url.startsWith(optionsPage)) {
-    notify.info(
-      { tabId: tab.id, page: "/options.html" },
-      {
-        id: "MSG_NO_SIDEBAR_ON_OPTIONS_PAGE",
-        message: MSG_NO_SIDEBAR_ON_OPTIONS_PAGE,
-      }
-    );
-  } else {
-    await toggleSidebar(tab.id, url);
-  }
+  await toggleSidebar(tab.id, url);
 }
 
-export default function initBrowserAction() {
+/**
+ * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
+ * the Extension Console, but that was confusing because the action was inconsistent with how the button behaves
+ * other pages.
+ * @param tabUrl the url of the tab, or null if not accessible
+ */
+function getPopoverUrl(tabUrl: string | null): string | null {
+  const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
+
+  if (tabUrl?.startsWith(getExtensionConsoleUrl())) {
+    return `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`;
+  }
+
+  if (!isScriptableUrl(tabUrl)) {
+    return `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`;
+  }
+
+  // The popup is disabled, and the extension will receive browserAction.onClicked events.
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
+  return null;
+}
+
+export default function initBrowserAction(): void {
   browserAction.onClicked.addListener(handleBrowserAction);
+
+  // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
+  // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
+  setActionPopup(getPopoverUrl);
 }

@@ -33,10 +33,8 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import {
-  starterBrickConfigFactory,
-  metadataFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";

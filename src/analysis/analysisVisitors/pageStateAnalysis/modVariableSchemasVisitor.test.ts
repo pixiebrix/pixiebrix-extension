@@ -16,7 +16,7 @@
  */
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import CollectNamesVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableNamesVisitor";
+import ModVariableSchemasVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
@@ -25,8 +25,8 @@ beforeAll(() => {
   registerBuiltinBlocks();
 });
 
-describe("CollectNamesVisitor", () => {
-  it("collects event name from a template literal", async () => {
+describe("ModVariableSchemasVisitor", () => {
+  it("collects event schema from a template literal", async () => {
     const formState = formStateFactory();
     formState.extension.blockPipeline[0] = {
       id: AssignModVariable.BRICK_ID,
@@ -35,14 +35,14 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames([formState]);
+    const result = ModVariableSchemasVisitor.collectSchemas([formState]);
 
     await expect(result).resolves.toEqual({
-      knownNames: ["foo"],
+      knownSchemas: [{ foo: true }],
     });
   });
 
-  it("unions known names", async () => {
+  it("unions known schemas", async () => {
     const formState = formStateFactory();
     formState.extension.blockPipeline[0] = {
       id: AssignModVariable.BRICK_ID,
@@ -59,17 +59,17 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames([
+    const result = ModVariableSchemasVisitor.collectSchemas([
       formState,
       otherFormState,
     ]);
 
     await expect(result).resolves.toEqual({
-      knownNames: ["foo", "bar"],
+      knownSchemas: [{ foo: true }, { bar: true }],
     });
   });
 
-  it("does not duplicate names", async () => {
+  it("does not duplicate schemas", async () => {
     const formState = formStateFactory();
     formState.extension.blockPipeline[0] = {
       id: AssignModVariable.BRICK_ID,
@@ -86,13 +86,13 @@ describe("CollectNamesVisitor", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames([
+    const result = ModVariableSchemasVisitor.collectSchemas([
       formState,
       otherFormState,
     ]);
 
     await expect(result).resolves.toEqual({
-      knownNames: ["foo"],
+      knownSchemas: [{ foo: true }],
     });
   });
 });
