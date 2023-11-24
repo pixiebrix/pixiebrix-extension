@@ -87,11 +87,11 @@ const CustomFormComponent: React.FunctionComponent<{
             templates={{ FieldTemplate }}
             onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
               if (autoSave) {
-                await onSubmit(formData);
+                await onSubmit(formData ?? {});
               }
             }}
             onSubmit={async ({ formData }: IChangeEvent<JsonObject>) => {
-              await onSubmit(formData);
+              await onSubmit(formData ?? {});
             }}
           >
             {autoSave || uiSchema["ui:submitButtonOptions"]?.norender ? (
