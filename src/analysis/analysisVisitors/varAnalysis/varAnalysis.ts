@@ -52,6 +52,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import { getOutputReference } from "@/runtime/runtimeTypes";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -618,23 +619,41 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     position: BrickPosition,
     pipeline: BrickConfig[],
     extra: VisitPipelineExtra
-  ) {
-    // Get variable provided to child pipeline if applicable (e.g. for a for-each, try-except, block)
+  ): void {
+    // Get variable provided to child pipeline if applicable (e.g. for a for-each, try-except)
     const childPipelineKey =
       extra.parentNode && extra.pipelinePropName
         ? getVariableKeyForSubPipeline(extra.parentNode, extra.pipelinePropName)
         : null;
 
     const childPipelineVars = new VarMap();
+
     if (childPipelineKey) {
+      const variableName = getOutputReference(childPipelineKey);
+
+      const block = this.allBlocks.get(extra.parentNode.id);
+      const variableSchema = block?.block.getPipelineVariableSchema?.(
+        extra.parentNode,
+        extra.pipelinePropName
+      );
+
       childPipelineVars.setVariableExistence({
         // The source of the element key is the parent block
         source: extra.parentPosition.path,
-        variableName: `@${childPipelineKey}`,
+        variableName,
         existence: VarExistence.DEFINITELY,
-        // XXX: in the future, base on the type of the variable provided
-        allowAnyChild: true,
+        // Allow any child if we don't have information from the brick
+        allowAnyChild: !variableSchema,
       });
+
+      if (variableSchema) {
+        setVarsFromSchema({
+          schema: variableSchema,
+          contextVars: childPipelineVars,
+          source: extra.parentPosition.path,
+          parentPath: [variableName],
+        });
+      }
     }
 
     // Construct new context with the variables provided to the child pipeline

@@ -24,11 +24,15 @@ import notify from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
-import { isEmpty, set } from "lodash";
+import { isEmpty, isPlainObject, set } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import {
+  type Schema,
+  SCHEMA_ALLOW_ANY,
+  type UiSchema,
+} from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
@@ -41,6 +45,7 @@ import { RendererABC } from "@/types/bricks/rendererTypes";
 import { namespaceOptions } from "@/bricks/effects/pageState";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 import { getOutputReference, validateOutputKey } from "@/runtime/runtimeTypes";
+import { type BrickConfig } from "@/bricks/types";
 
 interface DatabaseResult {
   success: boolean;
@@ -184,6 +189,21 @@ export class CustomFormRenderer extends RendererABC {
 
   override async isPageStateAware(): Promise<boolean> {
     return true;
+  }
+
+  override getPipelineVariableSchema(
+    _config: BrickConfig,
+    pipelineName: string
+  ): Schema | undefined {
+    if (pipelineName === "onSubmit") {
+      if (isPlainObject(_config.config.schema)) {
+        return _config.config.schema;
+      }
+
+      return SCHEMA_ALLOW_ANY;
+    }
+
+    return super.getPipelineVariableSchema(_config, pipelineName);
   }
 
   async render(

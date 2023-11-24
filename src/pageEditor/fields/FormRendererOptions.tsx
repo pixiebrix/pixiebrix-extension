@@ -251,7 +251,7 @@ const FormRendererOptions: React.FC<{
         title="Form Title/Description"
         initialExpanded
       >
-        <FormIntroFields formName={configName} />
+        <FormIntroFields name={configName} />
       </ConnectedCollapsibleFieldSection>
 
       <ConnectedCollapsibleFieldSection title="Data Binding" initialExpanded>

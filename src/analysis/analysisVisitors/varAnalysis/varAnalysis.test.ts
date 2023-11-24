@@ -57,6 +57,7 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedIntegrationConfigFactory({
@@ -1024,6 +1025,70 @@ describe("Collecting available vars", () => {
       )[0];
 
       expect(actualForEachBlockPath).toBe(expectedForEachBlockPath);
+    });
+  });
+
+  describe("custom form renderer brick", () => {
+    beforeAll(async () => {
+      const customFormBlock = {
+        id: CustomFormRenderer.BLOCK_ID,
+        config: {
+          schema: {
+            type: "object",
+            properties: {
+              foo: {
+                type: "string",
+              },
+            },
+          },
+          onSubmit: makePipelineExpression([brickConfigFactory()]),
+        },
+      };
+
+      const extension = formStateFactory(undefined, [
+        customFormBlock,
+        brickConfigFactory(),
+      ]);
+
+      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
+        new Map([
+          [
+            CustomFormRenderer.BLOCK_ID,
+            {
+              type: "renderer",
+              block: new CustomFormRenderer(),
+            },
+          ],
+        ])
+      );
+
+      analysis = new VarAnalysis();
+      await analysis.run(extension);
+    });
+
+    test("adds the `values` to the onsubmit handler", () => {
+      expect(
+        analysis
+          .getKnownVars()
+          .get("extension.blockPipeline.0.config.onSubmit.__value__.0")
+          .isVariableDefined("@values")
+      ).toBeTrue();
+    });
+
+    test("adds the form fields to the onsubmit handler", () => {
+      expect(
+        analysis
+          .getKnownVars()
+          .get("extension.blockPipeline.0.config.onSubmit.__value__.0")
+          .isVariableDefined("@values.foo")
+      ).toBeTrue();
+
+      expect(
+        analysis
+          .getKnownVars()
+          .get("extension.blockPipeline.0.config.onSubmit.__value__.0")
+          .isVariableDefined("@values.bar")
+      ).toBeFalse();
     });
   });
 });

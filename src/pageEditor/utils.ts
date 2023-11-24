@@ -43,6 +43,7 @@ import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import { OutputKey } from "@/types/runtimeTypes";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -154,7 +155,7 @@ export function getPipelinePropNames(
 export function getVariableKeyForSubPipeline(
   blockConfig: BrickConfig,
   pipelinePropName: string
-): string | null {
+): OutputKey | null {
   let keyPropName: string = null;
 
   if (
@@ -188,7 +189,8 @@ export function getVariableKeyForSubPipeline(
 
   const realValue = isExpression(keyValue) ? keyValue.__value__ : keyValue;
 
-  return realValue as string;
+  // XXX: where is this enforced?
+  return realValue as OutputKey;
 }
 
 /**

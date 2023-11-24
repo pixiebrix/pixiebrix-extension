@@ -28,6 +28,8 @@ import { type Except } from "type-fest";
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 
+export const SCHEMA_ALLOW_ANY: Schema = Object.freeze({});
+
 /**
  * Field Schema for labelled enums.
  *
