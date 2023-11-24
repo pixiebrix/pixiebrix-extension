@@ -19,7 +19,10 @@ import { type BrickConfig } from "@/bricks/types";
 import { type Brick } from "@/types/brickTypes";
 import { type BrickArgs, type OutputKey } from "@/types/runtimeTypes";
 
+const REFERENCE_CHAR = "@";
+
 export type BrickType = "reader" | "effect" | "transform" | "renderer";
+
 /**
  * A block configuration with the corresponding resolved Brick and BrickType.
  * @see BrickConfig
@@ -50,4 +53,12 @@ export function validateOutputKey(key: string): OutputKey {
   }
 
   throw new TypeError("Not a valid output key");
+}
+
+/**
+ * Returns a reference to the given output key. Currently, this is just the output key prefixed with `@`.
+ * @param outputKey the output key
+ */
+export function getOutputReference(outputKey: OutputKey): string {
+  return REFERENCE_CHAR + outputKey;
 }

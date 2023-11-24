@@ -161,7 +161,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
                     <FieldRuntimeContext.Provider value={formRuntimeContext}>
                       <FormEditor
                         name="optionsDefinition"
-                        showFormTitle={false}
+                        showFormFields={false}
                         activeField={activeField}
                         setActiveField={setActiveField}
                         fieldTypes={fieldTypes}

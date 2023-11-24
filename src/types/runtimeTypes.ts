@@ -136,6 +136,26 @@ export type DeferExpression<TValue = UnknownObject> = Expression<
 >;
 
 /**
+ * A branch in an execution trace.
+ */
+type TraceBranch = {
+  /**
+   * A locally unique key for the branch.
+   *
+   * Generally corresponds to the pipeline argument name for a control-flow brick.
+   *
+   * @example "if", "else", "try", "except", "body"
+   */
+  key: string;
+  /**
+   * The branch counter, e.g., the iteration of a loop.
+   *
+   * Generally should be 0 for non-looping control-flow.
+   */
+  counter: number;
+};
+
+/**
  * The ModComponent run reason.
  * @since 1.6.5
  */
@@ -280,35 +300,37 @@ export type BrickOptions<
 
   /**
    * True if the brick is executing in headless mode.
+   *
+   * @see HeadlessModeError
    */
   headless?: boolean;
 
   /**
    * Callback to run a sub-pipeline.
+   * @param pipeline the pipeline to run
+   * @param branch the branch for tracing. Used to determine order of pipeline runs
+   * @param extraContext additional context to pass to the pipeline, e.g., `@error`
+   * @param root the root element to use for selectors
    * @since 1.6.4
    */
   runPipeline: (
     pipeline: PipelineExpression,
-    // The branch for tracing. Used to determine order of pipeline runs
-    branch: {
-      key: string;
-      counter: number;
-    },
+    branch: TraceBranch,
     extraContext?: UnknownObject,
     root?: SelectorRoot
   ) => Promise<unknown>;
 
   /**
    * Callback to run a renderer pipeline.
+   * @param pipeline the pipeline to run
+   * @param branch the branch for tracing. Used to determine order of pipeline runs
+   * @param extraContext additional context to pass to the pipeline, e.g., `@error`
+   * @param root the root element to use for selectors
    * @since 1.7.13
    */
   runRendererPipeline: (
     pipeline: PipelineExpression,
-    // The branch for tracing. Used to determine order of pipeline runs
-    branch: {
-      key: string;
-      counter: number;
-    },
+    branch: TraceBranch,
     extraContext?: UnknownObject,
     root?: SelectorRoot
   ) => Promise<unknown>; // Should be PanelPayload

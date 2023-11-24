@@ -19,7 +19,9 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import React, { useCallback, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormEditor, {
+  FormFields,
+} from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -39,9 +41,8 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import databaseSchema from "@schemas/database.json";
 import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
-import { Card } from "react-bootstrap";
-import styles from "@/bricks/transformers/tourStep/TourStepOptions.module.scss";
 import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -53,16 +54,6 @@ const recordIdSchema: Schema = {
 const databaseIdSchema: Schema = {
   $ref: databaseSchema.$id,
 };
-
-const Section: React.FunctionComponent<{ title: string }> = ({
-  title,
-  children,
-}) => (
-  <>
-    <Card.Header className={styles.sectionHeader}>{title}</Card.Header>
-    <Card.Body>{children}</Card.Body>
-  </>
-);
 
 function usePruneUnusedServiceDependencies() {
   const { values: formState, setValues: setFormState } =
@@ -81,36 +72,21 @@ type StringOption = {
 };
 
 const storageTypeOptions: Options<StringOption> = [
-  { value: "state", label: "Page State" },
+  { value: "state", label: "Mod Variables / Page State" },
   { value: "database", label: "Database" },
   { value: "localStorage", label: "Local Storage (Deprecated)" },
 ];
 
 const DEFAULT_STORAGE_TYPE = "state";
 
-const FormRendererOptions: React.FC<{
-  name: string;
-  configKey: string;
-}> = ({ name, configKey }) => {
-  const makeName = partial(joinName, name, configKey);
-  const configName = makeName();
-
+const FormDataBindingOptions: React.FC<{
+  makeName: (...names: string[]) => string;
+}> = ({ makeName }) => {
   const pruneDependencies = usePruneUnusedServiceDependencies();
 
-  const [activeElement, setActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement
-  );
-
-  const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
-  const hideSubmitButtonName = makeName(
-    "uiSchema",
-    "ui:submitButtonOptions",
-    "norender"
-  );
-  const [{ value: hideSubmitButton }] = useField<boolean>(hideSubmitButtonName);
   const [{ value: storage }, , { setValue: setStorageValue }] =
     useField<Storage>(makeName("storage"));
+
   const storageType = storage?.type;
 
   // Sets the storage type and clears out any other values the user might have configured
@@ -147,104 +123,152 @@ const FormRendererOptions: React.FC<{
   }, [storageType, changeStorageType]);
 
   return (
+    <>
+      <FieldTemplate
+        name={makeName("storage", "type")}
+        label="Data Location"
+        description="The location to submit/store the form data"
+        as={Select}
+        options={storageTypeOptions}
+        value={storageTypeOptions.find((x) => x.value === storageType)}
+        onChange={async ({ value: nextStorageType }: StringOption) => {
+          await changeStorageType(nextStorageType);
+        }}
+      />
+
+      {storageType === "database" && (
+        <>
+          <SchemaField
+            name={makeName("storage", "databaseId")}
+            label="Database"
+            isRequired
+            schema={databaseIdSchema}
+          />
+          <AppApiIntegrationDependencyField
+            name={makeName("storage", "service")}
+          />
+        </>
+      )}
+
+      {storageType === "state" && (
+        <SchemaField
+          name={makeName("storage", "namespace")}
+          label="Namespace"
+          isRequired
+          schema={
+            customFormRendererSchema.properties.storage.oneOf[1].properties
+              .namespace as Schema
+          }
+        />
+      )}
+
+      {["localStorage", "database"].includes(storageType) && (
+        <SchemaField
+          name={makeName("recordId")}
+          label="Record ID"
+          schema={recordIdSchema}
+          isRequired
+        />
+      )}
+    </>
+  );
+};
+
+const FormSubmissionOptions: React.FC<{
+  makeName: (...names: string[]) => string;
+}> = ({ makeName }) => {
+  const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
+  const hideSubmitButtonName = makeName(
+    "uiSchema",
+    "ui:submitButtonOptions",
+    "norender"
+  );
+  const [{ value: hideSubmitButton }] = useField<boolean>(hideSubmitButtonName);
+
+  return (
+    <>
+      <SchemaField
+        name={makeName("autoSave")}
+        label="Auto Save/Submit"
+        schema={customFormRendererSchema.properties.autoSave as Schema}
+      />
+
+      {!autoSave && (
+        <>
+          <SchemaField
+            name={hideSubmitButtonName}
+            schema={{
+              type: "boolean",
+              title: "Hide Submit Button?",
+              description:
+                "Toggle on to hide the submit button. Caution: when using this option, you must also enable either autoSave or submit-on-enter so that the form can still be submitted.",
+              default: false,
+            }}
+          />
+
+          {!hideSubmitButton && (
+            <SchemaField
+              name={makeName("submitCaption")}
+              label="Submit Button Caption"
+              schema={
+                customFormRendererSchema.properties.submitCaption as Schema
+              }
+            />
+          )}
+        </>
+      )}
+
+      <SchemaField
+        name={makeName("successMessage")}
+        label="Success Message"
+        schema={customFormRendererSchema.properties.successMessage as Schema}
+      />
+
+      <PipelineToggleField
+        label="Custom Submit Handler"
+        description="Toggle on to run custom actions before the data is saved. Edit the actions in the Brick Actions Panel"
+        name={makeName("onSubmit")}
+      />
+    </>
+  );
+};
+
+const FormRendererOptions: React.FC<{
+  name: string;
+  configKey: string;
+}> = ({ name, configKey }) => {
+  const makeName = partial(joinName, name, configKey);
+  const configName = makeName();
+
+  const [activeElement, setActiveElement] = useReduxState(
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement
+  );
+
+  return (
     <div>
-      <Section title="Data Source">
-        <FieldTemplate
-          name={makeName("storage", "type")}
-          label="Storage Location"
-          description="The location to submit/store the form data"
-          as={Select}
-          options={storageTypeOptions}
-          value={storageTypeOptions.find((x) => x.value === storageType)}
-          onChange={async ({ value: nextStorageType }: StringOption) => {
-            await changeStorageType(nextStorageType);
-          }}
-        />
+      <ConnectedCollapsibleFieldSection
+        title="Form Title/Description"
+        initialExpanded
+      >
+        <FormFields formName={configName} />
+      </ConnectedCollapsibleFieldSection>
 
-        {storageType === "database" && (
-          <>
-            <SchemaField
-              name={makeName("storage", "databaseId")}
-              label="Database"
-              isRequired
-              schema={databaseIdSchema}
-            />
-            <AppApiIntegrationDependencyField
-              name={makeName("storage", "service")}
-            />
-          </>
-        )}
+      <ConnectedCollapsibleFieldSection title="Data Binding" initialExpanded>
+        <FormDataBindingOptions makeName={makeName} />
+      </ConnectedCollapsibleFieldSection>
 
-        {storageType === "state" && (
-          <SchemaField
-            name={makeName("storage", "namespace")}
-            label="State Namespace"
-            isRequired
-            schema={
-              customFormRendererSchema.properties.storage.oneOf[1].properties
-                .namespace as Schema
-            }
-          />
-        )}
+      <ConnectedCollapsibleFieldSection title="Form Submission" initialExpanded>
+        <FormSubmissionOptions makeName={makeName} />
+      </ConnectedCollapsibleFieldSection>
 
-        {["localStorage", "database"].includes(storageType) && (
-          <SchemaField
-            name={makeName("recordId")}
-            label="Record ID"
-            schema={recordIdSchema}
-            isRequired
-          />
-        )}
-      </Section>
-
-      <Section title="Form Submission">
-        <SchemaField
-          name={makeName("autoSave")}
-          label="Auto Save"
-          schema={customFormRendererSchema.properties.autoSave as Schema}
-        />
-
-        {!autoSave && (
-          <>
-            <SchemaField
-              name={hideSubmitButtonName}
-              schema={{
-                type: "boolean",
-                title: "Hide Submit Button?",
-                description:
-                  "Toggle on to hide the submit button. Caution: when using this option, you must also enable either autoSave or submit-on-enter so that the form can still be submitted.",
-                default: false,
-              }}
-            />
-
-            {!hideSubmitButton && (
-              <SchemaField
-                name={makeName("submitCaption")}
-                label="Submit Caption"
-                schema={
-                  customFormRendererSchema.properties.submitCaption as Schema
-                }
-              />
-            )}
-          </>
-        )}
-
-        <SchemaField
-          name={makeName("successMessage")}
-          label="Success Message"
-          schema={customFormRendererSchema.properties.successMessage as Schema}
-        />
-
-        <PipelineToggleField
-          label="Submit Handler"
-          description="Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel"
-          name={makeName("onSubmit")}
-        />
-      </Section>
+      <hr />
 
       <ConfigErrorBoundary>
         <FormEditor
           name={configName}
+          // Showing the section above manually
+          showFormFields={false}
           activeField={activeElement}
           setActiveField={setActiveElement}
           fieldTypes={FORM_FIELD_TYPE_OPTIONS}

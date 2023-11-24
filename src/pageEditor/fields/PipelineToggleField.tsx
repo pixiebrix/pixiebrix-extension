@@ -23,9 +23,12 @@ import React, { type ChangeEvent } from "react";
 import { useField, useFormikContext } from "formik";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { makePipelineExpression } from "@/runtime/expressionCreators";
 
 /**
  * A Formik field for toggling a pipeline expression on or off.
+ *
+ * @see getPipelinePropNames
  */
 const PipelineToggleField: React.VoidFunctionComponent<{
   name: string;
@@ -44,10 +47,7 @@ const PipelineToggleField: React.VoidFunctionComponent<{
       value={value}
       onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
         if (target.value) {
-          await setFieldValue(name, {
-            __type__: "pipeline",
-            __value__: [],
-          });
+          await setFieldValue(name, makePipelineExpression([]));
         } else {
           await setFieldValue(name, null);
         }

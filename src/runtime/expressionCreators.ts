@@ -32,6 +32,10 @@ export function makeTemplateExpression(
   };
 }
 
+/**
+ * Returns a PipelineExpression with the given pipeline.
+ * @param value the brick pipeline.
+ */
 export function makePipelineExpression(
   value: BrickPipeline
 ): PipelineExpression {

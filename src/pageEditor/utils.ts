@@ -89,6 +89,8 @@ export function getRecipeById(
  *
  * @param block the block, or null if resolved block not available yet
  * @param blockConfig the block configuration
+ *
+ * @see PipelineToggleField
  */
 export function getPipelinePropNames(
   block: Brick | null,

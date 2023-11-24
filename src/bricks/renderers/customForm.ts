@@ -40,7 +40,7 @@ import {
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { namespaceOptions } from "@/bricks/effects/pageState";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
-import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { getOutputReference, validateOutputKey } from "@/runtime/runtimeTypes";
 
 interface DatabaseResult {
   success: boolean;
@@ -259,11 +259,11 @@ export class CustomFormRenderer extends RendererABC {
         async onSubmit(values: JsonObject) {
           try {
             const normalizedValues = normalizeOutgoingFormData(schema, values);
-            await setData(storage, recordId, normalizedValues, {
-              blueprintId,
-              extensionId,
-            });
 
+            // Note that we're running the onSubmit handler before setting the data. Given that we're passing the values
+            // the submit handler, the handler shouldn't be relying on the data being set yet.
+            // This ordering also has more obvious behavior when the onSubmit handler throws an error (the data won't
+            // be saved).
             if (onSubmit) {
               await runPipeline(
                 onSubmit,
@@ -272,11 +272,17 @@ export class CustomFormRenderer extends RendererABC {
                   counter: 0,
                 },
                 {
-                  ["@" + CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME]:
-                    normalizedValues,
+                  [getOutputReference(
+                    CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME
+                  )]: normalizedValues,
                 }
               );
             }
+
+            await setData(storage, recordId, normalizedValues, {
+              blueprintId,
+              extensionId,
+            });
 
             if (!isEmpty(successMessage)) {
               notify.success(successMessage);

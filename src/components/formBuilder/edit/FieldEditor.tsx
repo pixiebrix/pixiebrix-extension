@@ -354,7 +354,7 @@ const FieldEditor: React.FC<{
           name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
           schema={{
             type: "boolean",
-            title: "Submit on Enter?",
+            title: "Submit Form on Enter?",
             description:
               "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
           }}
