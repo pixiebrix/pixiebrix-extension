@@ -175,7 +175,9 @@ export async function requestRunInOtherTabs(
   );
 
   if (results.length > LARGE_AMOUNT_OF_TABS) {
-    reportEvent(Events.MANY_TABS_BROADCAST, { tabCount: results.length });
+    reportEvent(Events.PERFORMANCE_MESSENGER_MANY_TABS_BROADCAST, {
+      tabCount: results.length,
+    });
   }
 
   const { rejected, fulfilled } = groupPromisesByStatus(results);

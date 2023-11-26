@@ -143,7 +143,8 @@ export const Events = {
   TOUR_END: "TourEnd",
 
   TRIGGER_RUN: "TriggerRun",
-  MANY_TABS_BROADCAST: "ManyTabsBroadcast",
+  PERFORMANCE_MESSENGER_MANY_TABS_BROADCAST:
+    "PerformanceMessengerManyTabsBroadcast",
 
   UNINITIALIZED_GAPI_GATE_VIEW: "UninitializedGapiGateView",
 
