@@ -26,6 +26,7 @@ import { MultipleElementsFoundError } from "@/errors/businessErrors";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { showPopover } from "@/bricks/transformers/temporaryInfo/popoverUtils";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeAll(() => {
   requestIdleCallback.mock();
@@ -79,16 +80,12 @@ function makeOptions({
   root = document,
   signal = undefined,
 }: { root?: HTMLElement | Document; signal?: AbortSignal } = {}): BrickOptions {
-  return {
+  return brickOptionsFactory({
     logger,
     root,
     runRendererPipeline: jest.fn().mockResolvedValue(undefined),
-    runPipeline: jest.fn().mockImplementation(async () => {
-      throw new Error("Not implemented");
-    }),
-    ctxt: {},
     abortSignal: signal,
-  };
+  });
 }
 
 describe("tourStep", () => {

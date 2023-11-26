@@ -52,7 +52,7 @@ import {
   type ResolvedBrickConfig,
   unsafeAssumeValidArg,
 } from "@/runtime/runtimeTypes";
-import { type RunBrick } from "@/contentScript/messenger/runBrickTypes";
+import { type RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import {
   BusinessError,
   CancelError,
@@ -325,7 +325,7 @@ async function executeBlockWithValidatedProps(
     messageContext: options.logger.context,
   };
 
-  const request: RunBrick = {
+  const request: RunBrickRequest = {
     blockId: config.id,
     blockArgs: args,
     options: {

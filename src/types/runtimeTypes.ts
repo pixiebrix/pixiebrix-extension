@@ -262,6 +262,9 @@ export type ServiceContext = Record<
 export type Branch = {
   /**
    * A static identifier for the branch.
+   *
+   * In practice, will typically be the name of the pipeline in the brick, e.g., "if", "else", "try", "body", etc.
+   *
    * @since 1.7.0
    */
   key: string;
@@ -272,6 +275,9 @@ export type Branch = {
   counter: number;
 };
 
+/**
+ * Metadata about the current run.
+ */
 export interface RunMetadata {
   /**
    * The extension that's running the brick. Used to correlate trace records across all runs/branches.
@@ -283,7 +289,7 @@ export interface RunMetadata {
    */
   runId: UUID | null;
   /**
-   * The control flow branch to correlate trace record for a brick.
+   * The control flow branch to correlate trace records for a brick.
    * @since 1.7.0
    */
   branches: Branch[];
