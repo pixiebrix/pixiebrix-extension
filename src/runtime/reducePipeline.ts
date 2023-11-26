@@ -70,7 +70,7 @@ import {
   type ServiceContext,
   type OptionsArgs,
   type PipelineExpression,
-  type Branch,
+  type RunMetadata,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
@@ -126,23 +126,6 @@ type CommonOptions = ApiVersionOptions & {
    * @since 1.7.19
    */
   abortSignal?: AbortSignal;
-};
-
-export type RunMetadata = {
-  /**
-   * The extension that's running the brick. Used to correlate trace records across all runs/branches.
-   * @since 1.7.0
-   */
-  extensionId: UUID;
-  /**
-   * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
-   */
-  runId: UUID | null;
-  /**
-   * The control flow branch to correlate trace record for a brick.
-   * @since 1.7.0
-   */
-  branches: Branch[];
 };
 
 export type ReduceOptions = CommonOptions & RunMetadata;

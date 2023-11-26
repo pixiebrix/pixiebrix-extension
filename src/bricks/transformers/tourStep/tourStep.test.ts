@@ -83,7 +83,7 @@ function makeOptions({
   return brickOptionsFactory({
     logger,
     root,
-    runRendererPipeline: jest.fn().mockResolvedValue(undefined),
+    runRendererPipeline: (_i: number) => jest.fn().mockResolvedValue(undefined),
     abortSignal: signal,
   });
 }

@@ -17,7 +17,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
-import { JsonValue } from "type-fest";
+import { type JsonValue } from "type-fest";
 
 const logger = new ConsoleLogger();
 

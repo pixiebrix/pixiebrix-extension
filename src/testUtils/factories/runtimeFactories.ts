@@ -33,10 +33,10 @@ export const brickOptionsFactory = define<BrickOptions>({
     new ConsoleLogger({
       extensionId: uuidSequence(i),
     }),
-  root: document,
-  runPipeline: () =>
+  root: (_i: number) => document,
+  runPipeline: (_i: number) =>
     jest.fn().mockRejectedValue(new Error("runPipeline mock not implemented")),
-  runRendererPipeline: () =>
+  runRendererPipeline: (_i: number) =>
     jest
       .fn()
       .mockRejectedValue(new Error("runRendererPipeline mock not implemented")),

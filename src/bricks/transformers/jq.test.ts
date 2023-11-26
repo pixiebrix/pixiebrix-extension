@@ -62,7 +62,7 @@ describe("ctxt", () => {
   test.each([[null], [""]])("pass context if data is %s", async (data) => {
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".foo", data }),
-      brickOptionsFactory()
+      brickOptionsFactory({ ctxt: { foo: 42 } })
     );
 
     await expect(promise).resolves.toBe(42);
