@@ -26,7 +26,7 @@ import {
 import { type MessageContext } from "@/types/loggerTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { isObject } from "@/utils/objectUtils";
-import { RunMetadata } from "@/types/runtimeTypes";
+import { type RunMetadata } from "@/types/runtimeTypes";
 
 /**
  * Entry types supported by the sidebar.
