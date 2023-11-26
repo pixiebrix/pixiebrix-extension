@@ -234,7 +234,7 @@
     "@types/semver": "^7.5.5",
     "@types/sinonjs__fake-timers": "^8.1.5",
     "@types/uuid": "^9.0.7",
-    "@types/webextension-polyfill": "^0.10.6",
+    "@types/webextension-polyfill": "^0.10.7",
     "@types/webpack": "^5.28.5",
     "@types/webpack-env": "^1.18.3",
     "@types/whatwg-mimetype": "^3.0.1",
