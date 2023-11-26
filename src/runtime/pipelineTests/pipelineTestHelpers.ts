@@ -17,9 +17,13 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
+import { JsonValue } from "type-fest";
 
 const logger = new ConsoleLogger();
 
+/**
+ * A test helper brick that returns and stores the BrickOptions.context.
+ */
 export class ContextBrick extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/context");
 
@@ -35,12 +39,39 @@ export class ContextBrick extends BrickABC {
 
   inputSchema = propertiesToSchema({});
 
-  async run(arg: BrickArgs, { ctxt }: BrickOptions) {
+  async run(_arg: BrickArgs, { ctxt }: BrickOptions) {
     ContextBrick.contexts.push(ctxt);
     return ctxt;
   }
 }
 
+/**
+ * A test helper brick that returns and stores the brick options it was called with.
+ */
+export class OptionsBrick extends BrickABC {
+  static BLOCK_ID = validateRegistryId("test/options");
+
+  static options: BrickOptions[] = [];
+
+  constructor() {
+    super(OptionsBrick.BLOCK_ID, "Return Options");
+  }
+
+  static clearOptions() {
+    OptionsBrick.options = [];
+  }
+
+  inputSchema = propertiesToSchema({});
+
+  async run(_arg: BrickArgs, options: BrickOptions): Promise<JsonValue> {
+    OptionsBrick.options.push(options);
+    return JSON.parse(JSON.stringify(options));
+  }
+}
+
+/**
+ * A test helper brick that echos a message.
+ */
 export class EchoBrick extends BrickABC {
   static BLOCK_ID = validateRegistryId("test/echo");
   constructor() {
@@ -53,7 +84,7 @@ export class EchoBrick extends BrickABC {
     },
   });
 
-  async run({ message }: BrickArgs) {
+  async run({ message }: BrickArgs<{ message: string }>) {
     return { message };
   }
 }
@@ -72,7 +103,7 @@ export class DeferredEchoBrick extends BrickABC {
     },
   });
 
-  async run({ message }: BrickArgs) {
+  async run({ message }: BrickArgs<{ message: string }>) {
     if (isPromise(this.promiseOrFactory)) {
       await this.promiseOrFactory;
     } else {
@@ -267,6 +298,7 @@ class DeferBrick extends BrickABC {
 export const echoBrick = new EchoBrick();
 
 export const contextBrick = new ContextBrick();
+export const optionsBrick = new OptionsBrick();
 export const identityBrick = new IdentityBrick();
 export const throwBrick = new ThrowBrick();
 export const teapotBrick = new TeapotBrick();

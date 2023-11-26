@@ -326,14 +326,15 @@ class UserDefinedBrick extends BrickABC {
     };
 
     if (isContentScript()) {
-      // Already in the contentScript, run the pipeline directly.
+      // Already in the contentScript, run the pipeline directly for performance
       return reducePipeline(this.component.pipeline, initialValues, {
         logger: options.logger,
         headless: options.headless,
         // The component uses its declared version of the runtime API, regardless of what version of the runtime
         // is used to call the component
         ...apiVersionOptions(this.component.apiVersion),
-        runId: options.meta.runId,
+        // Provide the run metadata (runId, branches) so that calls to pipeline functions trace correctly
+        ...options.meta,
       });
     }
 
@@ -355,6 +356,7 @@ class UserDefinedBrick extends BrickABC {
         pipeline: castArray(this.component.pipeline),
         options: apiVersionOptions(this.apiVersion),
         messageContext: options.logger.context,
+        // Provide the run metadata (runId, branches) so that calls to pipeline functions trace correctly
         meta: options.meta,
       });
     } catch (error) {
