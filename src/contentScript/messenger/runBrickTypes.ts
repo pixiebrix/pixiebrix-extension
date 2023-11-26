@@ -18,13 +18,14 @@
 import { type Availability } from "@/bricks/types";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import { type BrickArgs, type RunMetadata } from "@/types/runtimeTypes";
 
 export interface RemoteBrickOptions {
   ctxt: unknown;
   messageContext: MessageContext;
   maxRetries?: number;
   isAvailable?: Availability;
+  meta: RunMetadata;
 }
 
 export interface RunBrick {

@@ -19,8 +19,8 @@ import { getLocalISOString, ParseDate } from "@/bricks/transformers/parseDate";
 import { register, type TimeZone, unregister } from "timezone-mock";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { validateOutput } from "@/validators/generic";
-import { neverPromise } from "@/testUtils/testHelpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const refDate = "2021-12-07T06:17:09.258Z";
 
@@ -57,13 +57,7 @@ describe("ParseDate block", () => {
       date: "Thursday, December 9th 2021, 10pm, EST",
     });
 
-    const result = await brick.run(arg, {
-      ctxt: null,
-      logger: null,
-      root: null,
-      runPipeline: neverPromise,
-      runRendererPipeline: neverPromise,
-    });
+    const result = await brick.run(arg, brickOptionsFactory());
 
     expect(result).toMatchSnapshot();
 
@@ -75,13 +69,10 @@ describe("ParseDate block", () => {
     const brick = new ParseDate();
 
     await expect(async () => {
-      await brick.run(unsafeAssumeValidArg({ date: "   " }), {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      });
+      await brick.run(
+        unsafeAssumeValidArg({ date: "   " }),
+        brickOptionsFactory()
+      );
     }).rejects.toThrow(BusinessError);
   });
 
@@ -89,13 +80,10 @@ describe("ParseDate block", () => {
     const brick = new ParseDate();
 
     await expect(async () => {
-      await brick.run(unsafeAssumeValidArg({ date: "foo" }), {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      });
+      await brick.run(
+        unsafeAssumeValidArg({ date: "foo" }),
+        brickOptionsFactory()
+      );
     }).rejects.toThrow(BusinessError);
   });
 
@@ -106,13 +94,7 @@ describe("ParseDate block", () => {
       date: "Thursday, December 9th 2021, 3am, GMT",
     });
 
-    const result = await brick.run(arg, {
-      ctxt: null,
-      logger: null,
-      root: null,
-      runPipeline: neverPromise,
-      runRendererPipeline: neverPromise,
-    });
+    const result = await brick.run(arg, brickOptionsFactory());
 
     expect(result).toMatchSnapshot();
 

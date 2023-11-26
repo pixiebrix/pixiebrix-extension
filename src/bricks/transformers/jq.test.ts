@@ -17,26 +17,19 @@
 
 import { JQTransformer } from "@/bricks/transformers/jq";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import { InputValidationError } from "@/bricks/errors";
-import { neverPromise } from "@/testUtils/testHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 import { type RenderedArgs } from "@/types/runtimeTypes";
 import { range } from "lodash";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("smoke tests", () => {
   test("passes input to filter", async () => {
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".foo", data: { foo: 42 } }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     await expect(promise).resolves.toBe(42);
@@ -55,13 +48,7 @@ describe("smoke tests", () => {
             filter: ".foo.data",
             data: { foo: { data: number } },
           }),
-          {
-            ctxt: {},
-            root: null,
-            logger: new ConsoleLogger(),
-            runPipeline: neverPromise,
-            runRendererPipeline: neverPromise,
-          }
+          brickOptionsFactory()
         )
       )
     );
@@ -75,13 +62,7 @@ describe("ctxt", () => {
   test.each([[null], [""]])("pass context if data is %s", async (data) => {
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".foo", data }),
-      {
-        ctxt: { foo: 42 },
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     await expect(promise).resolves.toBe(42);
@@ -92,13 +73,7 @@ describe("json", () => {
   test("string data is not interpreted", async () => {
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".", data: "[]" }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     // String is returned as-is, not as a JSON array
@@ -143,13 +118,7 @@ describe("jq compilation errors", () => {
     try {
       await new JQTransformer().transform(
         unsafeAssumeValidArg({ filter: '"', data: {} }),
-        {
-          ctxt: {},
-          root: null,
-          logger: new ConsoleLogger(),
-          runPipeline: neverPromise,
-          runRendererPipeline: neverPromise,
-        }
+        brickOptionsFactory()
       );
     } catch (error) {
       expect(serializeError(error)).toStrictEqual({
@@ -174,13 +143,7 @@ describe("jq compilation errors", () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: "{", data: {} }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     await expect(promise).rejects.toThrow(InputValidationError);
@@ -193,13 +156,7 @@ describe("jq compilation errors", () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: "a | b", data: {} }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     await expect(promise).rejects.toThrow(InputValidationError);
@@ -214,13 +171,7 @@ describe("jq execution errors", () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".foo[]", data: {} }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -231,13 +182,7 @@ describe("jq execution errors", () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: '"" | fromdate', data: {} }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -252,13 +197,7 @@ describe("known jq-web bugs and quirks", () => {
     // https://github.com/fiatjaf/jq-web/issues/32
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".[] | .Title", data: [] }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -279,13 +218,7 @@ describe("known jq-web bugs and quirks", () => {
             filter: ".foo.data",
             data: { foo: { data: number } },
           }),
-          {
-            ctxt: {},
-            root: null,
-            logger: new ConsoleLogger(),
-            runPipeline: neverPromise,
-            runRendererPipeline: neverPromise,
-          }
+          brickOptionsFactory()
         )
       )
     );
@@ -297,13 +230,7 @@ describe("known jq-web bugs and quirks", () => {
     // https://github.com/fiatjaf/jq-web/issues/19
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: "1 % 1", data: [] }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     await expect(promise).rejects.toThrow(BusinessError);

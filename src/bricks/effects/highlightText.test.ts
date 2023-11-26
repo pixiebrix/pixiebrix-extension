@@ -15,15 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidv4 } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import HighlightText from "@/bricks/effects/highlightText";
-import { type BrickOptions } from "@/types/runtimeTypes";
-
-const logger = new ConsoleLogger({
-  extensionId: uuidv4(),
-});
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("ReplaceTextEffect", () => {
   test("can iterate body", () => {
@@ -47,7 +41,7 @@ describe("ReplaceTextEffect", () => {
           pattern: "foo",
           color,
         }),
-        { logger, root: document } as BrickOptions
+        brickOptionsFactory()
       );
 
       expect(document.body.innerHTML).toBe(
@@ -64,7 +58,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         isCaseInsensitive: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -79,7 +73,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "foo",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe("<div>fOobAr</div>");
@@ -93,7 +87,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "[foo]",
         isCaseInsensitive: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -108,7 +102,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "bar",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -123,7 +117,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "oba",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -141,7 +135,7 @@ describe("ReplaceTextEffect", () => {
         unsafeAssumeValidArg({
           pattern: "foo",
         }),
-        { logger, root: document } as BrickOptions
+        brickOptionsFactory()
       );
     }
 
@@ -159,7 +153,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         selector: "div",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -176,7 +170,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -193,7 +187,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         color: "#A020F0",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -211,7 +205,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -228,7 +222,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -245,7 +239,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "Sup",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.title).toBe("Support page");
@@ -264,7 +258,7 @@ describe("ReplaceTextEffect", () => {
         isRegex: true,
         color: '"<script>alert("xss")</script>',
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe("<div><mark>foo</mark>bar</div>");
@@ -281,7 +275,7 @@ describe("ReplaceTextEffect", () => {
         pattern: ".+",
         isRegex: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(
@@ -300,7 +294,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "foo",
       }),
-      { logger, root } as BrickOptions
+      brickOptionsFactory({ root })
     );
 
     expect(document.body.innerHTML).toBe(
@@ -317,7 +311,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foobar",
         isAcrossElements: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(document.body.innerHTML).toBe(

@@ -20,7 +20,7 @@ import quickbarRegistry from "@/components/quickBar/quickBarRegistry";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new AddQuickBarAction();
 
@@ -55,11 +55,14 @@ describe("AddQuickBarAction", () => {
   test("adds root action", async () => {
     const abortController = new AbortController();
 
-    await brick.run(unsafeAssumeValidArg({ title: "test" }), {
-      logger,
-      root: document,
-      abortSignal: abortController.signal,
-    } as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ title: "test" }),
+      brickOptionsFactory({
+        logger,
+        root: document,
+        abortSignal: abortController.signal,
+      })
+    );
     expect(addActionMock).toHaveBeenCalledWith({
       id: expect.toBeString(),
       extensionPointId: logger.context.extensionPointId,

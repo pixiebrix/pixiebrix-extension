@@ -70,6 +70,7 @@ import {
   type ServiceContext,
   type OptionsArgs,
   type PipelineExpression,
+  type Branch,
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
@@ -112,7 +113,7 @@ type CommonOptions = ApiVersionOptions & {
    */
   logValues: boolean;
   /**
-   * The context-aware logger
+   * The context-aware logger.
    */
   logger: Logger;
   /**
@@ -127,33 +128,16 @@ type CommonOptions = ApiVersionOptions & {
   abortSignal?: AbortSignal;
 };
 
-/**
- * An execution branch (defer, pipeline, etc.).
- * @since 1.7.0
- */
-type Branch = {
+export type RunMetadata = {
   /**
-   * A static identifier for the branch.
-   * @since 1.7.0
-   */
-  key: string;
-  /**
-   * A monotonically increasing counter for executions of branch with key
-   * @since 1.7.0
-   */
-  counter: number;
-};
-
-type RunMetadata = {
-  /**
-   * The extension UUID to correlate trace records for a brick.
-   */
-  runId: UUID;
-  /**
-   * The extension that's running the brick.
+   * The extension that's running the brick. Used to correlate trace records across all runs/branches.
    * @since 1.7.0
    */
   extensionId: UUID;
+  /**
+   * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
+   */
+  runId: UUID | null;
   /**
    * The control flow branch to correlate trace record for a brick.
    * @since 1.7.0
@@ -265,33 +249,22 @@ type BlockOutput = {
   context: BrickArgsContext;
 };
 
-type TraceMetadata = {
+interface TraceMetadata extends RunMetadata {
   /**
-   * The extension run UUID to correlate trace records for a run
-   * @see ReduceOptions.runId
-   */
-  runId: UUID;
-  /**
-   * The extension UUID
-   */
-  extensionId: UUID;
-  /**
-   * The instanceId of the configured brick
+   * The instanceId of the configured brick, or null if the brick is not running from the Page Editor.
+   *
+   * The blockInstanceId is used to correlate trace records for the same brick across runs/branches.
+   *
    * @see BrickConfig.instanceId
    */
-  blockInstanceId: UUID;
-  /**
-   * The branch information for the brick run
-   * @since 1.7.0
-   */
-  branches: Branch[];
-};
+  blockInstanceId: UUID | null;
+}
 
 type RunBlockOptions = CommonOptions & {
   /**
    * Additional context to record with the trace entry/exit records.
    */
-  trace: TraceMetadata | null;
+  trace: TraceMetadata;
 };
 
 /**
@@ -355,7 +328,10 @@ async function executeBlockWithValidatedProps(
   const request: RunBrick = {
     blockId: config.id,
     blockArgs: args,
-    options: commonOptions,
+    options: {
+      ...commonOptions,
+      meta: options.trace,
+    },
   };
 
   switch (config.window ?? "self") {
@@ -380,16 +356,22 @@ async function executeBlockWithValidatedProps(
     }
 
     case "self": {
+      const { runId, extensionId, branches } = options.trace;
+
       return block.run(args, {
         ...commonOptions,
         ...options,
+        meta: {
+          extensionId,
+          runId,
+          branches,
+        },
         root,
         async runPipeline(pipeline, branch, extraContext, rootOverride) {
           if (!isObject(commonOptions.ctxt)) {
             throw new Error("Expected object context for v3+ runtime");
           }
 
-          const { runId, extensionId, branches } = options.trace;
           return reducePipelineExpression(
             pipeline?.__value__ ?? [],
             getPipelineLexicalEnvironment({
@@ -671,8 +653,11 @@ async function applyReduceDefaults({
     logValues: logValues ?? globalLoggingConfig.logValues ?? false,
     // For stylistic consistency, default here instead of destructured parameters
     branches: [],
-    // Assign a run id, if one is not already provided
-    runId: runId ?? uuidv4(),
+    // NOTE: do not set runId here. It should be set by the starter brick explicitly, or implicitly generated
+    // by reduceExtensionPipeline. If a caller intentionally unset the run id, setting it here would create
+    // a new run id for the same extension id, which would cause a race condition in PixieBrix's detection
+    // of the latest starter brick pipeline run.
+    runId,
     logger,
     ...overrides,
   };
@@ -952,7 +937,12 @@ export async function reduceExtensionPipeline(
     clearExtensionDebugLogs(pipelineLogger.context.extensionId),
   ]);
 
-  return reducePipeline(pipeline, initialValues, partialOptions);
+  return reducePipeline(pipeline, initialValues, {
+    ...partialOptions,
+    // Provide a runId if one is not provided. Safe to do because tracing will only be enabled if brick instance ids
+    // also exist. Also see applyReduceDefaults.
+    runId: partialOptions.runId ?? uuidv4(),
+  });
 }
 
 /** Execute a pipeline of bricks and return the result. */

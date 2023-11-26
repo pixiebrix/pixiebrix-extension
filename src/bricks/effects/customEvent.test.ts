@@ -17,10 +17,9 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import CustomEventEffect from "@/bricks/effects/customEvent";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new CustomEventEffect();
 
@@ -49,10 +48,13 @@ describe("CustomEventEffect", () => {
     const eventHandler = jest.fn();
     document.querySelector("button").addEventListener("foo", eventHandler);
 
-    await brick.run(unsafeAssumeValidArg({ eventName: "foo" }), {
-      root: document.querySelector("button"),
-      logger,
-    } as unknown as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ eventName: "foo" }),
+      brickOptionsFactory({
+        root: document.querySelector("button"),
+        logger,
+      })
+    );
 
     expect(eventHandler).toHaveBeenCalled();
   });
@@ -61,10 +63,13 @@ describe("CustomEventEffect", () => {
     const eventHandler = jest.fn();
     document.querySelector("div").addEventListener("foo", eventHandler);
 
-    await brick.run(unsafeAssumeValidArg({ eventName: "foo" }), {
-      root: document.querySelector("button"),
-      logger,
-    } as unknown as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ eventName: "foo" }),
+      brickOptionsFactory({
+        root: document.querySelector("button"),
+        logger,
+      })
+    );
 
     expect(eventHandler).toHaveBeenCalled();
   });

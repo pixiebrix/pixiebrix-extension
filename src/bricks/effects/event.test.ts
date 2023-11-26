@@ -16,17 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { ElementEvent } from "@/bricks/effects/event";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new ElementEvent();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
 
 describe("ElementEvent", () => {
   beforeEach(() => {
@@ -55,7 +48,7 @@ describe("ElementEvent", () => {
           isRootAware,
           event: "click",
         }),
-        { root: document, logger } as BrickOptions
+        brickOptionsFactory()
       );
 
       expect(clickHandler).toHaveBeenCalled();
@@ -71,10 +64,7 @@ describe("ElementEvent", () => {
         isRootAware: true,
         event: "click",
       }),
-      {
-        root: document.querySelector("button"),
-        logger,
-      } as unknown as BrickOptions
+      brickOptionsFactory({ root: document.querySelector("button") })
     );
 
     expect(clickHandler).toHaveBeenCalled();

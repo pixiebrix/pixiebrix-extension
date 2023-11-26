@@ -63,7 +63,7 @@ describe("Trace normal exit", () => {
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      { ...testOptions("v3"), runId: uuidv4() }
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -87,6 +87,27 @@ describe("Trace normal exit", () => {
     // Should not record brick run when tracing is enabled
     expect(recordBrickRunMock).toHaveBeenCalledTimes(0);
   });
+
+  test("skip trace by default", async () => {
+    const instanceId = uuidv4();
+
+    const result = await reducePipeline(
+      {
+        id: echoBrick.id,
+        config: {
+          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+        },
+        instanceId,
+      },
+      simpleInput({ inputArg: "hello" }),
+      // `runId` defaults to null
+      testOptions("v3")
+    );
+
+    expect(result).toStrictEqual({ message: "hello" });
+
+    expect(traces.addEntry).toHaveBeenCalledTimes(0);
+  });
 });
 
 describe("Trace render error", () => {
@@ -103,7 +124,7 @@ describe("Trace render error", () => {
           instanceId,
         },
         simpleInput({ inputArg: "hello" }),
-        testOptions("v3")
+        { ...testOptions("v3"), runId: uuidv4() }
       )
     ).rejects.toThrow(/doesNotExist/);
 
@@ -139,7 +160,7 @@ describe("Trace render error", () => {
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      { ...testOptions("v3"), runId: uuidv4() }
     );
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -184,7 +205,7 @@ describe("Trace conditional execution", () => {
         },
       ],
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      { ...testOptions("v3"), runId: uuidv4() }
     );
 
     expect(traces.addEntry).toHaveBeenCalledTimes(2);

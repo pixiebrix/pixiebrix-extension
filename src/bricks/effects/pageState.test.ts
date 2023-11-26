@@ -18,8 +18,8 @@
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   // Isolate extension state between test
@@ -35,7 +35,10 @@ describe("@pixiebrix/state/get", () => {
       extensionId: uuidv4(),
       blueprintId: validateRegistryId("test/123"),
     });
-    await brick.transform(unsafeAssumeValidArg({}), { logger } as BrickOptions);
+    await brick.transform(
+      unsafeAssumeValidArg({}),
+      brickOptionsFactory({ logger })
+    );
   });
 
   test("is page state aware", async () => {
@@ -57,13 +60,13 @@ describe("@pixiebrix/state/set", () => {
 
     let result = await brick.transform(
       { data: { foo: 42, bar: 42 } } as any,
-      { logger } as BrickOptions
+      brickOptionsFactory({ logger })
     );
     expect(result).toStrictEqual({ foo: 42, bar: 42 });
 
     result = await brick.transform(
-      { data: { foo: 1 }, mergeStrategy: "shallow" } as any,
-      { logger } as BrickOptions
+      unsafeAssumeValidArg({ data: { foo: 1 }, mergeStrategy: "shallow" }),
+      brickOptionsFactory({ logger })
     );
     expect(result).toStrictEqual({ foo: 1, bar: 42 });
   });
@@ -86,12 +89,12 @@ describe("@pixiebrix/state/set", () => {
 
     let result = await brick.transform(
       { data: original } as any,
-      { logger } as BrickOptions
+      brickOptionsFactory({ logger })
     );
     expect(result).toStrictEqual(original);
 
     result = await brick.transform(
-      {
+      unsafeAssumeValidArg({
         data: {
           primitiveArray: [1],
           primitive: 1,
@@ -99,8 +102,8 @@ describe("@pixiebrix/state/set", () => {
           objectArray: [{ b: 1 }, { a: 2 }],
         },
         mergeStrategy: "deep",
-      } as any,
-      { logger } as BrickOptions
+      }),
+      brickOptionsFactory({ logger })
     );
 
     // NOTE: lodash's `merge` behavior is different from deepmerge from Python. Lodash will zip the list items together
@@ -168,24 +171,25 @@ describe("set and get", () => {
     });
 
     await setState.transform(
-      { data: { foo: 42 } } as any,
-      { logger } as BrickOptions
+      unsafeAssumeValidArg({ data: { foo: 42 } }),
+      brickOptionsFactory({ logger })
     );
-    let result = await getState.transform(unsafeAssumeValidArg({}), {
-      logger,
-    } as BrickOptions);
+    let result = await getState.transform(
+      unsafeAssumeValidArg({}),
+      brickOptionsFactory({ logger })
+    );
 
     expect(result).toStrictEqual({ foo: 42 });
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "extension" }),
-      { logger } as BrickOptions
+      brickOptionsFactory({ logger })
     );
     expect(result).toStrictEqual({});
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "shared" }),
-      { logger } as BrickOptions
+      brickOptionsFactory({ logger })
     );
     expect(result).toStrictEqual({});
   });
@@ -202,24 +206,25 @@ describe("set and get", () => {
     });
 
     await setState.transform(
-      { data: { foo: 42 } } as any,
-      { logger } as BrickOptions
+      unsafeAssumeValidArg({ data: { foo: 42 } }),
+      brickOptionsFactory({ logger })
     );
-    let result = await getState.transform(unsafeAssumeValidArg({}), {
-      logger,
-    } as BrickOptions);
+    let result = await getState.transform(
+      unsafeAssumeValidArg({}),
+      brickOptionsFactory({ logger })
+    );
 
     expect(result).toStrictEqual({ foo: 42 });
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "extension" }),
-      { logger } as BrickOptions
+      brickOptionsFactory({ logger })
     );
     expect(result).toStrictEqual({});
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "shared" }),
-      { logger } as BrickOptions
+      brickOptionsFactory({ logger })
     );
     expect(result).toStrictEqual({ foo: 42 });
   });

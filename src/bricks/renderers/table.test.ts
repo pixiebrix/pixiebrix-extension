@@ -17,8 +17,7 @@
 
 import { TableRenderer } from "./table";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { neverPromise } from "@/testUtils/testHelpers";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("parse compile error", () => {
   test("null data", async () => {
@@ -27,13 +26,7 @@ describe("parse compile error", () => {
         data: null,
         columns: [{ label: "label", property: "property" }],
       }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     expect(result).toMatchSnapshot();
@@ -45,13 +38,7 @@ describe("parse compile error", () => {
         data: [{ property: "Foo" }],
         columns: [{ label: "label", property: "property" }],
       }),
-      {
-        ctxt: {},
-        root: null,
-        logger: new ConsoleLogger(),
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     expect(result).toMatchSnapshot();

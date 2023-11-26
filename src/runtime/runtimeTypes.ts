@@ -35,6 +35,8 @@ export type ResolvedBrickConfig = {
  * Assume that a value matches the expected arg for any brick.
  *
  * For use in tests and JavaScript bricks that manually create a call to an individual brick.
+ *
+ * @see brickOptionsFactory
  */
 export function unsafeAssumeValidArg<T extends Record<string, unknown>>(
   value: unknown
