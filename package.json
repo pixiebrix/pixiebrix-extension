@@ -55,7 +55,7 @@
     "autocompleter": "^9.1.2",
     "axios": "^0.27.2",
     "bootstrap": "^4.6.0",
-    "bootstrap-icons": "^1.11.1",
+    "bootstrap-icons": "^1.11.2",
     "bootstrap-switch-button-react": "^1.2.0",
     "canvas-confetti": "^1.9.1",
     "chrono-node": "^2.7.3",
