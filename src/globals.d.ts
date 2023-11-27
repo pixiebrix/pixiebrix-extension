@@ -31,41 +31,41 @@ type Browser = import("webextension-polyfill").Browser;
 
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
 declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
+  const content: string;
+  export default content;
 }
 
 declare module "*.png" {
-  const CONTENT: string;
-  export default CONTENT;
+  const content: string;
+  export default content;
 }
 
 declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
+  const content: string;
+  export default content;
 }
 
 declare module "*?loadAsText" {
-  const CONTENT: string;
-  export default CONTENT;
+  const content: string;
+  export default content;
 }
 
 // Loading svg as React component using @svgr
 declare module "*.svg?loadAsComponent" {
   import type React from "react";
 
-  const SVG: React.FC<React.SVGProps<SVGSVGElement>>;
-  export default SVG;
+  const svg: React.FC<React.SVGProps<SVGSVGElement>>;
+  export default svg;
 }
 
 declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
+  const content: string;
+  export default content;
 }
 
 declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
+  const content: Record<string, unknown>;
+  export default content;
 }
 
 declare module "*.module.css" {
