@@ -18,17 +18,14 @@
 import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Form } from "react-bootstrap";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import settingsSlice from "@/store/settings/settingsSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settings/settingsSelectors";
-import reportEvent from "@/telemetry/reportEvent";
-import { Events } from "@/telemetry/events";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
+import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const GeneralSettings: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
-  const { isFloatingActionButtonEnabled } = useSelector(selectSettings);
+  const { isFloatingActionButtonEnabled, varAutosuggest } =
+    useSelector(selectSettings);
 
   // Disable FAB for enterprise and partner users
   const disableFloatingActionButton = useIsEnterpriseUser();
@@ -40,53 +37,26 @@ const GeneralSettings: React.FunctionComponent = () => {
       <Card.Header>General Settings</Card.Header>
       <Card.Body>
         <Form>
-          <Form.Group controlId="floating-action-button">
-            <div>
-              <Form.Label>
-                Floating action button:{" "}
-                <i>{checked ? "Enabled" : "Disabled"}</i>
-              </Form.Label>
-              {disableFloatingActionButton ? (
-                <Form.Text muted className="mb-2">
-                  The floating action button is not available for enterprise and
-                  partner users
-                </Form.Text>
-              ) : (
-                <Form.Text muted className="mb-2">
-                  Toggle on to enable floating button that opens the Quick Bar
-                </Form.Text>
-              )}
-            </div>
-
-            {
-              // Hide because the disabled flag is not working. Even when disabled is true, the user can
-              // still toggle the switch :shrug:
-              !disableFloatingActionButton && (
-                <BootstrapSwitchButton
-                  size="sm"
-                  onstyle="info"
-                  offstyle="light"
-                  onlabel=" "
-                  offlabel=" "
-                  disabled={disableFloatingActionButton}
-                  checked={checked}
-                  onChange={(enable) => {
-                    reportEvent(
-                      Events.FLOATING_QUICK_BAR_BUTTON_TOGGLE_SETTING,
-                      {
-                        enabled: enable,
-                      }
-                    );
-                    dispatch(
-                      settingsSlice.actions.setFloatingActionButtonEnabled(
-                        enable
-                      )
-                    );
-                  }}
-                />
-              )
+          <SettingToggle
+            controlId="isFloatingActionButtonEnabled"
+            label="Floating action button"
+            description={
+              disableFloatingActionButton
+                ? "The floating action button is not available for enterprise and partner users"
+                : "Toggle on to enable floating button that opens the Quick Bar"
             }
-          </Form.Group>
+            isEnabled={checked}
+            disabled={disableFloatingActionButton}
+            flag="isFloatingActionButtonEnabled"
+          />
+
+          <SettingToggle
+            controlId="varAutosuggest"
+            label="Autosuggest Variables in Page Editor"
+            description="Toggle on to enable variable autosuggest for variable and text template entry modes"
+            isEnabled={varAutosuggest}
+            flag="varAutosuggest"
+          />
         </Form>
       </Card.Body>
     </Card>

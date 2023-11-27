@@ -168,6 +168,11 @@ const PanelBody: React.FunctionComponent<{
             ...context,
             blockId,
           }),
+          meta: {
+            extensionId,
+            runId,
+            branches: [],
+          },
           async runPipeline() {
             throw new BusinessError(
               "Support for running pipelines in panels not implemented"

@@ -39,7 +39,8 @@ const STORAGE_KEY = validateReduxStorageKey("persist:editor");
  * @returns The editor state, if found in storage, otherwise undefined.
  */
 export async function getEditorState(): Promise<EditorState | undefined> {
-  return readReduxStorage<EditorState>(STORAGE_KEY, migrations);
+  // eslint-disable-next-line unicorn/no-useless-undefined -- Required by types
+  return readReduxStorage(STORAGE_KEY, migrations, undefined);
 }
 
 /**

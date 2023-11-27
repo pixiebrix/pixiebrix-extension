@@ -43,11 +43,11 @@ interface ErrorState {
    * The error message, if available.
    * @see getErrorMessage
    */
-  errorMessage: string | null;
+  errorMessage: string | undefined;
   /**
    * The error stack trace, if available.
    */
-  stack: string | null;
+  stack: string | undefined;
 }
 
 interface BoundaryProps extends DisplayProps {

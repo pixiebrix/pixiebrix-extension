@@ -28,12 +28,10 @@ import {
 } from "./customForm";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidv4 } from "@/types/helpers";
 
 import { dataStore } from "@/background/messenger/api";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const dataStoreGetMock = dataStore.get as jest.MockedFunction<
   typeof dataStore.get
@@ -220,11 +218,7 @@ describe("CustomFormRenderer", () => {
           },
         },
       } as any,
-      {
-        logger: new ConsoleLogger({
-          extensionId: uuidv4(),
-        }),
-      } as BrickOptions
+      brickOptionsFactory()
     );
 
     render(<Component {...props} />);

@@ -16,10 +16,7 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import {
-  type MigrationManifest,
-  type PersistedState,
-} from "redux-persist/es/types";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
 import { type SetOptional } from "type-fest";
@@ -119,9 +116,9 @@ export async function setStorage<T>(
 export async function readReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
   migrations: MigrationManifest,
-  defaultValue?: T,
+  defaultValue: T,
   inferPersistedVersion?: (state: UnknownObject) => number
-): Promise<T | undefined> {
+): Promise<T> {
   const storageValue = await readStorage<T>(storageKey);
 
   if (typeof storageValue !== "string") {

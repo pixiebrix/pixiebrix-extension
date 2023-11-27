@@ -18,7 +18,6 @@
 import { compact, partition, uniq } from "lodash";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
-import reportError from "@/telemetry/reportError";
 import {
   type ClassFlag,
   type Value,
@@ -71,12 +70,10 @@ export function parseValue(value: Value): {
     };
   }
 
-  reportError(
-    new Error(
-      `Unexpected value parsing the CSS class. Type of value: ${typeof value}. Value: ${JSON.stringify(
-        value
-      )}`
-    )
+  throw new Error(
+    `Unexpected value parsing the CSS class. Type of value: ${typeof value}. Value: ${JSON.stringify(
+      value
+    )}`
   );
 }
 
@@ -90,13 +87,11 @@ export function extractSpacing(prefix: string, classes: string[]): Spacing[] {
   return classes
     .map((element) => re.exec(element))
     .filter(Boolean)
-    .map((match) => ({
-      side: match.groups.side || null,
+    .map(({ groups }) => ({
+      side: groups?.side || null,
       size:
-        match.groups.negative === "n"
-          ? -Number(match.groups.size)
-          : Number(match.groups.size),
-    })) as Spacing[];
+        groups?.negative === "n" ? -Number(groups?.size) : Number(groups?.size),
+    }));
 }
 
 export function calculateNextSpacing(

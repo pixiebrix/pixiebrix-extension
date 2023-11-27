@@ -17,13 +17,13 @@
 
 import blockRegistry from "@/bricks/registry";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { type RunBrick } from "@/contentScript/messenger/runBrickTypes";
+import { type RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * Handle a remote brick run request from another tab/frame.
  */
-export async function runBrick(request: RunBrick): Promise<unknown> {
+export async function runBrick(request: RunBrickRequest): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request;
   const block = await blockRegistry.lookup(blockId);
@@ -32,6 +32,7 @@ export async function runBrick(request: RunBrick): Promise<unknown> {
   try {
     return await block.run(blockArgs, {
       ctxt: options.ctxt,
+      meta: options.meta,
       logger,
       root: document,
       async runPipeline() {
@@ -48,7 +49,7 @@ export async function runBrick(request: RunBrick): Promise<unknown> {
   } catch (error) {
     // Provide extra logging on the tab because `handlers` doesn't report errors. It's also nice to log here because
     // we still have the original (non-serialized) error
-    console.info("Error running remote block on tab", {
+    console.info("Error running remote brick on tab", {
       request,
       error,
     });

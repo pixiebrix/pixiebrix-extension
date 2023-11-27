@@ -17,7 +17,7 @@
 
 import { SplitText } from "@/bricks/transformers/splitText";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new SplitText();
 
@@ -29,7 +29,7 @@ describe("Split", () => {
         chunkSize: 8,
         chunkOverlap: 2,
       }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toStrictEqual({

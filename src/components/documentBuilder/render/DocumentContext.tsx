@@ -19,16 +19,11 @@ import React from "react";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
-import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext, type BrickOptions } from "@/types/runtimeTypes";
+import { UNSET_UUID } from "@/types/helpers";
 
 type DocumentState = {
   onAction: (action: { type: string; detail: JsonObject }) => void;
-
-  meta: {
-    runId: UUID;
-    extensionId: UUID;
-  };
   options: BrickOptions<BrickArgsContext>;
 };
 
@@ -41,14 +36,16 @@ export const initialValue: DocumentState = {
   onAction() {
     throw new BusinessError("Panel actions not available for panel type");
   },
-  meta: {
-    runId: null,
-    extensionId: null,
-  },
   options: {
+    meta: {
+      runId: null,
+      extensionId: UNSET_UUID,
+      branches: [],
+    },
     ctxt: blankContext,
     // The root should correspond to the host page's content script. If we passed document here, it would end up being
     // the document what's rendering the document (e.g., the sidebar panel's iframe document)
+    // XXX: BrickOptions.root is not nullable, so we'll need to adjust the type or behavior when introducing null checks
     root: null,
     logger: new ConsoleLogger(),
     headless: true,

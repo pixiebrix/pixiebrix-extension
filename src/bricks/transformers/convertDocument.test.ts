@@ -17,7 +17,7 @@
 
 import ConvertDocument from "@/bricks/transformers/convertDocument";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new ConvertDocument();
 
@@ -29,7 +29,7 @@ describe("convert document", () => {
         sourceFormat: "html",
         targetFormat: "text",
       }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
@@ -44,7 +44,7 @@ describe("convert document", () => {
         sourceFormat: "markdown",
         targetFormat: "html",
       }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({

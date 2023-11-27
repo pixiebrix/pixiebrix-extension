@@ -27,8 +27,8 @@ import reportError from "@/telemetry/reportError";
 
 interface State {
   hasError: boolean;
-  errorMessage: string;
-  stack: string;
+  errorMessage: string | undefined;
+  stack: string | undefined;
 }
 
 interface Props {
@@ -36,10 +36,11 @@ interface Props {
 }
 
 class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false, errorMessage: undefined, stack: undefined };
-  }
+  override state: State = {
+    hasError: false,
+    errorMessage: undefined,
+    stack: undefined,
+  };
 
   static getDerivedStateFromError(error: Error) {
     // Update state so the next render will show the fallback UI.

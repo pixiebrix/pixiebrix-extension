@@ -19,7 +19,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   AUTH_METHODS,
   type SettingsState,
-  type SkunkworksSettings,
+  type SettingOptions,
 } from "@/store/settings/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { isEmpty, once } from "lodash";
@@ -57,7 +57,7 @@ const settingsSlice = createSlice({
     setFlag(
       state,
       action: PayloadAction<{
-        flag: keyof SkunkworksSettings;
+        flag: keyof SettingOptions;
         value: boolean;
       }>
     ) {

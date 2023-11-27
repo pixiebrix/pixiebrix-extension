@@ -21,11 +21,12 @@ import { useLoggingConfig } from "@/hooks/logging";
 import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
+import Loader from "@/components/Loader";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
 import { clearTraces } from "@/telemetry/trace";
 import { clearLogs } from "@/telemetry/logging";
+import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 import useMessengerLogging from "@/development/useMessengerLogging";
 
 const LoggingSettings: React.FunctionComponent = () => {
@@ -57,47 +58,31 @@ const LoggingSettings: React.FunctionComponent = () => {
         </Card.Text>
 
         <Form>
-          <Form.Group controlId="logging">
-            <div>
-              <Form.Label>
-                Log values:{" "}
-                <i>{logValues?.logValues ? "Enabled" : "Disabled"}</i>
-              </Form.Label>
-            </div>
-            <BootstrapSwitchButton
-              size="sm"
-              onstyle="info"
-              offstyle="light"
-              onlabel=" "
-              offlabel=" "
-              checked={logValues?.logValues}
-              onChange={async (value) => {
-                await setLogValues({ ...logValues, logValues: value });
-              }}
-            />
-          </Form.Group>
-          <hr />
+          {logValues ? (
+            <>
+              <SettingToggle
+                controlId="logging"
+                label="Log values"
+                isEnabled={logValues?.logValues}
+                onChange={async (value: boolean) => {
+                  await setLogValues({ ...logValues, logValues: value });
+                }}
+              />
+              <hr />
+            </>
+          ) : (
+            <Loader />
+          )}
           <Card.Text className="text-info">
             <FontAwesomeIcon icon={faInfoCircle} /> Internal messaging can be
             temporarily logged to the browser console for debugging purposes.
           </Card.Text>
-          <Form.Group controlId="messenger-logging">
-            <div>
-              <Form.Label>
-                Display messaging in browser console:{" "}
-                <i>{logMessenger ? "Enabled" : "Disabled"}</i>
-              </Form.Label>
-            </div>
-            <BootstrapSwitchButton
-              size="sm"
-              onstyle="info"
-              offstyle="light"
-              onlabel=" "
-              offlabel=" "
-              checked={logMessenger}
-              onChange={setLogMessenger}
-            />
-          </Form.Group>
+          <SettingToggle
+            controlId="messenger-logging"
+            label="Display messaging in browser console"
+            isEnabled={logMessenger}
+            onChange={setLogMessenger}
+          />
         </Form>
       </Card.Body>
       <Card.Footer>

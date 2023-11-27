@@ -21,13 +21,19 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { type UUID } from "@/types/stringTypes";
 
-function useReportTraceError() {
+/**
+ * React Hook that reports when there's an error in a trace.
+ *
+ * Too many trace errors may indicate the user is having trouble creating/editing a mod.
+ */
+function useReportTraceError(): void {
   const sessionId = useSelector(selectSessionId);
   const traceErrors = useSelector(selectTraceErrors);
 
   const traceError = traceErrors.find((x) => x.runId);
-  const runId = traceError?.runId ?? null;
+  const runId: UUID | null = traceError?.runId;
 
   useEffect(() => {
     if (traceError) {
@@ -36,7 +42,7 @@ function useReportTraceError() {
         extensionId: traceError.extensionId,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- traceError is not required, runId is sufficient
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- report trace error once per run
   }, [runId, sessionId]);
 }
 
