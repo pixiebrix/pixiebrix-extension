@@ -171,7 +171,7 @@
     "webext-storage": "^1.2.2",
     "webext-tools": "^1.2.2",
     "webextension-polyfill": "^0.10.0",
-    "whatwg-mimetype": "^3.0.0",
+    "whatwg-mimetype": "^4.0.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {
