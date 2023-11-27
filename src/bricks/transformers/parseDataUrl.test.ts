@@ -16,7 +16,8 @@
  */
 
 import { ParseDataUrl } from "@/bricks/transformers/parseDataUrl";
-import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 
 const block = new ParseDataUrl();
 
@@ -27,11 +28,11 @@ describe("parseDataUrl", () => {
     ["data:,Hello%2C%20World%21"],
   ])("text-decodes URL: %s", async (url) => {
     const result = await block.run(
-      {
+      unsafeAssumeValidArg({
         url,
         decode: true,
-      } as unknown as BrickArgs,
-      {} as BrickOptions
+      }),
+      brickOptionsFactory()
     );
 
     expect(result).toStrictEqual({
@@ -47,11 +48,11 @@ describe("parseDataUrl", () => {
     const url = `data:image/png;base64,${base64}`;
 
     const result = await block.run(
-      {
+      unsafeAssumeValidArg({
         url,
         decodeText: false,
-      } as unknown as BrickArgs,
-      {} as BrickOptions
+      }),
+      brickOptionsFactory()
     );
 
     expect(result).toStrictEqual({

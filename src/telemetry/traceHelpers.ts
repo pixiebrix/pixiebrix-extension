@@ -17,7 +17,8 @@
 
 import { type TraceRecord } from "@/telemetry/trace";
 import { isEqual, reverse, sortBy } from "lodash";
-import { type Branch } from "@/bricks/types";
+import { type UUID } from "@/types/stringTypes";
+import { type Branch } from "@/types/runtimeTypes";
 
 /**
  * Given records for a single runId and blockInstanceId, return the latest call to a given blockInstanceId.
@@ -30,6 +31,28 @@ export function getLatestCall(records: TraceRecord[]): TraceRecord | undefined {
   return reverse(ascending)[0];
 }
 
+/**
+ * Returns trace record for the latest call to the given brickInstanceId, or undefined if one does not exist
+ * @param records the trace records
+ * @param blockInstanceId the block instanceid
+ */
+export function getLatestBrickCall(
+  records: TraceRecord[],
+  blockInstanceId: UUID
+): TraceRecord | undefined {
+  return getLatestCall(
+    records.filter(
+      // Use first block in pipeline to determine the latest run
+      (trace) => trace.blockInstanceId === blockInstanceId
+    )
+  );
+}
+
+/**
+ * Returns true if a trace record matches the given branch prefix
+ * @param prefix the branch prefix
+ * @param record the trace record
+ */
 export function hasBranchPrefix(
   prefix: Branch[],
   record: TraceRecord
@@ -41,6 +64,11 @@ export function hasBranchPrefix(
   );
 }
 
+/**
+ * Returns trace records with a branch prefix that matches callBranches
+ * @param records the trace records
+ * @param callBranches the branch prefix to filter by
+ */
 export function filterTracesByCall(
   records: TraceRecord[],
   callBranches: Branch[] | null

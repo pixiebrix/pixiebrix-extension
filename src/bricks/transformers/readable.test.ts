@@ -17,7 +17,7 @@
 
 import { Readable } from "@/bricks/transformers/readable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new Readable();
 
@@ -27,7 +27,7 @@ describe("readable", () => {
 
     const article = await brick.run(
       unsafeAssumeValidArg({}),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(article).toEqual(
@@ -43,9 +43,10 @@ describe("readable", () => {
 
     const element = document.querySelector("div");
 
-    const article = brick.run(unsafeAssumeValidArg({}), {
-      root: element,
-    } as unknown as BrickOptions);
+    const article = brick.run(
+      unsafeAssumeValidArg({}),
+      brickOptionsFactory({ root: element })
+    );
 
     await expect(article).rejects.toThrow();
   });

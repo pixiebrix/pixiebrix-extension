@@ -17,21 +17,18 @@
 
 import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4 } from "@/types/helpers";
 import {
-  performConfiguredRequestInBackground,
   getCachedAuthData,
   getUserData,
+  performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { type AuthData } from "@/integrations/integrationTypes";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
@@ -50,10 +47,6 @@ const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const getUserDataMock = jest.mocked(getUserData);
 
 const brick = new RunBot();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
 
 const tokenAuthId = uuidv4();
 
@@ -97,7 +90,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -156,7 +149,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         data: {},
       }),
-      { logger } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(getCachedAuthDataMock).not.toHaveBeenCalled();
@@ -220,7 +213,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(tokenAuthId);
@@ -285,7 +278,7 @@ describe("Automation Anywhere - RunBot", () => {
         data: {},
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
       }),
-      { logger } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -350,7 +343,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      { logger } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -459,7 +452,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         awaitResult: true,
       }),
-      { logger } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(

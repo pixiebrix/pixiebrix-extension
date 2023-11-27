@@ -16,7 +16,7 @@
  */
 
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
-import { type Branch } from "@/bricks/types";
+import { type Branch } from "@/types/runtimeTypes";
 
 export function mapPathToTraceBranches(tracePath: DynamicPath): Branch[] {
   return tracePath.branches.map(({ staticId, index }) => ({

@@ -17,7 +17,7 @@
 
 import { createStemMap, SearchText } from "@/bricks/transformers/searchText";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new SearchText();
 
@@ -42,7 +42,7 @@ describe("Search", () => {
         text: "the rain in spain",
         query: "rain",
       }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
@@ -59,7 +59,7 @@ describe("Search", () => {
           query: "rain",
           stemWords,
         }),
-        {} as BrickOptions
+        brickOptionsFactory()
       );
 
       expect(result).toEqual({
@@ -78,7 +78,7 @@ describe("Search", () => {
         query: "rain",
         stemWords: true,
       }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
@@ -93,7 +93,7 @@ describe("Search", () => {
         query: "raining",
         stemWords: true,
       }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
@@ -107,7 +107,7 @@ describe("Search", () => {
         text: "I have rain on my brain",
         query: "rain",
       }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
@@ -122,7 +122,7 @@ describe("Search", () => {
         query: "rain in spain",
         stemWords: true,
       }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
