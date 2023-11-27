@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type MigrationManifest,
-  type PersistedState,
-} from "redux-persist/es/types";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 import { type Except } from "type-fest";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { isEmpty, mapValues, omit } from "lodash";

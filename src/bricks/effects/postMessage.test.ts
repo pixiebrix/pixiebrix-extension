@@ -17,7 +17,7 @@
 
 import PostMessageEffect from "@/bricks/effects/postMessage";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new PostMessageEffect();
 
@@ -37,7 +37,7 @@ describe("postMessage", () => {
         selector: "iframe",
         message: { text: "Hello, frame!" },
       }),
-      { root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(frame.contentWindow.postMessage).toHaveBeenCalledWith(

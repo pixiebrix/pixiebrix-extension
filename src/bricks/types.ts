@@ -219,16 +219,6 @@ export type BrickConfig = {
 export type BrickPipeline = BrickConfig[];
 
 /**
- * A control flow branch, for tracing. The array of branches is used to correlate runs of the same brick in a pipeline
- * @see TraceMetadata.blockInstanceId
- * @see TraceMetadata.branches
- */
-export type Branch = {
-  key: string;
-  counter: number;
-};
-
-/**
  * Defines the position of the brick in the extension
  * ex. "extension.brickPipeline.0.config.body.__value__.0",
  * "extension.brickPipeline.0.config.body.0.children.0.config.onClick.__value__.0"

@@ -1,4 +1,4 @@
-import { type BrickPipeline, type Branch } from "@/bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/bricks/errors";
@@ -11,27 +11,13 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickArgsContext,
+  type RunMetadata,
   type ServiceContext,
 } from "@/types/runtimeTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { type RegistryId } from "@/types/registryTypes";
-
-type RunMetadata = {
-  /**
-   * The extension id.
-   */
-  extensionId: UUID;
-  /**
-   * The extension runId
-   */
-  runId: UUID;
-  /**
-   * The accumulated trace branches
-   */
-  branches: Branch[];
-};
 
 type RunPipelineParams = {
   nonce: UUID;

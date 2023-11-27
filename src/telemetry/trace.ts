@@ -23,7 +23,11 @@ import objectHash from "object-hash";
 import { type ErrorObject } from "serialize-error";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
+import {
+  type Branch,
+  type OutputKey,
+  type RenderedArgs,
+} from "@/types/runtimeTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 
 const DATABASE_NAME = "TRACE";
@@ -52,16 +56,7 @@ export type TraceRecordMeta = {
    *
    * @since 1.7.0
    */
-  branches: Array<{
-    /**
-     * Identifier for the branch. (Distinct from other branch ids for blockInstanceId, but not globally unique)
-     */
-    key: string;
-    /**
-     * Monotonically increasing counter
-     */
-    counter: number;
-  }>;
+  branches: Branch[];
 
   /**
    * Unique id to identify the block in the Page Editor across runs.

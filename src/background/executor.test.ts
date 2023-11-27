@@ -16,11 +16,16 @@
  */
 
 import { requestRunInAllFrames } from "@/background/executor";
-import { registryIdFactory } from "@/testUtils/factories/stringFactories";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import {
+  registryIdFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { type MessengerMeta, type Sender } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
 import { type WebNavigation } from "webextension-polyfill";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { define, derive } from "cooky-cutter";
+import { type RemoteBrickOptions } from "@/contentScript/messenger/runBrickTypes";
 
 type GetAllFramesCallbackDetailsItemType =
   WebNavigation.GetAllFramesCallbackDetailsItemType;
@@ -33,6 +38,21 @@ jest.mock("@/contentScript/messenger/api", () => ({
 
 const getAllFramesMock = jest.mocked(browser.webNavigation.getAllFrames);
 const runBrickMock = jest.mocked(runBrick);
+
+const optionsFactory = define<RemoteBrickOptions>({
+  ctxt: () => ({}),
+  messageContext: (i: number) => ({
+    extensionId: uuidSequence(i),
+  }),
+  meta: derive<RemoteBrickOptions, RemoteBrickOptions["meta"]>(
+    (options) => ({
+      extensionId: options.messageContext.extensionId,
+      runId: null,
+      branches: [],
+    }),
+    "messageContext"
+  ),
+});
 
 beforeEach(() => {
   runBrickMock.mockClear();
@@ -56,13 +76,9 @@ describe("requestRunInAllFrames", () => {
 
     const promise = requestRunInAllFrames.call(meta, {
       blockId: registryIdFactory(),
-      blockArgs: {} as BrickArgs,
-      options: {
-        ctxt: {},
-        messageContext: {},
-      },
+      blockArgs: unsafeAssumeValidArg({}),
+      options: optionsFactory(),
     });
-
     await expect(promise).resolves.toStrictEqual([]);
   });
 
@@ -85,11 +101,8 @@ describe("requestRunInAllFrames", () => {
 
     const promise = requestRunInAllFrames.call(meta, {
       blockId: registryIdFactory(),
-      blockArgs: {} as BrickArgs,
-      options: {
-        ctxt: {},
-        messageContext: {},
-      },
+      blockArgs: unsafeAssumeValidArg({}),
+      options: optionsFactory(),
     });
 
     await expect(promise).resolves.toStrictEqual([]);
@@ -116,11 +129,8 @@ describe("requestRunInAllFrames", () => {
 
     const promise = requestRunInAllFrames.call(meta, {
       blockId: registryIdFactory(),
-      blockArgs: {} as BrickArgs,
-      options: {
-        ctxt: {},
-        messageContext: {},
-      },
+      blockArgs: unsafeAssumeValidArg({}),
+      options: optionsFactory(),
     });
 
     await expect(promise).resolves.toStrictEqual([{ foo: 42 }]);

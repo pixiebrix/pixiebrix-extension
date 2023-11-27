@@ -120,6 +120,7 @@ export const initialState: EditorState = {
   isPendingDynamicExtensions: false,
   isModListExpanded: true,
   isDataPanelExpanded: true,
+  isDimensionsWarningDismissed: false,
 
   // Not persisted
   isVariablePopoverVisible: false,
@@ -906,6 +907,9 @@ export const editorSlice = createSlice({
      */
     hideVariablePopover(state) {
       state.isVariablePopoverVisible = false;
+    },
+    dismissDimensionsWarning(state) {
+      state.isDimensionsWarningDismissed = true;
     },
   },
   extraReducers(builder) {

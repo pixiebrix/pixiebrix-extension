@@ -43,7 +43,9 @@ export function isUUID(uuid: string): uuid is UUID {
   return validUuidRegex.test(uuid);
 }
 
-// Sentinel UUID
+/**
+ * A sentinel UUID to serve as a default value/initial state for required UUID parameters.
+ */
 export const UNSET_UUID = validateUUID("00000000-0000-4000-A000-000000000000");
 
 export function validateUUID(uuid: unknown): UUID {

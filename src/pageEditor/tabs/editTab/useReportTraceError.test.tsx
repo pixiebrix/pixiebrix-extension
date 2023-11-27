@@ -41,6 +41,7 @@ jest.mock("@/telemetry/reportEvent");
 const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
   const activeElementId = uuidv4();
 
+  // @ts-expect-error -- ignoring excessively deep warning for test
   const store: Store = configureStore({
     reducer: {
       session: sessionSlice.reducer,
@@ -53,6 +54,7 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
         activeElementId,
       },
       runtime: {
+        // @ts-expect-error -- TS is detecting the wrong type; ignoring since this is only for testing
         extensionTraces: {
           [activeElementId]: traces,
         },
