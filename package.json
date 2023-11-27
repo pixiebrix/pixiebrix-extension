@@ -205,7 +205,7 @@
     "@types/iframe-resizer": "^3.5.12",
     "@types/intro.js": "^5.1.5",
     "@types/jest": "^29.5.8",
-    "@types/jquery": "^3.5.27",
+    "@types/jquery": "^3.5.29",
     "@types/js-beautify": "^1.14.3",
     "@types/js-cookie": "^3.0.6",
     "@types/js-yaml": "^4.0.9",
