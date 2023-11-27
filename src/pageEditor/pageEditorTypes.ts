@@ -229,6 +229,12 @@ export interface EditorState {
    * @since 1.7.34
    */
   isVariablePopoverVisible: boolean;
+
+  /**
+   * Has the user dismissed Page Editor dimensions warning (i.e., indicating the Page Editor is docked on the side)
+   * Since 1.8.4
+   */
+  isDimensionsWarningDismissed: boolean;
 }
 
 export type EditorRootState = {
