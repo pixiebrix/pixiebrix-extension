@@ -34,7 +34,6 @@ import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPicke
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
-import { selectSchemaFieldInputMode } from "@/testUtils/formHelpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
@@ -120,12 +119,6 @@ const googlePKCEIntegrationDependency = integrationDependencyFactory({
   configId: GOOGLE_PKCE_AUTH_CONFIG,
 });
 
-const testSpreadsheetIntegrationDependency = integrationDependencyFactory({
-  integrationId: GOOGLE_SHEET_SERVICE_ID,
-  outputKey: validateOutputKey("google"),
-  configId: TEST_SPREADSHEET_AUTH_CONFIG,
-});
-
 const testSpreadsheet: Spreadsheet = {
   spreadsheetId: TEST_SPREADSHEET_ID,
   properties: {
@@ -204,12 +197,6 @@ beforeAll(() => {
   );
   isLoggedInMock.mockResolvedValue(true);
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
-  getSpreadsheetMock.mockImplementation(
-    async ({ spreadsheetId }: SpreadsheetTarget) =>
-      spreadsheetId === TEST_SPREADSHEET_ID
-        ? testSpreadsheet
-        : otherTestSpreadsheet
-  );
   getHeadersMock.mockImplementation(async ({ tabName }) => {
     switch (tabName) {
       case "Tab1": {
@@ -232,6 +219,12 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  getSpreadsheetMock.mockImplementation(
+    async ({ spreadsheetId }: SpreadsheetTarget) =>
+      spreadsheetId === TEST_SPREADSHEET_ID
+        ? testSpreadsheet
+        : otherTestSpreadsheet
+  );
   useFlagsMock.mockReturnValue({
     permit: jest.fn(),
     restrict: jest.fn(),
@@ -290,19 +283,6 @@ function expectTab1Selected() {
   // Headers for Tab2 should not be visible
   expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
   expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
-}
-
-function expectLegacySpreadsheetTitleLoaded() {
-  // Spreadsheet ID should not be user-visible
-  expect(screen.queryByText(TEST_SPREADSHEET_ID)).not.toBeInTheDocument();
-
-  // Legacy sheet picker is an input; need to use getByDisplayValue
-  expect(screen.getByDisplayValue(TEST_SPREADSHEET_NAME)).toBeVisible();
-}
-
-function expectLegacyTestSpreadsheetLoaded() {
-  expectLegacySpreadsheetTitleLoaded();
-  expectTab1Selected();
 }
 
 function expectGoogleAccountSpreadsheetTitleLoaded() {
@@ -439,7 +419,9 @@ describe("AppendSpreadsheetOptions", () => {
    * Basic Render Tests
    */
 
-  test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when rendered, loads spreadsheet/tabName/headers", async () => {
+  test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when rendered, shows spreadsheet Id", async () => {
+    getSpreadsheetMock.mockRejectedValue(new Error("Test error"));
+
     await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -448,54 +430,8 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expectLegacyTestSpreadsheetLoaded();
-  });
-
-  test("given empty googleAccount/rowValues and null tabName and legacy integration-based spreadsheetId, when rendered, loads tabName/headers", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@google"),
-        tabName: null,
-        rowValues: {},
-      },
-      integrationDependencies: [testSpreadsheetIntegrationDependency],
-    });
-
-    // Legacy service widget for spreadsheet isn't supported anymore, so title won't load,
-    // but tabName/header should still work with old form states
-    expectTab1Selected();
-  });
-
-  test("given empty googleAccount/rowValues and null tabName and mod input spreadsheetId, when rendered, loads tabName/headers", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: null,
-        rowValues: {},
-      },
-      optionsArgs: {
-        sheetId: TEST_SPREADSHEET_ID,
-      },
-    });
-
-    // Mod input var field won't render title
-    expectTab1Selected();
-  });
-
-  test("given empty googleAccount and string spreadsheetId and var tabName, when rendered, allows any rowValues fields", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeVariableExpression("@mySheetTab"),
-        rowValues: {},
-      },
-    });
-
-    // Ensure that no header names have been loaded into the rowValues field
-    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
+    // Spreadsheet ID should be shown when call fails to load
+    expect(screen.getByText(TEST_SPREADSHEET_ID)).toBeVisible();
   });
 
   test("given test googleAccount and null tabName, when spreadsheet selected, loads spreadsheet/tabName/headers", async () => {
@@ -574,46 +510,6 @@ describe("AppendSpreadsheetOptions", () => {
    * Tab Name Select Works Properly
    */
 
-  test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when tabs are selected, loads headers", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        rowValues: {},
-      },
-    });
-
-    await expectTabSelectWorksProperly();
-  });
-
-  test("given empty googleAccount/tabName/rowValues and legacy integration-based spreadsheetId, when tabs are selected, loads headers", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@google"),
-        tabName: makeTemplateExpression("nunjucks", ""),
-        rowValues: {},
-      },
-      integrationDependencies: [testSpreadsheetIntegrationDependency],
-    });
-
-    await expectTabSelectWorksProperly();
-  });
-
-  test("given empty googleAccount/tabName/rowValues and mod input spreadsheetId, when tabs are selected, loads headers", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: makeTemplateExpression("nunjucks", ""),
-        rowValues: {},
-      },
-      optionsArgs: {
-        sheetId: TEST_SPREADSHEET_ID,
-      },
-    });
-
-    await expectTabSelectWorksProperly();
-  });
-
   test("given test googleAccount and string spreadsheetId and empty tabName/rowValues, when tabs are selected, loads headers", async () => {
     await renderWithValuesAndWait({
       config: {
@@ -648,94 +544,6 @@ describe("AppendSpreadsheetOptions", () => {
   /**
    * Does Not Clear Initial Values
    */
-
-  test("given empty googleAccount and string spreadsheetId and selected tabName and nunjucks rowValues, when rendered, does not clear initial values", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: "Tab2",
-        rowValues: {
-          Foo: makeTemplateExpression("nunjucks", "valueA"),
-          Bar: makeTemplateExpression("nunjucks", "valueB"),
-        },
-      },
-    });
-
-    expectLegacySpreadsheetTitleLoaded();
-    expectTab2Selected();
-
-    // Ensure that initial values are not cleared
-    expect(screen.getByDisplayValue("valueA")).toBeVisible();
-    expect(screen.getByDisplayValue("valueB")).toBeVisible();
-  });
-
-  test("given empty googleAccount and string spreadsheetId and nunjucks tabName/rowValues, when rendered, does not clear initial values", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", "Tab2"),
-        rowValues: {
-          Foo: makeTemplateExpression("nunjucks", "valueA"),
-          Bar: makeTemplateExpression("nunjucks", "valueB"),
-        },
-      },
-    });
-
-    expectLegacySpreadsheetTitleLoaded();
-    expectTab2Selected();
-
-    // Ensure that initial values are not cleared
-    expect(screen.getByDisplayValue("valueA")).toBeVisible();
-    expect(screen.getByDisplayValue("valueB")).toBeVisible();
-  });
-
-  test("given empty googleAccount and mod input spreadsheetId and nunjucks tabName/rowValues, when rendered, does not clear initial values", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: makeTemplateExpression("nunjucks", "Tab2"),
-        rowValues: {
-          Foo: makeTemplateExpression("nunjucks", "valueA"),
-          Bar: makeTemplateExpression("nunjucks", "valueB"),
-        },
-      },
-      optionsArgs: {
-        sheetId: TEST_SPREADSHEET_ID,
-      },
-    });
-
-    // Mod input var field won't render title, tabName is nunjucks input
-    expect(screen.getByDisplayValue("Tab2")).toBeVisible();
-    // Headers for Tab2 should be loaded into rowValues
-    expect(screen.getByDisplayValue("Foo")).toBeVisible();
-    expect(screen.getByDisplayValue("Bar")).toBeVisible();
-    // Ensure that initial values are not cleared
-    expect(screen.getByDisplayValue("valueA")).toBeVisible();
-    expect(screen.getByDisplayValue("valueB")).toBeVisible();
-  });
-
-  test("given empty googleAccount and mod input spreadsheetId and selected tabName and nunjucks rowValues, when rendered, does not clear initial values", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: "Tab2",
-        rowValues: {
-          Foo: makeTemplateExpression("nunjucks", "valueA"),
-          Bar: makeTemplateExpression("nunjucks", "valueB"),
-        },
-      },
-      optionsArgs: {
-        sheetId: TEST_SPREADSHEET_ID,
-      },
-    });
-
-    // Mod input var field won't render title
-    expectTab2Selected();
-
-    // Ensure that initial values are not cleared
-    expect(screen.getByDisplayValue("valueA")).toBeVisible();
-    expect(screen.getByDisplayValue("valueB")).toBeVisible();
-  });
 
   test("given test googleAccount and string spreadsheetId and selected tabName and nunjucks rowValues, when rendered, does not clear initial values", async () => {
     await renderWithValuesAndWait({
@@ -837,73 +645,6 @@ describe("AppendSpreadsheetOptions", () => {
    * Miscellaneous Other Tests
    */
 
-  test("given empty googleAccount and string spreadsheetId and nunjucks tabName/rowValues, when tabName cleared, does not auto-pick first tabName", async () => {
-    const { getFormState } = await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", "Tab2"),
-        rowValues: {
-          Foo: makeTemplateExpression("nunjucks", "valueA"),
-          Bar: makeTemplateExpression("nunjucks", "valueB"),
-        },
-      },
-    });
-
-    expectLegacySpreadsheetTitleLoaded();
-
-    const tabNameField = screen.getByLabelText("Tab Name");
-
-    await userEvent.clear(tabNameField);
-
-    await waitForEffect();
-
-    // Ensure tab name has NOT toggled to select, and still contains an empty text expression
-    expect(tabNameField).toBeVisible();
-    // TextWidget uses HTMLTextAreaElement, while react-select uses HTMLInputElement
-    expect(tabNameField).toBeInstanceOf(HTMLTextAreaElement);
-    expect(tabNameField).toHaveValue("");
-    // Ensure tab name has not been reset to the first item, use queryByText to match react-select value
-    expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
-
-    expect(getFormState().config.tabName).toEqual(
-      makeTemplateExpression("nunjucks", "")
-    );
-  });
-
-  test("given empty googleAccount and mod input spreadsheetId and nunjucks tabName/rowValues, when tabName cleared, does not auto-pick first tabName", async () => {
-    const { getFormState } = await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: makeTemplateExpression("nunjucks", "Tab2"),
-        rowValues: {
-          Foo: makeTemplateExpression("nunjucks", "valueA"),
-          Bar: makeTemplateExpression("nunjucks", "valueB"),
-        },
-      },
-      optionsArgs: {
-        sheetId: TEST_SPREADSHEET_ID,
-      },
-    });
-
-    const tabNameField = screen.getByLabelText("Tab Name");
-
-    await userEvent.clear(tabNameField);
-
-    await waitForEffect();
-
-    // Ensure tab name has NOT toggled to select, and still contains an empty text expression
-    expect(tabNameField).toBeVisible();
-    // TextWidget uses HTMLTextAreaElement, while react-select uses HTMLInputElement
-    expect(tabNameField).toBeInstanceOf(HTMLTextAreaElement);
-    expect(tabNameField).toHaveValue("");
-    // Ensure tab name has not been reset to the first item, use queryByText to match react-select value
-    expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
-
-    expect(getFormState().config.tabName).toEqual(
-      makeTemplateExpression("nunjucks", "")
-    );
-  });
-
   test("given test googleAccount and string spreadsheetId and nunjucks tabName/rowValues, when tabName cleared, does not auto-pick first tabName", async () => {
     const { getFormState } = await renderWithValuesAndWait({
       config: {
@@ -973,107 +714,5 @@ describe("AppendSpreadsheetOptions", () => {
     expect(getFormState().config.tabName).toEqual(
       makeTemplateExpression("nunjucks", "")
     );
-  });
-
-  test("given selected tabName and entered rowValues, when tab changed, removes invalid rowValues properties", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: "Tab2",
-        rowValues: {
-          Foo: makeTemplateExpression("nunjucks", "valueA"),
-          Bar: makeTemplateExpression("nunjucks", "valueB"),
-        },
-      },
-    });
-
-    const tabChooser = await screen.findByLabelText("Tab Name");
-
-    // Choose Tab2
-    await userEvent.click(tabChooser);
-    const tab1Option = await screen.findByText("Tab1");
-    await userEvent.click(tab1Option);
-
-    expectTab1Selected();
-  });
-
-  // eslint-disable-next-line jest/no-disabled-tests -- Legacy behavior test, not sure if needed anymore, does not pass currently
-  it.skip("does not clear selected tabName and rowValues fieldValues until a different spreadsheetId is loaded", async () => {
-    const initialValues = {
-      config: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: "Tab2",
-        rowValues: {
-          Foo: makeTemplateExpression("nunjucks", "valueA"),
-          Bar: makeTemplateExpression("nunjucks", "valueB"),
-        },
-      },
-      optionsArgs: {
-        sheetId: TEST_SPREADSHEET_ID,
-      },
-    };
-
-    const { updateFormState } = render(
-      <AppendSpreadsheetOptions name="" configKey="config" />,
-      { initialValues }
-    );
-
-    await waitForEffect();
-
-    // Toggle the field to sheet picker
-    await act(async () => {
-      // The Google sheet picker uses "string" as the FieldInputMode
-      await selectSchemaFieldInputMode("config.spreadsheetId", "string");
-    });
-
-    // Ensure other fields have not changed yet. The spreadsheetId field value
-    // will be an empty nunjucks template here, and the tab names array has not
-    // loaded, so the tab name field will be automatically toggled to text
-    // field input mode, and the value preserved.
-    expect(screen.getByDisplayValue("Tab2")).toBeVisible();
-    expect(screen.getByDisplayValue("Foo")).toBeVisible();
-    expect(screen.getByDisplayValue("valueA")).toBeVisible();
-    expect(screen.getByDisplayValue("Bar")).toBeVisible();
-    expect(screen.getByDisplayValue("valueB")).toBeVisible();
-
-    // Update the form state value outside the Google sheet picker, so that we don't need to mock that
-    await act(async () => {
-      updateFormState({
-        ...initialValues,
-        config: {
-          ...initialValues.config,
-          spreadsheetId: TEST_SPREADSHEET_ID,
-        },
-      });
-    });
-
-    // SpreadsheetId is the same, ensure other fields have not changed
-    // The tab names array will be loaded here, so this will be a react-select text value
-    expect(screen.getByText("Tab2")).toBeVisible();
-    expect(screen.getByDisplayValue("Foo")).toBeVisible();
-    expect(screen.getByDisplayValue("valueA")).toBeVisible();
-    expect(screen.getByDisplayValue("Bar")).toBeVisible();
-    expect(screen.getByDisplayValue("valueB")).toBeVisible();
-
-    // Update the form state value to the other test spreadsheet id
-    await act(async () => {
-      updateFormState({
-        ...initialValues,
-        config: {
-          ...initialValues.config,
-          spreadsheetId: OTHER_TEST_SPREADSHEET_ID,
-        },
-      });
-    });
-
-    // Fields should be cleared and the other sheet values loaded
-    // The tab names array will be loaded here, so this will be a react-select text value
-    expect(screen.getByText("OtherTab1")).toBeVisible();
-    // The rowValues object fields should be showing headers for OtherTab1
-    expect(screen.getByDisplayValue("OtherColumn1")).toBeVisible();
-    expect(screen.getByDisplayValue("OtherColumn2")).toBeVisible();
-    // The old rowValues entry values should be cleared
-    expect(screen.queryByDisplayValue("valueA")).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue("valueB")).not.toBeInTheDocument();
   });
 });

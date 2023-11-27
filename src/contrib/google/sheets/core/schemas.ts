@@ -23,6 +23,7 @@ export const SPREADSHEET_FIELD_DESCRIPTION =
   "Select a Google Sheet. The first row in your sheet MUST contain headings.";
 
 export const BASE_SHEET_SCHEMA: Schema = {
+  type: "string",
   $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
 };
 

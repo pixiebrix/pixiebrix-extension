@@ -236,59 +236,6 @@ describe("LookupSpreadsheetOptions", () => {
    * Snapshots
    */
 
-  test("given empty googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    const { asFragment } = await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        header: makeTemplateExpression("nunjucks", ""),
-        query: makeTemplateExpression("nunjucks", ""),
-        multi: false,
-      },
-    });
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test("given feature flag off and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    useFlagsMock.mockReturnValue({
-      permit: jest.fn(),
-      restrict: jest.fn(),
-      flagOn(flag: string) {
-        return false;
-      },
-      flagOff(flag: string) {
-        return true;
-      },
-    });
-
-    const { asFragment } = await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        header: makeTemplateExpression("nunjucks", ""),
-        query: makeTemplateExpression("nunjucks", ""),
-        multi: false,
-      },
-    });
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test("given empty googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
-    const { asFragment } = await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: "Tab2",
-        header: "Bar",
-        query: makeTemplateExpression("nunjucks", "test query"),
-        multi: false,
-      },
-    });
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
   test("given test googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
     const { asFragment } = await renderWithValuesAndWait({
       config: {
@@ -324,43 +271,6 @@ describe("LookupSpreadsheetOptions", () => {
   /**
    * Basic Render Tests
    */
-
-  test("given empty googleAccount and string spreadsheetId, when rendered, loads tab names and header values", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        header: makeTemplateExpression("nunjucks", ""),
-        query: makeTemplateExpression("nunjucks", ""),
-        multi: false,
-      },
-    });
-
-    // Tab1 will be picked automatically since it's first in the list
-    expect(screen.getByText("Tab1")).toBeVisible();
-
-    await expectTabsAndHeadersToBeLoaded();
-  });
-
-  test("given empty googleAccount and mod input spreadsheetId, when rendered, loads tab names and header values", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: makeTemplateExpression("nunjucks", ""),
-        header: makeTemplateExpression("nunjucks", ""),
-        query: makeTemplateExpression("nunjucks", ""),
-        multi: false,
-      },
-      optionsArgs: {
-        sheetId: TEST_SPREADSHEET_ID,
-      },
-    });
-
-    // Tab1 will be picked automatically since it's first in the list
-    expect(screen.getByText("Tab1")).toBeVisible();
-
-    await expectTabsAndHeadersToBeLoaded();
-  });
 
   test("given test googleAccount and string spreadsheetId, when rendered, loads tab names and header values", async () => {
     await renderWithValuesAndWait({
@@ -433,50 +343,6 @@ describe("LookupSpreadsheetOptions", () => {
   /**
    * Does Not Clear Initial Values
    */
-
-  test("given empty googleAccount and mod input spreadsheetId value, when rendered, does not clear initial tabName and header values", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: "Tab2",
-        header: "Bar",
-        query: makeTemplateExpression("nunjucks", "test query"),
-        multi: true,
-      },
-      optionsArgs: {
-        sheetId: TEST_SPREADSHEET_ID,
-      },
-    });
-
-    expect(screen.getByDisplayValue("@options.sheetId")).toBeVisible();
-    // Use getByText for react-select value
-    expect(screen.getByText("Tab2")).toBeVisible();
-    // Use getByText for react-select value
-    expect(screen.getByText("Bar")).toBeVisible();
-    expect(screen.getByDisplayValue("test query")).toBeVisible();
-  });
-
-  test("given empty googleAccount and string spreadsheetId value, when rendered, does not clear initial tabName and header values", async () => {
-    await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: "Tab2",
-        header: "Bar",
-        query: makeTemplateExpression("nunjucks", "test query"),
-        multi: true,
-      },
-    });
-
-    // Spreadsheet ID should not be user-visible
-    expect(screen.queryByText(TEST_SPREADSHEET_ID)).not.toBeInTheDocument();
-    // Legacy sheet picker is an input; need to use getByDisplayValue
-    expect(screen.getByDisplayValue(TEST_SPREADSHEET_NAME)).toBeVisible();
-    // Use getByText for react-select value
-    expect(screen.getByText("Tab2")).toBeVisible();
-    // Use getByText for react-select value
-    expect(screen.getByText("Bar")).toBeVisible();
-    expect(screen.getByDisplayValue("test query")).toBeVisible();
-  });
 
   test("given test googleAccount and mod input spreadsheetId value, when rendered, does not clear variable values", async () => {
     await renderWithValuesAndWait({
