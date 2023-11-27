@@ -18,16 +18,29 @@
 import { type Availability } from "@/bricks/types";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import { type BrickArgs, type RunMetadata } from "@/types/runtimeTypes";
 
+/**
+ * @see BrickOptions
+ */
 export interface RemoteBrickOptions {
+  /**
+   * Available variables for the brick execution.
+   */
   ctxt: unknown;
+  /**
+   * Run metadata for the brick execution.
+   */
+  meta: RunMetadata;
+  /**
+   * Logging context for the brick execution.
+   */
   messageContext: MessageContext;
   maxRetries?: number;
   isAvailable?: Availability;
 }
 
-export interface RunBrick {
+export interface RunBrickRequest {
   sourceTabId?: number;
   nonce?: string;
   blockId: RegistryId;

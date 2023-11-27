@@ -38,6 +38,8 @@ export type ResolvedBrickConfig = {
  * Assume that a value matches the expected arg for any brick.
  *
  * For use in tests and JavaScript bricks that manually create a call to an individual brick.
+ *
+ * @see brickOptionsFactory
  */
 export function unsafeAssumeValidArg<T extends Record<string, unknown>>(
   value: unknown
@@ -47,6 +49,10 @@ export function unsafeAssumeValidArg<T extends Record<string, unknown>>(
 
 const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;
 
+/**
+ * Validates and returns if `key` is a valid brick output key (i.e., variable name), or throws a TypeError.
+ * @param key the key to test
+ */
 export function validateOutputKey(key: string): OutputKey {
   if (OUTPUT_KEY_REGEX.test(key)) {
     return key as OutputKey;

@@ -187,9 +187,16 @@ const PanelBody: React.FunctionComponent<{
           blockId,
         });
 
+        const branches = tracePath ? mapPathToTraceBranches(tracePath) : [];
+
         const body = await block.run(unsafeAssumeValidArg(args), {
           ctxt: brickArgsContext,
           root: null,
+          meta: {
+            runId,
+            extensionId,
+            branches,
+          },
           logger,
           async runPipeline(pipeline, branch, extraContext) {
             if (!brickArgsContext || typeof brickArgsContext !== "object") {
@@ -213,10 +220,7 @@ const PanelBody: React.FunctionComponent<{
               meta: {
                 extensionId,
                 runId,
-                branches: [
-                  ...(tracePath ? mapPathToTraceBranches(tracePath) : []),
-                  branch,
-                ],
+                branches: [...branches, branch],
               },
             });
           },

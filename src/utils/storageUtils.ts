@@ -16,10 +16,7 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
-import {
-  type MigrationManifest,
-  type PersistedState,
-} from "redux-persist/es/types";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
 import { type SetOptional } from "type-fest";

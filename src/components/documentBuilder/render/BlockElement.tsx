@@ -41,8 +41,7 @@ type BlockElementProps = {
  */
 const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   const {
-    meta,
-    options: { ctxt, logger },
+    options: { ctxt, logger, meta },
     onAction,
   } = useContext(DocumentContext);
 
@@ -61,7 +60,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
         meta: {
           ...meta,
           // The pipeline is static, so don't need to maintain run counter on branches
-          branches: mapPathToTraceBranches(tracePath),
+          branches: [...meta.branches, ...mapPathToTraceBranches(tracePath)],
         },
         // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
         options: apiVersionOptions("v3"),

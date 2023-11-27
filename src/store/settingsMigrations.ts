@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { BusinessError } from "@/errors/businessErrors";
-import { ErrorEffect } from "@/bricks/effects/error";
-import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { type MigrationManifest } from "redux-persist";
 
-const brick = new ErrorEffect();
+/**
+ * Migrations for the settings state based on the version found in the config.
+ * The keys represent the version number that the state is coming from. At the end of each migration,
+ * the version increments until it runs the version in the config.
+ * https://github.com/rt2zz/redux-persist#migrations
+ */
+const settingsMigrations: MigrationManifest = {
+  // Default the variable autosuggest to true after we take it out of beta
+  1: (state) => ({ ...state, varAutosuggest: true }),
+};
 
-describe("ErrorEffect", () => {
-  test("it throws BusinessError", async () => {
-    await expect(
-      brick.run(unsafeAssumeValidArg({}), brickOptionsFactory())
-    ).rejects.toThrow(BusinessError);
-  });
-});
+export default settingsMigrations;

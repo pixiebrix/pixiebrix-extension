@@ -51,8 +51,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
 }) => {
   const {
     onAction,
-    meta,
-    options: { ctxt, logger },
+    options: { ctxt, logger, meta },
   } = useContext(DocumentContext);
 
   const [counter, setCounter] = useState(0);
@@ -79,6 +78,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
         meta: {
           ...meta,
           branches: [
+            ...meta.branches,
             ...mapPathToTraceBranches(tracePath),
             { key: "onClick", counter: currentCounter },
           ],

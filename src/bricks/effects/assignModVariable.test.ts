@@ -17,12 +17,12 @@
 
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { validateRegistryId } from "@/types/helpers";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { getPageState, setPageState } from "@/contentScript/pageState";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { validateInput } from "@/validators/generic";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const extensionId = autoUUIDSequence();
 const blueprintId = validateRegistryId("test/123");
@@ -34,7 +34,7 @@ const logger = new ConsoleLogger({
   blueprintId,
 });
 
-const brickOptions = { logger } as BrickOptions;
+const brickOptions = brickOptionsFactory({ logger });
 
 beforeEach(() => {
   setPageState({

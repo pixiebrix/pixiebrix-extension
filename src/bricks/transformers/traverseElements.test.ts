@@ -15,19 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidv4, validateRegistryId } from "@/types/helpers";
 import TraverseElements from "@/bricks/transformers/traverseElements";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new TraverseElements();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidv4(),
-  blueprintId: validateRegistryId("test/123"),
-});
 
 describe("TraverseElements", () => {
   test("find", async () => {
@@ -38,7 +31,7 @@ describe("TraverseElements", () => {
         selector: "div",
         traversal: "find",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     expect(result).toStrictEqual({
@@ -55,7 +48,7 @@ describe("TraverseElements", () => {
         selector: "div",
         traversal: "closest",
       }),
-      { logger, root: div } as unknown as BrickOptions
+      brickOptionsFactory({ root: div })
     );
 
     expect(result).toStrictEqual({

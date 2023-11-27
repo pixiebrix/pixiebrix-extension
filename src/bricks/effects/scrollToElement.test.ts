@@ -16,17 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import ScrollIntoViewEffect from "@/bricks/effects/scrollIntoView";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new ScrollIntoViewEffect();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
 
 Element.prototype.scrollIntoView = jest.fn();
 
@@ -55,19 +48,19 @@ describe("ScrollToElementEffect", () => {
   });
 
   test("it scrolls for selector", async () => {
-    await brick.run(unsafeAssumeValidArg({ selector: "button" }), {
-      root: document,
-      logger,
-    } as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ selector: "button" }),
+      brickOptionsFactory()
+    );
 
     expect(scrollIntoViewMock).toHaveBeenCalled();
   });
 
   test("it scrolls to element for element for isRootAware: true", async () => {
-    await brick.run(unsafeAssumeValidArg({}), {
-      root: document.querySelector("button"),
-      logger,
-    } as unknown as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({}),
+      brickOptionsFactory({ root: document.querySelector("button") })
+    );
 
     expect(scrollIntoViewMock).toHaveBeenCalled();
   });

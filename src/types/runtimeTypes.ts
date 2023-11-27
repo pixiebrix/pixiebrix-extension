@@ -275,7 +275,47 @@ export type ServiceContext = Record<
   }
 >;
 
-// Using "any" for now so that bricks don't have to assert/cast all their argument types. We're checking
+/**
+ * An execution branch (defer, pipeline, etc.).
+ * @since 1.7.0
+ */
+export type Branch = {
+  /**
+   * A static identifier for the branch.
+   *
+   * In practice, will typically be the name of the pipeline in the brick, e.g., "if", "else", "try", "body", etc.
+   *
+   * @since 1.7.0
+   */
+  key: string;
+  /**
+   * A monotonically increasing counter for executions of branch with key
+   * @since 1.7.0
+   */
+  counter: number;
+};
+
+/**
+ * Metadata about the current run.
+ */
+export interface RunMetadata {
+  /**
+   * The extension that's running the brick. Used to correlate trace records across all runs/branches.
+   * @since 1.7.0
+   */
+  extensionId: UUID;
+  /**
+   * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
+   */
+  runId: UUID | null;
+  /**
+   * The control flow branch to correlate trace records for a brick.
+   * @since 1.7.0
+   */
+  branches: Branch[];
+}
+
+// Using "any" so bricks don't have to assert/cast all their argument types. We're checking
 // the inputs using yup/jsonschema, so the types should match what's expected.
 export type BrickOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
@@ -340,4 +380,16 @@ export type BrickOptions<
    * @since 1.7.19
    */
   abortSignal?: AbortSignal;
+
+  /**
+   * Trace metadata.
+   *
+   * Added to enable the UserDefinedBrick to pass the runId to the runtime because it can't make direct calls
+   * to BrickOptions.runPipeline or BrickOptions.runRendererPipeline.
+   *
+   * In general, you should not need to use this information.
+   *
+   * @since 1.8.4
+   */
+  meta: RunMetadata;
 };

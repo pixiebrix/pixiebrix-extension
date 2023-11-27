@@ -23,13 +23,12 @@ import {
 import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import {
-  type BrickConfig,
-  type BrickPipeline,
-  type Branch,
-} from "@/bricks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
-import { filterTracesByCall, getLatestCall } from "@/telemetry/traceHelpers";
+import {
+  filterTracesByCall,
+  getLatestBrickCall,
+} from "@/telemetry/traceHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
   getBlockAnnotations,
@@ -67,7 +66,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/blockFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
-import { type OutputKey } from "@/types/runtimeTypes";
+import { type Branch, type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
@@ -296,31 +295,12 @@ const usePipelineNodes = (): {
     const block = allBlocks.get(blockConfig.id)?.block;
     const isNodeActive = blockConfig.instanceId === activeNodeId;
 
-    const traceRecords = filterTracesByCall(
-      traces.filter(
-        (trace) => trace.blockInstanceId === blockConfig.instanceId
-      ),
-      latestPipelineCall
+    const traceRecord = getLatestBrickCall(
+      filterTracesByCall(traces, latestPipelineCall),
+      blockConfig.instanceId
     );
 
-    if (traceRecords.length > 1) {
-      console.warn(
-        "filterTracesByCall for %s returned multiple trace records",
-        blockConfig.instanceId,
-        {
-          traces,
-          instanceId: blockConfig.instanceId,
-          lastPipelineCall: latestPipelineCall,
-        }
-      );
-    }
-
-    const traceRecord = traceRecords[0];
-    let extensionHasTraces = extensionHasTracesInput;
-
-    if (traceRecord != null) {
-      extensionHasTraces = true;
-    }
+    let extensionHasTraces = extensionHasTracesInput || traceRecord != null;
 
     const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
@@ -560,6 +540,9 @@ const usePipelineNodes = (): {
           isAncestorActive: isSiblingHeaderActive
             ? isHeaderNodeActive
             : isParentActive || isAncestorActive,
+          // If this pipeline is a sub-pipeline that doesn't have traces yet, fall back to the latest parent call
+          // That prevents deeply nested stale traces from appearing in the UI
+          latestParentCall: traceRecord?.branches ?? latestPipelineCall,
         });
 
         nodes.push(
@@ -606,6 +589,7 @@ const usePipelineNodes = (): {
     nestingLevel = 0,
     isParentActive = false,
     isAncestorActive = false,
+    latestParentCall,
   }: {
     pipeline: BrickPipeline;
     flavor: PipelineFlavor;
@@ -613,6 +597,13 @@ const usePipelineNodes = (): {
     nestingLevel?: number;
     isParentActive?: boolean;
     isAncestorActive?: boolean;
+    /**
+     * The trace record of the current/most recent parent brick call. Used to exclude sub-pipeline brick traces
+     * from stale runs.
+     *
+     * @since 1.8.4
+     */
+    latestParentCall?: Branch[];
   }): MapOutput {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
@@ -622,15 +613,14 @@ const usePipelineNodes = (): {
     const nodes: EditorNodeProps[] = [];
 
     // Determine which execution of the pipeline to show. Currently, getting the latest execution
-    let latestPipelineCall: Branch[];
+    let latestPipelineCall: Branch[] | null;
     if (pipeline.length > 0) {
-      // XXX: there seems to be a bug (race condition) where sometimes this isn't seeing the latest click of a
-      // button in the render document brick
-      latestPipelineCall = getLatestCall(
-        traces.filter(
-          // Use first block in pipeline to determine the latest run
-          (trace) => trace.blockInstanceId === pipeline[0].instanceId
-        )
+      // Pass [] as default to include all traces
+      const latestTraces = filterTracesByCall(traces, latestParentCall ?? []);
+      // Use first block in pipeline to determine the latest run
+      latestPipelineCall = getLatestBrickCall(
+        latestTraces,
+        pipeline[0].instanceId
       )?.branches;
     }
 

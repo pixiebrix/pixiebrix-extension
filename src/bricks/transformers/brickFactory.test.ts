@@ -25,6 +25,8 @@ import blockRegistry from "@/bricks/registry";
 import {
   ContextBrick,
   contextBrick,
+  OptionsBrick,
+  optionsBrick,
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
@@ -33,18 +35,26 @@ import Run from "@/bricks/transformers/controlFlow/Run";
 import { cloneDeep, partial } from "lodash";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { setContext } from "@/testUtils/detectPageMock";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import {
+  makePipelineExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
 
 setContext("contentScript");
 
 const fromJS = partial(nativeFromJS, blockRegistry);
 
+beforeAll(() => {
+  registerBuiltinBlocks();
+});
+
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register([contextBrick]);
-  registerBuiltinBlocks();
+  blockRegistry.register([contextBrick, optionsBrick]);
   ContextBrick.clearContexts();
+  OptionsBrick.clearOptions();
 });
 
 test("two plus two is four", () => {
@@ -139,10 +149,7 @@ test("inner pipelines receive correct context", async () => {
       {
         id: "@pixiebrix/run",
         config: {
-          body: {
-            __type__: "var",
-            __value__: "@input.body",
-          },
+          body: makeVariableExpression("@input.body"),
         },
       },
     ],
@@ -155,10 +162,13 @@ test("inner pipelines receive correct context", async () => {
     id: block.id,
     config: {
       customInput: "Brick Environment",
-      body: {
-        __type__: "pipeline",
-        __value__: [{ id: "test/context", label: "Pipeline Arg Context" }],
-      },
+      body: makePipelineExpression([
+        {
+          id: validateRegistryId("test/context"),
+          label: "Pipeline Arg Context",
+          config: {},
+        },
+      ]),
     },
   };
 
@@ -191,7 +201,7 @@ test("inner pipelines receive correct context", async () => {
 });
 
 describe("getModVariableSchema", () => {
-  it("compiles mod variables", async () => {
+  it("unions mod variables", async () => {
     const json = {
       apiVersion: "v3",
       kind: "component",
@@ -309,5 +319,94 @@ describe("isPageStateAware", () => {
 
     const brick = fromJS(json);
     await expect(brick.isPageStateAware()).resolves.toBe(false);
+  });
+});
+
+describe("tracing", () => {
+  it("passes branches to inner blocks", async () => {
+    const json = {
+      apiVersion: "v3",
+      kind: "component",
+      metadata: {
+        id: "test/pipeline-echo",
+        name: "Pipeline Echo brick",
+      },
+      inputSchema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          customInput: {
+            type: "string",
+          },
+          body: {
+            $ref: "https://app.pixiebrix.com/schemas/pipeline#",
+          },
+        },
+        required: ["customInput", "body"],
+      },
+      pipeline: [
+        {
+          id: "test/options",
+          label: "Pipeline Echo Brick Options",
+          config: {},
+          outputKey: "ignore",
+        },
+        {
+          id: "@pixiebrix/run",
+          config: {
+            body: makeVariableExpression("@input.body"),
+          },
+        },
+      ],
+    };
+
+    const block = fromJS(json);
+    blockRegistry.register([block, new Run()]);
+
+    const pipeline = {
+      id: block.id,
+      config: {
+        customInput: "Brick Environment",
+        body: makePipelineExpression([
+          {
+            id: validateRegistryId("test/options"),
+            label: "Pipeline Arg Options",
+            config: {},
+          },
+        ]),
+      },
+    };
+
+    const runId = uuidv4();
+    const extensionId = uuidv4();
+    // Provide initial value to ensure it's preserved
+    const initialBranches = [{ key: "body", counter: 1 }];
+
+    await reducePipeline(
+      pipeline,
+      simpleInput({ customInput: "Closure Environment" }),
+      {
+        ...testOptions("v3"),
+        runId,
+        extensionId,
+        branches: initialBranches,
+      }
+    );
+
+    expect(OptionsBrick.options[0].meta).toStrictEqual({
+      runId,
+      extensionId,
+      branches: initialBranches,
+    });
+
+    expect(OptionsBrick.options[1].meta).toStrictEqual({
+      runId,
+      extensionId,
+      branches: [
+        ...initialBranches,
+        // Branch is added by the @pixiebrix/run brick
+        { key: "body", counter: 0 },
+      ],
+    });
   });
 });

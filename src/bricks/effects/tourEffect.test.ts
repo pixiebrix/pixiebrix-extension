@@ -17,17 +17,11 @@
 
 import { TourEffect } from "@/bricks/effects/tourEffect";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidv4 } from "@/types/helpers";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { CancelError, PropError } from "@/errors/businessErrors";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new TourEffect();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidv4(),
-});
 
 describe("TourEffect", () => {
   test("isRootAware", async () => {
@@ -37,10 +31,8 @@ describe("TourEffect", () => {
   test("require step", async () => {
     document.body.innerHTML = "<div>Test</div>";
 
-    const promise = brick.run(unsafeAssumeValidArg({}), {
-      logger,
-      root: document,
-    } as BrickOptions);
+    const promise = brick.run(unsafeAssumeValidArg({}), brickOptionsFactory());
+
     await expect(promise).rejects.toThrow(PropError);
   });
 
@@ -49,7 +41,7 @@ describe("TourEffect", () => {
 
     const promise = brick.run(
       unsafeAssumeValidArg({ steps: [{ intro: "test content" }] }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory()
     );
 
     await tick();
@@ -69,11 +61,10 @@ describe("TourEffect", () => {
 
     const promise = brick.run(
       unsafeAssumeValidArg({ steps: [{ intro: "test content" }] }),
-      {
-        logger,
+      brickOptionsFactory({
         root: document,
         abortSignal: abortController.signal,
-      } as BrickOptions
+      })
     );
 
     await tick();
