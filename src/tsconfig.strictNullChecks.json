@@ -264,6 +264,7 @@
     "./hooks/useUndo.ts",
     "./hooks/useUpdatableAsyncState.ts",
     "./hooks/useUserAction.ts",
+    "./hooks/useWindowSize.ts",
     "./icons/Icon.tsx",
     "./icons/IconSelector.tsx",
     "./icons/getSvgIcon.ts",
