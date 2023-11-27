@@ -88,7 +88,7 @@ const ModsPageToolbar: React.FunctionComponent<{
   }, [flatHeaders]);
 
   const tabContentTitle =
-    globalFilter && !["Bot Games", "Get Started"].includes(activeTab.key)
+    globalFilter && activeTab.key !== "Get Started"
       ? `${numberOfMods} results for "${globalFilter}"`
       : activeTab.tabTitle;
 
