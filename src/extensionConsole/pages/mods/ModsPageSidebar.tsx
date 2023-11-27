@@ -27,7 +27,6 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 // eslint-disable-next-line no-restricted-imports -- Type only
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 import useMilestones from "@/hooks/useMilestones";
-import { useInstallBotGamesBlueprint } from "@/extensionConsole/pages/mods/BotGamesView";
 import { type RegistryId } from "@/types/registryTypes";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
@@ -43,7 +42,6 @@ const MOD_TAB_KEYS = [
   "personal",
   "public",
   "getStarted",
-  "botGames",
 ] as const;
 type ModTabKey = typeof MOD_TAB_KEYS[number];
 type ModTabsMap = {
@@ -74,12 +72,6 @@ export const MODS_PAGE_TABS: ModTabsMap = {
   getStarted: {
     key: "Get Started",
     tabTitle: "Welcome to the PixieBrix Extension Console",
-    filters: [],
-    hideToolbar: true,
-  },
-  botGames: {
-    key: "Bot Games",
-    tabTitle: "Bot Games 2022",
     filters: [],
     hideToolbar: true,
   },
@@ -114,9 +106,6 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     isLoading: isMeLoading,
     isFetching: isMeFetching,
   } = appApi.endpoints.getMe.useQueryState();
-  const { hasMilestone } = useMilestones();
-  const { flagOn } = useFlags();
-  const { isBotGamesBlueprintInstalled } = useInstallBotGamesBlueprint();
   const { getMilestone } = useMilestones();
 
   const onboardingModId = getMilestone("first_time_public_blueprint_install")
@@ -141,21 +130,10 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     return modViewItem.status === "Active" && !isStarterMod;
   });
 
-  const showBotGamesTab =
-    hasMilestone("bot_games_2022_register") &&
-    flagOn("bot-games-event-in-progress");
-
   const showGetStartedTab =
     !isStarterBlueprintsLoading && !isMeLoading && !isMeFetching
-      ? isFreemiumUser && !hasSomeModEngagement && !showBotGamesTab
+      ? isFreemiumUser && !hasSomeModEngagement
       : false;
-
-  useEffect(() => {
-    // We want to nudge Bot Games users who may gotten lost back to the challenge page
-    if (showBotGamesTab && !isBotGamesBlueprintInstalled) {
-      setActiveTab(MODS_PAGE_TABS.botGames);
-    }
-  }, []);
 
   useEffect(() => {
     if (isStarterBlueprintsLoading || isMeLoading || isMeFetching) {
@@ -163,12 +141,6 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     }
 
     if (activeTab.key === null) {
-      // Bot Games page takes precedence over the Get Started welcome page
-      if (showBotGamesTab) {
-        setActiveTab(MODS_PAGE_TABS.botGames);
-        return;
-      }
-
       if (showGetStartedTab) {
         setActiveTab(MODS_PAGE_TABS.getStarted);
         return;
@@ -186,13 +158,6 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     if (!showGetStartedTab && activeTab.key === "Get Started") {
       setActiveTab(MODS_PAGE_TABS.active);
     }
-
-    // Similar to the above situation, if the Bot Games tab is selected
-    // but no longer shown due to the event ending, make sure that we reset
-    // the default
-    if (!showBotGamesTab && activeTab.key === "Bot Games") {
-      setActiveTab(MODS_PAGE_TABS.active);
-    }
   }, [
     isMeLoading,
     isMeFetching,
@@ -204,7 +169,6 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   ]);
 
   return {
-    showBotGamesTab,
     showGetStartedTab,
   };
 };
@@ -231,8 +195,7 @@ const ModsPageSidebar: React.FunctionComponent<ModsPageSidebarProps> = ({
     trailing: true,
     leading: false,
   });
-  const { showBotGamesTab, showGetStartedTab } =
-    useOnboardingTabs(tableInstance);
+  const { showGetStartedTab } = useOnboardingTabs(tableInstance);
 
   // By default, search everything with the option to re-select
   // filtered category
@@ -274,17 +237,6 @@ const ModsPageSidebar: React.FunctionComponent<ModsPageSidebarProps> = ({
             eventKey="Get Started"
             onClick={() => {
               setActiveTab(MODS_PAGE_TABS.getStarted);
-            }}
-          />
-        )}
-        {showBotGamesTab && (
-          <ListItem
-            className="mt-3"
-            icon={faRocket}
-            label="Bot Games"
-            eventKey="Bot Games"
-            onClick={() => {
-              setActiveTab(MODS_PAGE_TABS.botGames);
             }}
           />
         )}
