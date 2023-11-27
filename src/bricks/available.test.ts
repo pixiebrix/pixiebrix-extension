@@ -1,4 +1,4 @@
-/**
+/*
  * @jest-environment-options { "url": "https://www.example.com/#/foo/42" }
  */
 

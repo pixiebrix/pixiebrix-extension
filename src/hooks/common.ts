@@ -115,6 +115,7 @@ export function useAsyncState<T>(
     }
   }, dependencies);
 
+  // eslint-disable-next-line @shopify/react-hooks-strict-return -- Deprecated hook already
   return [data as T, isLoading, error, recalculate];
 }
 
