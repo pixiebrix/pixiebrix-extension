@@ -20,8 +20,8 @@ import React from "react";
 import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { useDNT } from "@/telemetry/dnt";
+import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const PrivacySettings: React.FunctionComponent = () => {
   const [dnt, setDNT] = useDNT();
@@ -42,22 +42,12 @@ const PrivacySettings: React.FunctionComponent = () => {
         </Card.Text>
 
         <Form>
-          <Form.Group controlId="telemetry">
-            <div>
-              <Form.Label>
-                Telemetry: <i>{dnt ? "Disabled" : "Enabled"}</i>
-              </Form.Label>
-            </div>
-            <BootstrapSwitchButton
-              size="sm"
-              onstyle="info"
-              offstyle="light"
-              onlabel=" "
-              offlabel=" "
-              checked={!(dnt ?? false)}
-              onChange={async (value) => setDNT(!value)}
-            />
-          </Form.Group>
+          <SettingToggle
+            controlId="telemetry"
+            label="Telemetry"
+            isEnabled={!dnt}
+            onChange={async (value: boolean) => setDNT(!value)}
+          />
         </Form>
       </Card.Body>
     </Card>

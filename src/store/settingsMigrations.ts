@@ -15,25 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MigrationManifest, type PersistedState } from "redux-persist";
-import {
-  type SettingsStateV1,
-  type SettingsStateV2,
-} from "@/store/settings/settingsTypes";
+import { type MigrationManifest } from "redux-persist";
 
-export const migrations: MigrationManifest = {
-  // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
-  // state version to match state type names
-  0: (state) => state,
-  1: (state) => state,
-  2: (state: SettingsStateV1 & PersistedState) => migrateSettingsStateV1(state),
+/**
+ * Migrations for the settings state based on the version found in the config.
+ * The keys represent the version number that the state is coming from. At the end of each migration,
+ * the version increments until it runs the version in the config.
+ * https://github.com/rt2zz/redux-persist#migrations
+ */
+const settingsMigrations: MigrationManifest = {
+  // Default the variable autosuggest to true after we take it out of beta
+  1: (state) => ({ ...state, varAutosuggest: true }),
 };
 
-function migrateSettingsStateV1(
-  state: SettingsStateV1 & PersistedState
-): SettingsStateV2 & PersistedState {
-  return {
-    ...state,
-    authIntegrationId: state.authServiceId,
-  };
-}
+export default settingsMigrations;

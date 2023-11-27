@@ -238,7 +238,6 @@
     "./extensionConsole/pages/mods/modals/shareModals/useSortOrganizations.ts",
     "./extensionConsole/pages/mods/modsPageSlice.ts",
     "./extensionConsole/pages/onboarding/partner/partnerOnboardingUtils.ts",
-    "./extensionConsole/pages/settings/PrivacySettings.tsx",
     "./extensionConsole/pages/useRecipeIdParam.ts",
     "./extensionConsole/pages/workshop/workshopTypes.ts",
     "./extensionConsole/pages/workshop/workshopUtils.ts",
