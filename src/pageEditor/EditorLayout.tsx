@@ -27,7 +27,7 @@ import RestrictedPane from "@/pageEditor/panes/RestrictedPane";
 import InsertPane from "@/pageEditor/panes/insert/InsertPane";
 import useCurrentUrl from "./hooks/useCurrentUrl";
 import NonScriptablePage from "./NonScriptablePage";
-import { isScriptableUrl } from "@/permissions/permissionsUtils";
+import { isScriptableUrl } from "webext-content-scripts";
 import Loader from "@/components/Loader";
 import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
