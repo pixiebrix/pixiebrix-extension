@@ -203,7 +203,7 @@
     "@types/holderjs": "^2.9.4",
     "@types/html-to-text": "^9.0.4",
     "@types/iframe-resizer": "^3.5.12",
-    "@types/intro.js": "^5.1.4",
+    "@types/intro.js": "^5.1.5",
     "@types/jest": "^29.5.8",
     "@types/jquery": "^3.5.27",
     "@types/js-beautify": "^1.14.3",
