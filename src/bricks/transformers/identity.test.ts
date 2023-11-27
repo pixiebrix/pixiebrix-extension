@@ -16,8 +16,8 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new IdentityTransformer();
 
@@ -26,7 +26,7 @@ describe("IdentityTransformer", () => {
     const value = { foo: "bar" };
     const result = await brick.run(
       unsafeAssumeValidArg(value),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
     expect(result).toStrictEqual(value);
   });

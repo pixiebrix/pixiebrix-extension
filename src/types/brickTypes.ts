@@ -190,7 +190,7 @@ export abstract class BrickABC implements Brick {
  * @see ExternalBlock
  */
 export function isUserDefinedBrick(brick: Brick): boolean {
-  // YAML-defined bricks have a .component property added by the ExternalBlock class
+  // YAML-defined bricks have a .component property added by the UserDefinedBrick class
   // We don't want to introduce circular dependency
   return brick && "component" in brick && Boolean(brick.component);
 }

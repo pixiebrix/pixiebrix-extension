@@ -24,13 +24,13 @@
 
 /**
  * Generates the svg path data for a rounded rectangle overlay
- * @param {Object} dimension - Dimensions of rectangle.
- * @param {number} width - Width.
- * @param {number} height - Height.
- * @param {number} [x=0] - Offset from top left corner in x axis. default 0.
- * @param {number} [y=0] - Offset from top left corner in y axis. default 0.
- * @param {number | { topLeft: number, topRight: number, bottomRight: number, bottomLeft: number }} [r=0] - Corner Radius. Keep this smaller than half of width or height.
- * @returns {string} - Rounded rectangle overlay path data.
+ * @param dimension - Dimensions of rectangle.
+ * @param width - Width.
+ * @param height - Height.
+ * @param [x=0] - Offset from top left corner in x axis. default 0.
+ * @param [y=0] - Offset from top left corner in y axis. default 0.
+ * @param [r=0] - Corner Radius. Keep this smaller than half of width or height.
+ * @returns - Rounded rectangle overlay path data.
  */
 export function makeOverlayPath({
   width,

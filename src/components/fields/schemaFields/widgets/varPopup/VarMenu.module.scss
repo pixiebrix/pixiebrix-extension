@@ -21,23 +21,22 @@
 $color-active: #c7e0ff;
 $color-hover: #a9d2ff;
 
-$popover-height: 300px;
-$footer-height: 20px;
-$menu-padding-y: 4px;
+$footer-height: 24px;
+$max-menu-height: 300px;
 
 // Aligned with the style of react-select's menu
 .menu {
+  font-family: monospace;
+  font-size: 0.75rem;
+
   width: 100%;
   min-width: 304px;
-  height: $popover-height;
-  max-height: $popover-height;
+  height: fit-content;
+  max-height: $max-menu-height;
   z-index: 1;
   background-color: rgb(255, 255, 255);
   border-radius: 4px;
   box-shadow: #0000001a 0 0 0 1px;
-
-  padding-top: $menu-padding-y;
-  padding-bottom: $menu-padding-y;
 
   position: absolute;
   top: 0;
@@ -60,24 +59,30 @@ $menu-padding-y: 4px;
       cursor: none;
     }
   }
+
+  button {
+    padding: 0rem;
+    padding-bottom: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
 }
 
 .body {
-  height: calc(100% - #{$footer-height} - #{$menu-padding-y} * 2);
   overflow-y: auto;
+  max-height: calc($max-menu-height - $footer-height);
 }
 
 .footer {
-  padding: 5px 10px;
-
+  padding: 0.5rem;
   height: $footer-height;
-  max-height: $footer-height;
-  font-size: 0.875em;
+  font-size: 0.625rem;
   color: #9c9fa6;
 }
 
 .sourceItem {
-  padding: 10px;
+  padding: 0.5rem;
+  padding-bottom: 0rem;
 
   & + & {
     border-top: 1px solid $N200;

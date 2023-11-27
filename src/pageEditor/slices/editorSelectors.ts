@@ -410,3 +410,6 @@ export const selectExtensionKnownEventNames = createSelector(
     // eslint-disable-next-line security/detect-object-injection -- is a UUID
     knownEventNameMap[activeElementId] ?? []
 );
+
+export const selectIsDimensionsWarningDismissed = (state: EditorRootState) =>
+  state.editor.isDimensionsWarningDismissed;

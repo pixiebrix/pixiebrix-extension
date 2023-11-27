@@ -16,13 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { WaitElementEffect } from "@/bricks/effects/wait";
 import { BusinessError } from "@/errors/businessErrors";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeAll(() => {
   requestIdleCallback.mock();
@@ -33,10 +30,6 @@ beforeEach(() => {
 });
 
 const brick = new WaitElementEffect();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
 
 describe("WaitElementEffect", () => {
   beforeEach(() => {
@@ -61,7 +54,7 @@ describe("WaitElementEffect", () => {
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        { root: document, logger } as BrickOptions
+        brickOptionsFactory()
       );
     }
   );
@@ -69,10 +62,9 @@ describe("WaitElementEffect", () => {
   test("it wait element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
-      {
-        root: document.querySelector("#hasButton"),
-        logger,
-      } as unknown as BrickOptions
+      brickOptionsFactory({
+        root: document.querySelector<HTMLElement>("#hasButton"),
+      })
     );
   });
 
@@ -83,10 +75,9 @@ describe("WaitElementEffect", () => {
         maxWaitMillis: 1,
         isRootAware: true,
       }),
-      {
-        root: document.querySelector("#noButton"),
-        logger,
-      } as unknown as BrickOptions
+      brickOptionsFactory({
+        root: document.querySelector<HTMLElement>("#noButton"),
+      })
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -95,7 +86,7 @@ describe("WaitElementEffect", () => {
   test("array of selectors", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: ["#hasButton", "button"] }),
-      { root: document, logger } as unknown as BrickOptions
+      brickOptionsFactory()
     );
   });
 });

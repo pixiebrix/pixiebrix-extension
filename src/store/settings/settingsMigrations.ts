@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type MigrationManifest,
-  type PersistedState,
-} from "redux-persist/es/types";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 import {
   type SettingsStateV1,
   type SettingsStateV2,

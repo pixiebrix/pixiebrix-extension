@@ -33,8 +33,8 @@ import { type RecipeResponse } from "@/types/contract";
 import {
   modComponentDefinitionFactory,
   defaultModDefinitionFactory,
-  metadataFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import useActivateRecipe, {
   type ActivateRecipeFormCallback,
 } from "@/activation/useActivateRecipe";

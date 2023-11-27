@@ -5,7 +5,7 @@ exports[`VarMenu shows view for match 1`] = `
   <input />
   <div
     class="menu"
-    style="max-height: NaNpx; transform: translate3d(0, NaNpx, 0);"
+    style="transform: translate3d(0, NaNpx, 0);"
   >
     <div
       class="body"
@@ -32,7 +32,7 @@ exports[`VarMenu shows view for match 1`] = `
                 style="position: relative; padding-top: 0.25em; margin-left: 0px; padding-left: 0px; display: flex; align-items: center; flex-wrap: wrap;"
               >
                 <div
-                  style="display: inline-block; cursor: pointer; padding: 4px; margin-right: 10px; background-color: rgb(240, 239, 242); border-radius: 2px;"
+                  style="display: inline-block; cursor: pointer; padding: 4px; margin-right: 8px; margin-bottom: 2px; background-color: rgb(239, 238, 241); border-radius: 2px;"
                 >
                   <div
                     style="margin-left: 0px; transition: 150ms; transform: rotateZ(0deg); transform-origin: 45% 50%; position: relative; line-height: 1.1em; font-size: 0.75em; height: 12px; width: 12px; display: flex; justify-content: center; align-items: center; color: rgb(46, 36, 65);"

@@ -20,7 +20,7 @@ import { type RuntimeState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { isTraceError, type TraceRecord } from "@/telemetry/trace";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { createSelector } from "reselect";
-import { getLatestCall } from "@/telemetry/traceHelpers";
+import { getLatestBrickCall } from "@/telemetry/traceHelpers";
 import { selectActiveNodeId } from "./editorSelectors";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
@@ -64,12 +64,10 @@ export function makeSelectBlockTrace(
   blockInstanceId: UUID
 ): EditorSelector<{ record: TraceRecord | null }> {
   return ({ runtime, editor }: RootState) => {
-    const callRecords = (
-      runtime.extensionTraces[editor.activeElementId] ?? []
-    ).filter((x) => x.blockInstanceId === blockInstanceId);
+    const records = runtime.extensionTraces[editor.activeElementId] ?? [];
 
     return {
-      record: getLatestCall(callRecords),
+      record: getLatestBrickCall(records, blockInstanceId),
     };
   };
 }

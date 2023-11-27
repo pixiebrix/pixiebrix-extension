@@ -16,17 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { DisableEffect } from "@/bricks/effects/disable";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new DisableEffect();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
 
 describe("DisableEffect", () => {
   beforeEach(() => {
@@ -48,7 +41,9 @@ describe("DisableEffect", () => {
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        { root: document, logger } as BrickOptions
+        brickOptionsFactory({
+          root: document,
+        })
       );
 
       expect(document.querySelector("button")).toBeDisabled();
@@ -56,10 +51,12 @@ describe("DisableEffect", () => {
   );
 
   test("it disables element for isRootAware: true", async () => {
-    await brick.run(unsafeAssumeValidArg({ isRootAware: true }), {
-      root: document.querySelector("button"),
-      logger,
-    } as unknown as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ isRootAware: true }),
+      brickOptionsFactory({
+        root: document.querySelector("button"),
+      })
+    );
 
     expect(document.querySelector("button")).toBeDisabled();
   });

@@ -23,11 +23,9 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import userEvent from "@testing-library/user-event";
-import { authSlice } from "@/auth/authSlice";
-import { mockCachedUser, mockLoadingUser } from "@/testUtils/userMock";
+import { mockCachedUser } from "@/testUtils/userMock";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
-  authStateFactory,
   userFactory,
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
@@ -108,68 +106,6 @@ describe("ModsPageLayout", () => {
       screen.queryByText("Welcome to the PixieBrix Extension Console")
     ).toBeNull();
     expect(screen.queryByText("Get Started")).toBeNull();
-  });
-
-  test("shows the bot games tab", async () => {
-    mockCachedUser();
-
-    render(<ModsPageLayout mods={mods} />, {
-      setupRedux(dispatch) {
-        dispatch(
-          authSlice.actions.setAuth(
-            authStateFactory({
-              flags: ["bot-games-event-in-progress"],
-              milestones: [{ key: "bot_games_2022_register" }],
-            })
-          )
-        );
-      },
-    });
-    await waitForEffect();
-    expect(screen.getByText("Bot Games")).not.toBeNull();
-    expect(screen.queryByText("Get Started")).toBeNull();
-  });
-
-  test("doesn't flash get started tab while loading the bot games tab", async () => {
-    mockLoadingUser();
-
-    render(<ModsPageLayout mods={mods} />);
-    await waitForEffect();
-    expect(screen.queryByText("Get Started")).toBeNull();
-
-    render(<ModsPageLayout mods={mods} />, {
-      setupRedux(dispatch) {
-        dispatch(
-          authSlice.actions.setAuth(
-            authStateFactory({
-              flags: ["bot-games-event-in-progress"],
-              milestones: [{ key: "bot_games_2022_register" }],
-            })
-          )
-        );
-      },
-    });
-    await waitForEffect();
-    expect(screen.getByText("Bot Games")).not.toBeNull();
-    expect(screen.queryByText("Get Started")).toBeNull();
-  });
-
-  test("bot games tab is active by default", async () => {
-    render(<ModsPageLayout mods={mods} />, {
-      setupRedux(dispatch) {
-        dispatch(
-          authSlice.actions.setAuth(
-            authStateFactory({
-              flags: ["bot-games-event-in-progress"],
-              milestones: [{ key: "bot_games_2022_register" }],
-            })
-          )
-        );
-      },
-    });
-    await waitForEffect();
-    expect(screen.getByText("Bot Games")).not.toBeNull();
-    expect(screen.getByTestId("bot-games-mod-tab")).toHaveClass("active");
   });
 
   test("search query heading renders", async () => {

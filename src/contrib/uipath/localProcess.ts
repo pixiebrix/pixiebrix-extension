@@ -61,7 +61,7 @@ export class RunLocalProcess extends TransformerABC {
 
     return Promise.race([
       // Throw error if Assistant is missing
-      new Promise((resolve, reject) => {
+      new Promise<JobResult>((resolve, reject) => {
         UiPathRobot.on("missing-components", () => {
           reject(new Error("UiPath Assistant not found. Is it installed?"));
         });

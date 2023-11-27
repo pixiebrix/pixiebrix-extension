@@ -16,17 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { ShowEffect } from "@/bricks/effects/show";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new ShowEffect();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
 
 describe("ShowEffect", () => {
   beforeEach(() => {
@@ -50,7 +43,7 @@ describe("ShowEffect", () => {
 
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        { root: document, logger } as BrickOptions
+        brickOptionsFactory()
       );
 
       expect(document.querySelector("button")).toBeVisible();
@@ -58,10 +51,10 @@ describe("ShowEffect", () => {
   );
 
   test("it shows element for isRootAware: true", async () => {
-    await brick.run(unsafeAssumeValidArg({ isRootAware: true }), {
-      root: document.querySelector("button"),
-      logger,
-    } as unknown as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ isRootAware: true }),
+      brickOptionsFactory({ root: document.querySelector("button") })
+    );
 
     expect(document.querySelector("button")).toBeVisible();
   });

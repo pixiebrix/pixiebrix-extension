@@ -190,6 +190,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -207,6 +208,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -381,6 +383,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -398,6 +401,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -811,6 +815,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -828,6 +833,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -1002,6 +1008,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -1019,6 +1026,7 @@ exports[`LookupSpreadsheetOptions given empty googleAccount and string spreadshe
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -1378,6 +1386,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -1395,6 +1404,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -1569,6 +1579,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -1586,6 +1597,7 @@ exports[`LookupSpreadsheetOptions given feature flag off and string spreadsheetI
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -1860,6 +1872,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                       aria-live="polite"
                       aria-relevant="additions text"
                       class="css-1f43avz-a11yText-A11yText"
+                      role="log"
                     />
                     <div
                       class=" css-13cymwt-control"
@@ -1877,6 +1890,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                           data-value=""
                         >
                           <input
+                            aria-activedescendant=""
                             aria-autocomplete="list"
                             aria-expanded="false"
                             aria-haspopup="true"
@@ -2069,6 +2083,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -2086,6 +2101,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -2209,6 +2225,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -2226,6 +2243,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -2400,6 +2418,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -2417,6 +2436,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -2691,6 +2711,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                       aria-live="polite"
                       aria-relevant="additions text"
                       class="css-1f43avz-a11yText-A11yText"
+                      role="log"
                     />
                     <div
                       class=" css-13cymwt-control"
@@ -2708,6 +2729,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                           data-value=""
                         >
                           <input
+                            aria-activedescendant=""
                             aria-autocomplete="list"
                             aria-expanded="false"
                             aria-haspopup="true"
@@ -2900,6 +2922,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -2917,6 +2940,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -3040,6 +3064,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -3057,6 +3082,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"
@@ -3231,6 +3257,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
                   class=" css-13cymwt-control"
@@ -3248,6 +3275,7 @@ exports[`LookupSpreadsheetOptions given test googleAccount and string spreadshee
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-expanded="false"
                         aria-haspopup="true"

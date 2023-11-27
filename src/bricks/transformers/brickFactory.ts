@@ -265,7 +265,7 @@ class UserDefinedBrick extends BrickABC {
    * implement. In the future, we may want to keep track of a map of lexical environments in the runtime.
    *
    * We also might in the future want to keep track in mapArgs:renderExplicit. However, that would be inefficient
-   * because ExternalBlock is currently the only block that switches the context. (The control flow bricks, e.g.,
+   * because UserDefinedBrick is currently the only block that switches the context. (The control flow bricks, e.g.,
    * try-except extend the context, but don't swap out the "@input", "@options", etc.).
    *
    * TODO: also track for deferred expressions. (Currently, deferred expressions only appear in the Document Builder.).
@@ -311,7 +311,11 @@ class UserDefinedBrick extends BrickABC {
       args: argsWithClosures,
     });
 
-    // Blocks only have inputs, they can't pick up free variables from the environment
+    // Can't use options.runPipeline because we want to:
+    // 1) replace the context, not extend it
+    // 2) run the pipeline with a potentially different API version
+
+    // UserDefinedBricks only have inputs, they can't pick up free variables from the environment
     const initialValues: InitialValues = {
       input: argsWithClosures,
       // OptionsArgs are set at the blueprint level. For user-defined bricks, are passed via brick inputs
@@ -322,13 +326,15 @@ class UserDefinedBrick extends BrickABC {
     };
 
     if (isContentScript()) {
-      // Already in the contentScript, run the pipeline directly.
+      // Already in the contentScript, run the pipeline directly for performance
       return reducePipeline(this.component.pipeline, initialValues, {
         logger: options.logger,
         headless: options.headless,
         // The component uses its declared version of the runtime API, regardless of what version of the runtime
         // is used to call the component
         ...apiVersionOptions(this.component.apiVersion),
+        // Provide the run metadata (runId, branches) so that calls to pipeline functions trace correctly
+        ...options.meta,
       });
     }
 
@@ -350,12 +356,8 @@ class UserDefinedBrick extends BrickABC {
         pipeline: castArray(this.component.pipeline),
         options: apiVersionOptions(this.apiVersion),
         messageContext: options.logger.context,
-        meta: {
-          // Don't trace within user-defined bricks
-          extensionId: options.logger.context.extensionId,
-          branches: [],
-          runId: null,
-        },
+        // Provide the run metadata (runId, branches) so that calls to pipeline functions trace correctly
+        meta: options.meta,
       });
     } catch (error) {
       if (isSpecificError(error, HeadlessModeError)) {

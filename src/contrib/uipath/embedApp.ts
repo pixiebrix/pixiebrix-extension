@@ -25,11 +25,12 @@ import pTimeout from "p-timeout";
 import { type RegistryId } from "@/types/registryTypes";
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type SafeHTML } from "@/types/stringTypes";
+import { type SafeHTML, type UUID } from "@/types/stringTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 
 interface RunDetails {
+  extensionId: UUID;
   blockId: RegistryId;
   inputs: unknown;
   url: URL;
@@ -37,6 +38,7 @@ interface RunDetails {
 
 async function runInFrame({
   blockId,
+  extensionId,
   inputs,
   url,
 }: RunDetails): Promise<unknown> {
@@ -65,6 +67,11 @@ async function runInFrame({
       ctxt: {},
       messageContext: {
         blockId,
+      },
+      meta: {
+        extensionId,
+        runId: null,
+        branches: [],
       },
     },
   });
@@ -123,7 +130,7 @@ export class UiPathAppRenderer extends RendererABC {
       height = 400,
       width = "100%",
     }: BrickArgs,
-    { logger }: BrickOptions
+    { logger, meta }: BrickOptions
   ): Promise<SafeHTML> {
     const nonce = uuidv4();
 
@@ -139,6 +146,7 @@ export class UiPathAppRenderer extends RendererABC {
     if (!isEmpty(inputs)) {
       void runInFrame({
         blockId: this.id,
+        extensionId: meta.extensionId,
         url: subframeUrl,
         inputs,
       })

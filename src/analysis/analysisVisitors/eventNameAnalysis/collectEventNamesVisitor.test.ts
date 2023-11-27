@@ -20,7 +20,7 @@ import {
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import CustomEventEffect from "@/bricks/effects/customEvent";
-import CollectNamesVisitor from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
+import CollectEventNamesVisitor from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
 import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
 describe("collectEventNamesAnalysis", () => {
@@ -33,7 +33,7 @@ describe("collectEventNamesAnalysis", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames(formState);
+    const result = CollectEventNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
       knownTriggerNames: [],
@@ -51,7 +51,7 @@ describe("collectEventNamesAnalysis", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames(formState);
+    const result = CollectEventNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
       knownTriggerNames: [],
@@ -69,7 +69,7 @@ describe("collectEventNamesAnalysis", () => {
       },
     };
 
-    const result = CollectNamesVisitor.collectNames(formState);
+    const result = CollectEventNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
       knownTriggerNames: [],
@@ -85,7 +85,7 @@ describe("collectEventNamesAnalysis", () => {
       eventName: "foo",
     };
 
-    const result = CollectNamesVisitor.collectNames(formState);
+    const result = CollectEventNamesVisitor.collectNames(formState);
 
     expect(result).toEqual({
       knownTriggerNames: ["foo"],

@@ -17,15 +17,15 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { ErrorEffect } from "@/bricks/effects/error";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new ErrorEffect();
 
 describe("ErrorEffect", () => {
   test("it throws BusinessError", async () => {
     await expect(
-      brick.run(unsafeAssumeValidArg({}), {} as BrickOptions)
+      brick.run(unsafeAssumeValidArg({}), brickOptionsFactory())
     ).rejects.toThrow(BusinessError);
   });
 });
