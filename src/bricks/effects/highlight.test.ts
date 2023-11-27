@@ -16,15 +16,8 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { HighlightEffect } from "@/bricks/effects/highlight";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("highlight", () => {
   test.each([[undefined], ["yellow"]])(
@@ -42,7 +35,7 @@ describe("highlight", () => {
           rootSelector: ".a",
           color,
         }),
-        { logger, root: document } as BrickOptions
+        brickOptionsFactory()
       );
 
       expect(document.body.innerHTML).toMatchSnapshot();
@@ -66,7 +59,9 @@ describe("highlight", () => {
         rootSelector: "span",
         rootMode: "inherit",
       }),
-      { logger, root: document.querySelector("#tree") } as BrickOptions
+      brickOptionsFactory({
+        root: document.querySelector<HTMLElement>("#tree"),
+      })
     );
 
     expect(document.body.innerHTML).toMatchSnapshot();
@@ -91,7 +86,9 @@ describe("highlight", () => {
           rootSelector: "span",
           rootMode,
         }),
-        { logger, root: document.querySelector("#tree") } as BrickOptions
+        brickOptionsFactory({
+          root: document.querySelector<HTMLElement>("#tree"),
+        })
       );
 
       expect(document.body.innerHTML).toMatchSnapshot();

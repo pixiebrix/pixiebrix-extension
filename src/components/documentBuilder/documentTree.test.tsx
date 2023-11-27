@@ -22,7 +22,7 @@ import React from "react";
 import blockRegistry from "@/bricks/registry";
 import { MarkdownRenderer } from "@/bricks/renderers/markdown";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
-import { UNSET_UUID, uuidv4 } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
 import {
   type DocumentElement,
@@ -57,10 +57,6 @@ describe("When rendered in panel", () => {
       <DocumentContext.Provider
         value={{
           ...initialValue,
-          meta: {
-            extensionId: UNSET_UUID,
-            runId: UNSET_UUID,
-          },
         }}
       >
         {children}

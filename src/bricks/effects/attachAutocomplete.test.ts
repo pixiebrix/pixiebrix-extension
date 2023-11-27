@@ -17,10 +17,9 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { AttachAutocomplete } from "@/bricks/effects/attachAutocomplete";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new AttachAutocomplete();
 
@@ -49,10 +48,13 @@ describe("AttachAutocomplete", () => {
   });
 
   test("it attaches autocomplete", async () => {
-    await brick.run(unsafeAssumeValidArg({ selector: "[name='name']" }), {
-      root: document,
-      logger,
-    } as unknown as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ selector: "[name='name']" }),
+      brickOptionsFactory({
+        root: document,
+        logger,
+      })
+    );
 
     expect(document.querySelector("[name='name']").getAttribute("role")).toBe(
       "combobox"
@@ -62,10 +64,10 @@ describe("AttachAutocomplete", () => {
   test("it is root aware", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "[name='name']", isRootAware: true }),
-      {
-        root: document.querySelector("#noForm"),
+      brickOptionsFactory({
+        root: document.querySelector<HTMLElement>("#noForm"),
         logger,
-      } as unknown as BrickOptions
+      })
     );
 
     expect(
@@ -74,10 +76,10 @@ describe("AttachAutocomplete", () => {
 
     await brick.run(
       unsafeAssumeValidArg({ selector: "[name='name']", isRootAware: true }),
-      {
-        root: document.querySelector("#hasForm"),
+      brickOptionsFactory({
+        root: document.querySelector<HTMLElement>("#hasForm"),
         logger,
-      } as unknown as BrickOptions
+      })
     );
 
     expect(document.querySelector("[name='name']").getAttribute("role")).toBe(
