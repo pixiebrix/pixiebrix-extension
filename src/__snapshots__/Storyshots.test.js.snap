@@ -8633,6 +8633,114 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
 </div>
 `;
 
+exports[`Storyshots PageEditor/HomePane Default 1`] = `
+<div
+  className="h-100 overflow-auto"
+>
+  <div
+    className="pane"
+  >
+    <div
+      className="gutter"
+    >
+      <img
+        alt="Page Editor logo"
+        src="test-file-stub"
+      />
+    </div>
+    <div>
+      <h1
+        className="title"
+      >
+        Welcome to the Page Editor!
+      </h1>
+      <div
+        className="lead"
+      >
+        <div>
+          You might recognize it from the video on the home page.
+        </div>
+        <div>
+          Here, you can create mods that improve the UX of any web apps and sites you visit.
+        </div>
+      </div>
+      <div>
+        <div
+          className="text"
+        >
+          Not sure where to get started? Our Template Gallery has customizable templates with guides for the most popular use cases.
+        </div>
+        <div>
+          <button
+            className="button btn btn-primary"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Launch Template Gallery
+          </button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        className="links"
+      >
+        <ul>
+          <span
+            className="linkSectionHeader"
+          >
+            Support
+          </span>
+          <li>
+            <a
+              href="https://docs.pixiebrix.com/"
+            >
+              Documentation
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://pixiebrix.thinkific.com/collections"
+            >
+              PixieBrix Certification
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://slack.pixiebrix.com/"
+            >
+              Join the Community Slack
+            </a>
+          </li>
+        </ul>
+        <ul>
+          <span
+            className="linkSectionHeader"
+          >
+            Helpful Links
+          </span>
+          <li>
+            <button
+              onClick={[Function]}
+            >
+              Extension Console
+            </button>
+          </li>
+          <li>
+            <a
+              href="https://app.pixiebrix.com/"
+            >
+              Admin Console
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Storyshots PageEditor/LoginCard Default 1`] = `
 <div
   className="d-flex flex-column mx-auto mt-4 pb-2 max-550 text-center h-100 justify-content-center"
