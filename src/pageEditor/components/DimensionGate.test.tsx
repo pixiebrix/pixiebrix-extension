@@ -52,7 +52,9 @@ describe("Dimension Gate", () => {
 
     expect(screen.queryByText("foo")).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByText("Dismiss Warning"));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Dismiss Warning" })
+    );
 
     expect(screen.getByText("foo")).toBeInTheDocument();
   });
