@@ -280,7 +280,10 @@ export class CustomFormRenderer extends RendererABC {
         autoSave,
         submitCaption,
         className,
-        async onSubmit(values: JsonObject) {
+        async onSubmit(
+          values: JsonObject,
+          { submissionCount }: { submissionCount: number }
+        ) {
           try {
             const normalizedValues = normalizeOutgoingFormData(schema, values);
 
@@ -293,7 +296,7 @@ export class CustomFormRenderer extends RendererABC {
                 onSubmit,
                 {
                   key: "onSubmit",
-                  counter: 0,
+                  counter: submissionCount,
                 },
                 {
                   [getOutputReference(
