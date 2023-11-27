@@ -16,24 +16,27 @@
  */
 
 import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import { type Meta, type StoryObj } from "@storybook/react";
 
 import HomePane from "@/pageEditor/panes/HomePane";
 import { Provider } from "react-redux";
 import { editorStore } from "@/testUtils/storyUtils";
 
-export default {
+type HomePagePropsAndCustomArgs = React.ComponentProps<typeof HomePane> &
+  Record<string, unknown>;
+
+const meta: Meta<HomePagePropsAndCustomArgs> = {
   title: "PageEditor/HomePane",
   component: HomePane,
-} as ComponentMeta<typeof HomePane>;
-
-const Template: ComponentStory<typeof HomePane> = (args) => {
-  return (
+  render: (args) => (
     <Provider store={editorStore()}>
       <HomePane {...args} />
     </Provider>
-  );
+  ),
 };
 
-export const Default = Template.bind({});
-Default.args = {};
+export default meta;
+
+type Story = StoryObj<HomePagePropsAndCustomArgs>;
+
+export const Default: Story = { args: {} };
