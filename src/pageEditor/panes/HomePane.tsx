@@ -96,15 +96,14 @@ const HomePane: React.FunctionComponent = () => {
             <ul>
               <span className={styles.linkSectionHeader}>Helpful Links</span>
               <li>
-                <a
-                  href="#"
+                <button
                   onClick={async (event) => {
                     event.preventDefault();
                     await browser.runtime.openOptionsPage();
                   }}
                 >
                   Extension Console
-                </a>
+                </button>
               </li>
               <li>
                 <a href="https://app.pixiebrix.com/">Admin Console</a>
