@@ -16,6 +16,7 @@
  */
 
 import { type Schema } from "@/types/schemaTypes";
+import { isEmpty } from "lodash";
 
 type SchemaProperties = Record<string, Schema>;
 
@@ -41,11 +42,22 @@ export function arraySchema(itemSchema: Schema): Schema {
 }
 
 /**
- * Return as an object schema
+ * Returns a Schema. If an normal object is passed in, casts it to an object Schema.
  */
 export function castSchema(
   schemaOrProperties: Schema | SchemaProperties
 ): Schema {
+  // XXX: this isn't quite right -- the check won't work if there's a title/description for the empty schema
+  if (isEmpty(schemaOrProperties)) {
+    // Empty schema means allow anything
+    return {} as Schema;
+  }
+
+  if (schemaOrProperties.type && schemaOrProperties.type !== "object") {
+    // Is another type of schema
+    return schemaOrProperties;
+  }
+
   if (schemaOrProperties.type && schemaOrProperties.properties) {
     return schemaOrProperties as Schema;
   }
