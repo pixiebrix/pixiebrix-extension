@@ -17,7 +17,10 @@
 
 import React from "react";
 import { useAuthOptions } from "@/hooks/auth";
-import { type IntegrationDefinition } from "@/integrations/integrationTypes";
+import {
+  type IntegrationDefinition,
+  type IntegrationDependency,
+} from "@/integrations/integrationTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -26,11 +29,20 @@ import { render } from "@/extensionConsole/testHelpers";
 import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
-import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  generateIntegrationAndRemoteConfig,
+  integrationDependencyFactory,
+} from "@/testUtils/factories/integrationFactories";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { registry, services } from "@/background/messenger/api";
+import { refreshServices } from "@/background/locator";
+import { clear, find, syncPackages } from "@/registry/packageRegistry";
+import Loader from "@/components/Loader";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import useRefreshRegistries from "@/hooks/useRefreshRegistries";
+import { produce } from "immer";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -92,53 +104,125 @@ const builtInOption1b: AuthOption = {
   value: autoUUIDSequence(),
 };
 
-const service1 = {
-  metadata: {
-    id: serviceId1,
-    name: "Test Service 1",
-  },
-} as IntegrationDefinition;
-const service2 = {
-  metadata: {
-    id: serviceId2,
-    name: "Test Service 2",
-  },
-} as IntegrationDefinition;
+const { integrationDefinition: _integrationDefinition1 } =
+  generateIntegrationAndRemoteConfig();
+const integrationDefinition1 = produce(_integrationDefinition1, (draft) => {
+  draft.metadata.id = serviceId1;
+});
+const { integrationDefinition: _integrationDefinition2 } =
+  generateIntegrationAndRemoteConfig();
+const integrationDefinition2 = produce(_integrationDefinition2, (draft) => {
+  draft.metadata.id = serviceId2;
+});
 
 beforeAll(() => {
   // These are only used for the service names in the descriptors
-  appApiMock.onGet("/api/services/").reply(200, [service1, service2]);
+  appApiMock
+    .onGet("/api/services/")
+    .reply(200, [integrationDefinition1, integrationDefinition2]);
+  appApiMock.onGet("/api/services/shared/").reply(200, []);
+  appApiMock
+    .onGet("/api/registry/bricks/")
+    .reply(200, [integrationDefinition1, integrationDefinition2]);
+  // Wire up directly to the background implementations for integration testing
+  jest.mocked(services.refresh).mockImplementation(refreshServices);
+  jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
+  jest.mocked(registry.find).mockImplementation(find);
+  jest.mocked(registry.clear).mockImplementation(clear);
 });
 
-function expectServiceDescriptorVisible(service: IntegrationDefinition) {
-  expect(screen.getByText(service.metadata.name)).toBeVisible();
-  expect(screen.getByText(service.metadata.id)).toBeVisible();
+afterAll(() => {
+  appApiMock.reset();
+});
+
+async function expectServiceDescriptorVisible(service: IntegrationDefinition) {
+  expect(await screen.findByText(service.metadata.name)).toBeVisible();
+  expect(await screen.findByText(service.metadata.id)).toBeVisible();
 }
 
-function expectRefreshButton(count?: number) {
+async function expectRefreshButton(count?: number) {
   if (count) {
-    expect(screen.getAllByRole("button", { name: /refresh/i })).toHaveLength(
-      count,
-    );
+    expect(
+      await screen.findAllByRole("button", { name: /refresh/i })
+    ).toHaveLength(count);
   } else {
-    expect(screen.getByRole("button", { name: /refresh/i })).toBeVisible();
+    expect(
+      await screen.findByRole("button", { name: /refresh/i })
+    ).toBeVisible();
   }
+}
+
+async function expectFieldToBeHidden(integration: IntegrationDefinition) {
+  // Wait for automatic form submit button to be shown
+  expect(await screen.findByRole("button", { name: /submit/i })).toBeVisible();
+
+  // Expect no service descriptor to be shown
+  expect(screen.queryByText(integration.metadata.name)).not.toBeInTheDocument();
+  expect(screen.queryByText(integration.metadata.id)).not.toBeInTheDocument();
+  // Expect no combobox input
+  expect(
+    screen.queryByRole("combobox", { name: integration.metadata.name })
+  ).not.toBeInTheDocument();
+}
+
+const Content: React.FC<{
+  blueprint: ModDefinition;
+  showOwnTitle?: boolean;
+  hideBuiltInServiceIntegrations?: boolean;
+}> = ({ blueprint, showOwnTitle, hideBuiltInServiceIntegrations }) => {
+  const [loaded] = useRefreshRegistries();
+
+  if (!loaded) {
+    return <Loader />;
+  }
+
+  return (
+    <ServicesBody
+      blueprint={blueprint}
+      showOwnTitle={showOwnTitle}
+      hideBuiltInServiceIntegrations={hideBuiltInServiceIntegrations}
+    />
+  );
+};
+
+function renderContent({
+  modDefinition = defaultModDefinitionFactory(),
+  integrationDependencies = [],
+  showOwnTitle,
+  hideBuiltInServiceIntegrations,
+}: {
+  modDefinition?: ModDefinition;
+  integrationDependencies: IntegrationDependency[];
+  showOwnTitle?: boolean;
+  hideBuiltInServiceIntegrations?: boolean;
+}) {
+  render(
+    <Content
+      blueprint={modDefinition}
+      showOwnTitle={showOwnTitle}
+      hideBuiltInServiceIntegrations={hideBuiltInServiceIntegrations}
+    />,
+    {
+      initialValues: {
+        integrationDependencies,
+      },
+    }
+  );
 }
 
 describe("ServicesBody", () => {
   it("renders with one service and no options and does not render title", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
-      initialValues: {
-        integrationDependencies: [
-          integrationDependencyFactory({ integrationId: serviceId1 }),
-        ],
-      },
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({ integrationId: serviceId1 }),
+      ],
     });
-    await waitForEffect();
-    expectServiceDescriptorVisible(service1);
-    expectRefreshButton();
+
+    await expectServiceDescriptorVisible(integrationDefinition1);
+    await expectRefreshButton();
+
     // Check that "configure" button is also shown when there are no options
     expect(screen.getByRole("button", { name: /configure/i })).toBeVisible();
     // Ensure Integrations title is not shown
@@ -148,19 +232,17 @@ describe("ServicesBody", () => {
   it("renders own title properly", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(
-      <ServicesBody blueprint={defaultModDefinitionFactory()} showOwnTitle />,
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({ integrationId: serviceId1 }),
-          ],
-        },
-      },
-    );
-    await waitForEffect();
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({ integrationId: serviceId1 }),
+      ],
+      showOwnTitle: true,
+    });
+
     // Ensure Integrations title is shown
-    expect(screen.getByRole("heading", { name: "Integrations" })).toBeVisible();
+    expect(
+      await screen.findByRole("heading", { name: "Integrations" })
+    ).toBeVisible();
   });
 
   it("does not hide field with one service, no options for the service, but other options exist", async () => {
@@ -168,22 +250,14 @@ describe("ServicesBody", () => {
       valueToAsyncState([sharedOption2a, sharedOption2b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
-      />,
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({ integrationId: serviceId1 }),
-          ],
-        },
-      },
-    );
-    await waitForEffect();
-    expectServiceDescriptorVisible(service1);
-    expectRefreshButton();
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({ integrationId: serviceId1 }),
+      ],
+    });
+
+    await expectServiceDescriptorVisible(integrationDefinition1);
+    await expectRefreshButton();
     // Check that "configure" button is also shown when there are no options
     expect(screen.getByRole("button", { name: /configure/i })).toBeVisible();
   });
@@ -193,19 +267,17 @@ describe("ServicesBody", () => {
       valueToAsyncState([sharedOption1a, sharedOption1b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
-      initialValues: {
-        integrationDependencies: [
-          integrationDependencyFactory({
-            integrationId: serviceId1,
-            configId: sharedOption1a.value,
-          }),
-        ],
-      },
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: sharedOption1a.value,
+        }),
+      ],
     });
-    await waitForEffect();
-    expectServiceDescriptorVisible(service1);
-    expectRefreshButton();
+
+    await expectServiceDescriptorVisible(integrationDefinition1);
+    await expectRefreshButton();
     // Expect the first option to be selected
     expect(screen.getByText(sharedOption1a.label)).toBeVisible();
   });
@@ -215,19 +287,17 @@ describe("ServicesBody", () => {
       valueToAsyncState([sharedOption1a, sharedOption1b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
-      initialValues: {
-        integrationDependencies: [
-          integrationDependencyFactory({
-            integrationId: serviceId1,
-            configId: sharedOption1a.value,
-          }),
-        ],
-      },
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: sharedOption1a.value,
+        }),
+      ],
     });
-    await waitForEffect();
-    expectServiceDescriptorVisible(service1);
-    expectRefreshButton();
+
+    await expectServiceDescriptorVisible(integrationDefinition1);
+    await expectRefreshButton();
     // Expect the first option to be selected
     expect(screen.getByText(sharedOption1a.label)).toBeVisible();
 
@@ -249,25 +319,23 @@ describe("ServicesBody", () => {
       ]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
-    render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
-      initialValues: {
-        integrationDependencies: [
-          integrationDependencyFactory({
-            integrationId: serviceId1,
-            configId: sharedOption1a.value,
-          }),
-          integrationDependencyFactory({
-            integrationId: serviceId2,
-            configId: sharedOption2a.value,
-          }),
-        ],
-      },
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: sharedOption1a.value,
+        }),
+        integrationDependencyFactory({
+          integrationId: serviceId2,
+          configId: sharedOption2a.value,
+        }),
+      ],
     });
-    await waitForEffect();
-    expectServiceDescriptorVisible(service1);
-    expectServiceDescriptorVisible(service2);
+
+    await expectServiceDescriptorVisible(integrationDefinition1);
+    await expectServiceDescriptorVisible(integrationDefinition2);
     // Each widget will have a refresh button
-    expectRefreshButton(2);
+    await expectRefreshButton(2);
     // Expect the first option to be selected for each service
     expect(screen.getByText(sharedOption1a.label)).toBeVisible();
     expect(screen.getByText(sharedOption2a.label)).toBeVisible();
@@ -276,32 +344,17 @@ describe("ServicesBody", () => {
   it("hides one field and label when one built-in option", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState([builtInOption1a]));
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
-      />,
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({
-              integrationId: serviceId1,
-              configId: builtInOption1a.value,
-            }),
-          ],
-        },
-      },
-    );
-    await waitForEffect();
-    // Expect no service descriptor to be shown
-    expect(screen.queryByText(service1.metadata.name)).not.toBeInTheDocument();
-    expect(screen.queryByText(service1.metadata.id)).not.toBeInTheDocument();
-    // Expect no combobox input
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
-    // Expect no refresh button
-    expect(
-      screen.queryByRole("button", { name: /refresh/i }),
-    ).not.toBeInTheDocument();
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: builtInOption1a.value,
+        }),
+      ],
+      hideBuiltInServiceIntegrations: true,
+    });
+
+    await expectFieldToBeHidden(integrationDefinition1);
   });
 
   it("hides one field when two built-in options", async () => {
@@ -309,32 +362,17 @@ describe("ServicesBody", () => {
       valueToAsyncState([builtInOption1a, builtInOption1b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
-      />,
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({
-              integrationId: serviceId1,
-              configId: builtInOption1a.value,
-            }),
-          ],
-        },
-      },
-    );
-    await waitForEffect();
-    // Expect no service descriptor to be shown
-    expect(screen.queryByText(service1.metadata.name)).not.toBeInTheDocument();
-    expect(screen.queryByText(service1.metadata.id)).not.toBeInTheDocument();
-    // Expect no combobox input
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
-    // Expect no refresh button
-    expect(
-      screen.queryByRole("button", { name: /refresh/i }),
-    ).not.toBeInTheDocument();
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: builtInOption1a.value,
+        }),
+      ],
+      hideBuiltInServiceIntegrations: true,
+    });
+
+    await expectFieldToBeHidden(integrationDefinition1);
   });
 
   it("shows one field when one built-in option and one shared", async () => {
@@ -342,25 +380,18 @@ describe("ServicesBody", () => {
       valueToAsyncState([builtInOption1a, sharedOption1a]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
-      />,
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({
-              integrationId: serviceId1,
-              configId: builtInOption1a.value,
-            }),
-          ],
-        },
-      },
-    );
-    await waitForEffect();
-    expectServiceDescriptorVisible(service1);
-    expectRefreshButton();
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: builtInOption1a.value,
+        }),
+      ],
+      hideBuiltInServiceIntegrations: true,
+    });
+
+    await expectServiceDescriptorVisible(integrationDefinition1);
+    await expectRefreshButton();
     // Expect the first option to be selected
     expect(screen.getByText(builtInOption1a.label)).toBeVisible();
   });
@@ -370,25 +401,18 @@ describe("ServicesBody", () => {
       valueToAsyncState([builtInOption1a, sharedOption1a]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
-      />,
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({
-              integrationId: serviceId1,
-              configId: sharedOption1a.value,
-            }),
-          ],
-        },
-      },
-    );
-    await waitForEffect();
-    expectServiceDescriptorVisible(service1);
-    expectRefreshButton();
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: sharedOption1a.value,
+        }),
+      ],
+      hideBuiltInServiceIntegrations: true,
+    });
+
+    await expectServiceDescriptorVisible(integrationDefinition1);
+    await expectRefreshButton();
     // Expect the shared option to be selected
     expect(screen.getByText(sharedOption1a.label)).toBeVisible();
 
@@ -398,8 +422,8 @@ describe("ServicesBody", () => {
       await selectEvent.select(selectInput, builtInOption1a.label);
     });
     // Expect widget elements still visible
-    expectServiceDescriptorVisible(service1);
-    expectRefreshButton();
+    await expectServiceDescriptorVisible(integrationDefinition1);
+    await expectRefreshButton();
     // Expect built-in option selected
     expect(screen.getByText(builtInOption1a.label)).toBeVisible();
   });
@@ -409,31 +433,26 @@ describe("ServicesBody", () => {
       valueToAsyncState([builtInOption1a, sharedOption2a, sharedOption2b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
-    render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
-      />,
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({
-              integrationId: serviceId1,
-              configId: builtInOption1a.value,
-            }),
-            integrationDependencyFactory({
-              integrationId: serviceId2,
-              configId: sharedOption2a.value,
-            }),
-          ],
-        },
-      },
-    );
-    await waitForEffect();
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: builtInOption1a.value,
+        }),
+        integrationDependencyFactory({
+          integrationId: serviceId2,
+          configId: sharedOption2a.value,
+        }),
+      ],
+      hideBuiltInServiceIntegrations: true,
+    });
+
+    await expectRefreshButton();
+
     // Expect only field 2 visible
-    expect(screen.queryByText(service1.metadata.name)).not.toBeInTheDocument();
-    expectServiceDescriptorVisible(service2);
-    expectRefreshButton();
+    await expectServiceDescriptorVisible(integrationDefinition2);
+    await expectFieldToBeHidden(integrationDefinition1);
+
     // Expect the first option to be selected for service 2
     expect(screen.getByText(sharedOption2a.label)).toBeVisible();
   });
@@ -448,32 +467,27 @@ describe("ServicesBody", () => {
       ]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
-    render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
-      />,
-      {
-        initialValues: {
-          integrationDependencies: [
-            integrationDependencyFactory({
-              integrationId: serviceId1,
-              configId: builtInOption1a.value,
-            }),
-            integrationDependencyFactory({
-              integrationId: serviceId2,
-              configId: sharedOption2a.value,
-            }),
-          ],
-        },
-      },
-    );
-    await waitForEffect();
+    renderContent({
+      integrationDependencies: [
+        integrationDependencyFactory({
+          integrationId: serviceId1,
+          configId: builtInOption1a.value,
+        }),
+        integrationDependencyFactory({
+          integrationId: serviceId2,
+          configId: sharedOption2b.value,
+        }),
+      ],
+      hideBuiltInServiceIntegrations: true,
+    });
+
+    await expectRefreshButton();
+
     // Expect only field 2 visible
-    expect(screen.queryByText(service1.metadata.name)).not.toBeInTheDocument();
-    expectServiceDescriptorVisible(service2);
-    expectRefreshButton();
-    // Expect the first option to be selected for service 2
-    expect(screen.getByText(sharedOption2a.label)).toBeVisible();
+    await expectServiceDescriptorVisible(integrationDefinition2);
+    await expectFieldToBeHidden(integrationDefinition1);
+
+    // Expect the second option to be selected for service 2
+    expect(screen.getByText(sharedOption2b.label)).toBeVisible();
   });
 });
