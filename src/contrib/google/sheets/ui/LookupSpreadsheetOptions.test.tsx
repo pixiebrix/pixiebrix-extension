@@ -85,9 +85,11 @@ const servicesLookup = {
   }),
 };
 
+const GOOGLE_AUTH_OPTION_LABEL = "Google OAuth2 PKCE";
+
 const googlePKCEAuthOption: AuthOption = {
   serviceId: GOOGLE_PKCE_SERVICE_ID,
-  label: "Google OAuth2 PKCE",
+  label: GOOGLE_AUTH_OPTION_LABEL,
   local: true,
   value: GOOGLE_PKCE_AUTH_CONFIG,
   sharingType: "private",
@@ -177,13 +179,6 @@ async function expectTabsAndHeadersToBeLoaded() {
   expect(screen.queryByText("Column2")).not.toBeInTheDocument();
 }
 
-jest.mock("@/hooks/useFlags", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-const useFlagsMock = jest.mocked(useFlags);
-
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockImplementation(
@@ -204,19 +199,6 @@ beforeAll(() => {
   });
 });
 
-beforeEach(() => {
-  useFlagsMock.mockReturnValue({
-    permit: jest.fn(),
-    restrict: jest.fn(),
-    flagOn(flag: string) {
-      return true;
-    },
-    flagOff(flag: string) {
-      return false;
-    },
-  });
-});
-
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
   const utils = render(
     <LookupSpreadsheetOptions name="" configKey="config" />,
@@ -232,28 +214,8 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
 };
 
 describe("LookupSpreadsheetOptions", () => {
-  /**
-   * Snapshots
-   */
-
-  test("given test googleAccount and string spreadsheetId and empty tabName, when rendered, should match snapshot", async () => {
-    const { asFragment } = await renderWithValuesAndWait({
-      config: {
-        googleAccount: makeVariableExpression("@google"),
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        header: makeTemplateExpression("nunjucks", ""),
-        query: makeTemplateExpression("nunjucks", ""),
-        multi: false,
-      },
-      integrationDependencies: [googlePKCEIntegrationDependency],
-    });
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test("given test googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, should match snapshot", async () => {
-    const { asFragment } = await renderWithValuesAndWait({
+  test("given test googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, does not change values", async () => {
+    await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -265,12 +227,13 @@ describe("LookupSpreadsheetOptions", () => {
       integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    expect(asFragment()).toMatchSnapshot();
+    // Expect values have not changed
+    expect(screen.getByText(GOOGLE_AUTH_OPTION_LABEL)).toBeVisible();
+    expect(screen.getByText(TEST_SPREADSHEET_NAME)).toBeVisible();
+    expect(screen.getByText("Tab2")).toBeVisible();
+    expect(screen.getByText("Bar")).toBeVisible();
+    expect(screen.getByDisplayValue("test query")).toBeVisible();
   });
-
-  /**
-   * Basic Render Tests
-   */
 
   test("given test googleAccount and string spreadsheetId, when rendered, loads tab names and header values", async () => {
     await renderWithValuesAndWait({
@@ -339,10 +302,6 @@ describe("LookupSpreadsheetOptions", () => {
 
     await expectTabsAndHeadersToBeLoaded();
   });
-
-  /**
-   * Does Not Clear Initial Values
-   */
 
   test("given test googleAccount and mod input spreadsheetId value, when rendered, does not clear variable values", async () => {
     await renderWithValuesAndWait({

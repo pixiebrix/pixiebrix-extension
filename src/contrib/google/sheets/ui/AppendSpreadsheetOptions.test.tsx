@@ -52,7 +52,6 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
-import useFlags from "@/hooks/useFlags";
 
 let idSequence = 0;
 function newId(): UUID {
@@ -180,13 +179,6 @@ const fileListResponse: FileList = {
   ],
 };
 
-jest.mock("@/hooks/useFlags", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-const useFlagsMock = jest.mocked(useFlags);
-
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockImplementation(
@@ -225,16 +217,6 @@ beforeEach(() => {
         ? testSpreadsheet
         : otherTestSpreadsheet
   );
-  useFlagsMock.mockReturnValue({
-    permit: jest.fn(),
-    restrict: jest.fn(),
-    flagOn(flag: string) {
-      return true;
-    },
-    flagOff(flag: string) {
-      return false;
-    },
-  });
 });
 
 describe("getToggleOptions", () => {
@@ -345,46 +327,13 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
 
 describe("AppendSpreadsheetOptions", () => {
   /**
-   * Snapshots
+   * Basic Render Tests
    */
 
-  test("given empty googleAccount and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
-    const { asFragment } = await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        rowValues: {},
-      },
-    });
+  test("given empty googleAccount and string spreadsheetId and selected tabName and entered rowValues, when rendered, does not clear values", async () => {
+    getSpreadsheetMock.mockRejectedValue(new Error("Test error"));
 
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test("given feature flag off and string spreadsheetId and empty nunjucks tabName, when rendered, matches snapshot", async () => {
-    useFlagsMock.mockReturnValue({
-      permit: jest.fn(),
-      restrict: jest.fn(),
-      flagOn(flag: string) {
-        return false;
-      },
-      flagOff(flag: string) {
-        return true;
-      },
-    });
-
-    const { asFragment } = await renderWithValuesAndWait({
-      config: {
-        spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        rowValues: {},
-      },
-    });
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test("given empty googleAccount and string spreadsheetId and selected tabName and entered rowValues, when rendered, matches snapshot", async () => {
-    const { asFragment } = await renderWithValuesAndWait({
+    await renderWithValuesAndWait({
       config: {
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: "Tab2",
@@ -395,11 +344,16 @@ describe("AppendSpreadsheetOptions", () => {
       },
     });
 
-    expect(asFragment()).toMatchSnapshot();
+    // Expect all values to be visible
+    expect(screen.getByText(TEST_SPREADSHEET_ID)).toBeVisible();
+    expect(screen.getByText("Tab2")).toBeVisible();
+    expect(screen.getByDisplayValue("fooValue")).toBeVisible();
+    expect(screen.getByDisplayValue("barValue")).toBeVisible();
   });
 
-  test("given test googleAccount and string spreadsheetId value and selected tabName and column values, when rendered, matches snapshot", async () => {
-    const { asFragment } = await renderWithValuesAndWait({
+  // eslint-disable-next-line jest/expect-expect -- custom expect functions
+  test("given test googleAccount and string spreadsheetId value and selected tabName and column values, when rendered, loads spreadsheet title and doesn't clear values", async () => {
+    await renderWithValuesAndWait({
       config: {
         googleAccount: makeVariableExpression("@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
@@ -412,12 +366,9 @@ describe("AppendSpreadsheetOptions", () => {
       integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    expect(asFragment()).toMatchSnapshot();
+    expectGoogleAccountSpreadsheetTitleLoaded();
+    expectTab2Selected();
   });
-
-  /**
-   * Basic Render Tests
-   */
 
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when rendered, shows spreadsheet Id", async () => {
     getSpreadsheetMock.mockRejectedValue(new Error("Test error"));
