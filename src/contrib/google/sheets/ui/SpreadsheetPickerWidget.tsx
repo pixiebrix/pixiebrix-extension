@@ -35,14 +35,19 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { AnnotationType } from "@/types/annotationTypes";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { type AsyncStateArray } from "@/types/sliceTypes";
+import { useField } from "formik";
+import { type Expression } from "@/types/runtimeTypes";
+import { isExpression } from "@/utils/expressionUtils";
 
 const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
-  const { schema: baseSchema } = props;
+  const { name, schema: baseSchema } = props;
   const [isSchemaError, setIsSchemaError] = useState(false);
   // Need to lift this into an AsyncState to force the useDeriveAsyncState() call below to
   // recalculate when baseSchema changes
   const baseSchemaAsyncState = valueToAsyncState(baseSchema);
   const googleAccountAsyncState = useGoogleAccount();
+  const [{ value }] = useField<string | Expression | undefined>(name);
+  const fieldValue = isExpression(value) ? value.__value__ : value;
 
   const [isRetrying, setIsRetrying] = useState(false);
   const retry = useCallback(async () => {
@@ -101,6 +106,25 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
 
       try {
         const schemaResult = await getSchema();
+        // If schema doesn't contain an option in oneOf containing the current
+        // value, then add an option with the current value as the value and
+        // label, so that the select widget doesn't clear the "invalid" value
+        // from the mod automatically.
+        if (
+          fieldValue != null &&
+          schemaResult.type === "string" &&
+          schemaResult.oneOf &&
+          !schemaResult.oneOf.some(
+            (option) =>
+              typeof option !== "boolean" && option.const === fieldValue
+          )
+        ) {
+          schemaResult.oneOf.unshift({
+            const: fieldValue,
+            title: fieldValue,
+          });
+        }
+
         setIsSchemaError(false);
         return schemaResult;
       } catch (error: unknown) {
@@ -123,7 +147,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
       {({ data: schema }) =>
         isSchemaError ? (
           <FieldTemplate
-            name={props.name}
+            name={name}
             disabled
             annotations={[
               {

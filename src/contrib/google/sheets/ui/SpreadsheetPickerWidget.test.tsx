@@ -19,13 +19,9 @@ import { render } from "@/pageEditor/testHelpers";
 import React from "react";
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { services, sheets } from "@/background/messenger/api";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { act, screen } from "@testing-library/react";
 import { type FormikValues } from "formik";
 import { dereference } from "@/validators/generic";
@@ -39,7 +35,6 @@ import { type FileList } from "@/contrib/google/sheets/core/types";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
-import useFlags from "@/hooks/useFlags";
 
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 
@@ -55,7 +50,6 @@ const OTHER_TEST_SPREADSHEET_ID = newId();
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 const GOOGLE_PKCE_SERVICE_ID = validateRegistryId("google/oauth2-pkce");
 const GOOGLE_PKCE_AUTH_CONFIG = newId();
-const TEST_SPREADSHEET_AUTH_CONFIG = newId();
 
 const TEST_SPREADSHEET_NAME = "Test Spreadsheet";
 const OTHER_TEST_SPREADSHEET_NAME = "Other Spreadsheet";
@@ -79,12 +73,6 @@ const googlePKCEIntegrationDependency = integrationDependencyFactory({
   configId: GOOGLE_PKCE_AUTH_CONFIG,
 });
 
-const testSpreadsheetIntegrationDependency = integrationDependencyFactory({
-  integrationId: GOOGLE_SHEET_SERVICE_ID,
-  outputKey: validateOutputKey("google"),
-  configId: TEST_SPREADSHEET_AUTH_CONFIG,
-});
-
 const fileListResponse: FileList = {
   kind: "drive#fileList",
   incompleteSearch: false,
@@ -104,27 +92,19 @@ const fileListResponse: FileList = {
   ],
 };
 
-jest.mock("@/hooks/useFlags", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-const useFlagsMock = jest.mocked(useFlags);
-
-const renderWithValuesAndWait = async (initialValues: FormikValues) => {
+const renderWithValues = async (initialValues: FormikValues) => {
   const baseSchema = await dereference(BASE_SHEET_SCHEMA);
 
-  const utils = render(
-    <SpreadsheetPickerWidget name="spreadsheetId" schema={baseSchema} />,
-    {
-      initialValues,
-      wrapper: IntegrationsSliceModIntegrationsContextAdapter,
-    }
-  );
-
-  await waitForEffect();
-
-  return utils;
+  // eslint-disable-next-line testing-library/no-unnecessary-act -- Need this for side effects to avoid console error
+  await act(async () => {
+    render(
+      <SpreadsheetPickerWidget name="spreadsheetId" schema={baseSchema} />,
+      {
+        initialValues,
+        wrapper: IntegrationsSliceModIntegrationsContextAdapter,
+      }
+    );
+  });
 };
 
 beforeAll(() => {
@@ -138,144 +118,58 @@ beforeAll(() => {
 describe("SpreadsheetPickerWidget", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    useFlagsMock.mockReturnValue({
-      permit: jest.fn(),
-      restrict: jest.fn(),
-      flagOn(flag: string) {
-        return true;
-      },
-      flagOff(flag: string) {
-        return false;
-      },
-    });
   });
 
-  it("smoke test", async () => {
-    useFlagsMock.mockReturnValue({
-      permit: jest.fn(),
-      restrict: jest.fn(),
-      flagOn(flag: string) {
-        return false;
-      },
-      flagOff(flag: string) {
-        return true;
-      },
-    });
-
-    const { asFragment } = await renderWithValuesAndWait({
+  test("given empty dependencies and null spreadsheetId, renders empty dropdown", async () => {
+    await renderWithValues({
       spreadsheetId: null,
-    });
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it("smoke test with feature flag off", async () => {
-    const { asFragment } = await renderWithValuesAndWait({
-      spreadsheetId: null,
-    });
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it("renders valid sheet on load", async () => {
-    await renderWithValuesAndWait({ spreadsheetId: TEST_SPREADSHEET_ID });
-
-    // Verify it's showing the sheet title and not the sheet unique id
-    expect(screen.getByRole("textbox")).toHaveDisplayValue(
-      TEST_SPREADSHEET_NAME
-    );
-  });
-
-  it("falls back to spreadsheet id if fetching properties fails", async () => {
-    await renderWithValuesAndWait({ spreadsheetId: TEST_SPREADSHEET_ID });
-
-    expect(screen.getByRole("textbox")).toHaveDisplayValue(TEST_SPREADSHEET_ID);
-  });
-
-  it("shows workshop fallback on expression", async () => {
-    await renderWithValuesAndWait({
-      spreadsheetId: makeVariableExpression("@sheet"),
+      integrationDependencies: [],
     });
 
-    expect(screen.getByRole("textbox")).toHaveDisplayValue(
-      "Use Workshop to edit"
-    );
-  });
+    const selectInput = await screen.findByRole("combobox");
+    expect(selectInput).toBeVisible();
 
-  it("removes unused integration dependency on mount", async () => {
-    const initialValues = formStateFactory(
-      {
-        integrationDependencies: [testSpreadsheetIntegrationDependency],
-      },
-      [
-        brickConfigFactory({
-          config: {
-            spreadsheetId: TEST_SPREADSHEET_ID,
-          },
-        }),
-      ]
-    );
+    // Dropdown should not have a value selected
+    expect(screen.queryByText(TEST_SPREADSHEET_NAME)).not.toBeInTheDocument();
 
-    const { getFormState } = await renderWithValuesAndWait(initialValues);
-
-    expect(getFormState().integrationDependencies).toHaveLength(0);
-  });
-
-  it("does not remove used integration dependency on mount", async () => {
-    const initialValues = formStateFactory(
-      {
-        integrationDependencies: [testSpreadsheetIntegrationDependency],
-      },
-      [
-        brickConfigFactory({
-          config: {
-            spreadsheetId: makeVariableExpression("@google"),
-          },
-        }),
-      ]
-    );
-
-    const { getFormState } = await renderWithValuesAndWait(initialValues);
-
-    const formState = getFormState();
-
-    expect(formState.integrationDependencies).toHaveLength(1);
-    expect(formState.integrationDependencies[0]).toEqual(
-      testSpreadsheetIntegrationDependency
-    );
-  });
-
-  it("shows working spreadsheet dropdown picker when using test google account PKCE", async () => {
-    const initialValues = formStateFactory(
-      {
-        integrationDependencies: [googlePKCEIntegrationDependency],
-      },
-      [
-        brickConfigFactory({
-          config: {
-            spreadsheetId: makeVariableExpression("@google"),
-          },
-        }),
-      ]
-    );
-
-    await renderWithValuesAndWait(initialValues);
-
-    // Dropdown should show both spreadsheets
-    selectEvent.openMenu(screen.getByRole("combobox"));
-    expect(screen.getByText(TEST_SPREADSHEET_NAME)).toBeVisible();
-    expect(screen.getByText(OTHER_TEST_SPREADSHEET_NAME)).toBeVisible();
-
-    // Pick the first one
     await act(async () => {
-      await selectEvent.select(
-        screen.getByRole("combobox"),
-        TEST_SPREADSHEET_NAME
-      );
+      selectEvent.openMenu(selectInput);
     });
 
+    expect(await screen.findByText("No options")).toBeVisible();
+  });
+
+  test("given google pkce dependency and string spreadsheetId, renders dropdown with test spreadsheet option selected", async () => {
+    await renderWithValues({
+      spreadsheetId: TEST_SPREADSHEET_ID,
+      integrationDependencies: [googlePKCEIntegrationDependency],
+    });
+
+    const selectInput = await screen.findByRole("combobox");
+    expect(selectInput).toBeVisible();
+
+    // Dropdown should show the test spreadsheet
     expect(screen.getByText(TEST_SPREADSHEET_NAME)).toBeVisible();
+  });
+
+  test("given google pkce dependency and string spreadsheetId, renders dropdown with all options", async () => {
+    await renderWithValues({
+      spreadsheetId: TEST_SPREADSHEET_ID,
+      integrationDependencies: [googlePKCEIntegrationDependency],
+    });
+
+    const selectInput = await screen.findByRole("combobox");
+    expect(selectInput).toBeVisible();
+
+    selectEvent.openMenu(selectInput);
+
+    // Dropdown should show the test spreadsheet options
     expect(
-      screen.queryByText(OTHER_TEST_SPREADSHEET_NAME)
-    ).not.toBeInTheDocument();
+      screen.getByRole("option", { name: TEST_SPREADSHEET_NAME })
+    ).toBeVisible();
+    expect(
+      screen.getByRole("option", { name: OTHER_TEST_SPREADSHEET_NAME })
+    ).toBeVisible();
 
     // Switch spreadsheets
     await act(async () => {
@@ -285,6 +179,7 @@ describe("SpreadsheetPickerWidget", () => {
       );
     });
 
+    // Dropdown should show the other test spreadsheet
     expect(screen.queryByText(TEST_SPREADSHEET_NAME)).not.toBeInTheDocument();
     expect(screen.getByText(OTHER_TEST_SPREADSHEET_NAME)).toBeVisible();
   });
