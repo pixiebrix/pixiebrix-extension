@@ -21,7 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { $safeFindElementsWithRootMode } from "@/bricks/rootModeHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { PropError } from "@/errors/businessErrors";
-import { assert } from "@/utils/typeUtils.js";
+import { assert } from "@/utils/typeUtils";
 
 class PostMessageEffect extends EffectABC {
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
