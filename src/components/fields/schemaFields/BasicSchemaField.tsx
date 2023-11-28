@@ -41,7 +41,7 @@ import useAsyncEffect from "use-async-effect";
 import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 
 /*
- *  This is a hack to fix the is`sue where the formik state is not updated correctly when the form is first rendered.
+ *  This is a hack to fix the issue where the formik state is not updated correctly when the form is first rendered.
  *  We use the renderRef to ensure that we only run this on the second render.
  *  TODO: We should be setting the initialValues in Redux before rendering the form.
  */
