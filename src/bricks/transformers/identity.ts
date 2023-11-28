@@ -30,6 +30,15 @@ export class IdentityTransformer extends TransformerABC {
     return true;
   }
 
+  constructor() {
+    super(
+      IdentityTransformer.BRICK_ID,
+      "Identity Function",
+      "Return/echo the value passed into it. Use to construct return values/event data.",
+      "faCode"
+    );
+  }
+
   override getOutputSchema(_config: BrickConfig): Schema | undefined {
     if (isPlainObject(_config.config) && !isExpression(_config.config)) {
       return {
@@ -50,21 +59,12 @@ export class IdentityTransformer extends TransformerABC {
     return undefined;
   }
 
-  constructor() {
-    super(
-      IdentityTransformer.BRICK_ID,
-      "Identity Function",
-      "Returns/echoes the value passed into it. Use to construct return values/event data.",
-      "faCode"
-    );
-  }
-
   // Empty schema matches any input
   inputSchema: Schema = {
     title: "Value",
   };
 
-  async transform(arg: BrickArgs): Promise<BrickArgs> {
-    return arg;
+  async transform(args: BrickArgs): Promise<BrickArgs> {
+    return args;
   }
 }

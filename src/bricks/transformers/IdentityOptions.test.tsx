@@ -44,8 +44,8 @@ describe("IdentityOptions", () => {
 
     await waitForEffect();
 
-    expect(
-      screen.getByRole("button", { name: "Add Property" })
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByRole("button", { name: "Add Property" })
+    ).resolves.toBeInTheDocument();
   });
 });

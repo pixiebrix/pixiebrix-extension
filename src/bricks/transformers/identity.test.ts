@@ -19,8 +19,20 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
+import { validateInput } from "@/validators/generic";
 
 const brick = new IdentityTransformer();
+
+describe("IdentityTransformer.schema", () => {
+  it.each([null, "hello", 42, [], {}])("allows: %s", async (value) => {
+    await expect(
+      validateInput(brick.inputSchema, value)
+    ).resolves.toStrictEqual({
+      errors: [],
+      valid: true,
+    });
+  });
+});
 
 describe("IdentityTransformer.run", () => {
   test("it returns same value", async () => {
