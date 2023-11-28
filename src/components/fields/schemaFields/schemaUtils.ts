@@ -47,6 +47,7 @@ export function arraySchema(itemSchema: Schema): Schema {
 export function castSchema(
   schemaOrProperties: Schema | SchemaProperties
 ): Schema {
+  // XXX: this isn't quite right -- the check won't work if there's a title/description for the empty schema
   if (isEmpty(schemaOrProperties)) {
     // Empty schema means allow anything
     return {} as Schema;
