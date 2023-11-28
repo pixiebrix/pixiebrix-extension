@@ -16,9 +16,9 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { neverPromise } from "@/testUtils/testHelpers";
 import { FormData } from "./FormData";
 import { html } from "code-tag";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("FormData block", () => {
   test("Basic form serialization", async () => {
@@ -46,13 +46,7 @@ describe("FormData block", () => {
 
     const arg = unsafeAssumeValidArg({ selector: "#serialize" });
 
-    const result = await brick.run(arg, {
-      ctxt: null,
-      logger: null,
-      root: null,
-      runPipeline: neverPromise,
-      runRendererPipeline: neverPromise,
-    });
+    const result = await brick.run(arg, brickOptionsFactory());
 
     expect(result).toEqual({
       "no-value": "",
@@ -83,13 +77,7 @@ describe("FormData block", () => {
 
     const arg = unsafeAssumeValidArg({ selector: "#logout-form" });
 
-    const result = await brick.run(arg, {
-      ctxt: null,
-      logger: null,
-      root: null,
-      runPipeline: neverPromise,
-      runRendererPipeline: neverPromise,
-    });
+    const result = await brick.run(arg, brickOptionsFactory());
 
     expect(result).toEqual({
       csrfmiddlewaretoken: "redacted",
@@ -111,13 +99,12 @@ describe("FormData block", () => {
 
     const arg = unsafeAssumeValidArg({ isRootAware: true });
 
-    const result = await brick.run(arg, {
-      ctxt: null,
-      logger: null,
-      root: document.querySelector<HTMLElement>("#fooForm"),
-      runPipeline: neverPromise,
-      runRendererPipeline: neverPromise,
-    });
+    const result = await brick.run(
+      arg,
+      brickOptionsFactory({
+        root: document.querySelector<HTMLElement>("#fooForm"),
+      })
+    );
 
     expect(result).toEqual({
       foo: "42",
@@ -139,13 +126,7 @@ describe("FormData block", () => {
 
     const arg = unsafeAssumeValidArg({ selector: "form" });
 
-    const result = await brick.run(arg, {
-      ctxt: null,
-      logger: null,
-      root: null,
-      runPipeline: neverPromise,
-      runRendererPipeline: neverPromise,
-    });
+    const result = await brick.run(arg, brickOptionsFactory());
 
     expect(result).toEqual({
       foo: "42",

@@ -100,8 +100,8 @@ const steps: WalkthroughModalStep[] = [
           </Col>
         </Row>
         <p className="mt-3">
-          Dock the DevTools to the bottom of the screen, if necessary. The Page
-          Editor is a powerful tool that needs a bit of room to work its magic.
+          Dock the DevTools to the bottom of the screen. The Page Editor is a
+          powerful tool that needs a bit of room to work its magic.
         </p>
         <p className="mb-0">
           Click the ‘

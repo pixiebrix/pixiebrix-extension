@@ -26,6 +26,7 @@ import {
 import { type MessageContext } from "@/types/loggerTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { isObject } from "@/utils/objectUtils";
+import { type RunMetadata } from "@/types/runtimeTypes";
 
 /**
  * Entry types supported by the sidebar.
@@ -330,10 +331,7 @@ export type ActivatePanelOptions = {
  * Metadata about the extension that produced the panel content
  * @since 1.7.0
  */
-export type PanelRunMeta = {
-  runId: UUID;
-  extensionId: UUID;
-};
+export type PanelRunMeta = Pick<RunMetadata, "runId" | "extensionId">;
 
 export type SidebarState = SidebarEntries & {
   activeKey: string;

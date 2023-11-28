@@ -17,8 +17,8 @@
 
 import { AlertEffect } from "@/bricks/effects/alert";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { validateInput } from "@/validators/generic";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new AlertEffect();
 
@@ -36,7 +36,7 @@ describe("AlertEffect", () => {
     window.alert = jest.fn();
     await brick.run(
       unsafeAssumeValidArg({ message: "Hello, world!" }),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
     expect(window.alert).toHaveBeenCalledWith("Hello, world!");
   });

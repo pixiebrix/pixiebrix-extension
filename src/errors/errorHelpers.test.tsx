@@ -329,15 +329,15 @@ describe("formatSchemaValidationMessage", () => {
 });
 
 describe("getErrorMessageWithCauses", () => {
-  const FIRST_ERROR = "There was an error while fetching the page";
-  const SECOND_ERROR = "Maybe you are not connected to the internet?";
-  const THIRD_ERROR = "The network request failed (NO_NETWORK)";
+  const firstError = "There was an error while fetching the page";
+  const secondError = "Maybe you are not connected to the internet?";
+  const thirdError = "The network request failed (NO_NETWORK)";
   test("handles string", () => {
-    expect(getErrorMessageWithCauses(FIRST_ERROR)).toBe(FIRST_ERROR);
+    expect(getErrorMessageWithCauses(firstError)).toBe(firstError);
   });
 
   test("handles vanilla error", () => {
-    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR))).toBe(FIRST_ERROR);
+    expect(getErrorMessageWithCauses(new Error(firstError))).toBe(firstError);
   });
 
   test("handles null/undefined", () => {
@@ -348,7 +348,7 @@ describe("getErrorMessageWithCauses", () => {
   test("handles good causes", () => {
     expect(
       getErrorMessageWithCauses(
-        new Error(FIRST_ERROR, { cause: new Error(SECOND_ERROR) })
+        new Error(firstError, { cause: new Error(secondError) })
       )
     ).toMatchInlineSnapshot(`
       "There was an error while fetching the page.
@@ -356,8 +356,8 @@ describe("getErrorMessageWithCauses", () => {
     `);
     expect(
       getErrorMessageWithCauses(
-        new Error(FIRST_ERROR, {
-          cause: new Error(SECOND_ERROR, { cause: new Error(THIRD_ERROR) }),
+        new Error(firstError, {
+          cause: new Error(secondError, { cause: new Error(thirdError) }),
         })
       )
     ).toMatchInlineSnapshot(`
@@ -369,17 +369,17 @@ describe("getErrorMessageWithCauses", () => {
 
   test("handles questionable causes", () => {
     expect(
-      getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: null }))
-    ).toBe(FIRST_ERROR);
+      getErrorMessageWithCauses(new Error(firstError, { cause: null }))
+    ).toBe(firstError);
     expect(
-      getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: undefined }))
-    ).toBe(FIRST_ERROR);
-    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: "idk" })))
+      getErrorMessageWithCauses(new Error(firstError, { cause: undefined }))
+    ).toBe(firstError);
+    expect(getErrorMessageWithCauses(new Error(firstError, { cause: "idk" })))
       .toMatchInlineSnapshot(`
         "There was an error while fetching the page.
         idk."
       `);
-    expect(getErrorMessageWithCauses(new Error(FIRST_ERROR, { cause: 420 })))
+    expect(getErrorMessageWithCauses(new Error(firstError, { cause: 420 })))
       .toMatchInlineSnapshot(`
         "There was an error while fetching the page.
         420."
@@ -389,9 +389,9 @@ describe("getErrorMessageWithCauses", () => {
   test("ignores duplicate error messages", () => {
     expect(
       getErrorMessageWithCauses(
-        new Error(FIRST_ERROR, { cause: new Error(FIRST_ERROR) })
+        new Error(firstError, { cause: new Error(firstError) })
       )
-    ).toBe(`${FIRST_ERROR}.`);
+    ).toBe(`${firstError}.`);
   });
 });
 

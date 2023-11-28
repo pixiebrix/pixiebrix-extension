@@ -17,8 +17,8 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ParseJson from "@/bricks/transformers/ParseJson";
-import { neverPromise } from "@/testUtils/testHelpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("ParseJson block", () => {
   test("Parse object", async () => {
@@ -26,13 +26,7 @@ describe("ParseJson block", () => {
 
     const arg = unsafeAssumeValidArg({ content: '{"foo": 42}' });
 
-    const result = await brick.run(arg, {
-      ctxt: null,
-      logger: null,
-      root: null,
-      runPipeline: neverPromise,
-      runRendererPipeline: neverPromise,
-    });
+    const result = await brick.run(arg, brickOptionsFactory());
 
     expect(result).toEqual({
       foo: 42,
@@ -43,13 +37,7 @@ describe("ParseJson block", () => {
     const brick = new ParseJson();
     const result = await brick.run(
       unsafeAssumeValidArg({ content: '{"foo": 42,}' }),
-      {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
@@ -60,13 +48,10 @@ describe("ParseJson block", () => {
   test("Throw BusinessError on invalid JSON", async () => {
     const brick = new ParseJson();
     await expect(async () => {
-      await brick.run(unsafeAssumeValidArg({ content: '{"foo":}' }), {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      });
+      await brick.run(
+        unsafeAssumeValidArg({ content: '{"foo":}' }),
+        brickOptionsFactory()
+      );
     }).rejects.toThrow(BusinessError);
   });
 
@@ -75,13 +60,7 @@ describe("ParseJson block", () => {
     await expect(async () => {
       await brick.run(
         unsafeAssumeValidArg({ content: '{"foo": 42,}', allowJson5: false }),
-        {
-          ctxt: null,
-          logger: null,
-          root: null,
-          runPipeline: neverPromise,
-          runRendererPipeline: neverPromise,
-        }
+        brickOptionsFactory()
       );
     }).rejects.toThrow(BusinessError);
   });
@@ -90,13 +69,7 @@ describe("ParseJson block", () => {
     const brick = new ParseJson();
     const result = await brick.run(
       unsafeAssumeValidArg({ content: "{foo: 42}" }),
-      {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
@@ -111,13 +84,7 @@ describe("ParseJson block", () => {
         lenient: true,
         content: 'Sure, here\'s your response: {"foo": 42}. What do you think?',
       }),
-      {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     expect(result).toEqual({
@@ -133,13 +100,7 @@ describe("ParseJson block", () => {
           lenient: true,
           content: 'abc {"foo": 42} {"bar": 421}',
         }),
-        {
-          ctxt: null,
-          logger: null,
-          root: null,
-          runPipeline: neverPromise,
-          runRendererPipeline: neverPromise,
-        }
+        brickOptionsFactory()
       );
     }).rejects.toThrow(BusinessError);
   });
@@ -151,13 +112,7 @@ describe("ParseJson block", () => {
         lenient: true,
         content: 'abc [{"foo": 42}, {"bar": 421}] def',
       }),
-      {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     expect(result).toEqual([
@@ -175,13 +130,7 @@ describe("ParseJson block", () => {
         lenient: true,
         content: 'abc [[{"foo": 42}], {"bar": 421}] def',
       }),
-      {
-        ctxt: null,
-        logger: null,
-        root: null,
-        runPipeline: neverPromise,
-        runRendererPipeline: neverPromise,
-      }
+      brickOptionsFactory()
     );
 
     expect(result).toEqual([

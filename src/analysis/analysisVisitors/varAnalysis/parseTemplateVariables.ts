@@ -20,11 +20,8 @@
 // https://github.com/archersado/nunjucks-variable-parser
 
 import { addPathPart } from "@/runtime/pathHelpers";
-import * as nunjucks from "nunjucks";
-
-// The typings of nunjucks do not expose parser and nodes
-// Have to hack the types
-const { parser, nodes } = nunjucks as any;
+// @ts-expect-error -- The typings of nunjucks do not expose parser and nodes
+import { parser, nodes } from "nunjucks";
 
 const VARIABLE_PARENT_SYMBOL = Symbol("#Variable_parent");
 const VARIABLE_CHILDREN_SYMBOL = Symbol("#Variable_children");
@@ -237,7 +234,8 @@ function parseLookUp(node: any, inLoop = false): Variable[] {
       : parseLookUp(target, inLoop);
 
   if (val instanceof Literal) {
-    const parentVar = targetVars.at(-1);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- targetVars can't be empty
+    const parentVar = targetVars.at(-1)!;
     const newVar = new Variable(String(val.value), {
       parent: parentVar,
       startIndex: val.colno,
@@ -318,8 +316,9 @@ function parseFor(node: any) {
 
 function getVariableName(variable: Variable, path = ""): string {
   const joinedName = addPathPart(path, variable.value);
-  if (variable.children.length > 0) {
-    return getVariableName(variable.children[0], joinedName);
+  const firstChild = variable.children[0];
+  if (firstChild) {
+    return getVariableName(firstChild, joinedName);
   }
 
   return joinedName;

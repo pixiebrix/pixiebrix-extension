@@ -34,6 +34,7 @@ import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers"
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
+import { IdentityTransformer } from "@/bricks/transformers/identity";
 
 /**
  * Get a default block config for a block
@@ -60,6 +61,12 @@ export function getExampleBlockConfig(
             isMulti: false,
           },
         },
+      };
+    }
+
+    case IdentityTransformer.BRICK_ID: {
+      return {
+        value: makeTemplateExpression("nunjucks", ""),
       };
     }
 

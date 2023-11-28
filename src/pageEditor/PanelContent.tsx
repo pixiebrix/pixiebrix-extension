@@ -41,6 +41,7 @@ import ReduxPersistenceContext, {
 } from "@/store/ReduxPersistenceContext";
 import type { StarterBrickType } from "@/types/starterBrickTypes";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
+import DimensionGate from "@/pageEditor/components/DimensionGate";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "actionPanel",
@@ -110,9 +111,11 @@ const PanelContent: React.FC = () => {
         <ModalProvider>
           <ErrorBoundary>
             <ErrorBanner />
-            <RequireAuth LoginPage={LoginCard}>
-              <EditorLayout />
-            </RequireAuth>
+            <DimensionGate>
+              <RequireAuth LoginPage={LoginCard}>
+                <EditorLayout />
+              </RequireAuth>
+            </DimensionGate>
           </ErrorBoundary>
         </ModalProvider>
       </ReduxPersistenceContext.Provider>

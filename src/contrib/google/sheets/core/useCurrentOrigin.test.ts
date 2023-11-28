@@ -80,16 +80,16 @@ describe("useCurrentOrigin", () => {
   });
 
   test("if other page, should return current tab url", async () => {
-    const OTHER_URL = "https://www.pixiebrix.com";
+    const otherUrl = "https://www.pixiebrix.com";
     setContext("web");
     queryMock.mockResolvedValue([
       {
-        url: OTHER_URL,
+        url: otherUrl,
       } as Tab,
     ]);
     const { result } = renderHook(() => useCurrentOrigin());
     // Wait for origin to load (async state)
     await waitForEffect();
-    expect(result.current).toBe(OTHER_URL);
+    expect(result.current).toBe(otherUrl);
   });
 });

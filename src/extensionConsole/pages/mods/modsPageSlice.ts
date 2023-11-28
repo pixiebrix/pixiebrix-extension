@@ -25,8 +25,8 @@ import { type ModViewItem } from "@/types/modTypes";
 type View = "list" | "grid";
 
 export type ActiveTab = {
-  key: string;
-  tabTitle: string;
+  key: string | null;
+  tabTitle: string | null;
   filters: Filters<ModViewItem>;
   hideToolbar?: boolean;
 };

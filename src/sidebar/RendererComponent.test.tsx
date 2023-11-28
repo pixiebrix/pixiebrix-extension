@@ -25,6 +25,7 @@ import { screen } from "shadow-dom-testing-library";
 import { SubmitPanelAction } from "@/bricks/errors";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   runHeadlessPipeline: jest
@@ -32,9 +33,7 @@ jest.mock("@/contentScript/messenger/api", () => ({
     .mockRejectedValue(new Error("not implemented")),
 }));
 
-const runHeadlessPipelineMock = runHeadlessPipeline as jest.MockedFunction<
-  typeof runHeadlessPipeline
->;
+const runHeadlessPipelineMock = jest.mocked(runHeadlessPipeline);
 
 describe("RendererComponent", () => {
   beforeEach(() => {
@@ -65,7 +64,14 @@ describe("RendererComponent", () => {
 
     const props = {
       body: [config],
-      options: { ctxt: {}, logger: new ConsoleLogger() },
+      options: brickOptionsFactory({
+        logger: new ConsoleLogger({ extensionId }),
+        meta: {
+          runId,
+          extensionId,
+          branches: [],
+        },
+      }),
     };
 
     render(

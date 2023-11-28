@@ -16,17 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { DetectElement } from "@/bricks/transformers/detect";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new DetectElement();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
 
 describe("DetectElement", () => {
   beforeEach(() => {
@@ -51,7 +44,7 @@ describe("DetectElement", () => {
     async (isRootAware) => {
       const result = await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        { root: document, logger } as BrickOptions
+        brickOptionsFactory()
       );
 
       expect(result).toStrictEqual({
@@ -64,10 +57,9 @@ describe("DetectElement", () => {
   test("it uses root if isRootAware: true", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
-      {
-        root: document.querySelector("#noButton"),
-        logger,
-      } as unknown as BrickOptions
+      brickOptionsFactory({
+        root: document.querySelector<HTMLElement>("#noButton"),
+      })
     );
 
     expect(result).toStrictEqual({

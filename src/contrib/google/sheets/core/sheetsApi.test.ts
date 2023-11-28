@@ -17,10 +17,8 @@
 
 import {
   DRIVE_BASE_URL,
-  ensureSheetsReady,
   getAllSpreadsheets,
 } from "@/contrib/google/sheets/core/sheetsApi";
-import { ensureGoogleToken } from "@/contrib/google/auth";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { performConfiguredRequest as realProxyService } from "@/background/requests";
@@ -42,57 +40,15 @@ const axiosMock = new MockAdapter(axios);
 
 const googleIntegration = fromJS(googleDefinition as any);
 
-jest.mock("@/contrib/google/initGoogle", () => ({
-  isGoogleInitialized: jest.fn().mockReturnValue(true),
-  isGAPISupported: jest.fn().mockReturnValue(true),
-  subscribe: jest.fn().mockImplementation(() => () => {}),
-}));
-
 jest.mock("@/background/auth/authStorage", () => ({
   ...jest.requireActual("@/background/auth/authStorage"),
   deleteCachedAuthData: jest.fn(),
 }));
 
-jest.mock("@/contrib/google/auth", () => {
-  const actual = jest.requireActual("@/contrib/google/auth");
-  return {
-    ...actual,
-    ensureGoogleToken: jest.fn().mockResolvedValue("NOTAREALTOKEN"),
-  };
-});
-
-// Mock out the gapi object
-(globalThis.gapi as any) = {
-  client: {
-    sheets: {},
-  },
-};
-
 // Wire up proxyService to the real implementation
 jest.mocked(apiProxyService).mockImplementation(realProxyService);
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
-const ensureGoogleTokenMock = jest.mocked(ensureGoogleToken);
 const deleteCachedAuthDataMock = jest.mocked(deleteCachedAuthData);
-
-describe("ensureSheetsReady", () => {
-  beforeEach(() => {
-    ensureGoogleTokenMock.mockResolvedValue("NOTAREALTOKEN");
-    ensureGoogleTokenMock.mockClear();
-  });
-
-  it("success", async () => {
-    await expect(ensureSheetsReady({ interactive: false })).toResolve();
-    expect(ensureGoogleTokenMock).toHaveBeenCalledTimes(1);
-  });
-
-  it("retries 3 times", async () => {
-    ensureGoogleTokenMock.mockRejectedValue(new Error("test error"));
-    await expect(ensureSheetsReady({ interactive: false })).rejects.toThrow(
-      Error
-    );
-    expect(ensureGoogleTokenMock).toHaveBeenCalledTimes(3);
-  });
-});
 
 jest.mock("@/integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");

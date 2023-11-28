@@ -1,3 +1,4 @@
+/* eslint-disable @shopify/prefer-module-scope-constants -- Dangerous here, contains copy-pasted code, serialized functions */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *

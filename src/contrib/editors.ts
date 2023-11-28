@@ -20,9 +20,6 @@ import PushOptions from "@/contrib/zapier/PushOptions";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import AppendSpreadsheetOptions from "@/contrib/google/sheets/ui/AppendSpreadsheetOptions";
-import SheetServiceOptions, {
-  SERVICE_GOOGLE_SHEET_ID,
-} from "@/contrib/google/sheets/ui/SheetServiceOptions";
 import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
 import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
@@ -57,6 +54,8 @@ import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import JQueryReaderOptions from "@/bricks/transformers/jquery/JQueryReaderOptions";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptions";
+import { IdentityTransformer } from "@/bricks/transformers/identity";
+import IdentityOptions from "@/bricks/transformers/IdentityOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -65,7 +64,6 @@ import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptio
  * @see BlockConfiguration
  */
 export default function registerEditors() {
-  optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
   optionsRegistry.set(ZAPIER_ID, PushOptions);
   optionsRegistry.set(UIPATH_ID, ProcessOptions);
   optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);
@@ -82,4 +80,5 @@ export default function registerEditors() {
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
   optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);
   optionsRegistry.set(AssignModVariable.BRICK_ID, AssignModVariableOptions);
+  optionsRegistry.set(IdentityTransformer.BRICK_ID, IdentityOptions);
 }
