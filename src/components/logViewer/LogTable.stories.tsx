@@ -107,7 +107,7 @@ const sampleSchema: Schema = {
 };
 
 const validationError = new InputValidationError(
-  "Invalid inputs for block",
+  "Invalid inputs for brick",
   sampleSchema,
   {},
   [
@@ -123,14 +123,14 @@ const validationError = new InputValidationError(
 const CONTEXT_ERROR_MESSAGE: LogEntry = {
   uuid: uuidv4(),
   timestamp: MESSAGE_DATE.toString(),
-  message: "Invalid inputs for block",
+  message: "Invalid inputs for brick",
   level: "error",
   context: {
     // Just the context that will show up in the table
     blockId,
   },
   error: serializeError(
-    new ContextError("Invalid inputs for block", {
+    new ContextError("Invalid inputs for brick", {
       cause: validationError,
       context: {
         blockId,

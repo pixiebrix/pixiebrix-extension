@@ -60,9 +60,7 @@ export class IdentityTransformer extends TransformerABC {
   }
 
   // Empty schema matches any input
-  inputSchema: Schema = {
-    title: "Value",
-  };
+  inputSchema: Schema = {};
 
   async transform(args: BrickArgs): Promise<BrickArgs> {
     return args;

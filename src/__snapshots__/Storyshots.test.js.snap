@@ -3220,7 +3220,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               @pixiebrix/system/notification
             </td>
             <td>
-              Invalid inputs for block
+              Invalid inputs for brick
             </td>
           </tr>
         </tbody>

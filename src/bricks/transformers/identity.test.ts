@@ -20,18 +20,31 @@ import { IdentityTransformer } from "@/bricks/transformers/identity";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { validateInput } from "@/validators/generic";
+import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 
 const brick = new IdentityTransformer();
 
 describe("IdentityTransformer.schema", () => {
-  it.each([null, "hello", 42, [], {}])("allows: %s", async (value) => {
-    await expect(
-      validateInput(brick.inputSchema, value)
-    ).resolves.toStrictEqual({
-      errors: [],
-      valid: true,
-    });
-  });
+  it.each([null, "hello", 42, [], {}])(
+    "allows validateInput: %s",
+    async (value) => {
+      await expect(
+        validateInput(brick.inputSchema, value)
+      ).resolves.toStrictEqual({
+        errors: [],
+        valid: true,
+      });
+    }
+  );
+
+  it.each([null, "hello", 42, [], {}])(
+    "allow throwIfInvalidInput: %s",
+    async (value) => {
+      await expect(
+        throwIfInvalidInput(brick, unsafeAssumeValidArg(value))
+      ).resolves.toBeUndefined();
+    }
+  );
 });
 
 describe("IdentityTransformer.run", () => {
