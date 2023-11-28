@@ -21,7 +21,7 @@ import {
   containsPermissions,
   openPopupPrompt,
 } from "@/background/messenger/api";
-import { isScriptableUrl as _isScriptableUrl } from "webext-content-scripts";
+import { isScriptableUrl } from "webext-content-scripts";
 import { isUrlPermittedByManifest } from "webext-additional-permissions";
 import {
   getTabUrl,
@@ -175,15 +175,6 @@ async function requestPermissionsFromUserGesture(
   const { tabId } = browser.devtools.inspectedWindow;
   await openPopupPrompt(tabId, page.toString());
   return containsPermissions(permissions);
-}
-
-/**
- * Determines whether a URL can potentially execute a content script.
- * @since 1.7.36 this includes http urls
- *
- */
-export function isScriptableUrl(url?: string): boolean {
-  return url && _isScriptableUrl(url);
 }
 
 /**

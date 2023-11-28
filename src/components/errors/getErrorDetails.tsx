@@ -38,7 +38,7 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
   const inputValidationError = selectSpecificError(error, InputValidationError);
   if (inputValidationError) {
     return {
-      title: "Invalid inputs for block",
+      title: "Invalid inputs for brick",
       detailsElement: (
         <InputValidationErrorDetail error={inputValidationError} />
       ),
@@ -51,7 +51,7 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
   );
   if (outputValidationError) {
     return {
-      title: "Invalid output for block",
+      title: "Invalid output for brick",
       detailsElement: (
         <OutputValidationErrorDetail error={outputValidationError} />
       ),

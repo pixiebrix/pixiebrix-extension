@@ -26,7 +26,7 @@ import {
   type ModComponentBase,
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("runSubTour", () => {
   test("it runs a sub-tour", async () => {
@@ -53,7 +53,7 @@ describe("runSubTour", () => {
 
     const promise = brick.run(
       unsafeAssumeValidArg({ tour: "Test Extension" }),
-      { logger: new ConsoleLogger({ blueprintId }) } as BrickOptions
+      brickOptionsFactory({ logger: new ConsoleLogger({ blueprintId }) })
     );
 
     await tick();

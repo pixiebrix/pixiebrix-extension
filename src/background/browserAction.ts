@@ -19,13 +19,14 @@ import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
 import { browserAction, type Tab } from "@/mv3/api";
-import { isScriptableUrl } from "@/permissions/permissionsUtils";
+import { isScriptableUrl } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import {
   DISPLAY_REASON_EXTENSION_CONSOLE,
   DISPLAY_REASON_RESTRICTED_URL,
 } from "@/tinyPages/restrictedUrlPopupConstants";
+import { setActionPopup } from "webext-tools";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -86,47 +87,28 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
  * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
  * the Extension Console, but that was confusing because the action was inconsistent with how the button behaves
  * other pages.
- * @param url the url of the tab, or null if not accessible
+ * @param tabUrl the url of the tab, or null if not accessible
  */
-async function updatePopover(url: string | null): Promise<void> {
-  // The URL might not be available in certain circumstances. This silences these
-  // cases and just treats them as "not allowed on this page"
-  const normalizedUrl = String(url);
-
+function getPopoverUrl(tabUrl: string | null): string | null {
   const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
 
-  if (normalizedUrl.startsWith(getExtensionConsoleUrl())) {
-    await browser.browserAction.setPopup({
-      popup: `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`,
-    });
-  } else if (isScriptableUrl(normalizedUrl)) {
-    await browser.browserAction.setPopup({
-      // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
-      // If an empty string ("") is passed here, the popup is disabled, and the extension will receive browserAction.onClicked events.
-      popup: "",
-    });
-  } else {
-    await browser.browserAction.setPopup({
-      popup: `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`,
-    });
+  if (tabUrl?.startsWith(getExtensionConsoleUrl())) {
+    return `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`;
   }
+
+  if (!isScriptableUrl(tabUrl)) {
+    return `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`;
+  }
+
+  // The popup is disabled, and the extension will receive browserAction.onClicked events.
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
+  return null;
 }
 
 export default function initBrowserAction(): void {
   browserAction.onClicked.addListener(handleBrowserAction);
 
-  // Track the active tab URL. MV2 doesn't support setting popover on a per-tab basis, so we need to update the popover
-  // every time status the active tab/active URL changes.
+  // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
   // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
-
-  chrome.tabs.onActivated.addListener(async (activeInfo) => {
-    const tab = await browser.tabs.get(activeInfo.tabId);
-    await updatePopover(tab.url);
-  });
-
-  browser.tabs.onUpdated.addListener(async (_tabId, _changeInfo, tab) => {
-    if (tab.active) {
-      await updatePopover(tab.url);
-    }
-  });
+  setActionPopup(getPopoverUrl);
 }

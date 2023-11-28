@@ -27,9 +27,6 @@ import { isExpression } from "@/utils/expressionUtils";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import useAsyncEffect from "use-async-effect";
 
-// Use a module constant for the sake of memo dependencies
-const emptyTabNames: string[] = [];
-
 const TabField: React.FC<
   SchemaFieldProps & { spreadsheet: Spreadsheet | null }
 > = ({ name, spreadsheet }) => {
@@ -38,13 +35,13 @@ const TabField: React.FC<
   const [{ value: tabName }, , { setValue: setTabName }] = useField<
     string | Expression
   >(name);
+  const defaultTabNames: string[] = isExpression(tabName) ? [] : [tabName];
 
-  const lastGoodTabNames = useRef(emptyTabNames);
+  const lastGoodTabNames = useRef(defaultTabNames);
 
   if (spreadsheet) {
     lastGoodTabNames.current =
-      spreadsheet.sheets?.map((sheet) => sheet.properties.title) ??
-      emptyTabNames;
+      spreadsheet.sheets?.map((sheet) => sheet.properties.title) ?? [];
   }
 
   const fieldSchema: Schema = {
@@ -55,39 +52,33 @@ const TabField: React.FC<
   };
 
   const allTabNames = lastGoodTabNames.current.join(",");
-  useAsyncEffect(
-    async () => {
-      // Don't modify the field if it's currently focused
-      if (document.activeElement === inputRef.current) {
-        return;
-      }
+  useAsyncEffect(async () => {
+    // Don't modify the field if it's currently focused
+    if (document.activeElement === inputRef.current) {
+      return;
+    }
 
-      // Don't modify if it's a non-empty expression (user-typed text, or variable)
-      if (isExpression(tabName) && !isEmpty(tabName.__value__)) {
-        return;
-      }
+    // Don't modify if it's a non-empty expression (user-typed text, or variable)
+    if (isExpression(tabName) && !isEmpty(tabName.__value__)) {
+      return;
+    }
 
-      const tabNames = lastGoodTabNames.current;
+    const tabNames = lastGoodTabNames.current;
 
-      // Set to empty nunjucks expression if no tab names have loaded
-      if (isEmpty(tabNames)) {
-        await setTabName(makeTemplateExpression("nunjucks", ""));
-        return;
-      }
+    // Set to empty nunjucks expression if no tab names have loaded
+    if (isEmpty(tabNames)) {
+      await setTabName(makeTemplateExpression("nunjucks", ""));
+      return;
+    }
 
-      // Don't modify if the tab name is still valid
-      if (typeof tabName === "string" && tabNames.includes(tabName)) {
-        return;
-      }
+    // Don't modify if the tab name is still valid
+    if (typeof tabName === "string" && tabNames.includes(tabName)) {
+      return;
+    }
 
-      // Remaining cases are either empty expression or invalid, selected tab name, so set to first tab name
-      await setTabName(tabNames[0]);
-    },
-    // We shouldn't include the setTabName formik helper due to unstable reference, the allTabNames string covers
-    // the tabNames dependency, and we're setting tabName here so don't want to run this side effect when it changes
-
-    [spreadsheet?.spreadsheetId, allTabNames]
-  );
+    // Remaining cases are either empty expression or invalid, selected tab name, so set to first tab name
+    await setTabName(tabNames[0]);
+  }, [spreadsheet?.spreadsheetId, allTabNames]);
 
   // TODO: re-add info message that tab will be created
   // {!tabsPending &&

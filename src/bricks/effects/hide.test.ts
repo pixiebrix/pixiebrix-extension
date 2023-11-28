@@ -16,17 +16,10 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { HideEffect } from "@/bricks/effects/hide";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new HideEffect();
-
-const logger = new ConsoleLogger({
-  extensionId: uuidSequence(0),
-});
 
 describe("HideEffect", () => {
   beforeEach(() => {
@@ -48,7 +41,7 @@ describe("HideEffect", () => {
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        { root: document, logger } as BrickOptions
+        brickOptionsFactory()
       );
 
       expect(document.querySelector("button")).not.toBeVisible();
@@ -56,10 +49,10 @@ describe("HideEffect", () => {
   );
 
   test("it hides element for isRootAware: true", async () => {
-    await brick.run(unsafeAssumeValidArg({ isRootAware: true }), {
-      root: document.querySelector("button"),
-      logger,
-    } as unknown as BrickOptions);
+    await brick.run(
+      unsafeAssumeValidArg({ isRootAware: true }),
+      brickOptionsFactory({ root: document.querySelector("button") })
+    );
 
     expect(document.querySelector("button")).not.toBeVisible();
   });
@@ -67,10 +60,7 @@ describe("HideEffect", () => {
   test("it removes element", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true, mode: "remove" }),
-      {
-        root: document.querySelector("button"),
-        logger,
-      } as unknown as BrickOptions
+      brickOptionsFactory({ root: document.querySelector("button") })
     );
 
     expect(document.querySelector("button")).toBeNull();

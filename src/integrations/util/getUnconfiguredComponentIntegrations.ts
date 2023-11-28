@@ -72,16 +72,17 @@ export default function getUnconfiguredComponentIntegrations({
     }
   );
 
-  const dedupedIntegrationDependencies = [];
+  const dedupedIntegrationDependencies: IntegrationDependency[] = [];
   for (const group of Object.values(
     groupBy(integrationDependencies, "integrationId")
   )) {
-    if (group.some(({ isOptional }) => !isOptional)) {
-      dedupedIntegrationDependencies.push(
-        group.find(({ isOptional }) => !isOptional)
-      );
+    const notOptional = group.find(({ isOptional }) => !isOptional);
+    if (notOptional) {
+      dedupedIntegrationDependencies.push(notOptional);
     } else {
-      dedupedIntegrationDependencies.push(group[0]);
+      // Groups can't be empty, they've just been created by groupBy
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      dedupedIntegrationDependencies.push(group[0]!);
     }
   }
 

@@ -29,6 +29,7 @@ import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { SubmitPanelAction } from "@/bricks/errors";
 import cx from "classnames";
 import { boolean } from "@/utils/typeUtils";
+import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BrickPipeline;
@@ -50,8 +51,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
 }) => {
   const {
     onAction,
-    meta,
-    options: { ctxt, logger },
+    options: { ctxt, logger, meta },
   } = useContext(DocumentContext);
 
   const [counter, setCounter] = useState(0);
@@ -78,10 +78,8 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
         meta: {
           ...meta,
           branches: [
-            ...tracePath.branches.map(({ staticId, index }) => ({
-              key: staticId,
-              counter: index,
-            })),
+            ...meta.branches,
+            ...mapPathToTraceBranches(tracePath),
             { key: "onClick", counter: currentCounter },
           ],
         },

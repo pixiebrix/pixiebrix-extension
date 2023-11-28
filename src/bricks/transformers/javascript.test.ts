@@ -16,9 +16,9 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 import { runUserJs } from "@/sandbox/messenger/api";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 jest.mock("@/sandbox/messenger/api", () => ({
   runUserJs: jest.fn(),
@@ -36,7 +36,7 @@ describe("JavaScriptTransformer", () => {
   test("executes the JavaScript function", async () => {
     const value = { function: "function () { return 1 + 1; };" };
 
-    await brick.transform(unsafeAssumeValidArg(value), {} as BrickOptions);
+    await brick.transform(unsafeAssumeValidArg(value), brickOptionsFactory());
 
     expect(runUserJsMock).toHaveBeenCalledWith({
       blockId: "@pixiebrix/javascript",
@@ -50,7 +50,7 @@ describe("JavaScriptTransformer", () => {
       arguments: { x: 1 },
     };
 
-    await brick.transform(unsafeAssumeValidArg(value), {} as BrickOptions);
+    await brick.transform(unsafeAssumeValidArg(value), brickOptionsFactory());
 
     expect(runUserJsMock).toHaveBeenCalledWith({
       blockId: "@pixiebrix/javascript",
@@ -64,7 +64,7 @@ describe("JavaScriptTransformer", () => {
     const value = { function: "function () { throw new Error('test'); };" };
 
     await expect(
-      brick.transform(unsafeAssumeValidArg(value), {} as BrickOptions)
+      brick.transform(unsafeAssumeValidArg(value), brickOptionsFactory())
     ).rejects.toThrow("test");
   });
 });

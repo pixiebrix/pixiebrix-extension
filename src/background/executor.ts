@@ -26,7 +26,7 @@ import { runBrick } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import type { RunBrick } from "@/contentScript/messenger/runBrickTypes";
+import type { RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { SessionMap } from "@/mv3/SessionStorage";
@@ -51,7 +51,7 @@ function rememberOpener(newTabId: TabId, openerTabId: TabId): void {
 
 async function safelyRunBrick(
   { tabId, frameId }: Target,
-  request: RunBrick
+  request: RunBrickRequest
 ): Promise<unknown> {
   try {
     return await runBrick({ tabId, frameId }, request);
@@ -93,7 +93,7 @@ export async function waitForTargetByUrl(url: string): Promise<Target> {
  */
 export async function requestRunInOpener(
   this: MessengerMeta,
-  request: RunBrick
+  request: RunBrickRequest
 ): Promise<unknown> {
   let { id: sourceTabId, openerTabId } = this.trace[0].tab;
 
@@ -119,7 +119,7 @@ export async function requestRunInOpener(
  */
 export async function requestRunInTarget(
   this: MessengerMeta,
-  request: RunBrick
+  request: RunBrickRequest
 ): Promise<unknown> {
   const sourceTabId = this.trace[0].tab.id;
   const target = await tabToTarget.get(String(sourceTabId));
@@ -140,7 +140,7 @@ export async function requestRunInTarget(
  */
 export async function requestRunInTop(
   this: MessengerMeta,
-  request: RunBrick
+  request: RunBrickRequest
 ): Promise<unknown> {
   const sourceTabId = this.trace[0].tab.id;
 
@@ -157,7 +157,7 @@ export async function requestRunInTop(
  */
 export async function requestRunInOtherTabs(
   this: MessengerMeta,
-  request: RunBrick
+  request: RunBrickRequest
 ): Promise<unknown[]> {
   const sourceTabId = this.trace[0].tab.id;
   const subRequest = { ...request, sourceTabId };
@@ -183,7 +183,7 @@ export async function requestRunInOtherTabs(
 
 export async function requestRunInAllFrames(
   this: MessengerMeta,
-  request: RunBrick
+  request: RunBrickRequest
 ): Promise<unknown[]> {
   const sourceTabId = this.trace[0].tab.id;
   const subRequest = { ...request, sourceTabId };

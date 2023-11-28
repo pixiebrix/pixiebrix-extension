@@ -26,7 +26,6 @@ import "@/development/darkMode.js";
 import { render } from "react-dom";
 import React from "react";
 import App from "@/extensionConsole/App";
-import initGoogle from "@/contrib/google/initGoogle";
 import { initToaster } from "@/utils/notify";
 import { initTelemetry } from "@/background/messenger/api";
 import { initMessengerLogging } from "@/development/messengerLogging";
@@ -41,7 +40,6 @@ function init(): void {
 void initMessengerLogging();
 void initRuntimeLogging();
 registerMessenger();
-void initGoogle();
 initToaster();
 initTelemetry();
 void initPerformanceMonitoring();

@@ -94,13 +94,13 @@ test("Input validation error", () => {
           'Instance type "object" is invalid. Expected "string", "number", "boolean".',
       },
     ],
-    message: "Invalid inputs for block",
+    message: "Invalid inputs for brick",
     stack:
-      "InputValidationError: Invalid inputs for block\n    at throwIfInvalidInput (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:56223:15)\n    at async runBlock (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55809:9)\n    at async blockReducer (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55879:20)\n    at async reducePipeline (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55989:26)\n    at async HTMLAnchorElement.<anonymous> (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:51535:17)",
+      "InputValidationError: Invalid inputs for brick\n    at throwIfInvalidInput (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:56223:15)\n    at async runBlock (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55809:9)\n    at async blockReducer (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55879:20)\n    at async reducePipeline (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55989:26)\n    at async HTMLAnchorElement.<anonymous> (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:51535:17)",
   };
 
   const { title, detailsElement } = getErrorDetails(error);
-  expect(title).toBe("Invalid inputs for block");
+  expect(title).toBe("Invalid inputs for brick");
   expect(render(detailsElement).asFragment()).toMatchSnapshot();
 });
 
