@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { navigateTab } from "@/contentScript/messenger/api";
@@ -24,6 +24,7 @@ import { thisTab } from "@/pageEditor/utils";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import paintbrush from "@img/paintbrush.svg";
+import bgIllustration from "@img/home-pane-bg-illustration.png";
 
 import styles from "@/pageEditor/panes/HomePane.module.scss";
 
@@ -32,13 +33,19 @@ const TEMPLATE_TELEMETRY_SOURCE = "home_pane";
 const HomePane: React.FunctionComponent = () => {
   const sessionId = useSelector(selectSessionId);
   return (
-    <div className="h-100 overflow-auto">
-      <div className={styles.pane}>
-        <div className={styles.gutter}>
-          <img src={paintbrush} alt="Page Editor logo" />
-        </div>
+    <Container fluid className="h-100 overflow-auto">
+      <Row className={styles.pane}>
+        <img
+          src={bgIllustration}
+          alt="background illustration"
+          className={styles.bgImage}
+        />
 
-        <div>
+        <Col xs={12} lg="auto">
+          <img src={paintbrush} alt="Page Editor logo" />
+        </Col>
+
+        <Col xs={12} lg={7}>
           <h1 className={styles.title}>Welcome to the Page Editor!</h1>
           <div className={styles.lead}>
             <div>You might recognize it from the video on the home page.</div>
@@ -72,9 +79,9 @@ const HomePane: React.FunctionComponent = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </Col>
 
-        <div>
+        <Col xs={12} lg="auto">
           <div className={styles.links}>
             <ul>
               <span className={styles.linkSectionHeader}>Support</span>
@@ -110,9 +117,9 @@ const HomePane: React.FunctionComponent = () => {
               </li>
             </ul>
           </div>
-        </div>
-      </div>
-    </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

@@ -18,23 +18,37 @@
 @import "@/themes/colors.scss";
 
 $button-color: $primary-bg;
+$lg-breakpoint: 992px;
 
 .pane {
-  display: flex;
-  flex-wrap: wrap;
   padding-left: 2em;
   padding-top: 1.5em;
+  position: relative;
+
+  :global(.col-12 + .col-12) {
+    margin-top: 0.5rem;
+    @media (min-width: $lg-breakpoint) {
+      margin-top: 0;
+    }
+  }
+}
+
+.bgImage {
+  position: absolute;
+  top: 3.5rem;
+  // using pixels to match the column padding
+  right: 15px;
+  z-index: -1;
+
+  @media (min-width: $lg-breakpoint) {
+    right: 12.5rem;
+  }
 }
 
 .title {
   font-size: 1.25em;
   font-weight: 700;
   color: $S800;
-}
-
-.gutter {
-  margin-right: 1em;
-  max-height: 24px;
 }
 
 .lead {
@@ -60,6 +74,11 @@ $button-color: $primary-bg;
   padding: 10px 16px;
   background-color: $button-color;
   border-color: $button-color;
+  width: 100%;
+
+  @media (min-width: $lg-breakpoint) {
+    width: auto;
+  }
 }
 
 .links {
