@@ -8654,7 +8654,7 @@ exports[`Storyshots PageEditor/HomePane Default 1`] = `
       />
     </div>
     <div
-      className="col-lg-7 col-12"
+      className="col-xl-auto col-lg-7 col-12"
     >
       <h1
         className="title"

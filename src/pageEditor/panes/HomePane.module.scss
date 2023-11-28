@@ -19,6 +19,7 @@
 
 $button-color: $primary-bg;
 $lg-breakpoint: 992px;
+$xl-breakpoint: 1200px;
 
 .pane {
   padding-left: 2em;
@@ -42,6 +43,10 @@ $lg-breakpoint: 992px;
 
   @media (min-width: $lg-breakpoint) {
     right: 12.5rem;
+  }
+  @media (min-width: $xl-breakpoint) {
+    right: auto;
+    left: 20rem;
   }
 }
 

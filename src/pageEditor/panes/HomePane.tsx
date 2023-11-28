@@ -45,7 +45,7 @@ const HomePane: React.FunctionComponent = () => {
           <img src={paintbrush} alt="Page Editor logo" />
         </Col>
 
-        <Col xs={12} lg={7}>
+        <Col xs={12} lg={7} xl="auto">
           <h1 className={styles.title}>Welcome to the Page Editor!</h1>
           <div className={styles.lead}>
             <div>You might recognize it from the video on the home page.</div>
