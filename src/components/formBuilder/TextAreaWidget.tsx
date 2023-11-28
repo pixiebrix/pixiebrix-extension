@@ -50,7 +50,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
         await submitForm();
       }
     },
-    [options.submitOnEnter, submitForm, onChange]
+    [options.submitOnEnter, submitForm]
   );
 
   const onFocusHandler = useCallback<FocusEventHandler<HTMLTextAreaElement>>(

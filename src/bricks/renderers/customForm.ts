@@ -288,7 +288,7 @@ export class CustomFormRenderer extends RendererABC {
             const normalizedValues = normalizeOutgoingFormData(schema, values);
 
             // Note that we're running the onSubmit handler before setting the data. Given that we're passing the values
-            // the submit handler, the handler shouldn't be relying on the data being set yet.
+            // to the submit handler, the handler shouldn't be relying on the data being set yet.
             // This ordering also has more obvious behavior when the onSubmit handler throws an error (the data won't
             // be saved).
             if (onSubmit) {

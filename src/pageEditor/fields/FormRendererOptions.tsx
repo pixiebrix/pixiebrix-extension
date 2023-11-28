@@ -268,7 +268,7 @@ const FormRendererOptions: React.FC<{
         <FormEditor
           name={configName}
           // Showing the section above manually
-          showFormFields={false}
+          showFormIntroFields={false}
           activeField={activeElement}
           setActiveField={setActiveElement}
           fieldTypes={FORM_FIELD_TYPE_OPTIONS}

@@ -20,7 +20,9 @@ import React from "react";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { screen } from "@testing-library/react";
 
-// :shrug: toBeVisible checks currently don't work with our CollapsibleFieldSection component
+// :shrug: toBeVisible checks currently don't work with our CollapsibleFieldSection component because we're using
+// we're using Collapse from react-bootstrap, which uses CSS to set display: none. RTL/jest-dom doesn't have access
+// to the css.
 
 describe("ConnectedCollapsibleFieldSection", () => {
   it("should render collapsed by default", () => {
@@ -36,7 +38,7 @@ describe("ConnectedCollapsibleFieldSection", () => {
     );
   });
 
-  it("should can render expanded", () => {
+  it("should render expanded", () => {
     render(
       <ConnectedCollapsibleFieldSection title="Test Section" initialExpanded>
         <div>foo</div>

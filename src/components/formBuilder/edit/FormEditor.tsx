@@ -54,14 +54,14 @@ export type FormEditorProps = {
   /**
    * If true, the form title and description fields will be shown (default: true).
    */
-  showFormFields?: boolean;
+  showFormIntroFields?: boolean;
   activeField?: string;
   setActiveField: SetActiveField;
   fieldTypes?: SelectStringOption[];
 };
 
 /**
- * Form fields for the form title and description.
+ * Form introductory fields for the form title and description.
  * @constructor
  */
 export const FormIntroFields: React.FunctionComponent<{ name: string }> = ({
@@ -94,7 +94,7 @@ export const FormIntroFields: React.FunctionComponent<{ name: string }> = ({
 
 const FormEditor: React.FC<FormEditorProps> = ({
   name,
-  showFormFields = true,
+  showFormIntroFields = true,
   activeField,
   setActiveField,
   fieldTypes,
@@ -234,7 +234,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   return (
     <>
-      {showFormFields && (
+      {showFormIntroFields && (
         <>
           <FormIntroFields name={name} />
           <hr />
