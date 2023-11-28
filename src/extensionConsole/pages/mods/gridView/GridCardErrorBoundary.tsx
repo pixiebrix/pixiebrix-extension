@@ -18,7 +18,7 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import { type ModViewItem } from "@/types/modTypes";
-import GenericErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 import styles from "./GridCard.module.scss";
 import cx from "classnames";
@@ -35,7 +35,7 @@ type Props = {
   modViewItem: ModViewItem;
 };
 
-class GridCardErrorBoundary extends GenericErrorBoundary<Props> {
+class GridCardErrorBoundary extends ErrorBoundary<Props> {
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (

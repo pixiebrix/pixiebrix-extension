@@ -19,12 +19,12 @@ import React from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isEmpty } from "lodash";
-import GenericErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
 
-class ConfigErrorBoundary extends GenericErrorBoundary {
+class ConfigErrorBoundary extends ErrorBoundary {
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (

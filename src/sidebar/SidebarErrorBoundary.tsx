@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ErrorInfo } from "react";
+import React from "react";
 import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
 import { reloadSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
-import GenericErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
-class ErrorBoundary extends GenericErrorBoundary {
+class SidebarErrorBoundary extends ErrorBoundary {
   async reloadSidebar() {
     const topLevelFrame = await getTopLevelFrame();
     await reloadSidebar(topLevelFrame);
@@ -71,4 +71,4 @@ class ErrorBoundary extends GenericErrorBoundary {
   }
 }
 
-export default ErrorBoundary;
+export default SidebarErrorBoundary;

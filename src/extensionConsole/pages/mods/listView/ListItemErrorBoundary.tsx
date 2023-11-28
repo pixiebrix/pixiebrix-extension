@@ -24,7 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_TEXT_ICON_COLOR } from "@/mods/ModIcon";
 import cx from "classnames";
-import GenericErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 type Props = {
   /**
@@ -37,7 +37,7 @@ type Props = {
   style: React.CSSProperties;
 };
 
-class ListItemErrorBoundary extends GenericErrorBoundary<Props> {
+class ListItemErrorBoundary extends ErrorBoundary<Props> {
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (
