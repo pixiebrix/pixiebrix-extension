@@ -153,10 +153,10 @@ export function parseDomTable(
   return { records, fieldNames };
 }
 
-function getAriaDescription(element: HTMLElement): string | null | undefined {
+function getAriaDescription(element: HTMLElement): string | undefined {
   const describedBy = element.getAttribute("aria-describedby");
   if (describedBy) {
-    return element.ownerDocument.querySelector("#" + describedBy)?.textContent;
+    return element.ownerDocument?.querySelector("#" + describedBy)?.textContent;
   }
 }
 

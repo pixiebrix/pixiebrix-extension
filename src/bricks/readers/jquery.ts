@@ -19,7 +19,6 @@ import {
   BusinessError,
   MultipleElementsFoundError,
 } from "@/errors/businessErrors";
-import { type JsonObject } from "type-fest";
 import { asyncMapValues, pollUntilTruthy } from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
 
@@ -62,7 +61,7 @@ export interface ChildrenSelector {
    * The sub-selectors to apply.
    */
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- this is a recursive type
-  find?: SelectorConfigMap;
+  find: SelectorConfigMap;
 }
 
 export type CommonSelector = ChildrenSelector | SingleSelector;
@@ -167,8 +166,8 @@ function processElement($elements: JQuery, selector: SingleSelector) {
   } else if (selector.renderedText) {
     const $clone = $elements.clone();
     $clone.find("br").replaceWith("\n");
-    // eslint-disable-next-line unicorn/prefer-dom-node-text-content -- TODO: May be unnecessary
-    value = $clone.get(0).innerText;
+    // eslint-disable-next-line unicorn/prefer-dom-node-text-content -- It's as requested by `selector.renderedText`
+    value = $clone.get(0)?.innerText;
   } else {
     value = cleanValue($elements.text());
   }
@@ -201,7 +200,7 @@ async function select(
   const findElements = () => {
     const $elements = selectorString
       ? $safeFind(selectorString, root)
-      : $(root);
+      : $(root ?? document);
     if ($elements.length > 0 || multi) {
       return $elements.get();
     }
@@ -254,7 +253,7 @@ async function select(
 export async function readJQuery(
   reader: JQueryConfig,
   root: HTMLElement | Document = document
-): Promise<JsonObject> {
+): Promise<Record<string, Result>> {
   const { selectors } = reader;
   if (!root) {
     throw new Error("jQuery reader requires the document or element(s)");

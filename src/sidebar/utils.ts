@@ -16,7 +16,7 @@
  */
 
 import { type SidebarState } from "@/types/sidebarTypes";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { getOpenPanelEntries } from "@/sidebar/eventKeyUtils";
 
 export const getVisiblePanelCount = ({
   panels,
@@ -28,9 +28,7 @@ export const getVisiblePanelCount = ({
 }: SidebarState) => {
   // Temporary Panels are removed from the sidebar state when they are closed, so we don't need to filter them out
   const closablePanels = [...panels, ...staticPanels];
-  const openPanels = closablePanels.filter(
-    (panel) => !closedTabs[eventKeyForEntry(panel)]
-  );
+  const openPanels = getOpenPanelEntries(closablePanels, closedTabs);
 
   return (
     openPanels.length +

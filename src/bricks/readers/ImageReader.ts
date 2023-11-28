@@ -18,9 +18,8 @@
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 
-/**
- * Copied from https://stackoverflow.com/questions/934012/get-image-data-url-in-javascript
- */
+// Copied from https://stackoverflow.com/questions/934012/get-image-data-url-in-javascript
+// TODO: Replace with `getData` from ImageExifReader?
 function getBase64Image(img: HTMLImageElement) {
   // Create an empty canvas element
   const canvas = document.createElement("canvas");
@@ -28,7 +27,7 @@ function getBase64Image(img: HTMLImageElement) {
   canvas.height = img.height;
 
   // Copy the image contents to the canvas
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext("2d")!;
   context.drawImage(img, 0, 0);
 
   // Get the data-URL formatted image

@@ -21,6 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { $safeFindElementsWithRootMode } from "@/bricks/rootModeHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { PropError } from "@/errors/businessErrors";
+import { assert } from "@/utils/typeUtils.js";
 
 class PostMessageEffect extends EffectABC {
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
@@ -88,7 +89,9 @@ class PostMessageEffect extends EffectABC {
         );
       }
 
-      element.contentWindow.postMessage(message, targetOrigin);
+      const { contentWindow } = element;
+      assert(contentWindow, "Iframe not ready or can't be connected to");
+      contentWindow.postMessage(message, targetOrigin);
     }
   }
 }
