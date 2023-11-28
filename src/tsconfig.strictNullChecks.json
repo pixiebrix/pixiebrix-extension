@@ -313,7 +313,6 @@
     "./pageEditor/panes/save/savingExtensionSlice.ts",
     "./pageEditor/sidebar/ReloadButton.tsx",
     "./pageEditor/sidebar/SaveButton.tsx",
-    "./pageEditor/sidebar/SidebarCollapsed.tsx",
     "./pageEditor/slices/runtimeSlice.ts",
     "./pageEditor/slices/runtimeSliceTypes.ts",
     "./pageEditor/slices/sessionSelectors.ts",
