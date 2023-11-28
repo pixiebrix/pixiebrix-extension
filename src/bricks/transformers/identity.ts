@@ -19,12 +19,35 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
+import { type BrickConfig } from "@/bricks/types";
+import { isPlainObject, mapValues } from "lodash";
+import { isExpression } from "@/utils/expressionUtils";
 
 export class IdentityTransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/identity");
 
   override async isPure(): Promise<boolean> {
     return true;
+  }
+
+  override getOutputSchema(_config: BrickConfig): Schema | undefined {
+    if (isPlainObject(_config.config) && !isExpression(_config.config)) {
+      return {
+        type: "object",
+        // Allow any under each property
+        properties: mapValues(_config.config, () => ({})),
+        required: Object.keys(_config.config),
+      };
+    }
+
+    if (Array.isArray(_config.config)) {
+      return {
+        type: "array",
+        items: {},
+      };
+    }
+
+    return undefined;
   }
 
   constructor() {

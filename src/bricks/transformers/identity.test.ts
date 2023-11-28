@@ -18,10 +18,11 @@
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 const brick = new IdentityTransformer();
 
-describe("IdentityTransformer", () => {
+describe("IdentityTransformer.run", () => {
   test("it returns same value", async () => {
     const value = { foo: "bar" };
     const result = await brick.run(
@@ -45,5 +46,44 @@ describe("IdentityTransformer", () => {
       brickOptionsFactory()
     );
     expect(result).toStrictEqual([]);
+  });
+});
+
+describe("IdentityTransformer.getOutputSchema", () => {
+  it("returns schema for plain object", () => {
+    const schema = brick.getOutputSchema({
+      id: IdentityTransformer.BRICK_ID,
+      config: {
+        foo: "bar",
+      },
+    });
+    expect(schema).toStrictEqual({
+      type: "object",
+      // Allow any under each property
+      properties: {
+        foo: {},
+      },
+      required: ["foo"],
+    });
+  });
+
+  it("returns undefined for expression", () => {
+    const schema = brick.getOutputSchema({
+      id: IdentityTransformer.BRICK_ID,
+      config: makeVariableExpression("@foo"),
+    });
+    expect(schema).toBeUndefined();
+  });
+
+  it("returns array type", () => {
+    const schema = brick.getOutputSchema({
+      id: IdentityTransformer.BRICK_ID,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- config technically accepts anything
+      config: [] as any,
+    });
+    expect(schema).toStrictEqual({
+      type: "array",
+      items: {},
+    });
   });
 });
