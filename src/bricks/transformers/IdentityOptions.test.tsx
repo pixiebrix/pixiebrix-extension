@@ -24,7 +24,6 @@ import brickRegistry from "@/bricks/registry";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import registerEditors from "@/contrib/editors";
-import { waitForEffect } from "@/testUtils/testHelpers";
 
 beforeAll(() => {
   brickRegistry.register([new IdentityTransformer()]);
@@ -41,8 +40,6 @@ describe("IdentityOptions", () => {
         },
       },
     });
-
-    await waitForEffect();
 
     await expect(
       screen.findByRole("button", { name: "Add Property" })
