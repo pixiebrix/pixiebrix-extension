@@ -31,7 +31,7 @@ export class IdentityTransformer extends TransformerABC {
     super(
       IdentityTransformer.BRICK_ID,
       "Identity Function",
-      "Returns the value passed into it. Use to construct return values/event data.",
+      "Returns/echoes the value passed into it. Use to construct return values/event data.",
       "faCode"
     );
   }
