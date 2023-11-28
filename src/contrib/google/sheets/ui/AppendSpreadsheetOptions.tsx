@@ -24,7 +24,6 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
 import { isEmpty } from "lodash";
-import { requireGoogleHOC } from "@/contrib/google/sheets/ui/RequireGoogleApi";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
@@ -35,7 +34,6 @@ import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
 import { type UnknownObject } from "@/types/objectTypes";
-import useFlags from "@/hooks/useFlags";
 
 const ANONYMOUS_OBJECT_SCHEMA: Schema = {
   type: "object",
@@ -129,16 +127,12 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
     joinName(blockConfigPath, "tabName")
   );
 
-  const { flagOn } = useFlags();
-
   return (
     <div className="my-2">
-      {flagOn("gsheets-pkce-integration-release") && (
-        <SchemaField
-          name={joinName(blockConfigPath, "googleAccount")}
-          schema={APPEND_SCHEMA.properties.googleAccount as Schema}
-        />
-      )}
+      <SchemaField
+        name={joinName(blockConfigPath, "googleAccount")}
+        schema={APPEND_SCHEMA.properties.googleAccount as Schema}
+      />
       <RequireGoogleSheet blockConfigPath={blockConfigPath}>
         {({ googleAccount, spreadsheet }) => (
           <>
@@ -173,4 +167,4 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 };
 
-export default requireGoogleHOC(AppendSpreadsheetOptions);
+export default AppendSpreadsheetOptions;

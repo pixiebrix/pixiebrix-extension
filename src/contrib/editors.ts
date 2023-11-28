@@ -20,9 +20,6 @@ import PushOptions from "@/contrib/zapier/PushOptions";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import AppendSpreadsheetOptions from "@/contrib/google/sheets/ui/AppendSpreadsheetOptions";
-import SheetServiceOptions, {
-  SERVICE_GOOGLE_SHEET_ID,
-} from "@/contrib/google/sheets/ui/SheetServiceOptions";
 import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
 import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
@@ -67,7 +64,6 @@ import IdentityOptions from "@/bricks/transformers/IdentityOptions";
  * @see BlockConfiguration
  */
 export default function registerEditors() {
-  optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
   optionsRegistry.set(ZAPIER_ID, PushOptions);
   optionsRegistry.set(UIPATH_ID, ProcessOptions);
   optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);

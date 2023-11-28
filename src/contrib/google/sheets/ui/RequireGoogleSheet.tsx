@@ -107,7 +107,7 @@ const RequireGoogleSheet: React.FC<{
       baseSchema: Schema
     ) => {
       setSpreadsheetError(null);
-      if (!spreadsheetId) {
+      if (!googleAccount || !spreadsheetId) {
         return {
           googleAccount,
           spreadsheet: null,
@@ -115,7 +115,7 @@ const RequireGoogleSheet: React.FC<{
         };
       }
 
-      if (!googleAccount || (await sheets.isLoggedIn(googleAccount))) {
+      if (await sheets.isLoggedIn(googleAccount)) {
         try {
           // Sheets API will handle legacy authentication when googleAccount is null
           const spreadsheet = await sheets.getSpreadsheet({
