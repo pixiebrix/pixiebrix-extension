@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isEmpty } from "lodash";
+import reportError from "@/telemetry/reportError";
 
 interface DisplayProps {
   /**
@@ -124,6 +125,11 @@ class ErrorBoundary<
       errorMessage: getErrorMessage(error),
       stack: error.stack,
     };
+  }
+
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    this.props.onError?.(error, errorInfo);
+    reportError(error);
   }
 
   override render(): React.ReactNode {

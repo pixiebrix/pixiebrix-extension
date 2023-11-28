@@ -22,15 +22,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
 import { reloadSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
-import reportError from "@/telemetry/reportError";
 import GenericErrorBoundary from "@/components/ErrorBoundary";
 
 class ErrorBoundary extends GenericErrorBoundary {
-  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    this.props.onError?.(error, errorInfo);
-    reportError(error);
-  }
-
   async reloadSidebar() {
     const topLevelFrame = await getTopLevelFrame();
     await reloadSidebar(topLevelFrame);
