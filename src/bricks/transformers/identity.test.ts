@@ -30,4 +30,20 @@ describe("IdentityTransformer", () => {
     );
     expect(result).toStrictEqual(value);
   });
+
+  test("it accepts null", async () => {
+    const result = await brick.run(
+      unsafeAssumeValidArg(null),
+      brickOptionsFactory()
+    );
+    expect(result).toBeNull();
+  });
+
+  test("it accepts array", async () => {
+    const result = await brick.run(
+      unsafeAssumeValidArg([]),
+      brickOptionsFactory()
+    );
+    expect(result).toStrictEqual([]);
+  });
 });

@@ -57,6 +57,8 @@ import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import JQueryReaderOptions from "@/bricks/transformers/jquery/JQueryReaderOptions";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptions";
+import { IdentityTransformer } from "@/bricks/transformers/identity";
+import IdentityOptions from "@/bricks/transformers/IdentityOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -82,4 +84,5 @@ export default function registerEditors() {
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
   optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);
   optionsRegistry.set(AssignModVariable.BRICK_ID, AssignModVariableOptions);
+  optionsRegistry.set(IdentityTransformer.BRICK_ID, IdentityOptions);
 }

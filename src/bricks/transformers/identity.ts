@@ -18,24 +18,27 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 export class IdentityTransformer extends TransformerABC {
+  static BRICK_ID = validateRegistryId("@pixiebrix/identity");
+
   override async isPure(): Promise<boolean> {
     return true;
   }
 
   constructor() {
     super(
-      "@pixiebrix/identity",
-      "Identity function",
-      "Returns the object passed into it",
+      IdentityTransformer.BRICK_ID,
+      "Identity Function",
+      "Returns the value passed into it. Use to construct return values/event data.",
       "faCode"
     );
   }
 
+  // Empty schema matches any input
   inputSchema: Schema = {
-    type: "object",
-    additionalProperties: true,
+    title: "Value",
   };
 
   async transform(arg: BrickArgs): Promise<BrickArgs> {
