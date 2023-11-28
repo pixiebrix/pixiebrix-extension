@@ -77,7 +77,7 @@ export function engineRenderer(
         return renderNunjucksTemplate({
           template,
           context: snakeCased as JsonObject,
-          autoescape: options.autoescape,
+          autoescape: options.autoescape ?? true,
         });
       };
     }
@@ -92,7 +92,7 @@ export function engineRenderer(
         return renderHandlebarsTemplate({
           template,
           context: ctxt as JsonObject,
-          autoescape: options.autoescape,
+          autoescape: options.autoescape ?? true,
         });
       };
     }
