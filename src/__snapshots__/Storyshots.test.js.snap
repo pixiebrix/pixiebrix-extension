@@ -8635,20 +8635,27 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
 
 exports[`Storyshots PageEditor/HomePane Default 1`] = `
 <div
-  className="h-100 overflow-auto"
+  className="h-100 overflow-auto container-fluid"
 >
   <div
-    className="pane"
+    className="pane row"
   >
+    <img
+      alt="background illustration"
+      className="bgImage"
+      src="test-file-stub"
+    />
     <div
-      className="gutter"
+      className="col-lg-auto col-12"
     >
       <img
         alt="Page Editor logo"
         src="test-file-stub"
       />
     </div>
-    <div>
+    <div
+      className="col-lg-7 col-12"
+    >
       <h1
         className="title"
       >
@@ -8682,7 +8689,9 @@ exports[`Storyshots PageEditor/HomePane Default 1`] = `
         </div>
       </div>
     </div>
-    <div>
+    <div
+      className="col-lg-auto col-12"
+    >
       <div
         className="links"
       >
