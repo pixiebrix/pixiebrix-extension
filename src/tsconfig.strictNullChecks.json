@@ -201,7 +201,6 @@
     "./contrib/google/sheets/core/sheetsHelpers.ts",
     "./contrib/google/sheets/core/types.ts",
     "./contrib/google/sheets/core/useOnChangeEffect.ts",
-    "./contrib/google/sheets/ui/RequireGoogleApi.tsx",
     "./contrib/navigationRules.ts",
     "./contrib/salesforce/navigation.ts",
     "./contrib/uipath/UiPathRobot.ts",
