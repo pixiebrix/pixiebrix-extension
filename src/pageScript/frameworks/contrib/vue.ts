@@ -129,7 +129,7 @@ export function getVersion(): string | null {
 }
 
 function isManaged(
-  element: HTMLElement
+  element: HTMLElement,
 ): element is HTMLElement & VueHTMLElement {
   return "__vue__" in element;
 }
@@ -150,7 +150,7 @@ function readVueData(instance: Instance): Record<string, unknown> {
     (value, key) =>
       typeof value !== "function" &&
       !key.startsWith("$") &&
-      !key.startsWith("_")
+      !key.startsWith("_"),
   );
 }
 

@@ -68,7 +68,7 @@ async function flush(): Promise<void> {
  * - Any service request if enterprise has enabled `enterprise-telemetry`
  */
 export async function selectExtraContext(
-  error: Error | SerializedError
+  error: Error | SerializedError,
 ): Promise<UnknownObject & { extensionVersion: SemVerString }> {
   const { version } = browser.runtime.getManifest();
   const extensionVersion = validateSemVerString(version);
@@ -107,12 +107,12 @@ export async function selectExtraContext(
 export async function reportToErrorService(
   error: Error,
   flatContext: MessageContext,
-  message: string
+  message: string,
 ): Promise<void> {
   expectContext(
     "background",
     // The buffer/flush call is local to the background page
-    "reportToErrorService should only be called from the background page"
+    "reportToErrorService should only be called from the background page",
   );
 
   if (flatContext.extensionId == null) {

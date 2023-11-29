@@ -58,7 +58,7 @@ jest.mock("@/integrations/registry", () => {
     readRawConfigurations: jest
       .fn()
       .mockRejectedValue(
-        new Error("Implement readRawConfigurations mock in test")
+        new Error("Implement readRawConfigurations mock in test"),
       ),
     lookup: jest.fn(async (id: string) => {
       if (id === googleIntegration.id) {
@@ -97,7 +97,7 @@ describe("error handling", () => {
 
     const config = await locator.locate(
       googleIntegration.id,
-      integrationConfig.id
+      integrationConfig.id,
     );
 
     await setCachedAuthData(integrationConfig.id, {
@@ -105,7 +105,7 @@ describe("error handling", () => {
     });
 
     await expect(getAllSpreadsheets(config)).rejects.toThrow(
-      "Cannot locate the Google Drive resource. Have you been granted access?"
+      "Cannot locate the Google Drive resource. Have you been granted access?",
     );
 
     // Don't clear the token, because the token is valid the user just might not have access
@@ -118,7 +118,7 @@ describe("error handling", () => {
 
     const config = await locator.locate(
       googleIntegration.id,
-      integrationConfig.id
+      integrationConfig.id,
     );
 
     await setCachedAuthData(integrationConfig.id, {
@@ -127,7 +127,7 @@ describe("error handling", () => {
 
     await expect(getAllSpreadsheets(config)).rejects.toThrow(
       // Generic Bad Request error based on status code
-      "Bad Request"
+      "Bad Request",
     );
 
     expect(deleteCachedAuthDataMock).not.toHaveBeenCalledOnce();
@@ -152,7 +152,7 @@ describe("error handling", () => {
 
       const config = await locator.locate(
         googleIntegration.id,
-        integrationConfig.id
+        integrationConfig.id,
       );
 
       await setCachedAuthData(integrationConfig.id, {
@@ -167,10 +167,10 @@ describe("error handling", () => {
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
 
       expect(
-        axiosMock.history.get.filter((x) => x.url.startsWith(DRIVE_BASE_URL))
+        axiosMock.history.get.filter((x) => x.url.startsWith(DRIVE_BASE_URL)),
       ).toHaveLength(2);
       expect(axiosMock.history.post).toHaveLength(0);
-    }
+    },
   );
 
   it.each([
@@ -193,7 +193,7 @@ describe("error handling", () => {
 
       const config = await locator.locate(
         googleIntegration.id,
-        integrationConfig.id
+        integrationConfig.id,
       );
 
       await setCachedAuthData(integrationConfig.id, {
@@ -210,10 +210,10 @@ describe("error handling", () => {
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
 
       expect(
-        axiosMock.history.get.filter((x) => x.url.startsWith(DRIVE_BASE_URL))
+        axiosMock.history.get.filter((x) => x.url.startsWith(DRIVE_BASE_URL)),
       ).toHaveLength(2);
       expect(axiosMock.history.post).toHaveLength(1);
-    }
+    },
   );
 
   it.each([401, 403])(
@@ -229,7 +229,7 @@ describe("error handling", () => {
 
       const config = await locator.locate(
         googleIntegration.id,
-        integrationConfig.id
+        integrationConfig.id,
       );
 
       await setCachedAuthData(integrationConfig.id, {
@@ -246,16 +246,16 @@ describe("error handling", () => {
       expect(deleteCachedAuthDataMock).not.toHaveBeenCalled();
 
       const googleGetRequests = axiosMock.history.get.filter((x) =>
-        x.url.startsWith(DRIVE_BASE_URL)
+        x.url.startsWith(DRIVE_BASE_URL),
       );
       expect(googleGetRequests).toHaveLength(2);
       expect(googleGetRequests[0].headers.Authorization).toBe(
-        "Bearer NOTAREALTOKEN"
+        "Bearer NOTAREALTOKEN",
       );
       expect(googleGetRequests[1].headers.Authorization).toBe(
-        "Bearer NOTAREALTOKEN2"
+        "Bearer NOTAREALTOKEN2",
       );
       expect(axiosMock.history.post).toHaveLength(1);
-    }
+    },
   );
 });

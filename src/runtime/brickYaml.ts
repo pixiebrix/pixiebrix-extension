@@ -134,7 +134,7 @@ export function loadBrickYaml(config: string): unknown {
 
 export function dumpBrickYaml(
   brick: unknown,
-  options: yaml.DumpOptions = {}
+  options: yaml.DumpOptions = {},
 ): string {
   return yaml.dump(stripNonSchemaProps(brick), {
     ...options,

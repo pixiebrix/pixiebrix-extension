@@ -26,7 +26,7 @@ import {
 } from "@/bricks/rootModeHelpers";
 
 function isCheckbox(
-  element: HTMLInputElement | HTMLTextAreaElement
+  element: HTMLInputElement | HTMLTextAreaElement,
 ): element is HTMLInputElement {
   return element.type === "checkbox";
 }
@@ -38,7 +38,7 @@ export class FormData extends TransformerABC {
     super(
       "@pixiebrix/forms/data",
       "Read data from a form",
-      "Read data from all inputs on a form"
+      "Read data from all inputs on a form",
     );
   }
 
@@ -59,7 +59,7 @@ export class FormData extends TransformerABC {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    []
+    [],
   );
 
   override outputSchema: Schema = {
@@ -70,7 +70,7 @@ export class FormData extends TransformerABC {
 
   async transform(
     { selector, isRootAware = false }: BrickArgs,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<Record<string, unknown>> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

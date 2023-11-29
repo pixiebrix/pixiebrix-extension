@@ -19,7 +19,7 @@ class AssignModVariable extends EffectABC {
     super(
       AssignModVariable.BRICK_ID,
       "Assign Mod Variable",
-      "Assign / Set the value of a Mod Variable"
+      "Assign / Set the value of a Mod Variable",
     );
   }
 
@@ -32,7 +32,7 @@ class AssignModVariable extends EffectABC {
   }
 
   override async getModVariableSchema(
-    _config: BrickConfig
+    _config: BrickConfig,
   ): Promise<Schema | undefined> {
     const { variableName: variableExpression } = _config.config;
 
@@ -74,7 +74,7 @@ class AssignModVariable extends EffectABC {
         additionalProperties: true,
       },
     },
-    ["variableName", "value"]
+    ["variableName", "value"],
   );
 
   uiSchema = {
@@ -90,7 +90,7 @@ class AssignModVariable extends EffectABC {
       // Input is validated, so we know value is a JsonPrimitive or JsonObject
       value: JsonPrimitive | JsonObject;
     }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     const { blueprintId = null, extensionId } = logger.context;
 

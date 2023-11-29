@@ -30,7 +30,7 @@ import { QuickBarProviderStarterBrickABC } from "@/starterBricks/quickBarProvide
 
 async function getStarterBrickType(
   modComponentDefinition: ModComponentDefinition,
-  modDefinition: ModDefinition
+  modDefinition: ModDefinition,
 ): Promise<StarterBrickType | null> {
   // Look up the extension point in recipe inner definitions first
   if (modDefinition.definitions?.[modComponentDefinition.id]) {
@@ -46,19 +46,19 @@ async function getStarterBrickType(
 
   // If no inner definitions, look up the extension point in the registry
   const extensionPointFromRegistry = await starterBrickRegistry.lookup(
-    modComponentDefinition.id as RegistryId
+    modComponentDefinition.id as RegistryId,
   );
 
   return extensionPointFromRegistry?.kind ?? null;
 }
 
 export async function getContainedStarterBrickTypes(
-  modDefinition: ModDefinition
+  modDefinition: ModDefinition,
 ): Promise<StarterBrickType[]> {
   const extensionPointTypes = await Promise.all(
     modDefinition.extensionPoints.map(async (extensionPoint) =>
-      getStarterBrickType(extensionPoint, modDefinition)
-    )
+      getStarterBrickType(extensionPoint, modDefinition),
+    ),
   );
 
   return uniq(compact(extensionPointTypes));
@@ -69,11 +69,10 @@ export async function getContainedStarterBrickTypes(
  * @param modDefinition the mod definition
  */
 export async function includesQuickBarStarterBrick(
-  modDefinition?: ModDefinition
+  modDefinition?: ModDefinition,
 ): Promise<boolean> {
-  const resolvedExtensionDefinitions = await resolveRecipeInnerDefinitions(
-    modDefinition
-  );
+  const resolvedExtensionDefinitions =
+    await resolveRecipeInnerDefinitions(modDefinition);
 
   for (const { id } of resolvedExtensionDefinitions) {
     // eslint-disable-next-line no-await-in-loop -- can break when we find one
@@ -81,7 +80,7 @@ export async function includesQuickBarStarterBrick(
     if (
       QuickBarStarterBrickABC.isQuickBarExtensionPoint(starterBrick) ||
       QuickBarProviderStarterBrickABC.isQuickBarProviderExtensionPoint(
-        starterBrick
+        starterBrick,
       )
     ) {
       return true;

@@ -40,7 +40,7 @@ test("renders value", () => {
       options={options}
       value={options[1].value}
       onChange={jest.fn()}
-    />
+    />,
   );
   expect(asFragment()).toMatchSnapshot();
 });
@@ -56,7 +56,7 @@ test("calls onChange", async () => {
       options={options}
       value={options[1].value}
       onChange={onChangeMock}
-    />
+    />,
   );
 
   const optionToSelect = options[0];

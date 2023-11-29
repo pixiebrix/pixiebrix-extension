@@ -61,7 +61,7 @@ export type RefreshTrigger = "manual" | "statechange";
 
 export async function createFrameSource(
   nonce: string,
-  mode: Location
+  mode: Location,
 ): Promise<URL> {
   const target = await getThisFrame();
 
@@ -195,7 +195,7 @@ export async function displayTemporaryInfo({
       },
       {
         signal: controller.signal,
-      }
+      },
     );
 
     controller.signal.addEventListener("abort", () => {
@@ -331,7 +331,7 @@ class DisplayTemporaryInfo extends TransformerABC {
     super(
       DisplayTemporaryInfo.BLOCK_ID,
       "Display Temporary Information",
-      "Display a document in a temporary sidebar panel"
+      "Display a document in a temporary sidebar panel",
     );
   }
 
@@ -399,7 +399,7 @@ class DisplayTemporaryInfo extends TransformerABC {
       runPipeline,
       runRendererPipeline,
       abortSignal,
-    }: BrickOptions
+    }: BrickOptions,
   ): Promise<JsonObject | null> {
     expectContext("contentScript");
 
@@ -422,7 +422,7 @@ class DisplayTemporaryInfo extends TransformerABC {
           counter,
         },
         {},
-        target
+        target,
       );
 
       counter++;

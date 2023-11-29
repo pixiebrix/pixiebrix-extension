@@ -64,7 +64,7 @@ describe("JavaScriptTransformer", () => {
     const value = { function: "function () { throw new Error('test'); };" };
 
     await expect(
-      brick.transform(unsafeAssumeValidArg(value), brickOptionsFactory())
+      brick.transform(unsafeAssumeValidArg(value), brickOptionsFactory()),
     ).rejects.toThrow("test");
   });
 });

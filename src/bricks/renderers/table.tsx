@@ -44,7 +44,7 @@ function makeLinkRenderer(href: string) {
 
     return typeof anchorHref === "string" && !isNullOrBlank(anchorHref)
       ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${String(
-          value
+          value,
         )}</a>`
       : String(value);
   };
@@ -56,7 +56,7 @@ export class TableRenderer extends RendererABC {
       "@pixiebrix/table",
       "A customizable table",
       "A customizable table that displays a list of values",
-      "faTable"
+      "faTable",
     );
   }
 
@@ -87,7 +87,7 @@ export class TableRenderer extends RendererABC {
         minItems: 1,
       },
     },
-    ["columns"]
+    ["columns"],
   );
 
   async render(
@@ -98,7 +98,7 @@ export class TableRenderer extends RendererABC {
       columns: Array<ColumnDefinition<Row> & { href: string }>;
       data: unknown;
     }>,
-    { ctxt = [] }: BrickOptions
+    { ctxt = [] }: BrickOptions,
   ): Promise<SafeHTML> {
     let data = userData ?? ctxt;
 
@@ -111,7 +111,7 @@ export class TableRenderer extends RendererABC {
 
     if (!Array.isArray(data)) {
       throw new BusinessError(
-        `Expected data to be an array, actual: ${typeof data}`
+        `Expected data to be an array, actual: ${typeof data}`,
       );
     }
 
@@ -120,7 +120,7 @@ export class TableRenderer extends RendererABC {
         label,
         property,
         renderer: href ? makeLinkRenderer(href) : undefined,
-      }))
+      })),
     );
 
     return table(data);

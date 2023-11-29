@@ -30,7 +30,7 @@ type FlowOptions = {
 
 async function launchAuthorizationGrantFlow(
   serviceId: RegistryId,
-  { target }: FlowOptions
+  { target }: FlowOptions,
 ) {
   const url = new URL("services/", await getBaseURL());
   url.searchParams.set("id", serviceId);
@@ -48,7 +48,7 @@ function useAuthorizationGrantFlow() {
   return useCallback(
     async (
       service: Integration | IntegrationDefinition,
-      options: FlowOptions
+      options: FlowOptions,
     ) => {
       const name = "name" in service ? service.name : service.metadata.name;
       const serviceId = "id" in service ? service.id : service.metadata.id;
@@ -67,7 +67,7 @@ function useAuthorizationGrantFlow() {
 
       await launchAuthorizationGrantFlow(serviceId, options);
     },
-    [modals]
+    [modals],
   );
 }
 

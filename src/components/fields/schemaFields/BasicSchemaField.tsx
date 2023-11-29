@@ -95,7 +95,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
   const fieldLabel = makeLabelForSchemaField(restProps);
   const defaultDescription = useMemo(
     () => description ?? schema.description,
-    [description, schema.description]
+    [description, schema.description],
   );
   const [fieldDescription, setFieldDescription] =
     useState<React.ReactNode>(defaultDescription);
@@ -104,7 +104,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
     (newDescription: React.ReactNode | undefined) => {
       setFieldDescription(newDescription ?? defaultDescription);
     },
-    [defaultDescription]
+    [defaultDescription],
   );
 
   const { customToggleModes } = useContext(SchemaFieldContext);
@@ -148,7 +148,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
       isObjectProperty,
       isArrayItem,
       allowExpressions,
-    ]
+    ],
   );
 
   const validate = getFieldValidator(validationSchema);
@@ -165,7 +165,7 @@ const BasicSchemaField: SchemaFieldComponent = ({
   const { onOmitField } = useToggleFormField(
     name,
     normalizedSchema,
-    isRequired
+    isRequired,
   );
 
   if (isEmpty(inputModeOptions)) {

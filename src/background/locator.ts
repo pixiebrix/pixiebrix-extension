@@ -26,7 +26,7 @@ export default async function initLocator() {
   // Force use of background page to ensure there's a singleton locator instance across all frames/pages.
   expectContext(
     "background",
-    "The service locator must run in the background worker"
+    "The service locator must run in the background worker",
   );
 
   console.debug("Eagerly initializing service locator");
@@ -41,7 +41,7 @@ async function _refreshServices({
   // Force use of background page to ensure there's a singleton locator instance across all frames/pages.
   expectContext(
     "background",
-    "The service locator must run in the background worker"
+    "The service locator must run in the background worker",
   );
 
   if (remote && local) {

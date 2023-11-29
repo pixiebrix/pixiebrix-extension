@@ -26,7 +26,7 @@ export class SoundEffect extends EffectABC {
       "@pixiebrix/audio",
       "Play Sound Effect",
       "Play a built-in sound effect",
-      "faPlay"
+      "faPlay",
     );
   }
 
@@ -39,7 +39,7 @@ export class SoundEffect extends EffectABC {
         default: "magic-wand",
       },
     },
-    ["sound"]
+    ["sound"],
   );
 
   async effect({ sound }: BrickArgs<{ sound: string }>): Promise<void> {

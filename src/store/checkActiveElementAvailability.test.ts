@@ -97,8 +97,8 @@ describe("checkActiveElementAvailability", () => {
       async (
         target: Target | PageTarget,
         availability: Availability,
-        url: string
-      ) => backgroundCheckAvailable(availability, url)
+        url: string,
+      ) => backgroundCheckAvailable(availability, url),
     );
 
     await store.dispatch(actions.checkAvailableDynamicElements());

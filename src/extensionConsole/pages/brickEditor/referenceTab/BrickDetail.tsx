@@ -100,7 +100,7 @@ const BrickDetail = <T extends Metadata>({
       successMessage: "Copied input argument YAML to clipboard",
       errorMessage: "Error copying YAML to clipboard",
     },
-    [schema]
+    [schema],
   );
 
   return (

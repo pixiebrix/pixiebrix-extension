@@ -28,7 +28,7 @@ var consonant = Array(
   "w",
   "x",
   "y",
-  "z"
+  "z",
 );
 var vowel = Array("a", "e", "i", "o", "u", "y");
 var number = Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
@@ -112,7 +112,7 @@ var dbl = Array(
   "yw",
   "yx",
   "yy",
-  "yz"
+  "yz",
 );
 var whitelist = Array("cpl", "srx", "tkt", "pbm", "slp", "ch");
 
@@ -150,7 +150,7 @@ var regexwl = makeRegex(whitelist);
 
 export default function detectRandomString(
   str: string,
-  options?: { min: number }
+  options?: { min: number },
 ) {
   var defaults = { min: 5 };
   var settings = defaults;

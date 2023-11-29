@@ -58,7 +58,7 @@ import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 
 (browser.runtime as any).getURL = jest.fn(
-  (path) => `chrome-extension://abc/${path}`
+  (path) => `chrome-extension://abc/${path}`,
 );
 
 jest.mock("@/bricks/transformers/ephemeralForm/modalUtils", () => ({
@@ -73,7 +73,7 @@ jest.mock("@/contentScript/sidebarController", () => ({
 }));
 const showTemporarySidebarPanelMock = jest.mocked(showTemporarySidebarPanel);
 const updateTemporarySidebarPanelMock = jest.mocked(
-  updateTemporarySidebarPanel
+  updateTemporarySidebarPanel,
 );
 
 jest.mock("@/bricks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
@@ -84,11 +84,11 @@ jest.mock("@/bricks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
   updatePanelDefinition: jest.fn(),
 }));
 const registerEmptyTemporaryPanelMock = jest.mocked(
-  registerEmptyTemporaryPanel
+  registerEmptyTemporaryPanel,
 );
 const waitForTemporaryPanelMock = jest.mocked(waitForTemporaryPanel);
 const cancelTemporaryPanelsForExtensionMock = jest.mocked(
-  cancelTemporaryPanelsForExtension
+  cancelTemporaryPanelsForExtension,
 );
 const updatePanelDefinitionMock = jest.mocked(updatePanelDefinition);
 
@@ -179,12 +179,12 @@ describe("DisplayTemporaryInfo", () => {
     showTemporarySidebarPanelMock.mockImplementation(
       (entry: TemporaryPanelEntry) => {
         payload = entry.payload;
-      }
+      },
     );
     updatePanelDefinitionMock.mockImplementation(
       (entry: TemporaryPanelEntry) => {
         payload = entry.payload;
-      }
+      },
     );
 
     await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
@@ -255,7 +255,7 @@ describe("DisplayTemporaryInfo", () => {
     };
 
     await expect(
-      reducePipeline(pipeline, simpleInput({}), options)
+      reducePipeline(pipeline, simpleInput({}), options),
     ).rejects.toThrow("Target must be an element for popover");
   });
 
@@ -290,7 +290,7 @@ describe("DisplayTemporaryInfo", () => {
     expect(cancelTemporaryPanelsForExtensionMock).toHaveBeenCalled();
 
     expect(
-      document.body.querySelector("#pb-tooltips-container")
+      document.body.querySelector("#pb-tooltips-container"),
     ).not.toBeNull();
   });
 
@@ -299,7 +299,7 @@ describe("DisplayTemporaryInfo", () => {
 
     const deferredPromise = pDefer<any>();
     waitForTemporaryPanelMock.mockImplementation(
-      async () => deferredPromise.promise
+      async () => deferredPromise.promise,
     );
 
     const config = getExampleBlockConfig(renderer.id);
@@ -342,7 +342,7 @@ describe("DisplayTemporaryInfo", () => {
 
     const deferredPromise = pDefer<any>();
     waitForTemporaryPanelMock.mockImplementation(
-      async () => deferredPromise.promise
+      async () => deferredPromise.promise,
     );
 
     const config = getExampleBlockConfig(renderer.id);
@@ -374,7 +374,7 @@ describe("DisplayTemporaryInfo", () => {
     await tick();
 
     expect(
-      ContextBrick.contexts.map(unary(contextAsPlainObject))
+      ContextBrick.contexts.map(unary(contextAsPlainObject)),
     ).toStrictEqual([{ "@input": {}, "@mod": {}, "@options": {} }]);
     expect(showTemporarySidebarPanelMock).toHaveBeenCalled();
 
@@ -389,7 +389,7 @@ describe("DisplayTemporaryInfo", () => {
     await tick();
 
     expect(
-      ContextBrick.contexts.map(unary(contextAsPlainObject))
+      ContextBrick.contexts.map(unary(contextAsPlainObject)),
     ).toStrictEqual([
       { "@input": {}, "@mod": {}, "@options": {} },
       { "@input": {}, "@mod": { foo: 42 }, "@options": {} },

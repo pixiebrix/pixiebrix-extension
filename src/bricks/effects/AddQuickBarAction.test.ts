@@ -61,7 +61,7 @@ describe("AddQuickBarAction", () => {
         logger,
         root: document,
         abortSignal: abortController.signal,
-      })
+      }),
     );
     expect(addActionMock).toHaveBeenCalledWith({
       id: expect.toBeString(),

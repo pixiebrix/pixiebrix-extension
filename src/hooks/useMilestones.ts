@@ -38,7 +38,7 @@ function useMilestones(): MilestoneHelpers {
 
   return useMemo(() => {
     const milestonesByKey = new Map(
-      (milestones ?? []).map((milestone) => [milestone.key, milestone])
+      (milestones ?? []).map((milestone) => [milestone.key, milestone]),
     );
 
     const getMilestone = (milestoneKey: string) =>

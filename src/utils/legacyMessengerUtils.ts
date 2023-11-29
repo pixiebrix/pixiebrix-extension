@@ -61,13 +61,13 @@ export function isErrorResponse(ex: unknown): ex is ErrorResponse {
 
 export function toErrorResponse(
   requestType: string,
-  ex: unknown
+  ex: unknown,
 ): ErrorResponse {
   return { $$error: serializeError(ex) };
 }
 
 export function isRemoteProcedureCallRequest(
-  message: unknown
+  message: unknown,
 ): message is RemoteProcedureCallRequest {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (message as any)?.type === "string";

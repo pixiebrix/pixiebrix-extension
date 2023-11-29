@@ -26,7 +26,7 @@ class CompositeReader extends ReaderABC {
     super(
       "@pixiebrix/composite-reader",
       "Composite Reader",
-      "Combination of multiple readers"
+      "Combination of multiple readers",
     );
     this._readers = readers;
     this.outputSchema = {
@@ -41,7 +41,7 @@ class CompositeReader extends ReaderABC {
     const readerArray = Object.values(this._readers);
     // PERFORMANCE: could return quicker if any came back false using Promise.any
     const availability = await Promise.all(
-      readerArray.map(async (x) => x.isAvailable())
+      readerArray.map(async (x) => x.isAvailable()),
     );
     return availability.every(Boolean);
   }
@@ -57,7 +57,7 @@ class CompositeReader extends ReaderABC {
     const readerArray = Object.values(this._readers);
     // PERFORMANCE: could return quicker if any came back true using Promise.any
     const awareness = await Promise.all(
-      readerArray.map(async (x) => x.isRootAware())
+      readerArray.map(async (x) => x.isRootAware()),
     );
     return awareness.some(Boolean);
   }
@@ -69,8 +69,8 @@ class CompositeReader extends ReaderABC {
     ];
     const resultPairs = await Promise.all(
       Object.entries(this._readers).map(async ([key, reader]) =>
-        readOne(key, reader)
-      )
+        readOne(key, reader),
+      ),
     );
     return Object.fromEntries(resultPairs);
   }

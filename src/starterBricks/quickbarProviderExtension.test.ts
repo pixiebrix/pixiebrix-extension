@@ -114,24 +114,24 @@ describe("quickBarProviderExtension", () => {
     starterBrick.registerModComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
-      })
+      }),
     );
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
     await starterBrick.install();
     await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS + 1
+      NUM_DEFAULT_QUICKBAR_ACTIONS + 1,
     );
 
     expect(rootReader.readCount).toBe(0);
 
     // QuickBar installation adds another div to the body
     expect(document.body.innerHTML).toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>'
+      '<div id="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
@@ -146,7 +146,7 @@ describe("quickBarProviderExtension", () => {
     starterBrick.uninstall();
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
 
     // Toggle off the quickbar
@@ -165,7 +165,7 @@ describe("quickBarProviderExtension", () => {
         config: {
           generator: [] as BrickPipeline,
         },
-      })
+      }),
     );
 
     await starterBrick.install();
@@ -174,14 +174,14 @@ describe("quickBarProviderExtension", () => {
     await tick();
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
 
     expect(rootReader.readCount).toBe(0);
 
     // QuickBar installation adds another div to the body
     expect(document.body.innerHTML).toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>'
+      '<div id="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
@@ -192,7 +192,7 @@ describe("quickBarProviderExtension", () => {
 
     // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
     expect(document.body.innerHTML).not.toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>'
+      '<div id="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // Getting an error here: make sure you apple `query.inputRefSetter`
@@ -208,7 +208,7 @@ describe("quickBarProviderExtension", () => {
     starterBrick.uninstall();
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
 
     await toggleQuickBar();

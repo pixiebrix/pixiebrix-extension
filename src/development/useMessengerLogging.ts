@@ -20,7 +20,7 @@ import { messengerLogging } from "./messengerLogging";
 
 export default function useMessengerLogging(): [
   boolean | undefined,
-  (value: boolean) => void
+  (value: boolean) => void,
 ] {
   return useUpdatableAsyncState(messengerLogging.get, messengerLogging.set);
 }

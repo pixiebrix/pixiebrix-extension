@@ -54,7 +54,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             },
           },
           simpleInput({ inputArg: "hello" }),
-          testOptions(apiVersion)
+          testOptions(apiVersion),
         );
       }).rejects.toThrow();
 
@@ -78,7 +78,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           },
         },
         simpleInput({ inputArg: "hello" }),
-        { ...testOptions(apiVersion), logger }
+        { ...testOptions(apiVersion), logger },
       );
 
       await expect(pipeline).rejects.toThrow(ContextError);
@@ -102,5 +102,5 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         },
       });
     });
-  }
+  },
 );

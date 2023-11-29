@@ -41,7 +41,7 @@ describe("TourEffect", () => {
 
     const promise = brick.run(
       unsafeAssumeValidArg({ steps: [{ intro: "test content" }] }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await tick();
@@ -64,7 +64,7 @@ describe("TourEffect", () => {
       brickOptionsFactory({
         root: document,
         abortSignal: abortController.signal,
-      })
+      }),
     );
 
     await tick();

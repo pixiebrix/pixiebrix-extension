@@ -46,9 +46,9 @@ const UrlPermissionsList: React.FunctionComponent<
           ...selectOptionalPermissions(permissions.permissions),
           ...permissions.origins,
         ]),
-      })
+      }),
     ),
-    noRequiredPermissions
+    noRequiredPermissions,
   );
 
   const permissionsList = data?.permissionsList;

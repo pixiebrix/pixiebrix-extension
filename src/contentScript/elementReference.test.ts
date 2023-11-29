@@ -45,7 +45,7 @@ describe("elementReference", () => {
 
   test("unknown id throws error", () => {
     expect(() => getElementForReference(uuidv4() as ElementReference)).toThrow(
-      BusinessError
+      BusinessError,
     );
   });
 

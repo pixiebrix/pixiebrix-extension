@@ -50,7 +50,7 @@ AxiosRequestConfig): string {
 export async function isAppUrl(url: string): Promise<boolean> {
   const baseURL = await getBaseURL();
   const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
-    (url) => `${withoutTrailingSlash(url)}/*`
+    (url) => `${withoutTrailingSlash(url)}/*`,
   );
 
   return testMatchPatterns(patterns, url);
@@ -60,12 +60,12 @@ export async function isAppUrl(url: string): Promise<boolean> {
  * Return true iff the error corresponds to a request to PixieBrix API.
  */
 export async function isAppRequest(
-  error: SerializableAxiosError
+  error: SerializableAxiosError,
 ): Promise<boolean> {
   const baseURL = await getBaseURL();
   const requestUrl = selectAbsoluteUrl(error.config);
   const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
-    (url) => `${withoutTrailingSlash(url)}/*`
+    (url) => `${withoutTrailingSlash(url)}/*`,
   );
   return testMatchPatterns(patterns, requestUrl);
 }
@@ -74,7 +74,7 @@ export async function isAppRequest(
  * Return the AxiosError associated with an error, or null if error is not associated with an AxiosError
  */
 export function selectAxiosError(
-  error: unknown
+  error: unknown,
 ): SerializableAxiosError | null {
   if (isAxiosError(error)) {
     return error;

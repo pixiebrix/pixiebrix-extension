@@ -44,7 +44,7 @@ describe("ObjectWidget", () => {
         initialValues: {
           [fieldName]: {},
         },
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -79,7 +79,7 @@ describe("ObjectWidget", () => {
         initialValues: {
           [fieldName]: {},
         },
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -100,7 +100,7 @@ describe("ObjectWidget", () => {
         initialValues: {
           [fieldName]: {},
         },
-      }
+      },
     );
 
     // Add a property
@@ -148,14 +148,14 @@ describe("ObjectWidget", () => {
             myField: "myValue",
           },
         },
-      }
+      },
     );
 
     // Open the field type toggle
     await userEvent.click(
       within(screen.getByTestId(`toggle-${fieldName}.myField`)).getByRole(
-        "button"
-      )
+        "button",
+      ),
     );
 
     // Select "Exclude"
@@ -196,12 +196,12 @@ describe("ObjectWidget", () => {
             bar: "barValue",
           },
         },
-      }
+      },
     );
 
     // Open the field type toggle
     await userEvent.click(
-      within(screen.getByTestId(`toggle-${fieldName}.bar`)).getByRole("button")
+      within(screen.getByTestId(`toggle-${fieldName}.bar`)).getByRole("button"),
     );
 
     // Select "Exclude"
@@ -246,15 +246,15 @@ describe("ObjectWidget", () => {
             bar: "barValue",
           },
         },
-      }
+      },
     );
 
     // Find the field type toggles
     const fooToggle = within(
-      screen.getByTestId(`toggle-${fieldName}.foo`)
+      screen.getByTestId(`toggle-${fieldName}.foo`),
     ).getByRole("button");
     const barToggle = within(
-      screen.getByTestId(`toggle-${fieldName}.bar`)
+      screen.getByTestId(`toggle-${fieldName}.bar`),
     ).getByRole("button");
 
     // Open foo's field type toggle

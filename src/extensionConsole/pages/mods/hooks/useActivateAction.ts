@@ -34,7 +34,7 @@ function useActivateAction(modViewItem: ModViewItem): () => void | null {
       });
 
       dispatch(
-        push(`/marketplace/activate/${encodeURIComponent(mod.metadata.id)}`)
+        push(`/marketplace/activate/${encodeURIComponent(mod.metadata.id)}`),
       );
     } else {
       reportEvent(Events.START_MOD_ACTIVATE, {

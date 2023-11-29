@@ -45,7 +45,7 @@ export function extractIdsFromUrl(searchParams: URLSearchParams): RegistryId[] {
 function getActivateButtonLinks(): NodeListOf<HTMLAnchorElement> {
   // Include DEFAULT_SERVICE_URL for use during local/staging testing
   return document.querySelectorAll<HTMLAnchorElement>(
-    `a[href*='.pixiebrix.com/activate'], a[href*='${DEFAULT_SERVICE_URL}/activate']`
+    `a[href*='.pixiebrix.com/activate'], a[href*='${DEFAULT_SERVICE_URL}/activate']`,
   );
 }
 
@@ -61,7 +61,7 @@ function changeActivateButtonToActiveLabel(button: HTMLAnchorElement): void {
   button.innerHTML = "Reactivate";
 
   const activeLabel = $(
-    '<div class="d-flex flex-column"><span class="text-success"><i class="fas fa-check"></i> Active</span></div>'
+    '<div class="d-flex flex-column"><span class="text-success"><i class="fas fa-check"></i> Active</span></div>',
   );
   $(button).replaceWith(activeLabel);
 
@@ -107,7 +107,7 @@ export async function loadActivationEnhancements(): Promise<void> {
         {
           maxWaitMillis: 2000,
           intervalMillis: 100,
-        }
+        },
       );
 
       if (isContentScriptReady) {
@@ -118,7 +118,7 @@ export async function loadActivationEnhancements(): Promise<void> {
               modIds: extractIdsFromUrl(new URL(button.href).searchParams),
               activateUrl: button.href,
             },
-          })
+          }),
         );
       } else {
         // Something probably went wrong with the content script, so navigate to the `/activate` url

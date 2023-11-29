@@ -52,7 +52,7 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ): void {
     super.visitBrick(position, blockConfig, extra);
 
@@ -70,7 +70,7 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
 
   public override visitDocument(
     position: BrickPosition,
-    blockConfig: BrickConfig
+    blockConfig: BrickConfig,
   ): void {
     super.visitDocument(position, blockConfig);
     for (const [index, element] of Object.entries(blockConfig.config.body)) {
@@ -114,12 +114,12 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
           {
             flavor: this.getPipelineFlavor(element.type),
             parentNode: blockConfig,
-          }
+          },
         );
       } else if (isExpression(value)) {
         this.visitExpression(
           nestedPosition(position, pathInBlock, "config", prop),
-          value
+          value,
         );
       }
     }
@@ -143,7 +143,7 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
    */
   abstract visitExpression(
     position: BrickPosition,
-    expression: Expression<unknown>
+    expression: Expression<unknown>,
   ): void;
 }
 

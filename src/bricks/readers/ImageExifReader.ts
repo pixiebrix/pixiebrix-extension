@@ -51,7 +51,7 @@ export class ImageExifReader extends ReaderABC {
     super(
       "@pixiebrix/image/exif",
       "Image EXIF reader",
-      "Read EXIF information from an image element. For remote images, makes an additional request for the image."
+      "Read EXIF information from an image element. For remote images, makes an additional request for the image.",
     );
   }
 
@@ -69,7 +69,7 @@ export class ImageExifReader extends ReaderABC {
     }
 
     throw new Error(
-      `Expected an image element, got ${element.tagName ?? "document"}`
+      `Expected an image element, got ${element.tagName ?? "document"}`,
     );
   }
 

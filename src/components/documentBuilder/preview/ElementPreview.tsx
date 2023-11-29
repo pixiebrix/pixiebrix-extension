@@ -66,8 +66,8 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
       // which time the ref should be set.
       reportError(
         new Error(
-          "Document Preview element ref is null, preventing scroll-to behavior."
-        )
+          "Document Preview element ref is null, preventing scroll-to behavior.",
+        ),
       );
       return;
     }
@@ -81,7 +81,7 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
 
     window.addEventListener(
       `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${elementName}`,
-      scrollIntoView
+      scrollIntoView,
     );
 
     if (isActive) {
@@ -98,7 +98,7 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
       // which would cause scrollIntoView to be called multiple times with out-of-date refs when the event is fired.
       window.removeEventListener(
         `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${elementName}`,
-        scrollIntoView
+        scrollIntoView,
       );
     };
   }, []);
@@ -133,7 +133,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     dispatch(actions.expandBrickPipelineNode(activeNodeId));
 
     window.dispatchEvent(
-      new Event(`${SCROLL_TO_HEADER_NODE_EVENT}-${elementName}`)
+      new Event(`${SCROLL_TO_HEADER_NODE_EVENT}-${elementName}`),
     );
   };
 
@@ -164,7 +164,7 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
 
   const { Component: PreviewComponent, props } = useMemo(
     () => getPreviewComponentDefinition(previewElement),
-    [previewElement]
+    [previewElement],
   );
 
   return (

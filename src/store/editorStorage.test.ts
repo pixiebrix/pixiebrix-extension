@@ -84,7 +84,7 @@ describe("dynamicElementStorage", () => {
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
       initialState,
-      currentPersistenceVersion
+      currentPersistenceVersion,
     );
   });
 
@@ -146,7 +146,7 @@ describe("dynamicElementStorage", () => {
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
       baseState,
-      currentPersistenceVersion
+      currentPersistenceVersion,
     );
   });
 
@@ -234,7 +234,7 @@ describe("dynamicElementStorage", () => {
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
       baseState,
-      currentPersistenceVersion
+      currentPersistenceVersion,
     );
   });
 
@@ -322,7 +322,7 @@ describe("dynamicElementStorage", () => {
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
       baseState,
-      currentPersistenceVersion
+      currentPersistenceVersion,
     );
   });
 });
@@ -343,7 +343,7 @@ describe("dynamicElementStorage when no state is persisted", () => {
     async (state?: null) => {
       await saveEditorState(state);
       expect(setReduxStorageMock).not.toHaveBeenCalled();
-    }
+    },
   );
 
   test("removeDynamicElementsForRecipe doesn't crash when readReduxStorage returns undefined", async () => {

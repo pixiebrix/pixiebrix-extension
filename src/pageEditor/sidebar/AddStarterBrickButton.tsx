@@ -35,7 +35,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 const sortedStarterBricks = sortBy(
   [...ADAPTERS.values()],
-  (x) => x.displayOrder
+  (x) => x.displayOrder,
 );
 
 const DropdownEntry: React.FunctionComponent<{
@@ -72,7 +72,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
         }
 
         return flagOn(config.flag);
-      })
+      }),
     );
 
     return (

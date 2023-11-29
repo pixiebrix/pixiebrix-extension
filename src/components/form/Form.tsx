@@ -29,7 +29,7 @@ import { FormErrorContext } from "@/components/form/FormErrorContext";
 
 export type OnSubmit<TValues = FormikValues> = (
   values: TValues,
-  formikHelpers: FormikHelpers<TValues>
+  formikHelpers: FormikHelpers<TValues>,
 ) => void | Promise<unknown>;
 
 export type RenderBody = (state: {

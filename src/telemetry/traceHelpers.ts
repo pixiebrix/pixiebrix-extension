@@ -26,7 +26,7 @@ import { type Branch } from "@/types/runtimeTypes";
  */
 export function getLatestCall(records: TraceRecord[]): TraceRecord | undefined {
   const ascending = sortBy(records, (x) =>
-    x.branches.flatMap((branch) => [branch.key, branch.counter])
+    x.branches.flatMap((branch) => [branch.key, branch.counter]),
   );
   return reverse(ascending)[0];
 }
@@ -38,13 +38,13 @@ export function getLatestCall(records: TraceRecord[]): TraceRecord | undefined {
  */
 export function getLatestBrickCall(
   records: TraceRecord[],
-  blockInstanceId: UUID
+  blockInstanceId: UUID,
 ): TraceRecord | undefined {
   return getLatestCall(
     records.filter(
       // Use first block in pipeline to determine the latest run
-      (trace) => trace.blockInstanceId === blockInstanceId
-    )
+      (trace) => trace.blockInstanceId === blockInstanceId,
+    ),
   );
 }
 
@@ -55,12 +55,12 @@ export function getLatestBrickCall(
  */
 export function hasBranchPrefix(
   prefix: Branch[],
-  record: TraceRecord
+  record: TraceRecord,
 ): boolean {
   return prefix.every(
     (branch, index) =>
       index < record.branches.length &&
-      isEqual(branch, record.branches.at(index))
+      isEqual(branch, record.branches.at(index)),
   );
 }
 
@@ -71,7 +71,7 @@ export function hasBranchPrefix(
  */
 export function filterTracesByCall(
   records: TraceRecord[],
-  callBranches: Branch[] | null
+  callBranches: Branch[] | null,
 ): TraceRecord[] {
   if (callBranches == null) {
     return [];

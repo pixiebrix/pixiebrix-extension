@@ -35,7 +35,7 @@ function readIdsFromUrl(url: URL): string[] {
 
 export default function activateLinkClickHandler(
   event: MouseEvent,
-  callback: (entry: ModActivationPanelEntry) => void
+  callback: (entry: ModActivationPanelEntry) => void,
 ): void {
   const path = event.composedPath();
   const target = path[0] as HTMLElement;

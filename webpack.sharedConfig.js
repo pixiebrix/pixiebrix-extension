@@ -119,7 +119,7 @@ const shared = {
 // Convert tsconfig paths to webpack aliases
 for (const [from, [to]] of Object.entries(tsconfig.compilerOptions.paths)) {
   shared.resolve.alias[from.replace("/*", "")] = path.resolve(
-    to.replace("/*", "")
+    to.replace("/*", ""),
   );
 }
 

@@ -69,7 +69,7 @@ const IGNORED_ERROR_PATTERNS = [
 
 export function shouldErrorBeIgnored(
   possibleError: unknown,
-  context: MessageContext = {}
+  context: MessageContext = {},
 ): boolean {
   const { pageName, ...extensionContext } = context;
   return (
@@ -91,14 +91,14 @@ export function onUncaughtError(handler: (error: Error) => void): void {
 }
 
 export function isErrorObject(
-  error: unknown
+  error: unknown,
 ): error is SetRequired<ErrorObject, "name" | "message"> {
   // We should probably just use ErrorLike everywhere but it requires changing a lot of code
   return isErrorLike(error);
 }
 
 export function isSpecificError<
-  ErrorType extends new (...args: unknown[]) => Error
+  ErrorType extends new (...args: unknown[]) => Error,
 >(error: unknown, errorType: ErrorType): error is InstanceType<ErrorType> {
   // Catch 2 common error subclass groups. Necessary until we drop support for serialized errors:
   // https://github.com/sindresorhus/serialize-error/issues/72
@@ -114,7 +114,7 @@ export function isSpecificError<
 }
 
 export function isCustomAggregateError(
-  error: unknown
+  error: unknown,
 ): error is ErrorObject & { errors: unknown[] } {
   return (
     isErrorObject(error) && "errors" in error && Array.isArray(error.errors)
@@ -122,7 +122,7 @@ export function isCustomAggregateError(
 }
 
 export function selectSpecificError<
-  ErrorType extends new (...args: unknown[]) => Error
+  ErrorType extends new (...args: unknown[]) => Error,
 >(error: unknown, errorType: ErrorType): InstanceType<ErrorType> | null {
   if (!isObject(error)) {
     return null;
@@ -149,7 +149,7 @@ export function getRootCause(error: unknown): unknown {
 }
 
 export function hasSpecificErrorCause<
-  ErrorType extends new (...args: unknown[]) => Error
+  ErrorType extends new (...args: unknown[]) => Error,
 >(error: unknown, errorType: ErrorType): boolean {
   return Boolean(selectSpecificError(error, errorType));
 }
@@ -187,7 +187,7 @@ function isBusinessError(error: unknown): boolean {
 }
 
 export function formatSchemaValidationMessage(
-  error: SchemaValidationError["errors"][number]
+  error: SchemaValidationError["errors"][number],
 ) {
   const { keywordLocation, error: validationError } = error;
   return `${keywordLocation ? `${keywordLocation}: ` : ""}${
@@ -218,7 +218,7 @@ function isClientRequestError(error: unknown): boolean {
  */
 export function getErrorMessage(
   error: unknown,
-  defaultMessage = DEFAULT_ERROR_MESSAGE
+  defaultMessage = DEFAULT_ERROR_MESSAGE,
 ): string {
   if (!error) {
     return defaultMessage;
@@ -272,14 +272,14 @@ export function getErrorMessage(
  */
 export function getErrorMessageWithCauses(
   error: unknown,
-  defaultMessage = DEFAULT_ERROR_MESSAGE
+  defaultMessage = DEFAULT_ERROR_MESSAGE,
 ): string {
   if (isErrorObject(error) && error.cause) {
     // Currently excluding all duplicates. Might instead consider only excluding adjacent duplicates.
     return uniq(
       getErrorCauseList(error).map((error) =>
-        smartAppendPeriod(getErrorMessage(error))
-      )
+        smartAppendPeriod(getErrorMessage(error)),
+      ),
     ).join("\n");
   }
 
@@ -345,7 +345,7 @@ export function selectErrorFromErrorEvent(event: ErrorEvent): Error {
  * @deprecated use the generic `selectErrorFromEvent`
  */
 export function selectErrorFromRejectionEvent(
-  event: PromiseRejectionEvent
+  event: PromiseRejectionEvent,
 ): Error {
   // WARNING: don't prefix the error message, e.g., with "Asynchronous error:" because that breaks
   // message-based error filtering via IGNORED_ERROR_PATTERNS
@@ -360,7 +360,7 @@ export function selectErrorFromRejectionEvent(
  * Extracts error from ErrorEvent and PromiseRejectionEvent
  */
 function selectErrorFromEvent(
-  event: ErrorEvent | PromiseRejectionEvent
+  event: ErrorEvent | PromiseRejectionEvent,
 ): Error {
   return event instanceof PromiseRejectionEvent
     ? selectErrorFromRejectionEvent(event)

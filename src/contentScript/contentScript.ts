@@ -62,7 +62,7 @@ async function initContentScript() {
     // Prior to 1.7.31 we had been using `webext-dynamic-content-scripts` which can inject the same content script
     // multiple times: https://github.com/pixiebrix/pixiebrix-extension/pull/5743
     console.warn(
-      `contentScript: was requested twice in the same context, skipping content script initialization ${context}`
+      `contentScript: was requested twice in the same context, skipping content script initialization ${context}`,
     );
     return;
   }

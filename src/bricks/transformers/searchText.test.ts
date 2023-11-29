@@ -42,7 +42,7 @@ describe("Search", () => {
         text: "the rain in spain",
         query: "rain",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({
@@ -59,7 +59,7 @@ describe("Search", () => {
           query: "rain",
           stemWords,
         }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
 
       expect(result).toEqual({
@@ -68,7 +68,7 @@ describe("Search", () => {
           { length: 4, query: "rain", startIndex: 23, text: "rain" },
         ],
       });
-    }
+    },
   );
 
   it("stems the haystack", async () => {
@@ -78,7 +78,7 @@ describe("Search", () => {
         query: "rain",
         stemWords: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({
@@ -93,7 +93,7 @@ describe("Search", () => {
         query: "raining",
         stemWords: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({
@@ -107,7 +107,7 @@ describe("Search", () => {
         text: "I have rain on my brain",
         query: "rain",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({
@@ -122,7 +122,7 @@ describe("Search", () => {
         query: "rain in spain",
         stemWords: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({

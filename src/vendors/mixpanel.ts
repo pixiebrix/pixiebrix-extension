@@ -27,7 +27,7 @@ import { includes } from "lodash";
 // https://github.com/mixpanel/mixpanel-js/blob/master/src/utils.js#L1489
 export function detectBrowser(
   userAgent: string,
-  vendor: string | null
+  vendor: string | null,
 ): string {
   vendor = vendor ?? ""; // vendor is undefined for at least IE9
   if (includes(userAgent, " OPR/")) {

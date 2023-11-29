@@ -50,11 +50,11 @@ describe("useActions", () => {
       },
       {
         wrapper: ({ children }) => <KBarProvider>{children}</KBarProvider>,
-      }
+      },
     );
 
     expect(Object.keys(result.current.actions)).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
   });
 
@@ -66,7 +66,7 @@ describe("useActions", () => {
       },
       {
         wrapper: ({ children }) => <KBarProvider>{children}</KBarProvider>,
-      }
+      },
     );
 
     await act(async () => {
@@ -77,7 +77,7 @@ describe("useActions", () => {
     });
 
     expect(Object.keys(result.current.actions)).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS + 1
+      NUM_DEFAULT_QUICKBAR_ACTIONS + 1,
     );
 
     await act(async () => {
@@ -85,7 +85,7 @@ describe("useActions", () => {
     });
 
     expect(Object.keys(result.current.actions)).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
   });
 });

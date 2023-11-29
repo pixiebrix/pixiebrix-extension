@@ -57,9 +57,9 @@ const BrickReference = ({
       sortBy(
         bricks ?? [],
         (x) => (isOfficial(x.id) ? 0 : 1),
-        (x) => x.name
+        (x) => x.name,
       ),
-    [bricks]
+    [bricks],
   );
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const BrickReference = ({
         // Prefer name, then id
         keys: ["name", "id"],
       }),
-    [sortedBricks]
+    [sortedBricks],
   );
 
   const results = useMemo(() => {

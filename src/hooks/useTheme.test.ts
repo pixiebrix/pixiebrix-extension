@@ -50,7 +50,7 @@ describe("useGetTheme", () => {
         dispatch(
           settingsSlice.actions.setPartnerId({
             partnerId: "automation-anywhere",
-          })
+          }),
         );
       },
     });
@@ -66,7 +66,7 @@ describe("useGetTheme", () => {
     } = renderHook(() => useGetTheme(), {
       setupRedux(dispatch) {
         dispatch(
-          settingsSlice.actions.setTheme({ theme: "automation-anywhere" })
+          settingsSlice.actions.setTheme({ theme: "automation-anywhere" }),
         );
       },
     });
@@ -88,8 +88,8 @@ describe("useGetTheme", () => {
                 name: "Automation Anywhere",
                 theme: "automation-anywhere",
               },
-            })
-          )
+            }),
+          ),
         );
       },
     });
@@ -145,7 +145,7 @@ describe("useGetOrganizationTheme", () => {
             logo: newTestLogoUrl,
           },
         }),
-      })
+      }),
     );
 
     const {

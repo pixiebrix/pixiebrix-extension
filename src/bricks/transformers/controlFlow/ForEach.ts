@@ -35,7 +35,7 @@ class ForEach extends TransformerABC {
     super(
       ForEach.BLOCK_ID,
       "For-Each Loop",
-      "Loop over elements in a list/array, returning the value of the last iteration"
+      "Loop over elements in a list/array, returning the value of the last iteration",
     );
   }
 
@@ -66,7 +66,7 @@ class ForEach extends TransformerABC {
           "The element key/variable for the body of the loop, without the leading @",
       },
     },
-    ["elements", "body"]
+    ["elements", "body"],
   );
 
   async transform(
@@ -79,7 +79,7 @@ class ForEach extends TransformerABC {
       body: PipelineExpression;
       elementKey: OutputKey;
     }>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<unknown> {
     let last: unknown;
 
@@ -90,7 +90,7 @@ class ForEach extends TransformerABC {
         { key: "body", counter: index },
         {
           [`@${elementKey}`]: element,
-        }
+        },
       );
     }
 

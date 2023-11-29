@@ -27,13 +27,13 @@ describe("makeBlueprint", () => {
       {
         id: validateRegistryId("test/blueprint"),
         name: "test",
-      }
+      },
     );
 
     expect(result).toEqual(
       expect.objectContaining({
         kind: "recipe",
-      })
+      }),
     );
   });
 
@@ -64,7 +64,7 @@ describe("makeBlueprint", () => {
             type: "object",
           },
         },
-      })
+      }),
     );
   });
 });

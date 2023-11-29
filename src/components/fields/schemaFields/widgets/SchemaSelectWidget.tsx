@@ -62,7 +62,7 @@ const SchemaSelectWidget: React.VFC<
         created,
         value,
       }),
-    [schema, created, value]
+    [schema, created, value],
   );
 
   // Show placeholder if users can create new options and the search is empty
@@ -95,7 +95,7 @@ const SchemaSelectWidget: React.VFC<
         });
       }
     },
-    [name, schema.title, setValue]
+    [name, schema.title, setValue],
   );
 
   if (isEmpty(options)) {

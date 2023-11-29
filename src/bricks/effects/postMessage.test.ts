@@ -37,12 +37,12 @@ describe("postMessage", () => {
         selector: "iframe",
         message: { text: "Hello, frame!" },
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(frame.contentWindow.postMessage).toHaveBeenCalledWith(
       { text: "Hello, frame!" },
-      "*"
+      "*",
     );
   });
 });

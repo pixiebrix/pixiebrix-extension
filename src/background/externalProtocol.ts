@@ -45,7 +45,7 @@ const handlers = new Map<string, HandlerEntry>();
  * https://developer.chrome.com/extensions/security#sanitize
  */
 function allowBackgroundSender(
-  sender: ChromeMessageSender | Runtime.MessageSender
+  sender: ChromeMessageSender | Runtime.MessageSender,
 ): boolean {
   if (sender == null) {
     return false;
@@ -61,7 +61,7 @@ function allowBackgroundSender(
 
 async function handleRequest(
   request: RemoteProcedureCallRequest,
-  sender: Runtime.MessageSender
+  sender: Runtime.MessageSender,
 ): Promise<unknown> {
   const { type, payload, meta } = request;
   const { handler, options } = handlers.get(type);
@@ -70,20 +70,20 @@ async function handleRequest(
     const value = await handler(...payload);
 
     console.debug(
-      `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
+      `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
     );
     return value;
   } catch (error) {
     if (isNotification(options)) {
       console.warn(
         `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
-        error
+        error,
       );
       return;
     }
 
     console.debug(
-      `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
+      `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
     );
 
     return toErrorResponse(type, error);
@@ -93,11 +93,11 @@ async function handleRequest(
 async function callBackground(
   type: string,
   args: unknown[],
-  options: HandlerOptions
+  options: HandlerOptions,
 ): Promise<unknown> {
   if (!isExtensionContext() && chrome.runtime == null) {
     throw new RuntimeNotFoundError(
-      "Browser runtime is unavailable; is the extension externally connectable?"
+      "Browser runtime is unavailable; is the extension externally connectable?",
     );
   }
 
@@ -119,7 +119,7 @@ async function callBackground(
     sendMessage(extensionId, message, {}).catch((error) => {
       console.warn(
         `An error occurred processing background notification ${type} (nonce: ${nonce})`,
-        error
+        error,
       );
     });
   } else {
@@ -132,7 +132,7 @@ async function callBackground(
     } catch (error) {
       console.debug(
         `Error sending background action ${type} (nonce: ${nonce})`,
-        { extensionId, error }
+        { extensionId, error },
       );
       throw error;
     }
@@ -154,11 +154,11 @@ async function callBackground(
  */
 export function _liftBackground<
   TArguments extends unknown[],
-  R extends SerializableResponse
+  R extends SerializableResponse,
 >(
   type: string,
   method: (...args: TArguments) => Promise<R>,
-  options?: HandlerOptions
+  options?: HandlerOptions,
 ): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
@@ -178,7 +178,7 @@ export function _liftBackground<
 
 function backgroundListener(
   request: RemoteProcedureCallRequest,
-  sender: Runtime.MessageSender
+  sender: Runtime.MessageSender,
 ): Promise<unknown> | void {
   // Returning "undefined" indicates the message has not been handled
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage

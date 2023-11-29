@@ -90,7 +90,7 @@ Z`;
  */
 function _getVisibleHeight(
   element: HTMLElement,
-  scrollParent: HTMLElement | null
+  scrollParent: HTMLElement | null,
 ) {
   const elementRect = element.getBoundingClientRect();
   let top = elementRect.y || elementRect.top;
@@ -139,7 +139,7 @@ export function positionModal(
   modalOverlayOpeningPadding: number,
   modalOverlayOpeningRadius: number,
   scrollParent: HTMLElement | null,
-  targetElement: HTMLElement
+  targetElement: HTMLElement,
 ) {
   const { y, height } = _getVisibleHeight(targetElement, scrollParent);
   const { x, width, left } = targetElement.getBoundingClientRect();
@@ -162,7 +162,7 @@ export function addOverlay(
   }: {
     modalOverlayOpeningPadding?: number;
     modalOverlayOpeningRadius?: number;
-  } = {}
+  } = {},
 ): () => void {
   if (target === document.body) {
     throw new Error("Cannot add overlay to body");
@@ -175,11 +175,11 @@ export function addOverlay(
       modalOverlayOpeningPadding,
       modalOverlayOpeningRadius,
       scrollParent,
-      target
-    )
+      target,
+    ),
   );
   const $svg = $(
-    `<svg class="pixiebrix-modal-overlay-container pixiebrix-modal-is-visible"><path d="${path}"</svg>`
+    `<svg class="pixiebrix-modal-overlay-container pixiebrix-modal-is-visible"><path d="${path}"</svg>`,
   );
 
   // Setup recursive function to call requestAnimationFrame to update the modal opening position (e.g. due to scroll)
@@ -192,8 +192,8 @@ export function addOverlay(
         modalOverlayOpeningPadding,
         modalOverlayOpeningRadius,
         scrollParent,
-        target
-      )
+        target,
+      ),
     );
 
     $svg.find("path").attr("d", path);

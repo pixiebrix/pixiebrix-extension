@@ -68,9 +68,8 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
           return baseSchema;
         }
 
-        const spreadsheetFileList = await sheets.getAllSpreadsheets(
-          googleAccount
-        );
+        const spreadsheetFileList =
+          await sheets.getAllSpreadsheets(googleAccount);
 
         if (isEmpty(spreadsheetFileList.files)) {
           return baseSchema;
@@ -80,7 +79,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
           (file) => ({
             const: file.id,
             title: file.name,
-          })
+          }),
         );
         if (!isEmpty(baseSchema.oneOf)) {
           // Currently there would only be one item here, the loop makes type narrowing easier
@@ -116,7 +115,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
           schemaResult.oneOf &&
           !schemaResult.oneOf.some(
             (option) =>
-              typeof option !== "boolean" && option.const === fieldValue
+              typeof option !== "boolean" && option.const === fieldValue,
           )
         ) {
           schemaResult.oneOf.unshift({
@@ -139,7 +138,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
       } finally {
         setIsRetrying(false);
       }
-    }
+    },
   );
 
   return (

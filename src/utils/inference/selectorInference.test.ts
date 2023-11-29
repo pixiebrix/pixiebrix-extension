@@ -62,13 +62,11 @@ expect.extend({
 describe("generateSelector", () => {
   test("find simple selectors", () => {
     expect(html`<h1><span>Text</span></h1>`).toFindSelector("h1 > span");
-    expect(
-      html`
-        <div>
-          <div><h1></h1></div>
-        </div>
-      `
-    ).toFindSelector("h1");
+    expect(html`
+      <div>
+        <div><h1></h1></div>
+      </div>
+    `).toFindSelector("h1");
   });
 });
 
@@ -80,15 +78,15 @@ describe("getAttributeSelector", () => {
   test("find title selectors", () => {
     expect(getAttributeSelector("title", "Book")).toBe("[title='Book']");
     expect(getAttributeSelector("title", "Book name")).toBe(
-      "[title='Book\\ name']"
+      "[title='Book\\ name']",
     );
     expect(getAttributeSelector("title", 'The "Great" Gatsby')).toBe(
-      "[title='The\\ \\\"Great\\\"\\ Gatsby']"
+      "[title='The\\ \\\"Great\\\"\\ Gatsby']",
     );
   });
   test("find aria attribute selectors", () => {
     expect(getAttributeSelector("aria-title", "Your email")).toBe(
-      "[aria-title='Your\\ email']"
+      "[aria-title='Your\\ email']",
     );
   });
   test("exclude non-unique selectors", () => {
@@ -104,7 +102,7 @@ describe("safeCssSelector", () => {
       [document.body.querySelector(selector)],
       {
         excludeRandomClasses: true,
-      }
+      },
     );
 
     expect(inferredSelector).toBe(selector);
@@ -118,7 +116,7 @@ describe("safeCssSelector", () => {
           <input aria-label="foo" />
           <input aria-label="bar" />
         </div>
-      `
+      `,
     );
   });
   test("infer class", () => {
@@ -129,7 +127,7 @@ describe("safeCssSelector", () => {
           <li><a class="navItem about" href="/about">About</a></li>
           <li><a class="navItem contacts" href="/contacts">Contacts</a></li>
         </ul>
-      `
+      `,
     );
   });
 
@@ -141,7 +139,7 @@ describe("safeCssSelector", () => {
           <input class="foo" aria-label="foo" />
           <input class="bar" aria-label="bar" />
         </div>
-      `
+      `,
     );
   });
 
@@ -153,7 +151,7 @@ describe("safeCssSelector", () => {
           <input class="asij340snlslnakdi9" aria-label="foo" />
           <input class="aksjhd93rqansld00s" aria-label="bar" />
         </div>
-      `
+      `,
     );
   });
 
@@ -165,7 +163,7 @@ describe("safeCssSelector", () => {
           <li><a class="i3349fj9 about" href="/about">About</a></li>
           <li><a class="iauoff23 contacts" href="/contacts">Contacts</a></li>
         </ul>
-      `
+      `,
     );
   });
 
@@ -177,7 +175,7 @@ describe("safeCssSelector", () => {
           <li><a title='The "Great" Gatsby' href="/about">About</a></li>
           <li><a title="The Other Gatsby" href="/contacts">Contacts</a></li>
         </ul>
-      `
+      `,
     );
   });
 
@@ -191,7 +189,7 @@ describe("safeCssSelector", () => {
             <a id="contacts" class="contacts" href="/contacts">Contacts</a>
           </li>
         </ul>
-      `
+      `,
     );
   });
 
@@ -205,7 +203,7 @@ describe("safeCssSelector", () => {
             <a id="ember-24" class="contacts" href="/contacts">Contacts</a>
           </li>
         </ul>
-      `
+      `,
     );
   });
 
@@ -221,7 +219,7 @@ describe("safeCssSelector", () => {
           </li>
           <li><a href="/contacts" aria-label="The other link">Contacts</a></li>
         </ul>
-      `
+      `,
     );
   });
 });
@@ -244,14 +242,14 @@ describe("expandedCssSelector", () => {
   const expectSimilarElements = (
     manualElementSelectors: string[],
     otherElementSelectors: string[],
-    body: string
+    body: string,
   ) => {
     document.body.innerHTML = body;
     const manualElements = manualElementSelectors.map((x) =>
-      document.body.querySelector<HTMLElement>(x)
+      document.body.querySelector<HTMLElement>(x),
     );
     const otherElements = otherElementSelectors.map((x) =>
-      document.body.querySelector<HTMLElement>(x)
+      document.body.querySelector<HTMLElement>(x),
     );
 
     const commonSelector = expandedCssSelector(manualElements);
@@ -346,7 +344,7 @@ describe("expandedCssSelector", () => {
     expectSelector(
       "#span, #a",
       "#root .foo.bar > span, #root .foo.bar > a",
-      body
+      body,
     );
   });
 
@@ -362,7 +360,7 @@ describe("expandedCssSelector", () => {
     expectSimilarElements(
       ["#up_33240341 .votearrow", "#up_33239220 .votearrow"],
       ["#up_33239255 .votearrow"],
-      body
+      body,
     );
   });
 });
@@ -376,8 +374,8 @@ describe("sortBySelector", () => {
     expect(
       sortBySelector(
         [{ foo: ".a" }, { foo: "#a" }],
-        (x: { foo: string }) => x.foo
-      )
+        (x: { foo: string }) => x.foo,
+      ),
     ).toStrictEqual([{ foo: "#a" }, { foo: ".a" }]);
   });
 });
@@ -405,7 +403,7 @@ describe("inferSelectors", () => {
 
     // The provided selector list should only match one element
     const userSelectedElements = selectors.map((selector) =>
-      document.body.querySelector<HTMLElement>(selector)
+      document.body.querySelector<HTMLElement>(selector),
     );
     expect(uniq(userSelectedElements)).toHaveLength(1);
 
@@ -422,7 +420,7 @@ describe("inferSelectors", () => {
           <input aria-label="foo" />
           <input aria-label="bar" />
         </div>
-      `
+      `,
     );
   });
 
@@ -434,7 +432,7 @@ describe("inferSelectors", () => {
           <input aria-label="foo" data-cy="baz" class="zoolander" />
           <input aria-label="bar" data-cy="zan" />
         </div>
-      `
+      `,
     );
   });
 
@@ -446,7 +444,7 @@ describe("inferSelectors", () => {
           <input aria-label="foo" data-cy="baz" class="zoolander" />
           <input aria-label="bar" data-cy="zan" class="zoolander" />
         </div>
-      `
+      `,
     );
   });
 
@@ -459,7 +457,7 @@ describe("inferSelectors", () => {
           <input aria-label="test" class="zoolander" />
           <input aria-label="bar" class="iAmAUniqueGreatClassSelector" />
         </div>
-      `
+      `,
     );
   });
 
@@ -468,9 +466,9 @@ describe("inferSelectors", () => {
     (attribute: string) => {
       expectSelectors(
         [`[${attribute}='a']`],
-        html`<div><input ${attribute}="a" /><input ${attribute}="b" /></div>`
+        html`<div><input ${attribute}="a" /><input ${attribute}="b" /></div>`,
       );
-    }
+    },
   );
 
   test.each([[PIXIEBRIX_DATA_ATTR], [EXTENSION_POINT_DATA_ATTR]])(
@@ -483,9 +481,9 @@ describe("inferSelectors", () => {
             <input ${attribute}="foo" aria-label="foo" />
             <input ${attribute}="bar" aria-label="bar" />
           </div>
-        `
+        `,
       );
-    }
+    },
   );
 });
 
@@ -495,7 +493,7 @@ describe("inferSelectorsIncludingStableAncestors", () => {
 
     // The provided selector list should only match one element
     const userSelectedElements = selectors.map((selector) =>
-      document.body.querySelector<HTMLElement>(selector)
+      document.body.querySelector<HTMLElement>(selector),
     );
     expect(uniq(userSelectedElements)).toHaveLength(1);
 
@@ -503,7 +501,7 @@ describe("inferSelectorsIncludingStableAncestors", () => {
     const inferredSelectors = inferSelectorsIncludingStableAncestors(
       userSelectedElements[0],
       document.body,
-      true
+      true,
     );
     expect(inferredSelectors).toEqual(selectors);
   };
@@ -515,7 +513,7 @@ describe("inferSelectorsIncludingStableAncestors", () => {
         <div id="ember33">
           <h2>I am a header</h2>
         </div>
-      `
+      `,
     );
   });
 
@@ -526,7 +524,7 @@ describe("inferSelectorsIncludingStableAncestors", () => {
         <div id="thisisgoodid">
           <h2>I am a header</h2>
         </div>
-      `
+      `,
     );
   });
 
@@ -537,7 +535,7 @@ describe("inferSelectorsIncludingStableAncestors", () => {
         <div data-id="thisisgoodid">
           <h2>I am a header</h2>
         </div>
-      `
+      `,
     );
   });
 });

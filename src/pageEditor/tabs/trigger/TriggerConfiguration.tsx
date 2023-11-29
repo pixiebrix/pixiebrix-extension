@@ -37,7 +37,7 @@ import { joinName } from "@/utils/formUtils";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval", "selectionchange", "statechange"].includes(
-    trigger
+    trigger,
   );
 }
 
@@ -54,7 +54,7 @@ const TriggerConfiguration: React.FC<{
   const [{ value: trigger }] = useField<Trigger>(fieldName("trigger"));
 
   const [{ value: debounce }] = useField<DebounceOptions | null>(
-    fieldName("debounce")
+    fieldName("debounce"),
   );
 
   const { setFieldValue } = useFormikContext<TriggerFormState>();
@@ -88,7 +88,7 @@ const TriggerConfiguration: React.FC<{
 
     void setFieldValue(
       fieldName("reportMode"),
-      getDefaultReportModeForTrigger(nextTrigger)
+      getDefaultReportModeForTrigger(nextTrigger),
     );
 
     if (nextTrigger === "selectionchange" && debounce == null) {

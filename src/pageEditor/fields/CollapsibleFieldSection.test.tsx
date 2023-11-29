@@ -28,7 +28,7 @@ describe("CollapsibleFieldSection", () => {
         title={<input name="foo" />}
         toggleExpanded={onToggle}
         expanded={true}
-      />
+      />,
     );
 
     await userEvent.click(screen.getByRole("textbox"));

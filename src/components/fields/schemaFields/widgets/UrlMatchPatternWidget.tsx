@@ -63,7 +63,7 @@ const DEFAULT_SHORTCUTS: Shortcut[] = [
 ];
 
 const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
-  props
+  props,
 ) => {
   const {
     name,

@@ -33,8 +33,8 @@ export const containsPermissions = jest
   .fn()
   .mockRejectedValue(
     new Error(
-      "Internal mocking error: jest should be using containsPermissions from mockPermissions"
-    )
+      "Internal mocking error: jest should be using containsPermissions from mockPermissions",
+    ),
   );
 
 export const getUID = jest.fn().mockResolvedValue(uuidv4());
@@ -62,7 +62,7 @@ export const registry = {
   getByKinds: jest.fn().mockResolvedValue([]),
   find: jest.fn().mockImplementation(async (id: RegistryId) => {
     throw new Error(
-      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`
+      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`,
     );
   }),
   clear: getMethod("REGISTRY_CLEAR", bg),
@@ -85,8 +85,8 @@ export const services = {
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const performConfiguredRequestInBackground = getMethod(
   "CONFIGURED_REQUEST",
-  bg
+  bg,
 ) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: AxiosRequestConfig
+  requestConfig: AxiosRequestConfig,
 ) => Promise<RemoteResponse<TData>>;

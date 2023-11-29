@@ -65,7 +65,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [{ value: body }] = useField<Expression>(configName("body"));
   const [{ value: appearance }] = useField<StepInputs["appearance"] | null>(
-    configName("appearance")
+    configName("appearance"),
   );
 
   return (
@@ -99,7 +99,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
                 });
                 await setFieldValue(
                   configName("appearance", "refreshTrigger"),
-                  "manual"
+                  "manual",
                 );
               } else {
                 await setFieldValue(configName("body"), {

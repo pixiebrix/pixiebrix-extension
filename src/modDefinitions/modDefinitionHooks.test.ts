@@ -30,13 +30,13 @@ describe("useRequiredModDefinitions", () => {
   it("only errors if mod definition not found after remote fetch", async () => {
     const deferred = pDefer();
     (registry.syncRemote as jest.Mock).mockImplementation(
-      async () => deferred.promise
+      async () => deferred.promise,
     );
 
     const wrapper = renderHook(() =>
       useRequiredModDefinitions([
         validateRegistryId("nonexistent-mod-definition"),
-      ])
+      ]),
     );
 
     await wrapper.waitForEffect();
@@ -47,7 +47,7 @@ describe("useRequiredModDefinitions", () => {
         isLoading: true,
         isError: false,
         error: undefined,
-      })
+      }),
     );
 
     deferred.resolve([]);
@@ -58,7 +58,7 @@ describe("useRequiredModDefinitions", () => {
         isLoading: false,
         isError: true,
         error: expect.toBeObject(),
-      })
+      }),
     );
   });
 });
@@ -67,11 +67,13 @@ describe("useOptionalModDefinition", () => {
   it("returns null if not found", async () => {
     const deferred = pDefer();
     (registry.syncRemote as jest.Mock).mockImplementation(
-      async () => deferred.promise
+      async () => deferred.promise,
     );
 
     const wrapper = renderHook(() =>
-      useOptionalModDefinition(validateRegistryId("nonexistent-mod-definition"))
+      useOptionalModDefinition(
+        validateRegistryId("nonexistent-mod-definition"),
+      ),
     );
 
     await wrapper.waitForEffect();
@@ -81,7 +83,7 @@ describe("useOptionalModDefinition", () => {
         data: undefined,
         isLoading: false,
         isSuccess: true,
-      })
+      }),
     );
 
     deferred.resolve([]);
@@ -92,7 +94,7 @@ describe("useOptionalModDefinition", () => {
         data: undefined,
         isLoading: false,
         isSuccess: true,
-      })
+      }),
     );
   });
 });

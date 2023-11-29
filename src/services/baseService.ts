@@ -55,7 +55,7 @@ export async function getBaseURL(): Promise<string> {
 
 type ConfiguredHostResult = [
   ConfiguredHost | undefined,
-  (url: string) => Promise<void>
+  (url: string) => Promise<void>,
 ];
 
 /**

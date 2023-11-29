@@ -46,7 +46,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: true }), optionsArgs: {} },
-      testOptions("v1")
+      testOptions("v1"),
     );
     expect(result).toStrictEqual({ message: "Ran block" });
   });
@@ -66,7 +66,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: true }), optionsArgs: {} },
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
     expect(result).toStrictEqual({ message: "Ran block" });
   });
@@ -86,7 +86,7 @@ describe("false mustache conditional", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
-      testOptions("v1")
+      testOptions("v1"),
     );
     // The original input is passed through
     expect(result).toStrictEqual({ run: false });
@@ -105,7 +105,7 @@ describe("false mustache conditional", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
-      testOptions("v2")
+      testOptions("v2"),
     );
     // The starting value is {}
     expect(result).toStrictEqual({});
@@ -124,7 +124,7 @@ describe("false mustache conditional", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
-      testOptions("v3")
+      testOptions("v3"),
     );
     // The block still doesn't run because the string is not truthy according to boolean
     expect(result).toStrictEqual({});
@@ -146,7 +146,7 @@ describe("false mustache conditional", () => {
     const result = await reducePipeline(
       pipeline as BrickPipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({});
   });
@@ -164,7 +164,7 @@ describe("apiVersion: v2", () => {
       await reducePipeline(
         pipeline,
         simpleInput({ inputArg: 42 }),
-        testOptions("v2")
+        testOptions("v2"),
       );
     } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);

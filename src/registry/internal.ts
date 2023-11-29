@@ -58,7 +58,7 @@ export function makeInternalId(obj: UnknownObject): RegistryId {
 
 async function resolveBrickDefinition(
   definitions: InnerDefinitions,
-  innerDefinition: InnerDefinition
+  innerDefinition: InnerDefinition,
 ): Promise<Brick> {
   // Don't include outputSchema in because it can't affect functionality
   const obj = pick(innerDefinition, [
@@ -90,7 +90,7 @@ async function resolveBrickDefinition(
 
 async function resolveReaderDefinition(
   definitions: InnerDefinitions,
-  reader: unknown
+  reader: unknown,
 ): Promise<ReaderConfig> {
   if (reader == null) {
     throw new TypeError("reader cannot be null/undefined");
@@ -102,13 +102,13 @@ async function resolveReaderDefinition(
       const definition = definitions[reader];
       if (definition.kind !== "reader") {
         throw new TypeError(
-          "extensionPoint references definition that is not a reader"
+          "extensionPoint references definition that is not a reader",
         );
       }
 
       const block = await resolveBrickDefinition(
         definitions,
-        definition as InnerBlock<"component">
+        definition as InnerBlock<"component">,
       );
       return block.id;
     }
@@ -119,13 +119,13 @@ async function resolveReaderDefinition(
 
   if (Array.isArray(reader)) {
     return Promise.all(
-      reader.map(async (x) => resolveReaderDefinition(definitions, x))
+      reader.map(async (x) => resolveReaderDefinition(definitions, x)),
     );
   }
 
   if (isObject(reader)) {
     return resolveObj(
-      mapValues(reader, async (x) => resolveReaderDefinition(definitions, x))
+      mapValues(reader, async (x) => resolveReaderDefinition(definitions, x)),
     );
   }
 
@@ -139,7 +139,7 @@ async function resolveReaderDefinition(
 
 async function resolveExtensionPointDefinition(
   definitions: InnerDefinitions,
-  originalInnerDefinition: InnerExtensionPoint
+  originalInnerDefinition: InnerExtensionPoint,
 ): Promise<StarterBrick> {
   const innerDefinition = cloneDeep(originalInnerDefinition);
 
@@ -147,7 +147,7 @@ async function resolveExtensionPointDefinition(
   // clash if they use the same name for different readers
   innerDefinition.definition.reader = await resolveReaderDefinition(
     definitions,
-    innerDefinition.definition.reader
+    innerDefinition.definition.reader,
   );
 
   const obj = pick(innerDefinition, ["kind", "definition"]);
@@ -181,7 +181,7 @@ async function resolveExtensionPointDefinition(
  */
 async function resolveInnerDefinition(
   definitions: InnerDefinitions,
-  innerDefinition: InnerDefinitions[string]
+  innerDefinition: InnerDefinitions[string],
 ): Promise<Brick | StarterBrick> {
   if (typeof innerDefinition.kind !== "string") {
     throw new TypeError("Expected kind of type string for inner definition");
@@ -191,7 +191,7 @@ async function resolveInnerDefinition(
     case "extensionPoint": {
       return resolveExtensionPointDefinition(
         definitions,
-        innerDefinition as InnerExtensionPoint
+        innerDefinition as InnerExtensionPoint,
       );
     }
 
@@ -202,7 +202,7 @@ async function resolveInnerDefinition(
 
     default: {
       throw new Error(
-        `Invalid kind for inner definition: ${innerDefinition.kind}`
+        `Invalid kind for inner definition: ${innerDefinition.kind}`,
       );
     }
   }
@@ -213,7 +213,7 @@ async function resolveInnerDefinition(
  * TODO: resolve/map ids for other definitions (brick, service, etc.) within the extension
  */
 export async function resolveExtensionInnerDefinitions<
-  T extends UnknownObject = UnknownObject
+  T extends UnknownObject = UnknownObject,
 >(extension: ModComponentBase<T>): Promise<ResolvedModComponent<T>> {
   if (isEmpty(extension.definitions)) {
     return extension as ResolvedModComponent<T>;
@@ -224,13 +224,13 @@ export async function resolveExtensionInnerDefinitions<
     const relevantDefinitions = pickBy(
       draft.definitions,
       (definition, name) =>
-        definition.kind !== "extensionPoint" || draft.extensionPointId === name
+        definition.kind !== "extensionPoint" || draft.extensionPointId === name,
     );
 
     const resolvedDefinitions = await resolveObj(
       mapValues(relevantDefinitions, async (definition) =>
-        resolveInnerDefinition(draft.definitions, definition)
-      )
+        resolveInnerDefinition(draft.definitions, definition),
+      ),
     );
 
     delete draft.definitions;
@@ -245,7 +245,7 @@ export async function resolveExtensionInnerDefinitions<
  * TODO: resolve other definitions (brick, service, etc.) within the extensions
  */
 export async function resolveRecipeInnerDefinitions(
-  recipe: Pick<ModDefinition, "extensionPoints" | "definitions">
+  recipe: Pick<ModDefinition, "extensionPoints" | "definitions">,
 ): Promise<ResolvedModComponentDefinition[]> {
   const extensionDefinitions = recipe.extensionPoints;
 
@@ -254,7 +254,7 @@ export async function resolveRecipeInnerDefinitions(
   }
 
   const extensionPointReferences = new Set<string>(
-    recipe.extensionPoints.map((x) => x.id)
+    recipe.extensionPoints.map((x) => x.id),
   );
 
   // Some mods created with the Page Editor end up with irrelevant definitions in the recipe, because they aren't
@@ -262,20 +262,21 @@ export async function resolveRecipeInnerDefinitions(
   const relevantDefinitions = pickBy(
     recipe.definitions,
     (definition, name) =>
-      definition.kind !== "extensionPoint" || extensionPointReferences.has(name)
+      definition.kind !== "extensionPoint" ||
+      extensionPointReferences.has(name),
   );
 
   const resolvedDefinitions = await resolveObj(
     mapValues(relevantDefinitions, async (config) =>
-      resolveInnerDefinition(relevantDefinitions, config)
-    )
+      resolveInnerDefinition(relevantDefinitions, config),
+    ),
   );
 
   return extensionDefinitions.map(
     (definition) =>
       (definition.id in resolvedDefinitions
         ? { ...definition, id: resolvedDefinitions[definition.id].id }
-        : definition) as ResolvedModComponentDefinition
+        : definition) as ResolvedModComponentDefinition,
   );
 }
 
@@ -286,7 +287,7 @@ export async function resolveRecipeInnerDefinitions(
  * @see ResolvedModComponent
  */
 export function hasInnerExtensionPointRef(
-  extension: ModComponentBase
+  extension: ModComponentBase,
 ): boolean {
   // XXX: should this also check for `@internal/` scope in the referenced id? The type ModComponentBase could receive a
   // ResolvedExtension, which would have the id mapped to the internal registry id

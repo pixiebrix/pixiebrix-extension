@@ -34,7 +34,7 @@ const RequireBrickRegistry: React.FC = ({ children }) => {
         serviceRegistry.all(),
         extensionPointRegistry.all(),
       ]),
-    []
+    [],
   );
 
   return <AsyncStateGate state={state}>{() => <>{children}</>}</AsyncStateGate>;

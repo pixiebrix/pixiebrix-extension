@@ -21,38 +21,38 @@ import { makeVariableExpression } from "@/runtime/expressionCreators";
 describe("getSheetServiceOutputKey", () => {
   test("abc", () => {
     expect(getSheetIdIntegrationOutputKey(makeVariableExpression("abc"))).toBe(
-      "abc"
+      "abc",
     );
   });
   test("@abc", () => {
     expect(getSheetIdIntegrationOutputKey(makeVariableExpression("@abc"))).toBe(
-      "abc"
+      "abc",
     );
   });
   test("@abc.def", () => {
     expect(
-      getSheetIdIntegrationOutputKey(makeVariableExpression("@abc.def"))
+      getSheetIdIntegrationOutputKey(makeVariableExpression("@abc.def")),
     ).toBeUndefined();
   });
   test("@abc.spreadsheetId", () => {
     expect(
       getSheetIdIntegrationOutputKey(
-        makeVariableExpression("@abc.spreadsheetId")
-      )
+        makeVariableExpression("@abc.spreadsheetId"),
+      ),
     ).toBe("abc");
   });
   test("@abc.spreadsheetId.def", () => {
     expect(
       getSheetIdIntegrationOutputKey(
-        makeVariableExpression("@abc.spreadsheetId.def")
-      )
+        makeVariableExpression("@abc.spreadsheetId.def"),
+      ),
     ).toBeUndefined();
   });
   test("@abc.def.spreadsheetId", () => {
     expect(
       getSheetIdIntegrationOutputKey(
-        makeVariableExpression("@abc.def.spreadsheetId")
-      )
+        makeVariableExpression("@abc.def.spreadsheetId"),
+      ),
     ).toBeUndefined();
   });
 });

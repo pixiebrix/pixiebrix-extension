@@ -34,19 +34,19 @@ describe("openShortcutsTabs", () => {
 describe("getExtensionConsoleUrl", () => {
   it("returns the options page URL", () => {
     expect(getExtensionConsoleUrl()).toBe(
-      "chrome-extension://abcxyz/options.html"
+      "chrome-extension://abcxyz/options.html",
     );
   });
 
   it("returns the options page URL with a hash", () => {
     expect(getExtensionConsoleUrl("test/sub")).toBe(
-      "chrome-extension://abcxyz/options.html#/test/sub"
+      "chrome-extension://abcxyz/options.html#/test/sub",
     );
   });
 
   it("returns the options page URL with a leading slash", () => {
     expect(getExtensionConsoleUrl("/test?param=123")).toBe(
-      "chrome-extension://abcxyz/options.html#/test?param=123"
+      "chrome-extension://abcxyz/options.html#/test?param=123",
     );
   });
 });

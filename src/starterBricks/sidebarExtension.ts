@@ -137,7 +137,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         ],
       },
     },
-    ["heading", "body"]
+    ["heading", "body"],
   );
 
   // Historical context: in the browser API, the toolbar icon is bound to an action. This is a panel that's shown
@@ -148,7 +148,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   async getBricks(
-    extension: ResolvedModComponent<SidebarConfig>
+    extension: ResolvedModComponent<SidebarConfig>,
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
@@ -162,7 +162,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
     removeExtensionPoint(this.id);
     console.debug(
-      "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents"
+      "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents",
     );
     sidebarShowEvents.remove(this.runModComponents);
     this.cancelListeners();
@@ -178,24 +178,24 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     remove(this.modComponents, (x) => x.id === extensionId);
     removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
     console.debug(
-      "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents"
+      "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents",
     );
     sidebarShowEvents.remove(this.runModComponents);
   }
 
   private async runModComponent(
     readerContext: JsonObject,
-    modComponent: ResolvedModComponent<SidebarConfig>
+    modComponent: ResolvedModComponent<SidebarConfig>,
   ): Promise<void> {
     // Generate our own run id so that we know it (to pass to upsertPanel)
     const runId = uuidv4();
 
     const componentLogger = this.logger.childLogger(
-      selectExtensionContext(modComponent)
+      selectExtensionContext(modComponent),
     );
 
     const serviceContext = await makeServiceContextFromDependencies(
-      modComponent.integrationDependencies
+      modComponent.integrationDependencies,
     );
     const extensionContext = { ...readerContext, ...serviceContext };
 
@@ -281,7 +281,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * @private
    */
   private async refreshComponentPanel(
-    modComponent: ResolvedModComponent<SidebarConfig>
+    modComponent: ResolvedModComponent<SidebarConfig>,
   ): Promise<void> {
     // Read per-panel, because panels might be debounced on different schedules.
     const reader = await this.defaultReader();
@@ -306,7 +306,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * @private
    */
   private async debouncedRefreshPanels(
-    componentsToRun: Array<ResolvedModComponent<SidebarConfig>>
+    componentsToRun: Array<ResolvedModComponent<SidebarConfig>>,
   ): Promise<void> {
     // Order doesn't matter because panel positions are already reserved
     await Promise.all(
@@ -325,7 +325,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
               async (x: ResolvedModComponent<SidebarConfig>) =>
                 this.refreshComponentPanel(x),
               waitMillis,
-              options
+              options,
             );
             this.debouncedRefreshPanel.set(modComponent.id, debounced);
 
@@ -336,7 +336,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         } else {
           await this.refreshComponentPanel(modComponent);
         }
-      })
+      }),
     );
   }
 
@@ -344,7 +344,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * Shared event handler for DOM event triggers.
    */
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
-    event
+    event,
   ): Promise<void> => {
     let relevantModComponents;
 
@@ -354,7 +354,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         // Perform the check _before_ debounce, so that the debounce timer is not impacted by state from other mods.
         // See https://github.com/pixiebrix/pixiebrix-extension/issues/6804 for more details/considerations.
         relevantModComponents = this.modComponents.filter((modComponent) =>
-          shouldModComponentRunForStateChange(modComponent, event.originalEvent)
+          shouldModComponentRunForStateChange(
+            modComponent,
+            event.originalEvent,
+          ),
         );
         break;
       }
@@ -386,7 +389,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     if (!(await this.isAvailable())) {
       console.debug(
         "SidebarStarterBrick:run calling sidebarController:removeExtensionPoint because StarterBrick is not available for URL",
-        this.id
+        this.id,
       );
 
       // Keep sidebar entries up-to-date regardless of trigger policy
@@ -397,7 +400,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     if (this.modComponents.length === 0) {
       console.debug(
         "SidebarStarterBrick:run Sidebar StarterBrick %s has no installed extensions",
-        this.id
+        this.id,
       );
 
       return;
@@ -410,13 +413,13 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         extensionId: extension.id,
         extensionPointId: this.id,
         blueprintId: extension._recipe?.id,
-      }))
+      })),
     );
 
     if (!isSidebarFrameVisible()) {
       console.debug(
         "SidebarStarterBrick:run Skipping run for %s because sidebar is not visible",
-        this.id
+        this.id,
       );
       return;
     }
@@ -466,12 +469,12 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
           extensionId: components.id,
           extensionPointId: this.id,
           blueprintId: components._recipe?.id,
-        }))
+        })),
       );
 
       // Add event listener so content for the panel is calculated/loaded when the sidebar opens
       console.debug(
-        "SidebarStarterBrick:install: listen for sidebarShowEvents"
+        "SidebarStarterBrick:install: listen for sidebarShowEvents",
       );
 
       sidebarShowEvents.add(this.runModComponents);

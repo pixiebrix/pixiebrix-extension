@@ -51,7 +51,7 @@ export type PipelineClosureExpression = PipelineExpression & {
  * @see isExpression
  */
 export function isTemplateExpression(
-  value: unknown
+  value: unknown,
 ): value is Expression<string, TemplateEngine> {
   return isExpression(value) && templateTypes.includes(value.__type__);
 }
@@ -61,7 +61,7 @@ export function isTemplateExpression(
  * @see isExpression
  */
 export function isVarExpression(
-  value: unknown
+  value: unknown,
 ): value is Expression<string, "var"> {
   return isExpression(value) && (value as Expression).__type__ === "var";
 }
@@ -71,25 +71,25 @@ export function isVarExpression(
  * @see isExpression
  */
 export function isNunjucksExpression(
-  value: unknown
+  value: unknown,
 ): value is Expression<string, "nunjucks"> {
   return isExpression(value) && (value as Expression).__type__ === "nunjucks";
 }
 
 export function isPipelineExpression(
-  value: unknown
+  value: unknown,
 ): value is PipelineExpression {
   return isExpression(value) && value.__type__ === "pipeline";
 }
 
 export function isPipelineClosureExpression(
-  value: unknown
+  value: unknown,
 ): value is PipelineClosureExpression {
   return isPipelineExpression(value) && "__env__" in value;
 }
 
 export function isDeferExpression<TValue = UnknownObject>(
-  value: unknown
+  value: unknown,
 ): value is DeferExpression<TValue> {
   return isExpression(value) && value.__type__ === "defer";
 }
@@ -119,7 +119,7 @@ export function containsTemplateExpression(literalOrTemplate: string): boolean {
  * @see castTextLiteralOrThrow
  */
 export function isTextLiteralOrNull(
-  literalOrTemplate: unknown
+  literalOrTemplate: unknown,
 ): literalOrTemplate is string | null | Expression<string, TemplateEngine> {
   if (literalOrTemplate == null) {
     return true;
@@ -147,7 +147,7 @@ export function isTextLiteralOrNull(
  * @see isTextLiteralOrNull
  */
 export function castTextLiteralOrThrow(
-  literalOrTemplate: unknown
+  literalOrTemplate: unknown,
 ): string | null {
   if (!isTextLiteralOrNull(literalOrTemplate)) {
     throw new TypeError("Expected literal, but found template expression");

@@ -276,7 +276,7 @@ export default class Overlay {
     // We can't get the size of text nodes or comment nodes. React as of v15
     // heavily uses comment nodes to delimit text.
     const elements = nodes.filter(
-      (node) => node.nodeType === Node.ELEMENT_NODE
+      (node) => node.nodeType === Node.ELEMENT_NODE,
     );
 
     while (this.rects.length > elements.length) {
@@ -305,11 +305,11 @@ export default class Overlay {
       outerBox.top = Math.min(outerBox.top, box.top - dims.marginTop);
       outerBox.right = Math.max(
         outerBox.right,
-        box.left + box.width + dims.marginRight
+        box.left + box.width + dims.marginRight,
       );
       outerBox.bottom = Math.max(
         outerBox.bottom,
-        box.top + box.height + dims.marginBottom
+        box.top + box.height + dims.marginBottom,
       );
       outerBox.left = Math.min(outerBox.left, box.left - dims.marginLeft);
 
@@ -324,12 +324,12 @@ export default class Overlay {
     this.tip.updateText(
       name,
       outerBox.right - outerBox.left,
-      outerBox.bottom - outerBox.top
+      outerBox.bottom - outerBox.top,
     );
 
     const tipBounds = getNestedBoundingClientRect(
       this.tipBoundsWindow.document.documentElement,
-      this.window
+      this.window,
     );
 
     this.tip.updatePosition(
@@ -344,7 +344,7 @@ export default class Overlay {
         left: tipBounds.left + this.tipBoundsWindow.scrollX,
         height: this.tipBoundsWindow.innerHeight,
         width: this.tipBoundsWindow.innerWidth,
-      }
+      },
     );
   }
 }
@@ -392,7 +392,7 @@ function mergeRectOffsets(rects: Array<Rect>): Rect {
 // taking into account any offsets caused by intermediate iframes.
 function getNestedBoundingClientRect(
   node: HTMLElement,
-  boundaryWindow: Window
+  boundaryWindow: Window,
 ): Rect {
   const ownerIframe = getOwnerIframe(node);
   if (ownerIframe) {

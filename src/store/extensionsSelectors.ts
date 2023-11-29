@@ -38,7 +38,7 @@ const extensionsForRecipeSelector = createSelector(
   selectExtensions,
   (state: ModComponentsRootState, recipeId: RegistryId) => recipeId,
   (extensions, recipeId) =>
-    extensions.filter((extension) => extension._recipe?.id === recipeId)
+    extensions.filter((extension) => extension._recipe?.id === recipeId),
 );
 
 export const selectExtensionsForRecipe =

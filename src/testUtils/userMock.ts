@@ -36,18 +36,18 @@ import { userFactory } from "@/testUtils/factories/authFactories";
 
 export function mockAnonymousUser(): void {
   (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    querySuccessFactory({})
+    querySuccessFactory({}),
   );
 }
 
 export function mockLoadingUser(): void {
   (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    queryLoadingFactory()
+    queryLoadingFactory(),
   );
 }
 
 export function mockCachedUser(me?: Me): void {
   (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    querySuccessFactory(me ?? userFactory())
+    querySuccessFactory(me ?? userFactory()),
   );
 }

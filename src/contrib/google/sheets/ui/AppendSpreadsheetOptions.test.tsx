@@ -182,10 +182,10 @@ const fileListResponse: FileList = {
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockImplementation(
-    async (serviceId) => servicesLookup[serviceId]
+    async (serviceId) => servicesLookup[serviceId],
   );
   useAuthOptionsMock.mockReturnValue(
-    valueToAsyncState([googlePKCEAuthOption, testSpreadsheetAuthOption])
+    valueToAsyncState([googlePKCEAuthOption, testSpreadsheetAuthOption]),
   );
   isLoggedInMock.mockResolvedValue(true);
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
@@ -215,7 +215,7 @@ beforeEach(() => {
     async ({ spreadsheetId }: SpreadsheetTarget) =>
       spreadsheetId === TEST_SPREADSHEET_ID
         ? testSpreadsheet
-        : otherTestSpreadsheet
+        : otherTestSpreadsheet,
   );
 });
 
@@ -251,11 +251,11 @@ function expectTab1Selected() {
   // Tab names use select widget, which renders the selected value into the DOM as text, so can use getByText
   // Tab1 will be picked automatically since it's first in the list
   expect(
-    screen.getByText(testSpreadsheet.sheets[0].properties.title)
+    screen.getByText(testSpreadsheet.sheets[0].properties.title),
   ).toBeVisible();
   // Tab2 should not be visible
   expect(
-    screen.queryByText(testSpreadsheet.sheets[1].properties.title)
+    screen.queryByText(testSpreadsheet.sheets[1].properties.title),
   ).not.toBeInTheDocument();
 
   // Column headers are readonly input values; need to use getByDisplayValue
@@ -283,11 +283,11 @@ function expectGoogleAccountTestSpreadsheetLoaded() {
 function expectTab2Selected() {
   // Tab2 should be selected
   expect(
-    screen.getByText(testSpreadsheet.sheets[1].properties.title)
+    screen.getByText(testSpreadsheet.sheets[1].properties.title),
   ).toBeVisible();
   // Tab1 should not be visible
   expect(
-    screen.queryByText(testSpreadsheet.sheets[0].properties.title)
+    screen.queryByText(testSpreadsheet.sheets[0].properties.title),
   ).not.toBeInTheDocument();
 
   // Headers for Tab2 should be loaded into rowValues
@@ -317,7 +317,7 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
     {
       initialValues,
       wrapper: IntegrationsSliceModIntegrationsContextAdapter,
-    }
+    },
   );
 
   await waitForEffect();
@@ -627,7 +627,7 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
 
     expect(getFormState().config.tabName).toEqual(
-      makeTemplateExpression("nunjucks", "")
+      makeTemplateExpression("nunjucks", ""),
     );
   });
 
@@ -663,7 +663,7 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.queryByText("Tab1")).not.toBeInTheDocument();
 
     expect(getFormState().config.tabName).toEqual(
-      makeTemplateExpression("nunjucks", "")
+      makeTemplateExpression("nunjucks", ""),
     );
   });
 });

@@ -25,7 +25,7 @@ describe("RootErrorPanel", () => {
   it("should render business error", () => {
     const expectedErrorMessage = "Business error message";
     const { asFragment } = render(
-      <RootErrorPanel error={new BusinessError(expectedErrorMessage)} />
+      <RootErrorPanel error={new BusinessError(expectedErrorMessage)} />,
     );
     expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
     expect(asFragment()).toMatchSnapshot();
@@ -34,7 +34,7 @@ describe("RootErrorPanel", () => {
   it("should render application error", () => {
     const expectedErrorMessage = "Application error message";
     const { asFragment } = render(
-      <RootErrorPanel error={new Error(expectedErrorMessage)} />
+      <RootErrorPanel error={new Error(expectedErrorMessage)} />,
     );
     expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
     expect(asFragment()).toMatchSnapshot();
@@ -42,7 +42,7 @@ describe("RootErrorPanel", () => {
 
   it("should render no renderer error", () => {
     const { asFragment } = render(
-      <RootErrorPanel error={new NoRendererError()} />
+      <RootErrorPanel error={new NoRendererError()} />,
     );
     expect(screen.getByText("No renderer found")).toBeInTheDocument();
     expect(asFragment()).toMatchSnapshot();

@@ -30,7 +30,7 @@ export class AddOrganization extends EffectABC {
       "pipedrive/organizations-add",
       "Add Organization in Pipedrive",
       "Add an organization in Pipedrive CRM if it does not already exist",
-      "faUserPlus"
+      "faUserPlus",
     );
   }
 
@@ -49,7 +49,7 @@ export class AddOrganization extends EffectABC {
           "ID of the user who will be marked as the owner of this person. When omitted, the authorized user ID will be used.",
       },
     },
-    ["name"]
+    ["name"],
   );
 
   async effect(
@@ -62,7 +62,7 @@ export class AddOrganization extends EffectABC {
       owner_id: number;
       pipedrive: SanitizedIntegrationConfig;
     }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     const { data } = await performConfiguredRequestInBackground<{
       items: unknown[];
@@ -100,7 +100,7 @@ export class AddPerson extends EffectABC {
       "pipedrive/persons-add",
       "Add Person in Pipedrive",
       "Add a person in Pipedrive CRM if they do not already exist",
-      "faUserPlus"
+      "faUserPlus",
     );
   }
 
@@ -127,7 +127,7 @@ export class AddPerson extends EffectABC {
         description: "Phone number associated with the person",
       },
     },
-    ["name"]
+    ["name"],
   );
 
   async effect(
@@ -144,7 +144,7 @@ export class AddPerson extends EffectABC {
       email?: string;
       phone?: string;
     }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     const { data } = await performConfiguredRequestInBackground<{
       items: unknown[];

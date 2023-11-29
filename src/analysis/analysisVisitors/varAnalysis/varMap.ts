@@ -129,7 +129,7 @@ type CreateNodeOptions = {
  */
 function createNode(
   selfExistence: VarExistence,
-  { allowAnyChild = false, isArray = false }: CreateNodeOptions = {}
+  { allowAnyChild = false, isArray = false }: CreateNodeOptions = {},
 ): ExistenceNode {
   const node: ExistenceNode = {
     [SELF_EXISTENCE]: selfExistence,
@@ -193,7 +193,7 @@ class VarMap {
         }
 
         return currentNode;
-      }
+      },
     );
 
     if (allowAnyChild) {
@@ -234,7 +234,7 @@ class VarMap {
           setWith(
             this.map,
             [source, ...toPath(parentPath), key, IS_ARRAY],
-            true
+            true,
           );
         }
       } else {
@@ -242,7 +242,7 @@ class VarMap {
           this.map,
           [source, ...toPath(parentPath), key, SELF_EXISTENCE],
           VarExistence.DEFINITELY,
-          (x) => x ?? createNode(VarExistence.DEFINITELY)
+          (x) => x ?? createNode(VarExistence.DEFINITELY),
         );
       }
     }
@@ -295,7 +295,7 @@ class VarMap {
     for (const sourceMap of Object.values(this.map).filter(
       // Only check the sources (bricks) that provide the output key (the first part of the path)
       // Usually there is one brick providing the output key and the vars from traces
-      (x) => x[outputKey] != null
+      (x) => x[outputKey] != null,
     )) {
       const pathPartsCopy = [...pathParts];
       let bag: ExistenceNode | undefined = sourceMap;

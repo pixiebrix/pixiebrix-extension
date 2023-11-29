@@ -28,7 +28,7 @@ export class ScrollIntoViewEffect extends EffectABC {
     super(
       "@pixiebrix/dom/scroll",
       "Scroll Element Into View",
-      "Scroll an element into view on the page"
+      "Scroll an element into view on the page",
     );
   }
 
@@ -59,7 +59,7 @@ export class ScrollIntoViewEffect extends EffectABC {
         description: "Defines horizontal alignment",
       },
     },
-    []
+    [],
   );
 
   override async isRootAware(): Promise<boolean> {
@@ -78,7 +78,7 @@ export class ScrollIntoViewEffect extends EffectABC {
       block?: "start" | "center" | "end" | "nearest";
       inline?: "start" | "center" | "end" | "nearest";
     }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

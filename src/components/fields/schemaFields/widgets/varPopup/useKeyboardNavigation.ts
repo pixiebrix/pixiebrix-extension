@@ -60,10 +60,10 @@ function useKeyboardNavigation({
           likelyVariable,
           offset,
           keyPath: activeKeyPath,
-        })
+        }),
       );
     },
-    [menuOptions, likelyVariable]
+    [menuOptions, likelyVariable],
   );
 
   // Attach keyboard listeners for navigation

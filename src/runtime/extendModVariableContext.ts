@@ -62,7 +62,7 @@ export function extraEmptyModStateContext(version: ApiVersion): UnknownObject {
  * @param ctxt the context
  */
 export function isModVariableContext<T extends UnknownObject = UnknownObject>(
-  ctxt: unknown
+  ctxt: unknown,
 ): ctxt is ExtendedContext<T> {
   if (typeof ctxt !== "object") {
     return false;
@@ -82,14 +82,14 @@ export function isModVariableContext<T extends UnknownObject = UnknownObject>(
  * @param context the context
  */
 export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
-  context: T
+  context: T,
 ): T {
   return {
     ...context,
     [MOD_VARIABLE_REFERENCE]: pickBy(
       // eslint-disable-next-line security/detect-object-injection -- constant
       (context as ExtendedContext)[MOD_VARIABLE_REFERENCE] ?? {},
-      (value, key) => key !== MOD_VARIABLE_TAG
+      (value, key) => key !== MOD_VARIABLE_TAG,
     ),
   };
 }
@@ -112,7 +112,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     blueprintId: RegistryId | null;
     update?: boolean;
     options: Pick<ApiVersionOptions, "extendModVariable">;
-  }
+  },
 ): ExtendedContext<T> {
   expectContext("contentScript");
 

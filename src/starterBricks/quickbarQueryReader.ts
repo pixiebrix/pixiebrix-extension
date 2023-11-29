@@ -29,7 +29,7 @@ export class QuickbarQueryReader extends ReaderABC {
     super(
       "@pixiebrix/quickbar/query",
       "Quick Bar Query",
-      "Data from the current Quick Bar query"
+      "Data from the current Quick Bar query",
     );
   }
 

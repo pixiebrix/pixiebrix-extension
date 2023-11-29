@@ -63,5 +63,5 @@ export type GeneratorArgs = {
  * An action generator. The generator is expected to make calls QuickBarRegistry.addAction
  */
 export type ActionGenerator = (
-  args: GeneratorArgs & { abortSignal: AbortSignal }
+  args: GeneratorArgs & { abortSignal: AbortSignal },
 ) => Promise<void>;

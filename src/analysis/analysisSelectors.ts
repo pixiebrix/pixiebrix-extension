@@ -25,7 +25,7 @@ import { type UUID } from "@/types/stringTypes";
 const emptyAnnotations = Object.freeze([]) as AnalysisAnnotation[];
 
 export function selectExtensionAnnotations(
-  extensionId: UUID
+  extensionId: UUID,
 ): (state: AnalysisRootState) => AnalysisAnnotation[] {
   return ({ analysis }: AnalysisRootState) =>
     // eslint-disable-next-line security/detect-object-injection -- extensionId is supposed to be UUID, not from user input

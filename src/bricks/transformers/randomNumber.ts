@@ -27,7 +27,7 @@ export class RandomNumber extends TransformerABC {
       "@pixiebrix/random",
       "Random Number",
       "Generate a random integer or decimal number",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -55,7 +55,7 @@ export class RandomNumber extends TransformerABC {
           "Flag to return a decimal (floating point) number instead of an integer.",
       },
     },
-    []
+    [],
   );
 
   override outputSchema = propertiesToSchema({

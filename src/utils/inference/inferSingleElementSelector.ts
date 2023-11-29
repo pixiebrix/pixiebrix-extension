@@ -32,7 +32,7 @@ import { renderString } from "nunjucks";
 
 function getMatchingRequiredSelectors(
   element: HTMLElement,
-  requiredSelectors: string[]
+  requiredSelectors: string[],
 ): string {
   return requiredSelectors.find((selector) => element.matches(selector));
 }
@@ -44,7 +44,7 @@ function getMatchingRequiredSelectors(
  */
 function mapSelectorOverrideToAncestors(
   element: HTMLElement,
-  root: HTMLElement | Document
+  root: HTMLElement | Document,
 ): Array<{ element: HTMLElement; selectorOverride: string }> {
   const { requiredSelectors, selectorTemplates } = getSiteSelectorHint(element);
 
@@ -96,10 +96,10 @@ function getAncestorSelectorTemplate({
   // Find first template that matches and uniquely selects the ancestor
   return templates
     .map((template) =>
-      maybeInstantiateSelectorTemplate(ancestorElement, template)
+      maybeInstantiateSelectorTemplate(ancestorElement, template),
     )
     .find(
-      (selector) => selector != null && doesSelectOneElement(selector, root)
+      (selector) => selector != null && doesSelectOneElement(selector, root),
     );
 }
 
@@ -115,7 +115,7 @@ function getElementAttributes(element: HTMLElement) {
 
 function maybeInstantiateSelectorTemplate(
   ancestorElement: HTMLElement,
-  template: SelectorTemplate
+  template: SelectorTemplate,
 ): string | null {
   if (!ancestorElement.matches(template.selector)) {
     return null;
@@ -159,11 +159,11 @@ async function inferSingleElementSelector({
   // Ancestors in order from root to element
   const ancestorSelectorOverrides = mapSelectorOverrideToAncestors(
     element,
-    root
+    root,
   );
 
   const ancestorSelectors = ancestorSelectorOverrides.map(
-    ({ selectorOverride }) => selectorOverride
+    ({ selectorOverride }) => selectorOverride,
   );
 
   const rootOverride =
@@ -182,7 +182,7 @@ async function inferSingleElementSelector({
     [
       selectorWithRootOverride,
       ...inferSelectorsIncludingStableAncestors(element, rootOverride),
-    ].map((selector) => [...ancestorSelectors, selector].join(" "))
+    ].map((selector) => [...ancestorSelectors, selector].join(" ")),
   );
 
   // Filter out any malformed selectors and/or selectors that don't exactly match the element

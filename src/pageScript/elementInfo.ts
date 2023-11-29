@@ -22,7 +22,7 @@ import { type ElementInfo } from "@/utils/inference/selectorTypes";
 export async function elementInfo(
   element: HTMLElement,
   selectors: string[] = [],
-  traverseUp = 0
+  traverseUp = 0,
 ): Promise<ElementInfo> {
   if (traverseUp < 0 || !element) {
     return undefined;

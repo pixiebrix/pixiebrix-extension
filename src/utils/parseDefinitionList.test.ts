@@ -24,7 +24,7 @@ import { html } from "code-tag";
 
 function getDL(
   html: string,
-  attributes: Record<string, string> = {}
+  attributes: Record<string, string> = {},
 ): HTMLDListElement {
   const list = JSDOM.fragment("<dl>" + html)
     .firstElementChild as HTMLDListElement;

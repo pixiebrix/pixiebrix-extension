@@ -96,7 +96,7 @@ export function makeIsAvailable(url: string): NormalizedAvailability {
  */
 export function baseFromExtension<T extends StarterBrickType>(
   config: ModComponentBase,
-  type: T
+  type: T,
 ): Pick<
   BaseFormState,
   | "uuid"
@@ -125,7 +125,7 @@ export function baseFromExtension<T extends StarterBrickType>(
 // Add the recipe options to the form state if the extension is a part of a recipe
 export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
   element: TElement,
-  recipes: ModDefinition[]
+  recipes: ModDefinition[],
 ) {
   if (element.recipe?.id) {
     const recipe = recipes?.find((x) => x.metadata.id === element.recipe.id);
@@ -182,7 +182,7 @@ export function baseSelectExtension({
 }
 
 export function makeInitialBaseState(
-  uuid: UUID = uuidv4()
+  uuid: UUID = uuidv4(),
 ): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
@@ -214,7 +214,7 @@ export function internalStarterBrickMetaFactory(): Metadata {
  * Map availability from extension point configuration to state for the page editor.
  */
 export function selectIsAvailable(
-  extensionPoint: StarterBrickConfig
+  extensionPoint: StarterBrickConfig,
 ): NormalizedAvailability {
   assertStarterBrickConfig(extensionPoint);
 
@@ -263,10 +263,10 @@ export function cleanIsAvailable({
 export async function lookupExtensionPoint<
   TDefinition extends StarterBrickDefinition,
   TConfig extends UnknownObject,
-  TType extends string
+  TType extends string,
 >(
   config: ModComponentBase<TConfig>,
-  type: TType
+  type: TType,
 ): Promise<StarterBrickConfig<TDefinition> & { definition: { type: TType } }> {
   if (!config) {
     throw new Error("config is required");
@@ -276,7 +276,7 @@ export async function lookupExtensionPoint<
     const definition = config.definitions[config.extensionPointId];
     console.debug(
       "Converting extension definition to temporary extension point",
-      definition
+      definition,
     );
     const innerExtensionPoint = {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
@@ -294,7 +294,7 @@ export async function lookupExtensionPoint<
   const brick = await registry.find(config.extensionPointId);
   if (!brick) {
     throw new Error(
-      `Cannot find starter brick definition: ${config.extensionPointId}`
+      `Cannot find starter brick definition: ${config.extensionPointId}`,
     );
   }
 
@@ -310,7 +310,7 @@ export async function lookupExtensionPoint<
 }
 
 export function baseSelectExtensionPoint(
-  formState: BaseFormState
+  formState: BaseFormState,
 ): Except<StarterBrickConfig, "definition"> {
   const { metadata } = formState.extensionPoint;
 
@@ -332,12 +332,12 @@ export function baseSelectExtensionPoint(
 
 export function extensionWithInnerDefinitions(
   extension: ModComponentBase,
-  extensionPointDefinition: StarterBrickDefinition
+  extensionPointDefinition: StarterBrickDefinition,
 ): ModComponentBase {
   if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
     const extensionPointId = freshIdentifier(
       DEFAULT_EXTENSION_POINT_VAR as SafeString,
-      Object.keys(extension.definitions ?? {})
+      Object.keys(extension.definitions ?? {}),
     );
 
     const result = cloneDeep(extension);
@@ -372,7 +372,7 @@ export function removeEmptyValues<T extends object>(obj: T): T {
   return deepPickBy(
     obj,
     (value: unknown, parent: unknown) =>
-      isExpression(parent) || (value !== undefined && value !== "")
+      isExpression(parent) || (value !== undefined && value !== ""),
   ) as T;
 }
 
@@ -380,7 +380,7 @@ export function removeEmptyValues<T extends object>(obj: T): T {
  * Return a composite reader to automatically include in new extensions created with the Page Editor.
  */
 export function getImplicitReader(
-  type: StarterBrickType
+  type: StarterBrickType,
 ): SingleLayerReaderConfig {
   // Reminder: when providing a composite array reader, the later entries override the earlier ones
 
@@ -434,16 +434,16 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  */
 export async function extensionWithNormalizedPipeline<
   T extends UnknownObject,
-  Prop extends keyof T
+  Prop extends keyof T,
 >(
   config: T,
   pipelineProp: Prop,
-  defaults: Partial<T> = {}
+  defaults: Partial<T> = {},
 ): Promise<BaseExtensionState & Omit<T, Prop>> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
     blockPipeline: await normalizePipelineForEditor(
-      castArray(pipeline) as BrickPipeline
+      castArray(pipeline) as BrickPipeline,
     ),
     ...defaults,
     ...rest,

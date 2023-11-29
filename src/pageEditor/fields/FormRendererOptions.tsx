@@ -181,7 +181,7 @@ const FormSubmissionOptions: React.FC<{
   const hideSubmitButtonName = makeName(
     "uiSchema",
     "ui:submitButtonOptions",
-    "norender"
+    "norender",
   );
   const [{ value: hideSubmitButton }] = useField<boolean>(hideSubmitButtonName);
 
@@ -242,7 +242,7 @@ const FormRendererOptions: React.FC<{
 
   const [activeElement, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement
+    editorActions.setNodePreviewActiveElement,
   );
 
   return (

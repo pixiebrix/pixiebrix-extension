@@ -56,9 +56,7 @@ const Pipeline: React.FunctionComponent<PipelineProps> = ({
     />
     <h3>{elementTypeLabels.pipeline}</h3>
     {(element.config?.pipeline as PipelineExpression)?.__value__.map(
-      ({ id }) => (
-        <p key={id}>{id}</p>
-      )
+      ({ id }) => <p key={id}>{id}</p>,
     )}
   </div>
 );

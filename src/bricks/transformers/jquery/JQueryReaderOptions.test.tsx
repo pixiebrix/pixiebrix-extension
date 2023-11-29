@@ -66,7 +66,7 @@ function renderOptions(formState: ModComponentFormState = baseStateFactory()) {
           configKey="config"
         />
       </Formik>
-    </SchemaFieldContext.Provider>
+    </SchemaFieldContext.Provider>,
   );
 }
 
@@ -121,13 +121,13 @@ describe("JQueryReaderOptions", () => {
     await waitForEffect();
 
     expect(screen.getByPlaceholderText("Property name")).toHaveValue(
-      "property"
+      "property",
     );
 
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.property.selector"
-      ).dataset.testSelected
+        "toggle-extension.blockPipeline.0.config.selectors.property.selector",
+      ).dataset.testSelected,
     ).toBe("Selector");
 
     expect(screen.getByPlaceholderText("Select an element")).toHaveValue("h1");
@@ -150,13 +150,13 @@ describe("JQueryReaderOptions", () => {
 
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.outer.selector"
-      ).dataset.testSelected
+        "toggle-extension.blockPipeline.0.config.selectors.outer.selector",
+      ).dataset.testSelected,
     ).toBe("Selector");
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector"
-      ).dataset.testSelected
+        "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector",
+      ).dataset.testSelected,
     ).toBe("Selector");
 
     expect(screen.queryAllByText("Loading...")).toHaveLength(0);
@@ -179,13 +179,13 @@ describe("JQueryReaderOptions", () => {
 
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.outer.selector"
-      ).dataset.testSelected
+        "toggle-extension.blockPipeline.0.config.selectors.outer.selector",
+      ).dataset.testSelected,
     ).toBe("Selector");
     expect(
       screen.getByTestId(
-        "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector"
-      ).dataset.testSelected
+        "toggle-extension.blockPipeline.0.config.selectors.outer.find.inner.selector",
+      ).dataset.testSelected,
     ).toBe("Selector");
 
     expect(screen.queryAllByText("Loading...")).toHaveLength(0);
@@ -208,7 +208,7 @@ describe("JQueryReaderOptions", () => {
 
     await userEvent.type(
       screen.getAllByRole("textbox", { name: /property name/i }).at(0),
-      "property"
+      "property",
     );
     // Click away to blur the field
     await userEvent.click(document.body);
@@ -216,7 +216,7 @@ describe("JQueryReaderOptions", () => {
     await waitForEffect();
 
     expect(
-      screen.getAllByRole("textbox", { name: /property name/i }).at(0)
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0),
     ).toHaveValue("outerproperty");
   });
 
@@ -236,7 +236,7 @@ describe("JQueryReaderOptions", () => {
     await waitForEffect();
 
     await userEvent.clear(
-      screen.getAllByRole("textbox", { name: /property name/i }).at(0)
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0),
     );
     // Click away to blur the field
     await userEvent.click(document.body);
@@ -244,7 +244,7 @@ describe("JQueryReaderOptions", () => {
     await waitForEffect();
 
     expect(
-      screen.getAllByRole("textbox", { name: /property name/i }).at(0)
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0),
     ).toHaveValue("outer");
   });
 
@@ -267,11 +267,11 @@ describe("JQueryReaderOptions", () => {
 
     expect(getAttributeExamplesMock).toHaveBeenCalledWith(
       { frameId: 0, tabId: 0 },
-      "div"
+      "div",
     );
     expect(getAttributeExamplesMock).toHaveBeenCalledWith(
       { frameId: 0, tabId: 0 },
-      "div h1"
+      "div h1",
     );
   });
 });
@@ -283,7 +283,7 @@ describe("type options", () => {
         selector: "div",
         multi: false,
         find: {},
-      })
+      }),
     ).toBe("element");
   });
 
@@ -293,7 +293,7 @@ describe("type options", () => {
         selector: "div",
         multi: false,
         attr: "foo",
-      })
+      }),
     ).toBe("attr:foo");
   });
 
@@ -303,7 +303,7 @@ describe("type options", () => {
         selector: "div",
         data: "foo",
         multi: false,
-      })
+      }),
     ).toBe("attr:data-foo");
   });
 
@@ -317,7 +317,7 @@ describe("type options", () => {
 
   it("matches data attribute", () => {
     expect(
-      typeOptionsFactory([{ name: "data-foo", value: "abc" }], "attr:data-foo")
+      typeOptionsFactory([{ name: "data-foo", value: "abc" }], "attr:data-foo"),
     ).toEqual([
       { label: "Text", value: "text" },
       { label: "Element", value: "element" },

@@ -39,14 +39,14 @@ class BlockIdVisitor extends PipelineVisitor {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ): void {
     super.visitBrick(position, blockConfig, extra);
     this._blockIds.add(blockConfig.id);
   }
 
   public static collectBlockIds(
-    pipeline: BrickConfig | BrickConfig[]
+    pipeline: BrickConfig | BrickConfig[],
   ): Set<RegistryId> {
     const visitor = new BlockIdVisitor();
     visitor.visitRootPipeline(castArray(pipeline));

@@ -33,7 +33,7 @@ type MoveWithinParent = {
 function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
   const [activeElement, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    actions.setNodePreviewActiveElement
+    actions.setNodePreviewActiveElement,
   );
 
   const { collectionName, elementIndex } =

@@ -69,7 +69,7 @@ export const SingleLine: Story = {
   args: {
     exampleValue: makeTemplateExpression(
       "nunjucks",
-      "The quick brown fox jumps over the lazy dog"
+      "The quick brown fox jumps over the lazy dog",
     ),
   },
 };
@@ -78,7 +78,7 @@ export const LongLine: Story = {
   args: {
     exampleValue: makeTemplateExpression(
       "nunjucks",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium."
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium.",
     ),
   },
 };
@@ -87,7 +87,7 @@ export const NunjucksExpression: Story = {
   args: {
     exampleValue: makeTemplateExpression(
       "nunjucks",
-      "Hello, {{ @input.name }}!"
+      "Hello, {{ @input.name }}!",
     ),
   },
 };
@@ -96,7 +96,7 @@ export const NunjucksTags: Story = {
   args: {
     exampleValue: makeTemplateExpression(
       "nunjucks",
-      'My favorite color is {% if @input.day == "Monday" %}red{% else %}blue{% endif %}'
+      'My favorite color is {% if @input.day == "Monday" %}red{% else %}blue{% endif %}',
     ),
   },
 };

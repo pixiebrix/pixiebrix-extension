@@ -29,7 +29,7 @@ describe("convert document", () => {
         sourceFormat: "html",
         targetFormat: "text",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({
@@ -44,7 +44,7 @@ describe("convert document", () => {
         sourceFormat: "markdown",
         targetFormat: "html",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({

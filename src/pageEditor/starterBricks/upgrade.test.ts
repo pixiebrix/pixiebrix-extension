@@ -55,7 +55,7 @@ describe("isTemplateString", () => {
     "detects variable: %s",
     (value: string) => {
       expect(isTemplateString(value)).toBe(true);
-    }
+    },
   );
 
   test.each([
@@ -92,7 +92,7 @@ describe("upgradePipelineToV3 tests", () => {
           prop: {
             type: type as any,
           },
-        })
+        }),
       );
 
       const upgraded = await upgradePipelineToV3([
@@ -115,7 +115,7 @@ describe("upgradePipelineToV3 tests", () => {
           },
         },
       ]);
-    }
+    },
   );
 
   test("upgrade literals", async () => {
@@ -127,7 +127,7 @@ describe("upgradePipelineToV3 tests", () => {
         numberProp: {
           type: "number",
         },
-      })
+      }),
     );
 
     const config = {
@@ -190,7 +190,7 @@ describe("upgradePipelineToV3 tests", () => {
           type: "string",
           format: "selector",
         },
-      })
+      }),
     );
 
     const config = {
@@ -218,7 +218,7 @@ describe("upgradePipelineToV3 tests", () => {
             },
           },
         },
-      })
+      }),
     );
 
     const upgraded = await upgradePipelineToV3([
@@ -439,7 +439,7 @@ describe("upgradePipelineToV3 tests", () => {
             },
           },
         },
-      })
+      }),
     );
 
     const upgraded = await upgradePipelineToV3([
@@ -487,7 +487,7 @@ describe("upgradePipelineToV3 tests", () => {
             },
           ],
         },
-      })
+      }),
     );
 
     const upgraded = await upgradePipelineToV3([
@@ -544,7 +544,7 @@ describe("upgradePipelineToV3 tests", () => {
             type: "string",
           },
         },
-      })
+      }),
     );
 
     const upgraded = await upgradePipelineToV3([
@@ -603,7 +603,7 @@ describe("upgradePipelineToV3 tests", () => {
             ],
           },
         },
-      })
+      }),
     );
 
     const upgraded = await upgradePipelineToV3([

@@ -57,7 +57,7 @@ const EmptyView: React.VoidFunctionComponent<{
               Try different search terms or search in the{" "}
               <a
                 href={`${MARKETPLACE_URL}search/?q=${encodeURI(
-                  String(globalFilter)
+                  String(globalFilter),
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

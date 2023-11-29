@@ -23,11 +23,11 @@ import { type Database, type Organization } from "@/types/contract";
 
 function databasesToOptions(
   databases: Database[],
-  organizations: Organization[]
+  organizations: Organization[],
 ): Option[] {
   return databases.map((database) => {
     const organization = organizations.find(
-      (x) => x.id === database.organization_id
+      (x) => x.id === database.organization_id,
     );
 
     return {
@@ -56,7 +56,7 @@ function useDatabaseOptions({
     databasesQueryState,
     organizationsQueryState,
     // Provide as module function so useMergeAsyncState can memoize it
-    databasesToOptions
+    databasesToOptions,
   );
 }
 

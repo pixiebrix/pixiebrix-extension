@@ -41,7 +41,7 @@ export type ReduxStorageKey = string & {
 export function validateReduxStorageKey(key: string): ReduxStorageKey {
   if (!key.startsWith("persist:")) {
     throw new Error(
-      `Expected storage key ${key} to start with "persist:" prefix`
+      `Expected storage key ${key} to start with "persist:" prefix`,
     );
   }
 
@@ -67,12 +67,12 @@ async function readStorage<T>(storageKey: StorageKey): Promise<T | undefined>;
 async function readStorage<T>(
   storageKey: StorageKey,
   defaultValue: T,
-  area?: "local" | "session"
+  area?: "local" | "session",
 ): Promise<T>;
 async function readStorage(
   storageKey: StorageKey,
   defaultValue?: unknown,
-  area: "local" | "session" = "local"
+  area: "local" | "session" = "local",
 ): Promise<unknown> {
   // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
   // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
@@ -93,7 +93,7 @@ export { readStorage };
 export async function setStorage<T>(
   storageKey: ManualStorageKey,
   value: T,
-  area: "local" | "session" = "local"
+  area: "local" | "session" = "local",
 ): Promise<void> {
   // eslint-disable-next-line security/detect-object-injection -- type-checked constant
   await browser.storage[area].set({ [storageKey]: value });
@@ -117,7 +117,7 @@ export async function readReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
   migrations: MigrationManifest,
   defaultValue: T,
-  inferPersistedVersion?: (state: UnknownObject) => number
+  inferPersistedVersion?: (state: UnknownObject) => number,
 ): Promise<T> {
   const storageValue = await readStorage<T>(storageKey);
 
@@ -145,12 +145,12 @@ export async function readReduxStorage<T extends object>(
   }
 
   const parsedState = mapValues(serializedState, (value) =>
-    JSON.parse(String(value))
+    JSON.parse(String(value)),
   );
   return migratePersistedState<T>(
     parsedState,
     migrations,
-    inferPersistedVersion
+    inferPersistedVersion,
   );
 }
 
@@ -170,11 +170,11 @@ export async function setReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
   // Optional persistence for flexibility at call-sites
   state: T & SetOptional<NonNullable<PersistedState>, "_persist">,
-  defaultPersistenceVersion: number
+  defaultPersistenceVersion: number,
 ): Promise<void> {
   if (typeof state !== "object") {
     throw new TypeError(
-      `Expected object value for redux storage key ${storageKey}`
+      `Expected object value for redux storage key ${storageKey}`,
     );
   }
 
@@ -209,7 +209,7 @@ export async function setReduxStorage<T extends object>(
  */
 // eslint-disable-next-line @typescript-eslint/ban-types -- Record breaks type inference at call-sites
 export function jsonifyObject<T extends object>(
-  object: T
+  object: T,
 ): Record<string, string> {
   return mapValues(object, (value) => JSON.stringify(value));
 }

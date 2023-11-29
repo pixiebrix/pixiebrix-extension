@@ -23,7 +23,7 @@ describe("contextMenu", () => {
     const formState = config.fromNativeElement(
       "https://example.com",
       internalStarterBrickMetaFactory(),
-      null
+      null,
     );
     expect(config.selectExtension(formState)).toEqual(
       expect.objectContaining({
@@ -32,7 +32,7 @@ describe("contextMenu", () => {
           onSuccess: true,
           title: "Context menu item",
         },
-      })
+      }),
     );
   });
 });

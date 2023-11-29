@@ -29,21 +29,21 @@ describe("IdentityTransformer.schema", () => {
     "allows validateInput: %s",
     async (value) => {
       await expect(
-        validateInput(brick.inputSchema, value)
+        validateInput(brick.inputSchema, value),
       ).resolves.toStrictEqual({
         errors: [],
         valid: true,
       });
-    }
+    },
   );
 
   it.each([null, "hello", 42, [], {}])(
     "allow throwIfInvalidInput: %s",
     async (value) => {
       await expect(
-        throwIfInvalidInput(brick, unsafeAssumeValidArg(value))
+        throwIfInvalidInput(brick, unsafeAssumeValidArg(value)),
       ).resolves.toBeUndefined();
-    }
+    },
   );
 });
 
@@ -52,7 +52,7 @@ describe("IdentityTransformer.run", () => {
     const value = { foo: "bar" };
     const result = await brick.run(
       unsafeAssumeValidArg(value),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
     expect(result).toStrictEqual(value);
   });
@@ -60,7 +60,7 @@ describe("IdentityTransformer.run", () => {
   test("it accepts null", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg(null),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
     expect(result).toBeNull();
   });
@@ -68,7 +68,7 @@ describe("IdentityTransformer.run", () => {
   test("it accepts array", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg([]),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
     expect(result).toStrictEqual([]);
   });

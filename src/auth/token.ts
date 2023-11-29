@@ -51,7 +51,7 @@ export function removeListener(handler: AuthListener): void {
 }
 
 function triggerListeners(
-  auth: Partial<TokenAuthData | PartnerAuthData>
+  auth: Partial<TokenAuthData | PartnerAuthData>,
 ): void {
   for (const listener of listeners) {
     listener(auth);

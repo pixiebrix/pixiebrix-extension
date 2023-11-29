@@ -27,7 +27,7 @@ function getClassNameEdit(
   {
     label = "Layout/Style",
     uiSchema,
-  }: { label?: string; uiSchema?: UiSchema } = {}
+  }: { label?: string; uiSchema?: UiSchema } = {},
 ): SchemaFieldProps {
   return {
     name: joinName(elementName, "config", "className"),
@@ -56,7 +56,7 @@ function getHiddenEdit(elementName: string): SchemaFieldProps {
 
 function getElementEditSchemas(
   elementType: DocumentElementType,
-  elementName: string
+  elementName: string,
 ): SchemaFieldProps[] {
   switch (elementType) {
     // Provide backwards compatibility for old elements

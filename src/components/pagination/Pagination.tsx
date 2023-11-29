@@ -48,7 +48,7 @@ const Pagination: React.FC<{
 
     displayedNumbers = range(
       firstDisplayedPage,
-      firstDisplayedPage + MAX_DISPLAYED_PAGES
+      firstDisplayedPage + MAX_DISPLAYED_PAGES,
     );
   }
 

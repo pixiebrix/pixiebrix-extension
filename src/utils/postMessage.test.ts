@@ -49,7 +49,7 @@ describe("postMessage", () => {
       postMessage({
         type: "SANDBOX_PING",
         recipient: channel as Window,
-      })
+      }),
     ).resolves.toBe("pong");
   });
 
@@ -67,7 +67,7 @@ describe("postMessage", () => {
       postMessage({
         type: "SANDBOX_PING",
         recipient: channel as Window,
-      })
+      }),
     ).rejects.toMatchInlineSnapshot("[Error: No balls found]");
   });
 });
@@ -106,7 +106,7 @@ describe("addPostMessageListener", () => {
             new MessageEvent("message", {
               data: packet,
               ports: [privateChannel.port2],
-            })
+            }),
           );
         }
       });

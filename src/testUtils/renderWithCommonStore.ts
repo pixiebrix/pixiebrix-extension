@@ -46,10 +46,10 @@ function configureCommonStoreForTests(initialState?: unknown) {
 }
 
 const renderWithWrappers = createRenderWithWrappers(
-  configureCommonStoreForTests
+  configureCommonStoreForTests,
 );
 const renderHookWithWrappers = createRenderHookWithWrappers(
-  configureCommonStoreForTests
+  configureCommonStoreForTests,
 );
 
 // eslint-disable-next-line import/export -- re-export RTL

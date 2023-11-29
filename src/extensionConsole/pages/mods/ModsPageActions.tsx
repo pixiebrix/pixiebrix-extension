@@ -117,7 +117,7 @@ const ModsPageActions: React.FunctionComponent<{
         className: "text-danger",
       },
     ],
-    [actions, hasUpdate]
+    [actions, hasUpdate],
   );
 
   return <EllipsisMenu items={actionItems} />;

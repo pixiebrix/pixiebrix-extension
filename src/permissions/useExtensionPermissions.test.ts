@@ -64,7 +64,7 @@ describe("useExtensionPermissions", () => {
           isUnique: true,
           name: "https://p.com/*",
         },
-      ])
+      ]),
     );
   });
 
@@ -92,7 +92,7 @@ describe("useExtensionPermissions", () => {
           isUnique: true,
           name: "https://p.com/*",
         },
-      ])
+      ]),
     );
   });
 
@@ -120,7 +120,7 @@ describe("useExtensionPermissions", () => {
           isUnique: true,
           name: "https://p.com/*",
         },
-      ])
+      ]),
     );
   });
 });

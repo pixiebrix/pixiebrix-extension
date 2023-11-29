@@ -35,13 +35,13 @@ describe("getPropByPath", () => {
 
   test("can get object path in array", () => {
     expect(getPropByPath({ array: [{ key: "foo" }] }, "array.0.key")).toBe(
-      "foo"
+      "foo",
     );
   });
 
   test("can apply null coalescing to array index", () => {
     expect(
-      getPropByPath({ array: [{ key: "foo" }] }, "array.1?.key")
+      getPropByPath({ array: [{ key: "foo" }] }, "array.1?.key"),
     ).toBeNull();
   });
 
@@ -73,7 +73,7 @@ describe("isSimplePath", () => {
   test("can detect path", () => {
     expect(isSimplePath("array.0", { array: [] })).toBeTruthy();
     expect(
-      isSimplePath("@anOutputKey", { "@anOutputKey": "foo" })
+      isSimplePath("@anOutputKey", { "@anOutputKey": "foo" }),
     ).toBeTruthy();
     expect(isSimplePath("kebab-case", { "kebab-case": "foo" })).toBeTruthy();
     expect(isSimplePath("snake_case", { snake_case: "foo" })).toBeTruthy();
@@ -126,7 +126,7 @@ describe("getFieldNamesFromPathString", () => {
 test("getPathFromArray", () => {
   const expectMatch = (
     pathArray: Array<number | string>,
-    expectedPathString: string
+    expectedPathString: string,
   ) => {
     const pathString = getPathFromArray(pathArray);
     const lodashArray = toPath(pathString);
@@ -145,12 +145,12 @@ test("getPathFromArray", () => {
   expectMatch(["names", "Dante Alighieri"], 'names["Dante Alighieri"]');
   expectMatch(
     ["Ugo Foscolo", "User Location"],
-    '["Ugo Foscolo"]["User Location"]'
+    '["Ugo Foscolo"]["User Location"]',
   );
   expectMatch(["User List", 100, "id"], '["User List"][100].id');
   expectMatch(
     ["User List", 100_000_000, "The name"],
-    '["User List"][100000000]["The name"]'
+    '["User List"][100000000]["The name"]',
   );
 });
 

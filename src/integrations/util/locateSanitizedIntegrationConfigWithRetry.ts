@@ -26,7 +26,7 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 async function _locateWithRetry(
   integrationId: RegistryId,
   authId: UUID,
-  { retry = true }: { retry: boolean }
+  { retry = true }: { retry: boolean },
 ): Promise<SanitizedIntegrationConfig> {
   try {
     return await services.locate(integrationId, authId);
@@ -57,7 +57,7 @@ const locateSanitizedIntegrationConfigWithRetry = memoizeUntilSettled(
   _locateWithRetry,
   {
     cacheKey: JSON.stringify,
-  }
+  },
 );
 
 export default locateSanitizedIntegrationConfigWithRetry;

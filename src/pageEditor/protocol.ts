@@ -51,8 +51,8 @@ export function watchNavigation(): void {
     browser.webNavigation.onTabReplaced.addListener(
       ({ replacedTabId, tabId }) => {
         console.warn(
-          `The tab ID was updated by the browser from ${replacedTabId} to ${tabId}. Did this cause any issues? https://stackoverflow.com/q/17756258/288906`
+          `The tab ID was updated by the browser from ${replacedTabId} to ${tabId}. Did this cause any issues? https://stackoverflow.com/q/17756258/288906`,
         );
-      }
+      },
     );
 }

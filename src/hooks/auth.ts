@@ -68,7 +68,7 @@ function getRemoteLabel(auth: RemoteIntegrationConfig): string {
 
 function mapConfigurationsToOptions(
   locationIntegrationConfigs: IntegrationConfig[],
-  remoteIntegrationConfigs: RemoteIntegrationConfig[]
+  remoteIntegrationConfigs: RemoteIntegrationConfig[],
 ) {
   const localOptions = sortBy(
     locationIntegrationConfigs.map((integrationConfig) => ({
@@ -78,7 +78,7 @@ function mapConfigurationsToOptions(
       serviceId: integrationConfig.integrationId,
       sharingType: "private" as AuthSharing,
     })),
-    (x) => x.label
+    (x) => x.label,
   );
 
   const sharedOptions = sortBy(
@@ -91,7 +91,7 @@ function mapConfigurationsToOptions(
       sharingType: getSharingType(remoteAuth),
     })),
     (x) => (x.user ? 0 : 1),
-    (x) => x.label
+    (x) => x.label,
   );
 
   return [...localOptions, ...sharedOptions];
@@ -106,7 +106,7 @@ export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
   // store to reload if it's changed on another tab
   const locationIntegrationConfigsState = useAsyncState<IntegrationConfig[]>(
     readRawConfigurations,
-    []
+    [],
   );
 
   const remoteIntegrationAuthsState = useGetIntegrationAuthsQuery();
@@ -114,13 +114,13 @@ export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
   return useMergeAsyncState(
     locationIntegrationConfigsState,
     remoteIntegrationAuthsState,
-    mapConfigurationsToOptions
+    mapConfigurationsToOptions,
   );
 }
 
 export function getDefaultAuthOptionsForMod(
   modDefinition: ModDefinition,
-  authOptions: AuthOption[]
+  authOptions: AuthOption[],
 ): Record<RegistryId, AuthOption | null> {
   const requiredIntegrationIds = getModDefinitionIntegrationIds(modDefinition, {
     // The PixieBrix service gets automatically configured, so no need to include it
@@ -130,12 +130,12 @@ export function getDefaultAuthOptionsForMod(
   return Object.fromEntries(
     requiredIntegrationIds.map((integrationId) => {
       const authOptionsForIntegration = authOptions.filter(
-        (authOption) => authOption.serviceId === integrationId
+        (authOption) => authOption.serviceId === integrationId,
       );
 
       // Prefer arbitrary personal or shared configuration
       const personalOrSharedOption = authOptionsForIntegration.find(
-        (authOption) => ["private", "shared"].includes(authOption.sharingType)
+        (authOption) => ["private", "shared"].includes(authOption.sharingType),
       );
       if (personalOrSharedOption) {
         return [integrationId, personalOrSharedOption];
@@ -143,13 +143,13 @@ export function getDefaultAuthOptionsForMod(
 
       // Default to built-in option otherwise
       const builtInOption = authOptionsForIntegration.find(
-        (authOption) => authOption.sharingType === "built-in"
+        (authOption) => authOption.sharingType === "built-in",
       );
       if (builtInOption) {
         return [integrationId, builtInOption];
       }
 
       return [integrationId, null];
-    })
+    }),
   );
 }

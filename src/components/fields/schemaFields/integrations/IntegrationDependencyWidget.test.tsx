@@ -54,7 +54,7 @@ describe("defaultOutputKey", () => {
 
   test("should handle id without collection", () => {
     expect(defaultOutputKey(validateRegistryId("google/sheet"), [])).toBe(
-      "google"
+      "google",
     );
   });
 
@@ -62,7 +62,7 @@ describe("defaultOutputKey", () => {
     expect(
       defaultOutputKey(validateRegistryId("google/sheet"), [
         validateOutputKey("google"),
-      ])
+      ]),
     ).toBe("google2");
   });
 });
@@ -70,7 +70,7 @@ describe("defaultOutputKey", () => {
 const renderWidget = (
   schema: Schema,
   initialValues: any = {},
-  props?: Partial<SchemaFieldProps>
+  props?: Partial<SchemaFieldProps>,
 ) =>
   render(
     <Formik
@@ -92,7 +92,7 @@ const renderWidget = (
           <div data-testid="values">{JSON.stringify(values)}</div>
         </>
       )}
-    </Formik>
+    </Formik>,
   );
 
 describe("ServiceWidget", () => {
@@ -134,7 +134,7 @@ describe("ServiceWidget", () => {
           local: true,
           sharingType: "built-in",
         },
-      ])
+      ]),
     );
 
     const schema = {
@@ -160,7 +160,7 @@ describe("ServiceWidget", () => {
           local: true,
           sharingType: "built-in",
         },
-      ])
+      ]),
     );
 
     const schema = {
@@ -194,7 +194,7 @@ describe("ServiceWidget", () => {
           local: true,
           sharingType: "built-in",
         },
-      ])
+      ]),
     );
 
     const schema = {

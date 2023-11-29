@@ -55,7 +55,7 @@ export const selectActiveElement = createSelector(
   selectActiveElementId,
   selectElements,
   (activeElementId, elements): EditorState["elements"][number] =>
-    elements.find((x) => x.uuid === activeElementId)
+    elements.find((x) => x.uuid === activeElementId),
 );
 
 export const selectActiveRecipeId = ({ editor }: EditorRootState) =>
@@ -66,7 +66,7 @@ export const selectShowV3UpgradeMessageForActiveElement = createSelector(
   ({ editor }: EditorRootState) => editor.showV3UpgradeMessageByElement,
   (activeElementId, showV3UpgradeMessageByElement) =>
     // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
-    showV3UpgradeMessageByElement[activeElementId] ?? false
+    showV3UpgradeMessageByElement[activeElementId] ?? false,
 );
 
 export const selectInserting = ({ editor }: EditorRootState) =>
@@ -84,7 +84,9 @@ export const selectDeletedElements = ({ editor }: EditorRootState) =>
 
 const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
   new Set(
-    flatMap(editor.deletedElementsByRecipeId).map((formState) => formState.uuid)
+    flatMap(editor.deletedElementsByRecipeId).map(
+      (formState) => formState.uuid,
+    ),
   );
 
 export const selectNotDeletedElements: ({
@@ -93,7 +95,7 @@ export const selectNotDeletedElements: ({
   selectElements,
   selectAllDeletedElementIds,
   (elements, deletedElementIds) =>
-    elements.filter(({ uuid }) => !deletedElementIds.has(uuid))
+    elements.filter(({ uuid }) => !deletedElementIds.has(uuid)),
 );
 
 export const selectNotDeletedExtensions: ({
@@ -102,7 +104,7 @@ export const selectNotDeletedExtensions: ({
   selectExtensions,
   selectAllDeletedElementIds,
   (extensions, deletedElementIds) =>
-    extensions.filter(({ id }) => !deletedElementIds.has(id))
+    extensions.filter(({ id }) => !deletedElementIds.has(id)),
 );
 
 export const selectDirtyRecipeOptionDefinitions = ({
@@ -114,7 +116,7 @@ const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
   (state: EditorRootState, recipeId: RegistryId) => recipeId,
   (dirtyRecipeOptionDefinitionsById, recipeId) =>
     // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
-    dirtyRecipeOptionDefinitionsById[recipeId]
+    dirtyRecipeOptionDefinitionsById[recipeId],
 );
 
 export const selectDirtyOptionDefinitionsForRecipeId =
@@ -125,7 +127,7 @@ const dirtyOptionValuesForRecipeIdSelector = createSelector(
   selectNotDeletedElements,
   (state: EditorRootState, recipeId: RegistryId) => recipeId,
   (elements, recipeId) =>
-    elements.find((element) => element.recipe?.id === recipeId)?.optionsArgs
+    elements.find((element) => element.recipe?.id === recipeId)?.optionsArgs,
 );
 
 export const selectDirtyOptionValuesForRecipeId =
@@ -140,7 +142,7 @@ const dirtyMetadataForRecipeIdSelector = createSelector(
   (state: EditorRootState, recipeId: RegistryId) => recipeId,
   (dirtyRecipeMetadataById, recipeId) =>
     // eslint-disable-next-line security/detect-object-injection
-    dirtyRecipeMetadataById[recipeId]
+    dirtyRecipeMetadataById[recipeId],
 );
 
 export const selectDirtyMetadataForRecipeId =
@@ -151,7 +153,7 @@ const elementIsDirtySelector = createSelector(
   selectDirty,
   (state: RootState, elementId: UUID) => elementId,
   // eslint-disable-next-line security/detect-object-injection
-  (dirty, elementId) => dirty[elementId] ?? false
+  (dirty, elementId) => dirty[elementId] ?? false,
 );
 
 export const selectElementIsDirty = (elementId: UUID) => (state: RootState) =>
@@ -173,12 +175,12 @@ const recipeIsDirtySelector = createSelector(
     dirtyRecipeOptions,
     dirtyRecipeMetadata,
     deletedElements,
-    elementIds
+    elementIds,
     // eslint-disable-next-line max-params
   ) => {
     const hasDirtyElements = elementIds.some(
       // eslint-disable-next-line security/detect-object-injection -- id extracted from element
-      (elementId) => dirtyElements[elementId]
+      (elementId) => dirtyElements[elementId],
     );
     return (
       hasDirtyElements ||
@@ -186,7 +188,7 @@ const recipeIsDirtySelector = createSelector(
       Boolean(dirtyRecipeMetadata) ||
       !isEmpty(deletedElements)
     );
-  }
+  },
 );
 
 export const selectRecipeIsDirty =
@@ -216,9 +218,9 @@ export const selectInstalledRecipeMetadatas = createSelector(
 
     return uniqBy(
       [...elementRecipes, ...extensionRecipes],
-      (recipe) => recipe.id
+      (recipe) => recipe.id,
     );
-  }
+  },
 );
 
 export const selectSelectionSeq = ({ editor }: EditorRootState) =>
@@ -249,17 +251,17 @@ export function selectActiveElementUIState({
 
 export const selectActiveNodeUIState = createSelector(
   selectActiveElementUIState,
-  (elementUIState) => elementUIState?.nodeUIStates[elementUIState.activeNodeId]
+  (elementUIState) => elementUIState?.nodeUIStates[elementUIState.activeNodeId],
 );
 
 export const selectActiveNodeId = createSelector(
   selectActiveElementUIState,
-  (elementUIState) => elementUIState?.activeNodeId
+  (elementUIState) => elementUIState?.activeNodeId,
 );
 
 export const selectPipelineMap = createSelector(
   selectActiveElementUIState,
-  (uiState: ElementUIState) => uiState?.pipelineMap
+  (uiState: ElementUIState) => uiState?.pipelineMap,
 );
 
 export const selectActiveNodeInfo = createSelector(
@@ -267,7 +269,7 @@ export const selectActiveNodeInfo = createSelector(
   selectActiveNodeId,
   (uiState: ElementUIState, activeNodeId: UUID) =>
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    uiState.pipelineMap[activeNodeId]
+    uiState.pipelineMap[activeNodeId],
 );
 
 export const selectCollapsedNodes = createSelector(
@@ -275,14 +277,15 @@ export const selectCollapsedNodes = createSelector(
   (elementUIState: ElementUIState) =>
     Object.entries(elementUIState.nodeUIStates)
       .map(([nodeId, { collapsed }]) => (collapsed ? nodeId : null))
-      .filter((nodeId) => nodeId != null)
+      .filter((nodeId) => nodeId != null),
 );
 
 const activeElementNodeInfoSelector = createSelector(
   selectActiveElementUIState,
   (state: EditorRootState, instanceId: UUID) => instanceId,
   // eslint-disable-next-line security/detect-object-injection -- using a node uuid
-  (uiState: ElementUIState, instanceId: UUID) => uiState.pipelineMap[instanceId]
+  (uiState: ElementUIState, instanceId: UUID) =>
+    uiState.pipelineMap[instanceId],
 );
 
 export const selectActiveElementNodeInfo =
@@ -305,7 +308,7 @@ const parentBlockInfoSelector = createSelector(
 
     // eslint-disable-next-line security/detect-object-injection -- UUID
     return uiState.pipelineMap[parentNodeId];
-  }
+  },
 );
 
 /**
@@ -317,15 +320,15 @@ export const selectParentBlockInfo =
     parentBlockInfoSelector(state, instanceId);
 
 export const selectNodeDataPanelTabSelected: (
-  rootState: EditorRootState
+  rootState: EditorRootState,
 ) => DataPanelTabKey = createSelector(
   selectActiveNodeUIState,
-  (nodeUIState) => nodeUIState.dataPanel.activeTabKey
+  (nodeUIState) => nodeUIState.dataPanel.activeTabKey,
 );
 
 export function selectNodeDataPanelTabState(
   rootState: EditorRootState,
-  tabKey: DataPanelTabKey
+  tabKey: DataPanelTabKey,
 ): TabUIState {
   const nodeUIState = selectActiveNodeUIState(rootState);
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
@@ -352,7 +355,7 @@ const annotationsForPathSelector = createSelector(
     // eslint-disable-next-line security/detect-object-injection -- UUID
     const elementAnnotations = annotations?.[activeElementId] ?? [];
     const pathAnnotations = elementAnnotations.filter(
-      (x) => x.position.path === path
+      (x) => x.position.path === path,
     );
     return sortBy(pathAnnotations, (annotation) => {
       switch (annotation.type) {
@@ -369,7 +372,7 @@ const annotationsForPathSelector = createSelector(
         }
       }
     });
-  }
+  },
 );
 
 /**
@@ -408,7 +411,7 @@ export const selectExtensionKnownEventNames = createSelector(
   selectKnownEventNames,
   (activeElementId, knownEventNameMap) =>
     // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    knownEventNameMap[activeElementId] ?? []
+    knownEventNameMap[activeElementId] ?? [],
 );
 
 export const selectIsDimensionsWarningDismissed = (state: EditorRootState) =>

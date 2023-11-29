@@ -41,7 +41,7 @@ const ActivateExtensionPage: React.FunctionComponent = () => {
     {
       // Force-refetch the latest data for this extension before activation
       refetchOnMountOrArgChange: true,
-    }
+    },
   );
 
   const { data: authOptions, refetch: refreshAuthOptions } = useAuthOptions();

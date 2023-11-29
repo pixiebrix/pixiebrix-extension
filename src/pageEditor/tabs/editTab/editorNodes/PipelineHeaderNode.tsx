@@ -71,7 +71,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
 
     window.addEventListener(
       `${SCROLL_TO_HEADER_NODE_EVENT}-${nodePreviewElement.name}`,
-      scrollIntoView
+      scrollIntoView,
     );
 
     if (nodePreviewElement?.active) {
@@ -81,7 +81,7 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
     return () => {
       window.removeEventListener(
         `${SCROLL_TO_HEADER_NODE_EVENT}-${nodePreviewElement.name}`,
-        scrollIntoView
+        scrollIntoView,
       );
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run when loading completes to prevent multiple event listeners from being added

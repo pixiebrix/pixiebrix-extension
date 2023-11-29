@@ -93,7 +93,7 @@ export class KeyboardEventReader extends ReaderABC {
     super(
       "@pixiebrix/event/keyboard",
       "Keyboard Event Reader",
-      "Data from a keyboard event"
+      "Data from a keyboard event",
     );
   }
 
@@ -154,7 +154,7 @@ export class SelectionChangedReader extends ReaderABC {
     super(
       "@pixiebrix/event/selection",
       "Selection Changed Reader",
-      "Data from a selection changed event"
+      "Data from a selection changed event",
     );
   }
 
@@ -165,7 +165,7 @@ export class SelectionChangedReader extends ReaderABC {
   async read(): Promise<JsonObject> {
     // The actual field is set by the extension point, not the reader
     throw new Error(
-      "SelectionChangedReader.read() should not be called directly"
+      "SelectionChangedReader.read() should not be called directly",
     );
   }
 
@@ -191,7 +191,7 @@ export class CustomEventReader extends ReaderABC {
     super(
       "@pixiebrix/event/custom",
       "Custom Event Reader",
-      "Data from a custom event"
+      "Data from a custom event",
     );
   }
 
@@ -202,7 +202,7 @@ export class CustomEventReader extends ReaderABC {
   async read(): Promise<JsonObject> {
     // The actual field is set by the extension point, not the reader
     throw new Error(
-      "SelectionChangedReader.read() should not be called directly"
+      "SelectionChangedReader.read() should not be called directly",
     );
   }
 

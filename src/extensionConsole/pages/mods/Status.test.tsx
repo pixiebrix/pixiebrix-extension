@@ -44,7 +44,7 @@ describe("Status", () => {
             active: true,
           } as any
         }
-      />
+      />,
     );
 
     expect(screen.getByText("Active")).toBeVisible();
@@ -63,7 +63,7 @@ describe("Status", () => {
             active: true,
           } as any
         }
-      />
+      />,
     );
 
     expect(screen.getByText("Activate")).toBeVisible();
@@ -78,7 +78,7 @@ describe("Status", () => {
             unavailable: true,
           } as any
         }
-      />
+      />,
     );
 
     expect(screen.getByText("No longer available")).toBeVisible();
@@ -93,7 +93,7 @@ describe("Status", () => {
             status: "Paused",
           } as any
         }
-      />
+      />,
     );
 
     expect(screen.getByText("Paused")).toBeVisible();

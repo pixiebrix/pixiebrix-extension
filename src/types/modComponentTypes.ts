@@ -186,13 +186,13 @@ export type ModComponentBase<Config extends UnknownObject = UnknownObject> =
   ModComponentBaseV2<Config>;
 
 export type UnresolvedModComponentV1<
-  Config extends UnknownObject = UnknownObject
+  Config extends UnknownObject = UnknownObject,
 > = ModComponentBaseV1<Config> & {
   _unresolvedModComponentBrand: never;
 };
 
 export type UnresolvedModComponentV2<
-  Config extends UnknownObject = UnknownObject
+  Config extends UnknownObject = UnknownObject,
 > = ModComponentBaseV2<Config> & {
   _unresolvedModComponentBrand: never;
 };
@@ -207,7 +207,7 @@ export type UnresolvedModComponentV2<
  * @see ResolvedModComponent
  */
 export type UnresolvedModComponent<
-  Config extends UnknownObject = UnknownObject
+  Config extends UnknownObject = UnknownObject,
 > = ModComponentBase<Config> & {
   _unresolvedModComponentBrand: never;
 };
@@ -234,11 +234,11 @@ type ActivatedModComponentBase = {
 };
 
 export type ActivatedModComponentV1<
-  Config extends UnknownObject = UnknownObject
+  Config extends UnknownObject = UnknownObject,
 > = UnresolvedModComponentV1<Config> & ActivatedModComponentBase;
 
 export type ActivatedModComponentV2<
-  Config extends UnknownObject = UnknownObject
+  Config extends UnknownObject = UnknownObject,
 > = UnresolvedModComponentV2<Config> & ActivatedModComponentBase;
 
 /**
@@ -247,7 +247,7 @@ export type ActivatedModComponentV2<
  * @see UserExtension
  */
 export type ActivatedModComponent<
-  Config extends UnknownObject = UnknownObject
+  Config extends UnknownObject = UnknownObject,
 > = ActivatedModComponentV2<Config>;
 
 /**

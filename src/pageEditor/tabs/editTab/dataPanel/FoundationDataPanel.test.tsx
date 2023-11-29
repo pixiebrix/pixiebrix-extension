@@ -35,11 +35,11 @@ describe("FoundationDataPanel", () => {
         dispatch(editorActions.addElement(formState));
         dispatch(editorActions.selectElement(formState.uuid));
         dispatch(
-          runtimeSlice.actions.setExtensionTrace({ extensionId, records })
+          runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
         );
         dispatch(editorActions.setElementActiveNodeId(instanceId));
         dispatch(
-          editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Output)
+          editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Output),
         );
       },
     });

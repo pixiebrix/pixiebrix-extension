@@ -30,7 +30,7 @@ type InvalidPathInformation = {
  */
 export function getInvalidPath(
   value: UnknownObject,
-  path: string
+  path: string,
 ): InvalidPathInformation {
   const parts = path.split(".");
 

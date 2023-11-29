@@ -24,19 +24,19 @@ import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 describe("isAvailable.urlPatterns", () => {
   test("can match hash", async () => {
     expect(await checkAvailable({ urlPatterns: { hash: "/foo/:id" } })).toBe(
-      true
+      true,
     );
   });
 
   test("invalid baseURL", async () => {
     await expect(
-      checkAvailable({ urlPatterns: { baseURL: "NOTAREALURL" } })
+      checkAvailable({ urlPatterns: { baseURL: "NOTAREALURL" } }),
     ).rejects.toThrow("Pattern for baseURL not recognized");
   });
 
   test("can reject hash", async () => {
     expect(
-      await checkAvailable({ urlPatterns: { hash: "/DIFFERENT/:id" } })
+      await checkAvailable({ urlPatterns: { hash: "/DIFFERENT/:id" } }),
     ).toBe(false);
   });
 });
@@ -44,7 +44,7 @@ describe("isAvailable.urlPatterns", () => {
 describe("isAvailable.matchPatterns", () => {
   test("can match pattern", async () => {
     expect(
-      await checkAvailable({ matchPatterns: "https://www.example.com/*" })
+      await checkAvailable({ matchPatterns: "https://www.example.com/*" }),
     ).toBe(true);
   });
 
@@ -53,7 +53,7 @@ describe("isAvailable.matchPatterns", () => {
       await checkAvailable({
         matchPatterns: "https://www.example.com/*",
         urlPatterns: { hash: "/DIFFERENT/:id" },
-      })
+      }),
     ).toBe(false);
   });
 });
@@ -66,34 +66,34 @@ describe("testMatchPatterns", () => {
     ];
     expect(testMatchPatterns(patterns, "https://www.example.com")).toBeTrue();
     expect(
-      testMatchPatterns(patterns, "https://pixiebrix.com/update/")
+      testMatchPatterns(patterns, "https://pixiebrix.com/update/"),
     ).toBeTrue();
 
     expect(testMatchPatterns(patterns, "https://example.com")).toBeFalse();
     expect(
-      testMatchPatterns(patterns, "https://www.example.comunication")
+      testMatchPatterns(patterns, "https://www.example.comunication"),
     ).toBeFalse();
     expect(
-      testMatchPatterns(patterns, "https://www.pixiebrix.com/")
+      testMatchPatterns(patterns, "https://www.pixiebrix.com/"),
     ).toBeFalse();
   });
 
   test("will throw BusinessError or invalid patterns", async () => {
     const url = "irrelevant";
     expect(() =>
-      testMatchPatterns(["https://pixiebrix.*/update/*"], url)
+      testMatchPatterns(["https://pixiebrix.*/update/*"], url),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Pattern not recognized as valid match pattern: https://pixiebrix.*/update/*"'
+      '"Pattern not recognized as valid match pattern: https://pixiebrix.*/update/*"',
     );
     expect(() =>
-      testMatchPatterns(["www.example.com/*"], url)
+      testMatchPatterns(["www.example.com/*"], url),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Pattern not recognized as valid match pattern: www.example.com/*"'
+      '"Pattern not recognized as valid match pattern: www.example.com/*"',
     );
     expect(() =>
-      testMatchPatterns(["*.example.com/*"], url)
+      testMatchPatterns(["*.example.com/*"], url),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Pattern not recognized as valid match pattern: *.example.com/*"'
+      '"Pattern not recognized as valid match pattern: *.example.com/*"',
     );
   });
 });

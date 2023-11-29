@@ -26,7 +26,7 @@ import {
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 
 function isFontAwesomeIcon(
-  maybeIcon: IconProp | React.ReactNode
+  maybeIcon: IconProp | React.ReactNode,
 ): maybeIcon is IconProp {
   return (
     typeof maybeIcon === "string" ||

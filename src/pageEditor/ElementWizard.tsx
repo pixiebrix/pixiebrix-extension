@@ -95,7 +95,7 @@ const ElementWizard: React.FunctionComponent<{
     if (formState.apiVersion === "v2") {
       const newState = await produce(formState, async (draft) => {
         draft.extension.blockPipeline = await upgradePipelineToV3(
-          draft.extension.blockPipeline
+          draft.extension.blockPipeline,
         );
         draft.apiVersion = "v3";
       });

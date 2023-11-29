@@ -82,7 +82,7 @@ export function parseDefinitionList(list: HTMLDListElement): ParsedTable {
 }
 
 export function getAllDefinitionLists(
-  root: HTMLElement | Document = document
+  root: HTMLElement | Document = document,
 ): Map<string, ParsedTable> {
   const tables = new Map();
   for (const table of $<HTMLDListElement>("dl", root)) {

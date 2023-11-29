@@ -31,7 +31,7 @@ export interface WindowConfig {
 
 async function handleFlatten<T>(
   pathSpec: PathSpec,
-  factory: (arg: PathSpecObj) => Promise<T>
+  factory: (arg: PathSpecObj) => Promise<T>,
 ): Promise<T> {
   const pathSpecObj: PathSpecObj =
     typeof pathSpec === "string" ? { value: pathSpec } : pathSpec;
@@ -45,7 +45,7 @@ async function doRead(reader: WindowConfig): Promise<JsonObject> {
     withReadWindow({
       pathSpec,
       waitMillis,
-    })
+    }),
   );
 }
 

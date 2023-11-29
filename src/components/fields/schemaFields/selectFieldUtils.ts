@@ -57,7 +57,7 @@ export function mapSchemaToOptions({
   const userOptions = compact([value, ...created])
     .filter(
       (value) =>
-        !schemaOptions.some((schemaOption) => value === schemaOption.value)
+        !schemaOptions.some((schemaOption) => value === schemaOption.value),
     )
     .map((value) => ({
       value,

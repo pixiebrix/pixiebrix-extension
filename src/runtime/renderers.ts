@@ -29,7 +29,7 @@ import { containsTemplateExpression } from "@/utils/expressionUtils";
 
 export type AsyncTemplateRenderer = (
   template: string,
-  context: unknown
+  context: unknown,
 ) => Promise<unknown>;
 export type TemplateRenderer = (template: string, context: unknown) => unknown;
 
@@ -39,7 +39,7 @@ export type RendererOptions = {
 
 export function engineRenderer(
   templateEngine: TemplateEngine,
-  options: RendererOptions
+  options: RendererOptions,
 ): AsyncTemplateRenderer | undefined {
   const autoescape = options.autoescape ?? true;
 
@@ -58,7 +58,7 @@ export function engineRenderer(
           {
             // By passing undefined here if autoescape = true, mustache will use it's built-in escaping method.
             escape: autoescape ? undefined : identity,
-          }
+          },
         );
     }
 
@@ -71,7 +71,7 @@ export function engineRenderer(
 
         // Convert top level data from kebab case to snake case in order to be valid identifiers
         const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
-          key.replaceAll("-", "_")
+          key.replaceAll("-", "_"),
         );
 
         return renderNunjucksTemplate({

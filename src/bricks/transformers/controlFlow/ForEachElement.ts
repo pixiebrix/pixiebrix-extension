@@ -38,7 +38,7 @@ class ForEachElement extends TransformerABC {
     super(
       ForEachElement.BLOCK_ID,
       "For-Each Element",
-      "Loop over elements on the page, returning the value of the last iteration"
+      "Loop over elements on the page, returning the value of the last iteration",
     );
   }
 
@@ -69,7 +69,7 @@ class ForEachElement extends TransformerABC {
           "The element key/variable for the body of the loop, without the leading @",
       },
     },
-    ["selector", "body"]
+    ["selector", "body"],
   );
 
   async transform(
@@ -83,7 +83,7 @@ class ForEachElement extends TransformerABC {
       body: PipelineExpression;
       elementKey?: string;
     }>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<unknown> {
     if (elementKey) {
       try {
@@ -93,7 +93,7 @@ class ForEachElement extends TransformerABC {
           "Invalid value for elementKey",
           this.id,
           "elementKey",
-          null
+          null,
         );
       }
     }
@@ -114,7 +114,7 @@ class ForEachElement extends TransformerABC {
         bodyPipeline,
         { key: "body", counter: index },
         extraContext,
-        element
+        element,
       );
     }
 

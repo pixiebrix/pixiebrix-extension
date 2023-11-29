@@ -57,7 +57,7 @@ const DEFAULT_TRAITS: PanelTraits = {
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  panel: PanelSelectionResult
+  panel: PanelSelectionResult,
 ): PanelFormState {
   return {
     type: "panel",
@@ -83,7 +83,7 @@ function fromNativeElement(
 }
 
 function selectExtensionPointConfig(
-  formState: PanelFormState
+  formState: PanelFormState,
 ): StarterBrickConfig<PanelDefinition> {
   const { extensionPoint } = formState;
   const {
@@ -105,7 +105,7 @@ function selectExtensionPointConfig(
 
 function selectExtension(
   state: PanelFormState,
-  options: { includeInstanceIds?: boolean } = {}
+  options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<PanelConfig> {
   const { extension } = state;
   const config: PanelConfig = {
@@ -131,7 +131,7 @@ function asDynamicElement(element: PanelFormState): DynamicDefinition {
 }
 
 async function fromExtension(
-  config: ModComponentBase<PanelConfig>
+  config: ModComponentBase<PanelConfig>,
 ): Promise<PanelFormState> {
   const extensionPoint = await lookupExtensionPoint<
     PanelDefinition,
@@ -145,7 +145,7 @@ async function fromExtension(
     "body",
     {
       heading: "",
-    }
+    },
   );
 
   return {

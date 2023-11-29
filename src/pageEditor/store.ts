@@ -61,7 +61,7 @@ if (typeof createLogger === "function") {
     createLogger({
       // Do not log polling actions (they happen too often)
       predicate: (getState, action) => !action.type.includes("logs/polling"),
-    })
+    }),
   );
 }
 
@@ -70,18 +70,18 @@ const store = configureStore({
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistExtensionOptionsConfig,
-      extensionsSlice.reducer
+      extensionsSlice.reducer,
     ),
     integrations: persistReducer(
       persistIntegrationsConfig,
-      integrationsSlice.reducer
+      integrationsSlice.reducer,
     ),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: persistReducer(persistEditorConfig, editorSlice.reducer),
     session: sessionSlice.reducer,
     sessionChanges: persistReducer(
       persistSessionChangesConfig,
-      sessionChangesSlice.reducer
+      sessionChangesSlice.reducer,
     ),
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
@@ -110,7 +110,7 @@ const store = configureStore({
           ...defaultCreateStateSyncMiddlewareConfig,
           // In the future: concat whitelisted sync action lists here
           whitelist: sessionChangesStateSyncActions,
-        })
+        }),
       );
     /* eslint-enable unicorn/prefer-spread */
   },

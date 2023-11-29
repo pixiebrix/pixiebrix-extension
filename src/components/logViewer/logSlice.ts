@@ -45,7 +45,7 @@ const clear = createAsyncThunk<void, void, { state: LogRootState }>(
     if (activeContext != null) {
       await clearLog(activeContext);
     }
-  }
+  },
 );
 
 // Init the logs polling. Should be dispatched once at the start of the app
@@ -76,7 +76,7 @@ export const logSlice: Slice<
     refreshEntries(state: Draft<LogState>): void;
     setContext(
       state: Draft<LogState>,
-      action: PayloadAction<MessageContext>
+      action: PayloadAction<MessageContext>,
     ): void;
   },
   "logs"
@@ -113,7 +113,7 @@ export const logSlice: Slice<
           state.isLoading = false;
           state.entries = castDraft(availableEntries);
         }
-      }
+      },
     );
   },
 });

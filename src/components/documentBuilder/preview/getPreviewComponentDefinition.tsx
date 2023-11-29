@@ -48,14 +48,14 @@ function filterCssClassesForPreview(props: UnknownObject | undefined): void {
     props.className = props.className
       .split(" ")
       .filter((x) =>
-        allowedBootstrapPrefixes.some((prefix) => x.startsWith(prefix))
+        allowedBootstrapPrefixes.some((prefix) => x.startsWith(prefix)),
       )
       .join(" ");
   }
 }
 
 function getPreviewComponentDefinition(
-  element: DocumentElement
+  element: DocumentElement,
 ): DocumentComponent {
   const previewElement = produce(element, (draft) => {
     // Don't hide elements in the preview
@@ -73,7 +73,7 @@ function getPreviewComponentDefinition(
     case "text": {
       const documentComponent = getComponentDefinition(
         previewElement,
-        DUMMY_TRACE_PATH
+        DUMMY_TRACE_PATH,
       );
 
       filterCssClassesForPreview(documentComponent.props);
@@ -90,7 +90,7 @@ function getPreviewComponentDefinition(
     case "image": {
       const documentComponent = getComponentDefinition(
         previewElement,
-        DUMMY_TRACE_PATH
+        DUMMY_TRACE_PATH,
       );
       filterCssClassesForPreview(documentComponent.props);
 
@@ -108,7 +108,7 @@ function getPreviewComponentDefinition(
     case "column": {
       const documentComponent = getComponentDefinition(
         previewElement,
-        DUMMY_TRACE_PATH
+        DUMMY_TRACE_PATH,
       );
       filterCssClassesForPreview(documentComponent.props);
 
@@ -128,7 +128,7 @@ function getPreviewComponentDefinition(
 
       const documentComponent = getComponentDefinition(
         cardPreviewElement,
-        DUMMY_TRACE_PATH
+        DUMMY_TRACE_PATH,
       );
       filterCssClassesForPreview(documentComponent.props);
 
@@ -170,7 +170,7 @@ function getPreviewComponentDefinition(
     default: {
       const documentComponent = getComponentDefinition(
         element,
-        DUMMY_TRACE_PATH
+        DUMMY_TRACE_PATH,
       );
       filterCssClassesForPreview(documentComponent.props);
 

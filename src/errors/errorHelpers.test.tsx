@@ -86,7 +86,7 @@ function nest(error: Error, level = 1): Error {
 
   return nest(
     new ContextError("Something happened", { cause: error }),
-    level - 1
+    level - 1,
   );
 }
 
@@ -124,7 +124,7 @@ describe("hasSpecificErrorCause CancelError", () => {
     const error = new Error(TEST_MESSAGE);
     for (const level of range(3)) {
       expect(hasCancelRootCause(serializeError(nest(error, level)))).toBe(
-        false
+        false,
       );
     }
   });
@@ -171,7 +171,7 @@ describe("hasSpecificErrorCause BusinessError", () => {
   test.each(errorTable)("can detect serialized error $name", ({ error }) => {
     for (const level of range(3)) {
       expect(hasBusinessRootCause(serializeError(nest(error, level)))).toBe(
-        true
+        true,
       );
     }
   });
@@ -187,7 +187,7 @@ describe("hasSpecificErrorCause BusinessError", () => {
     const error = new Error(TEST_MESSAGE);
     for (const level of range(3)) {
       expect(hasBusinessRootCause(serializeError(nest(error, level)))).toBe(
-        false
+        false,
       );
     }
   });
@@ -221,7 +221,7 @@ describe("getErrorMessage", () => {
       expect.fail("Expected error");
     } catch (error) {
       expect(getErrorMessage(error)).toBe(
-        "These aren't the droids you're looking for"
+        "These aren't the droids you're looking for",
       );
     }
   });
@@ -239,7 +239,7 @@ describe("getErrorMessage", () => {
       // isAxiosError is also dropped because it's on the prototype, and not the instance. As a result, error
       // fails the isAxiosError(...) check getErrorMessage uses getErrorMessage
       expect(getErrorMessage(serializeError(error))).toBe(
-        "Request failed with status code 404"
+        "Request failed with status code 404",
       );
     }
   });
@@ -266,7 +266,7 @@ describe("getErrorMessage", () => {
     // Unlike the non-RTK test case, the error here is detected as an AxiosError in the test suite because the base
     // query overrides the name to be AxiosError so it's detected by isAxiosError(...)
     expect(getErrorMessage(serializeError(error))).toBe(
-      "These aren't the droids you're looking for"
+      "These aren't the droids you're looking for",
     );
   });
 
@@ -308,7 +308,7 @@ describe("formatSchemaValidationMessage", () => {
   test("it returns a message in the form of 'keywordLocation: error'", () => {
     const message = formatSchemaValidationMessage(validationError);
     expect(message).toBe(
-      `${validationError.keywordLocation}: ${validationError.error}`
+      `${validationError.keywordLocation}: ${validationError.error}`,
     );
   });
 
@@ -322,7 +322,7 @@ describe("formatSchemaValidationMessage", () => {
 
   test("it returns empty string if no error or keyword location", () => {
     const message = formatSchemaValidationMessage(
-      {} as SchemaValidationError["errors"][number]
+      {} as SchemaValidationError["errors"][number],
     );
     expect(message).toBe("");
   });
@@ -348,8 +348,8 @@ describe("getErrorMessageWithCauses", () => {
   test("handles good causes", () => {
     expect(
       getErrorMessageWithCauses(
-        new Error(firstError, { cause: new Error(secondError) })
-      )
+        new Error(firstError, { cause: new Error(secondError) }),
+      ),
     ).toMatchInlineSnapshot(`
       "There was an error while fetching the page.
       Maybe you are not connected to the internet?"
@@ -358,8 +358,8 @@ describe("getErrorMessageWithCauses", () => {
       getErrorMessageWithCauses(
         new Error(firstError, {
           cause: new Error(secondError, { cause: new Error(thirdError) }),
-        })
-      )
+        }),
+      ),
     ).toMatchInlineSnapshot(`
       "There was an error while fetching the page.
       Maybe you are not connected to the internet?
@@ -369,10 +369,10 @@ describe("getErrorMessageWithCauses", () => {
 
   test("handles questionable causes", () => {
     expect(
-      getErrorMessageWithCauses(new Error(firstError, { cause: null }))
+      getErrorMessageWithCauses(new Error(firstError, { cause: null })),
     ).toBe(firstError);
     expect(
-      getErrorMessageWithCauses(new Error(firstError, { cause: undefined }))
+      getErrorMessageWithCauses(new Error(firstError, { cause: undefined })),
     ).toBe(firstError);
     expect(getErrorMessageWithCauses(new Error(firstError, { cause: "idk" })))
       .toMatchInlineSnapshot(`
@@ -389,8 +389,8 @@ describe("getErrorMessageWithCauses", () => {
   test("ignores duplicate error messages", () => {
     expect(
       getErrorMessageWithCauses(
-        new Error(firstError, { cause: new Error(firstError) })
-      )
+        new Error(firstError, { cause: new Error(firstError) }),
+      ),
     ).toBe(`${firstError}.`);
   });
 });
@@ -416,7 +416,7 @@ describe("selectError", () => {
     const error = new Error("test");
     expect(selectError(serializeError(error))).toBeInstanceOf(Error);
     expect(serializeError(selectError(serializeError(error)))).toStrictEqual(
-      serializeError(error)
+      serializeError(error),
     );
   });
 
@@ -426,7 +426,7 @@ describe("selectError", () => {
     expect(selectError(123)).toMatchInlineSnapshot("[Error: 123]");
     expect(selectError("test")).toMatchInlineSnapshot("[Error: test]");
     expect(selectError({ my: "object" })).toMatchInlineSnapshot(
-      '[Error: {"my":"object"}]'
+      '[Error: {"my":"object"}]',
     );
   });
 });
@@ -482,7 +482,7 @@ describe("selectErrorFromErrorEvent", () => {
     expect(
       shouldErrorBeIgnored(getErrorMessage(selectedError), {
         label: "Don’t ignore me",
-      })
+      }),
     ).toBeFalse();
   });
 
@@ -509,7 +509,7 @@ describe("selectErrorFromRejectionEvent", () => {
     const error = new Error("This won’t be caught");
     const errorEvent = new PromiseRejectionEvent(
       "error",
-      createUncaughtRejection(error)
+      createUncaughtRejection(error),
     );
 
     expect(selectErrorFromRejectionEvent(errorEvent)).toBe(error);
@@ -518,23 +518,23 @@ describe("selectErrorFromRejectionEvent", () => {
   it("handles PromiseRejectionEvent with null reason", () => {
     const errorEvent = new PromiseRejectionEvent(
       "error",
-      createUncaughtRejection(null)
+      createUncaughtRejection(null),
     );
 
     const selectedError = selectErrorFromRejectionEvent(errorEvent);
     expect(selectedError).toMatchInlineSnapshot(
-      "[Error: Unknown promise rejection]"
+      "[Error: Unknown promise rejection]",
     );
   });
 
   it("wraps primitive from PromiseRejectionEvent", () => {
     const errorEvent = new PromiseRejectionEvent(
       "error",
-      createUncaughtRejection("It's a non-error")
+      createUncaughtRejection("It's a non-error"),
     );
 
     expect(selectErrorFromRejectionEvent(errorEvent)).toMatchInlineSnapshot(
-      "[Error: It's a non-error]"
+      "[Error: It's a non-error]",
     );
   });
 });
@@ -599,7 +599,7 @@ describe("serialization", () => {
       "test input validation error",
       null,
       null,
-      []
+      [],
     );
     const contextError = new ContextError("text context error", {
       cause: inputValidationError,
@@ -662,7 +662,7 @@ describe("isCustomAggregateError", () => {
 
   it("returns true for aggregate error", () => {
     expect(
-      isCustomAggregateError(new InvalidDefinitionError("aggregate error", []))
+      isCustomAggregateError(new InvalidDefinitionError("aggregate error", [])),
     ).toBeTrue();
   });
 });

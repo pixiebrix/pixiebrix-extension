@@ -101,7 +101,7 @@ module.exports = {
     // https://stackoverflow.com/a/61706308/288906
     // https://github.com/pixiebrix/pixiebrix-extension/pull/3410#issuecomment-1130414970
     const fileLoaderRule = config.module.rules.find(
-      (rule) => rule.test && rule.test.test(".apng")
+      (rule) => rule.test && rule.test.test(".apng"),
     );
     fileLoaderRule.resourceQuery = { not: [/loadAsComponent/] };
 

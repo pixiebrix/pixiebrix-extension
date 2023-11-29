@@ -25,7 +25,7 @@ export class PageMetadataReader extends ReaderABC {
     super(
       "@pixiebrix/document-metadata",
       "Page metadata reader",
-      "Read OpenGraph, Twitter, and Meta tags"
+      "Read OpenGraph, Twitter, and Meta tags",
     );
   }
 

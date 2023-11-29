@@ -29,27 +29,27 @@ describe("string utilities", () => {
       rest: "some test string",
     });
     expect(
-      splitStartingEmoji("😊 some test string with an emoji at the start")
+      splitStartingEmoji("😊 some test string with an emoji at the start"),
     ).toStrictEqual({
       startingEmoji: "😊",
       rest: " some test string with an emoji at the start",
     });
     expect(
       splitStartingEmoji(
-        "😊 😊 some test string with multiple emojis at the start separated by space"
-      )
+        "😊 😊 some test string with multiple emojis at the start separated by space",
+      ),
     ).toStrictEqual({
       startingEmoji: "😊",
       rest: " 😊 some test string with multiple emojis at the start separated by space",
     });
     expect(
       splitStartingEmoji(
-        "🏜️ using apples troublesome emoji with .trim()"
-      ).rest.trim()
+        "🏜️ using apples troublesome emoji with .trim()",
+      ).rest.trim(),
     ).toBe("using apples troublesome emoji with .trim()");
 
     expect(
-      splitStartingEmoji("🏜️ using apples troublesome emoji with .trim()")
+      splitStartingEmoji("🏜️ using apples troublesome emoji with .trim()"),
     ).toStrictEqual({
       startingEmoji: "🏜️",
       rest: " using apples troublesome emoji with .trim()",
@@ -57,20 +57,20 @@ describe("string utilities", () => {
 
     expect(
       splitStartingEmoji(
-        "😊😊 some test string with multiple emojis at the start"
-      )
+        "😊😊 some test string with multiple emojis at the start",
+      ),
     ).toStrictEqual({
       startingEmoji: "😊",
       rest: "😊 some test string with multiple emojis at the start",
     });
     expect(
-      splitStartingEmoji("👋🏿 some test string with colors emoji at the start")
+      splitStartingEmoji("👋🏿 some test string with colors emoji at the start"),
     ).toStrictEqual({
       startingEmoji: "👋🏿",
       rest: " some test string with colors emoji at the start",
     });
     expect(
-      splitStartingEmoji("some test string with an emoji at the end 😊")
+      splitStartingEmoji("some test string with an emoji at the end 😊"),
     ).toStrictEqual({
       startingEmoji: undefined,
       rest: "some test string with an emoji at the end 😊",
@@ -104,7 +104,7 @@ describe("matchesAnyPattern", () => {
   test("matches a string array", () => {
     expect(matchesAnyPattern("hello", ["hi", "howdy", "hello"])).toBeTruthy();
     expect(
-      matchesAnyPattern("hello", ["hi", "howdy", "hello y’all"])
+      matchesAnyPattern("hello", ["hi", "howdy", "hello y’all"]),
     ).toBeFalsy();
     expect(matchesAnyPattern("yellow", ["hi", "howdy", "hello"])).toBeFalsy();
   });
@@ -147,7 +147,7 @@ describe("smartAppendPeriod", () => {
           const punctuationBeforeWrapper = [...string];
           punctuationBeforeWrapper.splice(-1, 0, piece); // Add punctuation
           expect(smartAppendPeriod(punctuationBeforeWrapper.join(""))).toBe(
-            punctuationBeforeWrapper.join("")
+            punctuationBeforeWrapper.join(""),
           );
         }
       }

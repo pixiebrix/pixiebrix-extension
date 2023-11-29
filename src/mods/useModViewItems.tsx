@@ -53,13 +53,13 @@ function useModViewItems(mods: Mod[]): {
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
       installedExtensionIds: new Set<UUID>(
-        installedExtensions.map((extension) => extension.id)
+        installedExtensions.map((extension) => extension.id),
       ),
       installedRecipeIds: new Set(
-        installedExtensions.map((extension) => extension._recipe?.id)
+        installedExtensions.map((extension) => extension._recipe?.id),
       ),
     }),
-    [installedExtensions]
+    [installedExtensions],
   );
 
   const isActive = useCallback(
@@ -70,7 +70,7 @@ function useModViewItems(mods: Mod[]): {
 
       return installedRecipeIds.has(mod.metadata.id);
     },
-    [installedExtensionIds, installedRecipeIds]
+    [installedExtensionIds, installedRecipeIds],
   );
 
   const getStatus = useCallback(
@@ -83,7 +83,7 @@ function useModViewItems(mods: Mod[]): {
         const deploymentExtension = installedExtensions.find(
           (installedExtension) =>
             installedExtension._recipe?.id === getPackageId(mod) &&
-            installedExtension._deployment
+            installedExtension._deployment,
         );
 
         return isDeploymentActive(deploymentExtension) ? "Active" : "Paused";
@@ -91,20 +91,20 @@ function useModViewItems(mods: Mod[]): {
 
       return isActive(mod) ? "Active" : "Inactive";
     },
-    [installedExtensions, isActive]
+    [installedExtensions, isActive],
   );
 
   const modViewItems = useMemo(() => {
     // Load to map for fast lookup if you have a lot of recipes. Could put in its own memo
     const recipeMap = new Map(
-      (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe])
+      (recipes ?? []).map((recipe) => [recipe.metadata.id, recipe]),
     );
 
     // Pick any ModComponentBase from the blueprint to check for updates. All of their versions should be the same.
     const extensionsMap = new Map(
       installedExtensions
         .filter((x) => x._recipe?.id)
-        .map((extension) => [extension._recipe.id, extension])
+        .map((extension) => [extension._recipe.id, extension]),
     );
 
     return mods.map((mod) => {
@@ -129,7 +129,7 @@ function useModViewItems(mods: Mod[]): {
         hasUpdate: updateAvailable(recipeMap, extensionsMap, mod),
         installedVersionNumber: getInstalledVersionNumber(
           installedExtensions,
-          mod
+          mod,
         ),
         unavailable: isUnavailableMod(mod),
         mod,

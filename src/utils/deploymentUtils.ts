@@ -64,7 +64,7 @@ export const makeUpdatedFilter =
   (installed: ModComponentBase[], { restricted }: { restricted: boolean }) =>
   (deployment: Deployment) => {
     const deploymentMatch = installed.find(
-      (extension) => extension._deployment?.id === deployment.id
+      (extension) => extension._deployment?.id === deployment.id,
     );
 
     if (restricted) {
@@ -79,7 +79,7 @@ export const makeUpdatedFilter =
     const blueprintMatch = installed.find(
       (extension) =>
         extension._deployment == null &&
-        extension._recipe?.id === deployment.package.package_id
+        extension._recipe?.id === deployment.package.package_id,
     );
 
     if (!deploymentMatch && !blueprintMatch) {
@@ -111,12 +111,12 @@ export const makeUpdatedFilter =
  * violation).
  */
 export function checkExtensionUpdateRequired(
-  deployments: Deployment[]
+  deployments: Deployment[],
 ): boolean {
   // Check that the user's extension van run the deployment
   const { version: extensionVersion } = browser.runtime.getManifest();
   const versionRanges = compact(
-    deployments.map((x) => x.package.config.metadata.extensionVersion)
+    deployments.map((x) => x.package.config.metadata.extensionVersion),
   );
 
   console.debug("Checking deployment version requirements", {
@@ -126,7 +126,7 @@ export function checkExtensionUpdateRequired(
 
   // For now assume the only version restrictions will be that the version must be greater than a certain number
   return versionRanges.some(
-    (versionRange) => !satisfies(extensionVersion, versionRange)
+    (versionRange) => !satisfies(extensionVersion, versionRange),
   );
 }
 
@@ -140,7 +140,7 @@ type InstalledDeployment = {
 };
 
 export function selectInstalledDeployments(
-  extensions: Array<Pick<ModComponentBase, "_deployment" | "_recipe">>
+  extensions: Array<Pick<ModComponentBase, "_deployment" | "_recipe">>,
 ): InstalledDeployment[] {
   return uniqBy(
     extensions
@@ -150,7 +150,7 @@ export function selectInstalledDeployments(
         blueprint: x._recipe?.id,
         blueprintVersion: x._recipe?.version,
       })),
-    (x) => x.deployment
+    (x) => x.deployment,
   );
 }
 
@@ -159,7 +159,7 @@ export function selectInstalledDeployments(
  * from the background page.
  */
 export type Locate = (
-  integrationId: RegistryId
+  integrationId: RegistryId,
 ) => Promise<SanitizedIntegrationConfig[]>;
 
 // XXX: this is incorrect for server-based OAuth2 integrations, because they're owned by user but still show as proxy
@@ -173,7 +173,7 @@ const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
  */
 export async function findLocalDeploymentConfiguredIntegrationDependencies(
   deployment: Deployment,
-  locate: Locate
+  locate: Locate,
 ): Promise<
   Array<
     Except<IntegrationDependency, "configId"> & {
@@ -182,16 +182,16 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
   >
 > {
   const deploymentIntegrations = getUnconfiguredComponentIntegrations(
-    deployment.package.config
+    deployment.package.config,
   );
   // Integrations in the deployment that are bound to a team credential
   const teamBoundIntegrationIds = new Set(
-    deployment.bindings.map((x) => x.auth.service_id)
+    deployment.bindings.map((x) => x.auth.service_id),
   );
   const unboundIntegrations = deploymentIntegrations.filter(
     ({ integrationId }) =>
       !teamBoundIntegrationIds.has(integrationId) &&
-      integrationId !== PIXIEBRIX_INTEGRATION_ID
+      integrationId !== PIXIEBRIX_INTEGRATION_ID,
   );
 
   return Promise.all(
@@ -202,7 +202,7 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
         ...unconfiguredDependency,
         configs: personalConfigs,
       };
-    })
+    }),
   );
 }
 
@@ -211,20 +211,20 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
  */
 export async function mergeDeploymentIntegrationDependencies(
   deployment: Deployment,
-  locate: Locate
+  locate: Locate,
 ): Promise<IntegrationDependency[]> {
   // Note/to-do: There is some logic overlap here with findLocalDeploymentConfiguredIntegrationDependencies() above,
   // but it's tricky to extract right now
 
   const deploymentIntegrations = getUnconfiguredComponentIntegrations(
-    deployment.package.config
+    deployment.package.config,
   );
   const teamBoundIntegrationIds = new Set(
-    deployment.bindings.map((x) => x.auth.service_id)
+    deployment.bindings.map((x) => x.auth.service_id),
   );
 
   const pixiebrixIntegration = deploymentIntegrations.find(
-    ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID
+    ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
   );
 
   const personalIntegrationDependencies: IntegrationDependency[] =
@@ -233,16 +233,16 @@ export async function mergeDeploymentIntegrationDependencies(
         .filter(
           ({ integrationId }) =>
             !teamBoundIntegrationIds.has(integrationId) &&
-            integrationId !== PIXIEBRIX_INTEGRATION_ID
+            integrationId !== PIXIEBRIX_INTEGRATION_ID,
         )
         .map(async (unconfiguredDependency) => {
           const sanitizedConfigs = await locate(
-            unconfiguredDependency.integrationId
+            unconfiguredDependency.integrationId,
           );
           const personalConfigs = sanitizedConfigs.filter((x) => isPersonal(x));
           if (personalConfigs.length > 1) {
             throw new Error(
-              `Multiple local configurations found for integration: ${unconfiguredDependency.integrationId}`
+              `Multiple local configurations found for integration: ${unconfiguredDependency.integrationId}`,
             );
           }
 
@@ -250,11 +250,11 @@ export async function mergeDeploymentIntegrationDependencies(
             ...unconfiguredDependency,
             configId: personalConfigs[0]?.id,
           };
-        })
+        }),
     );
 
   const deploymentBindingConfigs = Object.fromEntries(
-    deployment.bindings.map(({ auth, key }) => [auth.service_id, auth.id])
+    deployment.bindings.map(({ auth, key }) => [auth.service_id, auth.id]),
   );
   const teamIntegrationDependencies: IntegrationDependency[] =
     deploymentIntegrations
@@ -262,7 +262,7 @@ export async function mergeDeploymentIntegrationDependencies(
       .map((unconfiguredDependency) => ({
         ...unconfiguredDependency,
         configId: validateUUID(
-          deploymentBindingConfigs[unconfiguredDependency.integrationId]
+          deploymentBindingConfigs[unconfiguredDependency.integrationId],
         ),
       }));
 
@@ -274,7 +274,7 @@ export async function mergeDeploymentIntegrationDependencies(
   for (const { integrationId, configId } of integrationDependencies) {
     if (configId == null) {
       throw new Error(
-        `No configuration found for integration: ${integrationId}`
+        `No configuration found for integration: ${integrationId}`,
       );
     }
   }

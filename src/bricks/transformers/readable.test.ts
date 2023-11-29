@@ -27,14 +27,14 @@ describe("readable", () => {
 
     const article = await brick.run(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(article).toEqual(
       expect.objectContaining({
         excerpt: "content",
         textContent: "Titlecontent",
-      })
+      }),
     );
   });
 
@@ -45,7 +45,7 @@ describe("readable", () => {
 
     const article = brick.run(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory({ root: element })
+      brickOptionsFactory({ root: element }),
     );
 
     await expect(article).rejects.toThrow();

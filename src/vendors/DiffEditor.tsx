@@ -22,7 +22,7 @@ const DiffEditor = React.lazy(
     import(
       /* webpackChunkName: "ace-editor" */
       "./DiffEditorSync"
-    )
+    ),
 );
 
 export default DiffEditor;

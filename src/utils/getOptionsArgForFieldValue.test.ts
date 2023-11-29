@@ -29,7 +29,9 @@ describe("getOptionsArgForFieldValue", () => {
 
   it("returns null when fieldValue is not an options var expression", () => {
     expect(
-      getOptionsArgForFieldValue(makeVariableExpression("@foo"), { foo: "bar" })
+      getOptionsArgForFieldValue(makeVariableExpression("@foo"), {
+        foo: "bar",
+      }),
     ).toBeNull();
   });
 
@@ -37,7 +39,7 @@ describe("getOptionsArgForFieldValue", () => {
     expect(
       getOptionsArgForFieldValue(makeVariableExpression("@options."), {
         foo: "bar",
-      })
+      }),
     ).toBeNull();
   });
 
@@ -45,7 +47,7 @@ describe("getOptionsArgForFieldValue", () => {
     expect(
       getOptionsArgForFieldValue(makeVariableExpression("@options.foo"), {
         bar: "baz",
-      })
+      }),
     ).toBeNull();
   });
 
@@ -53,7 +55,7 @@ describe("getOptionsArgForFieldValue", () => {
     expect(
       getOptionsArgForFieldValue(makeVariableExpression("@options.foo"), {
         foo: "bar",
-      })
+      }),
     ).toBe("bar");
   });
 });

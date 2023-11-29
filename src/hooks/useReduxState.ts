@@ -26,7 +26,7 @@ import { type Action, type AnyAction, type Dispatch } from "redux";
  */
 const useReduxState = <TValue, TState, TAction extends Action = AnyAction>(
   selector: (state: TState) => TValue,
-  actionCreator: (nextValue: TValue) => TAction
+  actionCreator: (nextValue: TValue) => TAction,
 ): [TValue, (nextValue: TValue) => void] => {
   const value = useSelector(selector);
 
@@ -35,7 +35,7 @@ const useReduxState = <TValue, TState, TAction extends Action = AnyAction>(
     (nextValue: TValue) => {
       dispatch(actionCreator(nextValue));
     },
-    [dispatch, actionCreator]
+    [dispatch, actionCreator],
   );
 
   return [value, setValue];

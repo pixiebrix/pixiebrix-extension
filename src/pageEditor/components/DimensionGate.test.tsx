@@ -36,7 +36,7 @@ describe("Dimension Gate", () => {
     render(
       <DimensionGate>
         <div>foo</div>
-      </DimensionGate>
+      </DimensionGate>,
     );
     expect(screen.getByText("foo")).toBeInTheDocument();
   });
@@ -47,13 +47,13 @@ describe("Dimension Gate", () => {
     render(
       <DimensionGate>
         <div>foo</div>
-      </DimensionGate>
+      </DimensionGate>,
     );
 
     expect(screen.queryByText("foo")).not.toBeInTheDocument();
 
     await userEvent.click(
-      screen.getByRole("button", { name: "Dismiss Warning" })
+      screen.getByRole("button", { name: "Dismiss Warning" }),
     );
 
     expect(screen.getByText("foo")).toBeInTheDocument();

@@ -40,7 +40,7 @@ class Run extends TransformerABC {
     super(
       Run.BLOCK_ID,
       "Run Bricks",
-      "Run one or more bricks synchronously or asynchronously"
+      "Run one or more bricks synchronously or asynchronously",
     );
   }
 
@@ -68,7 +68,7 @@ class Run extends TransformerABC {
         default: false,
       },
     },
-    ["body"]
+    ["body"],
   );
 
   async transform(
@@ -79,7 +79,7 @@ class Run extends TransformerABC {
       body: PipelineExpression;
       async?: boolean;
     }>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<unknown> {
     const promise = options.runPipeline(bodyPipeline, {
       key: "body",

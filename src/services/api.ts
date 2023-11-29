@@ -129,7 +129,7 @@ export const appApi = createApi({
       query: () => ({ url: "/api/organizations/", method: "get" }),
       providesTags: ["Organizations"],
       transformResponse: (
-        baseQueryReturnValue: Array<components["schemas"]["Organization"]>
+        baseQueryReturnValue: Array<components["schemas"]["Organization"]>,
       ): Organization[] =>
         baseQueryReturnValue.map((apiOrganization) => ({
           ...apiOrganization,
@@ -146,7 +146,7 @@ export const appApi = createApi({
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
           role: (apiOrganization as any).members?.some(
-            (member: { role: UserRole }) => member.role === UserRole.admin
+            (member: { role: UserRole }) => member.role === UserRole.admin,
           )
             ? UserRole.admin
             : UserRole.restricted,
@@ -164,7 +164,7 @@ export const appApi = createApi({
       ],
       transformResponse: (
         baseQueryReturnValue: Group[],
-        { organizationId }: { organizationId: string }
+        { organizationId }: { organizationId: string },
       ) => ({
         [organizationId]: baseQueryReturnValue,
       }),
@@ -182,10 +182,10 @@ export const appApi = createApi({
       }),
       providesTags: ["MarketplaceListings"],
       transformResponse(
-        baseQueryReturnValue: MarketplaceListing[]
+        baseQueryReturnValue: MarketplaceListing[],
       ): Record<RegistryId, MarketplaceListing> {
         return Object.fromEntries(
-          baseQueryReturnValue.map((x) => [x.package.name as RegistryId, x])
+          baseQueryReturnValue.map((x) => [x.package.name as RegistryId, x]),
         );
       },
     }),

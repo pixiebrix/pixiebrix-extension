@@ -29,7 +29,7 @@ export class ExtensionDiagnostics extends TransformerABC {
     super(
       "@pixiebrix/diagnostics",
       "Extension Diagnostics",
-      "Collect PixieBrix performance and error diagnostics"
+      "Collect PixieBrix performance and error diagnostics",
     );
   }
 

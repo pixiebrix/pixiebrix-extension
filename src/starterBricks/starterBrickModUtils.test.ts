@@ -26,13 +26,13 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 extensionPointRegistry.lookup = jest.fn();
 
 const extensionPointRegistryLookupMock = jest.mocked(
-  extensionPointRegistry.lookup
+  extensionPointRegistry.lookup,
 );
 
 describe("getContainedStarterBrickTypes", () => {
   test("gets types with inner definitions", async () => {
     const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory()
+      defaultModDefinitionFactory(),
     );
     expect(result).toStrictEqual(["menuItem"]);
   });
@@ -44,7 +44,7 @@ describe("getContainedStarterBrickTypes", () => {
           modComponentDefinitionFactory(),
           modComponentDefinitionFactory(),
         ],
-      })
+      }),
     );
     expect(result).toStrictEqual(["menuItem"]);
   });
@@ -58,7 +58,7 @@ describe("getContainedStarterBrickTypes", () => {
       defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: undefined,
-      })
+      }),
     );
 
     expect(result).toStrictEqual(["menuItem"]);
@@ -71,7 +71,7 @@ describe("getContainedStarterBrickTypes", () => {
       defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: undefined,
-      })
+      }),
     );
 
     expect(result).toStrictEqual([]);
@@ -84,7 +84,7 @@ describe("getContainedStarterBrickTypes", () => {
       defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory()],
         definitions: {},
-      })
+      }),
     );
 
     expect(result).toStrictEqual([]);

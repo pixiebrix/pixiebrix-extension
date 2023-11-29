@@ -45,7 +45,7 @@ class ModVariableSchemasVisitor extends PipelineVisitor {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ): void {
     super.visitBrick(position, blockConfig, extra);
 
@@ -57,7 +57,7 @@ class ModVariableSchemasVisitor extends PipelineVisitor {
   }
 
   static async collectSchemas(
-    formStates: ModComponentFormState[]
+    formStates: ModComponentFormState[],
   ): Promise<ModVariableSchemaResult> {
     const allBlocks = await blockRegistry.allTyped();
     const visitor = new ModVariableSchemasVisitor(allBlocks);
@@ -68,7 +68,7 @@ class ModVariableSchemasVisitor extends PipelineVisitor {
 
     // Schema promises return undefined if not page state
     const schemas: Array<Schema | undefined> = await Promise.all(
-      visitor.schemaPromises
+      visitor.schemaPromises,
     );
 
     const variableSchemas: Array<Schema["properties"]> = [];

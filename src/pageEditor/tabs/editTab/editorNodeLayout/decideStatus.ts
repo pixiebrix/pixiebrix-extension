@@ -31,7 +31,7 @@ export function decideBlockStatus({
 }: DecideBlockStatusArgs): RunStatus {
   if (
     blockAnnotations.some(
-      (annotation) => annotation.type === AnnotationType.Error
+      (annotation) => annotation.type === AnnotationType.Error,
     )
   ) {
     return RunStatus.ERROR;
@@ -39,7 +39,7 @@ export function decideBlockStatus({
 
   if (
     blockAnnotations.some(
-      (annotation) => annotation.type === AnnotationType.Warning
+      (annotation) => annotation.type === AnnotationType.Warning,
     )
   ) {
     return RunStatus.WARNING;
@@ -70,7 +70,7 @@ export function decideFoundationStatus({
 }: DecideFoundationStatusArgs): RunStatus {
   if (
     blockAnnotations.some(
-      (annotation) => annotation.type === AnnotationType.Error
+      (annotation) => annotation.type === AnnotationType.Error,
     )
   ) {
     return RunStatus.ERROR;
@@ -78,7 +78,7 @@ export function decideFoundationStatus({
 
   if (
     blockAnnotations.some(
-      (annotation) => annotation.type === AnnotationType.Warning
+      (annotation) => annotation.type === AnnotationType.Warning,
     )
   ) {
     return RunStatus.WARNING;

@@ -33,18 +33,18 @@ function useLogEntriesView({ level, page, perPage }: Config) {
     () =>
       availableEntries.filter(
         // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
-        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
+        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level],
       ),
-    [level, availableEntries]
+    [level, availableEntries],
   );
 
   const filteredEntries = useMemo(
     () =>
       (entries ?? []).filter(
         // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
-        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
+        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level],
       ),
-    [level, entries]
+    [level, entries],
   );
 
   const numNew = filteredAvailableEntries.length - filteredEntries.length;

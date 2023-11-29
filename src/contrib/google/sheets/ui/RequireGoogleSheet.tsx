@@ -51,7 +51,7 @@ type GoogleSheetState = {
 const RequireGoogleSheet: React.FC<{
   blockConfigPath: string;
   children: (
-    props: Except<GoogleSheetState, "spreadsheetFieldSchema">
+    props: Except<GoogleSheetState, "spreadsheetFieldSchema">,
   ) => ReactElement;
 }> = ({ blockConfigPath, children }) => {
   const googleAccountAsyncState = useGoogleAccount();
@@ -71,7 +71,7 @@ const RequireGoogleSheet: React.FC<{
     [],
     {
       initialValue: BASE_SHEET_SCHEMA,
-    }
+    },
   );
 
   const [loginController, setLoginController] =
@@ -94,7 +94,7 @@ const RequireGoogleSheet: React.FC<{
       loginController?.abort();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount/unmount
-    []
+    [],
   );
 
   const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
@@ -104,7 +104,7 @@ const RequireGoogleSheet: React.FC<{
     async (
       googleAccount: SanitizedIntegrationConfig | null,
       spreadsheetId: string | null,
-      baseSchema: Schema
+      baseSchema: Schema,
     ) => {
       setSpreadsheetError(null);
       if (!googleAccount || !spreadsheetId) {
@@ -154,7 +154,7 @@ const RequireGoogleSheet: React.FC<{
         spreadsheet: null,
         spreadsheetFieldSchema: baseSchema,
       };
-    }
+    },
   );
 
   return (

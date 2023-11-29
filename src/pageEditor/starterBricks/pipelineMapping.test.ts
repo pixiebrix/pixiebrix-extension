@@ -202,7 +202,7 @@ describe("normalizePipeline", () => {
 
   test("nested pipelines", async () => {
     const createForEachBlock: (body: BrickConfig[]) => BrickConfig = (
-      body
+      body,
     ) => ({
       id: ForEach.BLOCK_ID,
       config: {
@@ -228,7 +228,7 @@ describe("normalizePipeline", () => {
 
     // 3d level
     expect(
-      isPipelineExpression(loopConfig1.__value__[0].config.body)
+      isPipelineExpression(loopConfig1.__value__[0].config.body),
     ).toBeTrue();
     const loopConfig2 = loopConfig1.__value__[0].config
       .body as PipelineExpression;
@@ -346,7 +346,7 @@ describe("omitEditorMetadata", () => {
   test("nested pipelines", () => {
     const createForEachBlock: (
       n: number,
-      body: BrickConfig[]
+      body: BrickConfig[],
     ) => BrickConfig = (n, body) => ({
       id: ForEach.BLOCK_ID,
       instanceId: uuidSequence(n),

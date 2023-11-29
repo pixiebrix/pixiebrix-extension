@@ -37,7 +37,7 @@ export const perf = <T = DefaultPerfToolsField>(React?: any) => {
         type,
         tools,
         perfState,
-        React
+        React,
       );
     }
 

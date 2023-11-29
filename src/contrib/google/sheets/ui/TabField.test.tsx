@@ -76,7 +76,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: "",
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -95,7 +95,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: null,
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -114,7 +114,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: makeTemplateExpression("nunjucks", ""),
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -133,7 +133,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: null,
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -168,7 +168,7 @@ describe("TabField", () => {
             },
           ],
         }}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -188,7 +188,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: null,
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -217,7 +217,7 @@ describe("TabField", () => {
             },
           ],
         }}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -238,7 +238,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: null,
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -276,7 +276,7 @@ describe("TabField", () => {
             },
           ],
         }}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -297,7 +297,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: null,
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -333,7 +333,7 @@ describe("TabField", () => {
             },
           ],
         }}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -355,7 +355,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: "Tab2",
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -368,7 +368,7 @@ describe("TabField", () => {
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
         spreadsheet={null}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -389,7 +389,7 @@ describe("TabField", () => {
         initialValues: {
           tabName: "Tab2",
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -402,7 +402,7 @@ describe("TabField", () => {
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
         spreadsheet={null}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -416,7 +416,7 @@ describe("TabField", () => {
         name="tabName"
         schema={{}} // Does not currently check the passed-in schema
         spreadsheet={TEST_SPREADSHEET}
-      />
+      />,
     );
 
     await waitForEffect();

@@ -83,7 +83,7 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
   const schemaItems = useMemo<Schema>(
     // Cast is okay here since we've already checked for array/boolean types
     () => (schema.items as Schema) ?? { additionalProperties: true },
-    [schema.items]
+    [schema.items],
   );
 
   return (

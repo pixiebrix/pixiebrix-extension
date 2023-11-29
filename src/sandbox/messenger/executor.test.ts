@@ -33,7 +33,7 @@ describe("renderNunjucksTemplate", () => {
         template: "{{ hello }}",
         context: { hello: "world" },
         autoescape: false,
-      })
+      }),
     ).resolves.toBe("world");
   });
 
@@ -43,7 +43,7 @@ describe("renderNunjucksTemplate", () => {
         template: "{{ hello",
         context: { hello: "world" },
         autoescape: false,
-      })
+      }),
     ).rejects.toThrow(InvalidTemplateError);
   });
 
@@ -59,7 +59,7 @@ describe("renderNunjucksTemplate", () => {
         template: "{{ hello",
         context: { hello: "world" },
         autoescape: false,
-      })
+      }),
     ).rejects.toThrow(Error);
 
     jest.resetAllMocks();
@@ -72,7 +72,7 @@ describe("runUserJs", () => {
       runUserJs({
         code: "function () { return 1 + 1; };",
         blockId: JavaScriptTransformer.BRICK_ID,
-      })
+      }),
     ).resolves.toBe(2);
   });
 
@@ -82,7 +82,7 @@ describe("runUserJs", () => {
         code: "function (data) { return data.hello + ' world'; };",
         data: { hello: "hello" },
         blockId: JavaScriptTransformer.BRICK_ID,
-      })
+      }),
     ).resolves.toBe("hello world");
   });
 
@@ -92,7 +92,7 @@ describe("runUserJs", () => {
         code: "async function (data) { return data.hello + ' world'; };",
         data: { hello: "hello" },
         blockId: JavaScriptTransformer.BRICK_ID,
-      })
+      }),
     ).resolves.toBe("hello world");
   });
 
@@ -104,7 +104,7 @@ describe("runUserJs", () => {
         code: malformedCode,
         data: {},
         blockId: JavaScriptTransformer.BRICK_ID,
-      })
+      }),
     ).rejects.toThrow(PropError);
   });
 
@@ -116,11 +116,11 @@ describe("runUserJs", () => {
         code: errorCode,
         data: {},
         blockId: JavaScriptTransformer.BRICK_ID,
-      })
+      }),
     ).rejects.toThrow(
       new BusinessError("Error running user-defined JavaScript", {
         cause: new Error("test"),
-      })
+      }),
     );
   });
 });

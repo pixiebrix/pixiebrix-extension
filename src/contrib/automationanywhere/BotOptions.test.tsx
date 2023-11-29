@@ -42,7 +42,7 @@ jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
 }));
 
 const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
-  useSanitizedIntegrationConfigFormikAdapter
+  useSanitizedIntegrationConfigFormikAdapter,
 );
 
 jest.mock("@/hooks/auth", () => ({
@@ -70,7 +70,7 @@ function makeBaseState() {
           data: {},
         },
       },
-    ]
+    ],
   );
 }
 
@@ -78,7 +78,7 @@ function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <BotOptions name="extension.blockPipeline.0" configKey="config" />
-    </Formik>
+    </Formik>,
   );
 }
 
@@ -89,7 +89,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-    valueToAsyncState(null)
+    valueToAsyncState(null),
   );
 });
 
@@ -108,12 +108,12 @@ describe("BotOptions", () => {
       } as unknown as SanitizedConfig,
     });
     useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-      valueToAsyncState(sanitizedConfig)
+      valueToAsyncState(sanitizedConfig),
     );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
-      "@automationAnywhere"
+      "@automationAnywhere",
     );
 
     renderOptions(base);
@@ -124,7 +124,7 @@ describe("BotOptions", () => {
     expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
     expect(screen.getByText("Await Result")).toBeInTheDocument();
     expect(
-      screen.queryByText("Result Timeout (Milliseconds)")
+      screen.queryByText("Result Timeout (Milliseconds)"),
     ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
@@ -138,12 +138,12 @@ describe("BotOptions", () => {
       } as unknown as SanitizedConfig,
     });
     useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-      valueToAsyncState(sanitizedConfig)
+      valueToAsyncState(sanitizedConfig),
     );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
-      "@automationAnywhere"
+      "@automationAnywhere",
     );
 
     renderOptions(base);
@@ -155,7 +155,7 @@ describe("BotOptions", () => {
     expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
     expect(screen.queryByText("Await Result")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Result Timeout (Milliseconds)")
+      screen.queryByText("Result Timeout (Milliseconds)"),
     ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
@@ -169,13 +169,13 @@ describe("BotOptions", () => {
       } as unknown as SanitizedConfig,
     });
     useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-      valueToAsyncState(sanitizedConfig)
+      valueToAsyncState(sanitizedConfig),
     );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.workspaceType = "public";
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
-      "@automationAnywhere"
+      "@automationAnywhere",
     );
 
     renderOptions(base);
@@ -187,7 +187,7 @@ describe("BotOptions", () => {
     expect(screen.getByText("Device Pools")).toBeInTheDocument();
     expect(screen.getByText("Await Result")).toBeInTheDocument();
     expect(
-      screen.queryByText("Result Timeout (Milliseconds)")
+      screen.queryByText("Result Timeout (Milliseconds)"),
     ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
@@ -201,14 +201,14 @@ describe("BotOptions", () => {
       } as unknown as SanitizedConfig,
     });
     useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-      valueToAsyncState(sanitizedConfig)
+      valueToAsyncState(sanitizedConfig),
     );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.workspaceType = "public";
     base.extension.blockPipeline[0].config.isAttended = true;
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
-      "@automationAnywhere"
+      "@automationAnywhere",
     );
 
     renderOptions(base);
@@ -220,7 +220,7 @@ describe("BotOptions", () => {
     expect(screen.queryByText("Device Pools")).not.toBeInTheDocument();
     expect(screen.getByText("Await Result")).toBeInTheDocument();
     expect(
-      screen.queryByText("Result Timeout (Milliseconds)")
+      screen.queryByText("Result Timeout (Milliseconds)"),
     ).not.toBeInTheDocument();
 
     // There's non-determinism in React Selects ids: react-select-X-live-region
@@ -234,20 +234,20 @@ describe("BotOptions", () => {
       } as unknown as SanitizedConfig,
     });
     useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-      valueToAsyncState(sanitizedConfig)
+      valueToAsyncState(sanitizedConfig),
     );
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.awaitResult = true;
     base.extension.blockPipeline[0].config.service = makeVariableExpression(
-      "@automationAnywhere"
+      "@automationAnywhere",
     );
 
     renderOptions(base);
 
     expect(screen.getByText("Await Result")).toBeInTheDocument();
     expect(
-      screen.getByText("Result Timeout (Milliseconds)")
+      screen.getByText("Result Timeout (Milliseconds)"),
     ).toBeInTheDocument();
   });
 });

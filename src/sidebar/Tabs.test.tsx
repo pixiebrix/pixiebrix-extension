@@ -50,7 +50,7 @@ async function setupPanelsAndRender(options: {
       forms: [],
       modActivationPanel: null,
       ...reservedSidebarEntries,
-    })
+    }),
   );
 
   const utils = render(<Tabs />, {
@@ -63,7 +63,7 @@ async function setupPanelsAndRender(options: {
           forms: [],
           modActivationPanel: undefined,
           ...sidebarEntries,
-        })
+        }),
       );
 
       if (!showModLauncher) {
@@ -104,7 +104,7 @@ describe("Tabs", () => {
         temporaryPanels: [],
         forms: [],
         modActivationPanel: null,
-      })
+      }),
     );
 
     test("renders with mod launcher visible if there are no other visible mods", async () => {
@@ -126,10 +126,10 @@ describe("Tabs", () => {
       });
 
       expect(
-        screen.getByText("We didn't find any mods to run")
+        screen.getByText("We didn't find any mods to run"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("Don't worry, there's a solution")
+        screen.getByText("Don't worry, there's a solution"),
       ).toBeInTheDocument();
     });
 
@@ -150,7 +150,7 @@ describe("Tabs", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" })
+        screen.getByRole("button", { name: "open mod launcher" }),
       );
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
@@ -160,7 +160,7 @@ describe("Tabs", () => {
         .click();
 
       expect(
-        screen.queryByRole("tab", { name: /mods/i })
+        screen.queryByRole("tab", { name: /mods/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -173,7 +173,7 @@ describe("Tabs", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" })
+        screen.getByRole("button", { name: "open mod launcher" }),
       );
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
@@ -187,7 +187,7 @@ describe("Tabs", () => {
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
       await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" })
+        screen.getByRole("button", { name: "open mod launcher" }),
       );
 
       expect(screen.getAllByText("Mods")).toHaveLength(1);
@@ -202,20 +202,20 @@ describe("Tabs", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" })
+        screen.getByRole("button", { name: "open mod launcher" }),
       );
 
       await userEvent.click(
         within(screen.getByRole("tab", { name: /panel test 1/i })).getByRole(
           "button",
-          { name: "Close" }
-        )
+          { name: "Close" },
+        ),
       );
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
       await userEvent.click(
-        await screen.findByRole("heading", { name: /panel test 1/i })
+        await screen.findByRole("heading", { name: /panel test 1/i }),
       );
 
       expect(screen.queryByText("Mods")).not.toBeInTheDocument();
@@ -229,7 +229,7 @@ describe("Tabs", () => {
         temporaryPanels: [],
         forms: [],
         modActivationPanel: null,
-      })
+      }),
     );
 
     test("can close a panel when mod launcher is available", async () => {
@@ -245,7 +245,7 @@ describe("Tabs", () => {
         .click();
 
       expect(
-        screen.queryByRole("tab", { name: /panel test 1/i })
+        screen.queryByRole("tab", { name: /panel test 1/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -260,24 +260,24 @@ describe("Tabs", () => {
       await userEvent.click(
         within(screen.getByRole("tab", { name: /panel test 1/i })).getByRole(
           "button",
-          { name: "Close" }
-        )
+          { name: "Close" },
+        ),
       );
 
       expect(
-        screen.queryByRole("tab", { name: /panel test 1/i })
+        screen.queryByRole("tab", { name: /panel test 1/i }),
       ).not.toBeInTheDocument();
 
       await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" })
+        screen.getByRole("button", { name: "open mod launcher" }),
       );
 
       await userEvent.click(
-        await screen.findByRole("heading", { name: /panel test 1/i })
+        await screen.findByRole("heading", { name: /panel test 1/i }),
       );
 
       expect(
-        screen.getByRole("tab", { name: /panel test 1/i })
+        screen.getByRole("tab", { name: /panel test 1/i }),
       ).toBeInTheDocument();
     });
 
@@ -323,7 +323,7 @@ describe("Tabs", () => {
         .click();
 
       expect(
-        screen.queryByRole("tab", { name: /temporary panel test 1/i })
+        screen.queryByRole("tab", { name: /temporary panel test 1/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -337,7 +337,7 @@ describe("Tabs", () => {
         .click();
 
       expect(
-        screen.queryByRole("tab", { name: /temporary panel test 1/i })
+        screen.queryByRole("tab", { name: /temporary panel test 1/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -354,11 +354,11 @@ describe("Tabs", () => {
         .click();
 
       expect(
-        screen.queryByRole("tab", { name: /temporary panel test 1/i })
+        screen.queryByRole("tab", { name: /temporary panel test 1/i }),
       ).not.toBeInTheDocument();
 
       expect(
-        screen.queryByRole("heading", { name: /temporary panel test 1/i })
+        screen.queryByRole("heading", { name: /temporary panel test 1/i }),
       ).not.toBeInTheDocument();
     });
 
@@ -418,7 +418,7 @@ describe("Tabs", () => {
           frameId: 0,
           tabId: 1,
         },
-        formPanel.nonce
+        formPanel.nonce,
       );
     });
   });
@@ -441,7 +441,7 @@ describe("Tabs", () => {
         .click();
 
       expect(
-        screen.queryByRole("tab", { name: /activate mods test 1/i })
+        screen.queryByRole("tab", { name: /activate mods test 1/i }),
       ).not.toBeInTheDocument();
 
       await waitForEffect();

@@ -61,8 +61,8 @@ describe("useActivateRecipeWizard", () => {
               foo: { type: "string" },
             }),
           },
-        })
-      )
+        }),
+      ),
     );
 
     const {
@@ -76,7 +76,7 @@ describe("useActivateRecipeWizard", () => {
     spy.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      useActivateRecipeWizard(defaultModDefinitionFactory())
+      useActivateRecipeWizard(defaultModDefinitionFactory()),
     );
 
     const {
@@ -90,7 +90,7 @@ describe("useActivateRecipeWizard", () => {
     spy.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      useActivateRecipeWizard(defaultModDefinitionFactory())
+      useActivateRecipeWizard(defaultModDefinitionFactory()),
     );
 
     const {
@@ -114,7 +114,7 @@ describe("useActivateRecipeWizard", () => {
       },
     });
     useDatabaseOptionsMock.mockReturnValue(
-      valueToAsyncState([{ label: "Database2", value: uuidSequence(2) }])
+      valueToAsyncState([{ label: "Database2", value: uuidSequence(2) }]),
     );
     const { result } = renderHook(() => useActivateRecipeWizard(modDefinition));
 
@@ -144,12 +144,12 @@ describe("useActivateRecipeWizard", () => {
           label: `${makeDatabasePreviewName(
             modDefinition,
             optionSchema,
-            name
+            name,
           )} - Private`,
           value: databaseId,
         },
         { label: "Database2", value: uuidSequence(2) },
-      ])
+      ]),
     );
     const { result } = renderHook(() => useActivateRecipeWizard(modDefinition));
 

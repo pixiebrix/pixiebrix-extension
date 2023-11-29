@@ -35,7 +35,7 @@ describe("selectUpdatePromptState", () => {
 
     const result = selectUpdatePromptState(
       { settings },
-      { now, enforceUpdateMillis: 5 }
+      { now, enforceUpdateMillis: 5 },
     );
     expect(result).toStrictEqual({
       isSnoozed: false,
@@ -60,7 +60,7 @@ describe("selectUpdatePromptState", () => {
 
     const result = selectUpdatePromptState(
       { settings },
-      { now, enforceUpdateMillis: 1 }
+      { now, enforceUpdateMillis: 1 },
     );
     expect(result).toStrictEqual({
       isSnoozed: true,
@@ -83,7 +83,7 @@ describe("selectUpdatePromptState", () => {
 
     const result = selectUpdatePromptState(
       { settings },
-      { now, enforceUpdateMillis: 1 }
+      { now, enforceUpdateMillis: 1 },
     );
     expect(result).toStrictEqual({
       isSnoozed: false,

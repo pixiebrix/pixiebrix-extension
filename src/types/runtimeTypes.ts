@@ -122,7 +122,7 @@ export type Expression<
   // pipeline at this time, though.
   TTemplateOrPipeline = string,
   // The type tag (without the !-prefix of the YAML simple tag)
-  TTypeTag extends ExpressionType = ExpressionType
+  TTypeTag extends ExpressionType = ExpressionType,
 > = {
   __type__: TTypeTag;
   __value__: TTemplateOrPipeline;
@@ -250,7 +250,7 @@ export function validateBrickArgsContext(obj: UnknownObject): BrickArgsContext {
  */
 export type BrickArgs<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
-  T extends Record<string, any> = Record<string, any>
+  T extends Record<string, any> = Record<string, any>,
 > = T & {
   _blockArgBrand: never;
 };
@@ -319,7 +319,7 @@ export interface RunMetadata {
 // the inputs using yup/jsonschema, so the types should match what's expected.
 export type BrickOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
-  TCtxt extends Record<string, any> = Record<string, any>
+  TCtxt extends Record<string, any> = Record<string, any>,
 > = {
   /**
    * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
@@ -357,7 +357,7 @@ export type BrickOptions<
     pipeline: PipelineExpression,
     branch: TraceBranch,
     extraContext?: UnknownObject,
-    root?: SelectorRoot
+    root?: SelectorRoot,
   ) => Promise<unknown>;
 
   /**
@@ -372,7 +372,7 @@ export type BrickOptions<
     pipeline: PipelineExpression,
     branch: TraceBranch,
     extraContext?: UnknownObject,
-    root?: SelectorRoot
+    root?: SelectorRoot,
   ) => Promise<unknown>; // Should be PanelPayload
 
   /**
