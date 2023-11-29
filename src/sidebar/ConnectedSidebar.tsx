@@ -33,7 +33,7 @@ import Tabs from "@/sidebar/Tabs";
 import sidebarSlice from "./sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
-import ErrorBoundary from "./ErrorBoundary";
+import ErrorBoundary from "./SidebarErrorBoundary";
 import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";

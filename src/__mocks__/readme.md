@@ -23,3 +23,36 @@ jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
 ```
 
 Note that you can't use `@/` in `requireActual` as that will likely still use the auto-mock.
+
+### Using jest.fn in `__mocks__/@`
+
+If the mocked file is simple:
+
+```ts
+// @/file.ts
+
+export const complexApiCall = () => {
+  // Some API call
+};
+```
+
+You can just export the mocked content:
+
+```ts
+// __mocks__/@/file.ts
+
+export const complexApiCall = jest.fn();
+```
+
+If it has a lot of exports, you'll have to mock them all, or re-export them from the original file and then override the export you want to mock:
+
+```ts
+// __mocks__/@/file.ts
+
+// Bypass auto-mocks
+export * from "../../../../file";
+
+export const complexApiCall = jest.fn();
+```
+
+Auto-mocking is based on `@` so anything that doesn't use it will skip it.

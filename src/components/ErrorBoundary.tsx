@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Component } from "react";
+import React, { Component, type ErrorInfo } from "react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
+import reportError from "@/telemetry/reportError";
 
 interface DisplayProps {
   /**
@@ -55,6 +55,8 @@ interface BoundaryProps extends DisplayProps {
    * Custom error display component
    */
   ErrorComponent?: React.FC<DisplayProps & ErrorState>;
+
+  onError?: (error?: Error, errorInfo?: ErrorInfo) => void;
 }
 
 /**
@@ -105,16 +107,15 @@ export const DefaultErrorComponent: React.FC<ErrorDisplayProps> = ({
   </div>
 );
 
-class ErrorBoundary extends Component<BoundaryProps, ErrorState> {
-  constructor(props: UnknownObject) {
-    super(props);
-    this.state = {
-      hasError: false,
-      error: undefined,
-      errorMessage: undefined,
-      stack: undefined,
-    };
-  }
+class ErrorBoundary<
+  Props extends BoundaryProps = BoundaryProps
+> extends Component<Props, ErrorState> {
+  override state: ErrorState = {
+    error: undefined,
+    hasError: false,
+    errorMessage: undefined,
+    stack: undefined,
+  };
 
   static getDerivedStateFromError(error: Error) {
     // Update state so the next render will show the fallback UI.
@@ -124,6 +125,11 @@ class ErrorBoundary extends Component<BoundaryProps, ErrorState> {
       errorMessage: getErrorMessage(error),
       stack: error.stack,
     };
+  }
+
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    this.props.onError?.(error, errorInfo);
+    reportError(error);
   }
 
   override render(): React.ReactNode {

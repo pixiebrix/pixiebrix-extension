@@ -880,6 +880,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="root"
             >
               <div
+                aria-expanded="false"
                 class="header"
                 role="button"
                 tabindex="0"
@@ -1070,6 +1071,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="root"
             >
               <div
+                aria-expanded="false"
                 class="header"
                 role="button"
                 tabindex="0"
@@ -1220,6 +1222,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="root"
             >
               <div
+                aria-expanded="false"
                 class="header"
                 role="button"
                 tabindex="0"
@@ -2185,6 +2188,7 @@ exports[`renders the first selected node 1`] = `
               class="root"
             >
               <div
+                aria-expanded="false"
                 class="header"
                 role="button"
                 tabindex="0"
