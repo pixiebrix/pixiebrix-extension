@@ -140,15 +140,15 @@ function hasRecipeScope(
  * @param mod the mod
  * @param userScope the user's scope, or null if it's not set
  */
-function isPersonal(mod: Mod, userScope: string | null) {
+function isPersonal(mod: Mod, userScope: string | null): boolean {
   if (isResolvedModComponent(mod)) {
     return (
       isPersonalModComponent(mod) ||
-      (userScope && hasSourceRecipeWithScope(mod, userScope))
+      Boolean(userScope && hasSourceRecipeWithScope(mod, userScope))
     );
   }
 
-  return userScope && hasRecipeScope(mod, userScope);
+  return Boolean(userScope && hasRecipeScope(mod, userScope));
 }
 
 export function getInstalledVersionNumber(
