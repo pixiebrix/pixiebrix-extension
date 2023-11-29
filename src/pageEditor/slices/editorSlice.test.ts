@@ -232,7 +232,7 @@ describe("Add/Remove Bricks", () => {
     expect(action2.payload).toEqual(
       expect.objectContaining({
         uuid: expect.not.stringMatching(source.uuid),
-        label: "Test Extension - copy",
+        label: "Test Extension (Copy)",
       }),
     );
     expect(action2.payload).not.toHaveProperty("recipe");

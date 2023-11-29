@@ -140,7 +140,7 @@ const cloneActiveExtension = createAsyncThunk<
     selectActiveElement(state),
     async (draft) => {
       draft.uuid = uuidv4();
-      draft.label += " - copy";
+      draft.label += " (Copy)";
       // Remove from its recipe, if any (the user can add it to any recipe after creation)
       delete draft.recipe;
       // Re-generate instance IDs for all the bricks in the extension
