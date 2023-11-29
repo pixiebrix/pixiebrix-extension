@@ -45,7 +45,7 @@ beforeAll(() => {
 describe("move element", () => {
   function renderDocumentEditor(
     documentElements: DocumentElement[],
-    initialActiveElement: string = null
+    initialActiveElement: string = null,
   ) {
     const formState = formStateFactory({
       extension: baseExtensionStateFactory({
@@ -68,12 +68,12 @@ describe("move element", () => {
           dispatch(actions.selectElement(formState.uuid));
           dispatch(
             actions.setElementActiveNodeId(
-              formState.extension.blockPipeline[0].instanceId
-            )
+              formState.extension.blockPipeline[0].instanceId,
+            ),
           );
           dispatch(actions.setNodePreviewActiveElement(initialActiveElement));
         },
-      }
+      },
     );
   }
 
@@ -90,7 +90,7 @@ describe("move element", () => {
     expect(screen.getByText("test text 1")).toBeInTheDocument();
 
     await userEvent.click(
-      screen.getByText("Move down", { selector: "button" })
+      screen.getByText("Move down", { selector: "button" }),
     );
 
     // The element is still active
@@ -98,12 +98,12 @@ describe("move element", () => {
 
     // Now can move the element up
     expect(
-      screen.getByText("Move up", { selector: "button" })
+      screen.getByText("Move up", { selector: "button" }),
     ).not.toBeDisabled();
 
     // Can't move it further down
     expect(
-      screen.getByText("Move down", { selector: "button" })
+      screen.getByText("Move down", { selector: "button" }),
     ).toBeDisabled();
   });
 
@@ -129,7 +129,7 @@ describe("move element", () => {
 
     // Can move it down
     expect(
-      screen.getByText("Move down", { selector: "button" })
+      screen.getByText("Move down", { selector: "button" }),
     ).not.toBeDisabled();
   });
 });
@@ -141,7 +141,7 @@ describe("remove element", () => {
    */
   function renderDocumentEditorWithFormState(
     formState: ModComponentFormState,
-    initialActiveElement: string = null
+    initialActiveElement: string = null,
   ) {
     const formikStateRef = {
       current: formState,
@@ -163,8 +163,8 @@ describe("remove element", () => {
         dispatch(actions.selectElement(formState.uuid));
         dispatch(
           actions.setElementActiveNodeId(
-            formState.extension.blockPipeline[0].instanceId
-          )
+            formState.extension.blockPipeline[0].instanceId,
+          ),
         );
         dispatch(actions.setNodePreviewActiveElement(initialActiveElement));
       },

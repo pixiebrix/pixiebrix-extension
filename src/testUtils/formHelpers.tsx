@@ -27,7 +27,7 @@ export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
 export const createFormikTemplate = (
   initialValues: FormikValues,
-  onSubmit = jest.fn()
+  onSubmit = jest.fn(),
 ) => {
   const FormikTemplate = ({ children }: PropsWithChildren<unknown>) => (
     <Formik
@@ -60,10 +60,10 @@ export const fireTextInput = (input: Element, text: string) => {
  */
 export const selectSchemaFieldInputMode = async (
   fieldName: string,
-  fieldInputMode: FieldInputMode
+  fieldInputMode: FieldInputMode,
 ) => {
   const fieldToggleButton = within(
-    screen.getByTestId(`toggle-${fieldName}`)
+    screen.getByTestId(`toggle-${fieldName}`),
   ).getByRole("button");
   await userEvent.click(fieldToggleButton);
   await waitForEffect();

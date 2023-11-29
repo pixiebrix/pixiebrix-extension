@@ -86,12 +86,12 @@ const BrickHistory: React.FunctionComponent<{
           created_at: formatted_date,
         };
       }),
-    [packageVersions, brick]
+    [packageVersions, brick],
   );
 
   const currentVersion = useMemo(
     () => versionOptions.find((option) => option.label.includes("current")),
-    [versionOptions]
+    [versionOptions],
   );
 
   useEffect(() => {

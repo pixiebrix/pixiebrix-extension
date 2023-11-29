@@ -140,7 +140,7 @@ const EditTab: React.FC<{
               dispatch(
                 actions.setDataSectionExpanded({
                   isExpanded: !isDataPanelExpanded,
-                })
+                }),
               );
             }}
           >

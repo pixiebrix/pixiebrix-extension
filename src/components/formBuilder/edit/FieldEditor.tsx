@@ -93,7 +93,7 @@ const FieldEditor: React.FC<{
       isNullOrBlank(propertyNameError)
         ? []
         : [{ message: propertyNameError, type: AnnotationType.Error }],
-    [propertyNameError]
+    [propertyNameError],
   );
 
   const validatePropertyName = (nextName: string) => {
@@ -124,7 +124,7 @@ const FieldEditor: React.FC<{
     const nextRjsfSchema = produceSchemaOnPropertyNameChange(
       rjsfSchema,
       propertyName,
-      nextName
+      nextName,
     );
     await setRjsfSchema(nextRjsfSchema);
     setActiveField(nextName);
@@ -139,7 +139,7 @@ const FieldEditor: React.FC<{
     const nextRjsfSchema = produceSchemaOnUiTypeChange(
       rjsfSchema,
       propertyName,
-      value
+      value,
     );
 
     await setRjsfSchema(nextRjsfSchema);
@@ -162,8 +162,8 @@ const FieldEditor: React.FC<{
     const uiWidget = isDatabaseFieldType
       ? "database"
       : isGoogleSheetFieldType
-      ? "googleSheet"
-      : uiSchema?.[propertyName]?.[UI_WIDGET];
+        ? "googleSheet"
+        : uiSchema?.[propertyName]?.[UI_WIDGET];
 
     const propertyFormat = propertySchema.format;
     const extra: UiTypeExtra =
@@ -197,7 +197,7 @@ const FieldEditor: React.FC<{
       } else {
         draft.schema.required = replaceStringInArray(
           draft.schema.required,
-          propertyName
+          propertyName,
         );
       }
     });
@@ -247,12 +247,12 @@ const FieldEditor: React.FC<{
                   $ref: databaseSchema.$id,
                 }
               : uiType.uiWidget === "googleSheet"
-              ? {
-                  $ref: googleSheetIdSchema.$id,
-                }
-              : {
-                  type: uiType.propertyType,
-                },
+                ? {
+                    $ref: googleSheetIdSchema.$id,
+                  }
+                : {
+                    type: uiType.propertyType,
+                  },
           label: "Default Value",
           description:
             uiType.extra === "selectWithLabels"

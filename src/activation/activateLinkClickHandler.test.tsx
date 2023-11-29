@@ -47,7 +47,7 @@ describe("activateLinkClickHandler", () => {
         type: "activateMods",
         modIds: [modId],
         heading: expect.toBeString(),
-      })
+      }),
     );
   });
 
@@ -71,9 +71,9 @@ describe("activateLinkClickHandler", () => {
           type: "activateMods",
           modIds,
           heading: expect.toBeString(),
-        })
+        }),
       );
-    }
+    },
   );
 
   it("does not intercept non-activation links", async () => {

@@ -10,7 +10,7 @@ import { pushTask } from "./utils/pushTask";
 const setArray = (
   displayName: string,
   state: PerfTools["renderCount"] | PerfTools["renderTime"],
-  initialValue: any
+  initialValue: any,
 ) => {
   const obj = state.current[displayName];
   let currentIndex = -1;
@@ -28,7 +28,7 @@ const setArray = (
 const updateRenderCount = (
   renderCount: PerfTools["renderCount"],
   index: number,
-  displayName: string
+  displayName: string,
 ) => {
   if (!displayName) {
     return;
@@ -56,7 +56,7 @@ const updateRenderCount = (
 const startMeasureRenderTime = (
   renderTime: PerfTools["renderTime"],
   index: number,
-  displayName?: string
+  displayName?: string,
 ) => {
   if (!displayName) {
     return () => {};
@@ -98,13 +98,13 @@ export interface PatchedClassComponent {}
 const createClassComponent = (
   type: React.ComponentClass,
   { renderCount, renderTime }: PerfTools,
-  { hasRenderCount, hasRenderTime }: PerfState
+  { hasRenderCount, hasRenderTime }: PerfState,
 ) => {
   const ClassComponent = type as new (...args: any) => any;
   const displayName = getDisplayName(type);
   if (!displayName) {
     console.warn(
-      "[react-performance-testing] You have anonymous component. If your component don't have display name, we can not set property to renderCount.current"
+      "[react-performance-testing] You have anonymous component. If your component don't have display name, we can not set property to renderCount.current",
     );
   }
 
@@ -160,7 +160,7 @@ const createClassComponent = (
         this.endMeasureRenderTime = startMeasureRenderTime(
           renderTime,
           this.currentIndex,
-          displayName
+          displayName,
         );
       }
 
@@ -175,13 +175,13 @@ const createFunctionComponent = (
   type: React.FunctionComponent,
   { renderCount, renderTime }: PerfTools,
   { hasRenderCount, hasRenderTime }: PerfState,
-  React: any
+  React: any,
 ) => {
   const functionComponent = type as (...args: any[]) => React.ReactElement;
   const displayName = getDisplayName(type);
   if (!displayName) {
     console.warn(
-      "[react-performance-testing] You have anonymous component. If your component don't have display name, we can not set property to renderCount.current"
+      "[react-performance-testing] You have anonymous component. If your component don't have display name, we can not set property to renderCount.current",
     );
   }
 
@@ -215,7 +215,7 @@ const createFunctionComponent = (
       endMeasureRenderTime.current = startMeasureRenderTime(
         renderTime,
         currentIndex,
-        displayName
+        displayName,
       );
     }
 
@@ -231,7 +231,7 @@ const createMemoComponent = (
   },
   tools: PerfTools,
   perfState: PerfState,
-  React: any
+  React: any,
 ): any => {
   const { type: InnerMemoComponent, compare } = type;
 
@@ -244,17 +244,17 @@ const createMemoComponent = (
   const PatchedInnerComponent = isClassComponent(InnerMemoComponent)
     ? createClassComponent(WrappedFunctionalComponent, tools, perfState)
     : isMemoComponent(InnerMemoComponent)
-    ? createMemoComponent(WrappedFunctionalComponent, tools, perfState, React)
-    : createFunctionComponent(
-        WrappedFunctionalComponent,
-        tools,
-        perfState,
-        React
-      );
+      ? createMemoComponent(WrappedFunctionalComponent, tools, perfState, React)
+      : createFunctionComponent(
+          WrappedFunctionalComponent,
+          tools,
+          perfState,
+          React,
+        );
 
   try {
     PatchedInnerComponent.displayName = getDisplayName(
-      WrappedFunctionalComponent
+      WrappedFunctionalComponent,
     );
   } catch {}
 
@@ -262,7 +262,7 @@ const createMemoComponent = (
     isInnerForwardRefComponent
       ? React.forwardRef(PatchedInnerComponent)
       : PatchedInnerComponent,
-    compare
+    compare,
   );
 
   return PatchedMemoComponent;
@@ -274,7 +274,7 @@ const createForwardRefComponent = (
   },
   tools: PerfTools,
   perfState: PerfState,
-  React: any
+  React: any,
 ): any => {
   const { render: InnerForwardRefComponent } = type;
 
@@ -288,19 +288,19 @@ const createForwardRefComponent = (
     WrappedFunctionalComponent,
     tools,
     perfState,
-    React
+    React,
   );
 
   try {
     PatchedInnerComponent.displayName = getDisplayName(
-      WrappedFunctionalComponent
+      WrappedFunctionalComponent,
     );
   } catch {}
 
   const PatchedForwardRefComponent = React.forwardRef(
     isInnerMemoComponent
       ? React.memo(PatchedInnerComponent, WrappedFunctionalComponent.compare)
-      : PatchedInnerComponent
+      : PatchedInnerComponent,
   );
 
   return PatchedForwardRefComponent;
@@ -312,7 +312,7 @@ const createPatchedComponent = (
   },
   tools: PerfTools,
   perfState: PerfState,
-  React: any
+  React: any,
 ): any => {
   if (isMemoComponent(type)) {
     return createMemoComponent(type, tools, perfState, React);
@@ -340,13 +340,13 @@ export const getPatchedComponent = (
   },
   tools: PerfTools,
   perfState: PerfState,
-  React: any
+  React: any,
 ) => {
   const PatchedComponent = createPatchedComponent(
     type,
     tools,
     perfState,
-    React
+    React,
   );
 
   try {

@@ -36,18 +36,18 @@ const renderSchemaField = (
   name: string,
   schema: Schema,
   initialValues: any,
-  props?: Partial<SchemaFieldProps>
+  props?: Partial<SchemaFieldProps>,
 ) =>
   render(
     <Formik initialValues={initialValues} onSubmit={jest.fn()}>
       <BasicSchemaField name={name} schema={schema} {...props} />
-    </Formik>
+    </Formik>,
   );
 
 describe("option mode switching", () => {
   const expectToggleMode = (container: HTMLElement, mode: string) => {
     expect(
-      container.querySelector('[data-testid="toggle-test"]')
+      container.querySelector('[data-testid="toggle-test"]'),
     ).toHaveAttribute("data-test-selected", mode);
   };
 
@@ -60,7 +60,7 @@ describe("option mode switching", () => {
           __type__: "var",
           __value__: "@data",
         },
-      }
+      },
     );
 
     expectToggleMode(container, "Variable");
@@ -81,7 +81,7 @@ describe("option mode switching", () => {
           __type__: "var",
           __value__: "@data",
         },
-      }
+      },
     );
 
     expectToggleMode(container, "Variable");
@@ -102,7 +102,7 @@ describe("option mode switching", () => {
           __type__: "nunjucks",
           __value__: "",
         },
-      }
+      },
     );
 
     expectToggleMode(container, "Text");
@@ -123,7 +123,7 @@ describe("option mode switching", () => {
           __type__: "var",
           __value__: "@data.foo",
         },
-      }
+      },
     );
 
     expectToggleMode(container, "Variable");
@@ -152,7 +152,7 @@ test("omit if empty", async () => {
     {
       omitIfEmpty: true,
       label: "testing omit",
-    }
+    },
   );
 
   const field = screen.getByLabelText("testing omit");

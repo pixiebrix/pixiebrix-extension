@@ -75,7 +75,7 @@ declare global {
     RECORD_ERROR: (
       serializedError: SerializedError,
       context: MessageContext,
-      data?: JsonObject
+      data?: JsonObject,
     ) => Promise<void>;
 
     RECORD_EVENT: (event: {

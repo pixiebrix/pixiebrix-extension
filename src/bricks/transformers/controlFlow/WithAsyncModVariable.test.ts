@@ -43,7 +43,7 @@ const withAsyncModVariableBrick = new WithAsyncModVariable();
 const makeAsyncModVariablePipeline = (
   brick: Brick,
   message: string,
-  stateKey: string | Expression
+  stateKey: string | Expression,
 ) => ({
   id: withAsyncModVariableBrick.id,
   config: {
@@ -212,12 +212,12 @@ describe("WithAsyncModVariable", () => {
     const pipeline = makeAsyncModVariablePipeline(
       asyncEchoBrick,
       expectedMessage,
-      modVariable
+      modVariable,
     );
     const stalePipeline = makeAsyncModVariablePipeline(
       staleAsyncBrick,
       "I shouldn't be in the page state!",
-      modVariable
+      modVariable,
     );
 
     await reducePipeline(stalePipeline, simpleInput({}), {
@@ -290,9 +290,8 @@ describe("WithAsyncModVariable", () => {
 
       const withAsyncModVariableBrick = new WithAsyncModVariable();
 
-      const actual = await withAsyncModVariableBrick.getModVariableSchema(
-        pipeline
-      );
+      const actual =
+        await withAsyncModVariableBrick.getModVariableSchema(pipeline);
 
       expect(actual).toStrictEqual({
         type: "object",
@@ -348,9 +347,8 @@ describe("WithAsyncModVariable", () => {
 
       const withAsyncModVariableBrick = new WithAsyncModVariable();
 
-      const actual = await withAsyncModVariableBrick.getModVariableSchema(
-        pipeline
-      );
+      const actual =
+        await withAsyncModVariableBrick.getModVariableSchema(pipeline);
 
       expect(actual).toStrictEqual({
         type: "object",

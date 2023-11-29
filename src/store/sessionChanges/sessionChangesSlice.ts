@@ -38,7 +38,7 @@ export const sessionChangesSlice = createSlice({
       state,
       action: PayloadAction<{
         sessionId: UUID;
-      }>
+      }>,
     ) {
       const { sessionId } = action.payload;
       // eslint-disable-next-line security/detect-object-injection -- generated UUID

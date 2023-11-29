@@ -22,11 +22,11 @@ const target = { tabId: "this", page: "/ephemeralPanel.html" } as const;
 const panelInThisTab = {
   updateTemporaryPanel: getNotifier(
     "EPHEMERAL_PANEL_UPDATE_TEMPORARY_PANEL",
-    target
+    target,
   ),
   setTemporaryPanelNonce: getNotifier(
     "EPHEMERAL_PANEL_SET_TEMPORARY_PANEL",
-    target
+    target,
   ),
 };
 

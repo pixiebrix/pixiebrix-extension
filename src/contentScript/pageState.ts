@@ -34,7 +34,7 @@ const blueprintState = new Map<RegistryId | null, JsonObject>();
 function mergeState(
   previous: JsonObject,
   update: JsonObject,
-  strategy: MergeStrategy
+  strategy: MergeStrategy,
 ): JsonObject {
   const cloned = cloneDeep(update);
 

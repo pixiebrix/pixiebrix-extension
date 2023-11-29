@@ -40,7 +40,7 @@ import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 
 async function fetchRobots(
-  config: SanitizedIntegrationConfig
+  config: SanitizedIntegrationConfig,
 ): Promise<Array<Option<number>>> {
   const response = await performConfiguredRequestInBackground<
     ODataResponseData<Robot>
@@ -60,23 +60,23 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   const configName = partial(joinName, basePath);
 
   const [{ value: strategy }, , strategyHelpers] = useField<string>(
-    configName("strategy")
+    configName("strategy"),
   );
 
   const [{ value: jobsCount }, , jobsCountHelpers] = useField<number>(
-    configName("jobsCount")
+    configName("jobsCount"),
   );
 
   const [{ value: releaseKey }] = useField<string | Expression>(
-    configName("releaseKey")
+    configName("releaseKey"),
   );
 
   const [{ value: awaitResult }] = useField<boolean | null>(
-    configName("awaitResult")
+    configName("awaitResult"),
   );
 
   const { selectedRelease, releasesPromise } = useSelectedRelease(
-    configName("releaseKey")
+    configName("releaseKey"),
   );
 
   useAsyncEffect(async () => {
@@ -92,10 +92,10 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       }
 
       return cachePromise(["uipath:fetchRobots", config], async () =>
-        fetchRobots(config)
+        fetchRobots(config),
       );
     },
-    []
+    [],
   );
 
   return isExpression(releaseKey) ? (

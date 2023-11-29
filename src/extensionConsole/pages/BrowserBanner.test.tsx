@@ -35,7 +35,7 @@ describe("BrowserBanner", () => {
     const { asFragment } = render(
       <div>
         <BrowserBanner />
-      </div>
+      </div>,
     );
 
     await waitForEffect();
@@ -43,7 +43,7 @@ describe("BrowserBanner", () => {
     expect(
       screen.getByText("PixieBrix officially supports Google Chrome", {
         exact: false,
-      })
+      }),
     ).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
@@ -55,7 +55,7 @@ describe("BrowserBanner", () => {
     const { asFragment } = render(
       <div>
         <BrowserBanner />
-      </div>
+      </div>,
     );
 
     await waitForEffect();
@@ -63,7 +63,7 @@ describe("BrowserBanner", () => {
     expect(
       screen.queryByText("PixieBrix officially supports Google Chrome.", {
         exact: false,
-      })
+      }),
     ).not.toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();

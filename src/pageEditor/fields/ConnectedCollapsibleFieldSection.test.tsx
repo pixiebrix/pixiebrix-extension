@@ -29,12 +29,12 @@ describe("ConnectedCollapsibleFieldSection", () => {
     render(
       <ConnectedCollapsibleFieldSection title="Test Section">
         <div>foo</div>
-      </ConnectedCollapsibleFieldSection>
+      </ConnectedCollapsibleFieldSection>,
     );
 
     expect(screen.getByRole("button")).toHaveAttribute(
       "aria-expanded",
-      "false"
+      "false",
     );
   });
 
@@ -42,7 +42,7 @@ describe("ConnectedCollapsibleFieldSection", () => {
     render(
       <ConnectedCollapsibleFieldSection title="Test Section" initialExpanded>
         <div>foo</div>
-      </ConnectedCollapsibleFieldSection>
+      </ConnectedCollapsibleFieldSection>,
     );
 
     expect(screen.getByRole("button")).toHaveAttribute("aria-expanded", "true");

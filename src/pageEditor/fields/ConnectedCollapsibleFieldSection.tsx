@@ -27,7 +27,7 @@ const ConnectedCollapsibleFieldSection = ({
           actions.setExpandedFieldSections({
             id: title,
             isExpanded: !isExpanded,
-          })
+          }),
         );
       }}
       expanded={isExpanded}

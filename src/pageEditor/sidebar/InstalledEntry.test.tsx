@@ -61,7 +61,7 @@ describe("InstalledEntry", () => {
           // Remove the active element and stay with one inactive item
           dispatch(editorActions.removeElement(formState.uuid));
         },
-      }
+      },
     );
     await waitForEffect();
 
@@ -80,7 +80,7 @@ describe("InstalledEntry", () => {
           // The addElement also sets the active element
           dispatch(editorActions.addElement(formState));
         },
-      }
+      },
     );
     await waitForEffect();
 

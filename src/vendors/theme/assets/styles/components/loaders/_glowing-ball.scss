@@ -72,9 +72,12 @@
   width: 15px;
   height: 15px;
   border-radius: 15px;
-  box-shadow: 0px 0px 10px theme-color(primary),
-    0px 0px 20px theme-color(primary), 0px 0px 30px theme-color(primary),
-    0px 0px 50px theme-color(primary), 0px 0px 60px theme-color(primary);
+  box-shadow:
+    0px 0px 10px theme-color(primary),
+    0px 0px 20px theme-color(primary),
+    0px 0px 30px theme-color(primary),
+    0px 0px 50px theme-color(primary),
+    0px 0px 60px theme-color(primary);
   z-index: 1;
   background-color: theme-color(primary);
   animation: bigball 1s infinite linear;

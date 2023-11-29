@@ -27,7 +27,7 @@ export class ReactivateEffect extends EffectABC {
     super(
       "@pixiebrix/reactivate",
       "Reactivate All",
-      "Reactivate PixieBrix enhancements, e.g., because page content has changed without a navigation event"
+      "Reactivate PixieBrix enhancements, e.g., because page content has changed without a navigation event",
     );
   }
 
@@ -38,7 +38,7 @@ export class ReactivateEffect extends EffectABC {
 
   async effect(
     arg: BrickArgs<JsonObject>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     expectContext("contentScript");
     console.debug("Sending reactivateTab signal");

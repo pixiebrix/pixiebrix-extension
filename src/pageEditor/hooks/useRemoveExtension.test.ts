@@ -48,10 +48,10 @@ test("useRemoveExtension", async () => {
   const { dispatch } = getReduxStore();
 
   expect(dispatch).toHaveBeenCalledWith(
-    editorActions.removeElement(extensionId)
+    editorActions.removeElement(extensionId),
   );
   expect(dispatch).toHaveBeenCalledWith(
-    extensionsActions.removeExtension({ extensionId })
+    extensionsActions.removeExtension({ extensionId }),
   );
   expect(clearDynamicElements).toHaveBeenCalledWith(expect.any(Object), {
     uuid: extensionId,

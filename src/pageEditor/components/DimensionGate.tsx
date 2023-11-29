@@ -109,7 +109,7 @@ export const GatePanel: React.FunctionComponent = () => {
  */
 const DimensionGate: React.FunctionComponent = ({ children }) => {
   const isDimensionsWarningDismissed = useSelector(
-    selectIsDimensionsWarningDismissed
+    selectIsDimensionsWarningDismissed,
   );
 
   const size = useWindowSize();

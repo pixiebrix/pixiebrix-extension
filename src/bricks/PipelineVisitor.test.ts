@@ -35,7 +35,7 @@ test("should invoke the callback for the pipeline bricks", () => {
     override visitBrick(
       position: BrickPosition,
       blockConfig: BrickConfig,
-      extra: VisitBlockExtra
+      extra: VisitBlockExtra,
     ) {
       super.visitBrick(position, blockConfig, extra);
 
@@ -58,7 +58,7 @@ test("should invoke the callback for the pipeline bricks", () => {
       parentNodeId: undefined,
       pipeline,
       pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
-    }
+    },
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
@@ -71,7 +71,7 @@ test("should invoke the callback for the pipeline bricks", () => {
       parentNodeId: undefined,
       pipeline,
       pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
-    }
+    },
   );
 });
 
@@ -92,7 +92,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
     override visitBrick(
       position: BrickPosition,
       blockConfig: BrickConfig,
-      extra: VisitBlockExtra
+      extra: VisitBlockExtra,
     ) {
       super.visitBrick(position, blockConfig, extra);
 
@@ -103,7 +103,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
   visitor.visitRootPipeline(pipeline, { extensionPointType: "menuItem" });
 
   expect(visitBlock).toHaveBeenCalledTimes(
-    pipeline.length + subPipeline.length
+    pipeline.length + subPipeline.length,
   );
 
   expect(visitBlock).toHaveBeenCalledWith(
@@ -119,7 +119,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
       pipelinePosition: {
         path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__`,
       },
-    }
+    },
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
@@ -134,7 +134,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
       pipelinePosition: {
         path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.__value__`,
       },
-    }
+    },
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
@@ -147,7 +147,7 @@ test("should invoke the callback for the sub pipeline bricks", () => {
       parentNodeId: undefined,
       pipeline,
       pipelinePosition: { path: PIPELINE_BLOCKS_FIELD_NAME },
-    }
+    },
   );
 });
 
@@ -172,7 +172,7 @@ test("should invoke the callback for the Document button pipeline", () => {
     override visitBrick(
       position: BrickPosition,
       blockConfig: BrickConfig,
-      extra: VisitBlockExtra
+      extra: VisitBlockExtra,
     ) {
       super.visitBrick(position, blockConfig, extra);
 
@@ -196,7 +196,7 @@ test("should invoke the callback for the Document button pipeline", () => {
       pipelinePosition: {
         path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
       },
-    }
+    },
   );
   expect(visitBlock).toHaveBeenCalledWith(
     {
@@ -211,6 +211,6 @@ test("should invoke the callback for the Document button pipeline", () => {
       pipelinePosition: {
         path: PIPELINE_BLOCKS_FIELD_NAME,
       },
-    }
+    },
   );
 });

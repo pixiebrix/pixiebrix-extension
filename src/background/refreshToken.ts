@@ -36,21 +36,21 @@ import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
  */
 export default async function refreshPKCEToken(
   integration: Integration,
-  integrationConfig: SanitizedIntegrationConfig
+  integrationConfig: SanitizedIntegrationConfig,
 ): Promise<boolean> {
   expectContext("background");
 
   if (integration.id !== integrationConfig.serviceId) {
     throw new Error(
-      `Integration id and config service id do not match: ${integration.id} !== ${integrationConfig.serviceId}`
+      `Integration id and config service id do not match: ${integration.id} !== ${integrationConfig.serviceId}`,
     );
   } else if (integration.id === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     throw new Error(
-      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`
+      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
     );
   } else if (!integration.isOAuth2PKCE) {
     throw new Error(
-      `Expected OAuth2 PKCE integration, but got ${integration.id}`
+      `Expected OAuth2 PKCE integration, but got ${integration.id}`,
     );
   }
 
@@ -60,7 +60,7 @@ export default async function refreshPKCEToken(
     console.debug("Refreshing PKCE token");
 
     const { config } = await serviceLocator.findIntegrationConfig(
-      integrationConfig.id
+      integrationConfig.id,
     );
     const { tokenUrl, client_id, client_secret } =
       integration.getOAuth2Context(config);

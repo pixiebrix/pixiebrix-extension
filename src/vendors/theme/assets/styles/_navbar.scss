@@ -14,17 +14,17 @@
     width: 110px;
   }
   .navbar-brand-wrapper {
-    transition: width $action-transition-duration
-        $action-transition-timing-function,
+    transition:
+      width $action-transition-duration $action-transition-timing-function,
       background $action-transition-duration $action-transition-timing-function;
-    -webkit-transition: width $action-transition-duration
-        $action-transition-timing-function,
+    -webkit-transition:
+      width $action-transition-duration $action-transition-timing-function,
       background $action-transition-duration $action-transition-timing-function;
-    -moz-transition: width $action-transition-duration
-        $action-transition-timing-function,
+    -moz-transition:
+      width $action-transition-duration $action-transition-timing-function,
       background $action-transition-duration $action-transition-timing-function;
-    -ms-transition: width $action-transition-duration
-        $action-transition-timing-function,
+    -ms-transition:
+      width $action-transition-duration $action-transition-timing-function,
       background $action-transition-duration $action-transition-timing-function;
     background: $navbar-bg;
     width: $sidebar-width-lg;

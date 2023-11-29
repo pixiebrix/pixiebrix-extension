@@ -68,8 +68,8 @@ function renderDocumentPreview(documentElement: DocumentElement) {
       dispatch(actions.selectElement(formState.uuid));
       dispatch(
         actions.setElementActiveNodeId(
-          formState.extension.blockPipeline[0].instanceId
-        )
+          formState.extension.blockPipeline[0].instanceId,
+        ),
       );
     },
   });
@@ -100,11 +100,11 @@ describe("Add new element", () => {
     // Select a dropdown inside a Col in List and open it
     await userEvent.click(
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelector(".col .col .addElement button")
+      container.querySelector(".col .col .addElement button"),
     );
     expect(
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelector(".col .col .addElement button")
+      container.querySelector(".col .col .addElement button"),
     ).toHaveAttribute("aria-expanded", "true");
 
     // Hover over the Col in the list
@@ -112,7 +112,7 @@ describe("Add new element", () => {
     fireEvent.mouseOver(container.querySelector(".col .col"));
     expect(
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelector(".col .col .addElement button")
+      container.querySelector(".col .col .addElement button"),
     ).toHaveAttribute("aria-expanded", "true");
 
     // Hover over the Container of the List, .root.root - is the Document root element
@@ -120,7 +120,7 @@ describe("Add new element", () => {
     fireEvent.mouseOver(container.querySelector(".root.root > .container"));
     expect(
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelector(".col .col .addElement button")
+      container.querySelector(".col .col .addElement button"),
     ).toHaveAttribute("aria-expanded", "true");
   });
 
@@ -192,7 +192,7 @@ describe("Show live preview", () => {
         dispatch(actions.addElement(formState));
         dispatch(actions.selectElement(formState.uuid));
         dispatch(
-          actions.setElementActiveNodeId(pipelineField.__value__[0].instanceId)
+          actions.setElementActiveNodeId(pipelineField.__value__[0].instanceId),
         );
       },
     });

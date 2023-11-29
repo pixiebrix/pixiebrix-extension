@@ -37,7 +37,7 @@ export function mockAllApiEndpoints() {
  * Helper method to provide a deferred response to a GET request.
  */
 export function onDeferredGet(
-  matcher?: string | RegExp
+  matcher?: string | RegExp,
 ): DeferredPromise<unknown> {
   const valuePromise = pDefer<unknown>();
 
@@ -53,7 +53,7 @@ export function onDeferredGet(
  * Helper method to provide a deferred response to a POST request.
  */
 export function onDeferredPost(
-  matcher?: string | RegExp
+  matcher?: string | RegExp,
 ): DeferredPromise<unknown> {
   const valuePromise = pDefer<unknown>();
 

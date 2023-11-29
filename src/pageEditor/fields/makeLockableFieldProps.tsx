@@ -21,7 +21,7 @@ import LockedExtensionPointLabel from "@/components/form/lockedLabel/LockedExten
 export function makeLockableFieldProps(
   label: string,
   isLocked: boolean,
-  message?: string
+  message?: string,
 ) {
   return {
     disabled: isLocked,

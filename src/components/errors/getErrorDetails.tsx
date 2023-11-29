@@ -47,7 +47,7 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
 
   const outputValidationError = selectSpecificError(
     error,
-    OutputValidationError
+    OutputValidationError,
   );
   if (outputValidationError) {
     return {

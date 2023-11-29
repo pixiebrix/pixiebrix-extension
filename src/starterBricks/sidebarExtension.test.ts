@@ -53,7 +53,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
-      } as Metadata),
+      }) as Metadata,
     definition: define<SidebarDefinition>({
       type: "actionPanel",
       isAvailable: () => ({
@@ -91,7 +91,7 @@ describe("sidebarExtension", () => {
     extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
-      })
+      }),
     );
 
     await extensionPoint.install();
@@ -122,7 +122,7 @@ describe("sidebarExtension", () => {
     extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
-      })
+      }),
     );
 
     await extensionPoint.install();
@@ -162,7 +162,7 @@ describe("sidebarExtension", () => {
     const extensionPoint = fromJS(
       starterBrickFactory({
         trigger: "statechange",
-      })()
+      })(),
     );
 
     const extension = extensionFactory({
@@ -236,7 +236,7 @@ describe("sidebarExtension", () => {
           waitMillis: debounceMillis,
           trailing: true,
         },
-      })()
+      })(),
     );
 
     const extension = extensionFactory({

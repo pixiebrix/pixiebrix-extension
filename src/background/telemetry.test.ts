@@ -50,7 +50,7 @@ describe("recordEvent", () => {
   test("successfully persists concurrent telemetry events to local storage", async () => {
     // Easiest way to test race condition without having to mock
     const recordTestEvents = Array.from({ length: 100 }, async () =>
-      recordEvent({ event: "TestEvent" as Event, data: {} })
+      recordEvent({ event: "TestEvent" as Event, data: {} }),
     );
     await Promise.all(recordTestEvents);
 
@@ -92,7 +92,7 @@ describe("recordEvent", () => {
 
   test("record and flush brick run", async () => {
     syncFlagOnMock.mockImplementation(
-      (flag: string) => flag === "telemetry-bricks"
+      (flag: string) => flag === "telemetry-bricks",
     );
 
     const promise = recordBrickRun({
@@ -110,7 +110,7 @@ describe("recordEvent", () => {
 
   test("split brick runs by blueprint id", async () => {
     syncFlagOnMock.mockImplementation(
-      (flag: string) => flag === "telemetry-bricks"
+      (flag: string) => flag === "telemetry-bricks",
     );
 
     const promise1 = recordBrickRun({
@@ -132,7 +132,7 @@ describe("recordEvent", () => {
     expect(JSON.parse(appApiMock.history.post[0].data as string)).toStrictEqual(
       {
         events: expect.toBeArrayOfSize(2),
-      }
+      },
     );
   });
 });

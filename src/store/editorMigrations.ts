@@ -55,7 +55,7 @@ export const migrations: MigrationManifest = {
 };
 
 export function migrateIntegrationDependenciesV1toV2(
-  services: IntegrationDependencyV1[]
+  services: IntegrationDependencyV1[],
 ): IntegrationDependencyV2[] {
   if (isEmpty(services)) {
     return [];
@@ -74,13 +74,13 @@ function migrateFormStateV1(state: BaseFormStateV1): BaseFormStateV2 {
   return {
     ...omit(state, "services"),
     integrationDependencies: migrateIntegrationDependenciesV1toV2(
-      state.services
+      state.services,
     ),
   };
 }
 
 export function migrateEditorStateV1(
-  state: PersistedEditorStateV1
+  state: PersistedEditorStateV1,
 ): PersistedEditorStateV2 {
   return {
     ...state,
@@ -88,7 +88,7 @@ export function migrateEditorStateV1(
     deletedElementsByRecipeId: mapValues(
       state.deletedElementsByRecipeId,
       (formStates) =>
-        formStates.map((formState) => migrateFormStateV1(formState))
+        formStates.map((formState) => migrateFormStateV1(formState)),
     ),
   };
 }

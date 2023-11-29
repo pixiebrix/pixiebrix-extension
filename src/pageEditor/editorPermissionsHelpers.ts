@@ -29,7 +29,7 @@ import { castArray } from "lodash";
 import { containsPermissions } from "@/background/messenger/api";
 
 export async function calculatePermissionsForElement(
-  element: ModComponentFormState
+  element: ModComponentFormState,
 ): Promise<{
   hasPermissions: boolean;
   permissions: Permissions.Permissions;
@@ -56,13 +56,13 @@ export async function calculatePermissionsForElement(
  * @param elementOrElements the Page Editor element form state(s)
  */
 export async function ensureElementPermissionsFromUserGesture(
-  elementOrElements: ModComponentFormState | ModComponentFormState[]
+  elementOrElements: ModComponentFormState | ModComponentFormState[],
 ): Promise<boolean> {
   try {
     const elementPermissions = await Promise.all(
       castArray(elementOrElements).map(async (element) =>
-        calculatePermissionsForElement(element)
-      )
+        calculatePermissionsForElement(element),
+      ),
     );
 
     const { hasPermissions: alreadyHasPermissions, permissions } =
@@ -76,7 +76,7 @@ export async function ensureElementPermissionsFromUserGesture(
 
     if (!hasPermissions) {
       notify.warning(
-        "You declined the permissions. This mod won't work on other tabs until you grant the permissions"
+        "You declined the permissions. This mod won't work on other tabs until you grant the permissions",
       );
     }
 

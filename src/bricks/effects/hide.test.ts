@@ -41,17 +41,17 @@ describe("HideEffect", () => {
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
 
       expect(document.querySelector("button")).not.toBeVisible();
-    }
+    },
   );
 
   test("it hides element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true }),
-      brickOptionsFactory({ root: document.querySelector("button") })
+      brickOptionsFactory({ root: document.querySelector("button") }),
     );
 
     expect(document.querySelector("button")).not.toBeVisible();
@@ -60,7 +60,7 @@ describe("HideEffect", () => {
   test("it removes element", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true, mode: "remove" }),
-      brickOptionsFactory({ root: document.querySelector("button") })
+      brickOptionsFactory({ root: document.querySelector("button") }),
     );
 
     expect(document.querySelector("button")).toBeNull();

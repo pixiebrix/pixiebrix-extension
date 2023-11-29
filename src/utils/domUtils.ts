@@ -33,7 +33,7 @@ import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
  */
 export function $safeFind<Element extends HTMLElement>(
   selector: string,
-  parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document
+  parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document,
 ): JQuery<Element> {
   try {
     return $(parent).find<Element>(selector);
@@ -56,7 +56,7 @@ export function $safeFind<Element extends HTMLElement>(
  */
 export function findSingleElement<Element extends HTMLElement>(
   selector: string,
-  parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document
+  parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document,
 ): Element {
   const $elements = $(parent).find<Element>(selector);
   return assertSingleElement($elements, selector);
@@ -71,7 +71,7 @@ export function findSingleElement<Element extends HTMLElement>(
  */
 export function assertSingleElement<Element extends HTMLElement>(
   $elements: JQuery<HTMLElement | Document>,
-  selector: string
+  selector: string,
 ): Element {
   if ($elements.length === 0) {
     throw new NoElementsFoundError(selector);
@@ -100,7 +100,7 @@ export async function waitAnimationFrame(): Promise<void> {
 
 export async function setAnimationFrameInterval(
   callback: () => void,
-  { signal }: { signal: AbortSignal }
+  { signal }: { signal: AbortSignal },
 ): Promise<void> {
   while (!signal.aborted) {
     // eslint-disable-next-line no-await-in-loop -- intentional
@@ -121,6 +121,6 @@ export function isVisible(element: HTMLElement): boolean {
   return Boolean(
     element.offsetWidth ||
       element.offsetHeight ||
-      element.getClientRects().length > 0
+      element.getClientRects().length > 0,
   );
 }

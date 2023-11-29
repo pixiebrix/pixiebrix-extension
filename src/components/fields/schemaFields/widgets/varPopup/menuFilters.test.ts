@@ -52,11 +52,11 @@ describe("filterVarMapByVariable", () => {
 
     // Empty because trailing period indicates final variable name
     expect(filterVarMapByVariable(inputMap, "@inpu.")).not.toContainKey(
-      "@input"
+      "@input",
     );
 
     expect(filterVarMapByVariable(inputMap, "@input2")).not.toContainKey(
-      "@input"
+      "@input",
     );
   });
 
@@ -79,7 +79,7 @@ describe("filterVarMapByVariable", () => {
         "@input": expect.objectContaining({
           foo: expect.toBeObject(),
         }),
-      })
+      }),
     );
 
     // Exact match
@@ -88,21 +88,21 @@ describe("filterVarMapByVariable", () => {
         "@input": expect.objectContaining({
           foo: expect.toBeObject(),
         }),
-      })
+      }),
     );
 
     // Empty because trailing period indicates final variable name
     expect(filterVarMapByVariable(inputMap, "@input.fo.")).toEqual(
       expect.objectContaining({
         "@input": expect.not.toContainKey("foo"),
-      })
+      }),
     );
 
     // Empty due to extra characters
     expect(filterVarMapByVariable(inputMap, "@input.food")).toEqual(
       expect.objectContaining({
         "@input": expect.not.toContainKey("foo"),
-      })
+      }),
     );
   });
 
@@ -130,7 +130,7 @@ describe("filterVarMapByVariable", () => {
             [ALLOW_ANY_CHILD]: false,
           },
         }),
-      })
+      }),
     );
 
     // Array is known to only have 2 elements
@@ -143,7 +143,7 @@ describe("filterVarMapByVariable", () => {
             [ALLOW_ANY_CHILD]: false,
           }),
         }),
-      })
+      }),
     );
   });
 });
@@ -362,7 +362,7 @@ describe("moveMenuOption", () => {
         likelyVariable: "@input.f",
         keyPath: ["foo", "@input"],
         offset: 1,
-      })
+      }),
     ).toEqual(["foz", "@input"]);
   });
 
@@ -387,7 +387,7 @@ describe("moveMenuOption", () => {
         likelyVariable: "@input.f",
         keyPath: ["foz", "@input"],
         offset: 1,
-      })
+      }),
     ).toEqual(["foo", "@input"]);
   });
 
@@ -412,7 +412,7 @@ describe("moveMenuOption", () => {
         likelyVariable: "@input.f",
         keyPath: ["foo", "@input"],
         offset: -1,
-      })
+      }),
     ).toEqual(["foz", "@input"]);
   });
 
@@ -437,7 +437,7 @@ describe("moveMenuOption", () => {
         likelyVariable: "@input.f",
         keyPath: ["foz", "@input"],
         offset: -1,
-      })
+      }),
     ).toEqual(["foo", "@input"]);
   });
 });

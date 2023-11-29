@@ -27,7 +27,7 @@ export const booleanPredicate = (schema: Schema) => schema.type === "boolean";
 
 export function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
   return schema.oneOf?.find(
-    (x) => typeof x === "object" && predicate(x)
+    (x) => typeof x === "object" && predicate(x),
   ) as Schema;
 }
 
@@ -45,7 +45,7 @@ export function arraySchema(itemSchema: Schema): Schema {
  * Returns a Schema. If an normal object is passed in, casts it to an object Schema.
  */
 export function castSchema(
-  schemaOrProperties: Schema | SchemaProperties
+  schemaOrProperties: Schema | SchemaProperties,
 ): Schema {
   // XXX: this isn't quite right -- the check won't work if there's a title/description for the empty schema
   if (isEmpty(schemaOrProperties)) {

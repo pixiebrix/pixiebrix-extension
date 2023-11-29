@@ -27,7 +27,7 @@ import { type JsonObject } from "type-fest";
 const loadSandbox = pMemoize(async () => {
   const iframe = await injectIframe(
     chrome.runtime.getURL("sandbox.html"),
-    hiddenIframeStyle
+    hiddenIframeStyle,
   );
   return iframe.contentWindow;
 });

@@ -36,7 +36,7 @@ const ServicesRow: React.FunctionComponent<{
   refreshAuthOptions: () => void;
 }> = ({ authOptions, refreshAuthOptions }) => {
   const [field, { error }] = useField<IntegrationDependency[]>(
-    "integrationDependencies"
+    "integrationDependencies",
   );
 
   const { data: serviceConfigs } = useGetIntegrationsQuery();
@@ -48,7 +48,7 @@ const ServicesRow: React.FunctionComponent<{
 
   const configurable = values.filter(
     ({ dependency: { integrationId } }) =>
-      integrationId !== PIXIEBRIX_INTEGRATION_ID
+      integrationId !== PIXIEBRIX_INTEGRATION_ID,
   );
 
   if (configurable.length === 0) {
@@ -80,7 +80,7 @@ const ServicesRow: React.FunctionComponent<{
               />
             </Card>
           </Col>
-        )
+        ),
       )}
     </Row>
   );

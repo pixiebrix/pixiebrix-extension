@@ -118,7 +118,7 @@ function expectServiceDescriptorVisible(service: IntegrationDefinition) {
 function expectRefreshButton(count?: number) {
   if (count) {
     expect(screen.getAllByRole("button", { name: /refresh/i })).toHaveLength(
-      count
+      count,
     );
   } else {
     expect(screen.getByRole("button", { name: /refresh/i })).toBeVisible();
@@ -156,7 +156,7 @@ describe("ServicesBody", () => {
             integrationDependencyFactory({ integrationId: serviceId1 }),
           ],
         },
-      }
+      },
     );
     await waitForEffect();
     // Ensure Integrations title is shown
@@ -165,7 +165,7 @@ describe("ServicesBody", () => {
 
   it("does not hide field with one service, no options for the service, but other options exist", async () => {
     useAuthOptionsMock.mockReturnValue(
-      valueToAsyncState([sharedOption2a, sharedOption2b])
+      valueToAsyncState([sharedOption2a, sharedOption2b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
@@ -179,7 +179,7 @@ describe("ServicesBody", () => {
             integrationDependencyFactory({ integrationId: serviceId1 }),
           ],
         },
-      }
+      },
     );
     await waitForEffect();
     expectServiceDescriptorVisible(service1);
@@ -190,7 +190,7 @@ describe("ServicesBody", () => {
 
   it("renders with one service and two auth options", async () => {
     useAuthOptionsMock.mockReturnValue(
-      valueToAsyncState([sharedOption1a, sharedOption1b])
+      valueToAsyncState([sharedOption1a, sharedOption1b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
@@ -212,7 +212,7 @@ describe("ServicesBody", () => {
 
   it("can change option with one service and two auth options", async () => {
     useAuthOptionsMock.mockReturnValue(
-      valueToAsyncState([sharedOption1a, sharedOption1b])
+      valueToAsyncState([sharedOption1a, sharedOption1b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
@@ -246,7 +246,7 @@ describe("ServicesBody", () => {
         sharedOption1b,
         sharedOption2a,
         sharedOption2b,
-      ])
+      ]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
@@ -290,7 +290,7 @@ describe("ServicesBody", () => {
             }),
           ],
         },
-      }
+      },
     );
     await waitForEffect();
     // Expect no service descriptor to be shown
@@ -300,13 +300,13 @@ describe("ServicesBody", () => {
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     // Expect no refresh button
     expect(
-      screen.queryByRole("button", { name: /refresh/i })
+      screen.queryByRole("button", { name: /refresh/i }),
     ).not.toBeInTheDocument();
   });
 
   it("hides one field when two built-in options", async () => {
     useAuthOptionsMock.mockReturnValue(
-      valueToAsyncState([builtInOption1a, builtInOption1b])
+      valueToAsyncState([builtInOption1a, builtInOption1b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
@@ -323,7 +323,7 @@ describe("ServicesBody", () => {
             }),
           ],
         },
-      }
+      },
     );
     await waitForEffect();
     // Expect no service descriptor to be shown
@@ -333,13 +333,13 @@ describe("ServicesBody", () => {
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     // Expect no refresh button
     expect(
-      screen.queryByRole("button", { name: /refresh/i })
+      screen.queryByRole("button", { name: /refresh/i }),
     ).not.toBeInTheDocument();
   });
 
   it("shows one field when one built-in option and one shared", async () => {
     useAuthOptionsMock.mockReturnValue(
-      valueToAsyncState([builtInOption1a, sharedOption1a])
+      valueToAsyncState([builtInOption1a, sharedOption1a]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
@@ -356,7 +356,7 @@ describe("ServicesBody", () => {
             }),
           ],
         },
-      }
+      },
     );
     await waitForEffect();
     expectServiceDescriptorVisible(service1);
@@ -367,7 +367,7 @@ describe("ServicesBody", () => {
 
   it("does not hide field after switching to built-in option when one built-in option and one shared", async () => {
     useAuthOptionsMock.mockReturnValue(
-      valueToAsyncState([builtInOption1a, sharedOption1a])
+      valueToAsyncState([builtInOption1a, sharedOption1a]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1]);
     render(
@@ -384,7 +384,7 @@ describe("ServicesBody", () => {
             }),
           ],
         },
-      }
+      },
     );
     await waitForEffect();
     expectServiceDescriptorVisible(service1);
@@ -406,7 +406,7 @@ describe("ServicesBody", () => {
 
   it("hides one of two fields when one built-in option", async () => {
     useAuthOptionsMock.mockReturnValue(
-      valueToAsyncState([builtInOption1a, sharedOption2a, sharedOption2b])
+      valueToAsyncState([builtInOption1a, sharedOption2a, sharedOption2b]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(
@@ -427,7 +427,7 @@ describe("ServicesBody", () => {
             }),
           ],
         },
-      }
+      },
     );
     await waitForEffect();
     // Expect only field 2 visible
@@ -445,7 +445,7 @@ describe("ServicesBody", () => {
         builtInOption1b,
         sharedOption2a,
         sharedOption2b,
-      ])
+      ]),
     );
     getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
     render(
@@ -466,7 +466,7 @@ describe("ServicesBody", () => {
             }),
           ],
         },
-      }
+      },
     );
     await waitForEffect();
     // Expect only field 2 visible

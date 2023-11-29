@@ -25,7 +25,7 @@ describe("renderExplicit", () => {
     const rendered = await renderExplicit(
       { foo: { __type__: "var", __value__: "array.0" } },
       { array: ["bar"] },
-      apiVersionOptions("v3")
+      apiVersionOptions("v3"),
     );
 
     expect(rendered).toEqual({
@@ -37,7 +37,7 @@ describe("renderExplicit", () => {
     const rendered = await renderExplicit(
       { foo: { __type__: "mustache", __value__: "{{ array.0 }}!" } },
       { array: ["bar"] },
-      apiVersionOptions("v3")
+      apiVersionOptions("v3"),
     );
 
     expect(rendered).toEqual({
@@ -57,11 +57,11 @@ describe("renderExplicit", () => {
       const rendered = await renderExplicit(
         { foo: { __type__: templateType, __value__: undefined } },
         {},
-        apiVersionOptions("v3")
+        apiVersionOptions("v3"),
       );
 
       expect(rendered).toEqual(expectedValue);
-    }
+    },
   );
 });
 
@@ -73,7 +73,7 @@ describe("exclude null", () => {
     const rendered = await renderExplicit(
       { foo: null },
       {},
-      apiVersionOptions("v3")
+      apiVersionOptions("v3"),
     );
 
     expect(rendered).toEqual({});
@@ -83,7 +83,7 @@ describe("exclude null", () => {
     const rendered = await renderExplicit(
       { foo: { __type__: "nunjucks", __value__: undefined } },
       {},
-      apiVersionOptions("v3")
+      apiVersionOptions("v3"),
     );
 
     expect(rendered).toEqual({ foo: "" });
@@ -93,7 +93,7 @@ describe("exclude null", () => {
     const rendered = await renderExplicit(
       { foo: { __type__: "var", __value__: undefined } },
       {},
-      apiVersionOptions("v3")
+      apiVersionOptions("v3"),
     );
 
     expect(rendered).toEqual({});
@@ -103,7 +103,7 @@ describe("exclude null", () => {
 describe("renderImplicit", () => {
   test("prefer path to renderer", async () => {
     await expect(
-      renderImplicit({ foo: "array.0" }, { array: ["bar"] }, Mustache.render)
+      renderImplicit({ foo: "array.0" }, { array: ["bar"] }, Mustache.render),
     ).resolves.toEqual({
       foo: "bar",
     });
@@ -111,7 +111,11 @@ describe("renderImplicit", () => {
 
   test("render path as string if it doesn't exist in the context", async () => {
     await expect(
-      renderImplicit({ foo: "array.0" }, { otherVar: ["bar"] }, Mustache.render)
+      renderImplicit(
+        { foo: "array.0" },
+        { otherVar: ["bar"] },
+        Mustache.render,
+      ),
     ).resolves.toEqual({
       foo: "array.0",
     });
@@ -124,8 +128,8 @@ describe("handlebars", () => {
       renderImplicit(
         { foo: "{{ obj.prop }}" },
         { obj: { prop: 42 } },
-        engineRenderer("handlebars", apiVersionOptions("v3"))
-      )
+        engineRenderer("handlebars", apiVersionOptions("v3")),
+      ),
     ).resolves.toEqual({
       foo: "42",
     });
@@ -138,8 +142,8 @@ describe("handlebars", () => {
       renderImplicit(
         { foo: "{{ obj.prop }}" },
         { "@obj": { prop: 42 } },
-        engineRenderer("handlebars", apiVersionOptions("v3"))
-      )
+        engineRenderer("handlebars", apiVersionOptions("v3")),
+      ),
     ).resolves.toEqual({
       foo: "",
     });
@@ -186,7 +190,7 @@ describe("identity - deep clone", () => {
         __value__: "@payload",
       },
       { "@payload": config },
-      apiVersionOptions("v3")
+      apiVersionOptions("v3"),
     );
 
     expect(rendered).toEqual(config);
@@ -211,7 +215,7 @@ describe("defer", () => {
         bar: config,
       },
       { foo: 42 },
-      { autoescape: false }
+      { autoescape: false },
     );
 
     expect(rendered).toEqual({
@@ -236,7 +240,7 @@ describe("pipeline", () => {
         foo: expression,
       },
       { array: ["bar"] },
-      { autoescape: false }
+      { autoescape: false },
     );
 
     expect(rendered).toEqual({
@@ -266,7 +270,7 @@ describe("pipeline", () => {
         bar: config,
       },
       { foo: 42 },
-      apiVersionOptions("v3")
+      apiVersionOptions("v3"),
     );
 
     expect(rendered).toEqual({
@@ -286,11 +290,11 @@ describe("autoescape", () => {
       const rendered = await renderExplicit(
         { foo: { __type__: templateEngine, __value__: "{{ special }}" } },
         { special: "a & b" },
-        { autoescape: true }
+        { autoescape: true },
       );
 
       expect(rendered).toEqual({ foo: "a &amp; b" });
-    }
+    },
   );
 
   test.each([["mustache"], ["nunjucks"], ["handlebars"]])(
@@ -299,10 +303,10 @@ describe("autoescape", () => {
       const rendered = await renderExplicit(
         { foo: { __type__: templateEngine, __value__: "{{ special }}" } },
         { special: "a & b" },
-        { autoescape: false }
+        { autoescape: false },
       );
 
       expect(rendered).toEqual({ foo: "a & b" });
-    }
+    },
   );
 });

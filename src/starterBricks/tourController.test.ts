@@ -36,7 +36,7 @@ describe("tourController", () => {
     markTourStart(
       nonce,
       { id: extensionId, label: "Ad-hoc", _recipe: null },
-      { abortController, context: { extensionId } }
+      { abortController, context: { extensionId } },
     );
 
     expect(isTourInProgress()).toBe(true);
@@ -53,7 +53,7 @@ describe("tourController", () => {
     markTourStart(
       nonce,
       { id: extensionId, label: "Ad-hoc", _recipe: null },
-      { abortController, context: { extensionId } }
+      { abortController, context: { extensionId } },
     );
 
     expect(isTourInProgress()).toBe(true);

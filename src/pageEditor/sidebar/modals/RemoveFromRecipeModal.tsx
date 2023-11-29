@@ -50,7 +50,7 @@ const formStateSchema = object({
 
 const RemoveFromRecipeModal: React.FC = () => {
   const { isRemoveFromRecipeModalVisible: show } = useSelector(
-    selectEditorModalVisibilities
+    selectEditorModalVisibilities,
   );
   const activeElement = useSelector(selectActiveElement);
 
@@ -76,7 +76,7 @@ const RemoveFromRecipeModal: React.FC = () => {
         helpers.setSubmitting(false);
       }
     },
-    [activeElement?.uuid, dispatch, hideModal]
+    [activeElement?.uuid, dispatch, hideModal],
   );
 
   const radioItems: RadioItem[] = [

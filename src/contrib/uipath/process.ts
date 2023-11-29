@@ -104,7 +104,7 @@ export class RunProcess extends TransformerABC {
     super(
       UIPATH_ID,
       "Run a UiPath process",
-      "Run a UiPath process using UiPath Orchestrator"
+      "Run a UiPath process using UiPath Orchestrator",
     );
   }
 
@@ -135,7 +135,7 @@ export class RunProcess extends TransformerABC {
       maxWaitMillis: number;
       inputArguments: UnknownObject;
     }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<unknown> {
     const responsePromise = performConfiguredRequestInBackground<JobsResponse>(
       uipath,
@@ -152,7 +152,7 @@ export class RunProcess extends TransformerABC {
             InputArguments: JSON.stringify(inputArguments),
           },
         },
-      }
+      },
     );
 
     if (!awaitResult) {
@@ -163,7 +163,7 @@ export class RunProcess extends TransformerABC {
 
     if (startData.value.length > 1) {
       throw new BusinessError(
-        "Awaiting response of multiple jobs not supported"
+        "Awaiting response of multiple jobs not supported",
       );
     }
 
@@ -199,7 +199,9 @@ export class RunProcess extends TransformerABC {
     }
 
     throw new BusinessError(
-      `UiPath job did not finish in ${Math.round(maxWaitMillis / 1000)} seconds`
+      `UiPath job did not finish in ${Math.round(
+        maxWaitMillis / 1000,
+      )} seconds`,
     );
   }
 }

@@ -54,7 +54,7 @@ export async function clearDynamicElements({
 
 export async function runExtensionPointReader(
   { extensionPointConfig }: Pick<DynamicDefinition, "extensionPointConfig">,
-  rootSelector: string | undefined
+  rootSelector: string | undefined,
 ): Promise<JsonObject> {
   expectContext("contentScript");
 
@@ -77,12 +77,12 @@ export async function runExtensionPointReader(
 
       if (root == null) {
         throw new Error(
-          `Focused element ${activeElement.tagName} does not match the root selector. There are ${$root.length} matching elements on the page`
+          `Focused element ${activeElement.tagName} does not match the root selector. There are ${$root.length} matching elements on the page`,
         );
       }
     } else if ($root.length === 0) {
       throw new Error(
-        `No elements matching selector are currently on the page: ${rootSelector}`
+        `No elements matching selector are currently on the page: ${rootSelector}`,
       );
     }
   }

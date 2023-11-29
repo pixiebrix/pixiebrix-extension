@@ -37,7 +37,7 @@ export type AsyncState<T = unknown> = [
   /**
    * Method to re-calculate the value. Does not set `isLoading` flag
    */
-  () => Promise<void>
+  () => Promise<void>,
 ];
 
 type State = {
@@ -81,7 +81,7 @@ const slice = createSlice({
 export function useAsyncState<T>(
   promiseOrGenerator: StateFactory<T>,
   dependencies: unknown[] = [],
-  initialState?: T | undefined
+  initialState?: T | undefined,
 ): AsyncState<T> {
   const [{ data, isLoading, error }, dispatch] = useReducer(slice.reducer, {
     ...defaultAsyncState,
@@ -126,7 +126,7 @@ export function useIsMounted(): () => boolean {
     () => () => {
       isMountedRef.current = false;
     },
-    []
+    [],
   );
 
   return () => isMountedRef.current;

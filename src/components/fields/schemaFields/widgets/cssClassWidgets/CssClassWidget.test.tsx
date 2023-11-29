@@ -32,7 +32,7 @@ const renderWidget = (value: string | Expression) =>
       }}
       name="cssClass"
     />,
-    { initialValues: { cssClass: value } }
+    { initialValues: { cssClass: value } },
   );
 
 beforeAll(() => {
@@ -71,13 +71,13 @@ describe("CssClassWidget", () => {
     const { getFormState } = renderWidget("extra-class text-justify");
     // Overwrites font-weight
     await userEvent.click(
-      screen.getByRole("button", { name: "font-weight-bold" })
+      screen.getByRole("button", { name: "font-weight-bold" }),
     );
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-justify font-weight-bold",
     });
     await userEvent.click(
-      screen.getByRole("button", { name: "font-weight-bold" })
+      screen.getByRole("button", { name: "font-weight-bold" }),
     );
     expect(getFormState()).toStrictEqual({
       cssClass: "extra-class text-justify",

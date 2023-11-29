@@ -28,7 +28,7 @@ let registered = false;
 function registerBuiltinBlocks() {
   if (registered) {
     console.warn(
-      "registerBuiltinBlocks already called; multiple calls are unnecessary and may impact startup performance"
+      "registerBuiltinBlocks already called; multiple calls are unnecessary and may impact startup performance",
     );
   }
 

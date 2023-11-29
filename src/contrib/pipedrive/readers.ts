@@ -42,14 +42,14 @@ export class PipedriveReader extends ReaderABC {
     super(
       `pipedrive/${resourceType}`,
       `Pipedrive ${startCase(resourceType)} Reader`,
-      `Read information from the Pipedrive ${resourceType} page`
+      `Read information from the Pipedrive ${resourceType} page`,
     );
     this.resourceType = resourceType;
     this.pathSpec = pathSpec;
     this.outputSchema = {
       type: "object",
       properties: Object.fromEntries(
-        Object.keys(this.pathSpec).map((x) => [x, {}])
+        Object.keys(this.pathSpec).map((x) => [x, {}]),
       ),
     };
   }

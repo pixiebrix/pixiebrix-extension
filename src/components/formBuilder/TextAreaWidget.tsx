@@ -52,28 +52,28 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
         await submitForm();
       }
     },
-    [options.submitOnEnter, submitForm]
+    [options.submitOnEnter, submitForm],
   );
 
   const onFocusHandler = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
     (event) => {
       onFocus(id, event.target.value);
     },
-    [id, onFocus]
+    [id, onFocus],
   );
 
   const onBlurHandler = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
     (event) => {
       onBlur(id, event.target.value);
     },
-    [id, onBlur]
+    [id, onBlur],
   );
 
   const onChangeHandler = useCallback<ChangeEventHandler<HTMLTextAreaElement>>(
     (event) => {
       onChange(event.target.value);
     },
-    [onChange]
+    [onChange],
   );
 
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js

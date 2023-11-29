@@ -45,7 +45,7 @@ describe("CodeEditorWidget", () => {
         initialValues: {
           function: "",
         },
-      }
+      },
     );
 
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
@@ -72,7 +72,7 @@ describe("CodeEditorWidget", () => {
     // So we're checking the value stored in formik
     expect(onSubmitMock).toHaveBeenCalledWith(
       { function: "function() {}" },
-      expect.anything()
+      expect.anything(),
     );
   });
 
@@ -86,7 +86,7 @@ describe("CodeEditorWidget", () => {
           function: "function() {}",
         },
         onSubmit: onSubmitMock,
-      }
+      },
     );
 
     expect(await screen.findByRole("textbox")).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe("CodeEditorWidget", () => {
     // So we're checking the value stored in formik
     expect(onSubmitMock).toHaveBeenCalledWith(
       { function: "abcfunction() {}" },
-      expect.anything()
+      expect.anything(),
     );
   });
 });

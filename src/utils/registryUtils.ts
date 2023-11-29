@@ -28,7 +28,7 @@ import { split } from "lodash";
 export function generatePackageId(scope: string, label: string): RegistryId {
   try {
     return validateRegistryId(
-      `${scope}/${slugify(label, { lower: true, strict: true })}`
+      `${scope}/${slugify(label, { lower: true, strict: true })}`,
     );
   } catch {
     return "" as RegistryId;
@@ -41,7 +41,7 @@ export function generatePackageId(scope: string, label: string): RegistryId {
  * @param value the full RegistryId
  */
 export function getScopeAndId(
-  value: RegistryId | null
+  value: RegistryId | null,
 ): [string | undefined, string | undefined] {
   // We call getScopeAndId in several places with a recipe that can be undefined
   // @see useHasEditPermissions.ts

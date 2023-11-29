@@ -69,7 +69,7 @@ function selectActivateEventData(recipe: ModDefinition) {
  */
 function useActivateRecipe(
   source: ActivationSource,
-  { checkPermissions = true }: { checkPermissions?: boolean } = {}
+  { checkPermissions = true }: { checkPermissions?: boolean } = {},
 ): ActivateRecipeFormCallback {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
@@ -79,7 +79,7 @@ function useActivateRecipe(
   return useCallback(
     async (formValues: WizardValues, recipe: ModDefinition) => {
       const recipeExtensions = extensions.filter(
-        (extension) => extension._recipe?.id === recipe.metadata.id
+        (extension) => extension._recipe?.id === recipe.metadata.id,
       );
       const isReactivate = !isEmpty(recipeExtensions);
 
@@ -96,13 +96,13 @@ function useActivateRecipe(
       }
 
       const configuredDependencies = formValues.integrationDependencies.filter(
-        ({ configId }) => Boolean(configId)
+        ({ configId }) => Boolean(configId),
       );
 
       try {
         const recipePermissions = await checkModDefinitionPermissions(
           recipe,
-          configuredDependencies
+          configuredDependencies,
         );
 
         if (checkPermissions) {
@@ -135,7 +135,7 @@ function useActivateRecipe(
         // schema format is "preview", and the field value is a string to use
         // as the database name
         const autoCreateDatabaseFieldNames = Object.entries(
-          recipe.options?.schema?.properties ?? {}
+          recipe.options?.schema?.properties ?? {},
         )
           .filter(
             ([name, fieldSchema]) =>
@@ -145,7 +145,7 @@ function useActivateRecipe(
               typeof optionsArgs[name] === "string" &&
               !isEmpty(optionsArgs[name]) &&
               // If the value is a UUID, then it's a database ID for an existing database
-              !isUUID(optionsArgs[name] as string)
+              !isUUID(optionsArgs[name] as string),
           )
           .map(([name]) => name);
         await Promise.all(
@@ -159,11 +159,11 @@ function useActivateRecipe(
             }
 
             optionsArgs[name] = validateUUID(result.data.id);
-          })
+          }),
         );
 
         const recipeExtensions = extensions.filter(
-          (extension) => extension._recipe?.id === recipe.metadata.id
+          (extension) => extension._recipe?.id === recipe.metadata.id,
         );
 
         await uninstallRecipe(recipe.metadata.id, recipeExtensions, dispatch);
@@ -175,7 +175,7 @@ function useActivateRecipe(
             optionsArgs,
             screen: source,
             isReinstall: recipeExtensions.length > 0,
-          })
+          }),
         );
 
         reactivateEveryTab();
@@ -198,7 +198,7 @@ function useActivateRecipe(
         success: true,
       };
     },
-    [createDatabase, dispatch, extensions, source]
+    [createDatabase, dispatch, extensions, source],
   );
 }
 

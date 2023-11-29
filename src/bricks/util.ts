@@ -43,7 +43,7 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
           (x) =>
             typeof x !== "boolean" &&
             ((x.default != null && !x.anyOf && !x.oneOf) ||
-              x.$ref === pipelineSchema.$id)
+              x.$ref === pipelineSchema.$id),
         ),
         (propertySchema: Schema) => {
           if (propertySchema.$ref === pipelineSchema.$id) {
@@ -56,8 +56,8 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
           if (typeof propertySchema.default !== "object") {
             return propertySchema.default;
           }
-        }
-      )
+        },
+      ),
     ) as UnknownObject;
   }
 
@@ -66,7 +66,7 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
 
 /** Return IBlocks for all blocks referenced in a pipeline, including any sub-pipelines. */
 export async function selectAllBlocks(
-  config: BrickConfig | BrickPipeline
+  config: BrickConfig | BrickPipeline,
 ): Promise<Brick[]> {
   const ids = BlockIdVisitor.collectBlockIds(config);
   return Promise.all([...ids].map(async (id) => blockRegistry.lookup(id)));

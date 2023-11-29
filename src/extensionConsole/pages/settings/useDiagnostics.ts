@@ -53,7 +53,7 @@ async function collectDiagnostics({
     extensions: {
       blueprints: uniqBy(
         compact(extensions.map((x) => x._recipe)),
-        (x) => x.id
+        (x) => x.id,
       ),
       extensions: extensions.filter((x) => !x._recipe),
     },
@@ -78,14 +78,14 @@ export function useDiagnostics() {
       download(
         JSON.stringify(data),
         filenamify(`diagnostics-${new Date().toISOString()}.json`),
-        "application/json"
+        "application/json",
       );
     },
     {
       successMessage: "Exported diagnostics",
       errorMessage: "Error exporting diagnostics",
     },
-    [permissionsState, extensions]
+    [permissionsState, extensions],
   );
 
   return {

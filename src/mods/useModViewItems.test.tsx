@@ -52,10 +52,10 @@ describe("useModViewItems", () => {
           dispatch(
             extensionsSlice.actions.UNSAFE_setExtensions([
               modComponent as unknown as ActivatedModComponent,
-            ])
+            ]),
           );
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -79,10 +79,10 @@ describe("useModViewItems", () => {
           dispatch(
             extensionsSlice.actions.UNSAFE_setExtensions([
               activatedModComponent,
-            ])
+            ]),
           );
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -100,7 +100,7 @@ describe("useModViewItems", () => {
     });
 
     const unavailableRecipe: UnavailableMod = selectUnavailableRecipe(
-      activatedModComponent
+      activatedModComponent,
     );
 
     const { waitForEffect, result } = renderHook(
@@ -110,10 +110,10 @@ describe("useModViewItems", () => {
           dispatch(
             extensionsSlice.actions.UNSAFE_setExtensions([
               activatedModComponent,
-            ])
+            ]),
           );
         },
-      }
+      },
     );
 
     await waitForEffect();

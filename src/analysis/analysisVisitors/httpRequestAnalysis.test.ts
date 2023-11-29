@@ -38,7 +38,7 @@ describe("httpRequestAnalysis", () => {
           url: "https://example.com/?foo=42",
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toStrictEqual([
@@ -63,11 +63,11 @@ describe("httpRequestAnalysis", () => {
           method: "get",
           url: makeTemplateExpression(
             "nunjucks",
-            "https://example.com/?foo={{ @foo }}"
+            "https://example.com/?foo={{ @foo }}",
           ),
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toStrictEqual([]);
@@ -87,7 +87,7 @@ describe("httpRequestAnalysis", () => {
           },
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toStrictEqual([
@@ -115,11 +115,11 @@ describe("httpRequestAnalysis", () => {
             "nunjucks",
             JSON.stringify({
               foo: 42,
-            })
+            }),
           ),
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toStrictEqual([
@@ -147,11 +147,11 @@ describe("httpRequestAnalysis", () => {
             "nunjucks",
             JSON.stringify({
               foo: "{{ @foo }}",
-            })
+            }),
           ),
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toStrictEqual([]);
@@ -171,7 +171,7 @@ describe("httpRequestAnalysis", () => {
           },
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toStrictEqual([
@@ -200,7 +200,7 @@ describe("httpRequestAnalysis", () => {
           },
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toStrictEqual([]);
@@ -220,7 +220,7 @@ describe("httpRequestAnalysis", () => {
           },
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toStrictEqual([]);

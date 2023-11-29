@@ -22,7 +22,7 @@ import { readAuthData } from "@/auth/token";
 
 // Used by the app
 export function selectOrganizations(
-  organizationMemberships: Me["organization_memberships"]
+  organizationMemberships: Me["organization_memberships"],
 ): AuthState["organizations"] {
   if (organizationMemberships == null) {
     return [];
@@ -43,7 +43,7 @@ export function selectOrganizations(
       role,
       scope,
       isDeploymentManager: is_deployment_manager,
-    })
+    }),
   );
 }
 

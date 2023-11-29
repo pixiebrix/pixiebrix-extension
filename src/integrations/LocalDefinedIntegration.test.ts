@@ -112,7 +112,7 @@ describe("LocalDefinedIntegration.authenticateBasicRequest", () => {
 
     const config = integration.authenticateRequest(
       { apiToken: "topsecret" } as unknown as SecretsConfig,
-      { url: "/v1/candidates/", method: "get" }
+      { url: "/v1/candidates/", method: "get" },
     );
 
     expect(config.baseURL).toBe("https://harvest.greenhouse.io");
@@ -130,8 +130,8 @@ describe("LocalDefinedIntegration.authenticateBasicRequest", () => {
     expect(() =>
       integration.authenticateRequest(
         { notTheKey: "topsecret" } as unknown as SecretsConfig,
-        { url: "/v1/candidates/", method: "get" }
-      )
+        { url: "/v1/candidates/", method: "get" },
+      ),
     ).toThrow(BusinessError);
   });
 });

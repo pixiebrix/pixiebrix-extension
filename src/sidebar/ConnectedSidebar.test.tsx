@@ -69,7 +69,7 @@ describe("SidebarApp", () => {
     const { asFragment } = render(
       <MemoryRouter>
         <ConnectedSidebar />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     await waitForEffect();
 
@@ -88,7 +88,7 @@ describe("SidebarApp", () => {
     const { asFragment } = render(
       <MemoryRouter>
         <ConnectedSidebar />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     await waitForEffect();
 
@@ -106,7 +106,7 @@ describe("SidebarApp", () => {
         setupRedux(dispatch) {
           dispatch(authActions.setAuth(authStateFactory()));
         },
-      }
+      },
     );
 
     await waitForEffect();

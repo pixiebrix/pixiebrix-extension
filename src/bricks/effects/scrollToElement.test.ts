@@ -50,7 +50,7 @@ describe("ScrollToElementEffect", () => {
   test("it scrolls for selector", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "button" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(scrollIntoViewMock).toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe("ScrollToElementEffect", () => {
   test("it scrolls to element for element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory({ root: document.querySelector("button") })
+      brickOptionsFactory({ root: document.querySelector("button") }),
     );
 
     expect(scrollIntoViewMock).toHaveBeenCalled();

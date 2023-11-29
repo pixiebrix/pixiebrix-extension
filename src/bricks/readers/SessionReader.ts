@@ -28,7 +28,7 @@ class SessionReader extends ReaderABC {
     super(
       "@pixiebrix/session",
       "PixieBrix session reader",
-      "Read information about the current tab session"
+      "Read information about the current tab session",
     );
   }
 

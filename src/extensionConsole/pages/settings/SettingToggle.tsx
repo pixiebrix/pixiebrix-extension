@@ -67,7 +67,7 @@ const SettingToggle: React.FunctionComponent<SettingToggleProps> = ({
         settingsSlice.actions.setFlag({
           flag,
           value,
-        })
+        }),
       );
     };
 

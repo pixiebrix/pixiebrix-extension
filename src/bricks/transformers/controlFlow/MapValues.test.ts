@@ -47,7 +47,7 @@ describe("MapValues", () => {
             config: {
               message: makeTemplateExpression(
                 "nunjucks",
-                "iteration {{ @element }}"
+                "iteration {{ @element }}",
               ),
             },
           },
@@ -57,7 +57,7 @@ describe("MapValues", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ elements: [1, 2, 3] }),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual([
       { message: "iteration 1" },

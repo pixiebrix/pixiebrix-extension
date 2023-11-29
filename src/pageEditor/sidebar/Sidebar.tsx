@@ -51,7 +51,7 @@ const Sidebar: React.VFC = () => {
             dispatch(
               actions.setModListExpanded({
                 isExpanded: true,
-              })
+              }),
             );
           }}
         />
@@ -62,7 +62,7 @@ const Sidebar: React.VFC = () => {
             dispatch(
               actions.setModListExpanded({
                 isExpanded: false,
-              })
+              }),
             );
           }}
         />

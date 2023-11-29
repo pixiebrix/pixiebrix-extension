@@ -31,7 +31,7 @@ afterAll(() => {
 describe("DelayedRender", () => {
   test("renders", async () => {
     const { asFragment } = render(
-      <DelayedRender millis={300}>Delayed content</DelayedRender>
+      <DelayedRender millis={300}>Delayed content</DelayedRender>,
     );
 
     expect(asFragment()).toMatchInlineSnapshot(`

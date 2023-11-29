@@ -64,7 +64,7 @@ function isFieldElement(element: HTMLElement): boolean {
 async function setFieldValue(
   field: FieldElement,
   value: unknown,
-  { dispatchEvent, isOption }: { dispatchEvent: boolean; isOption: boolean }
+  { dispatchEvent, isOption }: { dispatchEvent: boolean; isOption: boolean },
 ): Promise<void> {
   // For performance, use the contentScript-based call to determine if the element has the classname associate with
   // CKEditor 5 instances. If it does, set the data (will error if it's not actually a CKEditor 5 instance).
@@ -142,7 +142,7 @@ async function setValue({
       if (!isField) {
         logger.warn(
           "The selected element is not an input field nor an editable element",
-          { element }
+          { element },
         );
       }
 
@@ -163,13 +163,13 @@ async function setValue({
   const isOption =
     isNameBased &&
     fields.some(
-      (field) => field.value === value && optionFields.includes(field.type)
+      (field) => field.value === value && optionFields.includes(field.type),
     );
 
   return Promise.all(
     fields.map(async (field) =>
-      setFieldValue(field, value, { dispatchEvent, isOption })
-    )
+      setFieldValue(field, value, { dispatchEvent, isOption }),
+    ),
   );
 }
 
@@ -178,7 +178,7 @@ export class SetInputValue extends EffectABC {
     super(
       "@pixiebrix/forms/set",
       "Set Input Value",
-      "Set the value of an input field"
+      "Set the value of an input field",
     );
   }
 
@@ -224,7 +224,7 @@ export class SetInputValue extends EffectABC {
       inputs: Array<{ selector: string; value: unknown }>;
       isRootAware?: boolean;
     }>,
-    { logger, root }: BrickOptions
+    { logger, root }: BrickOptions,
   ): Promise<void> {
     const target = isRootAware ? root : document;
 
@@ -233,13 +233,13 @@ export class SetInputValue extends EffectABC {
         if (isEmpty(selector)) {
           if (target == null || target === document) {
             throw new BusinessError(
-              "Selector required when called on document"
+              "Selector required when called on document",
             );
           }
 
           if (!isFieldElement(target as HTMLElement)) {
             throw new BusinessError(
-              "Field is not a input field or editable element"
+              "Field is not a input field or editable element",
             );
           }
 
@@ -257,7 +257,7 @@ export class SetInputValue extends EffectABC {
             form: target,
           });
         }
-      })
+      }),
     );
   }
 }
@@ -313,7 +313,7 @@ export class FormFill extends EffectABC {
       submit: boolean;
       isRootAware: boolean;
     }>,
-    { logger, root }: BrickOptions
+    { logger, root }: BrickOptions,
   ): Promise<void> {
     const submitRoot = isRootAware ? root : document;
 
@@ -335,10 +335,10 @@ export class FormFill extends EffectABC {
 
     await Promise.all([
       ...Object.entries(fieldNames).map(async ([name, value]) =>
-        setValue({ name, value, logger, dispatchEvent: true })
+        setValue({ name, value, logger, dispatchEvent: true }),
       ),
       ...Object.entries(fieldSelectors).map(async ([selector, value]) =>
-        setValue({ selector, value, logger, dispatchEvent: true })
+        setValue({ selector, value, logger, dispatchEvent: true }),
       ),
     ]);
 
@@ -350,12 +350,12 @@ export class FormFill extends EffectABC {
 
           if (form instanceof Document) {
             throw new BusinessError(
-              "Can only submit a form element, got document"
+              "Can only submit a form element, got document",
             );
           }
 
           throw new BusinessError(
-            `Can only submit a form element, got tag ${form.tagName}`
+            `Can only submit a form element, got tag ${form.tagName}`,
           );
         }
 

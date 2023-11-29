@@ -56,7 +56,7 @@ const { actions } = extensionsSlice;
  * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
  */
 async function fetchDeployments(
-  installedExtensions: ModComponentBase[]
+  installedExtensions: ModComponentBase[],
 ): Promise<Deployment[]> {
   const client = await maybeGetLinkedApiClient();
 
@@ -71,7 +71,7 @@ async function fetchDeployments(
       uid: await getUID(),
       version: getExtensionVersion(),
       active: selectInstalledDeployments(installedExtensions),
-    }
+    },
   );
 
   return deployments;
@@ -80,7 +80,7 @@ async function fetchDeployments(
 async function activateDeployment(
   dispatch: Dispatch,
   deployment: Deployment,
-  installed: ModComponentBase[]
+  installed: ModComponentBase[],
 ): Promise<void> {
   let isReinstall = false;
 
@@ -91,7 +91,7 @@ async function activateDeployment(
       dispatch(
         actions.removeExtension({
           extensionId: extension.id,
-        })
+        }),
       );
 
       isReinstall = true;
@@ -105,13 +105,13 @@ async function activateDeployment(
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
         deployment,
-        services.locateAllForId
+        services.locateAllForId,
       ),
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
       screen: "extensionConsole",
       isReinstall,
-    })
+    }),
   );
 
   reportEvent(Events.DEPLOYMENT_ACTIVATE, {
@@ -122,7 +122,7 @@ async function activateDeployment(
 async function activateDeployments(
   dispatch: Dispatch,
   deployments: Deployment[],
-  installed: ModComponentBase[]
+  installed: ModComponentBase[],
 ): Promise<void> {
   // Activate as many as we can
   const errors = [];
@@ -194,10 +194,10 @@ function useDeployments(): DeploymentsState {
         "useDeployments:checkDeploymentPermissions",
         Promise.all(
           deployments.map(async (deployment) =>
-            checkDeploymentPermissions(deployment, services.locateAllForId)
-          )
-        )
-      )
+            checkDeploymentPermissions(deployment, services.locateAllForId),
+          ),
+        ),
+      ),
     );
 
     return {
@@ -250,7 +250,7 @@ function useDeployments(): DeploymentsState {
     if (checkExtensionUpdateRequired(deployments)) {
       void browser.runtime.requestUpdateCheck();
       notify.warning(
-        "You must update the PixieBrix browser extension to activate the deployment"
+        "You must update the PixieBrix browser extension to activate the deployment",
       );
       reportEvent(Events.DEPLOYMENT_REJECT_VERSION);
       return;
@@ -275,7 +275,7 @@ function useDeployments(): DeploymentsState {
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();
     notify.info(
-      "The extension update hasn't yet been downloaded. Try again in a few minutes."
+      "The extension update hasn't yet been downloaded. Try again in a few minutes.",
     );
   }, []);
 

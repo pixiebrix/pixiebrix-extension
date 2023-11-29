@@ -155,7 +155,7 @@ describe("useActivateRecipe", () => {
         setupRedux(dispatch, { store }) {
           jest.spyOn(store, "dispatch");
         },
-      }
+      },
     );
 
     const { success, error } = await activateRecipe(formValues, modDefinition);
@@ -195,7 +195,7 @@ describe("useActivateRecipe", () => {
     expect(uninstallRecipeMock).toHaveBeenCalledWith(
       modDefinition.metadata.id,
       expect.toBeArray(),
-      dispatch
+      dispatch,
     );
 
     expect(dispatch).toHaveBeenCalledWith(
@@ -205,7 +205,7 @@ describe("useActivateRecipe", () => {
         optionsArgs: {},
         screen: "extensionConsole",
         isReinstall: false,
-      })
+      }),
     );
 
     expect(reactivateEveryTabMock).toHaveBeenCalledOnce();
@@ -277,7 +277,7 @@ describe("useActivateRecipe", () => {
         },
         screen: "marketplace",
         isReinstall: false,
-      })
+      }),
     );
   });
 
@@ -306,7 +306,7 @@ describe("useActivateRecipe", () => {
       const formValues = set(
         inputFormValues,
         "optionsArgs.myDatabase",
-        databaseName
+        databaseName,
       );
       const modDefinition = set(
         inputModDefinition,
@@ -314,7 +314,7 @@ describe("useActivateRecipe", () => {
         {
           $ref: databaseSchema.$id,
           format: "preview",
-        }
+        },
       );
       setRecipeHasPermissions(true);
       const errorMessage = "Error creating database";
@@ -339,6 +339,6 @@ describe("useActivateRecipe", () => {
 
       expect(success).toBe(false);
       expect(error).toBe(errorMessage);
-    }
+    },
   );
 });

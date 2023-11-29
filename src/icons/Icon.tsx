@@ -30,7 +30,7 @@ const Icon: React.FunctionComponent<{
 }> = ({ icon, library, size = 16, className }) => {
   const { data: svg = "" } = useAsyncState(
     async () => getSvgIcon({ id: icon, library, size }),
-    [icon, library]
+    [icon, library],
   );
 
   return (

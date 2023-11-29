@@ -36,7 +36,7 @@ describe("TraceAnalysis.mapErrorAnnotations", () => {
 
     const annotations = new TraceAnalysis([]).mapErrorAnnotations(
       { path: "" },
-      inputError
+      inputError,
     );
 
     expect(annotations).toHaveLength(1);
@@ -54,20 +54,20 @@ describe("TraceAnalysis.mapErrorAnnotations", () => {
 
     const annotations = new TraceAnalysis([]).mapErrorAnnotations(
       { path: "" },
-      inputError
+      inputError,
     );
 
     expect(annotations).toHaveLength(1);
     expect(annotations[0].position).toEqual({ path: "config.filter" });
     expect(annotations[0].message).toBe(
-      "Error from the last run: This field is required."
+      "Error from the last run: This field is required.",
     );
   });
 
   test("handles non input value", async () => {
     const annotations = new TraceAnalysis([]).mapErrorAnnotations(
       { path: "" },
-      serializeError(new BusinessError("foo"))
+      serializeError(new BusinessError("foo")),
     );
 
     expect(annotations).toHaveLength(1);

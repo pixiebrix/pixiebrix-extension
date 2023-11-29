@@ -85,7 +85,7 @@ export async function runBlockPreview({
 
   if (!versionOptions.explicitDataFlow) {
     throw new BusinessError(
-      "Preview only supported for mods using runtime v2 or later"
+      "Preview only supported for mods using runtime v2 or later",
     );
   }
 
@@ -134,7 +134,7 @@ export async function runBlockPreview({
   const { output } = await blockReducer(
     { ...blockConfig, outputKey: undefined },
     state,
-    options
+    options,
   );
 
   return cloneDeep(output) as SerializableResponse;

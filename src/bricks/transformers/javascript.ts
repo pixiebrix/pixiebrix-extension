@@ -41,7 +41,7 @@ export class JavaScriptTransformer extends TransformerABC {
     super(
       JavaScriptTransformer.BRICK_ID,
       "[Experimental] Run JavaScript Function",
-      "Run a JavaScript function and return the result"
+      "Run a JavaScript function and return the result",
     );
   }
 
@@ -58,7 +58,7 @@ export class JavaScriptTransformer extends TransformerABC {
         description: "The arguments to pass to the function",
       },
     },
-    ["function"]
+    ["function"],
   );
 
   uiSchema: UiSchema = {
@@ -72,7 +72,7 @@ export class JavaScriptTransformer extends TransformerABC {
       function: string;
       arguments?: JsonObject;
     }>,
-    _options: BrickOptions
+    _options: BrickOptions,
   ): Promise<unknown> {
     return runUserJs({
       code: input.function,

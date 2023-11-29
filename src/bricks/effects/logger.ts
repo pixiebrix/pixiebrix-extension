@@ -37,7 +37,7 @@ export class LogEffect extends EffectABC {
       "@pixiebrix/browser/log",
       "Log To Console",
       "Log a message to the Browser's console",
-      "faSearch"
+      "faSearch",
     );
   }
 
@@ -58,7 +58,7 @@ export class LogEffect extends EffectABC {
           "Data to log with the message, or omit to log the current context",
       },
     },
-    ["message"]
+    ["message"],
   );
 
   async effect(
@@ -67,7 +67,7 @@ export class LogEffect extends EffectABC {
       level = "info",
       data,
     }: BrickArgs<{ message: string; level: Level; data: unknown }>,
-    { ctxt }: BrickOptions
+    { ctxt }: BrickOptions,
   ): Promise<void> {
     const logMethod = LEVEL_MAP.get(level) ?? realConsole.info;
     logMethod(message, data ?? ctxt);

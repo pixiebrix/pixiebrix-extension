@@ -33,8 +33,8 @@ describe("defaultEventKey", () => {
           staticPanels: [],
           modActivationPanel: null,
         },
-        {}
-      )
+        {},
+      ),
     ).toBeNull();
   });
 
@@ -57,7 +57,7 @@ describe("defaultEventKey", () => {
     } as SidebarEntries;
 
     expect(defaultEventKey(args, {})).toBe(
-      eventKeyForEntry(args.temporaryPanels[1])
+      eventKeyForEntry(args.temporaryPanels[1]),
     );
     expect(defaultEventKey(args, {})).not.toBe("temporaryPanel-undefined");
   });
@@ -71,7 +71,7 @@ describe("defaultEventKey", () => {
       } as SidebarEntries;
 
       expect(defaultEventKey(entries, {})).toBe(
-        eventKeyForEntry(entries.panels[0])
+        eventKeyForEntry(entries.panels[0]),
       );
       expect(defaultEventKey(entries, {})).not.toBe("panel-undefined");
     });
@@ -90,7 +90,7 @@ describe("defaultEventKey", () => {
       };
 
       expect(defaultEventKey(entries, closedTabs)).toBe(
-        eventKeyForEntry(entries.panels[1])
+        eventKeyForEntry(entries.panels[1]),
       );
       expect(defaultEventKey(entries, closedTabs)).not.toBe("panel-undefined");
     });
@@ -124,7 +124,7 @@ describe("defaultEventKey", () => {
       };
 
       expect(defaultEventKey(args, closedTabs)).toBe(
-        eventKeyForEntry(args.staticPanels[1])
+        eventKeyForEntry(args.staticPanels[1]),
       );
       expect(defaultEventKey(args, closedTabs)).not.toBe("panel-undefined");
     });
@@ -165,7 +165,7 @@ describe("eventKeyForEntry", () => {
       nonce,
     });
     expect(eventKeyForEntry(temporaryPanelEntry)).toBe(
-      `temporaryPanel-${nonce}`
+      `temporaryPanel-${nonce}`,
     );
   });
 

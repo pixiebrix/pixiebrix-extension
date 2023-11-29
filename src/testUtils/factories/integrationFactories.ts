@@ -37,7 +37,7 @@ export const sanitizedIntegrationConfigFactory =
     id: uuidSequence,
     proxy: false,
     serviceId: (n: number) => validateRegistryId(`test/integration-${n}`),
-    config: () => ({ _sanitizedConfigBrand: null } as SanitizedConfig),
+    config: () => ({ _sanitizedConfigBrand: null }) as SanitizedConfig,
   } as unknown as SanitizedIntegrationConfig);
 
 export const secretsConfigFactory = define<SecretsConfig>({} as SecretsConfig);
@@ -74,7 +74,7 @@ export const remoteIntegrationConfigurationFactory =
     config: () =>
       ({
         _sanitizedConfigBrand: null,
-      } as SanitizedConfig),
+      }) as SanitizedConfig,
     service: remoteIntegrationServiceFactory,
   });
 

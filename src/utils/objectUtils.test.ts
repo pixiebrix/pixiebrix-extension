@@ -51,7 +51,7 @@ describe("mapObject", () => {
     const callback = (value: string) => value.codePointAt(0);
     const result: Record<string, number> = mapObject(
       { foo: "bar", baz: "qux" },
-      callback
+      callback,
     );
     expect(result).toStrictEqual({
       foo: 98,
@@ -74,7 +74,7 @@ describe("isUnknownObjectArray", () => {
       isUnknownObjectArray([
         [1, 2, 3],
         [4, 5, 6],
-      ])
+      ]),
     ).toBe(true);
   });
 

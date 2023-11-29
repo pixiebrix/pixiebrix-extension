@@ -32,19 +32,19 @@ import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelec
 
 // @See persistIntegrationsConfig in integrationsSlice.ts
 const INTEGRATIONS_STORAGE_KEY = validateReduxStorageKey(
-  "persist:servicesOptions"
+  "persist:servicesOptions",
 );
 
 const registry = new BaseRegistry<RegistryId, IntegrationABC>(
   ["service"],
-  fromJS
+  fromJS,
 );
 
 export async function readRawConfigurations(): Promise<IntegrationConfig[]> {
   const integrations = await readReduxStorage(
     INTEGRATIONS_STORAGE_KEY,
     migrations,
-    initialState
+    initialState,
   );
   return selectIntegrationConfigs({ integrations });
 }

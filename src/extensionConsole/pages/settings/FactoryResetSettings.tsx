@@ -36,7 +36,7 @@ async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
     await browser.permissions.getAll();
   const additional = selectAdditionalPermissionsSync(
-    permissions
+    permissions,
   ) as Permissions.Permissions;
   await browser.permissions.remove(additional);
 }

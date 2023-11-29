@@ -26,7 +26,7 @@ export class AddLead extends EffectABC {
     super(
       "salesforce/leads-create",
       "Create Lead in Salesforce",
-      "Create a lead in Salesforce if they do not already exist"
+      "Create a lead in Salesforce if they do not already exist",
     );
   }
 

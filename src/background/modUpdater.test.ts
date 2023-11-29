@@ -359,7 +359,7 @@ describe("updateModsIfUpdatesAvailable", () => {
         modDefinition: publicMod,
         screen: "marketplace",
         isReinstall: false,
-      })
+      }),
     );
 
     await saveModComponentState(optionsState);

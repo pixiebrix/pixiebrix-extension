@@ -99,7 +99,7 @@ const previewSlice = createSlice({
  * @param blockInstanceId the instance id (node id) of the block to run
  */
 export default function useDocumentPreviewRunBlock(
-  blockInstanceId: UUID
+  blockInstanceId: UUID,
 ): BlockPreviewRunBlock {
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
@@ -112,11 +112,11 @@ export default function useDocumentPreviewRunBlock(
   } = useSelector(selectActiveElement);
 
   const { blockConfig } = useSelector(
-    selectActiveElementNodeInfo(blockInstanceId)
+    selectActiveElementNodeInfo(blockInstanceId),
   );
 
   const [blockInfo, isBlockLoading, blockError] = usePreviewInfo(
-    blockConfig.id
+    blockConfig.id,
   );
 
   useEffect(() => {
@@ -126,20 +126,20 @@ export default function useDocumentPreviewRunBlock(
           error: {
             name: "BlockRegistryError",
             message: `Error loading brick from registry\n${getErrorMessage(
-              blockError
+              blockError,
             )}`,
           },
-        })
+        }),
       );
     }
   }, [blockError]);
 
   const traceRecord = useSelector(
-    selectActiveElementTraceForBlock(blockInstanceId)
+    selectActiveElementTraceForBlock(blockInstanceId),
   );
   const [serviceContext, isLoadingServiceContext] = useAsyncState(
     makeServiceContextFromDependencies(integrationDependencies),
-    [integrationDependencies]
+    [integrationDependencies],
   );
   const context = {
     ...traceRecord?.templateContext,
@@ -209,7 +209,7 @@ export default function useDocumentPreviewRunBlock(
       }
     },
     300,
-    { trailing: false, leading: true }
+    { trailing: false, leading: true },
   );
 
   return {

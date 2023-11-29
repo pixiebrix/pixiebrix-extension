@@ -138,7 +138,7 @@ describe("checkEventNamesAnalysis", () => {
     await analysis.run(triggerFormState);
 
     expect(analysis.knownEventNames).toEqual(
-      expect.arrayContaining(["myevent", "myevent2"])
+      expect.arrayContaining(["myevent", "myevent2"]),
     );
   });
 });

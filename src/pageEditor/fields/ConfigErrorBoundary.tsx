@@ -54,7 +54,7 @@ class ConfigErrorBoundary extends ErrorBoundary {
                     // In the content script
                     .replaceAll(
                       `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
-                      ""
+                      "",
                     )}
                 </pre>
               )}

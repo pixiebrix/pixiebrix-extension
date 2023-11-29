@@ -90,7 +90,7 @@ export const clearPackages = async () => {
  */
 export interface RegistryProtocol<
   Id extends RegistryId = RegistryId,
-  Item extends RegistryItem<Id> = RegistryItem<Id>
+  Item extends RegistryItem<Id> = RegistryItem<Id>,
 > {
   lookup: (id: Id) => Promise<Item>;
 }
@@ -100,7 +100,7 @@ export interface RegistryProtocol<
  */
 export class MemoryRegistry<
   Id extends RegistryId = RegistryId,
-  Item extends RegistryItem<Id> = RegistryItem<Id>
+  Item extends RegistryItem<Id> = RegistryItem<Id>,
 > implements RegistryProtocol<Id, Item>
 {
   /**
@@ -289,7 +289,7 @@ export class MemoryRegistry<
     console.debug(
       "Parsed %d registry item(s) from IDB for %s",
       remoteItems.length,
-      [...this.kinds].join(", ")
+      [...this.kinds].join(", "),
     );
 
     // Perform as single call to register so listeners are notified once
@@ -320,7 +320,7 @@ export class MemoryRegistry<
     {
       source = "builtin",
       notify = true,
-    }: { source?: Source; notify?: boolean } = {}
+    }: { source?: Source; notify?: boolean } = {},
   ): void {
     let changed = false;
 
@@ -356,7 +356,7 @@ export class MemoryRegistry<
       console.warn(
         "Error de-serializing item: %s",
         getErrorMessage(error),
-        raw
+        raw,
       );
       return undefined;
     }

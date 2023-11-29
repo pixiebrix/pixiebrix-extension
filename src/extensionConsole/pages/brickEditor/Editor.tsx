@@ -117,7 +117,7 @@ const Editor = ({ showLogs = true }: OwnProps) => {
         notify.warning(`Cannot find brick: ${id}`);
       }
     },
-    [setTab, bricks, setSelectedReference]
+    [setTab, bricks, setSelectedReference],
   );
 
   const openEditorTab = useOpenEditorTab();

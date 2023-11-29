@@ -47,7 +47,7 @@ import type { Mod, ModViewItem } from "@/types/modTypes";
 const statusFilter = (
   rows: Array<Row<ModViewItem>>,
   _: string[],
-  filterValue: string
+  filterValue: string,
 ) => {
   // For UX purposes, Paused deployments will be included under the "Active" filter
   const filterValues = [
@@ -113,9 +113,9 @@ const ModsPageLayout: React.FunctionComponent<{
   const teamFilters = useMemo(
     () =>
       uniq(modViewItems.map((mod) => mod.sharing.source.label)).filter(
-        (label) => label !== "Public" && label !== "Personal"
+        (label) => label !== "Public" && label !== "Personal",
       ),
-    [modViewItems]
+    [modViewItems],
   );
 
   const groupBy = useSelector(selectGroupBy);
@@ -143,13 +143,13 @@ const ModsPageLayout: React.FunctionComponent<{
             globalFilter: searchQuery,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
-          [searchQuery, state, groupBy, sortBy, activeTab.filters]
+          [searchQuery, state, groupBy, sortBy, activeTab.filters],
         ),
     },
     useFilters,
     useGlobalFilter,
     useGroupBy,
-    useSortBy
+    useSortBy,
   );
 
   return (

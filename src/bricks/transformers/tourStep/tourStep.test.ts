@@ -70,7 +70,7 @@ function startTour() {
       label: "Test Tour",
       _recipe: null,
     },
-    { abortController, context: { extensionId } }
+    { abortController, context: { extensionId } },
   );
 
   return { nonce, abortController };
@@ -106,10 +106,10 @@ describe("tourStep", () => {
   it("requires tour", async () => {
     const promise = brick.run(
       unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
-      makeOptions()
+      makeOptions(),
     );
     await expect(promise).rejects.toThrow(
-      "This brick can only be called from a tour"
+      "This brick can only be called from a tour",
     );
   });
 
@@ -125,7 +125,7 @@ describe("tourStep", () => {
         appearance: { skippable: true },
         selector: "button",
       }),
-      makeOptions()
+      makeOptions(),
     );
 
     await expect(promise).resolves.toEqual({});
@@ -144,7 +144,7 @@ describe("tourStep", () => {
         body: "**markdown**",
         selector: "div",
       }),
-      makeOptions()
+      makeOptions(),
     );
 
     await expect(promise).rejects.toThrow(MultipleElementsFoundError);
@@ -159,7 +159,7 @@ describe("tourStep", () => {
 
     const promise = brick.run(
       unsafeAssumeValidArg({ title: "Test", body: "**markdown**" }),
-      makeOptions({ signal: abortController.signal })
+      makeOptions({ signal: abortController.signal }),
     );
 
     await tick();
@@ -184,7 +184,7 @@ describe("tourStep", () => {
       makeOptions({
         root: document.querySelector("div"),
         signal: abortController.signal,
-      })
+      }),
     );
 
     await tick();
@@ -200,7 +200,7 @@ describe("tourStep", () => {
     await tick();
 
     expect(document.querySelector("div").style.backgroundColor).not.toBe(
-      "yellow"
+      "yellow",
     );
   });
 
@@ -214,7 +214,7 @@ describe("tourStep", () => {
       makeOptions({
         root: document.querySelector("div"),
         signal: abortController.signal,
-      })
+      }),
     );
 
     await tick();
@@ -239,7 +239,7 @@ describe("tourStep", () => {
       makeOptions({
         root: document.querySelector("div"),
         signal: abortController.signal,
-      })
+      }),
     );
 
     await tick();
@@ -262,7 +262,7 @@ describe("tourStep", () => {
         body: "**markdown**",
         appearance: { wait: { maxWaitMillis: 0 } },
       }),
-      makeOptions({ signal: abortController.signal })
+      makeOptions({ signal: abortController.signal }),
     );
 
     await tick();

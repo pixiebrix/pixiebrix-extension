@@ -26,7 +26,7 @@ export class SetVueValues extends EffectABC {
     super(
       "@pixiebrix/vue/set-values",
       "Set Vue.js values",
-      "Set values on a Vue.js component"
+      "Set values on a Vue.js component",
     );
   }
 

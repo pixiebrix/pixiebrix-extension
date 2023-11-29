@@ -33,7 +33,7 @@ export default function getModDefinitionIntegrationIds(
   {
     extensionPoints: modComponentDefinitions = [],
   }: Pick<ModDefinition, "extensionPoints">,
-  { excludePixieBrix = false, requiredOnly = false } = {}
+  { excludePixieBrix = false, requiredOnly = false } = {},
 ): RegistryId[] {
   const integrationIds = uniq(
     modComponentDefinitions.flatMap(({ services }) => {
@@ -44,13 +44,13 @@ export default function getModDefinitionIntegrationIds(
       return isSchemaServicesFormat(services)
         ? Object.entries(services.properties)
             .filter(
-              ([key]) => !requiredOnly || services.required?.includes(key)
+              ([key]) => !requiredOnly || services.required?.includes(key),
             )
             .flatMap(([, schema]) =>
-              extractIntegrationIdsFromSchema(schema as Schema)
+              extractIntegrationIdsFromSchema(schema as Schema),
             )
         : Object.values(services ?? {});
-    })
+    }),
   );
 
   if (excludePixieBrix) {

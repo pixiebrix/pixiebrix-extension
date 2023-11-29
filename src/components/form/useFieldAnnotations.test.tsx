@@ -96,8 +96,8 @@ describe("useFieldAnnotations", () => {
           config: {
             testField: "test value",
           },
-        })
-      )
+        }),
+      ),
     );
 
     const path = "extension.blockPipeline[0].config.testField";
@@ -169,8 +169,8 @@ describe("useFieldAnnotations", () => {
             config: {
               testField: { __type__: "var", __value__: "@mod." },
             },
-          })
-        )
+          }),
+        ),
       );
 
       const path = "extension.blockPipeline[0].config.testField";
@@ -218,6 +218,6 @@ describe("useFieldAnnotations", () => {
         wrapper,
       }).result.current;
       expect(annotations).toHaveLength(0);
-    }
+    },
   );
 });

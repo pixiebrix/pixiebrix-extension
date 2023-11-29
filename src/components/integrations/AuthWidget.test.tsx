@@ -118,10 +118,10 @@ describe("AuthWidget", () => {
     renderContent();
 
     expect(
-      await screen.findByRole("button", { name: "Configure" })
+      await screen.findByRole("button", { name: "Configure" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("button", { name: /refresh/i, exact: false })
+      screen.getByRole("button", { name: /refresh/i, exact: false }),
     ).toBeVisible();
   });
 
@@ -130,7 +130,7 @@ describe("AuthWidget", () => {
 
     expect(await screen.findByText("Test Option 1")).toBeVisible();
     expect(
-      screen.queryByRole("button", { name: "Configure" })
+      screen.queryByRole("button", { name: "Configure" }),
     ).not.toBeInTheDocument();
   });
 
@@ -139,7 +139,7 @@ describe("AuthWidget", () => {
 
     expect(await screen.findByText("Select configuration...")).toBeVisible();
     expect(
-      screen.queryByRole("button", { name: "Configure" })
+      screen.queryByRole("button", { name: "Configure" }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Test Option 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Test Option 2")).not.toBeInTheDocument();

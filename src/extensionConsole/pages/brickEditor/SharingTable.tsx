@@ -68,7 +68,7 @@ const SharingTable: React.FunctionComponent = () => {
                   const next = checked
                     ? uniq([...organizationsField.value, organization.id])
                     : organizationsField.value.filter(
-                        (x: string) => x !== organization.id
+                        (x: string) => x !== organization.id,
                       );
                   await setOrganizations(next);
                 }}

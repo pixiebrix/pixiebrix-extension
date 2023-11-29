@@ -28,7 +28,7 @@ import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFa
 describe("removeEmptyValues()", () => {
   test("removes empty non-expression values", () => {
     expect(
-      removeEmptyValues({ foo: "", bar: undefined, baz: null })
+      removeEmptyValues({ foo: "", bar: undefined, baz: null }),
     ).toStrictEqual({ baz: null });
   });
 
@@ -38,7 +38,7 @@ describe("removeEmptyValues()", () => {
         foo: { __type__: "var", __value__: "" },
         bar: { __type__: "mustache", __value__: "" },
         baz: { __type__: "var", __value__: null },
-      })
+      }),
     ).toStrictEqual({
       foo: { __type__: "var", __value__: "" },
       bar: { __type__: "mustache", __value__: "" },
@@ -50,7 +50,7 @@ describe("removeEmptyValues()", () => {
     expect(
       removeEmptyValues({
         foo: { __type__: "nunjucks", __value__: undefined },
-      })
+      }),
     ).toStrictEqual({
       foo: { __type__: "nunjucks", __value__: null },
     });
@@ -62,7 +62,7 @@ describe("removeEmptyValues()", () => {
         extension: {
           action: [{ id: "@pixiebrix/jq", config: { data: "", filter: "." } }],
         },
-      })
+      }),
     ).toStrictEqual({
       extension: {
         action: [{ id: "@pixiebrix/jq", config: { filter: "." } }],
@@ -100,7 +100,7 @@ describe("getImplicitReader", () => {
     ["sidePanel"],
   ])("includes metadata reader for %s", (type: StarterBrickType) => {
     expect(getImplicitReader(type)).toContainEqual(
-      "@pixiebrix/document-metadata"
+      "@pixiebrix/document-metadata",
     );
   });
 
@@ -118,16 +118,16 @@ describe("getImplicitReader", () => {
       const readerArray = getImplicitReader(type) as ReaderConfig[];
 
       const metadataIndex = readerArray.indexOf(
-        validateRegistryId("@pixiebrix/document-metadata")
+        validateRegistryId("@pixiebrix/document-metadata"),
       );
       const contextIndex = readerArray.indexOf(
-        validateRegistryId("@pixiebrix/document-context")
+        validateRegistryId("@pixiebrix/document-context"),
       );
 
       expect(metadataIndex).toBeGreaterThan(-1);
       expect(contextIndex).toBeGreaterThan(-1);
       expect(contextIndex).toBeGreaterThan(metadataIndex);
-    }
+    },
   );
 
   it.each([
@@ -148,6 +148,6 @@ describe("getImplicitReader", () => {
       expect(getImplicitReader(type)).not.toContainEqual({
         element: "@pixiebrix/html/element",
       });
-    }
+    },
   );
 });

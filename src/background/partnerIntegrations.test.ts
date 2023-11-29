@@ -218,7 +218,7 @@ describe("refresh partner token", () => {
     await serviceLocator.refreshLocal();
 
     await expect(_refreshPartnerToken()).rejects.toThrow(
-      "Request failed with status code 401"
+      "Request failed with status code 401",
     );
   });
 });

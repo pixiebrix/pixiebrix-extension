@@ -73,7 +73,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
         dispatch(actions.adapterError({ uuid: extensionId, error }));
       }
     },
-    [dispatch, recipes, sessionId, installed, showConfirmation]
+    [dispatch, recipes, sessionId, installed, showConfirmation],
   );
 }
 

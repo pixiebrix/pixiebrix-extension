@@ -110,7 +110,7 @@ export class TourEffect extends EffectABC {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    ["steps"]
+    ["steps"],
   );
 
   async effect(
@@ -121,7 +121,7 @@ export class TourEffect extends EffectABC {
       steps = [] as Step[],
       isRootAware = false,
     }: BrickArgs,
-    { root, abortSignal: blockAbortSignal, logger }: BrickOptions
+    { root, abortSignal: blockAbortSignal, logger }: BrickOptions,
   ): Promise<void> {
     const { extensionId, label, extensionLabel, blueprintId } = logger.context;
     const nonce = uuidv4();
@@ -133,7 +133,7 @@ export class TourEffect extends EffectABC {
         "Must provide at least one step",
         this.id,
         "steps",
-        steps
+        steps,
       );
     }
 
@@ -165,7 +165,7 @@ export class TourEffect extends EffectABC {
         $safeFind(firstStep.element, $root).length === 0
       ) {
         throw new BusinessError(
-          "No matching element found for first step in tour"
+          "No matching element found for first step in tour",
         );
       }
 
@@ -179,7 +179,7 @@ export class TourEffect extends EffectABC {
           label: label ?? extensionLabel,
           _recipe: { id: blueprintId },
         },
-        { abortController, context: logger.context }
+        { abortController, context: logger.context },
       );
 
       const tour = introJs()

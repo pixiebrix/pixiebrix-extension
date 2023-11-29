@@ -103,7 +103,7 @@ const ModalContent: React.FC<ContentProps> = ({
   onDelete,
 }) => {
   useSetDocumentTitle(
-    `Configure ${truncate(integration.name, { length: 15 })}`
+    `Configure ${truncate(integration.name, { length: 15 })}`,
   );
 
   const onSubmit = useCallback<OnSubmit<IntegrationConfig>>(
@@ -111,7 +111,7 @@ const ModalContent: React.FC<ContentProps> = ({
       await onSave(newIntegrationConfig);
       onClose();
     },
-    [onSave, onClose]
+    [onSave, onClose],
   );
 
   const Editor = useMemo<React.FC<BlockOptionProps>>(() => {
@@ -144,14 +144,14 @@ const ModalContent: React.FC<ContentProps> = ({
       // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
       return buildYup(cloneDeep(schema), {
         errMessages: getValidationErrMessages(
-          schema.properties?.config as Schema
+          schema.properties?.config as Schema,
         ),
       });
     } catch (error) {
       reportError(
         new Error("Error building Yup validator from JSON Schema", {
           cause: error,
-        })
+        }),
       );
       return Yup.object();
     }

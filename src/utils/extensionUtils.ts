@@ -105,10 +105,10 @@ export async function getTabsWithAccess(): Promise<TabId[]> {
  * Runs a callback for each tab the extension has access to
  */
 export async function forEachTab<
-  TCallback extends (target: { tabId: number }) => Promisable<unknown>
+  TCallback extends (target: { tabId: number }) => Promisable<unknown>,
 >(
   callback: TCallback,
-  options?: { exclude: number }
+  options?: { exclude: number },
 ): Promise<Array<PromiseSettledResult<unknown>>> {
   const tabs = await getTabsWithAccess();
 

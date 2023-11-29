@@ -128,7 +128,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
 
   const organizationOptions = useMemo(
     () => getOrganizationOptions(organizations),
-    [organizations]
+    [organizations],
   );
 
   return (

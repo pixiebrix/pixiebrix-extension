@@ -60,7 +60,7 @@ const GetStartedView: React.VoidFunctionComponent<{
 
   const { data: listings } = useGetMarketplaceListingsQuery(
     { package__name: onboardingModId },
-    { skip: !onboardingModId }
+    { skip: !onboardingModId },
   );
 
   const onboardingModListing = listings ? listings[onboardingModId] : null;

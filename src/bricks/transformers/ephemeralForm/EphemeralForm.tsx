@@ -85,7 +85,7 @@ const EphemeralForm: React.FC = () => {
 
   const [definition, isLoading, error] = useAsyncState(
     async () => getFormDefinition(target, nonce),
-    [nonce]
+    [nonce],
   );
 
   // Report error once

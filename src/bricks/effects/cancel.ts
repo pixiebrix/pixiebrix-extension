@@ -25,7 +25,7 @@ export class CancelEffect extends EffectABC {
     super(
       "@pixiebrix/cancel",
       "Cancel current action",
-      "Cancels the current action"
+      "Cancels the current action",
     );
   }
 

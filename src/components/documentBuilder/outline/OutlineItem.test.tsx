@@ -68,7 +68,7 @@ describe("OutlineItem", () => {
             </div>
           )}
         </Droppable>
-      </DragDropContext>
+      </DragDropContext>,
     );
 
     expect(asFragment()).toMatchSnapshot();

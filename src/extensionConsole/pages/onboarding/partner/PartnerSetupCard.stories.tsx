@@ -72,7 +72,7 @@ const Template: Story<{
     },
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware(defaultMiddlewareConfig).concat(
-        appApi.middleware
+        appApi.middleware,
       );
     },
   });
@@ -100,7 +100,7 @@ OAuth2.parameters = {
     handlers: [
       rest.get("/api/me/", async (request, result, context) =>
         // State is blank for unauthenticated users
-        result(context.json({}))
+        result(context.json({})),
       ),
     ],
   },
@@ -116,7 +116,7 @@ TokenUnlinked.parameters = {
     handlers: [
       rest.get("/api/me/", async (request, result, context) =>
         // State is blank for unauthenticated users
-        result(context.json({}))
+        result(context.json({})),
       ),
     ],
   },
@@ -134,8 +134,8 @@ TokenLinked.parameters = {
         result(
           context.json({
             id: uuidv4(),
-          })
-        )
+          }),
+        ),
       ),
     ],
   },

@@ -201,7 +201,7 @@ const PanelBody: React.FunctionComponent<{
           async runPipeline(pipeline, branch, extraContext) {
             if (!brickArgsContext || typeof brickArgsContext !== "object") {
               throw new Error(
-                `Unexpected brickArgsContext type: ${typeof brickArgsContext}}`
+                `Unexpected brickArgsContext type: ${typeof brickArgsContext}}`,
               );
             }
 
@@ -226,7 +226,7 @@ const PanelBody: React.FunctionComponent<{
           },
           async runRendererPipeline() {
             throw new BusinessError(
-              "Support for running renderer pipelines in panels not implemented"
+              "Support for running renderer pipelines in panels not implemented",
             );
           },
         });
@@ -248,13 +248,13 @@ const PanelBody: React.FunctionComponent<{
               body: body as RendererOutput,
               meta: { runId, extensionId },
             },
-          })
+          }),
         );
       } catch (error) {
         dispatch(slice.actions.failure({ error }));
       }
     },
-    [payload?.key, dispatch]
+    [payload?.key, dispatch],
   );
 
   // Only show loader on initial render. Otherwise, just overlay a loading indicator over the other panel to

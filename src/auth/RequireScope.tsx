@@ -45,7 +45,7 @@ export const RequireScope: React.FunctionComponent<RequireScopeProps> = ({
   const scope = useSelector(selectScope);
 
   const mode = useSelector<RootStateWithSettings, string>(
-    ({ settings }) => settings.mode
+    ({ settings }) => settings.mode,
   );
 
   if (isRequired && mode !== "local" && scope == null) {

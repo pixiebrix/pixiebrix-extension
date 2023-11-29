@@ -50,7 +50,7 @@ const RowValuesField: React.FunctionComponent<{
     useField<UnknownObject>(name);
 
   const [fieldSchema, setFieldSchema] = useState<Schema>(
-    ANONYMOUS_OBJECT_SCHEMA
+    ANONYMOUS_OBJECT_SCHEMA,
   );
 
   useAsyncEffect(
@@ -73,7 +73,7 @@ const RowValuesField: React.FunctionComponent<{
       const headerProperties: Record<string, Schema> = Object.fromEntries(
         headers
           .filter((x) => !isNullOrBlank(x))
-          .map((header) => [header, { type: "string" }])
+          .map((header) => [header, { type: "string" }]),
       );
 
       if (isEmpty(headerProperties)) {
@@ -83,7 +83,7 @@ const RowValuesField: React.FunctionComponent<{
 
       // Remove any invalid rowValues values
       const invalidKeys = Object.keys(rowValues).filter(
-        (header) => !headers.includes(header)
+        (header) => !headers.includes(header),
       );
       if (invalidKeys.length > 0) {
         const newRowValues = { ...rowValues };
@@ -104,7 +104,7 @@ const RowValuesField: React.FunctionComponent<{
     // don't need to run the effect when googleAccount changes,
     // because we can keep headers loaded if the new user
     // still has access to the same spreadsheetId and tabName.
-    [hash({ spreadsheetId, tabName })]
+    [hash({ spreadsheetId, tabName })],
   );
 
   return (
@@ -124,7 +124,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const blockConfigPath = joinName(name, configKey);
 
   const [{ value: tabName }] = useField<string | Expression>(
-    joinName(blockConfigPath, "tabName")
+    joinName(blockConfigPath, "tabName"),
   );
 
   return (

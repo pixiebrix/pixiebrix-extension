@@ -81,7 +81,7 @@ const QuickBarConfiguration: React.FC<{
           {...makeLockableFieldProps(
             "Icon",
             emojiFirstCharacter,
-            "If the first character in the action title is an emoji we will use that in the place of an icon."
+            "If the first character in the action title is an emoji we will use that in the place of an icon.",
           )}
         />
         <ConnectedFieldTemplate

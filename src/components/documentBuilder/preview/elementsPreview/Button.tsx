@@ -75,7 +75,7 @@ const Button: React.FunctionComponent<ButtonProps> = ({
           // Not resolving expressions in Preview
           className={cx(
             isExpression(buttonClassName) ? undefined : buttonClassName,
-            { "btn-block": fullWidth }
+            { "btn-block": fullWidth },
           )}
           variant={isExpression(variant) ? undefined : variant}
           size={isExpression(size) ? undefined : size}

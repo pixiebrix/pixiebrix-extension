@@ -33,7 +33,7 @@ type Options = {
 function useUserAction<T extends (...args: never[]) => unknown>(
   callback: T,
   options: Options,
-  deps: DependencyList
+  deps: DependencyList,
 ): T {
   const { event, successMessage, errorMessage = "An error occurred" } = options;
 

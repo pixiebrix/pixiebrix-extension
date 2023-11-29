@@ -48,15 +48,15 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
             resetExtension({
               extensionId: element.uuid,
               shouldShowConfirmation: false,
-            })
-          )
+            }),
+          ),
       );
 
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
       dispatch(actions.restoreDeletedElementsForRecipe(recipeId));
       dispatch(actions.selectRecipeId(recipeId));
     },
-    [dispatch, elements, resetExtension, showConfirmation]
+    [dispatch, elements, resetExtension, showConfirmation],
   );
 }
 

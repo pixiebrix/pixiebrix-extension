@@ -41,7 +41,7 @@ export function removeField(parent: unknown, fieldName: string): void {
       `Can't remove '${fieldName}', parent is not an object or array`,
       {
         parent,
-      }
+      },
     );
   }
 }
@@ -49,7 +49,7 @@ export function removeField(parent: unknown, fieldName: string): void {
 function useToggleFormField(
   name: string,
   schema: Schema,
-  isRequired: boolean
+  isRequired: boolean,
 ): {
   inputMode: FieldInputMode;
   onOmitField: () => void;
@@ -64,7 +64,7 @@ function useToggleFormField(
   const inputMode = useMemo(
     () => inferInputMode(parentValues, fieldName, schema, { isRequired }),
     // eslint-disable-next-line -- run when value changes
-    [fieldName, value, schema]
+    [fieldName, value, schema],
   );
 
   const onOmitField = useCallback(async () => {

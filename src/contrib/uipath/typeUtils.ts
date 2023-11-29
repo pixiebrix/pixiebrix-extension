@@ -53,7 +53,7 @@ export function releaseSchema(release: Release): Schema {
   const inputs = JSON.parse(release.Arguments.Input) as Argument[];
 
   const properties = Object.fromEntries(
-    inputs.map((input) => [input.name, { type: toType(input.type) }])
+    inputs.map((input) => [input.name, { type: toType(input.type) }]),
   ) as SchemaProperties;
 
   return {

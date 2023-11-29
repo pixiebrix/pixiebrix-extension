@@ -61,7 +61,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
       !isUUID(initialFieldValue) &&
       // Don't add the preview option if a database with the name already exists
       !loadedOptions.some(
-        (option) => option.label === `${initialFieldValue} - Private`
+        (option) => option.label === `${initialFieldValue} - Private`,
       )
     ) {
       return [
@@ -123,7 +123,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
         isClearable={!isRequired || isLoadingDatabaseOptions}
         value={isExpression(fieldValue) ? fieldValue.__value__ : fieldValue}
         onChange={async (
-          event: React.ChangeEvent<SelectLike<Option<UUID>>>
+          event: React.ChangeEvent<SelectLike<Option<UUID>>>,
         ) => {
           await setDatabaseId(event.target.value);
         }}

@@ -94,7 +94,7 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
 // eslint-disable-next-line complexity
 export function getComponentDefinition(
   element: DocumentElement,
-  tracePath: DynamicPath
+  tracePath: DynamicPath,
 ): DocumentComponent | null {
   const componentType = element.type;
   // Destructure hidden from config, so we don't spread it onto components

@@ -29,7 +29,7 @@ export class JSONPathTransformer extends TransformerABC {
       "@pixiebrix/jsonpath",
       "JSONPath",
       "Apply a JSONPath expression: https://github.com/s3u/JSONPath",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -45,7 +45,7 @@ export class JSONPathTransformer extends TransformerABC {
 
   async transform(
     { path }: BrickArgs,
-    { ctxt }: BrickOptions
+    { ctxt }: BrickOptions,
   ): Promise<unknown> {
     const { JSONPath } = await import(
       /* webpackChunkName: "jsonpath-plus" */ "jsonpath-plus"

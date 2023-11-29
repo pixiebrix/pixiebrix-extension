@@ -113,7 +113,7 @@ const componentState = createSlice({
       action: PayloadAction<{
         urlParam: URLParamValue;
         integrationConfigs: IntegrationConfig[];
-      }>
+      }>,
     ) {
       const { urlParam, integrationConfigs } = action.payload;
 
@@ -126,7 +126,7 @@ const componentState = createSlice({
 
       if (integrationConfigId) {
         const integrationConfig = integrationConfigs.find(
-          ({ id }) => id === integrationConfigId
+          ({ id }) => id === integrationConfigId,
         );
         if (!integrationConfig) {
           throw new Error(`Unknown integration config ${integrationConfigId}`);
@@ -140,11 +140,11 @@ const componentState = createSlice({
         }
 
         const selectedIntegration = state.integrations.find(
-          ({ id }) => id === integrationConfig.integrationId
+          ({ id }) => id === integrationConfig.integrationId,
         );
         if (!selectedIntegration) {
           throw new Error(
-            `Unknown integration on config ${integrationConfig.integrationId}`
+            `Unknown integration on config ${integrationConfig.integrationId}`,
           );
         }
 
@@ -153,7 +153,7 @@ const componentState = createSlice({
         const { selectedIntegration } = state;
         if (!selectedIntegration) {
           throw new Error(
-            "Cannot create a new config without a selected integration"
+            "Cannot create a new config without a selected integration",
           );
         }
 
@@ -176,11 +176,11 @@ const componentState = createSlice({
       const integrations = action.payload;
       if (state.editingIntegrationConfig && isEmpty(state.integrations)) {
         const selectedIntegration = integrations.find(
-          ({ id }) => id === state.editingIntegrationConfig.integrationId
+          ({ id }) => id === state.editingIntegrationConfig.integrationId,
         );
         if (!selectedIntegration) {
           throw new Error(
-            `Unknown integration ${state.editingIntegrationConfig.integrationId}`
+            `Unknown integration ${state.editingIntegrationConfig.integrationId}`,
           );
         }
 
@@ -196,7 +196,7 @@ const componentState = createSlice({
 
       const integrationId = action.payload;
       const selectedIntegration = state.integrations.find(
-        ({ id }) => id === integrationId
+        ({ id }) => id === integrationId,
       );
       if (!selectedIntegration) {
         throw new Error(`Unknown integration ${integrationId}`);
@@ -222,7 +222,7 @@ const componentState = createSlice({
     },
     onAutoConfigureIntegrationConfig(
       state,
-      action: PayloadAction<IntegrationConfig>
+      action: PayloadAction<IntegrationConfig>,
     ) {
       state.createdIntegrationConfigId = action.payload.id;
       state.editingIntegrationConfig = null;
@@ -240,12 +240,12 @@ const IntegrationsPage: React.VFC = () => {
     (route: string) => {
       reduxDispatch(push(route));
     },
-    [reduxDispatch]
+    [reduxDispatch],
   );
 
   const [localState, localDispatch] = useReducer(
     componentState.reducer,
-    initialState
+    initialState,
   );
 
   // Load integration definitions from the registry on mount
@@ -253,7 +253,7 @@ const IntegrationsPage: React.VFC = () => {
     const fetched = await registry.all();
     const integrations = sortBy(
       fetched.filter(({ id }) => id !== PIXIEBRIX_INTEGRATION_ID),
-      "id"
+      "id",
     );
 
     if (!isMounted()) {
@@ -272,10 +272,10 @@ const IntegrationsPage: React.VFC = () => {
         componentState.actions.urlParamOrConfigsChanged({
           urlParam,
           integrationConfigs,
-        })
+        }),
       );
     },
-    isEqual
+    isEqual,
   );
 
   const syncIntegrations = useCallback(async () => {
@@ -306,13 +306,13 @@ const IntegrationsPage: React.VFC = () => {
       if (integration.id in autoConfigurations) {
         const label = freshIdentifier(
           `${integration.name} Config` as SafeString,
-          integrationConfigs.map(({ label }) => label)
+          integrationConfigs.map(({ label }) => label),
         );
         void autoConfigureIntegration(integration, label, {
           upsertIntegrationConfig(config: IntegrationConfig) {
             reduxDispatch(upsertIntegrationConfig(config));
             localDispatch(
-              componentState.actions.onAutoConfigureIntegrationConfig(config)
+              componentState.actions.onAutoConfigureIntegrationConfig(config),
             );
           },
           deleteIntegrationConfig(id: UUID) {
@@ -325,7 +325,7 @@ const IntegrationsPage: React.VFC = () => {
       }
 
       localDispatch(
-        componentState.actions.selectIntegrationById(integration.id)
+        componentState.actions.selectIntegrationById(integration.id),
       );
       navigate("/services/new");
     },
@@ -335,18 +335,18 @@ const IntegrationsPage: React.VFC = () => {
       navigate,
       reduxDispatch,
       syncIntegrations,
-    ]
+    ],
   );
 
   const onSaveIntegrationConfig = useCallback(
     async (newIntegrationConfig: IntegrationConfig) => {
       reduxDispatch(upsertIntegrationConfig(newIntegrationConfig));
       localDispatch(
-        componentState.actions.saveIntegrationConfig(newIntegrationConfig)
+        componentState.actions.saveIntegrationConfig(newIntegrationConfig),
       );
       const verbed = localState.isCreateNew ? "Created" : "Updated";
       notify.success(
-        `${verbed} private configuration for ${localState.selectedIntegration?.name}.`
+        `${verbed} private configuration for ${localState.selectedIntegration?.name}.`,
       );
       await syncIntegrations();
     },
@@ -355,7 +355,7 @@ const IntegrationsPage: React.VFC = () => {
       localState.selectedIntegration?.name,
       reduxDispatch,
       syncIntegrations,
-    ]
+    ],
   );
 
   const onDeleteIntegrationConfig = useCallback(
@@ -364,7 +364,7 @@ const IntegrationsPage: React.VFC = () => {
       reduxDispatch(deleteIntegrationConfig({ id }));
       localDispatch(componentState.actions.onDeleteIntegrationConfig());
       notify.success(
-        `Deleted private configuration for ${localState.selectedIntegration?.name}`
+        `Deleted private configuration for ${localState.selectedIntegration?.name}`,
       );
       await syncIntegrations();
     },
@@ -373,7 +373,7 @@ const IntegrationsPage: React.VFC = () => {
       navigate,
       reduxDispatch,
       syncIntegrations,
-    ]
+    ],
   );
 
   return (

@@ -55,7 +55,7 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
         }
       }
     },
-    [onClick]
+    [onClick],
   );
 
   return (

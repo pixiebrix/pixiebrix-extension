@@ -48,7 +48,7 @@ import { selectPageEditorDimensions } from "@/pageEditor/utils";
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
   const isConnectingToContentScript = useSelector(
-    selectTabIsConnectingToContentScript
+    selectTabIsConnectingToContentScript,
   );
   const installed = useSelector(selectNotDeletedExtensions);
   const sessionId = useSelector(selectSessionId);

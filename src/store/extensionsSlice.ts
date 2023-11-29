@@ -71,7 +71,7 @@ type ActivateModComponentParam = {
  * @param integrationDependencies the configured dependencies for the mod this component belongs to
  */
 function getActivatedModComponentFromDefinition<
-  Config extends UnknownObject = UnknownObject
+  Config extends UnknownObject = UnknownObject,
 >({
   modComponentDefinition,
   apiVersion,
@@ -107,7 +107,7 @@ function getActivatedModComponentFromDefinition<
     });
     activatedModComponent.integrationDependencies =
       integrationDependencies.filter(({ integrationId }) =>
-        modIntegrationIds.includes(integrationId)
+        modIntegrationIds.includes(integrationId),
       );
   }
 
@@ -156,20 +156,20 @@ const extensionsSlice = createSlice({
     // StandaloneModDefinition doesn't have the _recipe field
     UNSAFE_setExtensions(
       state,
-      { payload }: PayloadAction<ActivatedModComponent[]>
+      { payload }: PayloadAction<ActivatedModComponent[]>,
     ) {
       state.extensions = cloneDeep(payload);
     },
 
     installCloudExtension(
       state,
-      { payload }: PayloadAction<{ extension: StandaloneModDefinition }>
+      { payload }: PayloadAction<{ extension: StandaloneModDefinition }>,
     ) {
       const { extension } = payload;
 
       reportEvent(
         Events.MOD_COMPONENT_CLOUD_ACTIVATE,
-        selectEventData(extension)
+        selectEventData(extension),
       );
 
       // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
@@ -187,7 +187,7 @@ const extensionsSlice = createSlice({
       }: PayloadAction<{
         extensionId: UUID;
         recipeMetadata: ModComponentBase["_recipe"];
-      }>
+      }>,
     ) {
       const { extensionId, recipeMetadata } = payload;
       const extension = state.extensions.find((x) => x.id === extensionId);
@@ -205,7 +205,7 @@ const extensionsSlice = createSlice({
           screen,
           isReinstall,
         },
-      }: PayloadAction<InstallModPayload>
+      }: PayloadAction<InstallModPayload>,
     ) {
       for (const modComponentDefinition of modDefinition.extensionPoints) {
         // May be null from bad Workshop edit?
@@ -244,7 +244,7 @@ const extensionsSlice = createSlice({
 
         reportEvent(
           Events.STARTER_BRICK_ACTIVATE,
-          selectEventData(activatedModComponent)
+          selectEventData(activatedModComponent),
         );
 
         // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
@@ -273,7 +273,7 @@ const extensionsSlice = createSlice({
           createTimestamp?: string;
         };
         pushToCloud: boolean;
-      }>
+      }>,
     ) {
       const timestamp = new Date().toISOString();
 
@@ -340,7 +340,7 @@ const extensionsSlice = createSlice({
     },
     updateExtension(
       state,
-      action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>
+      action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>,
     ) {
       const { id, ...extensionUpdate } = action.payload;
       const index = state.extensions.findIndex((x) => x.id === id);
@@ -348,8 +348,8 @@ const extensionsSlice = createSlice({
       if (index === -1) {
         reportError(
           new Error(
-            `Can't find extension in optionsSlice to update. Target extension id: ${id}.`
-          )
+            `Can't find extension in optionsSlice to update. Target extension id: ${id}.`,
+          ),
         );
         return;
       }
@@ -363,11 +363,11 @@ const extensionsSlice = createSlice({
 
     updateRecipeMetadataForExtensions(
       state,
-      action: PayloadAction<ModComponentBase["_recipe"]>
+      action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
       const metadata = action.payload;
       const recipeExtensions = state.extensions.filter(
-        (extension) => extension._recipe?.id === metadata.id
+        (extension) => extension._recipe?.id === metadata.id,
       );
       for (const extension of recipeExtensions) {
         extension._recipe = metadata;
@@ -377,7 +377,7 @@ const extensionsSlice = createSlice({
     removeRecipeById(state, { payload: recipeId }: PayloadAction<RegistryId>) {
       const [, extensions] = partition(
         state.extensions,
-        (x) => x._recipe?.id === recipeId
+        (x) => x._recipe?.id === recipeId,
       );
 
       state.extensions = extensions;
@@ -385,17 +385,17 @@ const extensionsSlice = createSlice({
 
     removeExtensions(
       state,
-      { payload: { extensionIds } }: PayloadAction<{ extensionIds: UUID[] }>
+      { payload: { extensionIds } }: PayloadAction<{ extensionIds: UUID[] }>,
     ) {
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter(
-        (x) => !extensionIds.includes(x.id)
+        (x) => !extensionIds.includes(x.id),
       );
     },
 
     removeExtension(
       state,
-      { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
+      { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>,
     ) {
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);

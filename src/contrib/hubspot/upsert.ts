@@ -24,7 +24,7 @@ import { type BrickArgs } from "@/types/runtimeTypes";
 
 function makeProperties(
   obj: Record<string, unknown>,
-  propertyKey = "property"
+  propertyKey = "property",
 ) {
   return Object.entries(obj)
     .filter(([, value]) => Boolean(value))
@@ -39,7 +39,7 @@ export class AddUpdateContact extends EffectABC {
     super(
       "hubspot/create-update-contact",
       "Create/Update a HubSpot contact",
-      "Create/Update a HubSpot contact email and/or other information available"
+      "Create/Update a HubSpot contact email and/or other information available",
     );
   }
 
@@ -118,7 +118,7 @@ export class AddUpdateContact extends EffectABC {
     } else {
       if (!firstname || !lastname) {
         throw new BusinessError(
-          "firstname and lastname are required if an email is not provided"
+          "firstname and lastname are required if an email is not provided",
         );
       }
 
@@ -154,7 +154,7 @@ export class AddUpdateCompany extends EffectABC {
     super(
       "hubspot/create-update-company",
       "Create/Update a HubSpot company",
-      "Create/Update a HubSpot company by website domain"
+      "Create/Update a HubSpot company by website domain",
     );
   }
 

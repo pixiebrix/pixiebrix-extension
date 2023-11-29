@@ -37,7 +37,7 @@ const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
  * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
  */
 const modIdsStorage = new StorageItem<RegistryId | RegistryId[]>(
-  "activatingBlueprintId"
+  "activatingBlueprintId",
 );
 
 /**
@@ -53,7 +53,7 @@ export async function setExtensionAuth(auth: TokenAuthData): Promise<boolean> {
   if (updated) {
     reportEvent(Events.LINK_EXTENSION);
     console.debug(
-      `Extension link updated, reloading browser extension in ${HACK_EXTENSION_LINK_RELOAD_DELAY_MS}ms`
+      `Extension link updated, reloading browser extension in ${HACK_EXTENSION_LINK_RELOAD_DELAY_MS}ms`,
     );
 
     // A hack to ensure the SET_EXTENSION_AUTH messenger response flows to the front-end before the backend
@@ -171,7 +171,7 @@ export async function openActivateModPage({
     throw new Error("No mod ids provided");
   } else if (redirectUrl == null && modIds.length > 1) {
     reportError(
-      new Error("No redirectUrl provided for multiple mod activation")
+      new Error("No redirectUrl provided for multiple mod activation"),
     );
   }
 
@@ -179,7 +179,7 @@ export async function openActivateModPage({
     redirectUrl ??
     // For extension console activation, only support a single mod id
     getExtensionConsoleUrl(
-      `marketplace/activate/${encodeURIComponent(modIds[0])}`
+      `marketplace/activate/${encodeURIComponent(modIds[0])}`,
     );
 
   if (newTab) {

@@ -35,7 +35,7 @@ class MapValues extends TransformerABC {
     super(
       MapValues.BLOCK_ID,
       "Map/Transform Values",
-      "Map/Transform a list of values"
+      "Map/Transform a list of values",
     );
   }
 
@@ -81,7 +81,7 @@ class MapValues extends TransformerABC {
           "True to run the body in parallel, false to run sequentially",
       },
     },
-    ["elements", "body"]
+    ["elements", "body"],
   );
 
   async transform(
@@ -96,7 +96,7 @@ class MapValues extends TransformerABC {
       elementKey: OutputKey;
       runParallel?: boolean;
     }>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<unknown> {
     const resultPromises: Array<Promise<unknown>> = [];
 
@@ -106,7 +106,7 @@ class MapValues extends TransformerABC {
         { key: "body", counter: index },
         {
           [`@${elementKey}`]: element,
-        }
+        },
       );
 
       if (!runParallel) {

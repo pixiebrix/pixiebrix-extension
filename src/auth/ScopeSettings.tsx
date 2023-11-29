@@ -48,7 +48,7 @@ const VALIDATION_SCHEMA = Yup.object({
   scope: Yup.string()
     .matches(
       SCOPE_REGEX,
-      "Your account alias must start with an @ symbol and consist of lowercase alphanumeric characters and dashes, e.g. @my-account-alias"
+      "Your account alias must start with an @ symbol and consist of lowercase alphanumeric characters and dashes, e.g. @my-account-alias",
     )
     .required(),
 });
@@ -91,8 +91,8 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
               helpers.setErrors(
                 mapValues(
                   error.response.data,
-                  (xs) => castArray(xs)[0]
-                ) as FormikErrors<Profile>
+                  (xs) => castArray(xs)[0],
+                ) as FormikErrors<Profile>,
               );
             } else {
               notify.error({ message: "Error updating account alias", error });
@@ -110,7 +110,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
       await refetchMe();
     },
-    [refetchMe, updateScope]
+    [refetchMe, updateScope],
   );
 
   const renderBody: RenderBody = () => (

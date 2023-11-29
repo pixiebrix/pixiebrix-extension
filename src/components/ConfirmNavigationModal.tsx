@@ -40,7 +40,7 @@ const ConfirmNavigationModal: React.FunctionComponent = () => {
       setModalVisible(true);
       return false;
     },
-    [setModalVisible, setNextLocation]
+    [setModalVisible, setNextLocation],
   );
 
   const confirmNavigation = useCallback(() => {

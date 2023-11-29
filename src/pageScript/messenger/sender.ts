@@ -21,14 +21,14 @@ import injectScriptTag from "@/utils/injectScriptTag";
 import { expectContext } from "@/utils/expectContext";
 
 type SendScriptMessage<TReturn = unknown, TPayload = unknown> = (
-  payload: TPayload
+  payload: TPayload,
 ) => Promise<TReturn>;
 
 type CallbackMap = Map<number, (result: unknown) => void>;
 
 function assertCustomEvent(
   type: string,
-  event: Event
+  event: Event,
 ): asserts event is CustomEvent<{
   id: number;
   result?: unknown;
@@ -36,7 +36,7 @@ function assertCustomEvent(
 }> {
   if (!(event instanceof CustomEvent) || event.detail.id == null) {
     throw new TypeError(
-      `Handler for ${type} did not provide a detail property`
+      `Handler for ${type} did not provide a detail property`,
     );
   }
 }
@@ -49,13 +49,13 @@ const injectPageScriptOnce = once(async (): Promise<void> => {
     "injectPageScript",
     // Must use chrome namespace instead for browser namespace because there are bricks that call into this method,
     // and the bricks are statically imported into other contexts. For example,
-    injectScriptTag(browser.runtime.getURL("pageScript.js"))
+    injectScriptTag(browser.runtime.getURL("pageScript.js")),
   );
   script.remove();
 });
 
 export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
-  messageType: string
+  messageType: string,
 ): SendScriptMessage<TReturn, TPayload> {
   const currentWindow = globalThis.document?.defaultView;
   if (!currentWindow) {
@@ -72,7 +72,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   const listen = (
     type: string,
     callbacks: CallbackMap,
-    prop: "result" | "error"
+    prop: "result" | "error",
   ) => {
     document.addEventListener(type, (event: Event) => {
       assertCustomEvent(type, event);
@@ -109,7 +109,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
     });
     console.debug(
       `Messaging pageScript (origin: ${targetOrigin}): ${messageType}`,
-      payload
+      payload,
     );
 
     // As an alternative to postMessage, could potentially use cloneInto and CustomEvent's but that
@@ -122,7 +122,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
       },
       // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#Security_concerns
       // Security: always specify an exact target origin, not *, when you use postMessage to send data to other windows.
-      targetOrigin
+      targetOrigin,
     );
 
     return promise as Promise<TReturn>;

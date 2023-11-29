@@ -30,7 +30,7 @@ import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
  */
 export interface ElementConfig<
   TResult = unknown,
-  TState extends BaseFormState = BaseFormState
+  TState extends BaseFormState = BaseFormState,
 > {
   /**
    * The internal element type, e.g., menuItem, contextMenu, etc.
@@ -74,7 +74,7 @@ export interface ElementConfig<
    */
   readonly selectNativeElement?: (
     target: Target,
-    useNewFilter?: boolean
+    useNewFilter?: boolean,
   ) => Promise<TResult>;
 
   /**
@@ -88,7 +88,7 @@ export interface ElementConfig<
   readonly fromNativeElement: (
     url: string,
     metadata: Metadata,
-    element: TResult
+    element: TResult,
   ) => TState;
 
   /**

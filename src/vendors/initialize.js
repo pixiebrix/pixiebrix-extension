@@ -103,11 +103,11 @@ msobservers.initialize = function (selector, callback, options) {
             idleCallbackHandle = null;
           });
         },
-        { timeout: 150 }
+        { timeout: 150 },
       );
     },
     100,
-    { leading: true, trailing: true }
+    { leading: true, trailing: true },
   );
 
   // See if the selector matches any elements already on the page.
@@ -117,7 +117,7 @@ msobservers.initialize = function (selector, callback, options) {
   var msobserver = new MutationSelectorObserver(
     selector,
     callbackOnce,
-    options
+    options,
   );
   this.push(msobserver);
 
@@ -146,12 +146,12 @@ msobservers.initialize = function (selector, callback, options) {
         if (msobserver.isFraternal)
           matches.push.apply(
             matches,
-            $safeFind(msobserver.selector, mutations[m].target.parentElement)
+            $safeFind(msobserver.selector, mutations[m].target.parentElement),
           );
         else
           matches.push.apply(
             matches,
-            $safeFind(msobserver.selector, mutations[m].target)
+            $safeFind(msobserver.selector, mutations[m].target),
           );
       }
 
@@ -171,13 +171,13 @@ msobservers.initialize = function (selector, callback, options) {
               matches,
               $safeFind(
                 msobserver.selector,
-                mutations[m].addedNodes[n].parentElement
-              )
+                mutations[m].addedNodes[n].parentElement,
+              ),
             );
           else
             matches.push.apply(
               matches,
-              $safeFind(msobserver.selector, mutations[m].addedNodes[n])
+              $safeFind(msobserver.selector, mutations[m].addedNodes[n]),
             );
         }
       }

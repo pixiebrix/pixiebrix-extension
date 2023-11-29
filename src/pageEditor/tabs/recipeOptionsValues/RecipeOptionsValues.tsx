@@ -61,10 +61,10 @@ const RecipeOptionsValuesContent: React.FC = () => {
     error: recipeError,
   } = useOptionalModDefinition(recipeId);
   const dirtyRecipeOptions = useSelector(
-    selectDirtyOptionDefinitionsForRecipeId(recipeId)
+    selectDirtyOptionDefinitionsForRecipeId(recipeId),
   );
   const modifiedOptionValues = useSelector(
-    selectDirtyOptionValuesForRecipeId(recipeId)
+    selectDirtyOptionValuesForRecipeId(recipeId),
   );
   const installedExtensions = useSelector(selectNotDeletedExtensions);
   const dirtyElements = useSelector(selectNotDeletedElements);
@@ -87,39 +87,39 @@ const RecipeOptionsValuesContent: React.FC = () => {
     () =>
       genericOptionsFactory(
         optionsDefinition?.schema,
-        optionsDefinition?.uiSchema
+        optionsDefinition?.uiSchema,
       ),
-    [optionsDefinition]
+    [optionsDefinition],
   );
 
   const recipeExtensions = useMemo(
     () =>
       installedExtensions.filter(
-        (extension) => extension._recipe?.id === recipeId
+        (extension) => extension._recipe?.id === recipeId,
       ),
-    [installedExtensions, recipeId]
+    [installedExtensions, recipeId],
   );
 
   const initialValues = useMemo(
     () => modifiedOptionValues ?? inferRecipeOptions(recipeExtensions),
-    [modifiedOptionValues, recipeExtensions]
+    [modifiedOptionValues, recipeExtensions],
   );
 
   const recipeElements = useMemo(
     () => dirtyElements.filter((element) => element.recipe?.id === recipeId),
-    [dirtyElements, recipeId]
+    [dirtyElements, recipeId],
   );
 
   const integrationDependencies = useMemo(
     () => inferRecipeDependencies(recipeExtensions, recipeElements),
-    [recipeExtensions, recipeElements]
+    [recipeExtensions, recipeElements],
   );
 
   const updateRedux = useCallback(
     (options: OptionsArgs) => {
       dispatch(actions.editRecipeOptionsValues(options));
     },
-    [dispatch]
+    [dispatch],
   );
 
   if (isLoadingSchema || isLoadingRecipe) {
@@ -155,7 +155,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
         renderBody={renderBody}
         onSubmit={() => {
           console.error(
-            "The form's submit should not be called to save recipe option values, they are automatically synced with redux"
+            "The form's submit should not be called to save recipe option values, they are automatically synced with redux",
           );
         }}
         renderSubmit={() => null}

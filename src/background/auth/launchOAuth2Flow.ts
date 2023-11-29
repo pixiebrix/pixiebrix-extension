@@ -29,7 +29,7 @@ import codeGrantFlow from "@/background/auth/codeGrantFlow";
 
 async function launchOAuth2Flow(
   service: Integration,
-  auth: IntegrationConfig
+  auth: IntegrationConfig,
 ): Promise<AuthData> {
   // Reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js
   if (!service.isOAuth2) {

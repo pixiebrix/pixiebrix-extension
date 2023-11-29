@@ -54,7 +54,7 @@ const HeaderField: React.FunctionComponent<{
   >(name);
 
   const [fieldSchema, setFieldSchema] = useState<Schema>(
-    headerFieldSchemaForHeaders([])
+    headerFieldSchemaForHeaders([]),
   );
 
   useAsyncEffect(
@@ -99,7 +99,7 @@ const HeaderField: React.FunctionComponent<{
     // don't need to run the effect when googleAccount changes,
     // because we can keep headers loaded if the new user
     // still has access to the same spreadsheetId and tabName.
-    [hash({ spreadsheetId, tabName })]
+    [hash({ spreadsheetId, tabName })],
   );
 
   return (
@@ -119,12 +119,12 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   const blockConfigPath = joinName(name, configKey);
 
   const [{ value: tabName }] = useField<string | Expression>(
-    joinName(blockConfigPath, "tabName")
+    joinName(blockConfigPath, "tabName"),
   );
 
   const filterRowsFieldPath = joinName(blockConfigPath, "filterRows");
   const [{ value: filterRows }] = useField<boolean | undefined>(
-    filterRowsFieldPath
+    filterRowsFieldPath,
   );
 
   // For backwards compatibility, we want to show the filters if the field is undefined.

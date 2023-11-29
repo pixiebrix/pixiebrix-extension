@@ -19,11 +19,11 @@ test("getAttributeSelectorRegex", () => {
 
   const multipleAttributeRegex = getAttributeSelectorRegex(
     "name",
-    "aria-label"
+    "aria-label",
   );
   testAttribute(multipleAttributeRegex, "name");
   testAttribute(multipleAttributeRegex, "aria-label");
   expect(multipleAttributeRegex).toStrictEqual(
-    /^\[name(=|]$)|^\[aria-label(=|]$)/
+    /^\[name(=|]$)|^\[aria-label(=|]$)/,
   );
 });

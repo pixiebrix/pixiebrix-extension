@@ -162,7 +162,7 @@ describe("updateDeployments", () => {
 
     expect(reportEvent).toHaveBeenCalledWith(
       "OrganizationExtensionLink",
-      expect.anything()
+      expect.anything(),
     );
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
@@ -184,7 +184,7 @@ describe("updateDeployments", () => {
       "OrganizationExtensionLink",
       expect.objectContaining({
         sso: true,
-      })
+      }),
     );
 
     expect(openOptionsPageMock.mock.calls).toHaveLength(0);
@@ -203,7 +203,7 @@ describe("updateDeployments", () => {
 
     expect(reportEvent).toHaveBeenCalledWith(
       "OrganizationExtensionLink",
-      expect.anything()
+      expect.anything(),
     );
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
@@ -250,11 +250,11 @@ describe("updateDeployments", () => {
 
     let editorState = initialEditorState;
     const element = (await ADAPTERS.get(
-      starterBrick.definition.type
+      starterBrick.definition.type,
     ).fromExtension(modComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addElement(element)
+      editorSlice.actions.addElement(element),
     );
     await saveEditorState(editorState);
 
@@ -343,11 +343,11 @@ describe("updateDeployments", () => {
 
     let editorState = initialEditorState;
     const element = (await ADAPTERS.get("menuItem").fromExtension(
-      modComponent
+      modComponent,
     )) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addElement(element)
+      editorSlice.actions.addElement(element),
     );
     await saveEditorState(editorState);
 
@@ -567,19 +567,19 @@ describe("updateDeployments", () => {
     let editorState = initialEditorState;
 
     const personalElement = (await ADAPTERS.get(
-      personalStarterBrick.definition.type
+      personalStarterBrick.definition.type,
     ).fromExtension(personalModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addElement(personalElement)
+      editorSlice.actions.addElement(personalElement),
     );
 
     const deploymentElement = (await ADAPTERS.get(
-      deploymentStarterBrick.definition.type
+      deploymentStarterBrick.definition.type,
     ).fromExtension(deploymentModComponent)) as ActionFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addElement(deploymentElement)
+      editorSlice.actions.addElement(deploymentElement),
     );
 
     await saveModComponentState({

@@ -22,14 +22,14 @@ export async function expectToggleOptions(testId: string, expected: string[]) {
   if (testId) {
     // React Bootstrap dropdown does not render children items unless toggled
     await userEvent.click(
-      within(screen.getByTestId(testId)).getAllByRole("button").at(0)
+      within(screen.getByTestId(testId)).getAllByRole("button").at(0),
     );
   }
 
   const actual = new Set(
     [...screen.queryAllByRole("button")]
       .filter((x) => x.dataset.testid)
-      .map((x) => x.dataset.testid)
+      .map((x) => x.dataset.testid),
   );
   await waitFor(() => {
     expect(actual).toEqual(new Set(expected));

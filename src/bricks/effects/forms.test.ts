@@ -65,7 +65,7 @@ describe("SetInputValue", () => {
       unsafeAssumeValidArg({
         inputs: [{ selector: "[name='name']", value: "Bob Smith" }],
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -79,7 +79,7 @@ describe("SetInputValue", () => {
       }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#noForm"),
-      })
+      }),
     );
 
     // Will have original value because root it on the other path
@@ -92,7 +92,7 @@ describe("SetInputValue", () => {
       }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#hasForm"),
-      })
+      }),
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -104,7 +104,7 @@ describe("SetInputValue", () => {
         inputs: [{ value: "Bob Smith" }],
         isRootAware: true,
       }),
-      brickOptionsFactory({ root: document.querySelector("input") })
+      brickOptionsFactory({ root: document.querySelector("input") }),
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -116,7 +116,7 @@ describe("SetInputValue", () => {
         inputs: [{ value: "Bob Smith" }],
         isRootAware: false,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -128,7 +128,7 @@ describe("SetInputValue", () => {
         inputs: [{ value: "Bob Smith" }],
         isRootAware: true,
       }),
-      brickOptionsFactory({ root: document.querySelector("div") })
+      brickOptionsFactory({ root: document.querySelector("div") }),
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -161,7 +161,7 @@ describe("FormFill", () => {
         formSelector: "form",
         fieldNames: { name: "Bob Smith" },
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");
@@ -176,7 +176,7 @@ describe("FormFill", () => {
       }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#noForm"),
-      })
+      }),
     );
 
     await expect(promise).rejects.toThrow(NoElementsFoundError);
@@ -189,7 +189,7 @@ describe("FormFill", () => {
       }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#hasForm"),
-      })
+      }),
     );
 
     expect(document.querySelector("[name='name']")).toHaveValue("Bob Smith");

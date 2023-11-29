@@ -55,7 +55,7 @@ export type PanelPayload =
   | null;
 
 export function isRendererRunPayload(
-  payload: PanelPayload
+  payload: PanelPayload,
 ): payload is RendererRunPayload {
   return (
     isObject(payload) &&
@@ -66,13 +66,13 @@ export function isRendererRunPayload(
 }
 
 export function isRendererLoadingPayload(
-  payload: PanelPayload
+  payload: PanelPayload,
 ): payload is RendererLoadingPayload {
   return isObject(payload) && "loadingMessage" in payload;
 }
 
 export function isRendererErrorPayload(
-  payload: PanelPayload
+  payload: PanelPayload,
 ): payload is RendererErrorPayload {
   return isObject(payload) && "error" in payload;
 }
@@ -160,7 +160,7 @@ export type BaseModComponentPanelEntry = BasePanelEntry & {
 };
 
 export function isBaseModComponentPanelEntry(
-  panel: unknown
+  panel: unknown,
 ): panel is BaseModComponentPanelEntry {
   return (panel as BaseModComponentPanelEntry)?.extensionId != null;
 }
@@ -199,7 +199,7 @@ export type TemporaryPanelEntry = BaseModComponentPanelEntry & {
 };
 
 export function isTemporaryPanelEntry(
-  panel: unknown
+  panel: unknown,
 ): panel is TemporaryPanelEntry {
   return (panel as TemporaryPanelEntry)?.type === "temporaryPanel";
 }
@@ -252,7 +252,7 @@ export type ModActivationPanelEntry = BasePanelEntry & {
 };
 
 export function isModActivationPanelEntry(
-  panel: unknown
+  panel: unknown,
 ): panel is ModActivationPanelEntry {
   return (panel as ModActivationPanelEntry)?.type === "activateMods";
 }

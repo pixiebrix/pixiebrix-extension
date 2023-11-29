@@ -81,7 +81,7 @@ describe("Advanced options", () => {
     renderAdvancedLinks(blockConfig);
 
     expect(
-      screen.getByRole("button", { name: expectedOptionText })
+      screen.getByRole("button", { name: expectedOptionText }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("button")).toHaveLength(2);
   });

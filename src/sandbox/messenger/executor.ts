@@ -24,7 +24,7 @@ import {
 } from "@/errors/businessErrors";
 
 export async function renderNunjucksTemplate(
-  payload: TemplateRenderPayload
+  payload: TemplateRenderPayload,
 ): Promise<string> {
   const { template, context, autoescape } = payload;
 
@@ -46,7 +46,7 @@ export async function renderNunjucksTemplate(
 }
 
 export async function renderHandlebarsTemplate(
-  payload: TemplateRenderPayload
+  payload: TemplateRenderPayload,
 ): Promise<string> {
   const { template, context, autoescape } = payload;
 
@@ -76,7 +76,7 @@ export async function runUserJs({
       "Failed to construct JavaScript function",
       blockId,
       "function",
-      code
+      code,
     );
   }
 

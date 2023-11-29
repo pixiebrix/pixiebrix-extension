@@ -26,7 +26,7 @@ describe("parse compile error", () => {
         data: null,
         columns: [{ label: "label", property: "property" }],
       }),
-      brickOptionsFactory({ ctxt: [] })
+      brickOptionsFactory({ ctxt: [] }),
     );
 
     expect(result).toMatchSnapshot();
@@ -38,7 +38,7 @@ describe("parse compile error", () => {
         data: [{ property: "Foo" }],
         columns: [{ label: "label", property: "property" }],
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toMatchSnapshot();

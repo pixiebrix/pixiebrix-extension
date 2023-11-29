@@ -178,7 +178,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
           ...values,
           integrationId: integration.id,
           id,
-        })
+        }),
       );
 
       await syncIntegrations();
@@ -258,7 +258,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
 
   const CustomMenuList = useMemo(
     () => createMenuListWithAddButton(onClickNew),
-    [onClickNew]
+    [onClickNew],
   );
 
   const initialConfiguration = useMemo<IntegrationConfig | null>(

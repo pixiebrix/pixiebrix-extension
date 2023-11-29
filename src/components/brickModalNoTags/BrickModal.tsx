@@ -69,7 +69,7 @@ function makeBlockOption<T extends Metadata>(brick: T): BrickOption<T> {
 
 function useSearch<T extends Metadata>(
   bricks: T[],
-  query: string
+  query: string,
 ): Array<BrickOption<T>> {
   const [debouncedQuery] = useDebounce(query, 100, {
     trailing: true,
@@ -82,7 +82,7 @@ function useSearch<T extends Metadata>(
       (bricks ?? [])
         .filter((x) => !x.id.startsWith("@internal/"))
         .map((x) => makeBlockOption(x)),
-      (x) => x.label
+      (x) => x.label,
     );
     const fuse = new Fuse<BrickOption<T>>(brickOptions, {
       keys: ["label", "data.id", "data.description"],
@@ -96,7 +96,7 @@ function useSearch<T extends Metadata>(
       isNullOrBlank(debouncedQuery)
         ? brickOptions
         : fuse.search(debouncedQuery).map((x) => x.item),
-    [debouncedQuery, fuse, brickOptions]
+    [debouncedQuery, fuse, brickOptions],
   );
 }
 
@@ -164,7 +164,7 @@ const ItemRenderer = <T extends Metadata>({
 // See https://react-window.vercel.app/#/api/FixedSizeList
 function itemKey<T extends Metadata>(
   index: number,
-  { searchResults }: ItemType<T>
+  { searchResults }: ItemType<T>,
 ): RegistryId {
   // Find the item at the specified index.
   // In this case "data" is an Array that was passed to List as "itemData".
@@ -210,7 +210,7 @@ function ActualModal<T extends Metadata>({
     // Retain the same order that the recommendations were passed in
     const brickMap = new Map(bricks.map((brick) => [brick.id, brick]));
     return compact(
-      recommendations.map((registryId) => brickMap.get(registryId))
+      recommendations.map((registryId) => brickMap.get(registryId)),
     );
   }, [recommendations, bricks]);
 
@@ -222,7 +222,7 @@ function ActualModal<T extends Metadata>({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run on initial mount
-    []
+    [],
   );
 
   return (

@@ -30,7 +30,7 @@ const BrowserBanner: React.VoidFunctionComponent = () => {
   const dispatch = useDispatch();
 
   const browserWarningDismissed = useSelector<RootState, boolean>(
-    selectBrowserWarningDismissed
+    selectBrowserWarningDismissed,
   );
 
   const enterpriseState = useManagedStorageState();

@@ -51,7 +51,7 @@ function useModPermissions(extensions: ModComponentBase[]): {
 
       return fallback;
     }, [extensions, browserPermissions, isSuccess]),
-    fallback
+    fallback,
   );
 
   const requestPermissions = useRequestPermissionsCallback(permissions);

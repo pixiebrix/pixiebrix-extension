@@ -47,7 +47,7 @@ export class ImageReader extends ReaderABC {
     super(
       "@pixiebrix/image",
       "Image reader",
-      "Read base64 encoding of the image from an image (img) tag"
+      "Read base64 encoding of the image from an image (img) tag",
     );
   }
 

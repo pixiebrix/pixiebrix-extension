@@ -54,7 +54,7 @@ export type Target = {
  */
 export interface Message<
   Type extends ActionType = ActionType,
-  TMeta extends Meta = Meta
+  TMeta extends Meta = Meta,
 > {
   type: Type;
   payload?: unknown;

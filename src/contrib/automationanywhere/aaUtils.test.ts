@@ -23,7 +23,7 @@ describe("isCommunityControlRoom", () => {
 
   test("detect enterprise cloud URL", () => {
     expect(
-      isCommunityControlRoom("https://aa-dev-1.my.automationanywhere.digital/")
+      isCommunityControlRoom("https://aa-dev-1.my.automationanywhere.digital/"),
     ).toBeFalsy();
   });
 });
@@ -35,7 +35,7 @@ describe("hostnameToUrl", () => {
 
   test("nop for HTTP URL", () => {
     expect(hostnameToUrl("http://foo.example.com")).toBe(
-      "http://foo.example.com"
+      "http://foo.example.com",
     );
   });
 

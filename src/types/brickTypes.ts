@@ -73,7 +73,7 @@ export interface Brick extends Metadata {
    */
   getPipelineVariableSchema?(
     _config: BrickConfig,
-    pipelineName: string
+    pipelineName: string,
   ): Schema | undefined;
 
   /**
@@ -175,7 +175,7 @@ export abstract class BrickABC implements Brick {
   }
 
   async getModVariableSchema(
-    _config: BrickConfig
+    _config: BrickConfig,
   ): Promise<Schema | undefined> {
     return undefined;
   }
@@ -188,7 +188,7 @@ export abstract class BrickABC implements Brick {
    */
   getPipelineVariableSchema(
     _config: BrickConfig,
-    pipelineName: string
+    pipelineName: string,
   ): Schema | undefined {
     return undefined;
   }
@@ -197,7 +197,7 @@ export abstract class BrickABC implements Brick {
     id: string,
     name: string,
     description?: string,
-    icon?: BrickIcon
+    icon?: BrickIcon,
   ) {
     this.id = validateRegistryId(id);
     this.name = name;

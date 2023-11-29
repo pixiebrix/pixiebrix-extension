@@ -58,13 +58,13 @@ describe("replaceStringInArray", () => {
     const stringToInsert = "insert";
     const expected = [array[0], stringToInsert, array[2]];
     expect(replaceStringInArray(array, array[1], stringToInsert)).toEqual(
-      expected
+      expected,
     );
   });
 
   test("returns the same array when string is not found", () => {
     expect(replaceStringInArray(array, "anotherWord1", "anotherWord2")).toEqual(
-      array
+      array,
     );
   });
 });
@@ -79,11 +79,11 @@ describe("produceSchemaOnPropertyNameChange", () => {
       const actualSchema = produceSchemaOnPropertyNameChange(
         initialSchema,
         fieldName,
-        newFieldName
+        newFieldName,
       );
 
       expect(actualSchema).toEqual(expectedSchema);
-    }
+    },
   );
 });
 
@@ -121,7 +121,7 @@ describe("validateNextPropertyName", () => {
   test("Don't accept duplicates.", () => {
     const actual = validateNextPropertyName(schema, "field1", "field2");
     expect(actual).toBe(
-      'Name must be unique. Another property "Field 2" already has the name "field2".'
+      'Name must be unique. Another property "Field 2" already has the name "field2".',
     );
   });
 
@@ -147,7 +147,7 @@ describe("normalizeSchema", () => {
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
-      }
+      },
     );
 
     expect(actual.schema).toStrictEqual({
@@ -168,7 +168,7 @@ describe("normalizeSchema", () => {
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
-      }
+      },
     );
 
     expect(actual.schema).toStrictEqual({
@@ -195,7 +195,7 @@ describe("normalizeSchema", () => {
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
-      }
+      },
     );
 
     expect(actual.schema).toStrictEqual({
@@ -229,7 +229,7 @@ describe("normalizeUiOrder", () => {
   test("normalize the position of *", () => {
     const actual = getNormalizedUiOrder(
       ["propA", "propB"],
-      ["propA", "*", "propB"]
+      ["propA", "*", "propB"],
     );
     expect(actual).toEqual(["propA", "propB", "*"]);
   });
@@ -237,7 +237,7 @@ describe("normalizeUiOrder", () => {
   test("removes missing props", () => {
     const actual = getNormalizedUiOrder(
       ["propA", "propC"],
-      ["propA", "propB", "propC", "*"]
+      ["propA", "propB", "propC", "*"],
     );
     expect(actual).toEqual(["propA", "propC", "*"]);
   });
@@ -271,11 +271,11 @@ describe("produceSchemaOnUiTypeChange", () => {
         propertyType: "string",
         uiWidget: "select",
         extra: "selectWithLabels",
-      })
+      }),
     );
 
     expect(
-      (nextSchema.schema.properties.field1 as Schema).enum
+      (nextSchema.schema.properties.field1 as Schema).enum,
     ).toBeUndefined();
     expect((nextSchema.schema.properties.field1 as Schema).oneOf).toEqual([
       {
@@ -329,11 +329,11 @@ describe("produceSchemaOnUiTypeChange", () => {
       stringifyUiType({
         propertyType: "string",
         uiWidget: "select",
-      })
+      }),
     );
 
     expect(
-      (nextSchema.schema.properties.field1 as Schema).oneOf
+      (nextSchema.schema.properties.field1 as Schema).oneOf,
     ).toBeUndefined();
     expect((nextSchema.schema.properties.field1 as Schema).enum).toEqual([
       "foo",
@@ -359,7 +359,7 @@ describe("produceSchemaOnUiTypeChange", () => {
     const nextSchema = produceSchemaOnUiTypeChange(
       schema,
       "field1",
-      stringifyUiType({ propertyType: "string", uiWidget: "database" })
+      stringifyUiType({ propertyType: "string", uiWidget: "database" }),
     );
 
     expect(nextSchema.schema.properties.field1).toEqual({
@@ -394,7 +394,7 @@ describe("produceSchemaOnUiTypeChange", () => {
     const nextSchema = produceSchemaOnUiTypeChange(
       schema,
       "field1",
-      stringifyUiType({ propertyType: "string" })
+      stringifyUiType({ propertyType: "string" }),
     );
 
     expect(nextSchema.schema.properties.field1).toEqual({
@@ -422,7 +422,7 @@ describe("produceSchemaOnUiTypeChange", () => {
     const nextSchema = produceSchemaOnUiTypeChange(
       schema,
       "field1",
-      stringifyUiType({ propertyType: "string", uiWidget: "googleSheet" })
+      stringifyUiType({ propertyType: "string", uiWidget: "googleSheet" }),
     );
 
     expect(nextSchema.schema.properties.field1).toEqual({
@@ -457,7 +457,7 @@ describe("produceSchemaOnUiTypeChange", () => {
     const nextSchema = produceSchemaOnUiTypeChange(
       schema,
       "field1",
-      stringifyUiType({ propertyType: "string" })
+      stringifyUiType({ propertyType: "string" }),
     );
 
     expect(nextSchema.schema.properties.field1).toEqual({

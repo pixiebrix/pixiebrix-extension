@@ -52,7 +52,7 @@ describe("Run", () => {
     };
 
     return expect(
-      reducePipeline(pipeline, simpleInput({}), testOptions("v3"))
+      reducePipeline(pipeline, simpleInput({}), testOptions("v3")),
     ).rejects.toThrow();
   });
 
@@ -74,7 +74,7 @@ describe("Run", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({
@@ -105,7 +105,7 @@ describe("Run", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({});

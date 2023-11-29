@@ -46,7 +46,7 @@ function useDebouncedEffect<T>(
     leading?: boolean;
     trailing?: boolean;
     equalityFn?: (lhs: T, rhs: T) => boolean;
-  }
+  },
 ): void {
   const [debounced] = useDebounce(value, delayMillis, {
     leading,
@@ -60,7 +60,7 @@ function useDebouncedEffect<T>(
       onChange(debounced);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only watch the debounced value
-    [debounced]
+    [debounced],
   );
 }
 

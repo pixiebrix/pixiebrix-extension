@@ -62,7 +62,7 @@ export const selectExtensionFromEventKey =
 
     // Get sidebar entry by event key
     const sidebarEntry = sidebarEntries.find(
-      (entry) => eventKeyForEntry(entry) === eventKey
+      (entry) => eventKeyForEntry(entry) === eventKey,
     );
 
     if (!isBaseModComponentPanelEntry(sidebarEntry)) {
@@ -70,7 +70,7 @@ export const selectExtensionFromEventKey =
     }
 
     return options.extensions.find(
-      (extension) => extension.id === sidebarEntry.extensionId
+      (extension) => extension.id === sidebarEntry.extensionId,
     );
   };
 

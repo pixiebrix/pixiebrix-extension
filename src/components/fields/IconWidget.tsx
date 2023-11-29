@@ -26,7 +26,7 @@ const IconSelector = lazy(
     import(
       /* webpackChunkName: "icons" */
       "@/icons/IconSelector"
-    )
+    ),
 );
 
 type IconValue = {

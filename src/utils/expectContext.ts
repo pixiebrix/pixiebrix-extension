@@ -33,7 +33,7 @@ function isBrowserSidebar(): boolean {
 type ErrorBaseType = string | Error | (new (message?: string) => Error);
 function createError(
   defaultMessage: string,
-  errorOrCtor: ErrorBaseType = Error
+  errorOrCtor: ErrorBaseType = Error,
 ): Error {
   if (typeof errorOrCtor === "string") {
     return new Error(errorOrCtor);
@@ -55,7 +55,7 @@ const contexts = [
   "devTools",
   "sidebar",
 ] as const;
-const contextMap = new Map<typeof contexts[number], () => boolean>([
+const contextMap = new Map<(typeof contexts)[number], () => boolean>([
   ["web", isWebPage],
   ["extension", isExtensionContext],
   ["background", isBackground],
@@ -71,8 +71,8 @@ const contextMap = new Map<typeof contexts[number], () => boolean>([
  * @example expectContext('extension', new Error('Wrong context and this is my custom error'))
  */
 export function expectContext(
-  context: typeof contexts[number],
-  error?: ErrorBaseType
+  context: (typeof contexts)[number],
+  error?: ErrorBaseType,
 ): void {
   const isContext = contextMap.get(context);
   if (!isContext) {
@@ -82,7 +82,7 @@ export function expectContext(
   if (!isContext()) {
     throw createError(
       `This code can only run in the "${context}" context`,
-      error
+      error,
     );
   }
 }
@@ -94,8 +94,8 @@ export function expectContext(
  * @example forbidContext('extension', new Error('Wrong context and this is my custom error'))
  */
 export function forbidContext(
-  context: typeof contexts[number],
-  error?: ErrorBaseType
+  context: (typeof contexts)[number],
+  error?: ErrorBaseType,
 ): void {
   const isContext = contextMap.get(context);
   if (!isContext) {
@@ -105,7 +105,7 @@ export function forbidContext(
   if (isContext()) {
     throw createError(
       `This code cannot run in the "${context}" context`,
-      error
+      error,
     );
   }
 }

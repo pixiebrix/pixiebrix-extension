@@ -33,7 +33,7 @@ export class MappingTransformer extends TransformerABC {
       "@pixiebrix/mapping",
       "Map/Lookup Value",
       "Apply a mapping/lookup table",
-      "faCode"
+      "faCode",
     );
   }
 

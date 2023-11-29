@@ -245,7 +245,7 @@ describe("saving a Recipe Extension", () => {
     // Saving as personal extension
     // Invoke the saveElementAsPersonalExtension but don't wait for it to resolve yet
     const savingElementPromise = act(async () =>
-      result.current.saveElementAsPersonalExtension()
+      result.current.saveElementAsPersonalExtension(),
     );
 
     // Check wizard state
@@ -322,7 +322,7 @@ describe("saving a Recipe Extension", () => {
     // Saving with a new Recipe
     const newRecipeMeta = metadataFactory();
     const savingElementPromise = act(async () =>
-      result.current.saveElementAndCreateNewRecipe(newRecipeMeta)
+      result.current.saveElementAndCreateNewRecipe(newRecipeMeta),
     );
 
     // Check wizard state
@@ -416,7 +416,7 @@ describe("saving a Recipe Extension", () => {
     // Saving with a new Recipe
     const newRecipeMeta = metadataFactory({ id: recipe.metadata.id });
     const savingElementPromise = act(async () =>
-      result.current.saveElementAndUpdateRecipe(newRecipeMeta)
+      result.current.saveElementAndUpdateRecipe(newRecipeMeta),
     );
 
     // Check wizard state

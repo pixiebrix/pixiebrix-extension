@@ -71,7 +71,7 @@ describe("ModsPageLayout", () => {
     render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(
-      screen.queryByText("Welcome to the PixieBrix Extension Console")
+      screen.queryByText("Welcome to the PixieBrix Extension Console"),
     ).toBeNull();
     expect(screen.queryByText("Get Started")).toBeNull();
 
@@ -79,7 +79,7 @@ describe("ModsPageLayout", () => {
 
     await waitForEffect();
     expect(
-      screen.getByText("Welcome to the PixieBrix Extension Console")
+      screen.getByText("Welcome to the PixieBrix Extension Console"),
     ).not.toBeNull();
     expect(screen.getByText("Get Started")).not.toBeNull();
   });
@@ -88,7 +88,7 @@ describe("ModsPageLayout", () => {
     render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(
-      screen.getByText("Welcome to the PixieBrix Extension Console")
+      screen.getByText("Welcome to the PixieBrix Extension Console"),
     ).not.toBeNull();
     expect(screen.getByText("Get Started")).not.toBeNull();
     expect(screen.getByTestId("get-started-mod-tab")).toHaveClass("active");
@@ -98,12 +98,12 @@ describe("ModsPageLayout", () => {
     mockCachedUser(
       userFactory({
         organization: userOrganizationFactory(),
-      })
+      }),
     );
     render(<ModsPageLayout mods={mods} />);
     await waitForEffect();
     expect(
-      screen.queryByText("Welcome to the PixieBrix Extension Console")
+      screen.queryByText("Welcome to the PixieBrix Extension Console"),
     ).toBeNull();
     expect(screen.queryByText("Get Started")).toBeNull();
   });
@@ -116,7 +116,7 @@ describe("ModsPageLayout", () => {
 
     await user.type(
       screen.getByTestId("blueprints-search-input"),
-      "hello world"
+      "hello world",
     );
     act(() => {
       jest.runAllTimers();
@@ -125,13 +125,13 @@ describe("ModsPageLayout", () => {
 
     await user.type(
       screen.getByTestId("blueprints-search-input"),
-      " hello world again!"
+      " hello world again!",
     );
     act(() => {
       jest.runAllTimers();
     });
     expect(
-      screen.getByText('0 results for "hello world hello world again!"')
+      screen.getByText('0 results for "hello world hello world again!"'),
     ).not.toBeNull();
   });
 });
@@ -142,7 +142,7 @@ describe("Serializable Data Test", () => {
     render(<ModsPageLayout mods={mods} />, {
       setupRedux(dispatch) {
         dispatch(
-          modsPageSlice.actions.setSearchQuery((() => {}) as unknown as string)
+          modsPageSlice.actions.setSearchQuery((() => {}) as unknown as string),
         );
       },
     });
@@ -151,7 +151,7 @@ describe("Serializable Data Test", () => {
     expect(spy).toHaveBeenCalledWith(
       expect.stringContaining("A non-serializable value was detected"),
       expect.toBeFunction(),
-      expect.toBeString()
+      expect.toBeString(),
     );
   });
 });
