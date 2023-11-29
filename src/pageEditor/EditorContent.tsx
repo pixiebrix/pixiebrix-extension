@@ -120,7 +120,7 @@ const EditorContent: React.FC = () => {
   }
 
   if (isPendingExtensions || isConnectingToContentScript) {
-    // Avoid flashing the panes below while the state is loading. This condition could probably
+    // Avoid flashing the panes below while the state is loading. This condition should probably
     // not be moved below <HomePane>
     // It loads fast enough to not require a <Loader> either.
     // https://github.com/pixiebrix/pixiebrix-extension/pull/3611
