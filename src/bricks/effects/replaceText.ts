@@ -116,7 +116,7 @@ class ReplaceTextEffect extends EffectABC {
     { root }: BrickOptions,
   ): Promise<void> {
     // Don't make replacements outside the `body`, like in `title`
-    const { body } = root.ownerDocument ?? root;
+    const { body } = root.ownerDocument ?? (root as Document);
     if (root.contains(body)) {
       root = body;
     }

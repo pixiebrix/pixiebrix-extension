@@ -27,6 +27,7 @@ function getBase64Image(img: HTMLImageElement) {
   canvas.height = img.height;
 
   // Copy the image contents to the canvas
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- 2d always exists
   const context = canvas.getContext("2d")!;
   context.drawImage(img, 0, 0);
 

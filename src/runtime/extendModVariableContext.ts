@@ -143,7 +143,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     namespace: "blueprint",
     blueprintId,
     // `extensionId` is not used because namespace is `blueprint`
-    extensionId: validateUUID(undefined),
+    extensionId: validateUUID(null),
   });
 
   return {
