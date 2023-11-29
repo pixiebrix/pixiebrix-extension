@@ -36,10 +36,19 @@ import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type RegistryId } from "@/types/registryTypes";
-import { type RendererOutput } from "@/types/runtimeTypes";
+import {
+  type BrickArgsContext,
+  type RendererOutput,
+} from "@/types/runtimeTypes";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { isEmpty } from "lodash";
 import DelayedRender from "@/components/DelayedRender";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
+import { uuidv4 } from "@/types/helpers";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { getTopLevelFrame } from "webext-messenger";
+import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
+import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 
 // Used for the loading message
 // import cx from "classnames";
@@ -126,9 +135,15 @@ const slice = createSlice({
 const PanelBody: React.FunctionComponent<{
   isRootPanel?: boolean;
   payload: PanelPayload;
+  /**
+   * The current path to the panel inside a document builder tree. Used for distinguishing traces from
+   * branches with the same name, but different locations in the rendered tree.
+   * @since 1.8.4
+   */
+  tracePath?: DynamicPath;
   context: PanelContext;
   onAction: (action: SubmitPanelAction) => void;
-}> = ({ payload, context, isRootPanel = false, onAction }) => {
+}> = ({ payload, context, isRootPanel = false, onAction, tracePath }) => {
   const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
 
   useAsyncEffect(
@@ -155,32 +170,63 @@ const PanelBody: React.FunctionComponent<{
         // In most cases reactivate would have already been called for the payload == null branch. But confirm it here
         dispatch(slice.actions.reactivate());
 
-        const { blockId, ctxt, args, runId, extensionId } = payload;
+        const {
+          blockId,
+          ctxt: brickArgsContext,
+          args,
+          runId,
+          extensionId,
+        } = payload;
 
         console.debug("Running panel body for panel payload", payload);
 
         const block = await blockRegistry.lookup(blockId);
 
+        const logger = new BackgroundLogger({
+          ...context,
+          blockId,
+        });
+
+        const branches = tracePath ? mapPathToTraceBranches(tracePath) : [];
+
         const body = await block.run(unsafeAssumeValidArg(args), {
-          ctxt,
+          ctxt: brickArgsContext,
           root: null,
-          logger: new BackgroundLogger({
-            ...context,
-            blockId,
-          }),
           meta: {
-            extensionId,
             runId,
-            branches: [],
+            extensionId,
+            branches,
           },
-          async runPipeline() {
-            throw new BusinessError(
-              "Support for running pipelines in panels not implemented"
-            );
+          logger,
+          async runPipeline(pipeline, branch, extraContext) {
+            if (!brickArgsContext || typeof brickArgsContext !== "object") {
+              throw new Error(
+                `Unexpected brickArgsContext type: ${typeof brickArgsContext}}`
+              );
+            }
+
+            const topLevelFrame = await getTopLevelFrame();
+
+            await runHeadlessPipeline(topLevelFrame, {
+              nonce: uuidv4(),
+              context: {
+                ...(brickArgsContext as BrickArgsContext),
+                ...extraContext,
+              },
+              pipeline: pipeline.__value__,
+              // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
+              options: apiVersionOptions("v3"),
+              messageContext: logger.context,
+              meta: {
+                extensionId,
+                runId,
+                branches: [...branches, branch],
+              },
+            });
           },
           async runRendererPipeline() {
             throw new BusinessError(
-              "Support for running pipelines in panels not implemented"
+              "Support for running renderer pipelines in panels not implemented"
             );
           },
         });

@@ -19,7 +19,7 @@ import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
 import { browserAction, type Tab } from "@/mv3/api";
-import { isScriptableUrl } from "@/permissions/permissionsUtils";
+import { isScriptableUrl } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import {

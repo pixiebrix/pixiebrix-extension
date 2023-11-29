@@ -41,7 +41,7 @@ import {
 } from "@/testUtils/factories/marketplaceFactories";
 import * as messengerApi from "@/contentScript/messenger/api";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
-import ErrorBoundary from "@/sidebar/ErrorBoundary";
+import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 

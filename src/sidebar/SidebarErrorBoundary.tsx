@@ -15,47 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Component, type ErrorInfo } from "react";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import React from "react";
 import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
 import { reloadSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
-import reportError from "@/telemetry/reportError";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
-interface State {
-  hasError: boolean;
-  errorMessage: string | undefined;
-  stack: string | undefined;
-}
-
-interface Props {
-  onError?: (error?: Error, errorInfo?: ErrorInfo) => void;
-}
-
-class ErrorBoundary extends Component<Props, State> {
-  override state: State = {
-    hasError: false,
-    errorMessage: undefined,
-    stack: undefined,
-  };
-
-  static getDerivedStateFromError(error: Error) {
-    // Update state so the next render will show the fallback UI.
-    return {
-      hasError: true,
-      errorMessage: getErrorMessage(error),
-      stack: error.stack,
-    };
-  }
-
-  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    this.props.onError?.(error, errorInfo);
-    reportError(error);
-  }
-
+class SidebarErrorBoundary extends ErrorBoundary {
   async reloadSidebar() {
     const topLevelFrame = await getTopLevelFrame();
     await reloadSidebar(topLevelFrame);
@@ -102,4 +71,4 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export default ErrorBoundary;
+export default SidebarErrorBoundary;

@@ -18,7 +18,8 @@
 import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/utils/extensionUtils";
 import { type Target } from "@/types/messengerTypes";
-import { canAccessTab, isScriptableUrl } from "@/permissions/permissionsUtils";
+import { canAccessTab } from "@/permissions/permissionsUtils";
+import { isScriptableUrl } from "webext-content-scripts";
 import { debounce } from "lodash";
 import { syncFlagOn } from "@/store/syncFlags";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";

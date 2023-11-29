@@ -216,7 +216,7 @@ export function getToggleOptions({
       label: "Sheet",
       value: "string",
       symbol: <FontAwesomeIcon icon={faFileAlt} fixedWidth />,
-      Widget: widgetsRegistry.SheetsFileWidget,
+      Widget: widgetsRegistry.SpreadsheetPickerWidget,
       interpretValue: () => "",
     });
     handleVarOption();

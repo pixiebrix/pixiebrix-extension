@@ -751,6 +751,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="root"
     >
       <div
+        aria-expanded="false"
         class="header"
         role="button"
         tabindex="0"
@@ -867,6 +868,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="root"
     >
       <div
+        aria-expanded="false"
         class="header"
         role="button"
         tabindex="0"

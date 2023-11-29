@@ -47,16 +47,54 @@ import { findLast } from "lodash";
 import { joinName } from "@/utils/formUtils";
 
 export type FormEditorProps = {
+  /**
+   * The Formik name of the form field.
+   */
   name: string;
-  showFormTitle?: boolean;
+  /**
+   * If true, the form title and description fields will be shown (default: true).
+   */
+  showFormIntroFields?: boolean;
   activeField?: string;
   setActiveField: SetActiveField;
   fieldTypes?: SelectStringOption[];
 };
 
+/**
+ * Form introductory fields for the form title and description.
+ * @constructor
+ */
+export const FormIntroFields: React.FunctionComponent<{ name: string }> = ({
+  name,
+}) => {
+  const { titleFieldProps, descriptionFieldProps } = useMemo(() => {
+    const titleFieldProps: SchemaFieldProps = {
+      name: joinName(name, "schema", "title"),
+      schema: { type: "string" },
+      label: "Form Title",
+      description: "The form title to display",
+    };
+    const descriptionFieldProps: SchemaFieldProps = {
+      name: joinName(name, "schema", "description"),
+      schema: { type: "string" },
+      label: "Form Description",
+      description: "Form description or instructions. Supports markdown.",
+    };
+
+    return { titleFieldProps, descriptionFieldProps };
+  }, [name]);
+
+  return (
+    <>
+      <SchemaField {...titleFieldProps} />
+      <SchemaField {...descriptionFieldProps} />
+    </>
+  );
+};
+
 const FormEditor: React.FC<FormEditorProps> = ({
   name,
-  showFormTitle = true,
+  showFormIntroFields = true,
   activeField,
   setActiveField,
   fieldTypes,
@@ -95,20 +133,6 @@ const FormEditor: React.FC<FormEditorProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- resetting activeField only on new name
     [name]
   );
-
-  const { titleFieldProps, descriptionFieldProps } = useMemo(() => {
-    const titleFieldProps: SchemaFieldProps = {
-      name: joinName(name, "schema", "title"),
-      schema: { type: "string" },
-      label: "Form Title",
-    };
-    const descriptionFieldProps: SchemaFieldProps = {
-      name: joinName(name, "schema", "description"),
-      schema: { type: "string" },
-      label: "Form Description",
-    };
-    return { titleFieldProps, descriptionFieldProps };
-  }, [name]);
 
   const propertyKeys = Object.keys(schema?.properties ?? {});
 
@@ -210,10 +234,9 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   return (
     <>
-      {showFormTitle && (
+      {showFormIntroFields && (
         <>
-          <SchemaField {...titleFieldProps} />
-          <SchemaField {...descriptionFieldProps} />
+          <FormIntroFields name={name} />
           <hr />
         </>
       )}

@@ -33,8 +33,13 @@ import { SessionMap } from "@/mv3/SessionStorage";
 import { groupPromisesByStatus } from "@/utils/promiseUtils";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { forEachTab } from "@/utils/extensionUtils";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 type TabId = number;
+
+// Arbitrary number of tabs above which performance *might* be degraded
+const LARGE_AMOUNT_OF_TABS = 20;
 
 // TODO: One tab could have multiple targets, but `tabToTarget` currently only supports one at a time
 const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
@@ -169,6 +174,12 @@ export async function requestRunInOtherTabs(
       exclude: sourceTabId,
     }
   );
+
+  if (results.length > LARGE_AMOUNT_OF_TABS) {
+    reportEvent(Events.PERFORMANCE_MESSENGER_MANY_TABS_BROADCAST, {
+      tabCount: results.length,
+    });
+  }
 
   const { rejected, fulfilled } = groupPromisesByStatus(results);
 
