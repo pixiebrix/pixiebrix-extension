@@ -60,11 +60,11 @@ function useKeyboardNavigation({
   // and compare it to the current value to determine if we need to update the active key path
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/7006
   useEffect(() => {
-    if (!isEqual(prevMenuOptions.current, menuOptions)) {
+    if (!activeKeyPath || !isEqual(prevMenuOptions.current, menuOptions)) {
       setActiveKeyPath(defaultMenuOption(menuOptions, likelyVariable));
       prevMenuOptions.current = menuOptions;
     }
-  }, [likelyVariable, menuOptions]);
+  }, [activeKeyPath, likelyVariable, menuOptions]);
 
   const move = useCallback(
     (offset: number) => {
