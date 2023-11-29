@@ -76,7 +76,7 @@ describe("useKeyboardNavigation", () => {
     const initialProps = {
       inputElementRef,
       isVisible: true,
-      likelyVariable: "@input.",
+      likelyVariable: "@inpu",
       menuOptions,
       onSelect,
     };
@@ -88,16 +88,25 @@ describe("useKeyboardNavigation", () => {
       },
     );
 
-    expect(result.current.activeKeyPath).toStrictEqual([
-      "description",
-      "@input",
-    ]);
+    expect(result.current.activeKeyPath).toStrictEqual(["@input"]);
 
     rerender({
       ...initialProps,
       likelyVariable: "@input",
     });
 
-    expect(result.current.activeKeyPath).toStrictEqual(["@input"]);
+    expect(result.all).toHaveLength(4);
+
+    const prevResult = result.all[2];
+
+    if (prevResult instanceof Error) {
+      throw new TypeError("prevResult is an error");
+    }
+
+    // Active Key Path is deep equal, but not referentially equal
+    expect(prevResult.activeKeyPath).not.toBe(result.current.activeKeyPath);
+    expect(prevResult.activeKeyPath).toStrictEqual(
+      result.current.activeKeyPath,
+    );
   });
 });
