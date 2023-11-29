@@ -48,7 +48,6 @@ export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
 
 /**
  * Returns true if the mod is a ResolvedExtension, instead of a mod definition.
- * @param mod the mod
  */
 export function isResolvedModComponent(mod: Mod): mod is ResolvedModComponent {
   return "extensionPointId" in mod;
@@ -56,7 +55,6 @@ export function isResolvedModComponent(mod: Mod): mod is ResolvedModComponent {
 
 /**
  * Return true if the mod is an ModComponentBase that originated from a recipe.
- * @param mod the mod
  */
 export function isModComponentFromRecipe(mod: Mod): boolean {
   return isResolvedModComponent(mod) && Boolean(mod._recipe);
@@ -64,7 +62,6 @@ export function isModComponentFromRecipe(mod: Mod): boolean {
 
 /**
  * Return true if the mod is a ModDefinition or UnavailableMod
- * @param mod the mod
  */
 export function isModDefinition(
   mod: Mod,
@@ -74,7 +71,6 @@ export function isModDefinition(
 
 /**
  * Returns a unique id for the mod. Suitable for use as a React key
- * @param mod the mod
  */
 export function getUniqueId(mod: Mod): UUID | RegistryId {
   return isResolvedModComponent(mod) ? mod.id : mod.metadata.id;
@@ -82,7 +78,6 @@ export function getUniqueId(mod: Mod): UUID | RegistryId {
 
 /**
  * Returns the human-readable label for the mod
- * @param mod the mod
  */
 export function getLabel(mod: Mod): string {
   return isResolvedModComponent(mod) ? mod.label : mod.metadata.name;
@@ -90,7 +85,6 @@ export function getLabel(mod: Mod): string {
 
 /**
  * Returns the description for the mod
- * @param mod the mod
  */
 export const getDescription = (mod: Mod): string => {
   if (isResolvedModComponent(mod)) {
@@ -102,7 +96,6 @@ export const getDescription = (mod: Mod): string => {
 
 /**
  * Return the registry id associated with a mod, or null
- * @param mod the mod
  */
 export function getPackageId(mod: Mod): RegistryId | undefined {
   return isResolvedModComponent(mod) ? mod._recipe?.id : mod.metadata.id;
@@ -110,7 +103,6 @@ export function getPackageId(mod: Mod): RegistryId | undefined {
 
 /**
  * Returns the timestamp for the time the mod was last updated (edited)
- * @param mod the mod
  */
 export function getUpdatedAt(mod: Mod): string | null {
   return isResolvedModComponent(mod)
