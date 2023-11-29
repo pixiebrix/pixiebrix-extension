@@ -1,1 +1,3 @@
+# These formatting commits are excluded from blame views because they contain no useful information. Documentation:
+# https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view
 9c0e8c268d9b800e8b56df7f8d70f0e894d373e2
