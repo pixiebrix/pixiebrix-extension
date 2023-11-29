@@ -22,7 +22,6 @@ import { handleMenuAction } from "@/contentScript/contextMenus";
 import {
   ensureInstalled,
   getActiveExtensionPoints,
-  handleNavigate,
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
@@ -128,7 +127,6 @@ declare global {
     INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
     ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
     CHECK_AVAILABLE: typeof checkAvailable;
-    HANDLE_NAVIGATE: typeof handleNavigate;
     RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
@@ -195,7 +193,6 @@ export default function registerMessenger(): void {
     INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
     ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
     CHECK_AVAILABLE: checkAvailable,
-    HANDLE_NAVIGATE: handleNavigate,
 
     RUN_BRICK: runBrick,
     CANCEL_SELECT_ELEMENT: cancelSelect,

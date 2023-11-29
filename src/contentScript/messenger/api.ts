@@ -70,7 +70,6 @@ export const getInstalledExtensionPoints = getMethod(
   "INSTALLED_EXTENSION_POINTS",
 );
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
-export const handleNavigate = getNotifier("HANDLE_NAVIGATE");
 export const runBrick = getMethod("RUN_BRICK");
 export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getMethod("SELECT_ELEMENT");

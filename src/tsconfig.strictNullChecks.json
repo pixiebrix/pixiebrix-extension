@@ -301,8 +301,6 @@
     "./pageEditor/fields/makeLockableFieldProps.tsx",
     "./pageEditor/fields/selectorListItem/SelectorListItem.tsx",
     "./pageEditor/hooks/useEscapeHandler.ts",
-    "./pageEditor/messenger/api.ts",
-    "./pageEditor/messenger/registration.ts",
     "./pageEditor/panes/BetaPane.tsx",
     "./pageEditor/panes/IntroButtons.tsx",
     "./pageEditor/panes/NoModSelectedPane.tsx",
