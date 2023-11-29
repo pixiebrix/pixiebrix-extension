@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useRef } from "react";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import cx from "classnames";
@@ -50,7 +50,15 @@ const CustomFormComponent: React.FunctionComponent<{
   submitCaption: string;
   formData: JsonObject;
   autoSave: boolean;
-  onSubmit: (values: JsonObject) => Promise<void>;
+  /**
+   * Form submission handler.
+   * @param values the submitted values
+   * @param submissionCount the number of times the form has been submitted (For tracing)
+   */
+  onSubmit: (
+    values: JsonObject,
+    { submissionCount }: { submissionCount: number }
+  ) => Promise<void>;
   className?: string;
 }> = ({
   schema,
@@ -60,54 +68,72 @@ const CustomFormComponent: React.FunctionComponent<{
   autoSave,
   className,
   onSubmit,
-}) => (
-  <div
-    className={cx("CustomForm", className, {
-      // Since 1.7.33, support a className prop to allow for adjusting margin/padding. To maintain the legacy
-      // behavior, apply the default only if the className prop is not provided.
-      "p-3": className === undefined,
-    })}
-  >
-    <ErrorBoundary>
-      <Stylesheets href={[bootstrap, bootstrapOverrides, custom]}>
-        <RjsfSubmitContext.Provider
-          value={{
-            async submitForm() {
-              await onSubmit(formData);
-            },
-          }}
-        >
-          <JsonSchemaForm
-            schema={schema}
-            uiSchema={uiSchema}
-            formData={formData}
-            fields={fields}
-            widgets={uiWidgets}
-            validator={validator}
-            templates={{ FieldTemplate }}
-            onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
-              if (autoSave) {
-                await onSubmit(formData ?? {});
-              }
-            }}
-            onSubmit={async ({ formData }: IChangeEvent<JsonObject>) => {
-              await onSubmit(formData ?? {});
+}) => {
+  // Use useRef instead of useState because we don't need/want a re-render when count changes
+  const submissionCountRef = useRef(0);
+  // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
+  const valuesRef = useRef(formData);
+
+  return (
+    <div
+      className={cx("CustomForm", className, {
+        // Since 1.7.33, support a className prop to allow for adjusting margin/padding. To maintain the legacy
+        // behavior, apply the default only if the className prop is not provided.
+        "p-3": className === undefined,
+      })}
+    >
+      <ErrorBoundary>
+        <Stylesheets href={[bootstrap, bootstrapOverrides, custom]}>
+          <RjsfSubmitContext.Provider
+            value={{
+              async submitForm() {
+                submissionCountRef.current += 1;
+                await onSubmit(valuesRef.current, {
+                  submissionCount: submissionCountRef.current,
+                });
+              },
             }}
           >
-            {autoSave || uiSchema["ui:submitButtonOptions"]?.norender ? (
-              <div />
-            ) : (
-              <div>
-                <button className="btn btn-primary" type="submit">
-                  {submitCaption}
-                </button>
-              </div>
-            )}
-          </JsonSchemaForm>
-        </RjsfSubmitContext.Provider>
-      </Stylesheets>
-    </ErrorBoundary>
-  </div>
-);
+            <JsonSchemaForm
+              schema={schema}
+              uiSchema={uiSchema}
+              formData={formData}
+              fields={fields}
+              widgets={uiWidgets}
+              validator={validator}
+              templates={{ FieldTemplate }}
+              onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
+                valuesRef.current = formData;
+
+                if (autoSave) {
+                  submissionCountRef.current += 1;
+                  await onSubmit(formData ?? {}, {
+                    submissionCount: submissionCountRef.current,
+                  });
+                }
+              }}
+              onSubmit={async ({ formData }: IChangeEvent<JsonObject>) => {
+                submissionCountRef.current += 1;
+                await onSubmit(formData ?? {}, {
+                  submissionCount: submissionCountRef.current,
+                });
+              }}
+            >
+              {autoSave || uiSchema["ui:submitButtonOptions"]?.norender ? (
+                <div />
+              ) : (
+                <div>
+                  <button className="btn btn-primary" type="submit">
+                    {submitCaption}
+                  </button>
+                </div>
+              )}
+            </JsonSchemaForm>
+          </RjsfSubmitContext.Provider>
+        </Stylesheets>
+      </ErrorBoundary>
+    </div>
+  );
+};
 
 export default CustomFormComponent;

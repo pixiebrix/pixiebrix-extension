@@ -19,7 +19,10 @@ import { type BrickConfig } from "@/bricks/types";
 import { type Brick } from "@/types/brickTypes";
 import { type BrickArgs, type OutputKey } from "@/types/runtimeTypes";
 
+const REFERENCE_CHAR = "@";
+
 export type BrickType = "reader" | "effect" | "transform" | "renderer";
+
 /**
  * A block configuration with the corresponding resolved Brick and BrickType.
  * @see BrickConfig
@@ -35,6 +38,8 @@ export type ResolvedBrickConfig = {
  * Assume that a value matches the expected arg for any brick.
  *
  * For use in tests and JavaScript bricks that manually create a call to an individual brick.
+ *
+ * @see brickOptionsFactory
  */
 export function unsafeAssumeValidArg<T extends Record<string, unknown>>(
   value: unknown
@@ -44,10 +49,30 @@ export function unsafeAssumeValidArg<T extends Record<string, unknown>>(
 
 const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;
 
+/**
+ * Validates and returns if `key` is a valid brick output key (i.e., variable name), or throws a TypeError.
+ * @param key the key to test
+ */
 export function validateOutputKey(key: string): OutputKey {
   if (OUTPUT_KEY_REGEX.test(key)) {
     return key as OutputKey;
   }
 
   throw new TypeError("Not a valid output key");
+}
+
+/**
+ * Type guard for OutputKey
+ * @param value the value to check
+ */
+export function isOutputKey(value: unknown): value is OutputKey {
+  return typeof value === "string" && OUTPUT_KEY_REGEX.test(value);
+}
+
+/**
+ * Returns a reference to the given output key. Currently, this is just the output key prefixed with `@`.
+ * @param outputKey the output key
+ */
+export function getOutputReference(outputKey: OutputKey): string {
+  return REFERENCE_CHAR + outputKey;
 }

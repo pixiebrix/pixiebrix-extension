@@ -27,7 +27,6 @@ import OnboardingView from "@/extensionConsole/pages/mods/onboardingView/Onboard
 import EmptyView from "@/extensionConsole/pages/mods/emptyView/EmptyView";
 import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
-import BotGamesView from "@/extensionConsole/pages/mods/BotGamesView";
 import { type TableInstance } from "react-table";
 import { type ModViewItem } from "@/types/modTypes";
 
@@ -54,10 +53,6 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
 
   if (activeTab.key === "Get Started") {
     return <GetStartedView width={width} height={height} />;
-  }
-
-  if (activeTab.key === "Bot Games") {
-    return <BotGamesView width={width} height={height} />;
   }
 
   if (rows.length > 0) {

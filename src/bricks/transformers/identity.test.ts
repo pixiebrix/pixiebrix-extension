@@ -16,18 +16,99 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { makeVariableExpression } from "@/runtime/expressionCreators";
+import { validateInput } from "@/validators/generic";
+import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 
 const brick = new IdentityTransformer();
 
-describe("IdentityTransformer", () => {
+describe("IdentityTransformer.schema", () => {
+  it.each([null, "hello", 42, [], {}])(
+    "allows validateInput: %s",
+    async (value) => {
+      await expect(
+        validateInput(brick.inputSchema, value)
+      ).resolves.toStrictEqual({
+        errors: [],
+        valid: true,
+      });
+    }
+  );
+
+  it.each([null, "hello", 42, [], {}])(
+    "allow throwIfInvalidInput: %s",
+    async (value) => {
+      await expect(
+        throwIfInvalidInput(brick, unsafeAssumeValidArg(value))
+      ).resolves.toBeUndefined();
+    }
+  );
+});
+
+describe("IdentityTransformer.run", () => {
   test("it returns same value", async () => {
     const value = { foo: "bar" };
     const result = await brick.run(
       unsafeAssumeValidArg(value),
-      {} as BrickOptions
+      brickOptionsFactory()
     );
     expect(result).toStrictEqual(value);
+  });
+
+  test("it accepts null", async () => {
+    const result = await brick.run(
+      unsafeAssumeValidArg(null),
+      brickOptionsFactory()
+    );
+    expect(result).toBeNull();
+  });
+
+  test("it accepts array", async () => {
+    const result = await brick.run(
+      unsafeAssumeValidArg([]),
+      brickOptionsFactory()
+    );
+    expect(result).toStrictEqual([]);
+  });
+});
+
+describe("IdentityTransformer.getOutputSchema", () => {
+  it("returns schema for plain object", () => {
+    const schema = brick.getOutputSchema({
+      id: IdentityTransformer.BRICK_ID,
+      config: {
+        foo: "bar",
+      },
+    });
+    expect(schema).toStrictEqual({
+      type: "object",
+      // Allow any under each property
+      properties: {
+        foo: {},
+      },
+      required: ["foo"],
+    });
+  });
+
+  it("returns undefined for expression", () => {
+    const schema = brick.getOutputSchema({
+      id: IdentityTransformer.BRICK_ID,
+      config: makeVariableExpression("@foo"),
+    });
+    expect(schema).toBeUndefined();
+  });
+
+  it("returns array type", () => {
+    const schema = brick.getOutputSchema({
+      id: IdentityTransformer.BRICK_ID,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- config technically accepts anything
+      config: [] as any,
+    });
+    expect(schema).toStrictEqual({
+      type: "array",
+      items: {},
+    });
   });
 });

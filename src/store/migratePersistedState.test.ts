@@ -16,10 +16,7 @@
  */
 
 import migratePersistedState from "@/store/migratePersistedState";
-import {
-  type MigrationManifest,
-  type PersistedState,
-} from "redux-persist/es/types";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 import { omit, pick } from "lodash";
 
 describe("migratePersistedState", () => {

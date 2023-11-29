@@ -3220,7 +3220,7 @@ exports[`Storyshots Editor/LogTable Populated 1`] = `
               @pixiebrix/system/notification
             </td>
             <td>
-              Invalid inputs for block
+              Invalid inputs for brick
             </td>
           </tr>
         </tbody>
@@ -5742,6 +5742,17 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
               </button>
             </div>
           </div>
+          <small
+            className="text-muted form-text"
+          >
+            <span
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "The form title to display",
+                }
+              }
+            />
+          </small>
         </div>
       </div>
       <div
@@ -5804,6 +5815,17 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
               </button>
             </div>
           </div>
+          <small
+            className="text-muted form-text"
+          >
+            <span
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "Form description or instructions. Supports markdown.",
+                }
+              }
+            />
+          </small>
         </div>
       </div>
       <hr />
@@ -6239,7 +6261,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.properties.firstName.default"
           >
-            Default value
+            Default Value
           </label>
           <div
             className="col-xl-10 col-lg-9"
@@ -6709,6 +6731,17 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
               </button>
             </div>
           </div>
+          <small
+            className="text-muted form-text"
+          >
+            <span
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "The form title to display",
+                }
+              }
+            />
+          </small>
         </div>
       </div>
       <div
@@ -6770,6 +6803,17 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
               </button>
             </div>
           </div>
+          <small
+            className="text-muted form-text"
+          >
+            <span
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "Form description or instructions. Supports markdown.",
+                }
+              }
+            />
+          </small>
         </div>
       </div>
       <hr />

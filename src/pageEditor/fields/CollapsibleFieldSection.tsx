@@ -50,6 +50,7 @@ const CollapsibleFieldSection: React.FC<{
         onClick={onToggle}
         ref={headerRef}
         onKeyPress={onToggle}
+        aria-expanded={expanded}
       >
         <FontAwesomeIcon
           icon={faChevronRight}

@@ -50,6 +50,18 @@ export type SkunkworksSettings = {
   performanceTracing?: boolean;
 };
 
+export type SettingOptions = SkunkworksSettings & {
+  /**
+   * Setting to support autosuggest for variables in the Page Editor
+   */
+  varAutosuggest?: boolean;
+
+  /**
+   * Button to enable the floating action button on the page
+   */
+  isFloatingActionButtonEnabled?: boolean;
+};
+
 /**
  * @deprecated - Do not use versioned state types directly
  */

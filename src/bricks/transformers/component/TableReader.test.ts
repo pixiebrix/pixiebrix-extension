@@ -22,7 +22,7 @@ import {
   unsafeAssumeValidArg,
   validateOutputKey,
 } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const tableReaderBlock = new TableReader();
 
@@ -64,7 +64,7 @@ describe("TableReader", () => {
 
     const result = await tableReaderBlock.run(
       unsafeAssumeValidArg(blockConfig.config),
-      { root } as unknown as BrickOptions
+      brickOptionsFactory({ root })
     );
 
     expect(result).toStrictEqual(expected);
@@ -89,9 +89,10 @@ describe("TableReader", () => {
     `;
 
     const getResult = async () =>
-      tableReaderBlock.run(unsafeAssumeValidArg(blockConfig.config), {
-        root,
-      } as unknown as BrickOptions);
+      tableReaderBlock.run(
+        unsafeAssumeValidArg(blockConfig.config),
+        brickOptionsFactory({ root })
+      );
 
     await expect(getResult).rejects.toThrow(TypeError);
   });
@@ -116,7 +117,7 @@ describe("TableReader", () => {
 
     const result = await tableReaderBlock.run(
       unsafeAssumeValidArg(blockConfig.config),
-      { root: document.querySelector("table") } as unknown as BrickOptions
+      brickOptionsFactory({ root: document.querySelector("table") })
     );
 
     expect(result).toStrictEqual(expected);

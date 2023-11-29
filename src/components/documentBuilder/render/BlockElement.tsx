@@ -41,8 +41,7 @@ type BlockElementProps = {
  */
 const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   const {
-    meta,
-    options: { ctxt, logger },
+    options: { ctxt, logger, meta },
     onAction,
   } = useContext(DocumentContext);
 
@@ -61,7 +60,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
         meta: {
           ...meta,
           // The pipeline is static, so don't need to maintain run counter on branches
-          branches: mapPathToTraceBranches(tracePath),
+          branches: [...meta.branches, ...mapPathToTraceBranches(tracePath)],
         },
         // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
         options: apiVersionOptions("v3"),
@@ -71,7 +70,12 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
 
   if (isLoading) {
     return (
-      <PanelBody payload={null} context={panelContext} onAction={onAction} />
+      <PanelBody
+        payload={null}
+        context={panelContext}
+        tracePath={tracePath}
+        onAction={onAction}
+      />
     );
   }
 
@@ -80,6 +84,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
       <PanelBody
         context={panelContext}
         onAction={onAction}
+        tracePath={tracePath}
         payload={{
           key: `error-${getErrorMessage(error)}`,
           error: serializeError(error),
@@ -90,7 +95,12 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   }
 
   return (
-    <PanelBody context={panelContext} payload={payload} onAction={onAction} />
+    <PanelBody
+      context={panelContext}
+      payload={payload}
+      tracePath={tracePath}
+      onAction={onAction}
+    />
   );
 };
 

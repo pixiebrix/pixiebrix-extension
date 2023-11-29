@@ -27,7 +27,7 @@ import cx from "classnames";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import ErrorBoundary from "@/sidebar/ErrorBoundary";
+import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 
 // Need to memoize this to make sure it doesn't rerender unless its entry actually changes
 // This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646

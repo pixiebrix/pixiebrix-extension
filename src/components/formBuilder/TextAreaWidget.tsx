@@ -47,6 +47,8 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
       if (options.submitOnEnter && event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         event.stopPropagation();
+        // Can submit directly without calling onChange because prior key-presses would already be synced
+        // via the onChange handler.
         await submitForm();
       }
     },

@@ -47,7 +47,7 @@ type Widgets = {
   PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   IconWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   ServiceWidget: React.FC<IntegrationDependencyWidgetProps>;
-  SheetsFileWidget: React.FC<SchemaFieldProps>;
+  SpreadsheetPickerWidget: React.FC<SchemaFieldProps>;
 };
 
 function unsetWidgetFactory(label: string): React.VFC {
@@ -86,7 +86,7 @@ const widgetsRegistry: Widgets = {
   PasswordWidget: unsetWidgetFactory("PasswordWidget"),
   IconWidget: unsetWidgetFactory("IconWidget"),
   ServiceWidget: unsetWidgetFactory("ServiceWidget"),
-  SheetsFileWidget: unsetWidgetFactory("SheetsFileWidget"),
+  SpreadsheetPickerWidget: unsetWidgetFactory("SpreadsheetPickerWidget"),
 };
 
 export default widgetsRegistry;

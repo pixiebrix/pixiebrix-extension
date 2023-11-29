@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { type BrickOptions } from "@/types/runtimeTypes";
 import { JSDOM } from "jsdom";
 import ReplaceTextEffect from "@/bricks/effects/replaceText";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   // Isolate extension state between test
@@ -33,11 +31,6 @@ function getDocument(html: string): Document {
 
 const brick = new ReplaceTextEffect();
 
-const logger = new ConsoleLogger({
-  extensionId: uuidv4(),
-  blueprintId: validateRegistryId("test/123"),
-});
-
 describe("ReplaceTextEffect", () => {
   test("replace text shallow document", async () => {
     const document = getDocument("<div>foo</div>");
@@ -47,7 +40,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
 
     expect(document.body.innerHTML).toBe("<div>bar</div>");
@@ -61,7 +54,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
 
     expect(document.body.innerHTML).toBe("<div>barbar</div>");
@@ -75,7 +68,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
 
     expect(document.body.innerHTML).toBe("<div>FOO</div>");
@@ -88,7 +81,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
     expect(document.body.innerHTML).toBe("<div>bar <span>bar</span></div>");
   });
@@ -101,7 +94,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "bar",
         selector: "span",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
     expect(document.body.innerHTML).toBe("<div>foo <span>bar</span></div>");
   });
@@ -114,7 +107,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "foobar",
         selector: "div",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
     expect(document.body.innerHTML).toBe("<div>foobar <div>foobar</div></div>");
   });
@@ -127,7 +120,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      { logger, root: span } as BrickOptions
+      brickOptionsFactory({ root: span })
     );
     expect(document.body.innerHTML).toBe("<div>foo <span>bar</span></div>");
   });
@@ -140,7 +133,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "###-###-####",
         isRegex: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
     expect(document.body.innerHTML).toBe("<div>###-###-####</div>");
   });
@@ -153,7 +146,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "$<numbers>",
         isRegex: true,
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
     expect(document.body.innerHTML).toBe("<div>123</div>");
   });
@@ -165,7 +158,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}",
         replacement: "###-###-####",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
     expect(document.body.innerHTML).toBe("<div>123-456-7890</div>");
   });
@@ -181,7 +174,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "Sup",
         replacement: "Foo",
       }),
-      { logger, root: document } as BrickOptions
+      brickOptionsFactory({ root: document })
     );
 
     expect(document.head.innerHTML).toBe("<title>Support page</title>");

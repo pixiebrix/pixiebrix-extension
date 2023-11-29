@@ -29,6 +29,7 @@ function renderLogCard(state?: LogState) {
     reducer: {
       logs: logSlice.reducer,
     },
+    // @ts-expect-error -- ignoring preloadedState type error for testing
     preloadedState:
       state == null
         ? undefined
