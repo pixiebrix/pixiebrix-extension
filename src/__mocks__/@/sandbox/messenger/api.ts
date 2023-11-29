@@ -16,7 +16,4 @@
  */
 
 // Skip the sandbox messenger during tests
-export {
-  renderNunjucksTemplate,
-  renderHandlebarsTemplate,
-} from "@/sandbox/messenger/executor";
+export * from "@/sandbox/messenger/executor";

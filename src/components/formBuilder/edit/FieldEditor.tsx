@@ -253,7 +253,7 @@ const FieldEditor: React.FC<{
               : {
                   type: uiType.propertyType,
                 },
-          label: "Default value",
+          label: "Default Value",
           description:
             uiType.extra === "selectWithLabels"
               ? 'Should match one of the "const" values from the "Options" field'
@@ -354,7 +354,7 @@ const FieldEditor: React.FC<{
           name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
           schema={{
             type: "boolean",
-            title: "Submit on Enter?",
+            title: "Submit Form on Enter?",
             description:
               "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
           }}
