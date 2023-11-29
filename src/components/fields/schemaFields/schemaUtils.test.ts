@@ -15,5 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Skip the sandbox messenger during tests
-export * from "@/sandbox/messenger/executor";
+import { castSchema } from "@/components/fields/schemaFields/schemaUtils";
+
+describe("castSchema", () => {
+  it("casts an object to an object schema", () => {
+    expect(castSchema({ foo: {} })).toStrictEqual({
+      type: "object",
+      properties: {
+        foo: {},
+      },
+    });
+  });
+
+  it("returns empty schema", () => {
+    expect(castSchema({})).toStrictEqual({});
+  });
+
+  it("returns array schema", () => {
+    expect(castSchema({ type: "array" })).toStrictEqual({ type: "array" });
+  });
+});

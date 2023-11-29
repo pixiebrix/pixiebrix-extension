@@ -59,6 +59,13 @@ exports[`FormEditor renders empty schema 1`] = `
             </button>
           </div>
         </div>
+        <small
+          class="text-muted form-text"
+        >
+          <span>
+            The form title to display
+          </span>
+        </small>
       </div>
     </div>
     <div
@@ -115,6 +122,13 @@ exports[`FormEditor renders empty schema 1`] = `
             </button>
           </div>
         </div>
+        <small
+          class="text-muted form-text"
+        >
+          <span>
+            Form description or instructions. Supports markdown.
+          </span>
+        </small>
       </div>
     </div>
     <hr />
@@ -236,6 +250,13 @@ exports[`FormEditor renders simple schema 1`] = `
             </button>
           </div>
         </div>
+        <small
+          class="text-muted form-text"
+        >
+          <span>
+            The form title to display
+          </span>
+        </small>
       </div>
     </div>
     <div
@@ -293,6 +314,13 @@ exports[`FormEditor renders simple schema 1`] = `
             </button>
           </div>
         </div>
+        <small
+          class="text-muted form-text"
+        >
+          <span>
+            Form description or instructions. Supports markdown.
+          </span>
+        </small>
       </div>
     </div>
     <hr />
@@ -666,7 +694,7 @@ exports[`FormEditor renders simple schema 1`] = `
           class="label form-label col-form-label col-xl-2 col-lg-3"
           for="rjsfSchema.schema.properties.firstName.default"
         >
-          Default value
+          Default Value
         </label>
         <div
           class="col-xl-10 col-lg-9"
@@ -894,6 +922,13 @@ exports[`FormEditor renders unknown field format 1`] = `
             </button>
           </div>
         </div>
+        <small
+          class="text-muted form-text"
+        >
+          <span>
+            The form title to display
+          </span>
+        </small>
       </div>
     </div>
     <div
@@ -951,6 +986,13 @@ exports[`FormEditor renders unknown field format 1`] = `
             </button>
           </div>
         </div>
+        <small
+          class="text-muted form-text"
+        >
+          <span>
+            Form description or instructions. Supports markdown.
+          </span>
+        </small>
       </div>
     </div>
     <hr />

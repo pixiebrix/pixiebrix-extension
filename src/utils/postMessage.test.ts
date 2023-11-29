@@ -1,4 +1,4 @@
-/**
+/*
  * @jest-environment-options {"resources": "usable", "runScripts": "dangerously"}
  */
 /*

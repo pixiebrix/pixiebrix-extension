@@ -35,7 +35,7 @@ import DatabaseWidget from "./DatabaseWidget";
 import PasswordWidget from "./PasswordWidget";
 import IconWidget from "@/components/fields/IconWidget";
 import IntegrationDependencyWidget from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
-import SheetsFileWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
+import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import FixedInnerObjectWidget from "@/components/fields/schemaFields/widgets/FixedInnerObjectWidget";
 
 const defaultWidgets = {
@@ -59,7 +59,7 @@ const defaultWidgets = {
   IconWidget,
   PasswordWidget,
   ServiceWidget: IntegrationDependencyWidget,
-  SheetsFileWidget,
+  SpreadsheetPickerWidget,
 } as const;
 
 function registerDefaultWidgets() {

@@ -163,8 +163,9 @@
     "uuid": "^9.0.1",
     "webext-additional-permissions": "^2.4.0",
     "webext-base-css": "^1.4.4",
-    "webext-content-scripts": "^2.5.5",
+    "webext-content-scripts": "^2.6.0",
     "webext-detect-page": "^4.1.1",
+    "webext-inject-on-install": "^2.0.0-2",
     "webext-messenger": "^0.25.0-0",
     "webext-patterns": "^1.3.0",
     "webext-polyfill-kinda": "^1.0.2",
@@ -176,6 +177,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-common-types": "^0.2.36",
+    "@shopify/eslint-plugin": "^43.0.0",
     "@shopify/jest-dom-mocks": "^5.0.0",
     "@sindresorhus/tsconfig": "^5.0.0",
     "@sinonjs/fake-timers": "^11.2.2",

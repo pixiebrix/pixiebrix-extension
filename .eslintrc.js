@@ -39,8 +39,12 @@ module.exports = {
     // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
   ],
-  plugins: ["local-rules"],
+  plugins: ["local-rules", "@shopify"],
   rules: {
+    "@shopify/react-hooks-strict-return": "error",
+    "@shopify/prefer-module-scope-constants": "error",
+    "@shopify/jest/no-snapshots": "warn",
+
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/notBothLabelAndLockableProps": "error",
     "import/no-restricted-paths": [

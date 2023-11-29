@@ -15,19 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  ensureGoogleToken,
-  handleGoogleRequestRejection,
-  handleLegacyGoogleClientRequestRejection,
-} from "@/contrib/google/auth";
 import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
-import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/core/sheetsConstants";
-import { expectContext } from "@/utils/expectContext";
-import initGoogle, {
-  isGAPISupported,
-  isGoogleInitialized,
-  markGoogleInvalidated,
-} from "@/contrib/google/initGoogle";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
 import {
@@ -40,12 +28,11 @@ import {
   type BatchUpdateSpreadsheetResponse,
   type FileList,
   type Spreadsheet,
-  type SpreadsheetProperties,
   type UserInfo,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
-import pTimeout from "p-timeout";
 import { isEmpty } from "lodash";
+import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
@@ -55,83 +42,6 @@ export type SpreadsheetTarget = {
   spreadsheetId: string;
   tabName?: string;
 };
-
-/**
- * Ensure GAPI is initialized and return the Google token.
- */
-async function _ensureSheetsReadyOnce({
-  interactive,
-}: {
-  interactive: boolean;
-}): Promise<string> {
-  expectContext("extension");
-
-  if (!isGAPISupported()) {
-    throw new Error("Google API not supported by browser");
-  }
-
-  if (!isGoogleInitialized()) {
-    await initGoogle();
-  }
-
-  const token = await ensureGoogleToken(GOOGLE_SHEETS_SCOPES, {
-    interactive,
-  });
-
-  if (!gapi.client.sheets) {
-    markGoogleInvalidated();
-    throw new Error("gapi sheets module not loaded");
-  }
-
-  return token;
-}
-
-/**
- * Ensure the Google Sheets API is ready to be called, and return the user's token.
- * @param maxRetries the maximum number of retries
- * @param interactive true to show the Google authentication UI, if authentication is required
- * @param timeoutMillis a timeout for ensuring the token if the Google API is not ready
- * @return token the user's Google token
- */
-export async function ensureSheetsReady({
-  maxRetries = 3,
-  interactive,
-  timeoutMillis = 1000,
-}: {
-  maxRetries?: number;
-  interactive: boolean;
-  timeoutMillis?: number;
-}): Promise<string> {
-  let retry = 0;
-  let lastError;
-
-  do {
-    try {
-      const promise = _ensureSheetsReadyOnce({ interactive });
-
-      if (interactive) {
-        // Can't time out the promise on interactive mode, because it may be waiting for the user to authenticate
-        // with the Google authentication UI.
-        // eslint-disable-next-line no-await-in-loop -- retry loop
-        return await promise;
-      }
-
-      // eslint-disable-next-line no-await-in-loop -- retry loop
-      return await pTimeout(promise, {
-        milliseconds: timeoutMillis,
-        message: "Timeout waiting for Google Sheets API token",
-      });
-    } catch (error) {
-      console.error("Error ensuring Google Sheets API ready", error, {
-        retry,
-      });
-      lastError = error;
-      retry++;
-    }
-  } while (retry < maxRetries);
-
-  throw lastError;
-}
 
 export async function isLoggedIn(
   googleAccount: SanitizedIntegrationConfig
@@ -144,16 +54,6 @@ async function executeRequest<Response, RequestData = never>(
   requestConfig: AxiosRequestConfig<RequestData>,
   googleAccount: SanitizedIntegrationConfig | null
 ): Promise<Response> {
-  let legacyClientToken: string | null = null;
-
-  if (!googleAccount) {
-    legacyClientToken = await ensureSheetsReady({ interactive: false });
-    // Fall-back to using the token from ensureSheetsReady
-    requestConfig.headers = {
-      Authorization: `Bearer ${legacyClientToken}`,
-    };
-  }
-
   try {
     const result = await performConfiguredRequestInBackground<Response>(
       googleAccount,
@@ -161,11 +61,7 @@ async function executeRequest<Response, RequestData = never>(
     );
     return result.data;
   } catch (error) {
-    throw await handleGoogleRequestRejection(
-      error,
-      googleAccount,
-      legacyClientToken
-    );
+    throw await handleGoogleRequestRejection(error, googleAccount);
   }
 }
 
@@ -310,87 +206,4 @@ export async function getSpreadsheet({
     },
     googleAccount
   );
-}
-
-/**
- * @deprecated use getAllSpreadsheets() or getSpreadsheet() instead
- */
-export async function getSheetProperties(
-  spreadsheetId: string
-): Promise<SpreadsheetProperties> {
-  const token = await ensureSheetsReady({ interactive: false });
-
-  try {
-    const sheetRequest = gapi.client.sheets.spreadsheets.get({
-      spreadsheetId,
-      fields: "properties",
-    });
-    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
-      // TODO: Find a better solution than casting to any
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      sheetRequest.execute((r: any) => {
-        // Response in practice doesn't match the type signature
-        console.debug("Got spreadsheet response", r);
-        if (r.code >= 300) {
-          reject(
-            new Error(
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              r.message ?? `Google sheets request failed with status: ${r.code}`
-            )
-          );
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        resolve(r.result);
-      });
-    });
-
-    if (!spreadsheet) {
-      throw new Error("Unknown error fetching spreadsheet");
-    }
-
-    return spreadsheet.properties;
-  } catch (error) {
-    throw await handleLegacyGoogleClientRequestRejection(token, error);
-  }
-}
-
-/**
- * @deprecated use getAllSpreadsheets() or getSpreadsheet() instead
- */
-export async function getTabNames(spreadsheetId: string): Promise<string[]> {
-  const token = await ensureSheetsReady({ interactive: false });
-
-  try {
-    const sheetRequest = gapi.client.sheets.spreadsheets.get({
-      spreadsheetId,
-      fields: "sheets.properties",
-    });
-    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
-      // TODO: Find a better solution than casting to any
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      sheetRequest.execute((r: any) => {
-        // Response in practice doesn't match the type signature
-        console.debug("Got spreadsheet response", r);
-        if (r.code >= 300) {
-          reject(
-            new Error(
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              r.message ?? `Google sheets request failed with status: ${r.code}`
-            )
-          );
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        resolve(r.result);
-      });
-    });
-    if (!spreadsheet) {
-      throw new Error("Unknown error fetching spreadsheet");
-    }
-
-    return spreadsheet.sheets.map((x) => x.properties.title);
-  } catch (error) {
-    throw await handleLegacyGoogleClientRequestRejection(token, error);
-  }
 }

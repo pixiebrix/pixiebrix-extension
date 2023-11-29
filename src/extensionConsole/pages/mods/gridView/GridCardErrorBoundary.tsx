@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Component } from "react";
+import React from "react";
 import { Card } from "react-bootstrap";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ModViewItem } from "@/types/modTypes";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 import styles from "./GridCard.module.scss";
 import cx from "classnames";
@@ -35,28 +35,7 @@ type Props = {
   modViewItem: ModViewItem;
 };
 
-type State = {
-  hasError: boolean;
-  errorMessage: string | undefined;
-  stack: string | undefined;
-};
-
-class GridCardErrorBoundary extends Component<Props, State> {
-  override state: State = {
-    hasError: false,
-    errorMessage: undefined,
-    stack: undefined,
-  };
-
-  static getDerivedStateFromError(error: Error) {
-    // Update state so the next render will show the fallback UI.
-    return {
-      hasError: true,
-      errorMessage: getErrorMessage(error),
-      stack: error.stack,
-    };
-  }
-
+class GridCardErrorBoundary extends ErrorBoundary<Props> {
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (
