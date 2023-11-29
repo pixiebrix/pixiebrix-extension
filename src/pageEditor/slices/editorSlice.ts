@@ -926,7 +926,7 @@ export const editorSlice = createSlice({
         (state, { payload: { availableInstalledIds, unavailableCount } }) => {
           state.isPendingInstalledExtensions = false;
           state.availableInstalledIds = availableInstalledIds;
-        }
+        },
       )
       .addCase(
         checkAvailableInstalledExtensions.rejected,
@@ -945,7 +945,7 @@ export const editorSlice = createSlice({
         (state, { payload: { availableDynamicIds, unavailableCount } }) => {
           state.isPendingDynamicExtensions = false;
           state.availableDynamicIds = availableDynamicIds;
-        }
+        },
       )
       .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
         state.isPendingDynamicExtensions = false;
