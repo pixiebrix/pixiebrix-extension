@@ -348,11 +348,8 @@ export function moveMenuOption({
     head
   ] as UnknownRecord;
 
-  console.log("moveMenuOption", { offset, keyPathParts, head, rest, varMap });
-
   // User is switching between top-level variables
   if (rest.length === 0) {
-    console.log("moveMenuOption:noRest");
     const sourceIndex = options.findIndex(([x]) => x === source);
     const [, nextSourceVars] = options.at(
       (sourceIndex + offset) % options.length,
