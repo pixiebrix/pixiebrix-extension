@@ -244,13 +244,13 @@ const createMemoComponent = (
   const PatchedInnerComponent = isClassComponent(InnerMemoComponent)
     ? createClassComponent(WrappedFunctionalComponent, tools, perfState)
     : isMemoComponent(InnerMemoComponent)
-    ? createMemoComponent(WrappedFunctionalComponent, tools, perfState, React)
-    : createFunctionComponent(
-        WrappedFunctionalComponent,
-        tools,
-        perfState,
-        React,
-      );
+      ? createMemoComponent(WrappedFunctionalComponent, tools, perfState, React)
+      : createFunctionComponent(
+          WrappedFunctionalComponent,
+          tools,
+          perfState,
+          React,
+        );
 
   try {
     PatchedInnerComponent.displayName = getDisplayName(

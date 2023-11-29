@@ -153,8 +153,8 @@ const SidebarExpanded: React.FunctionComponent<{
           ? // If there's no extensions in the Blueprint (empty Blueprint?), use the Blueprint's version
             recipe?.metadata?.version
           : isModComponentBase(firstElement)
-          ? firstElement._recipe.version
-          : firstElement.recipe.version;
+            ? firstElement._recipe.version
+            : firstElement.recipe.version;
 
       return (
         <RecipeEntry

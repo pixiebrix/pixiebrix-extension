@@ -51,8 +51,8 @@ export function mapSchemaToOptions({
   const schemaOptions = isLabelledEnumField(schema)
     ? schema.oneOf.map((x) => ({ value: x.const, label: x.title ?? x.const }))
     : Array.isArray(primitiveValues)
-    ? primitiveValues.map((value: string) => ({ value, label: value }))
-    : [];
+      ? primitiveValues.map((value: string) => ({ value, label: value }))
+      : [];
 
   const userOptions = compact([value, ...created])
     .filter(

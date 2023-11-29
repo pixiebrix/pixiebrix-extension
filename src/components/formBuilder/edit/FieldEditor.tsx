@@ -162,8 +162,8 @@ const FieldEditor: React.FC<{
     const uiWidget = isDatabaseFieldType
       ? "database"
       : isGoogleSheetFieldType
-      ? "googleSheet"
-      : uiSchema?.[propertyName]?.[UI_WIDGET];
+        ? "googleSheet"
+        : uiSchema?.[propertyName]?.[UI_WIDGET];
 
     const propertyFormat = propertySchema.format;
     const extra: UiTypeExtra =
@@ -247,12 +247,12 @@ const FieldEditor: React.FC<{
                   $ref: databaseSchema.$id,
                 }
               : uiType.uiWidget === "googleSheet"
-              ? {
-                  $ref: googleSheetIdSchema.$id,
-                }
-              : {
-                  type: uiType.propertyType,
-                },
+                ? {
+                    $ref: googleSheetIdSchema.$id,
+                  }
+                : {
+                    type: uiType.propertyType,
+                  },
           label: "Default Value",
           description:
             uiType.extra === "selectWithLabels"
