@@ -161,7 +161,7 @@ function isPersonal(mod: Mod, userScope: string | null) {
 
 export function getInstalledVersionNumber(
   installedExtensions: UnresolvedModComponent[],
-  mod: Mod
+  mod: Mod,
 ): string | undefined {
   if (isResolvedModComponent(mod)) {
     return mod._recipe?.version;
@@ -318,7 +318,7 @@ export function updateAvailable(
 
 function getOrganization(
   mod: Mod,
-  organizations: Organization[]
+  organizations: Organization[],
 ): Organization | undefined {
   const sharing = isResolvedModComponent(mod)
     ? mod._recipe?.sharing

@@ -252,7 +252,7 @@ async function select(
 
 export async function readJQuery(
   reader: JQueryConfig,
-  root: HTMLElement | Document = document
+  root: HTMLElement | Document = document,
 ): Promise<Record<string, Result>> {
   const { selectors } = reader;
   if (!root) {
