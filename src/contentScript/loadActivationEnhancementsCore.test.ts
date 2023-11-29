@@ -77,10 +77,10 @@ const recipeId2 = validateRegistryId("@pixies/github/github-notifications");
 const activateButtonsHtml = `
 <div>
     <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-      recipeId1
+      recipeId1,
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
     <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-      recipeId2
+      recipeId2,
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
 </div>
 `;
@@ -110,7 +110,7 @@ describe("marketplace enhancements", () => {
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
     getActivatedModIdsMock.mockResolvedValue(
-      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id])
+      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id]),
     );
 
     await loadActivationEnhancements();
@@ -133,7 +133,7 @@ describe("marketplace enhancements", () => {
 
     const components = array(
       modComponentFactory,
-      2
+      2,
     )({
       _recipe: modMetadataFactory,
     });
@@ -143,7 +143,7 @@ describe("marketplace enhancements", () => {
     document.body.innerHTML = `
     <div>
         <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-          modIds[0]
+          modIds[0],
         )}&id=${modIds[1]}">Click Me!</a>
     </div>`;
 
@@ -212,7 +212,7 @@ describe("marketplace enhancements", () => {
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
     getActivatedModIdsMock.mockResolvedValue(
-      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id])
+      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id]),
     );
 
     await loadActivationEnhancements();
@@ -235,7 +235,7 @@ describe("marketplace enhancements", () => {
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
     getActivatedModIdsMock.mockResolvedValue(
-      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id])
+      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id]),
     );
 
     await loadActivationEnhancements();

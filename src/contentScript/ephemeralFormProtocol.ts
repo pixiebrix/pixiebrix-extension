@@ -98,7 +98,7 @@ function unregisterForm(formNonce: UUID) {
 }
 
 export async function getFormDefinition(
-  formNonce: UUID
+  formNonce: UUID,
 ): Promise<FormDefinition> {
   expectContext("contentScript");
 
@@ -112,7 +112,7 @@ export async function getFormDefinition(
 
 export async function resolveForm(
   formNonce: UUID,
-  values: unknown
+  values: unknown,
 ): Promise<void> {
   expectContext("contentScript");
 

@@ -52,7 +52,7 @@ class TraceAnalysis extends AnalysisVisitorABC {
 
     for (const [instanceId, records] of Object.entries(
       // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference of isTraceError
-      groupBy(trace.filter(isTraceError), (x) => x.blockInstanceId)
+      groupBy(trace.filter(isTraceError), (x) => x.blockInstanceId),
     )) {
       this.traceErrorMap.set(instanceId as UUID, records);
     }
@@ -60,14 +60,14 @@ class TraceAnalysis extends AnalysisVisitorABC {
 
   mapErrorAnnotations(
     position: BrickPosition,
-    traceError: ErrorObject
+    traceError: ErrorObject,
   ): AnalysisAnnotation[] {
     const annotations: AnalysisAnnotation[] = [];
 
     if (isSchemaValidationError(traceError)) {
       for (const maybeInputError of traceError.errors) {
         const rootProperty = rootPropertyRegex.exec(
-          maybeInputError.instanceLocation
+          maybeInputError.instanceLocation,
         )?.groups.property;
 
         if (rootProperty) {
@@ -118,7 +118,7 @@ class TraceAnalysis extends AnalysisVisitorABC {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ) {
     super.visitBrick(position, blockConfig, extra);
 

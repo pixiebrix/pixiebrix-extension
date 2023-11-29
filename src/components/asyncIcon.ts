@@ -25,11 +25,11 @@ async function handleIconImport(moduleImport: ModuleImport): Promise<IconProp> {
  * @param iconDefinition the FontAwesome icon prefix and iconName as a string, e.g. "fas fa-coffee"
  */
 export async function fetchFortAwesomeIcon(
-  iconDefinition: IconStringDefinition
+  iconDefinition: IconStringDefinition,
 ): Promise<IconProp> {
   const [prefix, iconName] = iconDefinition.split(" ") as [
     IconPrefix,
-    IconName
+    IconName,
   ];
 
   switch (prefix) {
@@ -39,7 +39,7 @@ export async function fetchFortAwesomeIcon(
         import(
           /* webpackChunkName: "free-solid-svg-icons/[request]" */
           `@fortawesome/free-solid-svg-icons/${camelCase(iconName)}.js`
-        ) as ModuleImport
+        ) as ModuleImport,
       );
     }
 
@@ -48,7 +48,7 @@ export async function fetchFortAwesomeIcon(
         import(
           /* webpackChunkName: "free-brands-svg-icons/[request]" */
           `@fortawesome/free-brands-svg-icons/${camelCase(iconName)}.js`
-        ) as ModuleImport
+        ) as ModuleImport,
       );
     }
 
@@ -57,7 +57,7 @@ export async function fetchFortAwesomeIcon(
         import(
           /* webpackChunkName: "free-regular-svg-icons/[request]" */
           `@fortawesome/free-regular-svg-icons/${camelCase(iconName)}.js`
-        ) as ModuleImport
+        ) as ModuleImport,
       );
     }
 
@@ -80,7 +80,7 @@ export async function fetchFortAwesomeIcon(
 export function useAsyncIcon(
   icon: IconStringDefinition | undefined,
   defaultIcon: IconProp,
-  placeholder: IconProp = defaultIcon
+  placeholder: IconProp = defaultIcon,
 ): IconProp {
   const [value, , error] = useAsyncState(
     async () => {
@@ -91,7 +91,7 @@ export function useAsyncIcon(
       return fetchFortAwesomeIcon(icon);
     },
     [icon, defaultIcon],
-    placeholder
+    placeholder,
   );
 
   useEffect(() => {

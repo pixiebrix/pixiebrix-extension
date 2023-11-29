@@ -41,11 +41,11 @@ export const DOCUMENT_ELEMENT_TYPES = [
   "header_3",
 ] as const;
 
-export type DocumentElementType = typeof DOCUMENT_ELEMENT_TYPES[number];
+export type DocumentElementType = (typeof DOCUMENT_ELEMENT_TYPES)[number];
 
 export type DocumentElement<
   TType extends DocumentElementType = DocumentElementType,
-  TConfig = UnknownObject
+  TConfig = UnknownObject,
 > = {
   type: TType;
   config: TConfig;
@@ -60,7 +60,7 @@ type ListDocumentConfig = {
 export type ListDocumentElement = DocumentElement<"list", ListDocumentConfig>;
 
 export function isListElement(
-  element: DocumentElement
+  element: DocumentElement,
 ): element is ListDocumentElement {
   return element.type === "list";
 }
@@ -75,7 +75,7 @@ type PipelineDocumentElement = DocumentElement<
 >;
 
 export function isPipelineElement(
-  element: DocumentElement
+  element: DocumentElement,
 ): element is PipelineDocumentElement {
   return element.type === "pipeline";
 }
@@ -99,7 +99,7 @@ export type ButtonDocumentElement = DocumentElement<
 >;
 
 export function isButtonElement(
-  element: DocumentElement
+  element: DocumentElement,
 ): element is ButtonDocumentElement {
   return element.type === "button";
 }
@@ -130,7 +130,7 @@ export type DynamicPath = {
 
 export type BuildDocumentBranch = (
   root: DocumentElement,
-  tracePath: DynamicPath
+  tracePath: DynamicPath,
 ) => DocumentComponent;
 
 export type PreviewComponentProps = {

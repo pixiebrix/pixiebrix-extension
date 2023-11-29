@@ -51,7 +51,7 @@ type SubmitCallbacks = {
   remove: (id: UUID) => Promise<void>;
   submit: (
     values: EditorValues & { id: UUID },
-    helpers: { setErrors: (errors: unknown) => void }
+    helpers: { setErrors: (errors: unknown) => void },
   ) => Promise<void>;
 };
 
@@ -63,7 +63,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
 
   const validate = useCallback(
     async (values: EditorValues) => validateSchema(values.config),
-    []
+    [],
   );
 
   const [createPackage] = useCreatePackageMutation();
@@ -84,7 +84,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
 
       dispatch(push("/workshop"));
     },
-    [dispatch, deletePackage]
+    [dispatch, deletePackage],
   );
 
   const submit = useCallback(
@@ -176,7 +176,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
         }
       }
     },
-    [history, refresh, reinstall, create, createPackage, updatePackage]
+    [history, refresh, reinstall, create, createPackage, updatePackage],
   );
 
   return { submit, validate, remove: create ? null : remove };

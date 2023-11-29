@@ -50,7 +50,7 @@ const NoOptions: React.FunctionComponent = () => (
 function genericOptionsFactory(
   schema: Schema,
   uiSchema: UiSchema = {},
-  { preserveSchemaOrder = false }: { preserveSchemaOrder?: boolean } = {}
+  { preserveSchemaOrder = false }: { preserveSchemaOrder?: boolean } = {},
 ): React.FunctionComponent<BlockOptionProps> {
   const optionSchema = inputProperties(schema);
   if (isEmpty(optionSchema)) {
@@ -72,7 +72,7 @@ function genericOptionsFactory(
             isRequired={isRequired}
             uiSchema={propUiSchema}
           />
-        )
+        ),
       )}
     </>
   );

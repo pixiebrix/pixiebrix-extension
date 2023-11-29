@@ -27,7 +27,7 @@ import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
  * @param errorData an error response from the PixieBrix API proxy.
  */
 export function selectRemoteResponseErrorMessage(
-  errorData: ProxyResponseErrorData
+  errorData: ProxyResponseErrorData,
 ): string {
   if (errorData.message) {
     return errorData.message;
@@ -51,7 +51,7 @@ export function selectRemoteResponseErrorMessage(
  * @param data the response from the PixieBrix proxy
  */
 export function proxyResponseToAxiosResponse(
-  data: ProxyResponseData
+  data: ProxyResponseData,
 ): Pick<AxiosResponse, "data" | "status" | "statusText"> {
   if (isProxiedErrorResponse(data)) {
     return {
@@ -75,7 +75,7 @@ export function proxyResponseToAxiosResponse(
  * @see ProxyResponseErrorData
  */
 export function isProxiedErrorResponse(
-  data: ProxyResponseData
+  data: ProxyResponseData,
 ): data is ProxyResponseErrorData {
   return data.status_code >= 400;
 }

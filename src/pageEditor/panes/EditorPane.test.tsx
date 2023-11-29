@@ -122,7 +122,7 @@ beforeAll(async () => {
       ({
         id: uuidSequence(index),
         name: listing.id,
-      } as EditablePackageMetadata)
+      }) as EditablePackageMetadata,
   );
 
   appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);
@@ -175,7 +175,7 @@ const getFormStateWithSubPipelines = (): ModComponentFormState =>
             config: {
               message: makeTemplateExpression(
                 "nunjucks",
-                "iteration {{ @element }}"
+                "iteration {{ @element }}",
               ),
             },
           }),
@@ -190,7 +190,7 @@ async function addABlock(addButton: Element, blockName: string) {
   // Filter for the specified block
   await immediateUserEvent.type(
     screen.getByTestId("tag-search-input"),
-    blockName
+    blockName,
   );
 
   // Run the debounced search
@@ -202,7 +202,7 @@ async function addABlock(addButton: Element, blockName: string) {
   await immediateUserEvent.click(
     screen.getAllByRole("button", {
       name: /^Add/,
-    })[0]
+    })[0],
   );
 }
 
@@ -251,7 +251,7 @@ describe("can add a node", () => {
           dispatch(editorActions.addElement(formState));
           dispatch(editorActions.selectElement(formState.uuid));
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -285,7 +285,7 @@ describe("can add a node", () => {
           dispatch(editorActions.addElement(element));
           dispatch(editorActions.selectElement(element.uuid));
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -314,14 +314,14 @@ describe("can add a node", () => {
           dispatch(editorActions.addElement(element));
           dispatch(editorActions.selectElement(element.uuid));
         },
-      }
+      },
     );
 
     await waitForEffect();
 
     // Adding a node at the very beginning of the sub pipeline
     const addButtonUnderSubPipelineHeader = screen.getByTestId(
-      /icon-button-[\w-]+-header-add-brick/i
+      /icon-button-[\w-]+-header-add-brick/i,
     );
     await addABlock(addButtonUnderSubPipelineHeader, "jq - json processor");
 
@@ -342,7 +342,7 @@ describe("can add a node", () => {
         .body as PipelineExpression
     ).__value__[0].instanceId;
     const addButtonInSubPipeline = screen.getByTestId(
-      `icon-button-${jqNodeId}-add-brick`
+      `icon-button-${jqNodeId}-add-brick`,
     );
 
     // The name of the brick is "Teapot Brick", searching for "Teapot" to get a single result in the Add Brick Dialog
@@ -372,7 +372,7 @@ async function renderEditorPaneWithBasicFormState() {
         dispatch(editorActions.selectElement(element.uuid));
         dispatch(editorActions.setElementActiveNodeId(activeNodeId));
       },
-    }
+    },
   );
   await waitForEffect();
   return utils;
@@ -388,7 +388,7 @@ describe("can remove a node", () => {
 
     // Click the remove button
     await immediateUserEvent.click(
-      screen.getByTestId("icon-button-removeNode")
+      screen.getByTestId("icon-button-removeNode"),
     );
 
     // Expect nodes to be: Foundation, ForEach: Echo
@@ -407,7 +407,7 @@ describe("can remove a node", () => {
 
     // Click the remove button
     await immediateUserEvent.click(
-      screen.getByTestId("icon-button-removeNode")
+      screen.getByTestId("icon-button-removeNode"),
     );
 
     // Expect nodes to be: Foundation, Echo, ForEach
@@ -602,7 +602,7 @@ describe("validation", () => {
   function expectEditorError(container: HTMLElement, errorMessage: string) {
     // eslint-disable-next-line testing-library/no-node-access
     const errorBadge = container.querySelector(
-      '.active[data-testid="editor-node"] span.badge'
+      '.active[data-testid="editor-node"] span.badge',
     );
     expect(errorBadge).toBeInTheDocument();
 
@@ -632,7 +632,7 @@ describe("validation", () => {
 
     expectEditorError(
       container,
-      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates",
     );
   });
 
@@ -663,7 +663,7 @@ describe("validation", () => {
           dispatch(editorActions.selectElement(extension1.uuid));
           dispatch(editorActions.setElementActiveNodeId(echoBlockInstanceId));
         },
-      }
+      },
     );
 
     await tickAsyncEffects();
@@ -692,7 +692,7 @@ describe("validation", () => {
     // Ensure 2 nodes have error badges
     expect(
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelectorAll('[data-testid="editor-node"] span.badge')
+      container.querySelectorAll('[data-testid="editor-node"] span.badge'),
     ).toHaveLength(2);
 
     // Selecting another extension. Only possible with Redux
@@ -702,7 +702,7 @@ describe("validation", () => {
     // Ensure no error is displayed
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const errorBadgesOfAnotherExtension = container.querySelectorAll(
-      '[data-testid="editor-node"] span.badge'
+      '[data-testid="editor-node"] span.badge',
     );
     expect(errorBadgesOfAnotherExtension).toHaveLength(0);
 
@@ -715,7 +715,7 @@ describe("validation", () => {
     // Should show 2 error in the Node Layout
     expect(
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelectorAll('[data-testid="editor-node"] span.badge')
+      container.querySelectorAll('[data-testid="editor-node"] span.badge'),
     ).toHaveLength(2);
 
     const editorNodes = screen.getAllByTestId("editor-node");
@@ -730,7 +730,7 @@ describe("validation", () => {
 
     expectEditorError(
       container,
-      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates"
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates",
     );
   });
 
@@ -742,7 +742,7 @@ describe("validation", () => {
         config: {
           markdown: makeTemplateExpression("nunjucks", "test"),
         },
-      })
+      }),
     );
     const { container } = render(
       <>
@@ -754,7 +754,7 @@ describe("validation", () => {
           dispatch(editorActions.addElement(formState));
           dispatch(editorActions.selectElement(formState.uuid));
         },
-      }
+      },
     );
 
     await tickAsyncEffects();
@@ -779,7 +779,7 @@ describe("validation", () => {
         config: {
           markdown: makeTemplateExpression("nunjucks", "test"),
         },
-      })
+      }),
     );
 
     // Selecting the last node (renderer)
@@ -795,7 +795,7 @@ describe("validation", () => {
     await waitForEffect();
 
     const moveUpButton = within(
-      screen.getAllByTestId("editor-node").at(-1)
+      screen.getAllByTestId("editor-node").at(-1),
     ).getByTitle("Move brick higher");
 
     await immediateUserEvent.click(moveUpButton);
@@ -841,15 +841,15 @@ describe("validation", () => {
                 block: disallowedBlockConfig,
                 pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
                 pipelineIndex: 0,
-              })
+              }),
             );
             dispatch(
               editorActions.setElementActiveNodeId(
-                disallowedBlockConfig.instanceId
-              )
+                disallowedBlockConfig.instanceId,
+              ),
             );
           },
-        }
+        },
       );
 
       await tickAsyncEffects();
@@ -857,9 +857,9 @@ describe("validation", () => {
       const brickType = await getType(disallowedBlock);
       expectEditorError(
         container,
-        `Brick of type "${brickType}" is not allowed in this pipeline`
+        `Brick of type "${brickType}" is not allowed in this pipeline`,
       );
-    }
+    },
   );
 });
 
@@ -891,13 +891,13 @@ describe("brick validation in Add Brick Modal UI", () => {
             dispatch(editorActions.addElement(formState));
             dispatch(editorActions.selectElement(formState.uuid));
           },
-        }
+        },
       );
 
       await waitForEffect();
 
       const addBrickButton = screen.getByTestId(
-        "icon-button-foundation-add-brick"
+        "icon-button-foundation-add-brick",
       );
 
       await immediateUserEvent.click(addBrickButton);
@@ -905,7 +905,7 @@ describe("brick validation in Add Brick Modal UI", () => {
       // Try to find the disallowed brick and make sure it's not there
       await immediateUserEvent.type(
         within(screen.getByRole("dialog")).getByRole("textbox"),
-        disallowedBlockName
+        disallowedBlockName,
       );
 
       // Run the debounced search
@@ -917,7 +917,7 @@ describe("brick validation in Add Brick Modal UI", () => {
         screen.getAllByRole("button", { name: /add/i })[0].parentElement;
       await immediateUserEvent.hover(firstResult);
       expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
-    }
+    },
   );
 
   test("hides UiPath bricks for AA users", async () => {
@@ -933,13 +933,13 @@ describe("brick validation in Add Brick Modal UI", () => {
           dispatch(editorActions.addElement(formState));
           dispatch(editorActions.selectElement(formState.uuid));
         },
-      }
+      },
     );
 
     await waitForEffect();
 
     const addBrickButton = screen.getByTestId(
-      "icon-button-foundation-add-brick"
+      "icon-button-foundation-add-brick",
     );
 
     await immediateUserEvent.click(addBrickButton);
@@ -947,7 +947,7 @@ describe("brick validation in Add Brick Modal UI", () => {
     // Try to find the disallowed brick and make sure it's not there
     await immediateUserEvent.type(
       within(screen.getByRole("dialog")).getByRole("textbox"),
-      "uipath"
+      "uipath",
     );
 
     // Run the debounced search

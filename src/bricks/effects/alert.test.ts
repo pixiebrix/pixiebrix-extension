@@ -25,7 +25,7 @@ const brick = new AlertEffect();
 describe("AlertEffect", () => {
   it("type is optional", async () => {
     await expect(
-      validateInput(brick.inputSchema, { message: "Hello, world!" })
+      validateInput(brick.inputSchema, { message: "Hello, world!" }),
     ).resolves.toStrictEqual({
       errors: [],
       valid: true,
@@ -36,7 +36,7 @@ describe("AlertEffect", () => {
     window.alert = jest.fn();
     await brick.run(
       unsafeAssumeValidArg({ message: "Hello, world!" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
     expect(window.alert).toHaveBeenCalledWith("Hello, world!");
   });

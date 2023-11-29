@@ -92,7 +92,7 @@ export class TableReader extends TransformerABC {
       selector,
       orientation = "infer",
     }: BrickArgs<{ selector: string } & ParsingOptions>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<unknown> {
     const table = selector ? findSingleElement(selector, root) : root;
 
@@ -106,8 +106,8 @@ export class TableReader extends TransformerABC {
 
     throw new TypeError(
       `Selector does not match a table or definition list (dl) element, found: <${lowerCase(
-        table.nodeName
-      )}>`
+        table.nodeName,
+      )}>`,
     );
   }
 }
@@ -117,7 +117,7 @@ export class TablesReader extends TransformerABC {
     super(
       TABLE_READER_ALL_ID,
       "Read All Tables",
-      "Extract data from all the tables on the page"
+      "Extract data from all the tables on the page",
     );
   }
 

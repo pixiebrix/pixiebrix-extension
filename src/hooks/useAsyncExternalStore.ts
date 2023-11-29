@@ -36,7 +36,7 @@ class StateController<T = unknown> {
 
   constructor(
     readonly externalSubscribe: Subscribe,
-    readonly factory: () => Promise<T>
+    readonly factory: () => Promise<T>,
   ) {
     externalSubscribe(this.updateSnapshot);
     void this.updateSnapshot();
@@ -119,7 +119,7 @@ export function INTERNAL_reset(): void {
  */
 function useAsyncExternalStore<T>(
   subscribe: Subscribe,
-  factory: () => Promise<T>
+  factory: () => Promise<T>,
 ): AsyncState<T> {
   const controller =
     stateControllerMap.get(subscribe) ??
@@ -128,7 +128,7 @@ function useAsyncExternalStore<T>(
 
   return useSyncExternalStore(
     controller.subscribe,
-    controller.getSnapshot
+    controller.getSnapshot,
   ) as AsyncState<T>;
 }
 

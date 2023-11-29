@@ -35,7 +35,7 @@ export class HtmlReader extends ReaderABC {
     super(
       "@pixiebrix/html/read",
       "HTML Reader",
-      "Read the HTML for an element/document"
+      "Read the HTML for an element/document",
     );
   }
 

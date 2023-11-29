@@ -53,7 +53,7 @@ export function excludeIntegrationVariables(options: MenuOptions): MenuOptions {
  */
 export function filterOptionsByVariable(
   options: MenuOptions,
-  likelyVariable: string
+  likelyVariable: string,
 ): MenuOptions {
   if (
     likelyVariable == null ||
@@ -76,7 +76,7 @@ export function filterOptionsByVariable(
 
 function filterVarMapByPath(
   vars: UnknownRecord,
-  path: string[]
+  path: string[],
 ): UnknownRecord {
   if (vars == null || path.length === 0) {
     return vars;
@@ -113,7 +113,7 @@ function filterVarMapByPath(
  */
 export function filterVarMapByVariable(
   varMap: UnknownRecord,
-  likelyVariable: string
+  likelyVariable: string,
 ): UnknownRecord {
   if (
     likelyVariable == null ||
@@ -133,7 +133,7 @@ export function filterVarMapByVariable(
  */
 export function expandCurrentVariableLevel(
   varMap: UnknownRecord,
-  likelyVariable: string
+  likelyVariable: string,
 ): ShouldExpandNodeInitially {
   if (
     likelyVariable == null ||
@@ -186,7 +186,7 @@ function isObjectLike(value: unknown): boolean {
 function compareObjectKeys(
   lhsKey: string,
   rhsKey: string,
-  obj: UnknownObject
+  obj: UnknownObject,
 ): number {
   // eslint-disable-next-line security/detect-object-injection -- from Object.fromEntries in caller
   const lhsValue = obj[lhsKey];
@@ -219,8 +219,8 @@ export function sortVarMapKeys(value: unknown): unknown {
   if (typeof value === "object" && value != null && !Array.isArray(value)) {
     return Object.fromEntries(
       Object.entries(value).sort(([lhsKey], [rhsKey]) =>
-        compareObjectKeys(lhsKey, rhsKey, value as UnknownObject)
-      )
+        compareObjectKeys(lhsKey, rhsKey, value as UnknownObject),
+      ),
     );
   }
 
@@ -234,7 +234,7 @@ export function sortVarMapKeys(value: unknown): unknown {
  */
 export function defaultMenuOption(
   options: MenuOptions,
-  likelyVariable: string
+  likelyVariable: string,
 ): KeyPath | null {
   const reversedOptions = reverse([...options]);
 
@@ -262,13 +262,13 @@ export function defaultMenuOption(
 
   // Reverse options to find the last source that matches. (To account for shadowing)
   const sourceMatch = reversedOptions.find(([source, vars]) =>
-    Object.hasOwn(vars, head)
+    Object.hasOwn(vars, head),
   );
 
   if (!sourceMatch) {
     // If no exact match of source, return top-level partial match as default.
     const partialMatch = reversedOptions.find(([, vars]) =>
-      Object.keys(vars).some((x) => x.startsWith(head))
+      Object.keys(vars).some((x) => x.startsWith(head)),
     );
     return partialMatch ? [Object.keys(partialMatch[1])[0]] : null;
   }
@@ -286,7 +286,9 @@ export function defaultMenuOption(
     if (!Object.hasOwn(currentVars, part)) {
       // No exact match, return first partial match as default.
       result.unshift(
-        Object.keys(sortVarMapKeys(currentVars)).find((x) => x.startsWith(part))
+        Object.keys(sortVarMapKeys(currentVars)).find((x) =>
+          x.startsWith(part),
+        ),
       );
       break;
     }
@@ -331,7 +333,7 @@ export function moveMenuOption({
 
   // Reverse options to find the last source that matches. (To account for shadowing)
   const sourceMatch = reversedOptions.find(([source, vars]) =>
-    Object.hasOwn(vars, head)
+    Object.hasOwn(vars, head),
   );
 
   if (!sourceMatch) {
@@ -350,7 +352,7 @@ export function moveMenuOption({
   if (rest.length === 0) {
     const sourceIndex = options.findIndex(([x]) => x === source);
     const [, nextSourceVars] = options.at(
-      (sourceIndex + offset) % options.length
+      (sourceIndex + offset) % options.length,
     );
     return [Object.keys(nextSourceVars)[0]];
   }

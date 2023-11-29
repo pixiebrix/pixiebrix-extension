@@ -85,7 +85,7 @@ export const authStateFactory = define<AuthState>({
   },
   organization: derive<AuthState, OrganizationAuthState>(
     ({ organizations }) => organizations[0],
-    "organizations"
+    "organizations",
   ),
   groups() {
     const groups: AuthState["groups"] = [];

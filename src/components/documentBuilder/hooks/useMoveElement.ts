@@ -32,7 +32,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 export function arrayMove(
   array: unknown[],
   fromIndex: number,
-  toIndex: number
+  toIndex: number,
 ): void {
   const element = array.at(fromIndex);
   array.splice(fromIndex, 1);
@@ -41,7 +41,7 @@ export function arrayMove(
 
 export function acceptDrop(
   element: DocumentElement,
-  parentElement: DocumentElement
+  parentElement: DocumentElement,
 ): boolean {
   return getAllowedChildTypes(parentElement).includes(element.type);
 }
@@ -49,13 +49,13 @@ export function acceptDrop(
 export function moveElement(
   body: DocumentElement[],
   source: TreeSourcePosition,
-  destination: TreeDestinationPosition
+  destination: TreeDestinationPosition,
 ): DocumentElement[] {
   return produce(body, (draft) => {
     const sourceParent = getIn(draft, source.parentId as string);
     const destinationParent: DocumentElement = getIn(
       draft,
-      destination.parentId as string
+      destination.parentId as string,
     );
 
     const element: DocumentElement = sourceParent.children[source.index];
@@ -68,7 +68,7 @@ export function moveElement(
         {
           sourceParent,
           destinationParent,
-        }
+        },
       );
       return;
     }
@@ -105,20 +105,20 @@ function useMoveElement(documentBodyName: string) {
 
   const [, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement
+    editorActions.setNodePreviewActiveElement,
   );
 
   return useCallback(
     async (
       sourcePosition: TreeSourcePosition,
-      destinationPosition?: TreeDestinationPosition
+      destinationPosition?: TreeDestinationPosition,
     ) => {
       // For now, just clear out the active element to ensure the active elementName is valid in the new tree
       setActiveElement(null);
 
       await setValue(moveElement(body, sourcePosition, destinationPosition));
     },
-    [body, setValue, setActiveElement]
+    [body, setValue, setActiveElement],
   );
 }
 

@@ -27,7 +27,7 @@ export class Prompt extends TransformerABC {
       "@pixiebrix/prompt",
       "Prompt for input",
       "Show a browser prompt for a single input",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -45,7 +45,7 @@ export class Prompt extends TransformerABC {
           "A string containing the default value displayed in the text input field",
       },
     },
-    ["message"]
+    ["message"],
   );
 
   override outputSchema: Schema = propertiesToSchema({

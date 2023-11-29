@@ -95,7 +95,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
     event: SyntheticEvent<Dropdown>,
     metadata: {
       source: "select" | "click" | "rootClose" | "keydown";
-    }
+    },
   ) => {
     event.stopPropagation();
 
@@ -108,7 +108,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       } catch (error) {
         console.debug(
           "EllipsisMenu. Failed to trigger closing other menus",
-          error
+          error,
         );
       }
     }
@@ -163,7 +163,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
               >
                 {item.title}
               </Dropdown.Item>
-            )
+            ),
           )}
       </Dropdown.Menu>
     </Dropdown>

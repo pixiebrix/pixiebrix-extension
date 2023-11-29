@@ -5,7 +5,7 @@ import { type JsonObject } from "type-fest";
  * Select data to report to the team admins for the deployment
  */
 export function selectEventData(
-  modComponent: ModComponentBase | null | undefined
+  modComponent: ModComponentBase | null | undefined,
 ): JsonObject {
   if (modComponent == null) {
     return {};

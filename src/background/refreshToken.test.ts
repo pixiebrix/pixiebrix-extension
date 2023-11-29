@@ -59,7 +59,7 @@ describe("refresh token argument validation", () => {
     const integrationConfig = sanitizedIntegrationConfigFactory();
 
     await expect(
-      refreshPKCEToken(googleIntegration, integrationConfig)
+      refreshPKCEToken(googleIntegration, integrationConfig),
     ).rejects.toThrow("Integration id and config service id do not match");
   });
 
@@ -69,9 +69,9 @@ describe("refresh token argument validation", () => {
     });
 
     await expect(
-      refreshPKCEToken(aaIntegration, integrationConfig)
+      refreshPKCEToken(aaIntegration, integrationConfig),
     ).rejects.toThrow(
-      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`
+      `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
     );
   });
 
@@ -81,9 +81,9 @@ describe("refresh token argument validation", () => {
     });
 
     await expect(
-      refreshPKCEToken(greenhouseIntegration, integrationConfig)
+      refreshPKCEToken(greenhouseIntegration, integrationConfig),
     ).rejects.toThrow(
-      `Expected OAuth2 PKCE integration, but got ${greenhouseIntegration.id}`
+      `Expected OAuth2 PKCE integration, but got ${greenhouseIntegration.id}`,
     );
   });
 });
@@ -106,7 +106,7 @@ describe.each([googleIntegration, microsoftIntegration])(
 
       const isTokenRefreshed = await refreshPKCEToken(
         integration,
-        integrationConfig
+        integrationConfig,
       );
 
       expect(isTokenRefreshed).toBe(false);
@@ -125,7 +125,7 @@ describe.each([googleIntegration, microsoftIntegration])(
 
       const isTokenRefreshed = await refreshPKCEToken(
         integration,
-        integrationConfig
+        integrationConfig,
       );
 
       expect(isTokenRefreshed).toBe(false);
@@ -159,7 +159,7 @@ describe.each([googleIntegration, microsoftIntegration])(
 
       const isTokenRefreshed = await refreshPKCEToken(
         integration,
-        integrationConfig
+        integrationConfig,
       );
 
       expect(isTokenRefreshed).toBe(true);
@@ -196,7 +196,7 @@ describe.each([googleIntegration, microsoftIntegration])(
 
       const isTokenRefreshed = await refreshPKCEToken(
         integration,
-        integrationConfig
+        integrationConfig,
       );
 
       expect(isTokenRefreshed).toBe(true);
@@ -230,8 +230,8 @@ describe.each([googleIntegration, microsoftIntegration])(
       appApiMock.onPost().reply(401);
 
       await expect(
-        refreshPKCEToken(integration, integrationConfig)
+        refreshPKCEToken(integration, integrationConfig),
       ).rejects.toThrow("Request failed with status code 401");
     });
-  }
+  },
 );

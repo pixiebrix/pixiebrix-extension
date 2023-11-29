@@ -49,7 +49,7 @@ const PermissionsToolbar: React.FunctionComponent<{
 
   const state = useAsyncState(
     async () => calculatePermissionsForElement(debouncedElement),
-    [debouncedElement]
+    [debouncedElement],
   );
   const {
     refetch,

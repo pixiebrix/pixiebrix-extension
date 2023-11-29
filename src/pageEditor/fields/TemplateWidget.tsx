@@ -38,7 +38,7 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
   ...props
 }) => {
   const templateInput = useRef<HTMLTextAreaElement | HTMLInputElement | null>(
-    null
+    null,
   );
 
   const insertSnippet = useCallback((snippet: string) => {

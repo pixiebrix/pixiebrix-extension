@@ -172,7 +172,7 @@ export class ThrowBrick extends BrickABC {
         type: "string",
       },
     },
-    []
+    [],
   );
 
   async run({
@@ -260,7 +260,7 @@ class DeferBrick extends BrickABC {
         additionalProperties: true,
       },
     },
-    ["array", "element"]
+    ["array", "element"],
   );
 
   async run(
@@ -273,7 +273,7 @@ class DeferBrick extends BrickABC {
       array: unknown[];
       elementKey?: string;
     }>,
-    { ctxt }: BrickOptions
+    { ctxt }: BrickOptions,
   ) {
     return Promise.all(
       array.map(async (data) => {
@@ -290,7 +290,7 @@ class DeferBrick extends BrickABC {
         }
 
         return element;
-      })
+      }),
     );
   }
 }

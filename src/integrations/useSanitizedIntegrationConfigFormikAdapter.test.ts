@@ -50,7 +50,7 @@ jest.mock("@/integrations/registry", () => {
       lookup: jest
         .fn()
         .mockRejectedValue(
-          new Error("Mock not implemented, implement in the test case")
+          new Error("Mock not implemented, implement in the test case"),
         ),
     },
   };
@@ -71,7 +71,7 @@ describe("useSanitizedIntegrationConfigFormikAdapter", () => {
       () => useSanitizedIntegrationConfigFormikAdapter(null),
       {
         initialValues: { integrationDependencies: [] },
-      }
+      },
     );
 
     await waitForEffect();
@@ -86,7 +86,7 @@ describe("useSanitizedIntegrationConfigFormikAdapter", () => {
       () => useSanitizedIntegrationConfigFormikAdapter(registryId),
       {
         initialValues: { integrationDependencies: [] },
-      }
+      },
     );
 
     await waitForEffect();
@@ -115,7 +115,7 @@ describe("useSanitizedIntegrationConfigFormikAdapter", () => {
             }),
           ],
         },
-      }
+      },
     );
 
     await waitForEffect();

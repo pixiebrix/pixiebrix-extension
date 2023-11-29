@@ -52,7 +52,7 @@ import { type ActionFormState } from "./formStateTypes";
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  button: ButtonSelectionResult
+  button: ButtonSelectionResult,
 ): ActionFormState {
   return {
     type: "menuItem",
@@ -86,7 +86,7 @@ function fromNativeElement(
 }
 
 function selectExtensionPointConfig(
-  formState: ActionFormState
+  formState: ActionFormState,
 ): StarterBrickConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
@@ -117,7 +117,7 @@ function selectExtensionPointConfig(
 
 function selectExtension(
   state: ActionFormState,
-  options: { includeInstanceIds?: boolean } = {}
+  options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<MenuItemStarterBrickConfig> {
   const { extension } = state;
   const config: MenuItemStarterBrickConfig = {
@@ -137,7 +137,7 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: ModComponentBase<MenuItemStarterBrickConfig>
+  config: ModComponentBase<MenuItemStarterBrickConfig>,
 ): Promise<ActionFormState> {
   const extensionPoint = await lookupExtensionPoint<
     MenuDefinition,
@@ -148,7 +148,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "action"
+    "action",
   );
 
   return {

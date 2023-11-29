@@ -53,11 +53,11 @@ describe("AttachAutocomplete", () => {
       brickOptionsFactory({
         root: document,
         logger,
-      })
+      }),
     );
 
     expect(document.querySelector("[name='name']").getAttribute("role")).toBe(
-      "combobox"
+      "combobox",
     );
   });
 
@@ -67,11 +67,11 @@ describe("AttachAutocomplete", () => {
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#noForm"),
         logger,
-      })
+      }),
     );
 
     expect(
-      document.querySelector("[name='name']").getAttribute("role")
+      document.querySelector("[name='name']").getAttribute("role"),
     ).toBeNull();
 
     await brick.run(
@@ -79,11 +79,11 @@ describe("AttachAutocomplete", () => {
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#hasForm"),
         logger,
-      })
+      }),
     );
 
     expect(document.querySelector("[name='name']").getAttribute("role")).toBe(
-      "combobox"
+      "combobox",
     );
   });
 });

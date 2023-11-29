@@ -29,7 +29,7 @@ import {
 describe("LocalDefinedService", () => {
   test("includes version", () => {
     const service = fromJS(
-      automationAnywhere as unknown as IntegrationDefinition
+      automationAnywhere as unknown as IntegrationDefinition,
     );
     expect(service.version).toBe("1.0.0");
     expect(service.uiSchema).toMatchObject({
@@ -39,7 +39,7 @@ describe("LocalDefinedService", () => {
 
   test("get origins for oauth2 service", () => {
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const origins = service.getOrigins({
       controlRoomUrl: "https://controlroom.example.com",
@@ -56,7 +56,7 @@ describe("LocalDefinedService", () => {
     const authConfigOrigin = "https://authconfig.example.com";
 
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const origins = service.getOrigins({
       controlRoomUrl: "https://controlroom.example.com",
@@ -72,7 +72,7 @@ describe("LocalDefinedService", () => {
 
   test("excludes invalid base URL", () => {
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const origins = service.getOrigins({
       controlRoomUrl: "",
@@ -87,7 +87,7 @@ describe("LocalDefinedService", () => {
 
   test("default client ID", () => {
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const oauth2 = service.getOAuth2Context({} as unknown as SecretsConfig);
     expect(oauth2.client_id).toBe("g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM");
@@ -97,7 +97,7 @@ describe("LocalDefinedService", () => {
     const clientId = "12345";
 
     const service = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const oauth2 = service.getOAuth2Context({
       clientId,
@@ -114,7 +114,7 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
 
     const config = service.authenticateRequest(
       { apiToken: "topsecret" } as unknown as SecretsConfig,
-      { url: "/v1/candidates/", method: "get" }
+      { url: "/v1/candidates/", method: "get" },
     );
 
     expect(config.baseURL).toBe("https://harvest.greenhouse.io");
@@ -132,8 +132,8 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
     expect(() =>
       service.authenticateRequest(
         { notTheKey: "topsecret" } as unknown as SecretsConfig,
-        { url: "/v1/candidates/", method: "get" }
-      )
+        { url: "/v1/candidates/", method: "get" },
+      ),
     ).toThrow(BusinessError);
   });
 });

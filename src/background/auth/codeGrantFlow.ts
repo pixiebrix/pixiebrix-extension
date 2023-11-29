@@ -32,7 +32,7 @@ import { setCachedAuthData } from "@/background/auth/authStorage";
 
 async function codeGrantFlow(
   auth: IntegrationConfig,
-  oauth2: OAuth2Context
+  oauth2: OAuth2Context,
 ): Promise<AuthData> {
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
@@ -66,12 +66,12 @@ async function codeGrantFlow(
     authorizeURL.searchParams.set("code_challenge", code_challenge);
     authorizeURL.searchParams.set(
       "code_challenge_method",
-      code_challenge_method
+      code_challenge_method,
     );
   } else if (code_challenge_method != null) {
     throw new BusinessError(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check; type is `never`
-      `Unsupported code challenge method: ${code_challenge_method}`
+      `Unsupported code challenge method: ${code_challenge_method}`,
     );
   }
 
@@ -91,7 +91,7 @@ async function codeGrantFlow(
   const error = authResponse.searchParams.get("error");
   if (error) {
     throw new Error(
-      authResponse.searchParams.get("error_description") ?? error
+      authResponse.searchParams.get("error_description") ?? error,
     );
   }
 
@@ -138,7 +138,7 @@ async function codeGrantFlow(
 
   if (status >= 400) {
     throw new Error(
-      `Error getting OAuth2 token: ${statusText ?? "Unknown error"}`
+      `Error getting OAuth2 token: ${statusText ?? "Unknown error"}`,
     );
   }
 
@@ -148,7 +148,7 @@ async function codeGrantFlow(
       parsed = new URLSearchParams(data);
     } catch {
       throw new Error(
-        "Expected application/x-www-form-urlencoded data for response"
+        "Expected application/x-www-form-urlencoded data for response",
       );
     }
 

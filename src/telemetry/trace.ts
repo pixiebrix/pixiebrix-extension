@@ -143,7 +143,7 @@ export type TraceRecord = TraceEntryData & Partial<TraceExitData> & DerivedData;
 export type TraceError = TraceEntryData & ErrorOutput & DerivedData;
 
 export function isTraceError(
-  traceRecord: TraceRecord
+  traceRecord: TraceRecord,
 ): traceRecord is TraceError {
   return "error" in traceRecord && traceRecord.error != null;
 }
@@ -177,7 +177,7 @@ async function openTraceDB() {
         db.deleteObjectStore(ENTRY_OBJECT_STORE);
         console.warn(
           "Deleting object store %s for upgrade",
-          ENTRY_OBJECT_STORE
+          ENTRY_OBJECT_STORE,
         );
       } catch {
         // Not sure what will happen if the store doesn't exist (i.e., on initial install, so just NOP it)
@@ -253,7 +253,7 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
     const data = await tx.store.get(
-      IDBKeyRange.only([record.runId, record.blockInstanceId, callId])
+      IDBKeyRange.only([record.runId, record.blockInstanceId, callId]),
     );
 
     if (data) {
@@ -324,7 +324,7 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
     console.debug(
       "Cleared %d trace entries for extension %s",
       cnt,
-      extensionId
+      extensionId,
     );
   } finally {
     db.close();
@@ -332,7 +332,7 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
 }
 
 export async function getLatestRunByExtensionId(
-  extensionId: UUID
+  extensionId: UUID,
 ): Promise<TraceRecord[]> {
   const db = await openTraceDB();
 
@@ -346,7 +346,7 @@ export async function getLatestRunByExtensionId(
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
     const sorted = sortBy(
       matches.reverse(),
-      (x) => -new Date(x.timestamp).getTime()
+      (x) => -new Date(x.timestamp).getTime(),
     );
 
     const runId = sorted[0]?.runId;

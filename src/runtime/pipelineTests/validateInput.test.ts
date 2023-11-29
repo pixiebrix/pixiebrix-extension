@@ -45,7 +45,7 @@ describe("apiVersion: v1", () => {
       await reducePipeline(
         pipeline,
         simpleInput({ inputArg: 42 }),
-        testOptions("v1")
+        testOptions("v1"),
       );
     } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);
@@ -80,7 +80,7 @@ describe("apiVersion: v2", () => {
       await reducePipeline(
         pipeline,
         simpleInput({ inputArg: 42 }),
-        testOptions("v2")
+        testOptions("v2"),
       );
     } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);
@@ -106,7 +106,7 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
 
     expect(result).toStrictEqual({

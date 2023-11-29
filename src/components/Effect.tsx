@@ -47,7 +47,7 @@ const Effect: React.FunctionComponent<{
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- leave off prev so it doesn't double-trigger the effect
-    [setPrev, debounced, onChange]
+    [setPrev, debounced, onChange],
   );
 
   // Don't render a react node

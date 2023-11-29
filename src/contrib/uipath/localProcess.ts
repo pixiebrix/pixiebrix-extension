@@ -40,7 +40,7 @@ export class RunLocalProcess extends TransformerABC {
     super(
       UIPATH_ID,
       "Run local UiPath process",
-      "Run a UiPath process using your local UiPath assistant"
+      "Run a UiPath process using your local UiPath assistant",
     );
   }
 
@@ -53,7 +53,7 @@ export class RunLocalProcess extends TransformerABC {
 
   async transform(
     { releaseKey, inputArguments = {} }: BrickArgs,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<JobResult> {
     const { UiPathRobot } = await import(
       /* webpackChunkName: "uipath-robot" */ "@/contrib/uipath/UiPathRobot"

@@ -48,7 +48,7 @@ describe("userSelectElement", () => {
 
     // React testing userEvent library doesn't seem to work here
     span.dispatchEvent(
-      new MouseEvent("click", { bubbles: true, cancelable: true })
+      new MouseEvent("click", { bubbles: true, cancelable: true }),
     );
 
     await expect(elementPromise).resolves.toEqual({
@@ -70,7 +70,7 @@ describe("userSelectElement", () => {
 
     // React testing userEvent library doesn't seem to work here
     span.dispatchEvent(
-      new MouseEvent("click", { bubbles: true, cancelable: true })
+      new MouseEvent("click", { bubbles: true, cancelable: true }),
     );
 
     await expect(elementPromise).rejects.toThrow(BusinessError);
@@ -88,7 +88,7 @@ describe("selectElement", () => {
 
     // React testing userEvent library doesn't seem to work here
     span.dispatchEvent(
-      new MouseEvent("click", { bubbles: true, cancelable: true })
+      new MouseEvent("click", { bubbles: true, cancelable: true }),
     );
 
     await expect(selectPromise).resolves.toEqual({
@@ -110,7 +110,7 @@ describe("selectElement", () => {
 
     // React testing userEvent library doesn't seem to work here
     span.dispatchEvent(
-      new MouseEvent("click", { bubbles: true, cancelable: true })
+      new MouseEvent("click", { bubbles: true, cancelable: true }),
     );
 
     await expect(selectPromise).resolves.toEqual({
@@ -136,7 +136,7 @@ describe("selectElement", () => {
 
       // React testing userEvent library doesn't seem to work here
       span.dispatchEvent(
-        new MouseEvent("click", { bubbles: true, cancelable: true })
+        new MouseEvent("click", { bubbles: true, cancelable: true }),
       );
 
       await expect(selectPromise).resolves.toEqual({
@@ -145,7 +145,7 @@ describe("selectElement", () => {
         selectors: ["span"],
         tagName: "SPAN",
       });
-    }
+    },
   );
 
   test("can select multiple in single root", async () => {
@@ -168,12 +168,12 @@ describe("selectElement", () => {
     document
       .querySelector("#span1")
       .dispatchEvent(
-        new MouseEvent("click", { bubbles: true, cancelable: true })
+        new MouseEvent("click", { bubbles: true, cancelable: true }),
       );
     document
       .querySelector("#span2")
       .dispatchEvent(
-        new MouseEvent("click", { bubbles: true, cancelable: true })
+        new MouseEvent("click", { bubbles: true, cancelable: true }),
       );
 
     expect(selectionHandlerMock).toHaveBeenCalledTimes(2);
@@ -212,12 +212,12 @@ describe("selectElement", () => {
     document
       .querySelector("#span1")
       .dispatchEvent(
-        new MouseEvent("click", { bubbles: true, cancelable: true })
+        new MouseEvent("click", { bubbles: true, cancelable: true }),
       );
     document
       .querySelector("#span2")
       .dispatchEvent(
-        new MouseEvent("click", { bubbles: true, cancelable: true })
+        new MouseEvent("click", { bubbles: true, cancelable: true }),
       );
 
     expect(selectionHandlerMock).toHaveBeenCalledTimes(3);

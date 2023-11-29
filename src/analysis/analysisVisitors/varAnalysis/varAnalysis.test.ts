@@ -62,7 +62,7 @@ import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedIntegrationConfigFactory({
     serviceId: validateRegistryId("@test/service"),
-  })
+  }),
 );
 
 jest.mock("@/bricks/registry", () => ({
@@ -95,7 +95,7 @@ describe("Collecting available vars", () => {
         options: {
           schema: optionsSchema,
         },
-      })
+      }),
     );
   }
 
@@ -135,7 +135,7 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/recipe"),
           }),
         },
-        [brickConfigFactory()]
+        [brickConfigFactory()],
       );
 
       await analysis.run(extension);
@@ -151,7 +151,7 @@ describe("Collecting available vars", () => {
       expect(foundationKnownVars.isVariableDefined("@options.foo")).toBeTrue();
 
       expect(
-        foundationKnownVars.isVariableDefined("@pixiebrix.__service.serviceId")
+        foundationKnownVars.isVariableDefined("@pixiebrix.__service.serviceId"),
       ).toBeTrue();
     });
 
@@ -247,16 +247,16 @@ describe("Collecting available vars", () => {
       expect(foundationKnownVars.isVariableDefined("@mod.foo")).toBeTrue();
       expect(foundationKnownVars.isVariableDefined("@mod.foo.data")).toBeTrue();
       expect(
-        foundationKnownVars.isVariableDefined("@mod.foo.cachedData")
+        foundationKnownVars.isVariableDefined("@mod.foo.cachedData"),
       ).toBeTrue();
       expect(
-        foundationKnownVars.isVariableDefined("@mod.foo.isLoading")
+        foundationKnownVars.isVariableDefined("@mod.foo.isLoading"),
       ).toBeTrue();
       expect(
-        foundationKnownVars.isVariableDefined("@mod.foo.isFetching")
+        foundationKnownVars.isVariableDefined("@mod.foo.isFetching"),
       ).toBeTrue();
       expect(
-        foundationKnownVars.isVariableDefined("@mod.foo.error")
+        foundationKnownVars.isVariableDefined("@mod.foo.error"),
       ).toBeFalse();
     });
 
@@ -291,7 +291,7 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/recipe"),
           }),
         },
-        [brickConfigFactory()]
+        [brickConfigFactory()],
       );
 
       await analysis.run(extension);
@@ -326,7 +326,7 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/recipe"),
           }),
         },
-        [brickConfigFactory()]
+        [brickConfigFactory()],
       );
 
       await analysis.run(extension);
@@ -362,7 +362,7 @@ describe("Collecting available vars", () => {
             id: validateRegistryId("test/recipe"),
           }),
         },
-        [brickConfigFactory()]
+        [brickConfigFactory()],
       );
 
       await analysis.run(extension);
@@ -395,7 +395,7 @@ describe("Collecting available vars", () => {
             foo: "bar",
           },
         },
-        [brickConfigFactory()]
+        [brickConfigFactory()],
       );
 
       await analysis.run(extension);
@@ -431,7 +431,7 @@ describe("Collecting available vars", () => {
               },
             },
           ],
-        ])
+        ]),
       );
 
       await analysis.run(extension);
@@ -456,20 +456,20 @@ describe("Collecting available vars", () => {
             },
           },
           required: ["innerHTML", "outerHTML"],
-        }
+        },
       );
 
       // Knows schema variables are defined
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.innerHTML`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.innerHTML`),
       ).toBeTrue();
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.outerHTML`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.outerHTML`),
       ).toBeTrue();
 
       // Arbitrary child of the output key is not defined
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`),
       ).toBeFalse();
     });
 
@@ -480,12 +480,12 @@ describe("Collecting available vars", () => {
           $schema: "https://json-schema.org/draft/2019-09/schema#",
           type: "object",
           additionalProperties: true,
-        }
+        },
       );
 
       // The output key allows any property
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.baz`),
       ).toBeTrue();
     });
 
@@ -500,7 +500,7 @@ describe("Collecting available vars", () => {
 
       // The output key allows any property
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.foo`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.foo`),
       ).toBeTrue();
     });
 
@@ -534,18 +534,18 @@ describe("Collecting available vars", () => {
 
       // Knows schema variables are defined
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.email`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.email`),
       ).toBeTrue();
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.id`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.id`),
       ).toBeTrue();
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.name`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.name`),
       ).toBeTrue();
 
       // Arbitrary child of the user property is not defined
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.baz`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.user.baz`),
       ).toBeFalse();
     });
 
@@ -571,38 +571,40 @@ describe("Collecting available vars", () => {
               },
             },
           },
-        }
+        },
       );
 
       // The output key allows only known properties
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate`),
       ).toBeTrue();
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.foo`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.foo`),
       ).toBeFalse();
 
       // The array items are known
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`),
       ).toBeTrue();
 
       // Non-index access is not allowed
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`),
       ).toBeFalse();
 
       // Only the known properties of array items are allowed
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.href`)
+        secondBlockKnownVars.isVariableDefined(
+          `@${outputKey}.alternate.0.href`,
+        ),
       ).toBeTrue();
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.foo`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.foo`),
       ).toBeFalse();
       expect(
         secondBlockKnownVars.isVariableDefined(
-          `@${outputKey}.alternate.0.href.foo`
-        )
+          `@${outputKey}.alternate.0.href.foo`,
+        ),
       ).toBeFalse();
     });
 
@@ -622,22 +624,22 @@ describe("Collecting available vars", () => {
 
       // The output key allows only known properties
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate`),
       ).toBeTrue();
 
       // The array items are known
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`),
       ).toBeTrue();
 
       // Non-index access is not allowed
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`),
       ).toBeFalse();
 
       // Item's properties are not allowed
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`),
       ).toBeFalse();
     });
 
@@ -669,17 +671,17 @@ describe("Collecting available vars", () => {
       });
 
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0`),
       ).toBeTrue();
 
       // Non-index access is not allowed
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.foo`),
       ).toBeFalse();
 
       // Any item's properties are allowed
       expect(
-        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`)
+        secondBlockKnownVars.isVariableDefined(`@${outputKey}.alternate.0.bar`),
       ).toBeTrue();
     });
   });
@@ -719,7 +721,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
-          .isVariableDefined("@ifOutput")
+          .isVariableDefined("@ifOutput"),
       ).toBeTrue();
     });
 
@@ -732,9 +734,9 @@ describe("Collecting available vars", () => {
       "doesn't add if-else output to sub pipelines (%s)",
       async (blockPath) => {
         expect(
-          analysis.getKnownVars().get(blockPath).isVariableDefined("@ifOutput")
+          analysis.getKnownVars().get(blockPath).isVariableDefined("@ifOutput"),
         ).toBeFalse();
-      }
+      },
     );
 
     test("doesn't leak sub pipeline outputs", async () => {
@@ -752,14 +754,14 @@ describe("Collecting available vars", () => {
       const textElement = createNewElement("text");
       textElement.config.text = makeTemplateExpression(
         "nunjucks",
-        "{{ @foo }} {{ @element }}"
+        "{{ @foo }} {{ @element }}",
       );
       listElement.config.element.__value__ = textElement;
 
       const otherTextElement = createNewElement("text");
       otherTextElement.config.text = makeTemplateExpression(
         "nunjucks",
-        "{{ @element }}"
+        "{{ @element }}",
       );
 
       const documentRendererBrick = {
@@ -778,7 +780,7 @@ describe("Collecting available vars", () => {
     test("adds the list element key list body", () => {
       const knownVars = analysis.getKnownVars();
       const listElementVarMap = knownVars.get(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__"
+        "extension.blockPipeline.0.config.body.0.config.element.__value__",
       );
 
       expect(listElementVarMap.isVariableDefined("@element")).toBeTrue();
@@ -791,18 +793,18 @@ describe("Collecting available vars", () => {
 
       // Check warning is generated for @foo but not @element
       expect(annotations[0].message).toBe(
-        'Variable "@foo" might not be defined'
+        'Variable "@foo" might not be defined',
       );
       expect(annotations[0].position.path).toBe(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__.config.text"
+        "extension.blockPipeline.0.config.body.0.config.element.__value__.config.text",
       );
 
       // Not available in to the peer element to the list
       expect(annotations[1].message).toBe(
-        'Variable "@element" might not be defined'
+        'Variable "@element" might not be defined',
       );
       expect(annotations[1].position.path).toBe(
-        "extension.blockPipeline.0.config.body.1.config.text"
+        "extension.blockPipeline.0.config.body.1.config.text",
       );
     });
   });
@@ -840,7 +842,7 @@ describe("Collecting available vars", () => {
     test("adds the list element key list body", () => {
       const knownVars = analysis.getKnownVars();
       const buttonPipelineVarMap = knownVars.get(
-        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0"
+        "extension.blockPipeline.0.config.body.0.config.element.__value__.children.0.children.0.config.onClick.__value__.0",
       );
 
       expect(buttonPipelineVarMap.isVariableDefined("@input")).toBeTrue();
@@ -892,7 +894,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.0.config.except.__value__.0")
-          .isVariableDefined("@error")
+          .isVariableDefined("@error"),
       ).toBeTrue();
     });
 
@@ -901,7 +903,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.0.config.try.__value__.0")
-          .isVariableDefined("@error")
+          .isVariableDefined("@error"),
       ).toBeFalse();
     });
   });
@@ -932,7 +934,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.0.config.body.__value__.0")
-          .isVariableDefined("@element")
+          .isVariableDefined("@element"),
       ).toBeTrue();
     });
   });
@@ -968,7 +970,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
-          .isVariableDefined("@forEachOutput")
+          .isVariableDefined("@forEachOutput"),
       ).toBeTrue();
     });
 
@@ -980,7 +982,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get(blockPath)
-          .isVariableDefined("@forEachOutput")
+          .isVariableDefined("@forEachOutput"),
       ).toBeFalse();
     });
 
@@ -989,7 +991,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
-          .isVariableDefined("@foo")
+          .isVariableDefined("@foo"),
       ).toBeFalse();
     });
 
@@ -998,7 +1000,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.0.config.body.__value__.0")
-          .isVariableDefined("@element")
+          .isVariableDefined("@element"),
       ).toBeTrue();
     });
 
@@ -1007,7 +1009,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.1")
-          .isVariableDefined("@element")
+          .isVariableDefined("@element"),
       ).toBeFalse();
     });
 
@@ -1021,7 +1023,7 @@ describe("Collecting available vars", () => {
 
       // Find the source that provided the @element variable
       const actualForEachBlockPath = Object.entries(blockVars).find(
-        ([, node]) => "@element" in node
+        ([, node]) => "@element" in node,
       )[0];
 
       expect(actualForEachBlockPath).toBe(expectedForEachBlockPath);
@@ -1059,7 +1061,7 @@ describe("Collecting available vars", () => {
               block: new CustomFormRenderer(),
             },
           ],
-        ])
+        ]),
       );
 
       analysis = new VarAnalysis();
@@ -1071,7 +1073,7 @@ describe("Collecting available vars", () => {
         analysis
           .getKnownVars()
           .get("extension.blockPipeline.0.config.onSubmit.__value__.0")
-          .isVariableDefined("@values")
+          .isVariableDefined("@values"),
       ).toBeTrue();
     });
 
@@ -1096,7 +1098,7 @@ describe("Invalid template", () => {
       config: {
         message: makeTemplateExpression(
           "nunjucks",
-          "This is a malformed template {{ @foo."
+          "This is a malformed template {{ @foo.",
         ),
       },
     };
@@ -1105,7 +1107,7 @@ describe("Invalid template", () => {
       config: {
         message: makeTemplateExpression(
           "nunjucks",
-          "This is a valid template {{ @bar }}"
+          "This is a valid template {{ @bar }}",
         ),
       },
     };
@@ -1126,7 +1128,7 @@ describe("Invalid template", () => {
     // Only the second (index = 1) block should be annotated
     expect(annotations).toHaveLength(1);
     expect(annotations[0].position.path).toBe(
-      "extension.blockPipeline.1.config.message"
+      "extension.blockPipeline.1.config.message",
     );
   });
 });
@@ -1183,7 +1185,7 @@ describe("var expression annotations", () => {
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
     expect(annotations[0].message).toEqual(
-      VARIABLE_SHOULD_START_WITH_AT_MESSAGE
+      VARIABLE_SHOULD_START_WITH_AT_MESSAGE,
     );
   });
 
@@ -1232,7 +1234,7 @@ describe("var analysis integration tests", () => {
         config: {
           message: makeTemplateExpression(
             "nunjucks",
-            "{{ @input.event.key }} was pressed"
+            "{{ @input.event.key }} was pressed",
           ),
         },
       },
@@ -1254,7 +1256,7 @@ describe("var analysis integration tests", () => {
         config: {
           message: makeTemplateExpression(
             "nunjucks",
-            "{{ @input.event.thiscouldbeanything }} was pressed"
+            "{{ @input.event.thiscouldbeanything }} was pressed",
           ),
         },
       },
@@ -1277,7 +1279,7 @@ describe("var analysis integration tests", () => {
           message: makeTemplateExpression(
             "nunjucks",
             // Only @input.event.selectedText is available for selectionchange
-            "{{ @input.event.key }} was pressed"
+            "{{ @input.event.key }} was pressed",
           ),
         },
       },

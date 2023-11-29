@@ -38,7 +38,7 @@ const activeElementTraceForBlockSelector = createSelector(
   selectActiveElementTraces,
   (state: RootState, instanceId: UUID) => instanceId,
   (traces, instanceId) =>
-    traces.find((trace) => trace.blockInstanceId === instanceId)
+    traces.find((trace) => trace.blockInstanceId === instanceId),
 );
 
 export const selectActiveElementTraceForBlock =
@@ -48,7 +48,7 @@ export const selectActiveElementTraceForBlock =
 export const selectActiveNodeTrace = createSelector(
   (state: RootState) => state,
   selectActiveNodeId,
-  activeElementTraceForBlockSelector
+  activeElementTraceForBlockSelector,
 );
 
 /**
@@ -57,11 +57,11 @@ export const selectActiveNodeTrace = createSelector(
 export const selectTraceErrors = createSelector(
   selectActiveElementTraces,
   // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference of isTraceError
-  (records) => records.filter(isTraceError)
+  (records) => records.filter(isTraceError),
 );
 
 export function makeSelectBlockTrace(
-  blockInstanceId: UUID
+  blockInstanceId: UUID,
 ): EditorSelector<{ record: TraceRecord | null }> {
   return ({ runtime, editor }: RootState) => {
     const records = runtime.extensionTraces[editor.activeElementId] ?? [];

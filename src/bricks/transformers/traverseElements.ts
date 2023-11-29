@@ -39,7 +39,7 @@ export class TraverseElements extends TransformerABC {
       "@pixiebrix/html/traverse",
       "Traverse Elements",
       "Traverse elements in an HTML document using a selector/filter",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -100,7 +100,7 @@ export class TraverseElements extends TransformerABC {
       selector: string;
       traversal: string;
     }>,
-    { ctxt, root }: BrickOptions
+    { ctxt, root }: BrickOptions,
   ): Promise<{
     elements: ElementReference[];
     count: number;

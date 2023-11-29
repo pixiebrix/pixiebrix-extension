@@ -67,7 +67,7 @@ export function isModComponentFromRecipe(mod: Mod): boolean {
  * @param mod the mod
  */
 export function isModDefinition(
-  mod: Mod
+  mod: Mod,
 ): mod is ModDefinition | UnavailableMod {
   return mod && "kind" in mod && mod.kind === "recipe" && "sharing" in mod;
 }
@@ -131,14 +131,14 @@ function isPersonalModComponent(extension: ModComponentBase): boolean {
 
 function hasSourceRecipeWithScope(
   extension: ModComponentBase,
-  scope: string
+  scope: string,
 ): boolean {
   return Boolean(scope && extension._recipe?.id.startsWith(scope + "/"));
 }
 
 function hasRecipeScope(
   modDefinition: ModDefinition | UnavailableMod,
-  scope: string
+  scope: string,
 ) {
   return Boolean(modDefinition.metadata?.id.startsWith(scope + "/"));
 }
@@ -169,7 +169,7 @@ export function getInstalledVersionNumber(
 
   const installedExtension = installedExtensions.find(
     (extension: UnresolvedModComponent) =>
-      extension._recipe?.id === mod.metadata.id
+      extension._recipe?.id === mod.metadata.id,
   );
 
   return installedExtension?._recipe?.version;
@@ -177,7 +177,7 @@ export function getInstalledVersionNumber(
 
 export function isDeployment(
   mod: Mod,
-  installedExtensions: UnresolvedModComponent[]
+  installedExtensions: UnresolvedModComponent[],
 ): boolean {
   if (isResolvedModComponent(mod)) {
     return Boolean(mod._deployment);
@@ -187,7 +187,7 @@ export function isDeployment(
   return installedExtensions.some(
     (installedExtension) =>
       installedExtension._recipe?.id === recipeId &&
-      installedExtension?._deployment
+      installedExtension?._deployment,
   );
 }
 
@@ -196,7 +196,7 @@ export function isDeployment(
  */
 export function isRecipePendingPublish(
   recipe: ModDefinition,
-  marketplaceListings: Record<RegistryId, MarketplaceListing>
+  marketplaceListings: Record<RegistryId, MarketplaceListing>,
 ): boolean {
   return recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
 }
@@ -218,7 +218,7 @@ export function getSharingSource({
   if (!isModDefinition(mod) && !isResolvedModComponent(mod)) {
     const error = new InvalidTypeError(
       "Mod is not a ModDefinition or ResolvedModComponent",
-      { mod, organization, scope, installedExtensions }
+      { mod, organization, scope, installedExtensions },
     );
 
     reportError(error);
@@ -257,7 +257,7 @@ export function getSharingSource({
 export function updateAvailable(
   availableRecipes: Map<RegistryId, ModDefinition>,
   installedExtensions: Map<RegistryId, UnresolvedModComponent>,
-  mod: Mod
+  mod: Mod,
 ): boolean {
   if (isUnavailableMod(mod)) {
     // Unavailable mods are never update-able
@@ -289,7 +289,7 @@ export function updateAvailable(
   if (
     semver.gt(
       availableRecipe.metadata.version,
-      installedExtension._recipe.version
+      installedExtension._recipe.version,
     )
   ) {
     return true;
@@ -298,7 +298,7 @@ export function updateAvailable(
   if (
     semver.eq(
       availableRecipe.metadata.version,
-      installedExtension._recipe.version
+      installedExtension._recipe.version,
     )
   ) {
     // Check the updated_at timestamp
@@ -341,7 +341,7 @@ export const selectExtensionsFromMod = createSelector(
   (installedExtensions, mod) =>
     isModDefinition(mod)
       ? installedExtensions.filter(
-          (extension) => extension._recipe?.id === mod.metadata.id
+          (extension) => extension._recipe?.id === mod.metadata.id,
         )
-      : installedExtensions.filter((x) => x.id === mod.id)
+      : installedExtensions.filter((x) => x.id === mod.id),
 );

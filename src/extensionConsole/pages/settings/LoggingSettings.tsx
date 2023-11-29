@@ -41,7 +41,7 @@ const LoggingSettings: React.FunctionComponent = () => {
       successMessage: "Cleared local logs",
       errorMessage: "Error clearing local logs",
     },
-    []
+    [],
   );
 
   return (

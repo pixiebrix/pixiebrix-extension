@@ -41,7 +41,7 @@ jest.mock("@/utils/storageUtils", () => {
 
 const readReduxStorageMock = jest.mocked(readReduxStorage);
 const inferModComponentStateVersionMock = jest.mocked(
-  inferModComponentStateVersion
+  inferModComponentStateVersion,
 );
 
 const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
@@ -52,7 +52,7 @@ describe("getModComponentState", () => {
       STORAGE_KEY,
       migrations,
       initialState,
-      inferModComponentStateVersionMock
+      inferModComponentStateVersionMock,
     );
   });
 });

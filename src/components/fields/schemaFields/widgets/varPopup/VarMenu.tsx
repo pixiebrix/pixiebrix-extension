@@ -104,7 +104,7 @@ function usePositionVarPopup({
 
     // Create a virtual element for the selected line
     const selectedLineBorderBox = getSelectedLineVirtualElement(
-      inputElementRef.current as HTMLTextAreaElement
+      inputElementRef.current as HTMLTextAreaElement,
     );
 
     const position = await computePosition(
@@ -122,7 +122,7 @@ function usePositionVarPopup({
             padding: 8,
           }),
         ],
-      }
+      },
     );
 
     rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
@@ -159,7 +159,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
         extensionId: null,
         blueprintId: activeElement.recipe?.id,
       }),
-    []
+    [],
   );
 
   useEffect(() => {

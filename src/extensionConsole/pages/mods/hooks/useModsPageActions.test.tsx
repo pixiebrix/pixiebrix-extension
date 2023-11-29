@@ -46,7 +46,7 @@ jest.mock("@/mods/hooks/useModPermissions", () => jest.fn());
 
 const expectActions = (
   expectedActions: string[],
-  actualActions: ModsPageActions
+  actualActions: ModsPageActions,
 ) => {
   // Union both set of keys to ensure all possible keys are covered
   const allActions = uniq([...Object.keys(actualActions), ...expectedActions]);
@@ -56,7 +56,7 @@ const expectActions = (
       expectedActions.includes(action)
         ? expect.not.toBeNil()
         : expect.toBeNil(),
-    ])
+    ]),
   );
   expect(actualActions).toStrictEqual(expected);
 };
@@ -102,7 +102,7 @@ const modViewItemFactory = ({
     },
     status,
     unavailable,
-  } as ModViewItem);
+  }) as ModViewItem;
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -122,7 +122,7 @@ describe("useModsPageActions", () => {
     } = renderHook(() => useModsPageActions(cloudModComponent));
     expectActions(
       ["viewPublish", "viewShare", "activate", "deleteExtension"],
-      actions
+      actions,
     );
   });
 
@@ -139,7 +139,7 @@ describe("useModsPageActions", () => {
     } = renderHook(() => useModsPageActions(personalModComponent));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs"],
-      actions
+      actions,
     );
   });
 
@@ -156,7 +156,7 @@ describe("useModsPageActions", () => {
     } = renderHook(() => useModsPageActions(personalMod));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
-      actions
+      actions,
     );
   });
 
@@ -187,7 +187,7 @@ describe("useModsPageActions", () => {
     } = renderHook(() => useModsPageActions(teamMod));
     expectActions(
       ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
-      actions
+      actions,
     );
   });
 
@@ -218,7 +218,7 @@ describe("useModsPageActions", () => {
     } = renderHook(() => useModsPageActions(publicMod));
     expectActions(
       ["viewPublish", "viewShare", "reactivate", "viewLogs", "deactivate"],
-      actions
+      actions,
     );
   });
 
@@ -270,7 +270,7 @@ describe("useModsPageActions", () => {
         "requestPermissions",
         "reactivate",
       ],
-      actions
+      actions,
     );
   });
 
@@ -359,7 +359,7 @@ describe("useModsPageActions", () => {
       } = renderHook(() => useModsPageActions(blueprintItem));
       expectActions(
         ["viewPublish", "viewShare", "deactivate", "viewLogs", "reactivate"],
-        actions
+        actions,
       );
     });
 
@@ -377,7 +377,7 @@ describe("useModsPageActions", () => {
           "viewLogs",
           "reactivate",
         ],
-        actions
+        actions,
       );
     });
   });
@@ -408,7 +408,7 @@ describe("actions", () => {
       expect(uninstallRecipe).toHaveBeenCalledWith(
         (modViewItem.mod as ModDefinition).metadata.id,
         expect.any(Array),
-        expect.any(Function)
+        expect.any(Function),
       );
       expect(uninstallExtensions).not.toHaveBeenCalled();
     });
@@ -434,12 +434,12 @@ describe("actions", () => {
           dispatch(
             extensionActions.installCloudExtension({
               extension: standaloneModDefinition,
-            })
+            }),
           );
           dispatch(
             extensionActions.installCloudExtension({
               extension: standaloneModDefinitionFactory(),
-            })
+            }),
           );
         },
       });
@@ -449,7 +449,7 @@ describe("actions", () => {
       expect(uninstallRecipe).not.toHaveBeenCalled();
       expect(uninstallExtensions).toHaveBeenCalledWith(
         [standaloneModDefinition.id],
-        expect.any(Function)
+        expect.any(Function),
       );
     });
   });

@@ -63,10 +63,10 @@ const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 
 function mockModDefinition(modDefinition: ModDefinition) {
   (useAllModDefinitions as jest.Mock).mockReturnValue(
-    valueToAsyncCacheState([modDefinition])
+    valueToAsyncCacheState([modDefinition]),
   );
   (useOptionalModDefinition as jest.Mock).mockReturnValue(
-    valueToAsyncCacheState(modDefinition)
+    valueToAsyncCacheState(modDefinition),
   );
 }
 
@@ -210,8 +210,8 @@ describe("ActivationOptions", () => {
       valueToAsyncState(
         sanitizedIntegrationConfigFactory({
           serviceId: GOOGLE_PKCE_INTEGRATION_ID,
-        })
-      )
+        }),
+      ),
     );
 
     getAllSpreadsheetsMock.mockResolvedValue({
@@ -252,8 +252,8 @@ describe("ActivationOptions", () => {
       valueToAsyncState(
         sanitizedIntegrationConfigFactory({
           serviceId: GOOGLE_PKCE_INTEGRATION_ID,
-        })
-      )
+        }),
+      ),
     );
 
     getAllSpreadsheetsMock.mockResolvedValue({

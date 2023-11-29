@@ -61,7 +61,7 @@ export function sortedFields(
   {
     preserveSchemaOrder = false,
     includePipelines = false,
-  }: { preserveSchemaOrder?: boolean; includePipelines?: boolean } = {}
+  }: { preserveSchemaOrder?: boolean; includePipelines?: boolean } = {},
 ): FieldConfig[] {
   const optionSchema = inputProperties(schema);
 
@@ -104,7 +104,7 @@ export function sortedFields(
       ([, fieldSchema]) =>
         includePipelines ||
         (typeof fieldSchema === "object" &&
-          fieldSchema.$ref !== pipelineSchema.$id)
+          fieldSchema.$ref !== pipelineSchema.$id),
     )
     .map(([prop, fieldSchema]) => {
       // Fine because coming from Object.entries for the schema

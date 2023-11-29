@@ -30,7 +30,7 @@ const ButtonOptions: React.FC<ButtonOptionsProps> = ({ elementName }) => {
       getElementEditSchemas("button", elementName).map((schema) => (
         <SchemaField key={schema.name} {...schema} />
       )),
-    [elementName]
+    [elementName],
   );
 
   return (

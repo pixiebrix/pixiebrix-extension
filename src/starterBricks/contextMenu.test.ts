@@ -49,7 +49,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
-      } as Metadata),
+      }) as Metadata,
     definition: define<MenuDefinition>({
       type: "contextMenu",
       contexts: () => ["page"] as any,
@@ -126,7 +126,7 @@ describe("contextMenu", () => {
     expect(ensureContextMenuMock).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         extensionId: modComponent.id,
-      })
+      }),
     );
   });
 

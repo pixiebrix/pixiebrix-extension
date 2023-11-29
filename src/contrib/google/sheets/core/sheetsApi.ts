@@ -44,7 +44,7 @@ export type SpreadsheetTarget = {
 };
 
 export async function isLoggedIn(
-  googleAccount: SanitizedIntegrationConfig
+  googleAccount: SanitizedIntegrationConfig,
 ): Promise<boolean> {
   const authData = await getCachedAuthData(googleAccount.id);
   return !isEmpty(authData);
@@ -52,12 +52,12 @@ export async function isLoggedIn(
 
 async function executeRequest<Response, RequestData = never>(
   requestConfig: AxiosRequestConfig<RequestData>,
-  googleAccount: SanitizedIntegrationConfig | null
+  googleAccount: SanitizedIntegrationConfig | null,
 ): Promise<Response> {
   try {
     const result = await performConfiguredRequestInBackground<Response>(
       googleAccount,
-      requestConfig
+      requestConfig,
     );
     return result.data;
   } catch (error) {
@@ -66,7 +66,7 @@ async function executeRequest<Response, RequestData = never>(
 }
 
 export async function getAllSpreadsheets(
-  googleAccount: SanitizedIntegrationConfig | null
+  googleAccount: SanitizedIntegrationConfig | null,
 ): Promise<FileList> {
   const requestConfig: AxiosRequestConfig<never> = {
     url: DRIVE_BASE_URL,
@@ -88,7 +88,7 @@ export async function getAllSpreadsheets(
 }
 
 export async function getGoogleUserEmail(
-  googleAccount: SanitizedIntegrationConfig
+  googleAccount: SanitizedIntegrationConfig,
 ): Promise<string> {
   const requestConfig: AxiosRequestConfig<never> = {
     url: "https://www.googleapis.com/oauth2/v1/userinfo",
@@ -101,7 +101,7 @@ export async function getGoogleUserEmail(
 
 async function batchUpdateSpreadsheet(
   { googleAccount, spreadsheetId }: SpreadsheetTarget,
-  request: BatchUpdateSpreadsheetRequest
+  request: BatchUpdateSpreadsheetRequest,
 ): Promise<BatchUpdateSpreadsheetResponse> {
   const requestConfig: AxiosRequestConfig<BatchUpdateSpreadsheetRequest> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}:batchUpdate`,
@@ -138,7 +138,7 @@ export async function createTab({
 
 export async function appendRows(
   { googleAccount, spreadsheetId, tabName }: SpreadsheetTarget,
-  values: unknown[][]
+  values: unknown[][],
 ): Promise<AppendValuesResponse> {
   const requestConfig: AxiosRequestConfig<ValueRange> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}:append`,
@@ -154,7 +154,7 @@ export async function appendRows(
   };
   return executeRequest<AppendValuesResponse, ValueRange>(
     requestConfig,
-    googleAccount
+    googleAccount,
   );
 }
 
@@ -164,7 +164,7 @@ async function getRows(
    * A1 notation of the values to retrieve.
    * @see: https://developers.google.com/sheets/api/guides/concepts#cell
    */
-  range = ""
+  range = "",
 ): Promise<ValueRange> {
   let url = `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}`;
   if (range) {
@@ -175,7 +175,7 @@ async function getRows(
 }
 
 export async function getAllRows(
-  target: SpreadsheetTarget
+  target: SpreadsheetTarget,
 ): Promise<ValueRange> {
   return getRows(target);
 }
@@ -204,6 +204,6 @@ export async function getSpreadsheet({
         fields: fileMask,
       },
     },
-    googleAccount
+    googleAccount,
   );
 }

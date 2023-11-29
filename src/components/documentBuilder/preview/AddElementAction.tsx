@@ -48,7 +48,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
   >(elementsCollectionName);
 
   const addElement = async (
-    elementType: Parameters<typeof createNewElement>[0]
+    elementType: Parameters<typeof createNewElement>[0],
   ) => {
     const element = createNewElement(elementType);
     await setValue([...elementsCollection, element]);

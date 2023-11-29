@@ -33,7 +33,7 @@ export class WaitEffect extends EffectABC {
     super(
       "@pixiebrix/wait/sleep",
       "Wait/Sleep",
-      "Wait/Sleep before continuing"
+      "Wait/Sleep before continuing",
     );
   }
 
@@ -51,7 +51,7 @@ export class WaitEffect extends EffectABC {
 
   async effect(
     { timeMillis = 0 }: BrickArgs<{ timeMillis: number }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     if (timeMillis > 0) {
       logger.debug(`Waiting/sleeping ${timeMillis} milliseconds`);
@@ -91,7 +91,7 @@ export async function awaitElement({
 
       if (error instanceof TimeoutError) {
         throw new BusinessError(
-          `Element not available in ${maxWaitMillis} milliseconds`
+          `Element not available in ${maxWaitMillis} milliseconds`,
         );
       }
 
@@ -109,7 +109,7 @@ export class WaitElementEffect extends EffectABC {
     super(
       "@pixiebrix/wait/element",
       "Wait for a DOM element",
-      "Wait for a DOM element to be available on the page"
+      "Wait for a DOM element to be available on the page",
     );
   }
 
@@ -146,7 +146,7 @@ export class WaitElementEffect extends EffectABC {
       maxWaitMillis: number | undefined;
       isRootAware: boolean;
     }>,
-    { logger, root, abortSignal }: BrickOptions
+    { logger, root, abortSignal }: BrickOptions,
   ): Promise<void> {
     // Single string for logging, the exact format isn't that important
     const combinedSelector = Array.isArray(selector)

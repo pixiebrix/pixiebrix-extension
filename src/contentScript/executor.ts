@@ -37,12 +37,12 @@ export async function runBrick(request: RunBrickRequest): Promise<unknown> {
       root: document,
       async runPipeline() {
         throw new BusinessError(
-          "Support for running pipelines in other contexts not implemented"
+          "Support for running pipelines in other contexts not implemented",
         );
       },
       async runRendererPipeline() {
         throw new BusinessError(
-          "Support for running pipelines in other contexts not implemented"
+          "Support for running pipelines in other contexts not implemented",
         );
       },
     });

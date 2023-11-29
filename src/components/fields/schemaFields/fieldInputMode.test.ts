@@ -26,8 +26,8 @@ describe("test input mode", () => {
         "field",
         {
           type: "string",
-        }
-      )
+        },
+      ),
     ).toBe("var");
   });
 
@@ -38,8 +38,8 @@ describe("test input mode", () => {
         "field",
         {
           type: "string",
-        }
-      )
+        },
+      ),
     ).toBe("string");
   });
 
@@ -47,7 +47,7 @@ describe("test input mode", () => {
     expect(
       inferInputMode({ field: 42 }, "field", {
         type: "number",
-      })
+      }),
     ).toBe("number");
   });
 
@@ -56,7 +56,7 @@ describe("test input mode", () => {
       inferInputMode({ field: "apple" }, "field", {
         type: "string",
         enum: ["apple", "banana"],
-      })
+      }),
     ).toBe("select");
   });
 
@@ -68,7 +68,7 @@ describe("test input mode", () => {
           { const: "apple", title: "Apple" },
           { const: "banana", title: "Banana" },
         ],
-      })
+      }),
     ).toBe("select");
   });
 
@@ -80,8 +80,8 @@ describe("test input mode", () => {
         {
           $ref: googleSheetIdSchema.$id,
         },
-        { isRequired: false }
-      )
+        { isRequired: false },
+      ),
     ).toBe("omit");
   });
 
@@ -93,8 +93,8 @@ describe("test input mode", () => {
         {
           $ref: googleSheetIdSchema.$id,
         },
-        { isRequired: false }
-      )
+        { isRequired: false },
+      ),
     ).toBe("string");
   });
 });

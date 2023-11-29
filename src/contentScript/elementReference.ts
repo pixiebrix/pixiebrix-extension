@@ -42,7 +42,7 @@ export function getSelectorForElement(element: HTMLElement): string {
  * @param element the element to generate a reference for
  */
 export function getReferenceForElement(
-  element: ElementOrDocument
+  element: ElementOrDocument,
 ): ElementReference {
   let id = knownElementReferences.get(element);
   if (id == null) {
@@ -59,13 +59,13 @@ export function getReferenceForElement(
  * @param id the element reference
  */
 export function getElementForReference(
-  id: ElementReference
+  id: ElementReference,
 ): ElementOrDocument {
   const elementReference = elementLookup.get(id);
 
   if (elementReference == null) {
     throw new BusinessError(
-      "Id is not a valid element reference for the document"
+      "Id is not a valid element reference for the document",
     );
   }
 

@@ -73,7 +73,7 @@ export type UseActivateRecipeWizardResult = {
 export function makeDatabasePreviewName(
   recipe: ModDefinition,
   optionSchema: Schema,
-  name: string
+  name: string,
 ): string {
   return `${recipe.metadata.name} - ${optionSchema.title ?? name}`;
 }
@@ -94,14 +94,14 @@ export function wizardStateFactory({
   const extensionPoints = modDefinition.extensionPoints ?? [];
 
   const installedBlueprintExtensions = installedExtensions?.filter(
-    (extension) => extension._recipe?.id === modDefinition.metadata.id
+    (extension) => extension._recipe?.id === modDefinition.metadata.id,
   );
 
   const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
   const installedIntegrationConfigs = Object.fromEntries(
     inferConfiguredModIntegrations(installedBlueprintExtensions, {
       optional: true,
-    }).map(({ integrationId, configId }) => [integrationId, configId])
+    }).map(({ integrationId, configId }) => [integrationId, configId]),
   );
   const unconfiguredIntegrationDependencies =
     getUnconfiguredComponentIntegrations(modDefinition);
@@ -112,14 +112,14 @@ export function wizardStateFactory({
       configId:
         installedIntegrationConfigs[unconfiguredDependency.integrationId] ??
         defaultAuthOptions[unconfiguredDependency.integrationId]?.value,
-    })
+    }),
   );
 
   const wizardSteps = STEPS.filter((step) => {
     switch (step.key) {
       case "services": {
         return integrationDependencies.some(
-          ({ integrationId }) => integrationId !== PIXIEBRIX_INTEGRATION_ID
+          ({ integrationId }) => integrationId !== PIXIEBRIX_INTEGRATION_ID,
         );
       }
 
@@ -136,7 +136,7 @@ export function wizardStateFactory({
   const initialValues: WizardValues = {
     extensions: Object.fromEntries(
       // By default, all extensions in the recipe should be toggled on
-      extensionPoints.map((_, index) => [index, true])
+      extensionPoints.map((_, index) => [index, true]),
     ),
     integrationDependencies,
     optionsArgs: mapValues(
@@ -154,24 +154,24 @@ export function wizardStateFactory({
           const databaseName = makeDatabasePreviewName(
             modDefinition,
             optionSchema,
-            name
+            name,
           );
           const existingDatabaseOption = databaseOptions.find(
-            (option) => option.label === `${databaseName} - Private`
+            (option) => option.label === `${databaseName} - Private`,
           );
           return existingDatabaseOption?.value ?? databaseName;
         }
 
         return forcePrimitive(optionSchema.default);
-      }
+      },
     ),
   };
 
   const validationSchema = Yup.object().shape({
     extensions: Yup.object().shape(
       Object.fromEntries(
-        extensionPoints.map((_, index) => [index, Yup.boolean().required()])
-      )
+        extensionPoints.map((_, index) => [index, Yup.boolean().required()]),
+      ),
     ),
     integrationDependencies: Yup.array().of(
       Yup.object().test(
@@ -180,8 +180,8 @@ export function wizardStateFactory({
         (value) =>
           value.integrationId === PIXIEBRIX_INTEGRATION_ID ||
           value.configId != null ||
-          value.isOptional
-      )
+          value.isOptional,
+      ),
     ),
     optionsArgs: optionsValidationSchema,
   });
@@ -195,11 +195,11 @@ export function wizardStateFactory({
 
 function useActivateRecipeWizard(
   recipe: ModDefinition,
-  defaultAuthOptions: Record<RegistryId, AuthOption> = {}
+  defaultAuthOptions: Record<RegistryId, AuthOption> = {},
 ): FetchableAsyncState<UseActivateRecipeWizardResult> {
   const installedExtensions = useSelector(selectExtensions);
   const optionsValidationSchemaState = useAsyncRecipeOptionsValidationSchema(
-    recipe.options?.schema
+    recipe.options?.schema,
   );
 
   // Force-fetch latest database options
@@ -215,7 +215,7 @@ function useActivateRecipeWizard(
         databaseOptions,
         installedExtensions,
         optionsValidationSchema,
-      })
+      }),
   );
 }
 

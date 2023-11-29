@@ -72,7 +72,7 @@ const PermissionsBody: React.FunctionComponent<{
   const { data: hasQuickBar } = useAsyncState(
     async () => includesQuickBarStarterBrick(blueprint),
     [],
-    { initialValue: false }
+    { initialValue: false },
   );
 
   return (

@@ -69,7 +69,7 @@ describe("VariablesTree", () => {
         vars={inputMap}
         onVarSelect={noop}
         likelyVariable="@input.foo."
-      />
+      />,
     );
 
     const elements = screen.getAllByRole("button");

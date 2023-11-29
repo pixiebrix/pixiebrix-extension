@@ -44,7 +44,7 @@ describe("TryExcept", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ prop: "I'm a teapot" });
   });
@@ -60,7 +60,7 @@ describe("TryExcept", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ prop: "I'm a teapot" });
   });
@@ -76,7 +76,7 @@ describe("TryExcept", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toBeNull();
   });

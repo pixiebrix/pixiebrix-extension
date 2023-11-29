@@ -54,7 +54,7 @@ const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
       await setValue(target.value);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- don't include formik helpers
-    []
+    [],
   );
 
   return (

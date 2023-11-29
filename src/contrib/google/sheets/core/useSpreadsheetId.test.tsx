@@ -45,7 +45,7 @@ describe("useSpreadsheetId", () => {
         config: {
           spreadsheetId: TEST_SPREADSHEET_ID,
         },
-      })
+      }),
     );
   });
 

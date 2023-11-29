@@ -48,7 +48,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  _element: null
+  _element: null,
 ): TourFormState {
   return {
     type: "tour",
@@ -71,7 +71,7 @@ function fromNativeElement(
 }
 
 function selectExtensionPointConfig(
-  formState: TourFormState
+  formState: TourFormState,
 ): StarterBrickConfig<TourDefinition> {
   const { extensionPoint } = formState;
   const {
@@ -89,7 +89,7 @@ function selectExtensionPointConfig(
 
 function selectExtension(
   state: TourFormState,
-  options: { includeInstanceIds?: boolean } = {}
+  options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<TourConfig> {
   const { extension } = state;
   const config: TourConfig = {
@@ -112,7 +112,7 @@ function asDynamicElement(element: TourFormState): DynamicDefinition {
 }
 
 async function fromExtension(
-  config: ModComponentBase<TourConfig>
+  config: ModComponentBase<TourConfig>,
 ): Promise<TourFormState> {
   const extensionPoint = await lookupExtensionPoint<
     TourDefinition,
@@ -125,7 +125,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "tour"
+    "tour",
   );
 
   return {

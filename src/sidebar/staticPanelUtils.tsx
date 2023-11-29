@@ -5,7 +5,7 @@ const ModLauncher = lazy(
     import(
       /* webpackChunkName: "ModLauncher" */
       "@/sidebar/modLauncher/ModLauncher"
-    )
+    ),
 );
 
 export const STATIC_PANEL_BODY_MAP: Record<string, ReactNode> = {

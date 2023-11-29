@@ -71,7 +71,7 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
   const recipe = inputRecipe.options?.schema?.properties
     ? produce(inputRecipe, (draft) => {
         for (const [name, optionSchema] of Object.entries(
-          inputRecipe.options.schema.properties
+          inputRecipe.options.schema.properties,
         )) {
           if (typeof optionSchema === "boolean") {
             return;
@@ -92,7 +92,7 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
     : inputRecipe;
 
   const recipeExtensions = useSelector(
-    selectExtensionsForRecipe(recipe?.metadata?.id)
+    selectExtensionsForRecipe(recipe?.metadata?.id),
   );
   const isReinstall = !isEmpty(recipeExtensions);
 

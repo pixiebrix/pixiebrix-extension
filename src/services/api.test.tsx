@@ -116,7 +116,7 @@ describe("baseQuery", () => {
         wrapper: ({ children }) => (
           <Provider store={store}>{children}</Provider>
         ),
-      }
+      },
     );
 
     await waitForEffect();

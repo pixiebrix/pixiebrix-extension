@@ -34,7 +34,7 @@ export class ShowSidebar extends EffectABC {
     super(
       "@pixiebrix/sidebar/show",
       "Show Sidebar",
-      "Show/open the PixieBrix sidebar"
+      "Show/open the PixieBrix sidebar",
     );
   }
 
@@ -54,7 +54,7 @@ export class ShowSidebar extends EffectABC {
         default: false,
       },
     },
-    []
+    [],
   );
 
   async effect(
@@ -65,7 +65,7 @@ export class ShowSidebar extends EffectABC {
       panelHeading?: string;
       forcePanel?: boolean;
     }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
     // not the extensionId of the extension toggling the sidebar
@@ -75,7 +75,7 @@ export class ShowSidebar extends EffectABC {
         force: forcePanel,
         panelHeading,
         blueprintId: logger.context.blueprintId,
-      })
+      }),
     );
   }
 }
@@ -85,7 +85,7 @@ export class HideSidebar extends EffectABC {
     super(
       "@pixiebrix/sidebar/hide",
       "Hide Sidebar",
-      "Hide/close the PixieBrix sidebar"
+      "Hide/close the PixieBrix sidebar",
     );
   }
 

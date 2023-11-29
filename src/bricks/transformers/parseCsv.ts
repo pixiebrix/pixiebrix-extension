@@ -27,7 +27,7 @@ export class ParseCsv extends TransformerABC {
       "@pixiebrix/parse/csv",
       "Parse CSV",
       "Parse a string as a CSV file",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -67,7 +67,7 @@ export class ParseCsv extends TransformerABC {
 
   async transform(
     { content }: BrickArgs<{ content: string }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<unknown> {
     const { default: Papa } = await import(
       /* webpackChunkName: "papaparse" */ "papaparse"

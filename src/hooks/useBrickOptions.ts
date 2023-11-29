@@ -33,7 +33,7 @@ interface BlockState {
 }
 
 function useBrickOptions(
-  id: RegistryId
+  id: RegistryId,
 ): [BlockState, React.FunctionComponent<BlockOptionProps>] {
   const [{ block, error }, setBlock] = useState<BlockState>({
     block: null,
@@ -53,7 +53,7 @@ function useBrickOptions(
         setBlock({ error: String(error) });
       }
     },
-    [id, setBlock]
+    [id, setBlock],
   );
 
   const BlockOptions = useMemo(() => {

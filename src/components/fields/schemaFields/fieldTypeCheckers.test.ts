@@ -36,14 +36,14 @@ describe("isServiceValue", () => {
   it("nunjucks is not a service value", () => {
     expect(
       isIntegrationDependencyValueFormat(
-        makeTemplateExpression("nunjucks", "@foo")
-      )
+        makeTemplateExpression("nunjucks", "@foo"),
+      ),
     ).toBe(false);
   });
 
   it("var is a service value", () => {
     expect(
-      isIntegrationDependencyValueFormat(makeVariableExpression("@foo"))
+      isIntegrationDependencyValueFormat(makeVariableExpression("@foo")),
     ).toBe(true);
   });
 });
@@ -51,7 +51,7 @@ describe("isServiceValue", () => {
 describe("isSelectField", () => {
   it("supports examples", () => {
     expect(isSelectField({ type: "string", examples: ["foo", "bar"] })).toBe(
-      true
+      true,
     );
   });
 
@@ -61,7 +61,10 @@ describe("isSelectField", () => {
 
   it("support oneOf const", () => {
     expect(
-      isSelectField({ type: "string", oneOf: [{ const: "foo", title: "Foo" }] })
+      isSelectField({
+        type: "string",
+        oneOf: [{ const: "foo", title: "Foo" }],
+      }),
     ).toBe(true);
   });
 

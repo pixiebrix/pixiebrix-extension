@@ -115,7 +115,7 @@ export type SelectorSelectorProps = {
  */
 export function getSuggestionsForElement(
   elementInfo: ElementInfo | undefined,
-  { sort }: { sort: boolean }
+  { sort }: { sort: boolean },
 ): ElementSuggestion[] {
   if (!elementInfo) {
     return [];
@@ -128,7 +128,7 @@ export function getSuggestionsForElement(
     ]
       .flat()
       .filter((suggestion) => suggestion?.value?.trim()),
-    (suggestion) => suggestion.value
+    (suggestion) => suggestion.value,
   );
 
   if (sort) {
@@ -176,7 +176,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   const suggestions: ElementSuggestion[] = useMemo(
     () =>
       getSuggestionsForElement(element, { sort: sort && !element?.isMulti }),
-    [element, sort]
+    [element, sort],
   );
 
   const enableSelector = useCallback((selector: string) => {
@@ -197,7 +197,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         disableSelector();
       }
     },
-    [enableSelector, disableSelector]
+    [enableSelector, disableSelector],
   );
 
   const onTextChanged = useCallback(
@@ -206,7 +206,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       enableSelector(value);
       await setValue(value);
     },
-    [disableSelector, enableSelector, setValue]
+    [disableSelector, enableSelector, setValue],
   );
 
   useEffect(
@@ -215,7 +215,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         void cancelSelect(thisTab);
       }
     },
-    [isSelecting]
+    [isSelecting],
   );
 
   const select = async () => {

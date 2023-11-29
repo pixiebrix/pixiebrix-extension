@@ -31,7 +31,7 @@ describe("TraverseElements", () => {
         selector: "div",
         traversal: "find",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toStrictEqual({
@@ -48,7 +48,7 @@ describe("TraverseElements", () => {
         selector: "div",
         traversal: "closest",
       }),
-      brickOptionsFactory({ root: div })
+      brickOptionsFactory({ root: div }),
     );
 
     expect(result).toStrictEqual({

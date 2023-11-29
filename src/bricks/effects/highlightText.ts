@@ -63,14 +63,14 @@ async function wrapText({
 
 class HighlightText extends EffectABC {
   static readonly BRICK_ID = validateRegistryId(
-    "@pixiebrix/html/highlight-text"
+    "@pixiebrix/html/highlight-text",
   );
 
   constructor() {
     super(
       HighlightText.BRICK_ID,
       "Highlight Text",
-      "Highlight text within an HTML document or subtree"
+      "Highlight text within an HTML document or subtree",
     );
   }
 
@@ -139,7 +139,7 @@ class HighlightText extends EffectABC {
       isRegex?: boolean;
       selector?: string;
     }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     // Don't make replacements outside the `body`, like in `title`
     const { body } = root.ownerDocument ?? root;
@@ -157,7 +157,7 @@ class HighlightText extends EffectABC {
     // eslint-disable-next-line security/detect-non-literal-regexp -- mod argument
     const convertedPattern = new RegExp(
       isRegex ? pattern : escapeStringRegexp(pattern),
-      flags
+      flags,
     );
 
     await wrapText({

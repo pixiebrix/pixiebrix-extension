@@ -55,22 +55,22 @@ const pageEditorAnalysisManager = new ReduxAnalysisManager();
  * @param state the Page Editor Redux State
  */
 export async function selectActiveModFormStates(
-  state: RootState
+  state: RootState,
 ): Promise<ModComponentFormState[]> {
   const element = selectActiveElement(state);
 
   if (element?.recipe) {
     const dirtyElements = state.editor.elements.filter(
-      (x) => x.recipe?.id === element.recipe.id
+      (x) => x.recipe?.id === element.recipe.id,
     );
     const dirtyIds = new Set(dirtyElements.map((x) => x.uuid));
 
     const extensions = selectExtensions(state);
     const otherExtensions = extensions.filter(
-      (x) => x._recipe?.id === element.recipe.id && !dirtyIds.has(x.id)
+      (x) => x._recipe?.id === element.recipe.id && !dirtyIds.has(x.id),
     );
     const otherElements = await Promise.all(
-      otherExtensions.map(async (x) => extensionToFormState(x))
+      otherExtensions.map(async (x) => extensionToFormState(x)),
     );
 
     return [...dirtyElements, ...otherElements];
@@ -99,7 +99,7 @@ const nodeListMutationActions = [
 pageEditorAnalysisManager.registerAnalysisEffect(
   (
     action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
-    state: RootState
+    state: RootState,
   ) => {
     // TraceAnalysis filter the trace errors, thus
     // selecting all records here to avoid double filtering
@@ -110,30 +110,30 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   {
     matcher: isAnyOf(
       runtimeActions.setExtensionTrace,
-      ...nodeListMutationActions
+      ...nodeListMutationActions,
     ),
-  }
+  },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new BrickTypeAnalysis(),
   {
     matcher: isAnyOf(...nodeListMutationActions),
-  }
+  },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new FormBrickAnalysis(),
   {
     matcher: isAnyOf(...nodeListMutationActions),
-  }
+  },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RenderersAnalysis(),
   {
     matcher: isAnyOf(...nodeListMutationActions),
-  }
+  },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
@@ -144,21 +144,21 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new PageStateAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
-  }
+  },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ExtensionUrlPatternAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
-  }
+  },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RequestPermissionAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
-  }
+  },
 );
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
@@ -169,12 +169,12 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new HttpRequestAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
-  }
+  },
 );
 
 async function varAnalysisFactory(
   action: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>,
-  state: RootState
+  state: RootState,
 ) {
   const trace = selectActiveElementTraces(state);
   const extension = selectActiveElement(state);
@@ -202,7 +202,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
   {
     matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
-  }
+  },
 );
 
 // CheckEventNamesAnalysis is not the slowest, but it triggers a post-analysis action, so put toward the end
@@ -216,7 +216,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
       // Must run whenever the active element changes in order to see changes from other mod components.
       editorActions.selectElement,
       editorActions.editElement,
-      ...nodeListMutationActions
+      ...nodeListMutationActions,
     ),
   },
   {
@@ -225,10 +225,10 @@ pageEditorAnalysisManager.registerAnalysisEffect(
         analysisSlice.actions.setKnownEventNames({
           extensionId,
           eventNames: analysis.knownEventNames,
-        })
+        }),
       );
     },
-  }
+  },
 );
 
 // VarAnalysis is not the slowest, but it triggers a post-analysis action, so put toward the end
@@ -241,7 +241,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
       editorActions.selectElement,
       editorActions.editElement,
       runtimeActions.setExtensionTrace,
-      ...nodeListMutationActions
+      ...nodeListMutationActions,
     ),
   },
   {
@@ -250,10 +250,10 @@ pageEditorAnalysisManager.registerAnalysisEffect(
         analysisSlice.actions.setKnownVars({
           extensionId,
           vars: analysis.getKnownVars(),
-        })
+        }),
       );
     },
-  }
+  },
 );
 
 export default pageEditorAnalysisManager;

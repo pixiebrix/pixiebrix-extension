@@ -38,7 +38,7 @@ describe("loadYaml", () => {
 
   test("deserialize pipeline", async () => {
     expect(
-      loadBrickYaml("foo: !pipeline\n  - id: '@pixiebrix/confetti'")
+      loadBrickYaml("foo: !pipeline\n  - id: '@pixiebrix/confetti'"),
     ).toEqual({
       foo: {
         __type__: "pipeline",
@@ -49,7 +49,7 @@ describe("loadYaml", () => {
 
   test("deserialize defer", async () => {
     expect(
-      loadBrickYaml("foo: !defer\n  bar: !mustache '{{ @element }}'")
+      loadBrickYaml("foo: !defer\n  bar: !mustache '{{ @element }}'"),
     ).toEqual({
       foo: {
         __type__: "defer",

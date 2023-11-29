@@ -38,7 +38,7 @@ const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
     error,
   } = useAsyncState(
     async () => createFrameSource(form.nonce, "panel"),
-    [form.nonce]
+    [form.nonce],
   );
 
   if (isLoading) {

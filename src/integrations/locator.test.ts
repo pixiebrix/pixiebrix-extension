@@ -65,7 +65,7 @@ describe("locator", () => {
     expect(option.proxy).toBe(true);
 
     await expect(
-      locator.findIntegrationConfig(config.id)
+      locator.findIntegrationConfig(config.id),
     ).resolves.toBeUndefined();
   });
 
@@ -91,13 +91,13 @@ describe("locator", () => {
 
     const option = await locator.locate(
       config.service.config.metadata.id,
-      config.id
+      config.id,
     );
 
     expect(option.proxy).toBe(false);
 
     await expect(
-      locator.findIntegrationConfig(config.id)
+      locator.findIntegrationConfig(config.id),
     ).resolves.not.toBeNull();
   });
 });

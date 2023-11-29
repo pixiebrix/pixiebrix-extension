@@ -43,7 +43,7 @@ function usePasteBlock():
     const normalizedBlock = normalizedPipeline.at(0);
     // Insert the block
     dispatch(
-      actions.addNode({ block: normalizedBlock, pipelinePath, pipelineIndex })
+      actions.addNode({ block: normalizedBlock, pipelinePath, pipelineIndex }),
     );
     dispatch(actions.clearCopiedBlockConfig());
   };

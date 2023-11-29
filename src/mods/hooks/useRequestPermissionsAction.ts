@@ -23,7 +23,7 @@ import useModPermissions from "@/mods/hooks/useModPermissions";
 import { type ModComponentState } from "@/store/extensionsTypes";
 
 function useRequestPermissionsAction(
-  modViewItem: ModViewItem
+  modViewItem: ModViewItem,
 ): () => void | null {
   const { mod } = modViewItem;
 
@@ -32,7 +32,7 @@ function useRequestPermissionsAction(
   const memoizedExtensionsSelector = useCallback(
     (state: { options: ModComponentState }) =>
       selectExtensionsFromMod(state, mod),
-    [mod]
+    [mod],
   );
 
   const extensionsFromMod = useSelector(memoizedExtensionsSelector);

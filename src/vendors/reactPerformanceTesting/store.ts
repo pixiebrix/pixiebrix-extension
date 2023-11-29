@@ -4,7 +4,7 @@ import { globalOption } from "./constants/globalOption";
 const checkRenderTimeDeclaring = (prop: keyof PerfTools) => {
   if (prop === "renderTime" && globalOption.isDeclaredRenderTime) {
     console.warn(
-      "[react-performance-testing] You need to execute test one by one when you use `renderTime`. Please check here: https://github.com/keiya01/react-performance-testing#renderTime"
+      "[react-performance-testing] You need to execute test one by one when you use `renderTime`. Please check here: https://github.com/keiya01/react-performance-testing#renderTime",
     );
   } else {
     globalOption.isDeclaredRenderTime = true;
@@ -39,7 +39,7 @@ export const getDefaultStore = () => ({
           this.hasRenderTime = value;
         },
       },
-    }
+    },
   ),
 });
 

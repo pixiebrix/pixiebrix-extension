@@ -26,5 +26,5 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 ReactDOM.render(
   <RestrictedUrlPopupApp />,
-  document.querySelector("#container")
+  document.querySelector("#container"),
 );

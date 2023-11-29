@@ -73,7 +73,7 @@ const ZapField: React.FunctionComponent<
         label: x.display_name,
         hook: x,
       })),
-    [hooks]
+    [hooks],
   );
 
   return (
@@ -102,21 +102,21 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [hasPermissions] = useAsyncState(
     async () => containsPermissions(ZAPIER_PERMISSIONS),
-    [permissionsState]
+    [permissionsState],
   );
 
   const onRequestPermissions =
     useRequestPermissionsCallback(ZAPIER_PERMISSIONS);
 
   const [{ value: pushKey }] = useField<string | Expression>(
-    `${basePath}.pushKey`
+    `${basePath}.pushKey`,
   );
 
   const { hooks, error } = useHooks();
 
   const hook = useMemo(
     () => hooks?.find((x) => x.display_name === pushKey),
-    [hooks, pushKey]
+    [hooks, pushKey],
   );
 
   if (!hasPermissions) {

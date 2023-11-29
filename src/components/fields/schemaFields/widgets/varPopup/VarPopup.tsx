@@ -91,7 +91,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
         const { newTemplate, newCursorPosition } = replaceLikelyVariable(
           value,
           cursorPosition,
-          fullVariableName
+          fullVariableName,
         );
         setValue(newTemplate);
 

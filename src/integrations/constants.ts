@@ -25,10 +25,10 @@ export const PIXIEBRIX_INTEGRATION_ID: RegistryId =
   validateRegistryId("@pixiebrix/api");
 // Automation Anywhere partner service definition constants
 export const CONTROL_ROOM_TOKEN_INTEGRATION_ID: RegistryId = validateRegistryId(
-  "automation-anywhere/control-room"
+  "automation-anywhere/control-room",
 );
 export const CONTROL_ROOM_OAUTH_INTEGRATION_ID: RegistryId = validateRegistryId(
-  "automation-anywhere/oauth2"
+  "automation-anywhere/oauth2",
 );
 export const INTEGRATION_DEPENDENCY_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",

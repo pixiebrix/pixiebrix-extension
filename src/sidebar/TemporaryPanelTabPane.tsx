@@ -41,10 +41,10 @@ export const TemporaryPanelTabPane: React.FC<{
         sidebarSlice.actions.resolveTemporaryPanel({
           nonce: panel.nonce,
           action,
-        })
+        }),
       );
     },
-    [dispatch, panel.nonce]
+    [dispatch, panel.nonce],
   );
   const { type, extensionId, blueprintId, payload } = panel;
 

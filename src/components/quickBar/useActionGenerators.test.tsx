@@ -37,7 +37,7 @@ describe("useActionGenerators", () => {
       },
       {
         wrapper: ({ children }) => <KBarProvider>{children}</KBarProvider>,
-      }
+      },
     );
 
     await waitForEffect();

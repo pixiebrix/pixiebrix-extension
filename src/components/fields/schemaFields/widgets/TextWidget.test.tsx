@@ -46,8 +46,8 @@ describe("TextWidget", () => {
           initialValues: {
             [fieldName]: "",
           },
-        }
-      ).asFragment()
+        },
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -62,7 +62,7 @@ describe("TextWidget", () => {
         initialValues: {
           [fieldName]: stringToExpression("", "nunjucks"),
         },
-      }
+      },
     );
 
     await userEvent.type(screen.getByRole("textbox"), "abc");
@@ -82,7 +82,7 @@ describe("TextWidget", () => {
     expect(isVarValue('@example["spaced property name"]')).toBe(true);
     expect(isVarValue('@example.property["nestedProperty"]')).toBe(true);
     expect(isVarValue('@example.property["nested spaced property"]')).toBe(
-      true
+      true,
     );
     expect(isVarValue("@example.property['nestedProperty']")).toBe(true);
     expect(isVarValue('@example["property"].nestedProperty')).toBe(true);

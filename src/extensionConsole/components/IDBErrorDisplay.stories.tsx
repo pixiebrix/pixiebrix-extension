@@ -49,7 +49,7 @@ const Template: ComponentStory<typeof IDBErrorDisplay> = (args) => (
 
 const normalError = new Error("This is a normal error");
 const quotaError = new Error(
-  "Encountered full disk while opening backing store for indexedDB.open."
+  "Encountered full disk while opening backing store for indexedDB.open.",
 );
 const connectionError = new Error("Error Opening IndexedDB");
 // Hard-code a stack because the stack includes the file path on local/CI builds, so Storyshots will fail

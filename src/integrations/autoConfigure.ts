@@ -29,7 +29,7 @@ import { services, sheets } from "@/background/messenger/api";
  * A function to automatically configure an integration config. If null is returned, the config will be deleted instead.
  */
 type AutoConfigureIntegrationConfig = (
-  config: IntegrationConfig
+  config: IntegrationConfig,
 ) => Promise<IntegrationConfig | null>;
 export const autoConfigurations: Record<
   RegistryId,
@@ -38,7 +38,7 @@ export const autoConfigurations: Record<
   async [GOOGLE_OAUTH2_PKCE_INTEGRATION_ID](config: IntegrationConfig) {
     const googleAccount = await services.locate(
       config.integrationId,
-      config.id
+      config.id,
     );
     try {
       const userEmail = await sheets.getUserEmail(googleAccount);
@@ -49,7 +49,7 @@ export const autoConfigurations: Record<
     } catch (error) {
       console.warn(
         "Failed to get user email for Google PKCE integration config",
-        error
+        error,
       );
       return null;
     }
@@ -67,7 +67,7 @@ export async function autoConfigureIntegration(
     upsertIntegrationConfig: (config: IntegrationConfig) => void;
     deleteIntegrationConfig: (id: UUID) => void;
     syncIntegrations: () => Promise<void>;
-  }
+  },
 ): Promise<void> {
   const newIntegrationConfig = {
     id: uuidv4(),

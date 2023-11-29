@@ -48,17 +48,17 @@ declare module "react-beautiful-dnd-next" {
 
   export type OnDragStartResponder = (
     start: DragStart,
-    provided: ResponderProvided
+    provided: ResponderProvided,
   ) => void;
 
   export type OnDragUpdateResponder = (
     update: DragUpdate,
-    provided: ResponderProvided
+    provided: ResponderProvided,
   ) => void;
 
   export type OnDragEndResponder = (
     result: DropResult,
-    provided: ResponderProvided
+    provided: ResponderProvided,
   ) => void;
 
   export interface Responders {
@@ -139,7 +139,7 @@ declare module "react-beautiful-dnd-next" {
     direction?: "vertical" | "horizontal" | undefined;
     children(
       provided: DroppableProvided,
-      snapshot: DroppableStateSnapshot
+      snapshot: DroppableStateSnapshot,
     ): React.ReactElement<HTMLElement>;
   }
 
@@ -230,7 +230,7 @@ declare module "react-beautiful-dnd-next" {
     disableInteractiveElementBlocking?: boolean | undefined;
     children(
       provided: DraggableProvided,
-      snapshot: DraggableStateSnapshot
+      snapshot: DraggableStateSnapshot,
     ): React.ReactElement<HTMLElement>;
     type?: TypeId | undefined;
     shouldRespectForcePress?: boolean | undefined;

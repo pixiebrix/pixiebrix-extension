@@ -91,7 +91,7 @@ class PipelineVisitor {
   public visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ): void {
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
       this.visitDocument(position, blockConfig);
@@ -104,11 +104,11 @@ class PipelineVisitor {
           position,
           "config",
           prop,
-          "__value__"
+          "__value__",
         );
         const pipelineFlavor = getSubPipelineFlavor(
           blockConfig.id,
-          pipelinePosition.path
+          pipelinePosition.path,
         );
         this.visitPipeline(pipelinePosition, value.__value__, {
           flavor: pipelineFlavor,
@@ -122,13 +122,13 @@ class PipelineVisitor {
 
   public visitDocument(
     position: BrickPosition,
-    blockConfig: BrickConfig
+    blockConfig: BrickConfig,
   ): void {
     const subPipelineProperties = getDocumentPipelinePaths(blockConfig);
     for (const subPipelineProperty of subPipelineProperties) {
       const subPipelineAccessor = joinPathParts(
         subPipelineProperty,
-        "__value__"
+        "__value__",
       );
 
       const subPipeline: BrickConfig[] = get(blockConfig, subPipelineAccessor);
@@ -136,7 +136,7 @@ class PipelineVisitor {
         const pipelinePosition = nestedPosition(position, subPipelineAccessor);
         const pipelineFlavor = getSubPipelineFlavor(
           blockConfig.id,
-          pipelinePosition.path
+          pipelinePosition.path,
         );
         this.visitPipeline(pipelinePosition, subPipeline, {
           flavor: pipelineFlavor,
@@ -156,7 +156,7 @@ class PipelineVisitor {
   public visitPipeline(
     position: BrickPosition,
     pipeline: BrickConfig[],
-    { flavor, parentNode }: VisitPipelineExtra
+    { flavor, parentNode }: VisitPipelineExtra,
   ): void {
     for (const [index, blockConfig] of pipeline.entries()) {
       this.visitBrick(nestedPosition(position, String(index)), blockConfig, {
@@ -171,7 +171,7 @@ class PipelineVisitor {
 
   public visitRootPipeline(
     pipeline: BrickConfig[],
-    extra?: VisitRootPipelineExtra
+    extra?: VisitRootPipelineExtra,
   ): void {
     const flavor = extra?.extensionPointType
       ? getRootPipelineFlavor(extra.extensionPointType)

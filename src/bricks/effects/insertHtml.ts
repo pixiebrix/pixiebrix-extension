@@ -41,7 +41,7 @@ class InsertHtml extends EffectABC {
     super(
       "@pixiebrix/html/insert",
       "Insert HTML Element",
-      "Insert HTML Element relative to another element on the page"
+      "Insert HTML Element relative to another element on the page",
     );
   }
 
@@ -70,7 +70,7 @@ class InsertHtml extends EffectABC {
           "Optional unique identifier (id) to replace element from previous run",
       },
     },
-    ["anchor", "html"]
+    ["anchor", "html"],
   );
 
   override async isRootAware(): Promise<boolean> {
@@ -89,7 +89,7 @@ class InsertHtml extends EffectABC {
       replacementId?: string;
       position?: Position;
     }>,
-    { root = document }: BrickOptions
+    { root = document }: BrickOptions,
   ): Promise<void> {
     const sanitizedHTML = sanitize(html);
     const sanitizedElement = $(sanitizedHTML).get(0);
@@ -107,7 +107,7 @@ class InsertHtml extends EffectABC {
       try {
         anchorElement.insertAdjacentHTML(
           POSITION_MAP.get(position),
-          sanitizedElement.outerHTML
+          sanitizedElement.outerHTML,
         );
       } catch (error) {
         if (error instanceof DOMException) {

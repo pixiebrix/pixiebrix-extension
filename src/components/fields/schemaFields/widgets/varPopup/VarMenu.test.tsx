@@ -27,7 +27,7 @@ import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 
 const TestWrapper: React.FunctionComponent<{
   renderMenu: (
-    inputElementRef: MutableRefObject<HTMLInputElement>
+    inputElementRef: MutableRefObject<HTMLInputElement>,
   ) => React.ReactNode;
 }> = ({ renderMenu }) => {
   const inputElementRef = React.useRef<HTMLInputElement>(null);
@@ -73,13 +73,13 @@ describe("VarMenu", () => {
           dispatch(editorActions.addElement(formState));
           dispatch(editorActions.selectElement(formState.uuid));
         },
-      }
+      },
     );
 
     await waitForEffect();
 
     expect(
-      screen.getByText("Available variables have not been computed yet.")
+      screen.getByText("Available variables have not been computed yet."),
     ).toBeInTheDocument();
   });
 
@@ -103,8 +103,8 @@ describe("VarMenu", () => {
           dispatch(editorActions.selectElement(formState.uuid));
           dispatch(
             editorActions.setElementActiveNodeId(
-              formState.extension.blockPipeline[0].instanceId
-            )
+              formState.extension.blockPipeline[0].instanceId,
+            ),
           );
 
           // Run analysis directly
@@ -115,10 +115,10 @@ describe("VarMenu", () => {
             analysisSlice.actions.setKnownVars({
               extensionId: formState.uuid,
               vars: analysis.getKnownVars(),
-            })
+            }),
           );
         },
-      }
+      },
     );
 
     await waitForEffect();
@@ -147,8 +147,8 @@ describe("VarMenu", () => {
           dispatch(editorActions.selectElement(formState.uuid));
           dispatch(
             editorActions.setElementActiveNodeId(
-              formState.extension.blockPipeline[0].instanceId
-            )
+              formState.extension.blockPipeline[0].instanceId,
+            ),
           );
 
           // Run analysis directly
@@ -159,16 +159,16 @@ describe("VarMenu", () => {
             analysisSlice.actions.setKnownVars({
               extensionId: formState.uuid,
               vars: analysis.getKnownVars(),
-            })
+            }),
           );
         },
-      }
+      },
     );
 
     await waitForEffect();
 
     expect(
-      screen.queryByText("No variables found for")
+      screen.queryByText("No variables found for"),
     ).not.toBeInTheDocument();
 
     // @inp matches @input

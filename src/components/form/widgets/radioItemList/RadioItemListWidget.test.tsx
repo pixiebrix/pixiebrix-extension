@@ -52,8 +52,8 @@ describe("RadioItemListWidget", () => {
           initialValues: {
             [fieldName]: "option1",
           },
-        }
-      ).asFragment()
+        },
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 });

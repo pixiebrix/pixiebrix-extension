@@ -27,19 +27,19 @@ describe("Infer shape", () => {
 
   it("Infer multi shape for additional properties", () => {
     expect(detectShape([{ header: "Foo", value: "bar", other: "42" }])).toBe(
-      "multi"
+      "multi",
     );
   });
 
   it("Infer multi shape", () => {
     expect(detectShape([{ "column A": "Foo" }, { "column A": "Foo" }])).toBe(
-      "multi"
+      "multi",
     );
   });
 
   it("Infer single shape", () => {
     expect(detectShape({ "column A": "Foo", "column B": "Bar" })).toBe(
-      "single"
+      "single",
     );
   });
 });
@@ -47,7 +47,7 @@ describe("Infer shape", () => {
 describe("Normalize shape", () => {
   it("Normalize single shape", () => {
     expect(
-      normalizeShape("infer", { "column A": "Foo", "column B": "Bar" })
+      normalizeShape("infer", { "column A": "Foo", "column B": "Bar" }),
     ).toStrictEqual([
       [
         { header: "column A", value: "Foo" },
@@ -58,13 +58,13 @@ describe("Normalize shape", () => {
 
   it("Normalize entries shape", () => {
     expect(
-      normalizeShape("infer", [{ header: "Foo", value: "bar" }])
+      normalizeShape("infer", [{ header: "Foo", value: "bar" }]),
     ).toStrictEqual([[{ header: "Foo", value: "bar" }]]);
   });
 
   it("Normalize multi shape", () => {
     expect(
-      normalizeShape("infer", [{ "column A": "Foo", "column B": "Bar" }])
+      normalizeShape("infer", [{ "column A": "Foo", "column B": "Bar" }]),
     ).toStrictEqual([
       [
         { header: "column A", value: "Foo" },

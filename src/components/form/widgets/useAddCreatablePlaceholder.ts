@@ -44,6 +44,6 @@ export default function useAddCreatablePlaceholder<OptionType>({
       creatable && textInputValue.length === 0
         ? [creatablePlaceholder, ...options]
         : options,
-    [creatable, options, textInputValue]
+    [creatable, options, textInputValue],
   );
 }

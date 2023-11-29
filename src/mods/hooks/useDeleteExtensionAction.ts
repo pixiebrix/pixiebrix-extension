@@ -64,7 +64,7 @@ function useDeleteExtensionAction(modViewItem: ModViewItem): () => void | null {
       errorMessage: `Error deleting mod ${getLabel(mod)} from your account`,
       event: Events.EXTENSION_CLOUD_DELETE,
     },
-    [modals]
+    [modals],
   );
 
   return isCloudExtension ? deleteExtension : null;

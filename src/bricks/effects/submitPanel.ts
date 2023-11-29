@@ -26,7 +26,7 @@ export class SubmitPanelEffect extends EffectABC {
     super(
       "@pixiebrix/display/action",
       "Submit Panel",
-      "Submit/close the panel that contains this brick"
+      "Submit/close the panel that contains this brick",
     );
   }
 

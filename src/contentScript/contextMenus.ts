@@ -71,6 +71,6 @@ export async function handleMenuAction({
   });
 
   throw new Error(
-    "No context menu handler found. Please try reloading the page."
+    "No context menu handler found. Please try reloading the page.",
   );
 }

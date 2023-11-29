@@ -57,12 +57,12 @@ const DocumentOutline = ({
   const [{ value: body }] = useField<DocumentElement[]>(documentBodyName);
 
   const { treeExpandedState } = useSelector((state: RootState) =>
-    selectNodeDataPanelTabState(state, DataPanelTabKey.Outline)
+    selectNodeDataPanelTabState(state, DataPanelTabKey.Outline),
   );
 
   const tree = useMemo(
     () => selectTreeData(body, treeExpandedState),
-    [treeExpandedState, body]
+    [treeExpandedState, body],
   );
 
   const onDelete = useDeleteElement(documentBodyName);
@@ -86,7 +86,7 @@ const DocumentOutline = ({
         />
       );
     },
-    [activeElement, setActiveElement, dragItemId, tree, onDelete]
+    [activeElement, setActiveElement, dragItemId, tree, onDelete],
   );
 
   const toggleExpand = useCallback(
@@ -95,15 +95,15 @@ const DocumentOutline = ({
         actions.setNodeDataPanelTabExpandedState({
           tabKey: DataPanelTabKey.Outline,
           expandedState: { ...treeExpandedState, [String(itemId)]: next },
-        })
+        }),
       );
     },
-    [dispatch, treeExpandedState]
+    [dispatch, treeExpandedState],
   );
 
   const onDragEnd = async (
     sourcePosition: TreeSourcePosition,
-    destinationPosition?: TreeDestinationPosition
+    destinationPosition?: TreeDestinationPosition,
   ) => {
     setDragItemId(null);
 

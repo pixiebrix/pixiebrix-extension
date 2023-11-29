@@ -32,11 +32,11 @@ test.each([
   "renders %s brick in loading state",
   async (brickName: string, brick: Metadata) => {
     const { asFragment } = render(
-      <BrickDetail brick={brick} brickConfig={null} isBrickConfigLoading />
+      <BrickDetail brick={brick} brickConfig={null} isBrickConfigLoading />,
     );
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
-  }
+  },
 );
 
 test("renders @pixiebrix/table loaded", async () => {
@@ -45,7 +45,7 @@ test("renders @pixiebrix/table loaded", async () => {
       brick={new TableRenderer()}
       brickConfig={null}
       isBrickConfigLoading={false}
-    />
+    />,
   );
   await waitForEffect();
   expect(asFragment()).toMatchSnapshot();

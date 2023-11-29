@@ -30,7 +30,7 @@ const REF_SECRETS = [
 /** Return config excluding any secrets/keys. */
 export function sanitizeIntegrationConfig(
   service: Integration,
-  config: IntegrationConfigArgs
+  config: IntegrationConfigArgs,
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {

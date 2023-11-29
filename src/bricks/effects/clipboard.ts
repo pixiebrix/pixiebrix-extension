@@ -33,7 +33,7 @@ export class CopyToClipboard extends EffectABC {
     super(
       "@pixiebrix/clipboard/copy",
       "Copy to clipboard",
-      "Copy text or images to your clipboard"
+      "Copy text or images to your clipboard",
     );
   }
 
@@ -81,7 +81,7 @@ export class CopyToClipboard extends EffectABC {
             "Invalid image content, expected data URI",
             this.id,
             "text",
-            text
+            text,
           );
         }
 
@@ -93,7 +93,7 @@ export class CopyToClipboard extends EffectABC {
 
         if (!("write" in navigator.clipboard)) {
           throw new BusinessError(
-            "Your browser does not support writing images to the clipboard"
+            "Your browser does not support writing images to the clipboard",
           );
         }
 

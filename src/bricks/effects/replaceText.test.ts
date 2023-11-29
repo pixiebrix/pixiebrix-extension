@@ -40,7 +40,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
 
     expect(document.body.innerHTML).toBe("<div>bar</div>");
@@ -54,7 +54,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
 
     expect(document.body.innerHTML).toBe("<div>barbar</div>");
@@ -68,7 +68,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
 
     expect(document.body.innerHTML).toBe("<div>FOO</div>");
@@ -81,7 +81,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
     expect(document.body.innerHTML).toBe("<div>bar <span>bar</span></div>");
   });
@@ -94,7 +94,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "bar",
         selector: "span",
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
     expect(document.body.innerHTML).toBe("<div>foo <span>bar</span></div>");
   });
@@ -107,7 +107,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "foobar",
         selector: "div",
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
     expect(document.body.innerHTML).toBe("<div>foobar <div>foobar</div></div>");
   });
@@ -120,7 +120,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         replacement: "bar",
       }),
-      brickOptionsFactory({ root: span })
+      brickOptionsFactory({ root: span }),
     );
     expect(document.body.innerHTML).toBe("<div>foo <span>bar</span></div>");
   });
@@ -133,7 +133,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "###-###-####",
         isRegex: true,
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
     expect(document.body.innerHTML).toBe("<div>###-###-####</div>");
   });
@@ -146,7 +146,7 @@ describe("ReplaceTextEffect", () => {
         replacement: "$<numbers>",
         isRegex: true,
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
     expect(document.body.innerHTML).toBe("<div>123</div>");
   });
@@ -158,14 +158,14 @@ describe("ReplaceTextEffect", () => {
         pattern: "^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}",
         replacement: "###-###-####",
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
     expect(document.body.innerHTML).toBe("<div>123-456-7890</div>");
   });
 
   test("excludes elements outside the body", async () => {
     const document = getDocument(
-      "<title>Support page</title><h1>Superlatives Abound</h1>"
+      "<title>Support page</title><h1>Superlatives Abound</h1>",
     );
     const brick = new ReplaceTextEffect();
 
@@ -174,7 +174,7 @@ describe("ReplaceTextEffect", () => {
         pattern: "Sup",
         replacement: "Foo",
       }),
-      brickOptionsFactory({ root: document })
+      brickOptionsFactory({ root: document }),
     );
 
     expect(document.head.innerHTML).toBe("<title>Support page</title>");

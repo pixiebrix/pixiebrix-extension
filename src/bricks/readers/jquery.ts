@@ -67,7 +67,7 @@ export interface ChildrenSelector {
 export type CommonSelector = ChildrenSelector | SingleSelector;
 
 export function isChildrenSelector(
-  selector: CommonSelector
+  selector: CommonSelector,
 ): selector is ChildrenSelector {
   return "find" in selector;
 }
@@ -126,10 +126,10 @@ function castValue(value: string, type?: CastType): Result {
 
 async function processFind(
   element: HTMLElement | Document,
-  selector: ChildrenSelector
+  selector: ChildrenSelector,
 ): Promise<Record<string, Result>> {
   return asyncMapValues(selector.find, async (selector) =>
-    select(selector, element)
+    select(selector, element),
   );
 }
 
@@ -146,7 +146,7 @@ function processElement($elements: JQuery, selector: SingleSelector) {
     const nodeType = CONTENT_TYPES[selector.contents];
     if (!nodeType) {
       throw new BusinessError(
-        "Invalid contents argument, must be either 'text' or 'comment'"
+        "Invalid contents argument, must be either 'text' or 'comment'",
       );
     }
 
@@ -157,7 +157,7 @@ function processElement($elements: JQuery, selector: SingleSelector) {
         .filter(function () {
           return this.nodeType === nodeType;
         })
-        .text()
+        .text(),
     );
   } else if (selector.data) {
     value = $elements.data(selector.data);
@@ -177,7 +177,7 @@ function processElement($elements: JQuery, selector: SingleSelector) {
 
 async function select(
   selector: string | SelectorConfig,
-  root?: HTMLElement | Document
+  root?: HTMLElement | Document,
 ): Promise<Result> {
   const normalizedSelector =
     typeof selector === "string" ? { selector } : selector;
@@ -193,7 +193,7 @@ async function select(
 
   if (!root && !selectorString) {
     throw new BusinessError(
-      "'selector' required if not nested within a 'find' block"
+      "'selector' required if not nested within a 'find' block",
     );
   }
 
@@ -214,12 +214,12 @@ async function select(
   if (!elements?.length) {
     console.debug(
       `Did not find any elements for selector in ${maxWaitMillis}ms: ${selectorString}`,
-      { root, selector }
+      { root, selector },
     );
 
     if (maxWaitMillis) {
       throw new BusinessError(
-        `Did not find any elements for selector in ${maxWaitMillis}ms: ${selectorString}`
+        `Did not find any elements for selector in ${maxWaitMillis}ms: ${selectorString}`,
       );
     }
 
@@ -229,13 +229,13 @@ async function select(
   if (elements.length > 1 && !multi) {
     throw new MultipleElementsFoundError(
       selectorString,
-      "Multiple elements found for selector. To return a list of values, toggle on Advanced Properties for the input and supply multi=true"
+      "Multiple elements found for selector. To return a list of values, toggle on Advanced Properties for the input and supply multi=true",
     );
   }
 
   if ("find" in normalizedSelector) {
     const values = elements.map(async (element) =>
-      processFind(element, normalizedSelector)
+      processFind(element, normalizedSelector),
     );
     return multi ? Promise.all(values) : values[0];
   }
@@ -245,7 +245,7 @@ async function select(
   }
 
   const values = elements.map((element) =>
-    processElement($(element) as JQuery, normalizedSelector)
+    processElement($(element) as JQuery, normalizedSelector),
   );
   return multi ? values : values[0];
 }

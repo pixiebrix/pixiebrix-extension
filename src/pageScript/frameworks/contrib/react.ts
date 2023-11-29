@@ -83,7 +83,7 @@ interface Fiber {
 
 function isManaged(node: Node): boolean {
   return Object.keys(node).some((key) =>
-    key.startsWith("__reactInternalInstance$")
+    key.startsWith("__reactInternalInstance$"),
   );
 }
 
@@ -109,7 +109,7 @@ function getComponentFiber(fiber: Fiber): Fiber {
 function findReactComponent(node: Node, traverseUp = 0): Fiber {
   // https://stackoverflow.com/a/39165137/402560
   const key = Object.keys(node).find((key) =>
-    key.startsWith("__reactInternalInstance$")
+    key.startsWith("__reactInternalInstance$"),
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Internal React types

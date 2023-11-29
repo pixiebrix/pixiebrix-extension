@@ -54,7 +54,7 @@ describe("migratePersistedState", () => {
       },
     };
     expect(() =>
-      migratePersistedState(oldPersistedState, nameMigrations)
+      migratePersistedState(oldPersistedState, nameMigrations),
     ).toThrow("Redux persistence migration not found for version: 0");
   });
 
@@ -69,7 +69,7 @@ describe("migratePersistedState", () => {
     };
     const newState: NewName = migratePersistedState(
       oldPersistedState,
-      nameMigrations
+      nameMigrations,
     );
     expect(newState).toEqual({
       commonProp: 123,
@@ -92,7 +92,7 @@ describe("migratePersistedState", () => {
     };
     const newState: NewName = migratePersistedState(
       newPersistedState,
-      nameMigrations
+      nameMigrations,
     );
     expect(newState).toEqual({
       commonProp: 123,
@@ -132,7 +132,7 @@ describe("migratePersistedState", () => {
       ...state,
       changedProp: {
         foos: Object.fromEntries(
-          state.changedProp.map(({ foo, bar }) => [foo, bar])
+          state.changedProp.map(({ foo, bar }) => [foo, bar]),
         ),
         required: state.changedProp.map(({ foo }) => foo),
       },
@@ -158,7 +158,7 @@ describe("migratePersistedState", () => {
     };
     const newState: StateV2 = migratePersistedState(
       oldPersistedState,
-      pick(migrations, [2])
+      pick(migrations, [2]),
     );
     expect(newState).toEqual({
       commonProp: 123,
@@ -193,7 +193,7 @@ describe("migratePersistedState", () => {
     };
     const newState: StateV2 = migratePersistedState(
       newPersistedState,
-      pick(migrations, [2])
+      pick(migrations, [2]),
     );
     expect(newState).toEqual({
       commonProp: 123,
@@ -225,7 +225,7 @@ describe("migratePersistedState", () => {
     };
     const newState: StateV3 = migratePersistedState(
       oldPersistedState,
-      migrations
+      migrations,
     );
     expect(newState).toEqual({
       commonProp: 123,
@@ -262,7 +262,7 @@ describe("migratePersistedState", () => {
     };
     const newState: StateV3 = migratePersistedState(
       newPersistedState,
-      migrations
+      migrations,
     );
     expect(newState).toEqual({
       ...newPersistedState,
@@ -274,7 +274,7 @@ describe("migratePersistedState", () => {
   });
 
   function inferPersistedVersion(
-    state: StateV1 | StateV2 | StateV3
+    state: StateV1 | StateV2 | StateV3,
   ): 1 | 2 | 3 {
     if ("newCommonProp" in state && "newFooProp" in state) {
       return 3;
@@ -298,7 +298,7 @@ describe("migratePersistedState", () => {
     const newState: StateV3 & PersistedState = migratePersistedState(
       v1State,
       migrations,
-      inferPersistedVersion
+      inferPersistedVersion,
     );
     expect(newState).toEqual({
       commonProp: 123,
@@ -331,7 +331,7 @@ describe("migratePersistedState", () => {
     const newState: StateV3 & PersistedState = migratePersistedState(
       v2State,
       migrations,
-      inferPersistedVersion
+      inferPersistedVersion,
     );
     expect(newState).toEqual({
       commonProp: 123,
@@ -365,7 +365,7 @@ describe("migratePersistedState", () => {
     const newState: StateV3 & PersistedState = migratePersistedState(
       v3State,
       migrations,
-      inferPersistedVersion
+      inferPersistedVersion,
     );
     expect(newState).toEqual({
       ...v3State,

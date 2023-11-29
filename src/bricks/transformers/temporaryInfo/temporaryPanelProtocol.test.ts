@@ -30,7 +30,7 @@ import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories
 describe("temporaryPanelProtocol", () => {
   it("getPanelDefinition if panel is not defined", async () => {
     await expect(async () => getPanelDefinition(uuidv4())).rejects.toThrow(
-      Error
+      Error,
     );
   });
 

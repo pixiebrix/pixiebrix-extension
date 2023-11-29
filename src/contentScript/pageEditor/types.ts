@@ -36,7 +36,7 @@ import { type UUID } from "@/types/stringTypes";
 
 export interface DynamicDefinition<
   TExtensionPoint extends StarterBrickDefinition = StarterBrickDefinition,
-  TExtension extends UnknownObject = UnknownObject
+  TExtension extends UnknownObject = UnknownObject,
 > {
   type: StarterBrickType;
   extensionPointConfig: StarterBrickConfig<TExtensionPoint>;

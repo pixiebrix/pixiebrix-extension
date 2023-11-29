@@ -34,7 +34,7 @@ export class GetAPITransformer extends TransformerABC {
       GetAPITransformer.BLOCK_ID,
       "[Deprecated] HTTP GET",
       "Fetch data from an API",
-      "faCloud"
+      "faCloud",
     );
   }
 
@@ -64,7 +64,7 @@ export class GetAPITransformer extends TransformerABC {
         additionalProperties: { type: "string" },
       },
     },
-    ["url"]
+    ["url"],
   );
 
   async transform({
@@ -80,7 +80,7 @@ export class GetAPITransformer extends TransformerABC {
         "Expected configured service",
         this.id,
         "service",
-        service
+        service,
       );
     }
 
@@ -89,7 +89,7 @@ export class GetAPITransformer extends TransformerABC {
       {
         ...requestProps,
         method: "get",
-      }
+      },
     );
 
     return data;

@@ -52,7 +52,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
       dispatch(actions.checkActiveElementAvailability());
     },
     REDUX_SYNC_WAIT_MILLIS,
-    { trailing: true, leading: false }
+    { trailing: true, leading: false },
   );
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const EditorPane: React.VFC = () => {
         initialValues={activeElement}
         onSubmit={() => {
           console.error(
-            "Formik's submit should not be called to save an extension."
+            "Formik's submit should not be called to save an extension.",
           );
         }}
         // We're validating on blur instead of on change as a stop-gap measure to improve typing

@@ -42,7 +42,7 @@ jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
 }));
 
 const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
-  useSanitizedIntegrationConfigFormikAdapter
+  useSanitizedIntegrationConfigFormikAdapter,
 );
 
 jest.mock("@/hooks/auth");
@@ -62,7 +62,7 @@ jest.mock("@/contrib/uipath/uipathHooks", () => {
 });
 jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
   const mock = jest.requireActual(
-    "@/components/form/widgets/RemoteSelectWidget"
+    "@/components/form/widgets/RemoteSelectWidget",
   );
   return {
     __esModule: true,
@@ -92,7 +92,7 @@ function makeBaseState() {
           inputArguments: {},
         },
       },
-    ]
+    ],
   );
 }
 
@@ -103,13 +103,13 @@ function renderOptions(formState: ModComponentFormState = makeBaseState()) {
         name="extension.blockPipeline.0"
         configKey="config"
       />
-    </Formik>
+    </Formik>,
   );
 }
 
 beforeEach(() => {
   useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-    valueToAsyncState(null)
+    valueToAsyncState(null),
   );
 });
 
@@ -144,7 +144,7 @@ describe("UiPath LocalProcess Options", () => {
     await waitForEffect();
 
     expect(
-      screen.getByText("UiPath Assistant consent code: abc123")
+      screen.getByText("UiPath Assistant consent code: abc123"),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Integration")).toBeInTheDocument();
   });
@@ -157,7 +157,7 @@ describe("UiPath LocalProcess Options", () => {
         valueToAsyncState({
           id: configId,
           serviceId: integrationId,
-        } as unknown as SanitizedIntegrationConfig)
+        } as unknown as SanitizedIntegrationConfig),
       );
 
     jest.mocked(auth.useAuthOptions).mockReturnValue(
@@ -169,7 +169,7 @@ describe("UiPath LocalProcess Options", () => {
           local: true,
           sharingType: "private",
         },
-      ])
+      ]),
     );
     jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
     jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
@@ -187,7 +187,7 @@ describe("UiPath LocalProcess Options", () => {
     await waitForEffect();
 
     expect(
-      screen.queryByText("UiPath Assistant consent code")
+      screen.queryByText("UiPath Assistant consent code"),
     ).not.toBeInTheDocument();
     expect(screen.getByLabelText("Integration")).toBeInTheDocument();
     expect(screen.getByLabelText("Process")).toBeInTheDocument();

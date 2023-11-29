@@ -21,14 +21,14 @@ import { RandomNumber } from "@/bricks/transformers/randomNumber";
 describe("random number", () => {
   it("returns a random integer", async () => {
     const { value } = await new RandomNumber().transform(
-      unsafeAssumeValidArg({ lower: 0, upper: 5 })
+      unsafeAssumeValidArg({ lower: 0, upper: 5 }),
     );
     expect(value).toBeInteger();
   });
 
   it("returns a random float", async () => {
     const { value } = await new RandomNumber().transform(
-      unsafeAssumeValidArg({ lower: 0, upper: 5, floating: true })
+      unsafeAssumeValidArg({ lower: 0, upper: 5, floating: true }),
     );
     expect(value).not.toBeInteger();
     expect(value).toBeNumber();

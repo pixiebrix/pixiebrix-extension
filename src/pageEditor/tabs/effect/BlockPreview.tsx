@@ -59,7 +59,7 @@ const HACK_TRACE_OPTIONAL = new Set([
 
 function isTraceOptional(
   blockId: RegistryId,
-  { type }: { type: BrickType }
+  { type }: { type: BrickType },
 ): boolean {
   return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
 }
@@ -119,7 +119,7 @@ const previewSlice = createSlice({
     },
     setSuccess(
       state,
-      action: PayloadAction<{ output: unknown; outputKey: string }>
+      action: PayloadAction<{ output: unknown; outputKey: string }>,
     ) {
       const { output, outputKey } = action.payload;
       state.outputKey = outputKey;
@@ -150,7 +150,7 @@ const BlockPreview: React.FunctionComponent<{
   const { values } = useFormikContext<ModComponentFormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: services }] = useField<IntegrationDependency[]>(
-    "integrationDependencies"
+    "integrationDependencies",
   );
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
@@ -183,7 +183,7 @@ const BlockPreview: React.FunctionComponent<{
       }
     },
     previewRefreshMillis,
-    { trailing: true, leading: false }
+    { trailing: true, leading: false },
   );
 
   const context = traceRecord?.templateContext;

@@ -44,7 +44,7 @@ export interface ParsedTable {
 }
 
 function guessDirection(
-  table: HTMLTableElement
+  table: HTMLTableElement,
 ): ParsingOptions["orientation"] {
   const labelRatio =
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Empty tables are filtered out early
@@ -112,7 +112,7 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
 
 function extractData(
   table: RawTableContent,
-  orientation: ParsingOptions["orientation"]
+  orientation: ParsingOptions["orientation"],
 ): NormalizedData {
   if (orientation === "horizontal") {
     // Transpose table so we only deal with one orientation
@@ -137,7 +137,7 @@ function extractData(
 
 export function parseDomTable(
   table: HTMLTableElement,
-  { orientation = "infer" }: ParsingOptions = {}
+  { orientation = "infer" }: ParsingOptions = {},
 ): ParsedTable {
   if (!table.rows[0]?.cells.length) {
     // Empty table
@@ -146,7 +146,7 @@ export function parseDomTable(
 
   const { fieldNames, body } = extractData(
     flattenTableContent(table),
-    orientation === "infer" ? guessDirection(table) : orientation
+    orientation === "infer" ? guessDirection(table) : orientation,
   );
 
   const records = body.map((row) => zipObject(fieldNames, row));
@@ -166,7 +166,7 @@ function getNameFromFields(fields: Array<number | string>): string {
 
 export function describeTable(
   table: HTMLTableElement | HTMLDListElement,
-  parsedTable: ParsedTable
+  parsedTable: ParsedTable,
 ): string {
   // Uses || instead of ?? to exclude empty strings
   const tableName =
@@ -181,7 +181,7 @@ export function describeTable(
 }
 
 export function getAllTables(
-  root: HTMLElement | Document = document
+  root: HTMLElement | Document = document,
 ): Map<string, ParsedTable> {
   const tables = new Map();
   for (const table of $<HTMLTableElement>("table", root)) {

@@ -59,7 +59,7 @@ const settingsSlice = createSlice({
       action: PayloadAction<{
         flag: keyof SettingOptions;
         value: boolean;
-      }>
+      }>,
     ) {
       const { flag, value } = action.payload;
       // eslint-disable-next-line security/detect-object-injection -- type checked
@@ -77,13 +77,15 @@ const settingsSlice = createSlice({
     },
     setPartnerId(
       state,
-      { payload: { partnerId } }: { payload: { partnerId: string } }
+      { payload: { partnerId } }: { payload: { partnerId: string } },
     ) {
       state.partnerId = partnerId;
     },
     setAuthIntegrationId(
       state,
-      { payload: { integrationId } }: { payload: { integrationId: RegistryId } }
+      {
+        payload: { integrationId },
+      }: { payload: { integrationId: RegistryId } },
     ) {
       // Ensure valid data for authServiceId
       state.authIntegrationId =
@@ -93,7 +95,7 @@ const settingsSlice = createSlice({
     },
     setAuthMethod(
       state,
-      { payload: { authMethod } }: { payload: { authMethod: string } }
+      { payload: { authMethod } }: { payload: { authMethod: string } },
     ) {
       // Ignore invalid values
       if (AUTH_METHODS.includes(authMethod)) {

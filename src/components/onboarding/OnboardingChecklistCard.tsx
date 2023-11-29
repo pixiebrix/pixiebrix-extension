@@ -33,8 +33,8 @@ export const OnboardingStep: React.FunctionComponent<{
   const circleIconStyle = completed
     ? styles.circleIconSuccess
     : active
-    ? styles.circleIconActive
-    : styles.circleIconDefault;
+      ? styles.circleIconActive
+      : styles.circleIconDefault;
 
   const notStarted = !completed && !active;
 

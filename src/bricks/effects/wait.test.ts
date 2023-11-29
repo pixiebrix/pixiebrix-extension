@@ -54,9 +54,9 @@ describe("WaitElementEffect", () => {
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
-    }
+    },
   );
 
   test("it wait element for isRootAware: true", async () => {
@@ -64,7 +64,7 @@ describe("WaitElementEffect", () => {
       unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#hasButton"),
-      })
+      }),
     );
   });
 
@@ -77,7 +77,7 @@ describe("WaitElementEffect", () => {
       }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#noButton"),
-      })
+      }),
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -86,7 +86,7 @@ describe("WaitElementEffect", () => {
   test("array of selectors", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: ["#hasButton", "button"] }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
   });
 });

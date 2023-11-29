@@ -76,14 +76,14 @@ function useConnectedListener(): SidebarListener {
       },
       onShowActivateRecipe(modActivationPanel: ModActivationPanelEntry) {
         dispatch(
-          sidebarSlice.actions.showModActivationPanel(modActivationPanel)
+          sidebarSlice.actions.showModActivationPanel(modActivationPanel),
         );
       },
       onHideActivateRecipe() {
         dispatch(sidebarSlice.actions.hideModActivationPanel());
       },
     }),
-    [dispatch]
+    [dispatch],
   );
 }
 
@@ -122,7 +122,7 @@ const ConnectedSidebar: React.VFC = () => {
         forms,
         staticPanels,
         modActivationPanel,
-      })
+      }),
     );
 
     // To avoid races with panel registration, listen after reserving the initial panels.

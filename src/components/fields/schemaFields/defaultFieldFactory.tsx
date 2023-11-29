@@ -24,7 +24,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
 export default function defaultFieldFactory(
-  Widget: React.FC<SchemaFieldProps>
+  Widget: React.FC<SchemaFieldProps>,
 ): SchemaFieldComponent {
   if (Widget == null) {
     // This would indicate a problem with the imports b/c all the call sites are passing in an imported component?

@@ -37,7 +37,7 @@ function isCurrentTopFrame({ tabId, frameId }: Target) {
 }
 
 async function onNavigation(
-  target: WebNavigation.OnCommittedDetailsType
+  target: WebNavigation.OnCommittedDetailsType,
 ): Promise<void> {
   if (isCurrentTopFrame(target)) {
     tabUrl = target.url;

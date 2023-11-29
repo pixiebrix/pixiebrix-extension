@@ -30,7 +30,7 @@ if (process.env.ENVIRONMENT === "development") {
           }
         }
       </style>
-    `
+    `,
   );
 
   const update = (set = localStorage.getItem("dev:dark-mode")) => {

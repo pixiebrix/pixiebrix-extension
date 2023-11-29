@@ -106,7 +106,7 @@ export const tabStateSlice = createSlice({
         (state, { payload: frameState }) => {
           state.isConnecting = false;
           state.frameState = frameState;
-        }
+        },
       )
       .addCase(connectToContentScript.rejected, (state, { error }) => {
         state.isConnecting = false;

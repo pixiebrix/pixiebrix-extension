@@ -25,6 +25,6 @@ export default function useSortOrganizations() {
 
   return useMemo(
     () => sortBy(organizations, (organization) => organization.name),
-    [organizations]
+    [organizations],
   );
 }

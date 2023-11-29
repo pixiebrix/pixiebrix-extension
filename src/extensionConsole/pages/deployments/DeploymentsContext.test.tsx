@@ -69,7 +69,7 @@ describe("DeploymentsContext", () => {
     render(
       <DeploymentsProvider>
         <Component />
-      </DeploymentsProvider>
+      </DeploymentsProvider>,
     );
 
     await waitForEffect();
@@ -87,7 +87,7 @@ describe("DeploymentsContext", () => {
     const { getReduxStore } = render(
       <DeploymentsProvider>
         <Component />
-      </DeploymentsProvider>
+      </DeploymentsProvider>,
     );
 
     await waitForEffect();

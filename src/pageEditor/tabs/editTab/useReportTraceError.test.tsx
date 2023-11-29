@@ -68,7 +68,7 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
     },
     {
       wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
-    }
+    },
   );
 };
 
@@ -80,7 +80,7 @@ test("it reports an error", () => {
   renderUseReportTraceError([traceErrorFactory()]);
   expect(reportEvent).toHaveBeenCalledWith(
     "PageEditorExtensionError",
-    expect.anything()
+    expect.anything(),
   );
 });
 

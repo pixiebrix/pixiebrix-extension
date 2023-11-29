@@ -45,7 +45,7 @@ describe("Header", () => {
             show_sidebar_logo: true,
           },
         }),
-      })
+      }),
     );
 
     const { asFragment } = render(<Header />);
@@ -61,7 +61,7 @@ describe("Header", () => {
             show_sidebar_logo: false,
           },
         }),
-      })
+      }),
     );
 
     render(<Header />);

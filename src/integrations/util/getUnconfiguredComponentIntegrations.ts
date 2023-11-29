@@ -42,7 +42,7 @@ function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
 }
 
 function getIntegrationsFromRecord(
-  services: Record<OutputKey, RegistryId>
+  services: Record<OutputKey, RegistryId>,
 ): IntegrationDependency[] {
   return Object.entries(services).map(([key, integrationId]) => ({
     integrationId,
@@ -69,12 +69,12 @@ export default function getUnconfiguredComponentIntegrations({
       return isSchemaServicesFormat(services)
         ? getIntegrationsFromSchema(services)
         : getIntegrationsFromRecord(services);
-    }
+    },
   );
 
   const dedupedIntegrationDependencies: IntegrationDependency[] = [];
   for (const group of Object.values(
-    groupBy(integrationDependencies, "integrationId")
+    groupBy(integrationDependencies, "integrationId"),
   )) {
     const notOptional = group.find(({ isOptional }) => !isOptional);
     if (notOptional) {

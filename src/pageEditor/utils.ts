@@ -67,20 +67,20 @@ export const thisTab: Target = {
 };
 
 export function getIdForElement(
-  element: ModComponentBase | ModComponentFormState
+  element: ModComponentBase | ModComponentFormState,
 ): UUID {
   return isModComponentBase(element) ? element.id : element.uuid;
 }
 
 export function getRecipeIdForElement(
-  element: ModComponentBase | ModComponentFormState
+  element: ModComponentBase | ModComponentFormState,
 ): RegistryId {
   return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
 }
 
 export function getRecipeById(
   recipes: ModDefinition[],
-  id: RegistryId
+  id: RegistryId,
 ): ModDefinition | undefined {
   return recipes.find((recipe) => recipe.metadata.id === id);
 }
@@ -97,7 +97,7 @@ export function getRecipeById(
  */
 export function getPipelinePropNames(
   block: Brick | null,
-  blockConfig: BrickConfig
+  blockConfig: BrickConfig,
 ): string[] {
   switch (blockConfig.id) {
     // Special handling for tour step to avoid clutter and input type alternatives
@@ -142,7 +142,7 @@ export function getPipelinePropNames(
         inputProperties(block.inputSchema),
         (value) =>
           typeof value === "object" &&
-          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#"
+          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#",
       );
 
       return sortedFields(pipelineProperties, block.uiSchema, {
@@ -161,7 +161,7 @@ export function getPipelinePropNames(
  */
 export function getVariableKeyForSubPipeline(
   brickConfig: BrickConfig,
-  pipelinePropName: string
+  pipelinePropName: string,
   // NOTE: does not return an OutputKey because a user-entered value may not be a valid OutputKey at this point
 ): string | null {
   let keyPropName: string = null;
@@ -211,7 +211,7 @@ export function getVariableKeyForSubPipeline(
  */
 function getElementsPipelinePropNames(
   parentPath: string,
-  elements: DocumentElement | DocumentElement[]
+  elements: DocumentElement | DocumentElement[],
 ): string[] {
   const isArray = Array.isArray(elements);
 
@@ -227,15 +227,15 @@ function getElementsPipelinePropNames(
       propNames.push(
         ...getElementsPipelinePropNames(
           joinPathParts(parentPath, index, "config", "element", "__value__"),
-          element.config.element.__value__
-        )
+          element.config.element.__value__,
+        ),
       );
     } else if (element.children?.length > 0) {
       propNames.push(
         ...getElementsPipelinePropNames(
           joinPathParts(parentPath, index, "children"),
-          element.children
-        )
+          element.children,
+        ),
       );
     }
   }
@@ -246,27 +246,27 @@ function getElementsPipelinePropNames(
 export function getDocumentPipelinePaths(block: BrickConfig): string[] {
   return getElementsPipelinePropNames(
     "config.body",
-    (block.config.body ?? []) as DocumentElement[]
+    (block.config.body ?? []) as DocumentElement[],
   );
 }
 
 export function getFoundationNodeAnnotations(
-  annotations: AnalysisAnnotation[]
+  annotations: AnalysisAnnotation[],
 ): AnalysisAnnotation[] {
   return annotations.filter(
     (annotation) =>
-      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
+      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME),
   );
 }
 
 export function getBlockAnnotations(
   blockPath: string,
-  annotations: AnalysisAnnotation[]
+  annotations: AnalysisAnnotation[],
 ): AnalysisAnnotation[] {
   const pathLength = blockPath.length;
 
   const relatedAnnotations = annotations.filter((annotation) =>
-    annotation.position.path.startsWith(blockPath)
+    annotation.position.path.startsWith(blockPath),
   );
 
   return relatedAnnotations.filter((annotation) => {

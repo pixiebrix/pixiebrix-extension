@@ -36,7 +36,7 @@ class TryExcept extends TransformerABC {
     super(
       TryExcept.BLOCK_ID,
       "Try-Except",
-      "Try to run a brick, and recover on error"
+      "Try to run a brick, and recover on error",
     );
   }
 
@@ -65,7 +65,7 @@ class TryExcept extends TransformerABC {
         default: "error",
       },
     },
-    ["try"]
+    ["try"],
   );
 
   async transform(
@@ -78,7 +78,7 @@ class TryExcept extends TransformerABC {
       except?: PipelineExpression;
       errorKey: OutputKey;
     }>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<unknown> {
     try {
       return await options.runPipeline(tryPipeline, {
@@ -93,7 +93,7 @@ class TryExcept extends TransformerABC {
         { key: "catch", counter: 0 },
         {
           [`@${errorKey}`]: serializeError(error, { useToJSON: false }),
-        }
+        },
       );
     }
   }

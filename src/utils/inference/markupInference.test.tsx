@@ -73,7 +73,7 @@ test("infer anchor with button sibling", () => {
 
   const inferred = inferButtonHTML($("div").get(0), $("a").get());
   expect(inferred).toBe(
-    '<a href="#" class="org-top-card-primary-actions__action"><span class="org-top-card-primary-actions__action-inner artdeco-button artdeco-button--secondary">{{{ caption }}}<li-icon>{{{ icon }}}</li-icon></span></a>'
+    '<a href="#" class="org-top-card-primary-actions__action"><span class="org-top-card-primary-actions__action-inner artdeco-button artdeco-button--secondary">{{{ caption }}}<li-icon>{{{ icon }}}</li-icon></span></a>',
   );
 });
 
@@ -82,7 +82,7 @@ test("infer bootstrap anchor button", () => {
     '<div><a href="/docs/5.0/getting-started/download/" class="btn btn-lg btn-outline-secondary mb-3">Download</a></div>';
   const inferred = inferButtonHTML($("div").get(0), $("a").get());
   expect(inferred).toBe(
-    '<a href="#" class="btn btn-lg btn-outline-secondary mb-3">{{{ caption }}}</a>'
+    '<a href="#" class="btn btn-lg btn-outline-secondary mb-3">{{{ caption }}}</a>',
   );
 });
 
@@ -112,7 +112,7 @@ test("infer list item mixed elements with icons", () => {
 
   const inferred = inferButtonHTML($("ul").get(0), $("button").toArray());
   expect(inferred).toBe(
-    "<li><button><li-icon>{{{ icon }}}</li-icon>{{{ caption }}}</button></li>"
+    "<li><button><li-icon>{{{ icon }}}</li-icon>{{{ caption }}}</button></li>",
   );
 });
 
@@ -147,7 +147,7 @@ test("do not duplicate button caption", () => {
     "</span></button></div>";
   const inferred = inferButtonHTML($("div").get(0), $("button").get());
   expect(inferred).toBe(
-    '<button type="button"><span class="artdeco-button__text">{{{ caption }}}</span></button>'
+    '<button type="button"><span class="artdeco-button__text">{{{ caption }}}</span></button>',
   );
 });
 
@@ -163,7 +163,7 @@ test("infer ember button", () => {
   expect(inferred).toBe(
     "<button" +
       ' class="artdeco-button"' +
-      ' type="button">{{{ caption }}}</button>'
+      ' type="button">{{{ caption }}}</button>',
   );
 });
 
@@ -208,7 +208,7 @@ test("infer single panel", () => {
   const inferred = inferPanelHTML($("div").get(0), $("section").get());
 
   expect(inferred).toBe(
-    "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>"
+    "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>",
   );
 });
 
@@ -222,7 +222,7 @@ test("infer basic panel structure with header", () => {
   const inferred = inferPanelHTML($("div").get(0), $("section").get());
 
   expect(inferred).toBe(
-    "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>"
+    "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>",
   );
 });
 
@@ -236,7 +236,7 @@ test("infer basic panel structure with div header", () => {
   const inferred = inferPanelHTML($("div").get(0), $("section").get());
 
   expect(inferred).toBe(
-    "<section><div><h2>{{{ heading }}}</h2></div><div>{{{ body }}}</div></section>"
+    "<section><div><h2>{{{ heading }}}</h2></div><div>{{{ body }}}</div></section>",
   );
 });
 
@@ -250,6 +250,6 @@ test("infer header structure mismatch", () => {
   const inferred = inferPanelHTML($("div").get(0), $("section").get());
 
   expect(inferred).toBe(
-    "<section><h2>{{{ heading }}}</h2><div>{{{ body }}}</div></section>"
+    "<section><h2>{{{ heading }}}</h2><div>{{{ body }}}</div></section>",
   );
 });

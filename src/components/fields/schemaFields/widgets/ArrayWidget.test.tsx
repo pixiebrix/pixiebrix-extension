@@ -49,8 +49,8 @@ describe("ArrayWidget", () => {
           initialValues: {
             [fieldName]: [],
           },
-        }
-      ).asFragment()
+        },
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -79,8 +79,8 @@ describe("ArrayWidget", () => {
               "this is a really long string to see what happens when the array value is long",
             ],
           },
-        }
-      ).asFragment()
+        },
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -101,7 +101,7 @@ describe("ArrayWidget", () => {
         initialValues: {
           [fieldName]: [],
         },
-      }
+      },
     );
 
     // Add an item
@@ -137,12 +137,12 @@ describe("ArrayWidget", () => {
         initialValues: {
           [fieldName]: ["abc", "def"],
         },
-      }
+      },
     );
 
     // Open the field type toggle
     await userEvent.click(
-      within(screen.getByTestId(`toggle-${fieldName}.1`)).getByRole("button")
+      within(screen.getByTestId(`toggle-${fieldName}.1`)).getByRole("button"),
     );
 
     // Select "Remove" since we're in an array

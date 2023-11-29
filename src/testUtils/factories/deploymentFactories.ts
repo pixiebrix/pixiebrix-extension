@@ -28,15 +28,15 @@ export const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,
   name: derive<Deployment["package"], string>(
     ({ config }) => config.metadata.name,
-    "config"
+    "config",
   ),
   version: derive<Deployment["package"], string>(
     ({ config }) => config.metadata.version,
-    "config"
+    "config",
   ),
   package_id: derive<Deployment["package"], RegistryId>(
     ({ config }) => config.metadata.id,
-    "config"
+    "config",
   ),
   config: defaultModDefinitionFactory,
 });
@@ -50,8 +50,8 @@ export const deploymentFactory = define<Deployment>({
   services: () => [] as Deployment["services"],
   package_version: derive<Deployment, string>(
     ({ package: deploymentPackage }) => deploymentPackage.version,
-    "package"
+    "package",
   ),
   package: deploymentPackageFactory,
-  options_config: () => ({} as Deployment["options_config"]),
+  options_config: () => ({}) as Deployment["options_config"],
 });

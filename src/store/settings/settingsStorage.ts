@@ -39,7 +39,7 @@ export async function getSettingsState(): Promise<SettingsState> {
   return readReduxStorage(
     SETTINGS_STORAGE_KEY,
     migrations,
-    initialSettingsState
+    initialSettingsState,
   );
 }
 
@@ -50,7 +50,7 @@ export async function saveSettingsState(state: SettingsState): Promise<void> {
   await setReduxStorage(
     SETTINGS_STORAGE_KEY,
     state,
-    getMaxMigrationsVersion(migrations)
+    getMaxMigrationsVersion(migrations),
   );
 }
 

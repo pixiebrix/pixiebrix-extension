@@ -33,7 +33,7 @@ describe("FieldAnnotationAlert", () => {
         type={AnnotationType.Error}
         message="Error annotation"
         actions={[action]}
-      />
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -41,7 +41,7 @@ describe("FieldAnnotationAlert", () => {
     expect(
       screen.getByRole("button", {
         name: /test action/i,
-      })
+      }),
     ).toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe("FieldAnnotationAlert", () => {
         type={AnnotationType.Warning}
         message="Warning annotation"
         actions={[action]}
-      />
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -59,7 +59,7 @@ describe("FieldAnnotationAlert", () => {
     expect(
       screen.getByRole("button", {
         name: /test action/i,
-      })
+      }),
     ).toBeInTheDocument();
   });
 
@@ -69,7 +69,7 @@ describe("FieldAnnotationAlert", () => {
         type={AnnotationType.Info}
         message="Info annotation"
         actions={[action]}
-      />
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -77,7 +77,7 @@ describe("FieldAnnotationAlert", () => {
     expect(
       screen.getByRole("button", {
         name: /test action/i,
-      })
+      }),
     ).toBeInTheDocument();
   });
 });

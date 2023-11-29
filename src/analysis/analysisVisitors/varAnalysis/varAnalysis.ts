@@ -112,7 +112,7 @@ export enum KnownSources {
  */
 async function setIntegrationDependencyVars(
   extension: ModComponentFormState,
-  contextVars: VarMap
+  contextVars: VarMap,
 ): Promise<void> {
   // Loop through all the integrations, so we can set the source for each dependency variable properly
   for (const integrationDependency of extension.integrationDependencies ?? []) {
@@ -132,7 +132,7 @@ async function setIntegrationDependencyVars(
  */
 async function setInputVars(
   extension: ModComponentFormState,
-  contextVars: VarMap
+  contextVars: VarMap,
 ): Promise<void> {
   const adapter = ADAPTERS.get(extension.extensionPoint.definition.type);
   const config = adapter.selectExtensionPointConfig(extension);
@@ -299,7 +299,7 @@ function setVarsFromSchema({
  */
 async function setOptionsVars(
   extension: ModComponentFormState,
-  contextVars: VarMap
+  contextVars: VarMap,
 ): Promise<void> {
   if (extension.recipe == null) {
     return;
@@ -335,13 +335,13 @@ async function setOptionsVars(
 async function setModVariables(
   modVariableSchemas: Array<Schema["properties"]>,
   modState: UnknownObject,
-  contextVars: VarMap
+  contextVars: VarMap,
 ): Promise<void> {
   setVarsFromSchema({
     schema: {
       type: "object",
       properties: Object.fromEntries(
-        modVariableSchemas.flatMap((schema) => Object.entries(schema))
+        modVariableSchemas.flatMap((schema) => Object.entries(schema)),
       ),
       additionalProperties: true,
     },
@@ -479,7 +479,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ) {
     // Create a new context frame with:
     // - The context provided by the parent pipeline
@@ -492,7 +492,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     const traceRecord = this.trace.find(
       (x) =>
         x.blockInstanceId === blockConfig.instanceId &&
-        x.templateContext != null
+        x.templateContext != null,
     );
 
     if (traceRecord?.templateContext != null) {
@@ -537,7 +537,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   override visitExpression(
     position: BrickPosition,
-    expression: Expression<unknown>
+    expression: Expression<unknown>,
   ): void {
     if (isVarExpression(expression)) {
       this.visitVarExpression(position, expression);
@@ -548,7 +548,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   private visitVarExpression(
     position: BrickPosition,
-    expression: Expression<string, "var">
+    expression: Expression<string, "var">,
   ) {
     const varName = expression.__value__;
     if (isEmpty(varName)) {
@@ -562,7 +562,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   private visitNunjucksExpression(
     position: BrickPosition,
-    expression: Expression<string, "nunjucks">
+    expression: Expression<string, "nunjucks">,
   ) {
     let templateVariables: string[];
     try {
@@ -583,7 +583,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   private pushNotFoundVariableAnnotation(
     position: BrickPosition,
     varName: string,
-    expression: Expression<string, TemplateEngine>
+    expression: Expression<string, TemplateEngine>,
   ) {
     let message: string;
     if (varName === "@") {
@@ -598,7 +598,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
     if (
       this.annotations.some(
-        (x) => x.message === message && x.position.path === position.path
+        (x) => x.message === message && x.position.path === position.path,
       )
     ) {
       return;
@@ -618,7 +618,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   override visitPipeline(
     position: BrickPosition,
     pipeline: BrickConfig[],
-    extra: VisitPipelineExtra
+    extra: VisitPipelineExtra,
   ): void {
     // Get variable provided to child pipeline if applicable (e.g. for a for-each, try-except)
     const childPipelineKey =
@@ -634,7 +634,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       const block = this.allBlocks.get(extra.parentNode.id);
       const variableSchema = block?.block.getPipelineVariableSchema?.(
         extra.parentNode,
-        extra.pipelinePropName
+        extra.pipelinePropName,
       );
 
       childPipelineVars.setVariableExistence({
@@ -737,9 +737,9 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
           pathInBlock,
           "config",
           "element",
-          "__value__"
+          "__value__",
         ),
-        bodyKnownVars
+        bodyKnownVars,
       );
 
       // Creating context frame for visiting the deferred expression
@@ -756,7 +756,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
           pathInBlock,
           "config",
           "element",
-          "__value__"
+          "__value__",
         ),
       });
 
@@ -766,7 +766,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   override visitDocument(
     position: BrickPosition,
-    blockConfig: BrickConfig
+    blockConfig: BrickConfig,
   ): void {
     // Override because the base class extracts all pipelines directly. Instead, we need to visit the pipeline
     // in the context of their ancestor document builder elements (e.g., ListElement introduces a variable)
@@ -804,7 +804,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
           } else if (isExpression(value)) {
             this.visitExpression(
               nestedPosition(position, pathInBlock, "config", prop),
-              value
+              value,
             );
           }
         }

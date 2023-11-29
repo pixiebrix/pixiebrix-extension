@@ -23,7 +23,7 @@ const MAX_HISTORY_SIZE = 100;
 
 function useUndo<T>(
   realValue: T,
-  setRealValue: (value: T | undefined) => void
+  setRealValue: (value: T | undefined) => void,
 ): () => void {
   // Array used like a stack
   const history = useRef<T[]>([]);
@@ -47,7 +47,7 @@ function useUndo<T>(
     {
       delayMillis: 300,
       maxWaitMillis: 500,
-    }
+    },
   );
 
   return useCallback(() => {

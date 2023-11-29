@@ -59,7 +59,7 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-      })
+      }),
     ).toStrictEqual({
       parent: null,
       // Site hint doesn't match, so requiredSelectors has not effect
@@ -90,7 +90,7 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-      })
+      }),
     ).toStrictEqual({
       parent: null,
       selectors: [".grandparent>.parent #test", ".grandparent>.parent div"],
@@ -114,7 +114,7 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-      })
+      }),
     ).toStrictEqual({
       parent: null,
       selectors: [
@@ -150,7 +150,7 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-      })
+      }),
     ).toStrictEqual({
       parent: null,
       // Doesn't return the instantiated template, because it would match both field.
@@ -193,7 +193,7 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-      })
+      }),
     ).toStrictEqual({
       parent: null,
       selectors: [
@@ -215,7 +215,7 @@ describe("inferElementSelector", () => {
           ({ location }: { element: HTMLElement; location: Location }) =>
             location.hostname === "www.example.com",
         requiredSelectors: [".container"],
-      })
+      }),
     );
 
     document.body.innerHTML = html`
@@ -236,7 +236,7 @@ describe("inferElementSelector", () => {
         element,
         root: document.body,
         excludeRandomClasses: true,
-      })
+      }),
     ).toStrictEqual({
       parent: null,
       selectors: [".container div", ".container .testValue"],

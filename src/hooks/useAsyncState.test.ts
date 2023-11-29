@@ -100,7 +100,7 @@ describe("useAsyncState", () => {
           dependency: 42,
           factory,
         },
-      }
+      },
     );
 
     await act(async () => {
@@ -111,7 +111,7 @@ describe("useAsyncState", () => {
       expect.objectContaining({
         data: 42,
         currentData: 42,
-      })
+      }),
     );
 
     deferred = pDefer<number>();
@@ -124,7 +124,7 @@ describe("useAsyncState", () => {
         data: 42,
         currentData: undefined,
         isFetching: true,
-      })
+      }),
     );
 
     await act(async () => {
@@ -136,7 +136,7 @@ describe("useAsyncState", () => {
         data: 43,
         currentData: 43,
         isFetching: false,
-      })
+      }),
     );
   });
 
@@ -146,7 +146,7 @@ describe("useAsyncState", () => {
       (props) => useAsyncState(props, []),
       {
         initialProps: originalFactory,
-      }
+      },
     );
 
     await waitForEffect();
@@ -155,7 +155,7 @@ describe("useAsyncState", () => {
       expect.objectContaining({
         data: 42,
         currentData: 42,
-      })
+      }),
     );
 
     const deferred = pDefer<number>();
@@ -171,7 +171,7 @@ describe("useAsyncState", () => {
         data: 42,
         currentData: 42,
         isFetching: true,
-      })
+      }),
     );
 
     await act(async () => {
@@ -183,7 +183,7 @@ describe("useAsyncState", () => {
         data: 43,
         currentData: 43,
         isFetching: false,
-      })
+      }),
     );
   });
 });

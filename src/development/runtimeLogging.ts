@@ -76,7 +76,7 @@ export async function initRuntimeLogging(): Promise<void> {
   if (!alreadyImported) {
     if (!enableRuntimeLogging) {
       console.debug(
-        "PixieBrix: runtime logging is disabled. Enable it by calling `window.setRuntimeLogging(true)` in an extension context."
+        "PixieBrix: runtime logging is disabled. Enable it by calling `window.setRuntimeLogging(true)` in an extension context.",
       );
     }
 

@@ -29,7 +29,7 @@ describe("FixedInnerObjectWidget", () => {
   it("bail on allOf", () => {
     render(<FixedInnerObjectWidget name="test" schema={{ allOf: [] }} />);
     expect(
-      screen.getByDisplayValue("Use Workshop to edit")
+      screen.getByDisplayValue("Use Workshop to edit"),
     ).toBeInTheDocument();
   });
 
@@ -42,7 +42,7 @@ describe("FixedInnerObjectWidget", () => {
       <FixedInnerObjectWidget name="test" schema={schema} />,
       {
         initialValues: { test: { foo: "bar" } },
-      }
+      },
     );
     expect(screen.queryByDisplayValue("Use Workshop to edit")).toBeNull();
     expect(asFragment()).toMatchSnapshot();
@@ -59,7 +59,7 @@ describe("FixedInnerObjectWidget", () => {
       <FixedInnerObjectWidget name="test" schema={schema} />,
       {
         initialValues: { test: { foo: "bar" } },
-      }
+      },
     );
     expect(screen.queryByDisplayValue("Use Workshop to edit")).toBeNull();
     expect(asFragment()).toMatchSnapshot();

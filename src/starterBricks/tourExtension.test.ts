@@ -57,7 +57,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
-      } as Metadata),
+      }) as Metadata,
     definition: define<TourDefinition>({
       type: "tour",
       isAvailable: () => ({
@@ -100,7 +100,7 @@ describe("tourExtension", () => {
     starterBrick.registerModComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
-      })
+      }),
     );
 
     await starterBrick.install();
@@ -118,13 +118,13 @@ describe("tourExtension", () => {
     await initQuickBarApp();
 
     const extensionPoint = fromJS(
-      starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })()
+      starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })(),
     );
 
     extensionPoint.registerModComponent(
       extensionFactory({
         extensionPointId: extensionPoint.id,
-      })
+      }),
     );
 
     await extensionPoint.install();
@@ -137,11 +137,11 @@ describe("tourExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS + 1
+      NUM_DEFAULT_QUICKBAR_ACTIONS + 1,
     );
     extensionPoint.uninstall();
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
   });
 });

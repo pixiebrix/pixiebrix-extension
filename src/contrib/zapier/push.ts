@@ -65,7 +65,7 @@ export class PushZap extends EffectABC {
 
   async effect(
     { pushKey, data }: BrickArgs<{ pushKey: string; data: UnknownObject }>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<void> {
     const { data: webhooks } = await performConfiguredRequestInBackground<{
       new_push_fields: Webhook[];
@@ -76,7 +76,7 @@ export class PushZap extends EffectABC {
     });
 
     const webhook = webhooks.new_push_fields.find(
-      (x) => x.display_name === pushKey
+      (x) => x.display_name === pushKey,
     );
 
     if (!webhook) {

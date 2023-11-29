@@ -37,7 +37,7 @@ export const getToken = memoizeUntilSettled(_getToken, {
 
 async function _getToken(
   service: Integration,
-  auth: IntegrationConfig
+  auth: IntegrationConfig,
 ): Promise<AuthData> {
   expectContext("background");
 

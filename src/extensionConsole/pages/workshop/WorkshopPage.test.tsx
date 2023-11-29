@@ -54,8 +54,8 @@ describe("WorkshopPage", () => {
 
     expect(
       screen.getByText(
-        "To use the Workshop, you must first set an account alias for your PixieBrix account"
-      )
+        "To use the Workshop, you must first set an account alias for your PixieBrix account",
+      ),
     ).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
@@ -75,19 +75,19 @@ describe("WorkshopPage", () => {
             authSlice.actions.setAuth(
               authStateFactory({
                 scope: "workshopuser",
-              })
-            )
+              }),
+            ),
           );
         },
-      }
+      },
     );
 
     await waitForEffect();
 
     expect(
       screen.queryByText(
-        "To use the Workshop, you must first set an account alias for your PixieBrix account"
-      )
+        "To use the Workshop, you must first set an account alias for your PixieBrix account",
+      ),
     ).not.toBeInTheDocument();
 
     expect(screen.queryByTestId("loader")).not.toBeInTheDocument();

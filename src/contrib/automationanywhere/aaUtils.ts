@@ -119,7 +119,7 @@ export function interfaceToInputSchema(botInterface: Interface): Schema {
         }
 
         return [variable.name, definition];
-      })
+      }),
     ),
     required: inputs.map((variable) => variable.name),
   };
@@ -169,9 +169,9 @@ function mapBotOutput(value: OutputValue): Primitive {
 }
 
 export function selectBotOutput(
-  execution: Pick<Execution, "botOutVariables">
+  execution: Pick<Execution, "botOutVariables">,
 ): Record<string, Primitive> {
   return mapValues(execution.botOutVariables?.values ?? {}, (value) =>
-    mapBotOutput(value)
+    mapBotOutput(value),
   );
 }

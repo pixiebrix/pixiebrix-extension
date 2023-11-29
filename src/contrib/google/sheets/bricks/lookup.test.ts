@@ -28,7 +28,7 @@ describe("Google sheets lookup brick logic", () => {
   type InputType = Parameters<typeof lookupBrick.transform>[0];
 
   async function runLookup(
-    input: Record<string, any>
+    input: Record<string, any>,
   ): Promise<UnknownObject | UnknownObject[]> {
     return lookupBrick.transform(
       {
@@ -37,7 +37,7 @@ describe("Google sheets lookup brick logic", () => {
         ...input,
       } as InputType,
       // @ts-expect-error -- lookupBrick.transform() only uses the logger
-      { logger: { debug: jest.fn() } }
+      { logger: { debug: jest.fn() } },
     );
   }
 
@@ -57,7 +57,7 @@ describe("Google sheets lookup brick logic", () => {
         header: "ColumnA",
         query: "testQuery",
         multi: false,
-      })
+      }),
     ).rejects.toThrowWithMessage(BusinessError, "Header ColumnA not found");
   });
 
@@ -78,7 +78,7 @@ describe("Google sheets lookup brick logic", () => {
         header: "ColumnA",
         query: "testQuery",
         multi: false,
-      })
+      }),
     ).rejects.toThrowWithMessage(BusinessError, "Header ColumnA not found");
   });
 

@@ -101,7 +101,7 @@ async function runExtensionPoint(
     reason,
     extensionIds,
     abortSignal,
-  }: { reason: RunReason; extensionIds?: UUID[]; abortSignal: AbortSignal }
+  }: { reason: RunReason; extensionIds?: UUID[]; abortSignal: AbortSignal },
 ): Promise<void> {
   // Could potentially call _activeExtensionPoints.delete here, but assume the extension point is still available
   // until we know for sure that it's not
@@ -129,7 +129,7 @@ async function runExtensionPoint(
     if (error instanceof PromiseCancelled) {
       console.debug(
         `Skipping ${extensionPoint.kind} ${extensionPoint.id} because user navigated away from the page`,
-        details
+        details,
       );
 
       _activeExtensionPoints.delete(extensionPoint);
@@ -142,7 +142,7 @@ async function runExtensionPoint(
   if (!installed) {
     console.debug(
       `Skipping ${extensionPoint.kind} ${extensionPoint.id} because it was not installed on the page`,
-      details
+      details,
     );
 
     _activeExtensionPoints.delete(extensionPoint);
@@ -152,7 +152,7 @@ async function runExtensionPoint(
   if (abortSignal.aborted) {
     console.debug(
       `Skipping ${extensionPoint.kind} ${extensionPoint.id} because user navigated away from the page`,
-      details
+      details,
     );
 
     _activeExtensionPoints.delete(extensionPoint);
@@ -161,7 +161,7 @@ async function runExtensionPoint(
 
   console.debug(
     `Installed extension point ${extensionPoint.kind}: ${extensionPoint.id}`,
-    details
+    details,
   );
 
   await extensionPoint.runModComponents({ reason, extensionIds });
@@ -169,7 +169,7 @@ async function runExtensionPoint(
 
   console.debug(
     `Ran extension point ${extensionPoint.kind}: ${extensionPoint.id}`,
-    details
+    details,
   );
 }
 
@@ -192,7 +192,7 @@ export async function ensureInstalled(): Promise<void> {
     sidebarExtensionPoints,
   });
   await Promise.allSettled(
-    sidebarExtensionPoints.map(async (x) => x.install())
+    sidebarExtensionPoints.map(async (x) => x.install()),
   );
 }
 
@@ -259,7 +259,7 @@ export function removePersistedExtension(extensionId: UUID): void {
  */
 export function clearEditorExtension(
   extensionId?: UUID,
-  options?: { clearTrace?: boolean; preserveSidebar?: boolean }
+  options?: { clearTrace?: boolean; preserveSidebar?: boolean },
 ): void {
   const { clearTrace, preserveSidebar } = {
     clearTrace: true,
@@ -338,7 +338,7 @@ function notifyNavigationListeners(): void {
  */
 export async function runEditorExtension(
   extensionId: UUID,
-  extensionPoint: StarterBrick
+  extensionPoint: StarterBrick,
 ): Promise<void> {
   // Uninstall the installed extension point instance in favor of the dynamic extensionPoint
   if (_persistedExtensions.has(extensionId)) {
@@ -374,12 +374,12 @@ export async function runEditorExtension(
  * used to do that clean up at a more appropriate time, e.g. upon navigation.
  */
 function cleanUpDeactivatedExtensionPoints(
-  activeExtensionMap: Record<RegistryId, ResolvedModComponent[]>
+  activeExtensionMap: Record<RegistryId, ResolvedModComponent[]>,
 ): void {
   for (const extensionPoint of _activeExtensionPoints) {
     const hasActiveExtensions = Object.hasOwn(
       activeExtensionMap,
-      extensionPoint.id
+      extensionPoint.id,
     );
 
     if (hasActiveExtensions) {
@@ -406,7 +406,7 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
   console.debug("lifecycle:loadPersistedExtensions");
   const options = await logPromiseDuration(
     "loadPersistedExtensions:loadOptions",
-    getModComponentState()
+    getModComponentState(),
   );
 
   // Exclude the following:
@@ -414,19 +414,19 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
   // - dynamic extensions: these are already installed on the page via the Page Editor
   const activeExtensions = options.extensions.filter(
     (extension) =>
-      isDeploymentActive(extension) && !_editorExtensions.has(extension.id)
+      isDeploymentActive(extension) && !_editorExtensions.has(extension.id),
   );
 
   const resolvedActiveExtensions = await logPromiseDuration(
     "loadPersistedExtensions:resolveDefinitions",
     Promise.all(
-      activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x))
-    )
+      activeExtensions.map(async (x) => resolveExtensionInnerDefinitions(x)),
+    ),
   );
 
   const activeExtensionMap = groupBy(
     resolvedActiveExtensions,
-    (extension) => extension.extensionPointId
+    (extension) => extension.extensionPointId,
   );
 
   cleanUpDeactivatedExtensionPoints(activeExtensionMap);
@@ -438,12 +438,11 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
       Object.entries(activeExtensionMap).map(
         async ([extensionPointId, extensions]: [
           RegistryId,
-          ResolvedModComponent[]
+          ResolvedModComponent[],
         ]) => {
           try {
-            const extensionPoint = await extensionPointRegistry.lookup(
-              extensionPointId
-            );
+            const extensionPoint =
+              await extensionPointRegistry.lookup(extensionPointId);
 
             // It's tempting to call extensionPoint.isAvailable here and skip if it's not available.
             // However, that would cause the extension point to be unavailable for the entire session
@@ -462,9 +461,9 @@ async function loadPersistedExtensions(): Promise<StarterBrick[]> {
               error,
             });
           }
-        }
-      )
-    )
+        },
+      ),
+    ),
   );
 
   checkLifecycleInvariants();
@@ -490,7 +489,7 @@ async function loadPersistedExtensionsOnce(): Promise<StarterBrick[]> {
 
     pendingLoadPromise = logPromiseDuration(
       "loadPersistedExtensionsOnce:loadPersistedExtensions",
-      loadPersistedExtensions()
+      loadPersistedExtensions(),
     );
 
     try {
@@ -519,7 +518,7 @@ async function loadPersistedExtensionsOnce(): Promise<StarterBrick[]> {
 async function waitDocumentLoad(abortSignal: AbortSignal): Promise<void> {
   const url = document.location.href;
   const rules = NAVIGATION_RULES.filter((rule) =>
-    testMatchPatterns(rule.matchPatterns, url)
+    testMatchPatterns(rule.matchPatterns, url),
   );
   if (rules.length > 0) {
     const jointSelector = rules
@@ -532,7 +531,7 @@ async function waitDocumentLoad(abortSignal: AbortSignal): Promise<void> {
       }
 
       console.debug(
-        `Custom navigation rule detected that page is still loading: ${url}`
+        `Custom navigation rule detected that page is still loading: ${url}`,
       );
     };
 
@@ -595,7 +594,7 @@ export async function handleNavigate({
     // Wait for document to load, to ensure any selector-based availability rules are ready to be applied.
     await logPromiseDuration(
       "handleNavigate:waitDocumentLoad",
-      waitDocumentLoad(abortSignal)
+      waitDocumentLoad(abortSignal),
     );
 
     // Safe to use Promise.all because the inner method can't throw
@@ -617,8 +616,8 @@ export async function handleNavigate({
           if (extensionPoint.isSyncInstall) {
             await runPromise;
           }
-        })
-      )
+        }),
+      ),
     );
   }
 }

@@ -30,7 +30,7 @@ class FormBrickAnalysis extends AnalysisVisitorABC {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ) {
     super.visitBrick(position, blockConfig, extra);
 

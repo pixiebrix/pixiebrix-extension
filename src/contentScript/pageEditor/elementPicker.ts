@@ -178,8 +178,8 @@ export async function userSelectElement({
         ) {
           reject(
             new BusinessError(
-              "One or more selected elements are not contained within a root element"
-            )
+              "One or more selected elements are not contained within a root element",
+            ),
           );
         }
 
@@ -478,7 +478,7 @@ export async function selectElement({
       if (isMulti) {
         // If there are rootElements, the elements must all be contained within the same root
         activeRoot = rootElements?.find((rootElement) =>
-          elements.every((element) => rootElement.contains(element))
+          elements.every((element) => rootElement.contains(element)),
         );
 
         return inferMultiElementSelector({
@@ -491,14 +491,14 @@ export async function selectElement({
 
       if (elements.length !== 1) {
         console.warn(
-          "Expected exactly one element for single element selector generation"
+          "Expected exactly one element for single element selector generation",
         );
       }
 
       const element = elements[0];
       // At least one much match, otherwise userSelectElement would have thrown
       activeRoot = rootElements?.find((rootElement) =>
-        rootElement.contains(element)
+        rootElement.contains(element),
       );
 
       return inferSingleElementSelector({

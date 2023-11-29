@@ -21,21 +21,21 @@ describe("test normalizeControlRoomUrl", () => {
   it("removes trailing slash", () => {
     expect(
       normalizeControlRoomUrl(
-        "https://community2.cloud-2.automationanywhere.digital/"
-      )
+        "https://community2.cloud-2.automationanywhere.digital/",
+      ),
     ).toBe("https://community2.cloud-2.automationanywhere.digital");
   });
 
   it("preserves scheme", () => {
     expect(
       normalizeControlRoomUrl(
-        "http://community2.cloud-2.automationanywhere.digital"
-      )
+        "http://community2.cloud-2.automationanywhere.digital",
+      ),
     ).toBe("http://community2.cloud-2.automationanywhere.digital");
   });
   it("allows localhost", () => {
     expect(normalizeControlRoomUrl("http://localhost:8000")).toBe(
-      "http://localhost:8000"
+      "http://localhost:8000",
     );
   });
 });

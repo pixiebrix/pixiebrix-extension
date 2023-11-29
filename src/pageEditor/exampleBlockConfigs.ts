@@ -43,7 +43,7 @@ import { IdentityTransformer } from "@/bricks/transformers/identity";
  */
 export function getExampleBlockConfig(
   blockId: RegistryId,
-  { parentBlockId }: { parentBlockId?: RegistryId } = {}
+  { parentBlockId }: { parentBlockId?: RegistryId } = {},
 ): UnknownObject | null {
   switch (blockId) {
     case COMPONENT_READER_ID: {
@@ -229,7 +229,7 @@ export function createNewBlock(
   {
     parentBlockId,
     blockInputSchema,
-  }: { parentBlockId?: RegistryId; blockInputSchema?: Schema } = {}
+  }: { parentBlockId?: RegistryId; blockInputSchema?: Schema } = {},
 ): BrickConfig {
   return {
     id: blockId,

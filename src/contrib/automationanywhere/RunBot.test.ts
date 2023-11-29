@@ -41,7 +41,7 @@ jest.mock("@/background/messenger/api", () => ({
 }));
 
 const performConfiguredRequestInBackgroundMock = jest.mocked(
-  performConfiguredRequestInBackground
+  performConfiguredRequestInBackground,
 );
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const getUserDataMock = jest.mocked(getUserData);
@@ -90,7 +90,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -111,7 +111,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         method: "post",
         url: "/v2/automations/deploy",
-      }
+      },
     );
 
     // CE returns blank object
@@ -149,7 +149,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         data: {},
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(getCachedAuthDataMock).not.toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         method: "post",
         url: "/v3/automations/deploy",
-      }
+      },
     );
 
     // CE returns blank object
@@ -213,7 +213,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(tokenAuthId);
@@ -238,7 +238,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         method: "post",
         url: "/v3/automations/deploy",
-      }
+      },
     );
 
     // CE returns blank object
@@ -278,7 +278,7 @@ describe("Automation Anywhere - RunBot", () => {
         data: {},
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -301,7 +301,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         method: "post",
         url: "/v3/automations/deploy",
-      }
+      },
     );
 
     expect(values).toStrictEqual({
@@ -343,7 +343,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -366,7 +366,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         method: "post",
         url: "/v3/automations/deploy",
-      }
+      },
     );
 
     expect(values).toStrictEqual({
@@ -427,7 +427,7 @@ describe("Automation Anywhere - RunBot", () => {
         }
 
         throw new Error("Unexpected request");
-      }
+      },
     );
 
     getCachedAuthDataMock.mockResolvedValue({
@@ -452,7 +452,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         awaitResult: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -475,7 +475,7 @@ describe("Automation Anywhere - RunBot", () => {
         },
         method: "post",
         url: "/v3/automations/deploy",
-      }
+      },
     );
 
     expect(values).toStrictEqual({

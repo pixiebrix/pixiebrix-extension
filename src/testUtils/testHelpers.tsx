@@ -111,7 +111,7 @@ type CreateRenderFunctionOptions<TState, TAction extends Action, TProps> = {
 export type RenderFunctionWithRedux<
   S = any,
   // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
-  P = {}
+  P = {},
 > = (overrides?: {
   propsOverride?: Partial<P>;
   stateOverride?: Partial<S>;
@@ -124,7 +124,7 @@ export function createRenderFunctionWithRedux<
   S = any,
   A extends Action = AnyAction,
   // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
-  P = {}
+  P = {},
 >({
   reducer,
   preloadedState,
@@ -151,7 +151,7 @@ export function createRenderFunctionWithRedux<
     return render(
       <Provider store={store}>
         <ComponentUnderTest {...props} />
-      </Provider>
+      </Provider>,
     );
   };
 }
@@ -160,7 +160,7 @@ type SetupRedux = (
   dispatch: ThunkDispatch<unknown, unknown, AnyAction>,
   extra: {
     store: EnhancedStore;
-  }
+  },
 ) => void;
 
 type WrapperOptions = RenderOptions & {
@@ -169,7 +169,7 @@ type WrapperOptions = RenderOptions & {
   setupRedux?: SetupRedux;
   onSubmit?: (
     values: FormikValues,
-    formikHelpers: FormikHelpers<FormikValues>
+    formikHelpers: FormikHelpers<FormikValues>,
   ) => void | Promise<unknown>;
 };
 
@@ -177,8 +177,8 @@ type WrapperResult<
   S = UnknownObject,
   A extends Action = AnyAction,
   M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
-    ThunkMiddlewareFor<S>
-  ]
+    ThunkMiddlewareFor<S>,
+  ],
 > = RenderResult & {
   getReduxStore(): EnhancedStore<S, A, M>;
 
@@ -194,13 +194,13 @@ type WrapperResult<
    */
   updateFormState(
     newValues: React.SetStateAction<FormikValues>,
-    shouldValidate?: boolean
+    shouldValidate?: boolean,
   ): void;
 };
 
 type ConfigureStore<
   S = UnknownObject,
-  A extends Action = AnyAction
+  A extends Action = AnyAction,
 > = () => EnhancedStore<S, A>;
 
 export function createRenderWithWrappers(configureStore: ConfigureStore) {
@@ -213,7 +213,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
       onSubmit = jest.fn(),
       wrapper,
       ...renderOptions
-    }: WrapperOptions = {}
+    }: WrapperOptions = {},
   ): WrapperResult => {
     const store = configureStore();
 
@@ -223,7 +223,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
     let updateFormState: (
       newValues: React.SetStateAction<FormikValues>,
-      shouldValidate?: boolean
+      shouldValidate?: boolean,
     ) => void = noop;
 
     const ExtraWrapper = wrapper ?? (({ children }) => <>{children}</>);
@@ -283,8 +283,8 @@ type HookWrapperResult<
   S = UnknownObject,
   A extends Action = AnyAction,
   M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
-    ThunkMiddlewareFor<S>
-  ]
+    ThunkMiddlewareFor<S>,
+  ],
 > = RenderHookResult<TProps, TResult> & {
   getReduxStore(): EnhancedStore<S, A, M>;
 
@@ -312,7 +312,7 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
       setupRedux = noop,
       wrapper,
       ...renderOptions
-    }: HookWrapperOptions<TProps> = {}
+    }: HookWrapperOptions<TProps> = {},
   ): HookWrapperResult<TProps, TResult> => {
     const store = configureStore();
 
@@ -370,10 +370,10 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
 
 export function toExpression<
   TTemplateOrPipeline,
-  TTypeTag extends ExpressionType
+  TTypeTag extends ExpressionType,
 >(
   type: TTypeTag,
-  value: TTemplateOrPipeline
+  value: TTemplateOrPipeline,
 ): Expression<TTemplateOrPipeline, TTypeTag> {
   return {
     __type__: type,
@@ -382,5 +382,5 @@ export function toExpression<
 }
 
 export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
-  toExpression("pipeline", [] as BrickPipeline)
+  toExpression("pipeline", [] as BrickPipeline),
 );

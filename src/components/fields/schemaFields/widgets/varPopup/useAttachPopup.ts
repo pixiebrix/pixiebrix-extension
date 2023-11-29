@@ -84,7 +84,7 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
   const { varAutosuggest } = useSelector(selectSettings);
   const [{ isMenuShowing, likelyVariable }, dispatch] = useReducer(
     popupSlice.reducer,
-    initialState
+    initialState,
   );
 
   const autosuggestEnabled = varAutosuggest && analysisSliceExists;
@@ -184,7 +184,7 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
     },
     {
       delayMillis: 50,
-    }
+    },
   );
 
   return {

@@ -38,11 +38,10 @@ import { type UUID } from "@/types/stringTypes";
 export async function uninstallRecipe(
   recipeId: RegistryId,
   recipeExtensions: UnresolvedModComponent[],
-  dispatch: Dispatch<unknown>
+  dispatch: Dispatch<unknown>,
 ): Promise<void> {
-  const dynamicElementsToUninstall = await removeDynamicElementsForRecipe(
-    recipeId
-  );
+  const dynamicElementsToUninstall =
+    await removeDynamicElementsForRecipe(recipeId);
 
   dispatch(extensionActions.removeRecipeById(recipeId));
 
@@ -50,7 +49,7 @@ export async function uninstallRecipe(
     uniq([
       ...recipeExtensions.map(({ id }) => id),
       ...dynamicElementsToUninstall,
-    ])
+    ]),
   );
 }
 
@@ -60,7 +59,7 @@ export async function uninstallRecipe(
  */
 export async function uninstallExtensions(
   extensionIds: UUID[],
-  dispatch: Dispatch<unknown>
+  dispatch: Dispatch<unknown>,
 ): Promise<void> {
   await removeDynamicElements(extensionIds);
 

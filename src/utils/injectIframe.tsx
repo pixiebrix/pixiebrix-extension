@@ -38,7 +38,7 @@ export type LoadedFrame = HTMLIFrameElement & {
 async function _injectIframe(
   url: string,
   /** The style is required because you never want an unstyled iframe */
-  style: Partial<CSSStyleDeclaration>
+  style: Partial<CSSStyleDeclaration>,
 ): Promise<LoadedFrame> {
   const iframe = document.createElement("iframe");
   const { promise: iframeLoad, resolve } = pDefer();

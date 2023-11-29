@@ -95,7 +95,7 @@ const EphemeralPanel: React.FC = () => {
 
   const { panelNonce, entry, isLoading, error } = useTemporaryPanelDefinition(
     target,
-    initialNonce
+    initialNonce,
   );
 
   // Report error once
@@ -167,7 +167,7 @@ const EphemeralPanel: React.FC = () => {
                 cancelTemporaryPanel(
                   target,
                   [panelNonce],
-                  new ClosePanelAction("User closed the panel")
+                  new ClosePanelAction("User closed the panel"),
                 );
               }}
             >
@@ -214,7 +214,7 @@ const EphemeralPanel: React.FC = () => {
           cancelTemporaryPanel(
             target,
             [panelNonce],
-            new ClosePanelAction("User closed the panel")
+            new ClosePanelAction("User closed the panel"),
           );
         }}
       >

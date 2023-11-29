@@ -32,7 +32,7 @@ function useLogContext(config: string | null) {
   // Track latest context, as there will be intermediate states where the YAML is invalid
   const [debouncedConfig] = useDebounce(
     config,
-    LOG_MESSAGE_CONTEXT_DEBOUNCE_MS
+    LOG_MESSAGE_CONTEXT_DEBOUNCE_MS,
   );
 
   const dispatch = useDispatch();

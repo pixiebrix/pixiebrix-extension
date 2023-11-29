@@ -64,7 +64,7 @@ const InstalledEntry: React.FunctionComponent<{
   const dispatch = useDispatch();
   const [type] = useAsyncState(
     async () => selectType(extension),
-    [extension.extensionPointId]
+    [extension.extensionPointId],
   );
 
   const activeRecipeId = useSelector(selectActiveRecipeId);
@@ -104,7 +104,7 @@ const InstalledEntry: React.FunctionComponent<{
         dispatch(actions.adapterError({ uuid: extension.id, error }));
       }
     },
-    [dispatch, sessionId, recipes, type]
+    [dispatch, sessionId, recipes, type],
   );
 
   const isButton = type === "menuItem";

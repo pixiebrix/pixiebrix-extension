@@ -45,7 +45,7 @@ import { type Metadata } from "@/types/registryTypes";
 
 function getDefaultBrickIcon<T extends Metadata>(
   brick: T,
-  blockType: BrickType
+  blockType: BrickType,
 ): IconProp {
   if ("schema" in brick) {
     return faCloud;
@@ -136,7 +136,7 @@ const BrickIcon = <T extends Metadata>({
 
   const listingFaIcon = useAsyncIcon(
     listing?.fa_icon,
-    getDefaultBrickIcon(brick, type)
+    getDefaultBrickIcon(brick, type),
   );
 
   const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;

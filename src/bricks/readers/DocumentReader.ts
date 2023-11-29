@@ -26,7 +26,7 @@ class DocumentReader extends ReaderABC {
     super(
       "@pixiebrix/document-context",
       "Context reader",
-      "Read generic metadata about the current page context"
+      "Read generic metadata about the current page context",
     );
   }
 

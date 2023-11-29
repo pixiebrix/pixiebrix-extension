@@ -25,7 +25,7 @@ export class ActivateTabEffect extends EffectABC {
     super(
       "@pixiebrix/browser/activate-tab",
       "Activate browser tab/window",
-      "Activate the tab/window"
+      "Activate the tab/window",
     );
   }
 

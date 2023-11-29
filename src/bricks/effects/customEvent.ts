@@ -28,7 +28,7 @@ class CustomEventEffect extends EffectABC {
     super(
       CustomEventEffect.BRICK_ID,
       "Emit a Custom Event",
-      "Emit a custom event with custom data"
+      "Emit a custom event with custom data",
     );
   }
 
@@ -63,7 +63,7 @@ class CustomEventEffect extends EffectABC {
       eventName,
       data = {},
     }: BrickArgs<{ eventName: string; data?: JsonObject }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     const event = new CustomEvent(eventName, { detail: data, bubbles: true });
     root.dispatchEvent(event);

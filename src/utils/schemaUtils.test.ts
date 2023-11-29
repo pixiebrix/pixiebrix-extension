@@ -30,7 +30,7 @@ const barObjectSchema: Schema = {
 describe("unionSchemaDefinitionTypes", () => {
   it("merges object properties", () => {
     expect(
-      unionSchemaDefinitionTypes(fooObjectSchema, barObjectSchema)
+      unionSchemaDefinitionTypes(fooObjectSchema, barObjectSchema),
     ).toEqual({
       type: "object",
       properties: {
@@ -46,8 +46,8 @@ describe("unionSchemaDefinitionTypes", () => {
     expect(
       unionSchemaDefinitionTypes(
         { ...fooObjectSchema, additionalProperties: true },
-        barObjectSchema
-      )
+        barObjectSchema,
+      ),
     ).toEqual({
       type: "object",
       properties: {
@@ -63,8 +63,8 @@ describe("unionSchemaDefinitionTypes", () => {
     expect(
       unionSchemaDefinitionTypes(
         { ...fooObjectSchema, required: ["foo"] },
-        { ...fooObjectSchema, required: ["foo"] }
-      )
+        { ...fooObjectSchema, required: ["foo"] },
+      ),
     ).toEqual({
       type: "object",
       properties: {
@@ -79,8 +79,8 @@ describe("unionSchemaDefinitionTypes", () => {
     expect(
       unionSchemaDefinitionTypes(
         { ...barObjectSchema, required: ["bar"] },
-        { ...fooObjectSchema, required: ["foo"] }
-      )
+        { ...fooObjectSchema, required: ["foo"] },
+      ),
     ).toEqual({
       type: "object",
       properties: {
@@ -94,7 +94,7 @@ describe("unionSchemaDefinitionTypes", () => {
 
   it("unions types", () => {
     expect(
-      unionSchemaDefinitionTypes({ type: "string" }, { type: "number" })
+      unionSchemaDefinitionTypes({ type: "string" }, { type: "number" }),
     ).toEqual({
       type: ["string", "number"],
     });
@@ -104,8 +104,8 @@ describe("unionSchemaDefinitionTypes", () => {
     expect(
       unionSchemaDefinitionTypes(
         { type: ["string", "number"] },
-        { type: "number" }
-      )
+        { type: "number" },
+      ),
     ).toEqual({
       type: ["string", "number"],
     });
@@ -116,7 +116,7 @@ describe("unionSchemaDefinitionTypes", () => {
       unionSchemaDefinitionTypes(fooObjectSchema, {
         type: "object",
         properties: { foo: true },
-      })
+      }),
     ).toEqual({
       type: "object",
       properties: { foo: true },
@@ -129,7 +129,7 @@ describe("unionSchemaDefinitionTypes", () => {
     expect(
       unionSchemaDefinitionTypes(fooObjectSchema, {
         type: "number",
-      })
+      }),
     ).toEqual({
       anyOf: [fooObjectSchema, { type: "number" }],
     });

@@ -42,12 +42,12 @@ browser.permissions = {
   contains: jest.fn().mockImplementation(
     async (permissions: Permissions.AnyPermissions) =>
       (permissions.permissions ?? []).every((permission) =>
-        extensionPermissions.permissions.includes(permission)
+        extensionPermissions.permissions.includes(permission),
       ) &&
       // XXX: only handles exact matches
       (permissions.origins ?? []).every((origin) =>
-        extensionPermissions.origins.includes(origin)
-      )
+        extensionPermissions.origins.includes(origin),
+      ),
   ),
   onAdded: {
     addListener: jest.fn().mockImplementation((listener: () => void) => {
@@ -71,7 +71,7 @@ browser.permissions = {
     hasListener: jest
       .fn()
       .mockImplementation((listener: () => void) =>
-        removeListeners.has(listener)
+        removeListeners.has(listener),
       ),
     hasListeners: jest.fn().mockImplementation(() => removeListeners.size > 0),
   },
@@ -79,11 +79,11 @@ browser.permissions = {
     .fn()
     .mockImplementation(async (toRemove: Permissions.AnyPermissions) => {
       remove(extensionPermissions.permissions, (permission) =>
-        toRemove.permissions.includes(permission)
+        toRemove.permissions.includes(permission),
       );
       // XXX: only handles exact matches
       remove(extensionPermissions.origins, (permission) =>
-        toRemove.origins.includes(permission)
+        toRemove.origins.includes(permission),
       );
 
       for (const listener of removeListeners) {
@@ -109,7 +109,7 @@ export function resetMock(): void {
 }
 
 export function setPermissions(
-  newPermissions: Permissions.AnyPermissions
+  newPermissions: Permissions.AnyPermissions,
 ): void {
   extensionPermissions = newPermissions;
 }
@@ -121,7 +121,7 @@ jest
 
 jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
-    "@/modDefinitions/modDefinitionPermissionsHelpers"
+    "@/modDefinitions/modDefinitionPermissionsHelpers",
   );
   return {
     ...originalModule,
@@ -134,7 +134,7 @@ jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
 
 jest.mock("@/permissions/extensionPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
-    "@/permissions/extensionPermissionsHelpers"
+    "@/permissions/extensionPermissionsHelpers",
   );
   return {
     ...originalModule,
@@ -150,7 +150,7 @@ jest.mock("@/permissions/extensionPermissionsHelpers", () => {
 
 jest.mock("@/permissions/cloudExtensionPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
-    "@/permissions/cloudExtensionPermissionsHelpers"
+    "@/permissions/cloudExtensionPermissionsHelpers",
   );
   return {
     ...originalModule,
@@ -163,7 +163,7 @@ jest.mock("@/permissions/cloudExtensionPermissionsHelpers", () => {
 
 jest.mock("@/permissions/deploymentPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
-    "@/permissions/deploymentPermissionsHelpers"
+    "@/permissions/deploymentPermissionsHelpers",
   );
   return {
     ...originalModule,
@@ -176,7 +176,7 @@ jest.mock("@/permissions/deploymentPermissionsHelpers", () => {
 
 jest.mock("@/integrations/util/permissionsHelpers", () => {
   const originalModule = jest.requireActual(
-    "@/permissions/deploymentPermissionsHelpers"
+    "@/permissions/deploymentPermissionsHelpers",
   );
   return {
     ...originalModule,
