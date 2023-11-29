@@ -70,6 +70,8 @@ const CustomFormComponent: React.FunctionComponent<{
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   const submissionCountRef = useRef(0);
+  // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
+  const valuesRef = useRef(formData);
 
   return (
     <div
@@ -85,7 +87,7 @@ const CustomFormComponent: React.FunctionComponent<{
             value={{
               async submitForm() {
                 submissionCountRef.current += 1;
-                await onSubmit(formData, {
+                await onSubmit(valuesRef.current, {
                   submissionCount: submissionCountRef.current,
                 });
               },
@@ -99,6 +101,8 @@ const CustomFormComponent: React.FunctionComponent<{
               widgets={uiWidgets}
               FieldTemplate={FieldTemplate}
               onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
+                valuesRef.current = formData;
+
                 if (autoSave) {
                   submissionCountRef.current += 1;
                   await onSubmit(formData, {
