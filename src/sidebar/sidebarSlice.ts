@@ -159,7 +159,7 @@ async function resolvePanel(
 
 export function fixActiveTabOnRemove(
   state: SidebarState,
-  removedEntry: SidebarEntry | null
+  removedEntry: SidebarEntry | null,
 ) {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {

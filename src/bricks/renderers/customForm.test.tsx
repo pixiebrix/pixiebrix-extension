@@ -183,7 +183,7 @@ describe("form data normalization", () => {
         widgets={uiWidgets}
         validator={validator}
         templates={{ FieldTemplate }}
-      />
+      />,
     );
 
     await waitForEffect();
