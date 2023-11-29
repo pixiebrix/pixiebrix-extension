@@ -25,15 +25,12 @@ import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
 import EditorPane from "@/pageEditor/panes/EditorPane";
 import RecipePane from "@/pageEditor/panes/RecipePane";
-import NoModSelectedPane from "@/pageEditor/panes/NoModSelectedPane";
-import NoModsPane from "@/pageEditor/panes/NoModsPane";
-import WelcomePane from "@/pageEditor/panes/WelcomePane";
+import HomePane from "@/pageEditor/panes/HomePane";
 import {
   selectActiveElementId,
   selectActiveRecipeId,
   selectErrorState,
   selectExtensionAvailability,
-  selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import {
   selectTabHasPermissions,
@@ -50,18 +47,12 @@ const EditorContent: React.FC = () => {
   const isConnectingToContentScript = useSelector(
     selectTabIsConnectingToContentScript,
   );
-  const installed = useSelector(selectNotDeletedExtensions);
   const sessionId = useSelector(selectSessionId);
   const { isBetaError, editorError } = useSelector(selectErrorState);
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
-  const {
-    availableDynamicIds,
-    unavailableDynamicCount,
-    unavailableInstalledCount,
-    isPendingInstalledExtensions,
-    isPendingDynamicExtensions,
-  } = useSelector(selectExtensionAvailability);
+  const { isPendingInstalledExtensions, isPendingDynamicExtensions } =
+    useSelector(selectExtensionAvailability);
 
   const url = useCurrentUrl();
 
@@ -79,7 +70,6 @@ const EditorContent: React.FC = () => {
     isConnectingToContentScript,
   ]);
 
-  const unavailableCount = unavailableInstalledCount + unavailableDynamicCount;
   const isPendingExtensions =
     isPendingInstalledExtensions || isPendingDynamicExtensions;
 
@@ -131,21 +121,13 @@ const EditorContent: React.FC = () => {
 
   if (isPendingExtensions || isConnectingToContentScript) {
     // Avoid flashing the panes below while the state is loading. This condition should probably
-    // not be moved below <NoExtensionSelectedPane>, <NoExtensionsPane>, or <WelcomePane>.
+    // not be moved below <HomePane>
     // It loads fast enough to not require a <Loader> either.
     // https://github.com/pixiebrix/pixiebrix-extension/pull/3611
     return null;
   }
 
-  if (availableDynamicIds?.length > 0 || installed.length > unavailableCount) {
-    return <NoModSelectedPane />;
-  }
-
-  if (installed.length > 0) {
-    return <NoModsPane />;
-  }
-
-  return <WelcomePane />;
+  return <HomePane />;
 };
 
 export default EditorContent;
