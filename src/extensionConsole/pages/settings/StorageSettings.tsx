@@ -60,7 +60,7 @@ const StorageSettings: React.FunctionComponent = () => {
       traceCount: await traceSize(),
       eventCount: await eventsSize(),
     }),
-    []
+    [],
   );
 
   const recalculate = state.refetch;
@@ -74,7 +74,7 @@ const StorageSettings: React.FunctionComponent = () => {
       successMessage: "Reclaimed local space",
       errorMessage: "Error reclaiming local space",
     },
-    [recalculate]
+    [recalculate],
   );
 
   const recoverStorageAction = useUserAction(
@@ -92,7 +92,7 @@ const StorageSettings: React.FunctionComponent = () => {
       successMessage: "Recreated local databases",
       errorMessage: "Error recreating local databases",
     },
-    [recalculate]
+    [recalculate],
   );
 
   return (
@@ -132,7 +132,7 @@ const StorageSettings: React.FunctionComponent = () => {
                       <td>{key} (MB)</td>
                       <td>{round(value / 1e6, 1)}</td>
                     </tr>
-                  )
+                  ),
                 )}
                 <tr>
                   <td># Brick Versions</td>

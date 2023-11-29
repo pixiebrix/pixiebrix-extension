@@ -78,7 +78,7 @@ type ChildSelectorDefinition = SelectorDefinition & {
 };
 
 export function isChildrenSelectorDefinition(
-  selector: SelectorDefinition
+  selector: SelectorDefinition,
 ): selector is ChildSelectorDefinition {
   return "find" in selector;
 }
@@ -100,7 +100,7 @@ type SelectorItem = {
  * Normalize the shape of the selector definition to use the object form the selector definition.
  */
 function normalizeSelectorDefinitionShape(
-  selectors: SelectorDefinitionMap
+  selectors: SelectorDefinitionMap,
 ): SelectorItem[] {
   return Object.entries(selectors).map(([name, selector]) => {
     if (typeof selector === "string" || isTemplateExpression(selector)) {
@@ -122,7 +122,7 @@ const BASE_TYPE_OPTIONS = [
 ];
 
 export function inferActiveTypeOption(
-  selectorDefinition: SelectorDefinition
+  selectorDefinition: SelectorDefinition,
 ): string {
   if (isChildrenSelectorDefinition(selectorDefinition)) {
     return "element";
@@ -145,7 +145,7 @@ export function inferActiveTypeOption(
 
 export function typeOptionsFactory(
   attributeExamples: AttributeExample[],
-  currentValue: string
+  currentValue: string,
 ) {
   const typeOptions = [
     ...BASE_TYPE_OPTIONS,
@@ -213,7 +213,7 @@ const SelectorCard: React.FC<{
   const [expanded, setExpanded] = useState(true);
 
   const [{ value: isMulti }, , { setValue: setMulti }] = useField<boolean>(
-    configName("multi")
+    configName("multi"),
   );
 
   const { data: attributeExamples } = fallbackValue(
@@ -221,13 +221,13 @@ const SelectorCard: React.FC<{
       if (typeof selectorDefinition.selector === "string") {
         return getAttributeExamples(
           thisTab,
-          compact([rootSelector, selectorDefinition.selector]).join(" ")
+          compact([rootSelector, selectorDefinition.selector]).join(" "),
         );
       }
 
       return [];
     }, [selectorDefinition.selector, rootSelector]),
-    []
+    [],
   );
 
   const typeOption = inferActiveTypeOption(selectorDefinition);
@@ -319,13 +319,13 @@ const SelectorCard: React.FC<{
 
                 if (next.startsWith(ATTRIBUTE_OPTION_VALUE_PREFIX)) {
                   const attributeName = next.slice(
-                    ATTRIBUTE_OPTION_VALUE_PREFIX.length
+                    ATTRIBUTE_OPTION_VALUE_PREFIX.length,
                   );
                   if (attributeName.startsWith(DATA_ATTRIBUTE_PREFIX)) {
                     delete commonDraft.attr;
                     delete commonDraft.find;
                     commonDraft.data = attributeName.slice(
-                      DATA_ATTRIBUTE_PREFIX.length
+                      DATA_ATTRIBUTE_PREFIX.length,
                     );
                   } else {
                     delete commonDraft.data;
@@ -388,17 +388,17 @@ const SelectorsOptions: React.FC<{
 
   const selectorItems = useMemo(
     () => normalizeSelectorDefinitionShape(rawSelectors),
-    [rawSelectors]
+    [rawSelectors],
   );
 
   const setSelectorItems = useCallback(
     async (items: SelectorItem[]) => {
       await fieldHelpers.setValue(
-        Object.fromEntries(items.map(({ name, selector }) => [name, selector]))
+        Object.fromEntries(items.map(({ name, selector }) => [name, selector])),
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fieldHelpers.setValue changes on every render
-    []
+    [],
   );
 
   const containsUnsupportedVariable =
@@ -410,7 +410,7 @@ const SelectorsOptions: React.FC<{
     if (
       !containsUnsupportedVariable &&
       Object.values(rawSelectors).some(
-        (x) => typeof x === "string" || isTemplateExpression(x)
+        (x) => typeof x === "string" || isTemplateExpression(x),
       )
     ) {
       await setSelectorItems(selectorItems);
@@ -437,7 +437,7 @@ const SelectorsOptions: React.FC<{
             {
               name: freshIdentifier(
                 "property" as SafeString,
-                selectorItems.map((x) => x.name)
+                selectorItems.map((x) => x.name),
               ),
               selector: { selector: "", multi: false },
             },
@@ -460,14 +460,14 @@ const SelectorsOptions: React.FC<{
                 produce(selectorItems, (draft) => {
                   // eslint-disable-next-line security/detect-object-injection -- index is a number
                   draft[index] = item;
-                })
+                }),
               );
             }}
             onDelete={
               selectorItems.length > 1
                 ? async () => {
                     await setSelectorItems(
-                      selectorItems.filter((_, i) => i !== index)
+                      selectorItems.filter((_, i) => i !== index),
                     );
                   }
                 : null

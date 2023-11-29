@@ -30,7 +30,7 @@ export type BrickValidationResult =
   | Record<never, unknown>;
 
 export async function validateSchema(
-  value: string
+  value: string,
 ): Promise<BrickValidationResult> {
   if (!value) {
     return {
@@ -65,7 +65,7 @@ export async function validateSchema(
   try {
     validation = await validateKind(
       json as Record<string, unknown>,
-      json.kind as keyof typeof KIND_SCHEMAS
+      json.kind as keyof typeof KIND_SCHEMAS,
     );
   } catch (error) {
     console.error("An error occurred when validating the schema", error);

@@ -44,14 +44,14 @@ describe("DetectElement", () => {
     async (isRootAware) => {
       const result = await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
 
       expect(result).toStrictEqual({
         count: 1,
         exists: true,
       });
-    }
+    },
   );
 
   test("it uses root if isRootAware: true", async () => {
@@ -59,7 +59,7 @@ describe("DetectElement", () => {
       unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#noButton"),
-      })
+      }),
     );
 
     expect(result).toStrictEqual({

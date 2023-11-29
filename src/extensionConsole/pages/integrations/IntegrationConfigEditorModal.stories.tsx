@@ -49,7 +49,7 @@ export default {
 
 const Template: Story<StoryType> = ({ fixture, ...args }) => {
   const service = fromJS(
-    loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as IntegrationDefinition
+    loadBrickYaml(dumpBrickYaml(FIXTURES[fixture])) as IntegrationDefinition,
   );
 
   // Cheap call, just call in the render function

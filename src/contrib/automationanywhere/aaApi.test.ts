@@ -31,7 +31,7 @@ jest.mock("@/background/messenger/api", () => ({
 }));
 
 const performConfiguredRequestInBackgroundMock = jest.mocked(
-  performConfiguredRequestInBackground
+  performConfiguredRequestInBackground,
 );
 
 describe("aaApi", () => {

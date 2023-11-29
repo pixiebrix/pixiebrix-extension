@@ -38,7 +38,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ foo: "a & b" }),
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
     expect(result).toStrictEqual({ message: "a &amp; b" });
   });
@@ -60,7 +60,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ foo: "a & b" }),
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
     expect(result).toStrictEqual({ message: "a & b" });
   });

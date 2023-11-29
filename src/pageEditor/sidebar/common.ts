@@ -25,7 +25,7 @@ export function getLabel(extension: ModComponentFormState): string {
 }
 
 export function isModComponentBase(
-  value: SidebarItem
+  value: SidebarItem,
 ): value is ModComponentBase {
   return "extensionPointId" in value;
 }

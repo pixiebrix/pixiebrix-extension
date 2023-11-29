@@ -63,7 +63,7 @@ const waitForInitialManagedStorage = pMemoize(async () => {
     },
     {
       maxWaitMillis: MAX_MANAGED_STORAGE_WAIT_MILLIS,
-    }
+    },
   );
 
   if (managedStorageState) {
@@ -101,7 +101,7 @@ export const initManagedStorage = once(() => {
     // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
     console.warn(
       "Not listening for managed storage changes because managed storage is not supported",
-      { error }
+      { error },
     );
   }
 
@@ -118,7 +118,7 @@ export const initManagedStorage = once(() => {
  * @see MAX_MANAGED_STORAGE_WAIT_MILLIS
  */
 export async function readManagedStorageByKey<
-  K extends keyof ManagedStorageState
+  K extends keyof ManagedStorageState,
 >(key: K): Promise<ManagedStorageState[K]> {
   expectContext("extension");
 
@@ -170,7 +170,7 @@ export function getSnapshot(): ManagedStorageState | undefined {
  * @see useManagedStorageState
  */
 export function subscribe(
-  callback: (state: ManagedStorageState) => void
+  callback: (state: ManagedStorageState) => void,
 ): () => void {
   expectContext("extension");
 

@@ -38,7 +38,7 @@ const analysisSlice = createSlice({
     // `startAnalysis` action is to help with debugging via redux-logger
     startAnalysis(
       state,
-      action: PayloadAction<{ extensionId: UUID; analysisId: string }>
+      action: PayloadAction<{ extensionId: UUID; analysisId: string }>,
     ) {
       // NOP
     },
@@ -49,7 +49,7 @@ const analysisSlice = createSlice({
         extensionId: UUID;
         analysisId: string;
         error: ErrorObject;
-      }>
+      }>,
     ) {
       // NOP
     },
@@ -59,7 +59,7 @@ const analysisSlice = createSlice({
         extensionId: UUID;
         analysisId: string;
         annotations: AnalysisAnnotation[];
-      }>
+      }>,
     ) {
       const { extensionId, analysisId, annotations } = action.payload;
 
@@ -82,7 +82,7 @@ const analysisSlice = createSlice({
       action: PayloadAction<{
         extensionId: UUID;
         vars: Map<string, VarMap>;
-      }>
+      }>,
     ) {
       const { extensionId, vars } = action.payload;
       state.knownVars[extensionId] = vars;
@@ -92,7 +92,7 @@ const analysisSlice = createSlice({
       action: PayloadAction<{
         extensionId: UUID;
         eventNames: string[];
-      }>
+      }>,
     ) {
       const { extensionId, eventNames } = action.payload;
       state.knownEventNames[extensionId] = eventNames;

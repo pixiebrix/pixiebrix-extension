@@ -21,7 +21,7 @@ import Pagination, { MAX_DISPLAYED_PAGES } from "./Pagination";
 
 test(`renders ${MAX_DISPLAYED_PAGES} pages`, () => {
   const { asFragment } = render(
-    <Pagination page={1} numPages={MAX_DISPLAYED_PAGES} setPage={jest.fn()} />
+    <Pagination page={1} numPages={MAX_DISPLAYED_PAGES} setPage={jest.fn()} />,
   );
   expect(asFragment()).toMatchSnapshot();
 });
@@ -42,8 +42,8 @@ test.each([
         page={currentPage - 1}
         numPages={3 * MAX_DISPLAYED_PAGES}
         setPage={jest.fn()}
-      />
+      />,
     );
     expect(asFragment()).toMatchSnapshot();
-  }
+  },
 );

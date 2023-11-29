@@ -25,7 +25,7 @@ import { type RendererOutput } from "@/types/runtimeTypes";
 
 // Require SafeHTML here, because if we just accepted unknown, this would return `true` even for unsanitized strings
 function isRendererOutput(
-  value: SafeHTML | UnknownObject
+  value: SafeHTML | UnknownObject,
 ): value is RendererOutput {
   if (typeof value === "string") {
     return true;
@@ -45,7 +45,7 @@ function isRendererOutput(
 /** An error boundary for renderers */
 export async function errorBoundary(
   renderPromise: Promise<RendererOutput>,
-  logger: Logger
+  logger: Logger,
 ): Promise<RendererOutput> {
   try {
     const value = await renderPromise;
@@ -53,7 +53,7 @@ export async function errorBoundary(
     if (!isRendererOutput(value)) {
       logger.warn("Expected a renderer output");
       return sanitize(
-        '<div style="color: red;">Expected a renderer brick</div>'
+        '<div style="color: red;">Expected a renderer brick</div>',
       );
     }
 

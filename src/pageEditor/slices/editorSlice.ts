@@ -145,9 +145,9 @@ const cloneActiveExtension = createAsyncThunk<
       delete draft.recipe;
       // Re-generate instance IDs for all the bricks in the extension
       draft.extension.blockPipeline = await normalizePipelineForEditor(
-        draft.extension.blockPipeline
+        draft.extension.blockPipeline,
       );
-    }
+    },
   );
   // Add the cloned extension
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -168,12 +168,15 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
   const extensionPoints = await getInstalledExtensionPoints(thisTab);
   const installedExtensionPoints = new Map(
-    extensionPoints.map((extensionPoint) => [extensionPoint.id, extensionPoint])
+    extensionPoints.map((extensionPoint) => [
+      extensionPoint.id,
+      extensionPoint,
+    ]),
   );
   const resolved = await Promise.all(
     extensions.map(async (extension) =>
-      resolveExtensionInnerDefinitions(extension)
-    )
+      resolveExtensionInnerDefinitions(extension),
+    ),
   );
   const tabUrl = await getCurrentURL();
   const availableExtensionPointIds = resolved
@@ -196,7 +199,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
   // Note: we can take out this filter if and when we persist the editor
   // slice and remove installed extensions when they become dynamic elements
   const notDynamicInstalled = extensions.filter(
-    (extension) => !elements.some((element) => element.uuid === extension.id)
+    (extension) => !elements.some((element) => element.uuid === extension.id),
   );
 
   const availableInstalledIds = notDynamicInstalled
@@ -211,19 +214,19 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
 
 async function isElementAvailable(
   tabUrl: string,
-  elementExtensionPoint: BaseExtensionPointState
+  elementExtensionPoint: BaseExtensionPointState,
 ): Promise<boolean> {
   if (isQuickBarExtensionPoint(elementExtensionPoint)) {
     return testMatchPatterns(
       elementExtensionPoint.definition.documentUrlPatterns,
-      tabUrl
+      tabUrl,
     );
   }
 
   return checkAvailable(
     thisTab,
     elementExtensionPoint.definition.isAvailable,
-    tabUrl
+    tabUrl,
   );
 }
 
@@ -243,11 +246,11 @@ const checkAvailableDynamicElements = createAsyncThunk<
     elements.map(async ({ uuid, extensionPoint: elementExtensionPoint }) => {
       const isAvailable = await isElementAvailable(
         tabUrl,
-        elementExtensionPoint
+        elementExtensionPoint,
       );
 
       return isAvailable ? uuid : null;
-    })
+    }),
   );
 
   const availableDynamicIds = uniq(compact(availableElementIds));
@@ -278,7 +281,7 @@ const checkActiveElementAvailability = createAsyncThunk<
   // Calculate new availability for the active element
   const isAvailable = await isElementAvailable(
     tabUrl,
-    activeElement.extensionPoint
+    activeElement.extensionPoint,
   );
   // Calculate the new dynamic element availability, depending on the
   // new availability of the active element -- should be a unique list of ids,
@@ -308,12 +311,12 @@ const checkActiveElementAvailability = createAsyncThunk<
       }
 
       return extensionOrElement.uuid;
-    }
+    },
   ).map((extension) => extension.id);
   // Match the filtered installed extensions with their previously calculated availability
   const availableInstalledNotDynamicIds = intersection(
     availableInstalledIds,
-    installedNotDynamicIds
+    installedNotDynamicIds,
   );
   // Calculate the count of unavailable installed extensions that do not
   // have matching dynamic elements
@@ -438,7 +441,7 @@ export const editorSlice = createSlice({
      */
     updateElement(
       state,
-      action: PayloadAction<{ uuid: UUID } & Partial<ModComponentFormState>>
+      action: PayloadAction<{ uuid: UUID } & Partial<ModComponentFormState>>,
     ) {
       const { uuid, ...elementUpdate } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
@@ -471,7 +474,7 @@ export const editorSlice = createSlice({
       action: PayloadAction<{
         nodeIdToRemove: UUID;
         newActiveNodeId?: UUID;
-      }>
+      }>,
     ) {
       const elementUIState = state.elementUIStates[state.activeElementId];
       const { nodeIdToRemove, newActiveNodeId } = action.payload;
@@ -496,7 +499,7 @@ export const editorSlice = createSlice({
      */
     setNodeDataPanelTabSearchQuery(
       state,
-      action: PayloadAction<{ tabKey: DataPanelTabKey; query: string }>
+      action: PayloadAction<{ tabKey: DataPanelTabKey; query: string }>,
     ) {
       const { tabKey, query } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
@@ -513,7 +516,7 @@ export const editorSlice = createSlice({
       action: PayloadAction<{
         tabKey: DataPanelTabKey;
         expandedState: TreeExpandedState;
-      }>
+      }>,
     ) {
       const { tabKey, expandedState } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElementId];
@@ -554,7 +557,7 @@ export const editorSlice = createSlice({
     },
     editRecipeOptionsDefinitions(
       state,
-      action: PayloadAction<ModOptionsDefinition>
+      action: PayloadAction<ModOptionsDefinition>,
     ) {
       const { payload: options } = action;
       editRecipeOptionsDefinitions(state, options);
@@ -570,11 +573,11 @@ export const editorSlice = createSlice({
     },
     updateRecipeMetadataForElements(
       state,
-      action: PayloadAction<ModComponentBase["_recipe"]>
+      action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
       const metadata = action.payload;
       const recipeElements = state.elements.filter(
-        (element) => element.recipe?.id === metadata.id
+        (element) => element.recipe?.id === metadata.id,
       );
       for (const element of recipeElements) {
         element.recipe = metadata;
@@ -589,17 +592,17 @@ export const editorSlice = createSlice({
         elementId: UUID;
         recipeMetadata: ModComponentBase["_recipe"];
         keepLocalCopy: boolean;
-      }>
+      }>,
     ) {
       const {
         payload: { elementId, recipeMetadata, keepLocalCopy },
       } = action;
       const elementIndex = state.elements.findIndex(
-        (element) => element.uuid === elementId
+        (element) => element.uuid === elementId,
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to add extension to mod, extension form state not found"
+          "Unable to add extension to mod, extension form state not found",
         );
       }
 
@@ -632,15 +635,15 @@ export const editorSlice = createSlice({
       action: PayloadAction<{
         elementId: UUID;
         keepLocalCopy: boolean;
-      }>
+      }>,
     ) {
       const { elementId, keepLocalCopy } = action.payload;
       const elementIndex = state.elements.findIndex(
-        (element) => element.uuid === elementId
+        (element) => element.uuid === elementId,
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to remove extension from mod, extension form state not found"
+          "Unable to remove extension from mod, extension form state not found",
         );
       }
 
@@ -681,7 +684,7 @@ export const editorSlice = createSlice({
       if (!isEmpty(deletedElements)) {
         state.elements.push(...deletedElements);
         for (const elementId of deletedElements.map(
-          (element) => element.uuid
+          (element) => element.uuid,
         )) {
           state.dirty[elementId] = false;
           ensureElementUIState(state, elementId);
@@ -696,7 +699,7 @@ export const editorSlice = createSlice({
     },
     showCreateRecipeModal(
       state,
-      action: PayloadAction<{ keepLocalCopy: boolean }>
+      action: PayloadAction<{ keepLocalCopy: boolean }>,
     ) {
       state.visibleModalKey = ModalKey.CREATE_RECIPE;
       state.keepLocalCopyOnCreateRecipe = action.payload.keepLocalCopy;
@@ -708,13 +711,13 @@ export const editorSlice = createSlice({
         newRecipeId: RegistryId;
         metadata: ModMetadataFormState;
         options: ModOptionsDefinition;
-      }>
+      }>,
     ) {
       const { oldRecipeId, newRecipeId, metadata, options } = action.payload;
 
       // Remove old recipe extension form states
       for (const element of state.elements.filter(
-        (element) => element.recipe?.id === oldRecipeId
+        (element) => element.recipe?.id === oldRecipeId,
       )) {
         removeElement(state, element.uuid);
       }
@@ -739,12 +742,12 @@ export const editorSlice = createSlice({
         block: BrickConfig;
         pipelinePath: string;
         pipelineIndex: number;
-      }>
+      }>,
     ) {
       const { block, pipelinePath, pipelineIndex } = action.payload;
 
       const element = state.elements.find(
-        (x) => x.uuid === state.activeElementId
+        (x) => x.uuid === state.activeElementId,
       );
 
       const pipeline = get(element, pipelinePath);
@@ -772,7 +775,7 @@ export const editorSlice = createSlice({
       action: PayloadAction<{
         nodeId: UUID;
         direction: "up" | "down";
-      }>
+      }>,
     ) {
       const { nodeId, direction } = action.payload;
       const element = selectActiveElement({ editor: state });
@@ -845,7 +848,7 @@ export const editorSlice = createSlice({
 
       const elements = selectNotDeletedElements({ editor: state });
       const recipeElements = elements.filter(
-        (element) => element.recipe?.id === recipeId
+        (element) => element.recipe?.id === recipeId,
       );
       for (const element of recipeElements) {
         element.optionsArgs = action.payload;
@@ -854,7 +857,7 @@ export const editorSlice = createSlice({
     },
     setExpandedFieldSections(
       state,
-      { payload }: PayloadAction<{ id: string; isExpanded: boolean }>
+      { payload }: PayloadAction<{ id: string; isExpanded: boolean }>,
     ) {
       const uiState = selectActiveNodeUIState({
         editor: state,
@@ -880,13 +883,13 @@ export const editorSlice = createSlice({
     },
     setDataSectionExpanded(
       state,
-      { payload }: PayloadAction<{ isExpanded: boolean }>
+      { payload }: PayloadAction<{ isExpanded: boolean }>,
     ) {
       state.isDataPanelExpanded = payload.isExpanded;
     },
     setModListExpanded(
       state,
-      { payload }: PayloadAction<{ isExpanded: boolean }>
+      { payload }: PayloadAction<{ isExpanded: boolean }>,
     ) {
       state.isModListExpanded = payload.isExpanded;
     },
@@ -918,7 +921,7 @@ export const editorSlice = createSlice({
           state.isPendingInstalledExtensions = false;
           state.availableInstalledIds = availableInstalledIds;
           state.unavailableInstalledCount = unavailableCount;
-        }
+        },
       )
       .addCase(
         checkAvailableInstalledExtensions.rejected,
@@ -927,7 +930,7 @@ export const editorSlice = createSlice({
           state.unavailableInstalledCount = 0;
           state.error = error;
           reportError(error);
-        }
+        },
       )
       .addCase(checkAvailableDynamicElements.pending, (state) => {
         state.isPendingDynamicExtensions = true;
@@ -939,7 +942,7 @@ export const editorSlice = createSlice({
           state.isPendingDynamicExtensions = false;
           state.availableDynamicIds = availableDynamicIds;
           state.unavailableDynamicCount = unavailableCount;
-        }
+        },
       )
       .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
         state.isPendingDynamicExtensions = false;
@@ -957,13 +960,13 @@ export const editorSlice = createSlice({
               unavailableDynamicCount,
               unavailableInstalledCount,
             },
-          }
+          },
         ) => ({
           ...state,
           availableDynamicIds,
           unavailableDynamicCount,
           unavailableInstalledCount,
-        })
+        }),
       );
   },
 });

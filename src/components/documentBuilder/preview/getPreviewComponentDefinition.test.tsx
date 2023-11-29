@@ -37,7 +37,7 @@ test.each(["container", "row", "column"])(
 
     render(<Component {...props} />);
     expect(screen.getByText(elementTypeLabels[elementType])).not.toBeNull();
-  }
+  },
 );
 
 test.each(["container", "row", "column"])(
@@ -60,5 +60,5 @@ test.each(["container", "row", "column"])(
 
     render(<Component {...props} />);
     expect(screen.queryByText(elementTypeLabels[elementType])).toBeNull();
-  }
+  },
 );

@@ -160,16 +160,15 @@ export type Deployment = Except<
 > & {
   id: UUID;
   options_config: OptionsArgs;
-  package:
-    | Except<
-        NonNullable<components["schemas"]["DeploymentDetail"]["package"]>,
-        // Patch types for the following properties which our automatic schema generation generated the wrong types for
-        "config" | "id" | "package_id"
-      > & {
-        id: UUID;
-        package_id: RegistryId;
-        config: ModDefinition;
-      };
+  package: Except<
+    NonNullable<components["schemas"]["DeploymentDetail"]["package"]>,
+    // Patch types for the following properties which our automatic schema generation generated the wrong types for
+    "config" | "id" | "package_id"
+  > & {
+    id: UUID;
+    package_id: RegistryId;
+    config: ModDefinition;
+  };
 };
 
 /**

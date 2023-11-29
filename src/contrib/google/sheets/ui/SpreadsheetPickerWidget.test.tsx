@@ -102,7 +102,7 @@ const renderWithValues = async (initialValues: FormikValues) => {
       {
         initialValues,
         wrapper: IntegrationsSliceModIntegrationsContextAdapter,
-      }
+      },
     );
   });
 };
@@ -110,7 +110,7 @@ const renderWithValues = async (initialValues: FormikValues) => {
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockImplementation(
-    async (serviceId) => servicesLookup[serviceId]
+    async (serviceId) => servicesLookup[serviceId],
   );
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
 });
@@ -165,17 +165,17 @@ describe("SpreadsheetPickerWidget", () => {
 
     // Dropdown should show the test spreadsheet options
     expect(
-      screen.getByRole("option", { name: TEST_SPREADSHEET_NAME })
+      screen.getByRole("option", { name: TEST_SPREADSHEET_NAME }),
     ).toBeVisible();
     expect(
-      screen.getByRole("option", { name: OTHER_TEST_SPREADSHEET_NAME })
+      screen.getByRole("option", { name: OTHER_TEST_SPREADSHEET_NAME }),
     ).toBeVisible();
 
     // Switch spreadsheets
     await act(async () => {
       await selectEvent.select(
         screen.getByRole("combobox"),
-        OTHER_TEST_SPREADSHEET_NAME
+        OTHER_TEST_SPREADSHEET_NAME,
       );
     });
 

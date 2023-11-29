@@ -76,23 +76,17 @@ function popoverFactory(initialUrl: URL): HTMLElement {
   decoratedUrl.searchParams.set("frameNonce", frameNonce);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's being created here, it can't be missing
-  const tooltip = $(
-    html`
-      <div
-        role="tooltip"
-        data-popover-id="${frameNonce}"
-        style="display: none;"
-      >
-        <iframe
-          src="${decoratedUrl.href}"
-          title="Popover content"
-          scrolling="no"
-          style="border: 0; color-scheme: normal;"
-        ></iframe>
-        <div data-popper-arrow></div>
-      </div>
-    `
-  ).get(0)!;
+  const tooltip = $(html`
+    <div role="tooltip" data-popover-id="${frameNonce}" style="display: none;">
+      <iframe
+        src="${decoratedUrl.href}"
+        title="Popover content"
+        scrolling="no"
+        style="border: 0; color-scheme: normal;"
+      ></iframe>
+      <div data-popper-arrow></div>
+    </div>
+  `).get(0)!;
 
   $container.append(tooltip);
 
@@ -112,7 +106,7 @@ function popoverFactory(initialUrl: URL): HTMLElement {
       },
     },
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's being created here, it can't be missing
-    tooltip.querySelector("iframe")!
+    tooltip.querySelector("iframe")!,
   );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- It's being created here, it can't be missing
@@ -272,7 +266,7 @@ export function showPopover({
     () => {
       resizerMap.get(tooltip)?.iFrameResizer.resize();
     },
-    { signal }
+    { signal },
   );
 
   const outsideClickListener = (event: JQuery.TriggeredEvent) => {

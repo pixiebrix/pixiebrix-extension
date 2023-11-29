@@ -59,7 +59,7 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ message: "Ran block" });
   });
@@ -85,7 +85,7 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ message: "Ran block" });
   });
@@ -108,7 +108,7 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(contextAsPlainObject(result as UnknownObject)).toStrictEqual({
       "@input": {},
@@ -137,7 +137,7 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ message: "Hello, Bob" });
   });
@@ -162,7 +162,7 @@ describe("modVariableContext", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: {} },
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ message: "Bob" });
   });

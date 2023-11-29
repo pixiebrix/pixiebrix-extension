@@ -43,7 +43,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ length: 1 });
   });
@@ -61,7 +61,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({
       data: {

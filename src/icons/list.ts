@@ -36,13 +36,13 @@ function getIconMap(resolve: RequireContext): Map<string, string> {
 export const icons = new Map<IconLibrary, Map<string, string>>();
 icons.set(
   "bootstrap",
-  getIconMap(require.context("bootstrap-icons/icons/", false, /\.svg$/))
+  getIconMap(require.context("bootstrap-icons/icons/", false, /\.svg$/)),
 );
 icons.set(
   "simple-icons",
-  getIconMap(require.context("simple-icons/icons/", false, /\.svg$/))
+  getIconMap(require.context("simple-icons/icons/", false, /\.svg$/)),
 );
 icons.set(
   "custom",
-  getIconMap(require.context("@/icons/custom-icons/", false, /\.svg$/))
+  getIconMap(require.context("@/icons/custom-icons/", false, /\.svg$/)),
 );

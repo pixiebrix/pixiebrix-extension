@@ -35,7 +35,7 @@ export function isAbsoluteUrl(url: string): boolean {
 export function makeURL(
   url: string,
   params: Record<string, string | number | boolean> = {},
-  spaceEncoding: "plus" | "percent" = URL_INPUT_SPACE_ENCODING_DEFAULT
+  spaceEncoding: "plus" | "percent" = URL_INPUT_SPACE_ENCODING_DEFAULT,
 ): string {
   // https://javascript.info/url#searchparams
   const result = new URL(url, location.origin);
@@ -70,7 +70,7 @@ export function safeParseUrl(url: string, baseUrl?: string): URL {
  */
 export function isValidUrl(
   value: string,
-  { protocols = ["http:", "https:"] }: { protocols?: string[] } = {}
+  { protocols = ["http:", "https:"] }: { protocols?: string[] } = {},
 ): boolean {
   try {
     const url = new URL(value);

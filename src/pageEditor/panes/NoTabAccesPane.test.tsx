@@ -40,8 +40,8 @@ describe("PermissionsPane", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "PixieBrix cannot connect to this page. Try reloading the Tab."
-        )
+          "PixieBrix cannot connect to this page. Try reloading the Tab.",
+        ),
       ).toBeInTheDocument();
     });
   });

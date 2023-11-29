@@ -44,7 +44,7 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
  * to a linked Control Room.
  */
 function usePartnerAppStartUrl(
-  controlRoomUrl: string
+  controlRoomUrl: string,
 ): FetchableAsyncState<string> {
   return useAsyncState(async () => {
     const baseUrl = await getBaseURL();
@@ -91,7 +91,7 @@ function usePartnerLoginMode(): "token" | "oauth2" {
 
     case "pixiebrix-token": {
       throw new Error(
-        "Unexpected authMode 'pixiebrix-token' for usePartnerLoginMode"
+        "Unexpected authMode 'pixiebrix-token' for usePartnerLoginMode",
       );
     }
 
@@ -146,7 +146,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
     dispatch(
       settingsSlice.actions.setPartnerId({
         partnerId: "automation-anywhere",
-      })
+      }),
     );
   }, [dispatch]);
 

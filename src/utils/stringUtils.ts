@@ -78,7 +78,7 @@ export function isNullOrBlank(value: unknown): boolean {
 /** Tests a target string against a list of strings (full match) or regexes (can be mixed) */
 export function matchesAnyPattern(
   target: string,
-  patterns: Array<string | RegExp | ((x: string) => boolean)>
+  patterns: Array<string | RegExp | ((x: string) => boolean)>,
 ): boolean {
   return patterns.some((pattern) => {
     if (typeof pattern === "string") {

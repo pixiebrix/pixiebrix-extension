@@ -38,7 +38,7 @@ import { type ActionMeta } from "react-select";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType,
-  T = Element
+  T = Element,
 > = Except<FormControlProps, "onChange" | "value"> &
   Except<React.ComponentProps<As>, "name"> & {
     name: string;
@@ -64,7 +64,7 @@ export type FieldProps<
 type WidgetElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type CustomFieldWidgetProps<
   TValue = string | string[] | number,
-  TInputElement = WidgetElement
+  TInputElement = WidgetElement,
 > = {
   id?: string;
   name: string;
@@ -78,7 +78,7 @@ export type CustomFieldWidget<
   TFieldWidgetProps extends CustomFieldWidgetProps<
     TValue,
     TInputElement
-  > = CustomFieldWidgetProps<TValue, TInputElement>
+  > = CustomFieldWidgetProps<TValue, TInputElement>,
 > = React.ComponentType<TFieldWidgetProps>;
 
 type ComputeLabelAndColSizeArgs = {
@@ -114,7 +114,7 @@ export function computeLabelAndColSize({
 }
 
 const FieldTemplate: <As extends React.ElementType, T = Element>(
-  p: FieldProps<As, T>
+  p: FieldProps<As, T>,
 ) => React.ReactElement<FieldProps<As, T>> = ({
   name,
   label,
@@ -132,8 +132,8 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
 }) => {
   const isInvalid = !isEmpty(
     annotations?.filter(
-      (annotation) => annotation.type === AnnotationType.Error
-    )
+      (annotation) => annotation.type === AnnotationType.Error,
+    ),
   );
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
@@ -151,7 +151,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
         nonUndefinedValue,
         blankValue,
         value,
-      }
+      },
     );
   }
 

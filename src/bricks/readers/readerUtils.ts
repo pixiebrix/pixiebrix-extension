@@ -43,7 +43,7 @@ export function selectReaderIds(config: ReaderConfig): RegistryId[] {
 
 /** Instantiate a reader from a reader configuration. */
 export async function mergeReaders(
-  readerConfig: ReaderConfig
+  readerConfig: ReaderConfig,
 ): Promise<Reader> {
   if (typeof readerConfig === "string") {
     return blockRegistry.lookup(readerConfig) as Promise<Reader>;
@@ -51,13 +51,13 @@ export async function mergeReaders(
 
   if (Array.isArray(readerConfig)) {
     return new ArrayCompositeReader(
-      await Promise.all(readerConfig.map(async (x) => mergeReaders(x)))
+      await Promise.all(readerConfig.map(async (x) => mergeReaders(x))),
     );
   }
 
   if (isPlainObject(readerConfig)) {
     return new CompositeReader(
-      await resolveObj(mapValues(readerConfig, mergeReaders))
+      await resolveObj(mapValues(readerConfig, mergeReaders)),
     );
   }
 

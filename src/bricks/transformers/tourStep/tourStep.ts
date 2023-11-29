@@ -278,7 +278,7 @@ export const StepSchema: Schema = propertiesToSchema(
       },
     },
   },
-  ["title", "body"]
+  ["title", "body"],
 );
 
 function markdownPipeline(markdown: string): PipelineExpression {
@@ -297,7 +297,7 @@ export class TourStepTransformer extends TransformerABC {
     super(
       TourStepTransformer.BLOCK_ID,
       "Show Tour Step",
-      "Show a step in a tour"
+      "Show a step in a tour",
     );
   }
 
@@ -320,7 +320,7 @@ export class TourStepTransformer extends TransformerABC {
         context: { extensionId, blueprintId },
       },
       runRendererPipeline,
-    }: BrickOptions
+    }: BrickOptions,
   ): Promise<unknown> {
     let counter = 0;
 
@@ -357,7 +357,7 @@ export class TourStepTransformer extends TransformerABC {
           counter,
         },
         {},
-        element
+        element,
       );
 
       counter++;
@@ -415,11 +415,11 @@ export class TourStepTransformer extends TransformerABC {
    */
   async locateElement(
     args: StepInputs,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<HTMLElement> {
     let $elements: JQuery<Document | HTMLElement> = $safeFind(
       args.selector,
-      options.root
+      options.root,
     );
 
     if ($elements.length === 0 && args.appearance?.wait) {
@@ -444,7 +444,7 @@ export class TourStepTransformer extends TransformerABC {
 
   highlightTarget(
     element: HTMLElement,
-    config: StepInputs["appearance"]["highlight"]
+    config: StepInputs["appearance"]["highlight"],
   ): void {
     if (isEmpty(config)) {
       return;
@@ -467,7 +467,7 @@ export class TourStepTransformer extends TransformerABC {
 
   async transform(
     args: BrickArgs<StepInputs>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<unknown> {
     const {
       root,
@@ -499,7 +499,7 @@ export class TourStepTransformer extends TransformerABC {
 
       throw new NoElementsFoundError(
         selector,
-        "Target element not available on the page"
+        "Target element not available on the page",
       );
     }
 
@@ -527,7 +527,7 @@ export class TourStepTransformer extends TransformerABC {
             counter: 0,
           },
           {},
-          target
+          target,
         );
       }
 
@@ -552,7 +552,7 @@ export class TourStepTransformer extends TransformerABC {
             counter: 0,
           },
           {},
-          target
+          target,
         );
       }
     } finally {

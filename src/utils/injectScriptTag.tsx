@@ -17,7 +17,7 @@
 
 /** Loads a script URL via `script` tag. Resolves with `script` tag or throws when it fails. */
 export default async function injectScriptTag(
-  source: string
+  source: string,
 ): Promise<HTMLScriptElement> {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
@@ -25,7 +25,7 @@ export default async function injectScriptTag(
     script.addEventListener("error", (event) => {
       // The cause will most likely be `undefined`
       reject(
-        new Error(`Script failed loading: ${source}`, { cause: event.error })
+        new Error(`Script failed loading: ${source}`, { cause: event.error }),
       );
     });
     script.addEventListener("load", () => {

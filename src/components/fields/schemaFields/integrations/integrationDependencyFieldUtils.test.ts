@@ -272,7 +272,7 @@ describe("selectVariables", () => {
       extensionPoint: {
         metadata: {
           id: validateRegistryId(
-            "@internal/52d42d87-4382-4c78-b00e-bbdd21d75000"
+            "@internal/52d42d87-4382-4c78-b00e-bbdd21d75000",
           ),
           name: "Temporary starter brick",
         },

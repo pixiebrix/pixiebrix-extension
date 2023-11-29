@@ -43,7 +43,7 @@ export type SelectLike<TOption extends Option<TOption["value"]> = Option> = {
 // The signature of onChange is dictated by the compatibility with Formik. for a Widget to be compatible with Formik
 // it should trigger onChange with an event, that has target and value
 export type SelectWidgetOnChange<
-  TOption extends Option<TOption["value"]> = Option
+  TOption extends Option<TOption["value"]> = Option,
 > = React.ChangeEventHandler<SelectLike<TOption>>;
 
 // Type of the SelectWidget props

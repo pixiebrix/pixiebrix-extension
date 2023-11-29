@@ -33,7 +33,7 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
   const { integrationDependencies } = useContext(ModIntegrationsContext);
   // Dependency may not exist, do not destructure here
   const googleDependency = integrationDependencies.find(
-    ({ integrationId }) => integrationId === GOOGLE_PKCE_INTEGRATION_ID
+    ({ integrationId }) => integrationId === GOOGLE_PKCE_INTEGRATION_ID,
   );
 
   return useAsyncState(async () => {
@@ -44,7 +44,7 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
     try {
       return await services.locate(
         googleDependency.integrationId,
-        googleDependency.configId
+        googleDependency.configId,
       );
     } catch (error: unknown) {
       reportError(error);

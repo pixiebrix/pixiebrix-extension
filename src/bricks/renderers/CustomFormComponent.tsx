@@ -57,7 +57,7 @@ const CustomFormComponent: React.FunctionComponent<{
    */
   onSubmit: (
     values: JsonObject,
-    { submissionCount }: { submissionCount: number }
+    { submissionCount }: { submissionCount: number },
   ) => Promise<void>;
   className?: string;
 }> = ({

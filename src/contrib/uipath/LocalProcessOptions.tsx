@@ -40,7 +40,7 @@ import { joinName } from "@/utils/formUtils";
 function useLocalRobot() {
   expectContext(
     "devTools",
-    "useLocalRobot only works in the page editor due to its `thisTab` usage"
+    "useLocalRobot only works in the page editor due to its `thisTab` usage",
   );
 
   const [robotAvailable, setRobotAvailable] = useState(false);
@@ -50,7 +50,9 @@ function useLocalRobot() {
   useAsyncEffect(async () => {
     if (!isDevToolsPage()) {
       setInitError(
-        new Error("UiPath Assistant can only be configured from a page context")
+        new Error(
+          "UiPath Assistant can only be configured from a page context",
+        ),
       );
       return;
     }
@@ -78,7 +80,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   const configName = partial(joinName, name, configKey);
 
   const [{ value: releaseKey }] = useField<string | Expression>(
-    configName("releaseKey")
+    configName("releaseKey"),
   );
 
   const { robotAvailable, consentCode } = useLocalRobot();

@@ -49,12 +49,12 @@ const PRESERVE_LITERAL_VALUES = new Map<RegistryId, Set<string>>(
     "@pixiebrix/data/get": new Set(["databaseId"]),
     "@pixiebrix/data/put": new Set(["databaseId"]),
     "@pixiebrix/component-reader": new Set(["framework"]),
-  }) as Array<[RegistryId, Set<string>]>
+  }) as Array<[RegistryId, Set<string>]>,
 );
 
 export function stringToExpression(
   value: unknown,
-  templateEngine: TemplateEngine
+  templateEngine: TemplateEngine,
 ): Expression {
   if (typeof value !== "string") {
     throw new TypeError("Expected string for value");
@@ -95,7 +95,7 @@ async function upgradeBlock(blockConfig: BrickConfig): Promise<void> {
         templateEngine,
         blockId: blockConfig.id,
       });
-    })
+    }),
   );
 
   if (blockConfig.if) {
@@ -119,7 +119,7 @@ type UpgradeArgs = {
  */
 function selectSchema(
   value: unknown,
-  fieldSchema: SchemaDefinition
+  fieldSchema: SchemaDefinition,
 ): SchemaDefinition {
   if (typeof fieldSchema === "boolean") {
     return fieldSchema;
@@ -137,31 +137,31 @@ function selectSchema(
 
   if (Array.isArray(value)) {
     return schemaArray.find(
-      (schema) => typeof schema !== "boolean" && schema.type === "array"
+      (schema) => typeof schema !== "boolean" && schema.type === "array",
     );
   }
 
   if (typeof value === "object") {
     return schemaArray.find(
-      (schema) => typeof schema !== "boolean" && schema.type === "object"
+      (schema) => typeof schema !== "boolean" && schema.type === "object",
     );
   }
 
   if (typeof value === "string") {
     return schemaArray.find(
-      (schema) => typeof schema !== "boolean" && schema.type === "string"
+      (schema) => typeof schema !== "boolean" && schema.type === "string",
     );
   }
 
   if (typeof value === "number") {
     return schemaArray.find(
-      (schema) => typeof schema !== "boolean" && schema.type === "number"
+      (schema) => typeof schema !== "boolean" && schema.type === "number",
     );
   }
 
   if (typeof value === "boolean") {
     return schemaArray.find(
-      (schema) => typeof schema !== "boolean" && schema.type === "boolean"
+      (schema) => typeof schema !== "boolean" && schema.type === "boolean",
     );
   }
 
@@ -277,9 +277,9 @@ async function upgradeValue({
               fieldName: index.toString(),
               fieldSchema: itemSchemas.at(index),
               templateEngine,
-            }
+            },
           );
-        })
+        }),
       );
     } else if (fieldSchema.type === "object") {
       // This section handling object values works fundamentally the same way as
@@ -309,7 +309,7 @@ async function upgradeValue({
         }
 
         for (const name of Object.keys(value).filter(
-          (key) => !(key in propertySchemas)
+          (key) => !(key in propertySchemas),
         )) {
           // eslint-disable-next-line security/detect-object-injection
           const subValue = (value as UnknownObject)[name];
@@ -328,7 +328,7 @@ async function upgradeValue({
             fieldSchema: propertySchemas[fieldName],
             templateEngine,
           });
-        })
+        }),
       );
     }
   } else if (
@@ -352,13 +352,13 @@ async function upgradeValue({
  * Attempt to upgrade the blocks in a pipeline from api v2 to v3
  */
 export async function upgradePipelineToV3(
-  blockPipeline: BrickPipeline
+  blockPipeline: BrickPipeline,
 ): Promise<BrickPipeline> {
   const cloned = cloneDeep(blockPipeline);
   await Promise.all(
     cloned.map(async (block) => {
       await upgradeBlock(block);
-    })
+    }),
   );
   return cloned;
 }

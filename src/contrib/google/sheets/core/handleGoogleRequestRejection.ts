@@ -38,7 +38,7 @@ export class PermissionsError extends Error {
 
 export async function handleGoogleRequestRejection(
   error: unknown,
-  googleAccount: SanitizedIntegrationConfig | null
+  googleAccount: SanitizedIntegrationConfig | null,
 ): Promise<Error> {
   // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
   // configuration. Therefore, get root cause for determining if this is an Axios error
@@ -72,7 +72,7 @@ export async function handleGoogleRequestRejection(
     if (googleAccount) {
       await deleteCachedAuthData(googleAccount.id);
       console.debug(
-        "Bad Google client PKCE token. Removed the auth token from the cache so the user can re-authenticate"
+        "Bad Google client PKCE token. Removed the auth token from the cache so the user can re-authenticate",
       );
     } else {
       console.warn("No auth token provided for request");
@@ -80,9 +80,9 @@ export async function handleGoogleRequestRejection(
 
     return new PermissionsError(
       `Permission denied, re-authenticate with Google and try again. Details: ${getErrorMessage(
-        error
+        error,
       )}`,
-      status
+      status,
     );
   }
 

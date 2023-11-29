@@ -31,7 +31,7 @@ class BrickTypeAnalysis extends AnalysisVisitorWithResolvedBricksABC {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ) {
     super.visitBrick(position, blockConfig, extra);
 
@@ -41,7 +41,7 @@ class BrickTypeAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     }
 
     const isBlockAllowed = makeIsBlockAllowedForPipeline(extra.pipelineFlavor)(
-      typedBlock
+      typedBlock,
     );
 
     if (

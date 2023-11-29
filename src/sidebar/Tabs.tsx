@@ -66,7 +66,7 @@ const ActivateModPanel = lazy(
     import(
       /* webpackChunkName: "ActivatePanels" */
       "@/sidebar/activateRecipe/ActivateModPanel"
-    )
+    ),
 );
 
 const ActivateMultipleModsPanel = lazy(
@@ -74,7 +74,7 @@ const ActivateMultipleModsPanel = lazy(
     import(
       /* webpackChunkName: "ActivatePanels" */
       "@/sidebar/activateRecipe/ActivateMultipleModsPanel"
-    )
+    ),
 );
 
 const permanentSidebarPanelAction = () => {
@@ -155,7 +155,7 @@ const Tabs: React.FC = () => {
 
   const onClosePanel = async (
     event: MouseEvent<HTMLButtonElement>,
-    panel: SidebarEntry
+    panel: SidebarEntry,
   ) => {
     // Default is to navigate to `#` hash which causes an error in the background page
     event.preventDefault();
@@ -183,7 +183,7 @@ const Tabs: React.FC = () => {
     },
     // Only run on initial mount, other views are handled by onSelect
     // eslint-disable-next-line react-hooks/exhaustive-deps -- see comment above
-    []
+    [],
   );
 
   useHideEmptySidebar();
@@ -290,7 +290,7 @@ const Tabs: React.FC = () => {
         <Tab.Content
           className={cx(
             "p-0 border-0 full-height bg-white",
-            styles.tabContainer
+            styles.tabContainer,
           )}
         >
           {panels.map((panel: PanelEntry) => (

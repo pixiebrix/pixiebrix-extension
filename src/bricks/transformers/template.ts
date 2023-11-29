@@ -41,7 +41,7 @@ export class TemplateTransformer extends TransformerABC {
       "@pixiebrix/template",
       "Fill template",
       "Fill in a template using the current context",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -57,7 +57,7 @@ export class TemplateTransformer extends TransformerABC {
         default: "mustache",
       },
     },
-    ["template"]
+    ["template"],
   );
 
   async transform(
@@ -65,11 +65,11 @@ export class TemplateTransformer extends TransformerABC {
       template,
       templateEngine = "mustache",
     }: BrickArgs<{ template: string; templateEngine: TemplateEngine }>,
-    { ctxt }: BrickOptions
+    { ctxt }: BrickOptions,
   ): Promise<unknown> {
     if (templateEngine !== "mustache") {
       throw new BusinessError(
-        "Only 'mustache' is currently supported for templateEngine"
+        "Only 'mustache' is currently supported for templateEngine",
       );
     }
 

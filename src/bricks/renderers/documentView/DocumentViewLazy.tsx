@@ -25,7 +25,7 @@ const DocumentView = React.lazy(
     import(
       /* webpackChunkName: "components-lazy" */
       "./DocumentView"
-    )
+    ),
 );
 
 const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (

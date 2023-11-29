@@ -37,7 +37,7 @@ import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 
 export function ensureElementUIState(
   state: Draft<EditorState>,
-  elementId: UUID
+  elementId: UUID,
 ) {
   if (!state.elementUIStates[elementId]) {
     state.elementUIStates[elementId] = makeInitialElementUIState();
@@ -55,7 +55,7 @@ export function ensureNodeUIState(state: Draft<ElementUIState>, nodeId: UUID) {
 
 export function syncElementNodeUIStates(
   state: Draft<EditorState>,
-  element: ModComponentFormState
+  element: ModComponentFormState,
 ) {
   const elementUIState = state.elementUIStates[element.uuid];
 
@@ -130,7 +130,7 @@ export function removeElement(state: Draft<EditorState>, uuid: UUID) {
  */
 export function removeRecipeData(
   state: Draft<EditorState>,
-  recipeId: RegistryId
+  recipeId: RegistryId,
 ) {
   if (state.activeRecipeId === recipeId) {
     state.activeRecipeId = null;
@@ -147,7 +147,7 @@ export function removeRecipeData(
 
 export function selectRecipeId(
   state: Draft<EditorState>,
-  recipeId: RegistryId
+  recipeId: RegistryId,
 ) {
   state.error = null;
   state.beta = false;
@@ -169,7 +169,7 @@ export function selectRecipeId(
 
 export function editRecipeMetadata(
   state: Draft<EditorState>,
-  metadata: ModMetadataFormState
+  metadata: ModMetadataFormState,
 ) {
   const recipeId = state.activeRecipeId;
   if (recipeId == null) {
@@ -181,7 +181,7 @@ export function editRecipeMetadata(
 
 export function editRecipeOptionsDefinitions(
   state: Draft<EditorState>,
-  options: ModOptionsDefinition
+  options: ModOptionsDefinition,
 ) {
   const recipeId = state.activeRecipeId;
   if (recipeId == null) {
@@ -194,7 +194,7 @@ export function editRecipeOptionsDefinitions(
 
 export function activateElement(
   state: Draft<EditorState>,
-  element: ModComponentFormState
+  element: ModComponentFormState,
 ) {
   state.error = null;
   state.beta = false;

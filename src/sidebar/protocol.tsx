@@ -88,7 +88,7 @@ export function removeListener(listener: SidebarListener): void {
   listeners.splice(
     0,
     listeners.length,
-    ...listeners.filter((x) => x !== listener)
+    ...listeners.filter((x) => x !== listener),
   );
 }
 
@@ -118,7 +118,7 @@ function runListeners<Method extends keyof SidebarListener>(
   method: Method,
   sequence: number,
   data?: Parameters<SidebarListener[Method]>[0],
-  { force = false }: { force?: boolean } = {}
+  { force = false }: { force?: boolean } = {},
 ): void {
   // Buffer messages until the listener is initialized
   if (listeners.length === 0) {
@@ -131,7 +131,7 @@ function runListeners<Method extends keyof SidebarListener>(
       "Skipping stale message (seq: %d, current: %d)",
       sequence,
       lastMessageSeen,
-      { data }
+      { data },
     );
     return;
   }
@@ -156,21 +156,21 @@ function runListeners<Method extends keyof SidebarListener>(
 
 export async function renderPanels(
   sequence: number,
-  panels: PanelEntry[]
+  panels: PanelEntry[],
 ): Promise<void> {
   runListeners("onRenderPanels", sequence, panels);
 }
 
 export async function activatePanel(
   sequence: number,
-  options: ActivatePanelOptions
+  options: ActivatePanelOptions,
 ): Promise<void> {
   if (sequence < lastActivateMessageSeen) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
       sequence,
       lastActivateMessageSeen,
-      { data: options }
+      { data: options },
     );
     return;
   }
@@ -190,14 +190,14 @@ export async function hideForm(sequence: number, nonce: UUID) {
 
 export async function showTemporaryPanel(
   sequence: number,
-  entry: TemporaryPanelEntry
+  entry: TemporaryPanelEntry,
 ) {
   runListeners("onShowTemporaryPanel", sequence, entry);
 }
 
 export async function updateTemporaryPanel(
   sequence: number,
-  entry: TemporaryPanelEntry
+  entry: TemporaryPanelEntry,
 ) {
   runListeners("onUpdateTemporaryPanel", sequence, entry);
 }
@@ -208,7 +208,7 @@ export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
 
 export async function showActivateMods(
   sequence: number,
-  entry: ModActivationPanelEntry
+  entry: ModActivationPanelEntry,
 ): Promise<void> {
   runListeners("onShowActivateRecipe", sequence, entry);
 }

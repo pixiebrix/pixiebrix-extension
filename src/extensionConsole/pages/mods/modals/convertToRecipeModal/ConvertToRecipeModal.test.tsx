@@ -69,12 +69,12 @@ describe("it renders", () => {
         dispatch(
           extensionsSlice.actions.installCloudExtension({
             extension: standaloneModDefinition,
-          })
+          }),
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
             extensionId: standaloneModDefinition.id,
-          })
+          }),
         );
       },
     });
@@ -92,12 +92,12 @@ describe("it renders", () => {
         dispatch(
           extensionsSlice.actions.installCloudExtension({
             extension: standaloneModDefinition,
-          })
+          }),
         );
         dispatch(
           modModalsSlice.actions.setShareContext({
             extensionId: standaloneModDefinition.id,
-          })
+          }),
         );
       },
     });
@@ -149,15 +149,15 @@ describe("it renders", () => {
             dispatch(
               extensionsSlice.actions.installCloudExtension({
                 extension: standaloneModDefinition,
-              })
+              }),
             );
             dispatch(
               sharingAction({
                 extensionId: standaloneModDefinition.id,
-              })
+              }),
             );
           },
-        }
+        },
       );
 
       const submit = await screen.findByRole("button", {
@@ -166,13 +166,13 @@ describe("it renders", () => {
       await userEvent.click(submit);
 
       const modalState = selectModalsContext(
-        getReduxStore().getState() as RootState
+        getReduxStore().getState() as RootState,
       );
 
       expect(modalState[contextToBeEmpty]).toBeNull();
       expect(modalState[sharingContext].extensionId).toBeUndefined();
       expect(modalState[sharingContext].blueprintId).toBeDefined();
-    }
+    },
   );
 
   test("converts cloud mod component", async () => {
@@ -198,7 +198,7 @@ describe("it renders", () => {
         dispatch(
           modModalsSlice.actions.setShareContext({
             extensionId: standaloneModDefinition.id,
-          })
+          }),
         );
       },
     });
@@ -212,7 +212,7 @@ describe("it renders", () => {
     expect(deleteCloudExtensionMock).toHaveBeenCalled();
 
     const showShareContext = selectShowShareContext(
-      getReduxStore().getState() as RootState
+      getReduxStore().getState() as RootState,
     );
 
     expect(showShareContext.extensionId).toBeUndefined();

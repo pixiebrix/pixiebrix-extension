@@ -80,10 +80,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
         if (typeof draftSchema.properties === "object") {
           const databaseProperties = Object.values(
-            draftSchema.properties
+            draftSchema.properties,
           ).filter(
             (value) =>
-              typeof value === "object" && value.$ref === databaseSchema.$id
+              typeof value === "object" && value.$ref === databaseSchema.$id,
           ) as Array<Draft<Schema>>;
 
           for (const property of databaseProperties) {
@@ -101,10 +101,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           }
 
           const googleSheetProperties = Object.values(
-            draftSchema.properties
+            draftSchema.properties,
           ).filter(
             (value) =>
-              typeof value === "object" && value.$ref === googleSheetSchema.$id
+              typeof value === "object" && value.$ref === googleSheetSchema.$id,
           ) as Array<Draft<Schema>>;
 
           for (const property of googleSheetProperties) {
@@ -160,7 +160,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
           }
         }
       }),
-    [rjsfSchema, activeField]
+    [rjsfSchema, activeField],
   );
 
   useEffect(() => {
@@ -171,20 +171,20 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     (props: FieldProps) => (
       <FormPreviewStringField setActiveField={setActiveField} {...props} />
     ),
-    [setActiveField]
+    [setActiveField],
   );
   const BooleanField = useCallback(
     (props: FieldProps) => (
       <FormPreviewBooleanField setActiveField={setActiveField} {...props} />
     ),
-    [setActiveField]
+    [setActiveField],
   );
 
   const ArrayField = useCallback(
     (props: FieldProps) => (
       <FormPreviewArrayField setActiveField={setActiveField} {...props} />
     ),
-    [setActiveField]
+    [setActiveField],
   );
 
   if (!previewSchema || !previewUiSchema) {

@@ -30,7 +30,7 @@ export class DisableEffect extends EffectABC {
     super(
       "@pixiebrix/disable",
       "Disable Element",
-      "Disable an element (e.g., button, input)"
+      "Disable an element (e.g., button, input)",
     );
   }
 
@@ -42,7 +42,7 @@ export class DisableEffect extends EffectABC {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    []
+    [],
   );
 
   override async isRootAware(): Promise<boolean> {
@@ -51,7 +51,7 @@ export class DisableEffect extends EffectABC {
 
   async effect(
     args: BrickArgs<{ selector: string; isRootAware?: boolean }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       ...args,

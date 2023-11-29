@@ -26,7 +26,7 @@ export class PageSemanticReader extends ReaderABC {
     super(
       "@pixiebrix/document-semantic",
       "Read semantic data",
-      "Read HTML metadata, JSON-LD, RDFa, microdata, OEmbed, Twitter cards and AppLinks."
+      "Read HTML metadata, JSON-LD, RDFa, microdata, OEmbed, Twitter cards and AppLinks.",
     );
   }
 
@@ -52,7 +52,7 @@ export class PageSemanticReader extends ReaderABC {
         {
           // The HTML pages URL is used to resolve relative URLs.
           url: document.location.href,
-        }
+        },
       );
 
       const parser = new Parser(handler, { decodeEntities: true });

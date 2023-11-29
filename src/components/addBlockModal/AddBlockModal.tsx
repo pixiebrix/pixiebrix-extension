@@ -126,7 +126,7 @@ const AddBlockModal: React.FC = () => {
   const [state, dispatch] = useReducer(slice.reducer, initialState);
 
   const { isAddBlockModalVisible: show } = useSelector(
-    selectEditorModalVisibilities
+    selectEditorModalVisibilities,
   );
 
   const gridRef = useRef<LazyGrid>();
@@ -151,7 +151,7 @@ const AddBlockModal: React.FC = () => {
 
       closeModal();
     },
-    [addBlock, closeModal]
+    [addBlock, closeModal],
   );
 
   useEffect(() => {
@@ -179,7 +179,7 @@ const AddBlockModal: React.FC = () => {
 
   const taggedBrickIds = useMemo(
     () => groupListingsByTag(marketplaceTags, listings),
-    [marketplaceTags, listings]
+    [marketplaceTags, listings],
   );
 
   const partnerKey = useGetTheme();
@@ -188,7 +188,7 @@ const AddBlockModal: React.FC = () => {
     const items: TagItem[] = [{ tag: TAG_ALL }];
     if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
       const aaTag = marketplaceTags.find(
-        (tag) => tag.name === "Automation Anywhere"
+        (tag) => tag.name === "Automation Anywhere",
       );
       if (aaTag) {
         items.push({
@@ -204,7 +204,7 @@ const AddBlockModal: React.FC = () => {
         .map((tag) => ({
           tag: tag.name,
           icon: tag.fa_icon,
-        }))
+        })),
     );
 
     return items;
@@ -220,7 +220,7 @@ const AddBlockModal: React.FC = () => {
     if (partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY) {
       typedBlocks = typedBlocks.filter(
         // eslint-disable-next-line security/detect-object-injection -- constant
-        (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.block.id)
+        (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.block.id),
       );
     }
 
@@ -237,7 +237,7 @@ const AddBlockModal: React.FC = () => {
     filteredBlocks,
     taggedBrickIds,
     state.query,
-    state.searchTag
+    state.searchTag,
   );
 
   const blockOptions = useMemo<BlockOption[]>(() => {
@@ -285,12 +285,12 @@ const AddBlockModal: React.FC = () => {
                 }
 
                 return null;
-              }
-            )
-          )
-        )
+              },
+            ),
+          ),
+        ),
       ),
-    [blockOptions]
+    [blockOptions],
   );
 
   const gridData = useMemo<BlockGridData>(
@@ -305,7 +305,7 @@ const AddBlockModal: React.FC = () => {
         void onSelectBlock(block);
       },
     }),
-    [blockOptions, invalidBlockMessages, onSelectBlock]
+    [blockOptions, invalidBlockMessages, onSelectBlock],
   );
 
   return (
@@ -414,7 +414,7 @@ const AddBlockModal: React.FC = () => {
                       rowHeight={BLOCK_ITEM_FIXED_HEIGHT_PX}
                       columnCount={BLOCK_RESULT_COLUMN_COUNT}
                       rowCount={Math.ceil(
-                        searchResults.length / BLOCK_RESULT_COLUMN_COUNT
+                        searchResults.length / BLOCK_RESULT_COLUMN_COUNT,
                       )}
                       itemKey={getItemKey}
                       itemData={gridData}

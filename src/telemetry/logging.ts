@@ -124,7 +124,7 @@ async function openLoggingDB() {
         db.deleteObjectStore(ENTRY_OBJECT_STORE);
         console.warn(
           "Deleting object store %s for upgrade",
-          ENTRY_OBJECT_STORE
+          ENTRY_OBJECT_STORE,
         );
       } catch {
         // Not sure what will happen if the store doesn't exist (i.e., on initial install, so just NOP it
@@ -174,7 +174,7 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
 }
 
 function makeMatchEntry(
-  context: MessageContext = {}
+  context: MessageContext = {},
 ): (entry: LogEntry) => boolean {
   return (entry: LogEntry) =>
     indexKeys.every((key) => {
@@ -251,7 +251,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
  * @param context the query log entry context
  */
 export async function getLogEntries(
-  context: MessageContext = {}
+  context: MessageContext = {},
 ): Promise<LogEntry[]> {
   const db = await openLoggingDB();
 
@@ -271,7 +271,7 @@ export async function getLogEntries(
 
     if (!indexKey) {
       throw new Error(
-        "At least one of the known index keys must be set in the context to get logs"
+        "At least one of the known index keys must be set in the context to get logs",
       );
     }
 
@@ -295,14 +295,14 @@ export async function getLogEntries(
  */
 function flattenContext(
   error: Error | SerializedError,
-  context: MessageContext
+  context: MessageContext,
 ): MessageContext {
   if (isSpecificError(error, ContextError)) {
     const currentContext =
       typeof error.context === "object" ? error.context : {};
     const innerContext = flattenContext(
       error.cause as SerializedError,
-      context
+      context,
     );
     // Prefer the outer context which should have the most accurate detail about which brick the error occurred in
     return { ...context, ...innerContext, ...currentContext };
@@ -329,7 +329,7 @@ export async function reportToRollbar(
   // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
   error: Error,
   flatContext: MessageContext,
-  message: string
+  message: string,
 ): Promise<void> {
   // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
   if (
@@ -384,14 +384,14 @@ export async function recordError(
   this: MessengerMeta, // Enforce usage via Messenger only
   serializedError: SerializedError,
   context: MessageContext,
-  data?: JsonObject
+  data?: JsonObject,
   // NOTE: If this function signature is changed, also update it in sidebar/messenger/registration.ts
   // If those types are removed from that file, then also remove this comment.
 ): Promise<void> {
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
   expectContext(
     "background",
-    "Errors should be recorded via the background page to allow HTTP request batching"
+    "Errors should be recorded via the background page to allow HTTP request batching",
   );
 
   try {
@@ -426,12 +426,12 @@ export async function recordWarning(
   this: MessengerMeta, // Enforce usage via Messenger only
   context: MessageContext | null,
   message: string,
-  data?: JsonObject
+  data?: JsonObject,
 ) {
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
   expectContext(
     "background",
-    "Errors should be recorded via the background page to allow HTTP request batching"
+    "Errors should be recorded via the background page to allow HTTP request batching",
   );
 
   void recordLog(context, "warn", message, data);
@@ -454,7 +454,7 @@ export async function recordLog(
   context: MessageContext,
   level: MessageLevel,
   message: string,
-  data: JsonObject
+  data: JsonObject,
 ): Promise<void> {
   await appendEntry({
     uuid: uuidv4(),
@@ -480,7 +480,7 @@ export const loggingConfig = new StorageItem<LoggingConfig>("LOG_OPTIONS", {
  * Clear all debug and trace level logs for the given extension.
  */
 export async function clearExtensionDebugLogs(
-  extensionId: UUID
+  extensionId: UUID,
 ): Promise<void> {
   const db = await openLoggingDB();
 
@@ -542,7 +542,7 @@ export const sweepLogs = memoizeUntilSettled(_sweepLogs);
 export function initLogSweep(): void {
   expectContext(
     "background",
-    "Log sweep should only be initialized in the background page"
+    "Log sweep should only be initialized in the background page",
   );
 
   // Sweep after initial extension startup

@@ -76,10 +76,10 @@ test("renders publish modal", async () => {
         dispatch(
           modModalsSlice.actions.setPublishContext({
             blueprintId: blueprint.metadata.id,
-          })
+          }),
         );
       },
-    }
+    },
   );
 
   await waitForEffect();
@@ -101,10 +101,10 @@ test("renders edit publish modal", async () => {
         dispatch(
           modModalsSlice.actions.setPublishContext({
             blueprintId: blueprint.metadata.id,
-          })
+          }),
         );
       },
-    }
+    },
   );
 
   await waitForEffect();
@@ -127,10 +127,10 @@ test("renders cancel publish modal", async () => {
           modModalsSlice.actions.setPublishContext({
             blueprintId: blueprint.metadata.id,
             cancelingPublish: true,
-          })
+          }),
         );
       },
-    }
+    },
   );
 
   await waitForEffect();

@@ -76,7 +76,7 @@ describe("logging", () => {
     await appendEntry(
       logEntryFactory({
         context: messageContextFactory({ blueprintId }),
-      })
+      }),
     );
 
     await appendEntry(logEntryFactory());
@@ -90,7 +90,7 @@ describe("logging", () => {
     await Promise.all(
       array(logEntryFactory, 1500)().map(async (x) => {
         await appendEntry(x);
-      })
+      }),
     );
 
     await sweepLogs();
@@ -105,7 +105,7 @@ describe("logging", () => {
     await appendEntry(
       logEntryFactory({
         context: messageContextFactory({ blueprintId }),
-      })
+      }),
     );
 
     await appendEntry(logEntryFactory());
@@ -123,7 +123,7 @@ describe("logging", () => {
     await reportToRollbar(new Error("test"), null, null);
 
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
-      "rollbar-disable-report"
+      "rollbar-disable-report",
     );
     expect(rollbarErrorMock).toHaveBeenCalledOnce();
   });
@@ -134,7 +134,7 @@ describe("logging", () => {
     await reportToRollbar(new Error("test"), null, null);
 
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
-      "rollbar-disable-report"
+      "rollbar-disable-report",
     );
     expect(rollbarErrorMock).not.toHaveBeenCalled();
   });

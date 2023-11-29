@@ -24,19 +24,19 @@ describe("isCustomizableObjectSchema", () => {
 
   it("false additionalProperties is not customizable", () => {
     expect(isCustomizableObjectSchema({ additionalProperties: false })).toBe(
-      false
+      false,
     );
   });
 
   it("true additionalProperties is customizable", () => {
     expect(isCustomizableObjectSchema({ additionalProperties: true })).toBe(
-      true
+      true,
     );
   });
 
   it("schema additionalProperties is customizable", () => {
     expect(
-      isCustomizableObjectSchema({ additionalProperties: { type: "number" } })
+      isCustomizableObjectSchema({ additionalProperties: { type: "number" } }),
     ).toBe(true);
   });
 

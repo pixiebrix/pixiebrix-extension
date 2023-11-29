@@ -86,7 +86,7 @@ export async function openInstallPage() {
         // AARI account. Include the Control Room hostname in the URL so that the ControlRoomOAuthForm can pre-fill
         // the URL
         const extensionStartUrl = getExtensionConsoleUrl(
-          `start${appOnboardingTabUrl.search}`
+          `start${appOnboardingTabUrl.search}`,
         );
 
         await browser.tabs.update(appOnboardingTab.id, {
@@ -155,7 +155,7 @@ export async function requirePartnerAuth(): Promise<void> {
 
     if (userData.partner?.theme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
-        CONTROL_ROOM_TOKEN_INTEGRATION_ID
+        CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       );
 
       if (!configs.some((x) => !x.proxy)) {

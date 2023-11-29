@@ -45,7 +45,7 @@ beforeEach(() => {
 const renderModal = (
   { extensionUpdateRequired }: { extensionUpdateRequired: boolean },
   settings: Partial<SettingsState>,
-  auth: Partial<AuthState>
+  auth: Partial<AuthState>,
 ) => {
   const store = configureStore({
     reducer: {
@@ -65,7 +65,7 @@ const renderModal = (
         extensionUpdateRequired={extensionUpdateRequired}
         updateExtension={jest.fn()}
       />
-    </Provider>
+    </Provider>,
   );
 };
 
@@ -85,7 +85,7 @@ describe("DeploymentModal", () => {
         ...initialSettingsState,
         nextUpdate: date.getTime() + 1,
       },
-      {}
+      {},
     );
 
     expect(screen.queryAllByRole("dialog")).toHaveLength(0);
@@ -109,7 +109,7 @@ describe("DeploymentModal", () => {
       },
       {
         enforceUpdateMillis: 1,
-      }
+      },
     );
 
     expect(screen.queryAllByRole("dialog")).toHaveLength(1);
@@ -129,14 +129,14 @@ describe("DeploymentModal", () => {
         ...initialSettingsState,
         nextUpdate,
       },
-      {}
+      {},
     );
 
     expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
     expect(
       screen.getByText(
-        "An update to the PixieBrix browser extension is available. After updating, you will need need to reload any pages where PixieBrix is running."
-      )
+        "An update to the PixieBrix browser extension is available. After updating, you will need need to reload any pages where PixieBrix is running.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("Remind Me Later")).not.toBeDisabled();
   });
@@ -159,7 +159,7 @@ describe("DeploymentModal", () => {
         // But enforcement window is now enforced
         updatePromptTimestamp: time - 3,
       },
-      { enforceUpdateMillis: 1 }
+      { enforceUpdateMillis: 1 },
     );
 
     expect(reloadMock).toHaveBeenCalledTimes(1);
@@ -184,7 +184,7 @@ describe("DeploymentModal", () => {
         nextUpdate: date.getTime() + 1,
         updatePromptTimestamp: new Date(date.getTime() - 2).getTime(),
       },
-      { enforceUpdateMillis: 1 }
+      { enforceUpdateMillis: 1 },
     );
 
     expect(reloadMock).toHaveBeenCalledTimes(0);
@@ -209,7 +209,7 @@ describe("DeploymentModal", () => {
         nextUpdate: date.getTime() + 1,
         updatePromptTimestamp: new Date(date.getTime() - 2).getTime(),
       },
-      { enforceUpdateMillis: 1 }
+      { enforceUpdateMillis: 1 },
     );
 
     expect(reloadMock).toHaveBeenCalledTimes(1);

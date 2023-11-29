@@ -53,7 +53,7 @@ describe("CustomEventEffect", () => {
       brickOptionsFactory({
         root: document.querySelector("button"),
         logger,
-      })
+      }),
     );
 
     expect(eventHandler).toHaveBeenCalled();
@@ -68,7 +68,7 @@ describe("CustomEventEffect", () => {
       brickOptionsFactory({
         root: document.querySelector("button"),
         logger,
-      })
+      }),
     );
 
     expect(eventHandler).toHaveBeenCalled();

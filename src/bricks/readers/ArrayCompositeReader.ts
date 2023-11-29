@@ -25,7 +25,7 @@ class ArrayCompositeReader extends ReaderABC {
     super(
       "@pixiebrix/array-composite-reader",
       "Array Composite Reader",
-      "Combination of multiple readers"
+      "Combination of multiple readers",
     );
 
     this._readers = readers;
@@ -33,7 +33,7 @@ class ArrayCompositeReader extends ReaderABC {
     if (this._readers.some((x) => !x.outputSchema)) {
       console.error(
         "One or more readers are missing an outputSchema",
-        this._readers
+        this._readers,
       );
       throw new Error("One or more readers are missing an outputSchema");
     }
@@ -52,21 +52,21 @@ class ArrayCompositeReader extends ReaderABC {
 
   async isAvailable(): Promise<boolean> {
     const availability = await Promise.all(
-      this._readers.map(async (x) => x.isAvailable())
+      this._readers.map(async (x) => x.isAvailable()),
     );
     return availability.every(Boolean);
   }
 
   override async isPure(): Promise<boolean> {
     const availability = await Promise.all(
-      this._readers.map(async (x) => x.isPure())
+      this._readers.map(async (x) => x.isPure()),
     );
     return availability.every(Boolean);
   }
 
   override async isRootAware(): Promise<boolean> {
     const awareness = await Promise.all(
-      this._readers.map(async (x) => x.isRootAware())
+      this._readers.map(async (x) => x.isRootAware()),
     );
     return awareness.some(Boolean);
   }

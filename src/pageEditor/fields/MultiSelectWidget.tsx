@@ -46,7 +46,7 @@ const MultiSelectWidget: React.FC<MultiSelectWidgetProps> = ({
       isClearable={isClearable}
       options={options}
       value={options.filter((option: Option) =>
-        (field.value ?? []).includes(option.value)
+        (field.value ?? []).includes(option.value),
       )}
       onChange={async (values) => {
         await helpers.setValue(values.map((x) => x.value));

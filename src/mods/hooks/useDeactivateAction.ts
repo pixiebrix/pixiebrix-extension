@@ -47,7 +47,7 @@ function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
   const memoizedExtensionsSelector = useCallback(
     (state: { options: ModComponentState }) =>
       selectExtensionsFromMod(state, mod),
-    [mod]
+    [mod],
   );
 
   const extensionsFromMod = useSelector(memoizedExtensionsSelector);
@@ -64,7 +64,7 @@ function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
       } else {
         await uninstallExtensions(
           extensionsFromMod.map(({ id }) => id),
-          dispatch
+          dispatch,
         );
 
         for (const extension of extensionsFromMod) {
@@ -78,7 +78,7 @@ function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
       successMessage: `Deactivated mod: ${getLabel(mod)}`,
       errorMessage: `Error deactivating mod: ${getLabel(mod)}`,
     },
-    [mod, extensionsFromMod]
+    [mod, extensionsFromMod],
   );
 
   return isActive && !isRestricted ? deactivate : null;

@@ -45,7 +45,7 @@ function useOnboarding(): {
     useContext(DeploymentsContext);
 
   const teamRecipes = (rawRecipes ?? []).filter(
-    (recipe) => recipe.sharing.organizations.length > 0
+    (recipe) => recipe.sharing.organizations.length > 0,
   );
 
   const hasTeamBlueprints = teamRecipes?.length > 0;

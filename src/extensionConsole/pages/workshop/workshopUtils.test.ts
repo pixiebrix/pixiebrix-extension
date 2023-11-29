@@ -23,13 +23,13 @@ describe("getKindDisplayName", () => {
     "maps %s to Brick",
     (kind: EditablePackageMetadata["kind"]) => {
       expect(mapKindToKindUiValue(kind)).toBe("Brick");
-    }
+    },
   );
 
   it.each(["blueprint", "Blueprint"])(
     "maps %s to Mod",
     (kind: EditablePackageMetadata["kind"]) => {
       expect(mapKindToKindUiValue(kind)).toBe("Mod");
-    }
+    },
   );
 });

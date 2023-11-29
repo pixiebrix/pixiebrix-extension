@@ -22,9 +22,11 @@
         background: theme-color(success);
         -webkit-transform-origin: 50% 250%;
         transform-origin: 50% 250%;
-        -webkit-animation: rota 1.13s linear infinite,
+        -webkit-animation:
+          rota 1.13s linear infinite,
           opa 3.67s ease-in-out infinite alternate;
-        animation: rota 1.13s linear infinite,
+        animation:
+          rota 1.13s linear infinite,
           opa 3.67s ease-in-out infinite alternate;
       }
       &:nth-child(2) {
@@ -34,9 +36,11 @@
         background: theme-color(danger);
         -webkit-transform-origin: -150% 50%;
         transform-origin: -150% 50%;
-        -webkit-animation: rota 1.86s linear infinite,
+        -webkit-animation:
+          rota 1.86s linear infinite,
           opa 4.29s ease-in-out infinite alternate;
-        animation: rota 1.86s linear infinite,
+        animation:
+          rota 1.86s linear infinite,
           opa 4.29s ease-in-out infinite alternate;
       }
       &:nth-child(3) {
@@ -46,9 +50,11 @@
         background: theme-color(warning);
         -webkit-transform-origin: 50% -150%;
         transform-origin: 50% -150%;
-        -webkit-animation: rota 1.45s linear infinite,
+        -webkit-animation:
+          rota 1.45s linear infinite,
           opa 5.12s ease-in-out infinite alternate;
-        animation: rota 1.45s linear infinite,
+        animation:
+          rota 1.45s linear infinite,
           opa 5.12s ease-in-out infinite alternate;
       }
       &:nth-child(4) {
@@ -58,9 +64,11 @@
         background: theme-color(primary);
         -webkit-transform-origin: 250% 50%;
         transform-origin: 250% 50%;
-        -webkit-animation: rota 1.72s linear infinite,
+        -webkit-animation:
+          rota 1.72s linear infinite,
           opa 5.25s ease-in-out infinite alternate;
-        animation: rota 1.72s linear infinite,
+        animation:
+          rota 1.72s linear infinite,
           opa 5.25s ease-in-out infinite alternate;
       }
     }

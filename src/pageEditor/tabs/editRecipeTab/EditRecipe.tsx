@@ -50,7 +50,7 @@ const editRecipeSchema = object({
     .test(
       "semver",
       "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-      (value: string) => testIsSemVerString(value, { allowLeadingV: false })
+      (value: string) => testIsSemVerString(value, { allowLeadingV: false }),
     )
     .required(),
   description: string(),
@@ -60,7 +60,7 @@ const selectFirstExtension = createSelector(
   selectExtensions,
   selectActiveRecipeId,
   (extensions, activeRecipeId) =>
-    extensions.find((x) => x._recipe?.id === activeRecipeId)
+    extensions.find((x) => x._recipe?.id === activeRecipeId),
 );
 
 const EditRecipe: React.VoidFunctionComponent = () => {
@@ -98,7 +98,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
     (metadata: ModMetadataFormState) => {
       dispatch(actions.editRecipeMetadata(metadata));
     },
-    [dispatch]
+    [dispatch],
   );
 
   if (isFetching || error) {
@@ -175,7 +175,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
               initialValues={initialFormState}
               onSubmit={() => {
                 console.error(
-                  "The form's submit should not be called to save recipe metadata. Use 'saveRecipe' from 'useRecipeSaver' instead."
+                  "The form's submit should not be called to save recipe metadata. Use 'saveRecipe' from 'useRecipeSaver' instead.",
                 );
               }}
               renderBody={renderBody}

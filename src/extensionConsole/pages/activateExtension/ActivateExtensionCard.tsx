@@ -45,7 +45,7 @@ const ActivateButton: React.FunctionComponent = () => {
 
   const anyUnconfigured = values.integrationDependencies.some(
     ({ integrationId, configId }) =>
-      integrationId !== PIXIEBRIX_INTEGRATION_ID && configId == null
+      integrationId !== PIXIEBRIX_INTEGRATION_ID && configId == null,
   );
 
   return (
@@ -66,8 +66,8 @@ const validationSchema = object().shape({
       "Please select a configuration",
       (value) =>
         value.integrationId === PIXIEBRIX_INTEGRATION_ID ||
-        value.configId != null
-    )
+        value.configId != null,
+    ),
   ),
 });
 
@@ -95,7 +95,7 @@ const ActivateExtensionCard: React.FunctionComponent<{
         dispatch(
           actions.installCloudExtension({
             extension: { ...extension, ...values },
-          })
+          }),
         );
         notify.success("Activated mod");
         dispatch(push("/mods"));
@@ -105,7 +105,7 @@ const ActivateExtensionCard: React.FunctionComponent<{
         helpers.setSubmitting(false);
       }
     },
-    [extension, dispatch]
+    [extension, dispatch],
   );
 
   const renderBody: RenderBody = () => (

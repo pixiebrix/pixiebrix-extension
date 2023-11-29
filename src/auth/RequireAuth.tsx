@@ -94,7 +94,7 @@ const useRequiredAuth = () => {
   useEffect(() => {
     if (isBadToken) {
       console.warn(
-        "Resetting extension auth because session or partner JWT was rejected by PixieBrix API"
+        "Resetting extension auth because session or partner JWT was rejected by PixieBrix API",
       );
       void clearCachedAuthSecrets();
     }

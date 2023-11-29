@@ -42,11 +42,11 @@ const FoundationDataPanel: React.FC = () => {
   const firstBlockInstanceId = blockPipeline[0]?.instanceId;
 
   const { record: firstBlockTraceRecord } = useSelector(
-    makeSelectBlockTrace(firstBlockInstanceId)
+    makeSelectBlockTrace(firstBlockInstanceId),
   );
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    firstBlockTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview
+    firstBlockTraceRecord ? DataPanelTabKey.Output : DataPanelTabKey.Preview,
   );
 
   return (

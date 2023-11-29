@@ -50,7 +50,7 @@ const optionsFactory = define<RemoteBrickOptions>({
       runId: null,
       branches: [],
     }),
-    "messageContext"
+    "messageContext",
   ),
 });
 

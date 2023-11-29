@@ -70,8 +70,8 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
           // definition for CONTROL_ROOM_OAUTH_SERVICE_ID hasn't been made available on the server yet
           return [];
         }
-      })
-    )
+      }),
+    ),
   );
 
   return auths
@@ -145,7 +145,7 @@ export async function launchAuthIntegration({
 
         throw new Error(
           `Control Room rejected login. Verify you are a user in the Control Room, and/or verify the Control Room SAML and AuthConfig App configuration.
-          Error: ${getErrorMessage(error)}`
+          Error: ${getErrorMessage(error)}`,
         );
       }
 
@@ -154,7 +154,7 @@ export async function launchAuthIntegration({
 
     console.info(
       "Setting partner auth for Control Room %s",
-      config.config.controlRoomUrl
+      config.config.controlRoomUrl,
     );
 
     await setPartnerAuth({
@@ -168,7 +168,7 @@ export async function launchAuthIntegration({
     });
   } else {
     throw new Error(
-      `Support for login with integration not implemented: ${serviceId}`
+      `Support for login with integration not implemented: ${serviceId}`,
     );
   }
 }
@@ -185,7 +185,7 @@ export async function _refreshPartnerToken(): Promise<void> {
     console.debug("Refreshing partner JWT");
 
     const service = await serviceRegistry.lookup(
-      CONTROL_ROOM_OAUTH_INTEGRATION_ID
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
     );
     const config = await serviceLocator.findIntegrationConfig(authData.authId);
     const context = service.getOAuth2Context(config.config);

@@ -29,7 +29,7 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 jest.mock("@/hooks/useFlags", () =>
   jest.fn().mockReturnValue({
     flagOn: jest.fn().mockReturnValue(true),
-  })
+  }),
 );
 
 beforeAll(() => {
@@ -47,7 +47,7 @@ describe("RecipeOptionsDefinitions", () => {
             modDefinition,
             screen: "pageEditor",
             isReinstall: false,
-          })
+          }),
         );
       },
     });
@@ -61,7 +61,7 @@ describe("RecipeOptionsDefinitions", () => {
     expect(screen.getByText("Google Sheet")).toBeVisible();
     expect(screen.getByText("Database selector")).toBeVisible();
     expect(
-      screen.getByText("Database automatically created at activation")
+      screen.getByText("Database automatically created at activation"),
     ).toBeVisible();
   });
 });

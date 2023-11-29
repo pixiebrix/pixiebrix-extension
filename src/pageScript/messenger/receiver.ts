@@ -56,7 +56,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
     document.dispatchEvent(
       new CustomEvent(`${type}_FULFILLED`, {
         detail,
-      })
+      }),
     );
   } catch (error) {
     try {
@@ -68,13 +68,13 @@ async function messageHandler(event: MessageEvent): Promise<void> {
       document.dispatchEvent(
         new CustomEvent(`${type}_REJECTED`, {
           detail,
-        })
+        }),
       );
     } catch (error_) {
       console.error(
         "An error occurred while dispatching an error for %s",
         type,
-        { error: error_, originalError: error }
+        { error: error_, originalError: error },
       );
     }
   }

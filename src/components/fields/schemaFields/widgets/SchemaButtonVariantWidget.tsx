@@ -81,7 +81,7 @@ const SchemaButtonVariantWidget: React.FunctionComponent<SchemaFieldProps> = ({
   const [{ value }, , { setValue }] = useField<string>(name);
   const { options } = useMemo(
     () => mapSchemaToOptions({ schema, value }),
-    [schema, value]
+    [schema, value],
   );
 
   const selectedValue = options.find((x) => x.value === value) ?? {

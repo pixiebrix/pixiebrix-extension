@@ -90,7 +90,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
         "data-aura-rendered-by",
         "data-interactive-lib-uid",
         // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir
-        "dir"
+        "dir",
       ),
 
       /#\\+\d+ \d+\\+:0/,
@@ -148,7 +148,7 @@ export const SELECTOR_HINTS: SiteSelectorHint[] = [
  */
 export function getSiteSelectorHint(element: HTMLElement): SiteSelectorHint {
   const siteSelectorHint = SELECTOR_HINTS.find((hint) =>
-    hint.siteValidator({ element, location: window.location })
+    hint.siteValidator({ element, location: window.location }),
   );
 
   return (

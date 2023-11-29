@@ -52,7 +52,7 @@ jest.mock("@/activation/useActivateRecipe.ts", () => ({
 }));
 
 const activateRecipeHookMock = jest.mocked(
-  useActivateRecipe
+  useActivateRecipe,
 ) as jest.MockedFunction<typeof useActivateRecipe>;
 
 jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
@@ -112,7 +112,7 @@ describe("ActivateRecipeCard", () => {
     setupRecipe(
       defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory({ services: null })],
-      })
+      }),
     );
     const { asFragment } = render(<RecipeCard />);
     await waitForEffect();
@@ -179,7 +179,7 @@ describe("ActivateRecipeCard", () => {
         optionsArgs: {},
         integrationDependencies: [],
       },
-      modDefinition
+      modDefinition,
     );
   });
 
@@ -208,7 +208,7 @@ describe("ActivateRecipeCard", () => {
     await waitForEffect();
 
     expect(
-      screen.getByText("You must accept browser permissions to activate")
+      screen.getByText("You must accept browser permissions to activate"),
     ).toBeVisible();
   });
 });

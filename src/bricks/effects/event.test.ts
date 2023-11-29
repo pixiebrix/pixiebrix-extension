@@ -48,11 +48,11 @@ describe("ElementEvent", () => {
           isRootAware,
           event: "click",
         }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
 
       expect(clickHandler).toHaveBeenCalled();
-    }
+    },
   );
 
   test("it clicks element for isRootAware: true", async () => {
@@ -64,7 +64,7 @@ describe("ElementEvent", () => {
         isRootAware: true,
         event: "click",
       }),
-      brickOptionsFactory({ root: document.querySelector("button") })
+      brickOptionsFactory({ root: document.querySelector("button") }),
     );
 
     expect(clickHandler).toHaveBeenCalled();

@@ -28,7 +28,7 @@ const rules = Object.fromEntries(
     path.basename(file, ".js"),
     // eslint-disable-next-line security/detect-non-literal-require
     require("./" + file),
-  ])
+  ]),
 );
 
 module.exports = rules;

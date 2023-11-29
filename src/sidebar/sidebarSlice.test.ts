@@ -60,7 +60,7 @@ describe("sidebarSlice.selectTab", () => {
     const state = sidebarSlice.getInitialState();
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.selectTab("unknown")
+      sidebarSlice.actions.selectTab("unknown"),
     );
     expect(newState.activeKey).toBeNull();
   });
@@ -75,7 +75,7 @@ describe("sidebarSlice.selectTab", () => {
 
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.selectTab(eventKeyForEntry(entry))
+      sidebarSlice.actions.selectTab(eventKeyForEntry(entry)),
     );
     expect(newState.activeKey).toBe(eventKeyForEntry(entry));
   });
@@ -96,7 +96,7 @@ describe("sidebarSlice.selectTab", () => {
 
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.selectTab(staleKey)
+      sidebarSlice.actions.selectTab(staleKey),
     );
     expect(newState.activeKey).toBe(activeKey);
   });
@@ -117,7 +117,7 @@ describe("sidebarSlice.addTemporaryPanel", () => {
 
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel })
+      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel }),
     );
 
     expect(newState.activeKey).toBe(eventKeyForEntry(newPanel));
@@ -131,7 +131,7 @@ describe("sidebarSlice.addTemporaryPanel", () => {
         tabId: 1,
       },
       // Only the panel with the same extensionId should be cancelled
-      [existingPanel.nonce]
+      [existingPanel.nonce],
     );
   });
 });
@@ -149,7 +149,7 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
 
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.removeTemporaryPanel(activePanel.nonce)
+      sidebarSlice.actions.removeTemporaryPanel(activePanel.nonce),
     );
 
     expect(newState.activeKey).toBe(eventKeyForEntry(otherPanel));
@@ -162,7 +162,7 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
         frameId: 0,
         tabId: 1,
       },
-      [activePanel.nonce]
+      [activePanel.nonce],
     );
   });
 
@@ -186,12 +186,12 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
 
     const intermediateState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel })
+      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel }),
     );
 
     const newState = sidebarSlice.reducer(
       intermediateState,
-      sidebarSlice.actions.removeTemporaryPanel(newPanel.nonce)
+      sidebarSlice.actions.removeTemporaryPanel(newPanel.nonce),
     );
 
     expect(newState.activeKey).toBe(eventKeyForEntry(originalPanel));
@@ -222,7 +222,7 @@ describe("sidebarSlice.addForm", () => {
             location: "sidebar",
           },
         },
-      })
+      }),
     );
 
     await tick();
@@ -247,7 +247,7 @@ describe("closed tabs", () => {
 
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.closeTab(panelKey)
+      sidebarSlice.actions.closeTab(panelKey),
     );
 
     expect(newState).toStrictEqual({
@@ -264,7 +264,7 @@ describe("closed tabs", () => {
 
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.openTab(panelKey)
+      sidebarSlice.actions.openTab(panelKey),
     );
 
     expect(newState).toStrictEqual({
@@ -285,7 +285,7 @@ describe("closed tabs", () => {
       sidebarSlice.actions.activatePanel({
         panelHeading: "Test Panel",
         force: true,
-      })
+      }),
     );
 
     // Ensure sure correct panels are visible
@@ -311,7 +311,7 @@ describe("closed tabs", () => {
         forms: [],
         temporaryPanels: [],
         modActivationPanel: null,
-      })
+      }),
     );
 
     // Ensure sure correct panels are visible
@@ -342,7 +342,7 @@ describe("closed tabs", () => {
         forms: [],
         temporaryPanels: [],
         modActivationPanel: null,
-      })
+      }),
     );
 
     expect(stateWithInitialPanels.closedTabs).toStrictEqual({
@@ -370,7 +370,7 @@ describe("closed tabs", () => {
       sidebarSlice.actions.activatePanel({
         panelHeading: "Test Panel",
         force: true,
-      })
+      }),
     );
 
     expect(stateWithActivePanel.closedTabs).toStrictEqual({
@@ -397,7 +397,7 @@ describe("closed tabs", () => {
       sidebarSlice.actions.activatePanel({
         panelHeading: "Test Panel",
         force: true,
-      })
+      }),
     );
 
     // After activatePanel, if there is only one other tab open, the mod launcher should be closed

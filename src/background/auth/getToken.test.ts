@@ -30,7 +30,7 @@ const getOneToken = async (id: UUID) =>
       getTokenContext: () => ({}),
       isToken: true,
     },
-    { id }
+    { id },
   );
 
 describe("getToken", () => {
@@ -45,13 +45,13 @@ describe("getToken", () => {
 
     // Parallel calls should make one request
     expect(
-      await Promise.all([getOneToken(id1), getOneToken(id1)])
+      await Promise.all([getOneToken(id1), getOneToken(id1)]),
     ).toStrictEqual([2, 2]);
 
     // Parallel calls but with different auth.id’s should make multiple requests
     const id2 = uuidv4();
     expect(
-      await Promise.all([getOneToken(id1), getOneToken(id2)])
+      await Promise.all([getOneToken(id1), getOneToken(id2)]),
     ).toStrictEqual([3, 4]);
   });
 });

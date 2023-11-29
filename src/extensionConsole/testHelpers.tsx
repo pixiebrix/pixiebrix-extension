@@ -53,7 +53,7 @@ const configureStoreForTests = () =>
 
 const renderWithWrappers = createRenderWithWrappers(configureStoreForTests);
 const renderHookWithWrappers = createRenderHookWithWrappers(
-  configureStoreForTests
+  configureStoreForTests,
 );
 
 // eslint-disable-next-line import/export -- re-export RTL

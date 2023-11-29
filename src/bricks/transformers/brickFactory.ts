@@ -115,10 +115,10 @@ type BrickDefinition = {
  * Throw an error if the brick definition is invalid with respect to the brick meta-schema.
  */
 function validateBrickDefinition(
-  component: unknown
+  component: unknown,
 ): asserts component is BrickDefinition {
   const validator = new Validator(
-    dereference(blockSchema as Schema) as ValidatorSchema
+    dereference(blockSchema as Schema) as ValidatorSchema,
   );
   const result = validator.validate(component);
   if (!result.valid) {
@@ -128,7 +128,7 @@ function validateBrickDefinition(
     });
     throw new InvalidDefinitionError(
       "Invalid block configuration",
-      result.errors
+      result.errors,
     );
   }
 }
@@ -147,7 +147,7 @@ class UserDefinedBrick extends BrickABC {
 
   constructor(
     private readonly registry: BrickRegistryProtocol,
-    public readonly component: BrickDefinition
+    public readonly component: BrickDefinition,
   ) {
     const { id, name, description, icon, version } = component.metadata;
     super(id, name, description, icon);
@@ -180,7 +180,7 @@ class UserDefinedBrick extends BrickABC {
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await this.registry.lookup(blockConfig.id);
         return resolvedBlock.isPure();
-      })
+      }),
     );
 
     // All must be pure for the brick to be pure.
@@ -194,7 +194,7 @@ class UserDefinedBrick extends BrickABC {
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await this.registry.lookup(blockConfig.id);
         return resolvedBlock.isRootAware();
-      })
+      }),
     );
 
     return awareness.some(Boolean);
@@ -207,14 +207,14 @@ class UserDefinedBrick extends BrickABC {
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await this.registry.lookup(blockConfig.id);
         return resolvedBlock.isPageStateAware();
-      })
+      }),
     );
 
     return awareness.some(Boolean);
   }
 
   override async getModVariableSchema(
-    _config: BrickConfig
+    _config: BrickConfig,
   ): Promise<Schema | undefined> {
     const pipeline = castArray(this.component.pipeline);
 
@@ -222,7 +222,7 @@ class UserDefinedBrick extends BrickABC {
       pipeline.map(async (blockConfig) => {
         const block = await this.registry.lookup(blockConfig.id);
         return block.getModVariableSchema?.(blockConfig);
-      })
+      }),
     );
 
     // Start with an empty object
@@ -276,15 +276,15 @@ class UserDefinedBrick extends BrickABC {
    */
   private capturePipelineClosures(
     args: BrickArgs,
-    options: BrickOptions
+    options: BrickOptions,
   ): BrickArgs {
     const pipelinePropertyNames = Object.keys(
       pickBy(
         inputProperties(this.inputSchema),
         (value) =>
           typeof value === "object" &&
-          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#"
-      )
+          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#",
+      ),
     );
 
     if (typeof args === "object" && pipelinePropertyNames.length > 0) {
@@ -378,12 +378,12 @@ class UserDefinedBrick extends BrickABC {
 // Put registry first for easier partial application
 export function fromJS(
   registry: BrickRegistryProtocol,
-  component: UnknownObject
+  component: UnknownObject,
 ): Brick {
   if (component.kind == null) {
     throw new InvalidDefinitionError(
       "Component definition is missing a 'kind' property",
-      null
+      null,
     );
   }
 

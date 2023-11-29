@@ -86,7 +86,7 @@ describe("asyncStateUtils", () => {
     };
 
     expect(
-      mergeAsyncState(state1, state2, (...xs: string[]) => xs.join(""))
+      mergeAsyncState(state1, state2, (...xs: string[]) => xs.join("")),
     ).toEqual({
       data: "data1data2",
       currentData: "data1data2",
@@ -120,7 +120,7 @@ describe("asyncStateUtils", () => {
   it("generates valid fallback for error state", () => {
     const state = fallbackValue(
       errorToAsyncState<number>(new Error("error")),
-      42
+      42,
     );
     expect(() => {
       checkAsyncStateInvariants(state);

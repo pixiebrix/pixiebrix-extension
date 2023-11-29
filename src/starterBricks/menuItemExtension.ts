@@ -229,7 +229,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     {
       leading: true,
       trailing: false,
-    }
+    },
   ) as typeof notify.error; // `debounce` loses the overloads
 
   public get kind(): "menuItem" {
@@ -290,7 +290,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         required: ["tag"],
       },
     },
-    ["caption", "action"]
+    ["caption", "action"],
   );
 
   private cancelAllPending(): void {
@@ -303,7 +303,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     console.debug(
       "Remove extensionIds for menuItem extension point: %s",
       this.id,
-      { extensionIds }
+      { extensionIds },
     );
     // Can't use this.menus.values() here b/c because it may have already been cleared
     for (const extensionId of extensionIds) {
@@ -327,12 +327,12 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     if (extensions.length === 0) {
       console.warn(
-        `uninstall called on menu extension point with no extensions: ${this.id}`
+        `uninstall called on menu extension point with no extensions: ${this.id}`,
       );
     }
 
     console.debug(
-      `Uninstalling ${menus.length} menus for ${extensions.length} extensions`
+      `Uninstalling ${menus.length} menus for ${extensions.length} extensions`,
     );
 
     this.cancelAllPending();
@@ -389,7 +389,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   }
 
   async getBricks(
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -407,7 +407,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     if (this.uninstalled) {
       console.warn(
-        `${this.instanceNonce}: cannot reacquire because extension ${this.id} is destroyed`
+        `${this.instanceNonce}: cannot reacquire because extension ${this.id} is destroyed`,
       );
       return;
     }
@@ -416,11 +416,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     this.removed.add(menuNonce);
     if (alreadyRemoved) {
       console.warn(
-        `${this.instanceNonce}: menu ${menuNonce} removed from DOM multiple times for ${this.id}`
+        `${this.instanceNonce}: menu ${menuNonce} removed from DOM multiple times for ${this.id}`,
       );
     } else {
       console.debug(
-        `${this.instanceNonce}: menu ${menuNonce} removed from DOM for ${this.id}`
+        `${this.instanceNonce}: menu ${menuNonce} removed from DOM for ${this.id}`,
       );
       this.menus.delete(menuNonce);
       // Re-install the menus (will wait for the menu selector to re-appear if there's no copies of it on the page)
@@ -454,7 +454,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
           onNodeRemoved(
             element,
             async () => this.reacquire(menuNonce),
-            this.cancelController.signal
+            this.cancelController.signal,
           );
         }
       }
@@ -470,7 +470,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     if (typeof containerSelector !== "string") {
       throw new BusinessError(
-        "Array of container selectors not supported for attachMode: 'watch'"
+        "Array of container selectors not supported for attachMode: 'watch'",
       );
     }
 
@@ -483,7 +483,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       },
       // `target` is a required option. Would it be possible to scope if the selector is nested? Would have to consider
       // commas in the selector. E.g., revert back to document if there's a comma
-      { target: document }
+      { target: document },
     );
 
     onAbort(this.cancelController, mutationObserver);
@@ -500,7 +500,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         extensionPointNonce: this.instanceNonce,
       });
       throw new Error(
-        "Cannot install menu item because starter brick was uninstalled"
+        "Cannot install menu item because starter brick was uninstalled",
       );
     }
 
@@ -510,7 +510,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       `${this.instanceNonce}: awaiting menu container for ${this.id}`,
       {
         selector: containerSelector,
-      }
+      },
     );
 
     const [menuPromise, cancelWait] = awaitElementOnce(containerSelector);
@@ -523,7 +523,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     } catch (error) {
       console.debug(
         `${this.instanceNonce}: stopped awaiting menu container for ${this.id}`,
-        { error }
+        { error },
       );
       throw error;
     }
@@ -548,13 +548,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   protected abstract makeItem(
     html: string,
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ): JQuery;
 
   private async runExtension(
     menu: HTMLElement,
     ctxtPromise: Promise<JsonObject>,
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ) {
     if (!extension.id) {
       this.logger.error(`Refusing to run mod without id for ${this.id}`);
@@ -562,11 +562,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension)
+      selectExtensionContext(extension),
     );
 
     console.debug(
-      `${this.instanceNonce}: running menuItem extension ${extension.id}`
+      `${this.instanceNonce}: running menuItem extension ${extension.id}`,
     );
 
     // Safe because menu is an HTMLElement, not a string
@@ -589,7 +589,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       ? null
       : engineRenderer(
           extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
-          versionOptions
+          versionOptions,
         );
 
     let html: string;
@@ -598,7 +598,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       // Read the latest state at the time of the action
       const input = await ctxtPromise;
       const serviceContext = await makeServiceContextFromDependencies(
-        extension.integrationDependencies
+        extension.integrationDependencies,
       );
 
       console.debug("Checking menuItem precondition", {
@@ -609,7 +609,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       // There's no button at this point, so can't use the eventTarget targetMode
       if (this.targetMode !== "document") {
         throw new BusinessError(
-          `targetMode ${this.targetMode} not supported for conditional menu items`
+          `targetMode ${this.targetMode} not supported for conditional menu items`,
         );
       }
 
@@ -639,7 +639,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContextFromDependencies(
-        extension.integrationDependencies
+        extension.integrationDependencies,
       );
 
       // Integrations take precedence over the other context
@@ -693,10 +693,10 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
               this.getReaderRoot({
                 $containerElement: $menu,
                 $buttonElement: $menuItem,
-              })
+              }),
             ),
             serviceContext: await makeServiceContextFromDependencies(
-              extension.integrationDependencies
+              extension.integrationDependencies,
             ),
             optionsArgs: extension.optionsArgs,
             root: this.getPipelineRoot($menuItem),
@@ -741,12 +741,12 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     if ($existingItem.length > 0) {
       // We don't need to unbind any click handlers because we're replacing the element completely.
       console.debug(
-        `Replacing existing menu item for ${extension.id} (${extension.label})`
+        `Replacing existing menu item for ${extension.id} (${extension.label})`,
       );
       $existingItem.replaceWith($menuItem);
     } else {
       console.debug(
-        `Adding new menu item ${extension.id} (${extension.label})`
+        `Adding new menu item ${extension.id} (${extension.label})`,
       );
       this.addMenuItem($menu, $menuItem);
     }
@@ -759,16 +759,16 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         () => {
           // Don't re-install here. We're reinstalling the entire menu
           console.debug(
-            `Menu item for ${extension.id} was removed from the DOM`
+            `Menu item for ${extension.id} was removed from the DOM`,
           );
         },
-        this.cancelController.signal
+        this.cancelController.signal,
       );
     }
   }
 
   watchDependencies(
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ): void {
     const { dependencies = [] } = extension.config;
 
@@ -813,7 +813,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       }
 
       console.debug(
-        `Observing ${elementCount} element(s) for extension: ${extension.id}`
+        `Observing ${elementCount} element(s) for extension: ${extension.id}`,
       );
 
       this.cancelDependencyObservers.set(extension.id, () => {
@@ -853,7 +853,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     for (const menu of this.menus.values()) {
       if (!currentMenus.includes(menu)) {
         console.debug(
-          "Skipping menu because it's no longer found by the container selector"
+          "Skipping menu because it's no longer found by the container selector",
         );
         continue;
       }
@@ -885,9 +885,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
               this.getReaderRoot({
                 $containerElement: $(menu),
                 $buttonElement: null,
-              })
+              }),
             ),
-            isNavigationCancelled
+            isNavigationCancelled,
           );
         }
 
@@ -897,7 +897,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         } catch (error) {
           if (error instanceof PromiseCancelled) {
             console.debug(
-              `menuItemExtension run promise cancelled for extension: ${extension.id}`
+              `menuItemExtension run promise cancelled for extension: ${extension.id}`,
             );
           } else {
             errors.push(error);
@@ -1023,7 +1023,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
         const $sibling = $safeFind(position.sibling, $menu);
         if ($sibling.length > 1) {
           throw new Error(
-            `Multiple sibling elements for selector: ${position.sibling}`
+            `Multiple sibling elements for selector: ${position.sibling}`,
           );
         }
 
@@ -1063,7 +1063,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
   }): SelectorRoot {
     if (this._definition.readerSelector && this.targetMode !== "document") {
       throw new BusinessError(
-        "Cannot provide both readerSelector and targetMode"
+        "Cannot provide both readerSelector and targetMode",
       );
     }
 
@@ -1077,14 +1077,14 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
       if ($elements.length > 1) {
         throw new MultipleElementsFoundError(
           selector,
-          "Multiple elements found for reader selector"
+          "Multiple elements found for reader selector",
         );
       }
 
       if ($elements.length === 0) {
         throw new NoElementsFoundError(
           selector,
-          "No elements found for reader selector"
+          "No elements found for reader selector",
         );
       }
 
@@ -1094,7 +1094,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
     if (this.targetMode === "eventTarget") {
       if ($buttonElement == null) {
         throw new BusinessError(
-          "eventTarget not supported for buttons with dynamic captions"
+          "eventTarget not supported for buttons with dynamic captions",
         );
       }
 
@@ -1134,7 +1134,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 
   protected makeItem(
     unsanitizedHTML: string,
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>
+    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ): JQuery {
     const sanitizedHTML = sanitize(unsanitizedHTML);
 
@@ -1160,7 +1160,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 }
 
 export function fromJS(
-  config: StarterBrickConfig<MenuDefinition>
+  config: StarterBrickConfig<MenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "menuItem") {

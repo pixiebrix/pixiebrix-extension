@@ -57,7 +57,7 @@ export class HeadlessModeError extends Error {
     blockId: RegistryId,
     args: BrickArgs,
     ctxt: BrickArgsContext,
-    loggerContext: MessageContext
+    loggerContext: MessageContext,
   ) {
     super(`${blockId} is a renderer`);
     this.blockId = blockId;
@@ -77,7 +77,7 @@ export class InputValidationError extends BusinessError {
     message: string,
     readonly schema: Schema,
     readonly input: unknown,
-    readonly errors: OutputUnit[]
+    readonly errors: OutputUnit[],
   ) {
     super(message);
   }
@@ -96,7 +96,7 @@ export class OutputValidationError extends BusinessError {
     message: string,
     readonly schema: Schema,
     readonly instance: unknown,
-    readonly errors: OutputUnit[]
+    readonly errors: OutputUnit[],
   ) {
     super(message);
   }
@@ -106,7 +106,7 @@ export type SchemaValidationError =
   | InputValidationError
   | OutputValidationError;
 export function isSchemaValidationError(
-  error: unknown
+  error: unknown,
 ): error is SchemaValidationError {
   return isObject(error) && "schema" in error && "errors" in error;
 }
@@ -114,7 +114,10 @@ export function isSchemaValidationError(
 export class RemoteExecutionError extends BusinessError {
   override name = "RemoteExecutionError";
 
-  constructor(message: string, readonly error: JsonObject) {
+  constructor(
+    message: string,
+    readonly error: JsonObject,
+  ) {
     super(message);
   }
 }
@@ -136,7 +139,10 @@ export class SubmitPanelAction extends CancelError {
    * @param type A custom action type to resolve the panel with, e.g., "submit" or "cancel".
    * @param detail Extra data to resolve the panel with.
    */
-  constructor(readonly type: string, readonly detail: JsonObject = {}) {
+  constructor(
+    readonly type: string,
+    readonly detail: JsonObject = {},
+  ) {
     super(`Submitted panel with action: ${type}`);
   }
 }

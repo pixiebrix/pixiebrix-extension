@@ -62,7 +62,7 @@ const BrickResult = <T extends Metadata>({
       <div
         className={cx(
           "align-items-center justify-content-end",
-          styles.actionButtons
+          styles.actionButtons,
         )}
       >
         <Button

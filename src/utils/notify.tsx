@@ -90,7 +90,7 @@ const Message: React.FunctionComponent<{
 
 const getIcon = (
   Icon: React.FC<React.SVGProps<SVGSVGElement>>,
-  color: string
+  color: string,
 ) => <Icon style={{ height: 24, color, flex: "0 0 24px" }} />;
 
 const toastStyle: ToastStyle = {
@@ -117,7 +117,7 @@ function getMessageDisplayTime(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
   return Math.max(
     MINIMUM_NOTIFICATION_DURATION,
-    (message.split(" ").length / wpm) * 60_000
+    (message.split(" ").length / wpm) * 60_000,
   );
 }
 
@@ -231,7 +231,7 @@ export interface MessageConfig {
 // Always add logic to `showNotification` instead so it's in one place.
 function _show(
   type: NotificationType,
-  notification: string | Except<Notification, "type">
+  notification: string | Except<Notification, "type">,
 ): string {
   if (typeof notification === "string") {
     notification = { message: notification };

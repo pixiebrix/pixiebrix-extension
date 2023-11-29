@@ -58,6 +58,6 @@ export const useHideEmptySidebar = () => {
         void hideSidebar(topLevelFrame);
       }
     },
-    [visiblePanelCount]
+    [visiblePanelCount],
   );
 };

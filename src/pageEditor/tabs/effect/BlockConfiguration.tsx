@@ -52,7 +52,7 @@ const BlockConfiguration: React.FunctionComponent<{
   const context = useFormikContext<ModComponentFormState>();
   const [config] = useField<BrickConfig>(name);
   const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BrickConfig>(
-    configName("root")
+    configName("root"),
   );
   const blockErrors = getIn(context.errors, name);
 
@@ -83,7 +83,7 @@ const BlockConfiguration: React.FunctionComponent<{
         await rootFieldHelpers.setValue(null);
       }
     }, // Dependencies - rootFieldHelpers changes reference every render
-    [config.value.rootMode]
+    [config.value.rootMode],
   );
 
   const rootElementSchema: SchemaFieldProps = useMemo(
@@ -106,7 +106,7 @@ const BlockConfiguration: React.FunctionComponent<{
         type: "string",
       },
     }),
-    [configName]
+    [configName],
   );
 
   const ifSchemaProps: SchemaFieldProps = useMemo(
@@ -125,7 +125,7 @@ const BlockConfiguration: React.FunctionComponent<{
         </p>
       ),
     }),
-    [configName]
+    [configName],
   );
 
   // Only show if the extension point supports a target mode. menuItem implicitly supports target mode, because

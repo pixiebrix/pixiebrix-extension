@@ -47,7 +47,7 @@ const integrationsSlice = createSlice({
   reducers: {
     deleteIntegrationConfig(
       state,
-      { payload: { id } }: PayloadAction<{ id: UUID }>
+      { payload: { id } }: PayloadAction<{ id: UUID }>,
     ) {
       if (!state.configured[id]) {
         throw new Error(`Integration configuration ${id} does not exist`);
@@ -57,7 +57,7 @@ const integrationsSlice = createSlice({
     },
     upsertIntegrationConfig(
       state,
-      { payload: integrationConfig }: PayloadAction<IntegrationConfig>
+      { payload: integrationConfig }: PayloadAction<IntegrationConfig>,
     ) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The ID is always provided in this operation
       state.configured[integrationConfig.id!] = integrationConfig;

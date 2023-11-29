@@ -32,7 +32,7 @@ async function openTab(url: string, openerTabId: number): Promise<Tabs.Tab> {
 
 async function openPopup(
   url: string,
-  opener: Windows.Window
+  opener: Windows.Window,
 ): Promise<Tabs.Tab> {
   // `top` and `left` are ignored in .create on Firefox, but attempt anyway.
   // If present, the popup will be centered on screen rather than on the window.

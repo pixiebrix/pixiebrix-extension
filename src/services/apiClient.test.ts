@@ -22,7 +22,7 @@ jest.mock("@/services/apiClient", () => jest.requireActual("./apiClient.ts"));
 describe("absoluteApiUrl", () => {
   it("makes relative url absolute", async () => {
     await expect(absoluteApiUrl("/relative")).resolves.toBe(
-      "https://app.pixiebrix.com/relative"
+      "https://app.pixiebrix.com/relative",
     );
   });
 

@@ -67,13 +67,13 @@ export type ModComponentsRootState = {
 };
 
 export function isModComponentStateV0(
-  state: ModComponentStateVersions
+  state: ModComponentStateVersions,
 ): state is ModComponentStateV0 {
   return !Array.isArray(state.extensions);
 }
 
 export function isModComponentStateV1(
-  state: ModComponentStateVersions
+  state: ModComponentStateVersions,
 ): state is ModComponentStateV1 {
   return (
     Array.isArray(state.extensions) &&
@@ -83,7 +83,7 @@ export function isModComponentStateV1(
 }
 
 export function isModComponentStateV2(
-  state: ModComponentStateVersions
+  state: ModComponentStateVersions,
 ): state is ModComponentStateV2 {
   return (
     Array.isArray(state.extensions) &&
@@ -95,7 +95,7 @@ export function isModComponentStateV2(
 }
 
 export function isModComponentStateV3(
-  state: ModComponentStateVersions
+  state: ModComponentStateVersions,
 ): state is ModComponentStateV3 {
   return (
     Array.isArray(state.extensions) &&

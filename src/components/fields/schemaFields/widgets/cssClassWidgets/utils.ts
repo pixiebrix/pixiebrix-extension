@@ -72,8 +72,8 @@ export function parseValue(value: Value): {
 
   throw new Error(
     `Unexpected value parsing the CSS class. Type of value: ${typeof value}. Value: ${JSON.stringify(
-      value
-    )}`
+      value,
+    )}`,
   );
 }
 
@@ -97,7 +97,7 @@ export function extractSpacing(prefix: string, classes: string[]): Spacing[] {
 export function calculateNextSpacing(
   previousValue: Value,
   prefix: string,
-  spacingUpdate: Spacing
+  spacingUpdate: Spacing,
 ): Value {
   const { isVar, isTemplate, classes, includesTemplate } =
     parseValue(previousValue);
@@ -109,7 +109,7 @@ export function calculateNextSpacing(
   const regex = createSpacingRegex(prefix);
 
   const [spacingClasses, otherClasses] = partition(classes, (x) =>
-    regex.test(x)
+    regex.test(x),
   );
   const spacingRules = extractSpacing(prefix, spacingClasses);
   // Select onClear sets the size as null
@@ -117,12 +117,12 @@ export function calculateNextSpacing(
     // Remove spacingRules with same side as spacingUpdate
     spacingRules.splice(
       spacingRules.findIndex((x) => x.side === spacingUpdate.side),
-      1
+      1,
     );
   } else {
     // Don't try to be smart for now. Just update the rule
     const existingRule = spacingRules.find(
-      (x) => x.side === spacingUpdate.side
+      (x) => x.side === spacingUpdate.side,
     );
     if (existingRule) {
       existingRule.size = spacingUpdate.size;
@@ -136,11 +136,13 @@ export function calculateNextSpacing(
     ...spacingRules
       // We filter rules so that we don't have both generic and side-specific rules
       .filter((rule) =>
-        spacingUpdate.side == null ? rule.side == null : rule.side != null
+        spacingUpdate.side == null ? rule.side == null : rule.side != null,
       )
       .map(
         (x) =>
-          `${prefix}${x.side ?? ""}-${x.size < 0 ? "n" : ""}${Math.abs(x.size)}`
+          `${prefix}${x.side ?? ""}-${x.size < 0 ? "n" : ""}${Math.abs(
+            x.size,
+          )}`,
       ),
   ];
 
@@ -160,7 +162,7 @@ export function calculateNextValue(
   previousValue: Value,
   className: string,
   on: boolean,
-  group?: ClassFlag[]
+  group?: ClassFlag[],
 ): Value {
   const { isVar, isTemplate, classes, includesTemplate } =
     parseValue(previousValue);
@@ -188,7 +190,8 @@ export function calculateNextValue(
     nextClasses = [
       ...classes.filter(
         (x) =>
-          (!isExclusive || !inactiveClasses.includes(x)) && !implies.includes(x)
+          (!isExclusive || !inactiveClasses.includes(x)) &&
+          !implies.includes(x),
       ),
       className,
     ];

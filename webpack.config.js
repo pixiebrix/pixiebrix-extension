@@ -87,7 +87,7 @@ console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
 console.log(
   "ROLLBAR_BROWSER_ACCESS_TOKEN:",
-  process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
+  process.env.ROLLBAR_BROWSER_ACCESS_TOKEN,
 );
 
 if (!process.env.SOURCE_VERSION) {
@@ -121,7 +121,7 @@ console.log(sourcemapsLogMessage);
 function getVersion() {
   // `manifest.json` only supports numbers in the version, so use the semver
   const match = /^(?<version>\d+\.\d+\.\d+)/.exec(
-    process.env.npm_package_version
+    process.env.npm_package_version,
   );
   return match.groups.version;
 }
@@ -249,7 +249,7 @@ function customizeManifest(manifest, isProduction) {
 function mockHeavyDependencies() {
   if (process.env.DEV_SLIM.toLowerCase() === "true") {
     console.warn(
-      "Mocking dependencies for development build: @/icons/list, uipath/robot"
+      "Mocking dependencies for development build: @/icons/list, uipath/robot",
     );
     return {
       "@/icons/list": path.resolve("src/__mocks__/@/icons/list"),
@@ -300,7 +300,7 @@ module.exports = (env, options) =>
 
         // The script that gets injected into the host page
         "pageScript/pageScript",
-      ].map((name) => [path.basename(name), `./src/${name}`])
+      ].map((name) => [path.basename(name), `./src/${name}`]),
     ),
 
     resolve: {

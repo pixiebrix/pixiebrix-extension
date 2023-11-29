@@ -28,7 +28,7 @@ modDefinitionsListenerMiddleware.startListening({
     apiEndpoints.updateRecipe.matchFulfilled,
     apiEndpoints.createPackage.matchFulfilled,
     apiEndpoints.updatePackage.matchFulfilled,
-    apiEndpoints.deletePackage.matchFulfilled
+    apiEndpoints.deletePackage.matchFulfilled,
   ),
   effect(action, { dispatch }) {
     void dispatch(syncRemoteModDefinitions());

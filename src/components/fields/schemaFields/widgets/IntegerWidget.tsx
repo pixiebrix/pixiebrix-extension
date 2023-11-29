@@ -26,7 +26,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
  * @see: NumberWidget
  */
 const IntegerWidget: React.VFC<SchemaFieldProps & FormControlProps> = (
-  props
+  props,
 ) => <NumberWidget {...props} step={1} />; // Spread props first so that 'step' is overridden properly
 
 export default IntegerWidget;

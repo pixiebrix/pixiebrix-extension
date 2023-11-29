@@ -99,11 +99,11 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   const connect = useCallback(
     async (
       values: ControlRoomConfiguration,
-      helpers: FormikHelpers<ControlRoomConfiguration>
+      helpers: FormikHelpers<ControlRoomConfiguration>,
     ) => {
       try {
         const existingIntegrationConfig = integrationConfigs.find(
-          (x) => x.integrationId === authIntegrationId
+          (x) => x.integrationId === authIntegrationId,
         );
         let configId = existingIntegrationConfig?.id;
         const secretsConfig = {
@@ -160,7 +160,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
       history,
       dispatch,
       flushReduxPersistence,
-    ]
+    ],
   );
 
   const renderBody: RenderBody = () => (

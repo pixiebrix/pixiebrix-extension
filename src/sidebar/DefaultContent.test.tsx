@@ -38,13 +38,13 @@ describe("renders DefaultPanel", () => {
           extensionsSlice.actions.saveExtension({
             extension: modComponentFactory() as ActivatedModComponent,
             pushToCloud: false,
-          })
+          }),
         );
 
         dispatch(
           authSlice.actions.setAuth({
             flags: ["restricted-marketplace"],
-          } as AuthState)
+          } as AuthState),
         );
       },
     });

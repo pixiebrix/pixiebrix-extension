@@ -79,7 +79,7 @@ function getEmberApplication(): EmberApplication {
     const namespaces = Ember.A(Ember.Namespace.NAMESPACES);
     // TODO: support multiple Ember applications on the page
     return namespaces.find(
-      (namespace) => namespace instanceof Ember.Application
+      (namespace) => namespace instanceof Ember.Application,
     ) as EmberApplication;
   }
 
@@ -165,21 +165,21 @@ const EMBER_INTERNAL_PROPS = new Set([
 function pickExternalProps(obj: UnknownObject): UnknownObject {
   // Lodash's pickby was having issues with some getters
   return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
+    Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key)),
   );
 }
 
 function readEmberValueFromCache(
   value: unknown,
   maxDepth = EMBER_MAX_DEPTH,
-  depth = 0
+  depth = 0,
 ): unknown {
   const recurse = unary(
-    partial(readEmberValueFromCache, partial.placeholder, maxDepth, depth + 1)
+    partial(readEmberValueFromCache, partial.placeholder, maxDepth, depth + 1),
   );
 
   const traverse = unary(
-    partial(readEmberValueFromCache, partial.placeholder, maxDepth, depth)
+    partial(readEmberValueFromCache, partial.placeholder, maxDepth, depth),
   );
 
   if (depth >= maxDepth) {
@@ -269,13 +269,13 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   hasData(instance) {
     const target = targetForComponent(instance);
     return getAllPropertyNames(target).some(
-      (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
+      (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop),
     );
   },
   getData(instance) {
     const target = targetForComponent(instance);
     const props = getAllPropertyNames(target).filter(
-      (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
+      (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop),
     );
     // Safe because the prop names are coming from getAllPropertyNames
     // eslint-disable-next-line security/detect-object-injection

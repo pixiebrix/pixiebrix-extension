@@ -57,19 +57,19 @@ const store = configureStore({
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistExtensionOptionsConfig,
-      extensionsSlice.reducer
+      extensionsSlice.reducer,
     ),
     sidebar: persistReducer(persistSidebarConfig, sidebarSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     // `integrations` slice is used to determine login state for partner installs
     integrations: persistReducer(
       persistIntegrationsConfig,
-      integrationsSlice.reducer
+      integrationsSlice.reducer,
     ),
     session: sessionSlice.reducer,
     sessionChanges: persistReducer(
       persistSessionChangesConfig,
-      sessionChangesSlice.reducer
+      sessionChangesSlice.reducer,
     ),
     modDefinitions: modDefinitionsSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
@@ -84,7 +84,7 @@ const store = configureStore({
         createStateSyncMiddleware({
           ...defaultCreateStateSyncMiddlewareConfig,
           whitelist: sessionChangesStateSyncActions,
-        })
+        }),
       );
     /* eslint-enable unicorn/prefer-spread */
   },

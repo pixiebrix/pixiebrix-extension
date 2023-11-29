@@ -26,7 +26,7 @@ const ServiceDescriptor: React.FunctionComponent<{
 }> = ({ serviceId, serviceConfigs }) => {
   const config = useMemo(
     () => serviceConfigs?.find((x) => x.metadata.id === serviceId),
-    [serviceId, serviceConfigs]
+    [serviceId, serviceConfigs],
   );
 
   return (

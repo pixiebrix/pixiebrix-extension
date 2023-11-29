@@ -60,7 +60,7 @@ describe("When rendered in panel", () => {
         }}
       >
         {children}
-      </DocumentContext.Provider>
+      </DocumentContext.Provider>,
     );
   };
 
@@ -88,7 +88,7 @@ describe("When rendered in panel", () => {
       expect(element).toBeInTheDocument();
       expect(element).toHaveClass("test-class");
       expect(element).toHaveTextContent("Test Header");
-    }
+    },
   );
 
   test.each([1, 2, 3, 4, 5, 6])("renders tag for h%d", (headerLevel) => {
@@ -160,8 +160,8 @@ describe("When rendered in panel", () => {
 
     expect(
       screen.getByText(
-        /unknown component type: thetypeforwhichacomponentisnotdefined/i
-      )
+        /unknown component type: thetypeforwhichacomponentisnotdefined/i,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -237,7 +237,7 @@ describe("When rendered in panel", () => {
     const firstRowColumn = within(rows[0]).getByTestId("column");
     expect(firstRowColumn).toBeInTheDocument();
     expect(
-      within(firstRowColumn).getByRole("heading", { level: 1 })
+      within(firstRowColumn).getByRole("heading", { level: 1 }),
     ).toBeInTheDocument();
 
     // Second row should have a class and 2 columns
@@ -314,7 +314,7 @@ describe("When rendered in panel", () => {
         const element = screen.getByRole("button");
 
         expect(element).toHaveClass(className);
-      }
+      },
     );
 
     test.each([true, "y"])("renders disabled button for %s", (disabled) => {
@@ -381,7 +381,7 @@ describe("When rendered in panel", () => {
 
       const cardBody = screen.getByTestId("card-body");
       expect(
-        within(cardBody).getByText("Test body of card")
+        within(cardBody).getByText("Test body of card"),
       ).toBeInTheDocument();
     });
   });
@@ -395,7 +395,7 @@ describe("When rendered in panel", () => {
       ctxt: { "@input": {}, "@options": {} },
     });
     (contentScriptAPI.runMapArgs as jest.Mock).mockImplementationOnce(
-      async (inputConfig) => inputConfig
+      async (inputConfig) => inputConfig,
     );
 
     const yamlConfig = `

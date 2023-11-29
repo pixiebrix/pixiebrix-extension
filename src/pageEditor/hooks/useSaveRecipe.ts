@@ -76,7 +76,7 @@ function useSaveRecipe(): RecipeSaver {
     const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
     if (recipe == null) {
       throw new Error(
-        "You no longer have edit permissions for the mod. Please reload the Page Editor."
+        "You no longer have edit permissions for the mod. Please reload the Page Editor.",
       );
     }
 
@@ -104,7 +104,7 @@ function useSaveRecipe(): RecipeSaver {
       (element) =>
         element.recipe?.id === recipeId &&
         isDirtyByElementId[element.uuid] &&
-        !deletedElementIds.has(element.uuid)
+        !deletedElementIds.has(element.uuid),
     );
 
     // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
@@ -116,7 +116,7 @@ function useSaveRecipe(): RecipeSaver {
       (extension) =>
         extension._recipe?.id === recipeId &&
         !dirtyRecipeElements.some((element) => element.uuid === extension.id) &&
-        !deletedElementIds.has(extension.id)
+        !deletedElementIds.has(extension.id),
     );
     // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
     const newOptions = dirtyRecipeOptions[recipeId];
@@ -133,7 +133,7 @@ function useSaveRecipe(): RecipeSaver {
 
     const packageId = editablePackages.find(
       // Bricks endpoint uses "name" instead of id
-      (x) => x.name === newRecipe.metadata.id
+      (x) => x.name === newRecipe.metadata.id,
     )?.id;
 
     const response = await updateRecipe({
@@ -156,13 +156,13 @@ function useSaveRecipe(): RecipeSaver {
             notifySuccess: false,
             reactivateEveryTab: false,
           },
-        })
-      )
+        }),
+      ),
     );
 
     // Update the recipe metadata on extensions in the options slice
     dispatch(
-      optionsActions.updateRecipeMetadataForExtensions(newRecipeMetadata)
+      optionsActions.updateRecipeMetadataForExtensions(newRecipeMetadata),
     );
 
     // Update the recipe metadata on elements in the page editor slice
@@ -175,7 +175,7 @@ function useSaveRecipe(): RecipeSaver {
 
     // Clear the dirty states
     dispatch(
-      editorActions.resetMetadataAndOptionsForRecipe(newRecipeMetadata.id)
+      editorActions.resetMetadataAndOptionsForRecipe(newRecipeMetadata.id),
     );
     dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
 

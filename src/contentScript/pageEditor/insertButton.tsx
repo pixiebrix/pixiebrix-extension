@@ -28,7 +28,7 @@ import { inferButtonHTML } from "@/utils/inference/markupInference";
 const DEFAULT_ACTION_CAPTION = "Action";
 
 export async function insertButton(
-  useNewFilter = false
+  useNewFilter = false,
 ): Promise<ButtonSelectionResult> {
   // Dynamically import because it's a large package (130kb minified) that's only used by Page Editor
   const { beautifyHTML } = await import(

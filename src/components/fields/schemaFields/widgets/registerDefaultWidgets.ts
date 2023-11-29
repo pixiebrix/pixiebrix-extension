@@ -67,7 +67,7 @@ function registerDefaultWidgets() {
   for (const [name, widget] of Object.entries(defaultWidgets)) {
     if (!widget) {
       throw new Error(
-        `Error registering default widgets. ${name} is undefined. Is there a circular dependency?`
+        `Error registering default widgets. ${name} is undefined. Is there a circular dependency?`,
       );
     }
   }

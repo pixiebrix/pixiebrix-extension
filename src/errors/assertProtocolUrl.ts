@@ -37,7 +37,7 @@ export function assertProtocolUrl(
     // Don't default baseUrl to location.href here. API calls are always routed through a chrome-extension:// page (e.g.,
     // the background page. So they would always be flagged as having an invalid schema)
     baseUrl?: string;
-  } = {}
+  } = {},
 ): URL {
   const parsedUrl = safeParseUrl(url, baseUrl);
 
@@ -53,7 +53,7 @@ export function assertProtocolUrl(
 
   throw new BusinessError(
     `Unsupported protocol: ${parsedUrl.protocol}. Use ${allowedProtocols.join(
-      ", "
-    )}`
+      ", ",
+    )}`,
   );
 }

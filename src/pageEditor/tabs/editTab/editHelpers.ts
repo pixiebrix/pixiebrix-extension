@@ -42,7 +42,7 @@ export function showOutputKey(blockType: BrickType): boolean {
  */
 export async function generateFreshOutputKey(
   block: Brick,
-  outputKeys: OutputKey[]
+  outputKeys: OutputKey[],
 ): Promise<OutputKey | undefined> {
   const type = await getType(block);
 
@@ -54,7 +54,7 @@ export async function generateFreshOutputKey(
   if (block.defaultOutputKey) {
     return freshIdentifier(
       block.defaultOutputKey as SafeString,
-      outputKeys
+      outputKeys,
     ) as OutputKey;
   }
 
@@ -65,7 +65,7 @@ export async function generateFreshOutputKey(
   if (type === "transform") {
     return freshIdentifier(
       "transformed" as SafeString,
-      outputKeys
+      outputKeys,
     ) as OutputKey;
   }
 
@@ -81,7 +81,7 @@ class PipelineMapVisitor extends PipelineVisitor {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ): void {
     this.pipelineMap[blockConfig.instanceId] = {
       blockId: blockConfig.id,

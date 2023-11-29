@@ -84,7 +84,7 @@ const workshopSlice = createSlice({
         state.recent = orderBy(
           state.recent,
           [(x) => x.timestamp],
-          ["desc"]
+          ["desc"],
         ).slice(0, state.maxRecent);
       }
     },

@@ -30,7 +30,7 @@ export class ContextMenuReader extends ReaderABC {
     super(
       "@pixiebrix/context-menu-data",
       "Context menu reader",
-      "Data from a context menu event"
+      "Data from a context menu event",
     );
   }
 

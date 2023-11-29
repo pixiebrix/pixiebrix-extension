@@ -112,7 +112,7 @@ const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
 };
 
 const ChildObjectField: React.FunctionComponent<SchemaFieldProps & OwnProps> = (
-  props
+  props,
 ) => (
   <ConnectedFieldTemplate
     {...props}

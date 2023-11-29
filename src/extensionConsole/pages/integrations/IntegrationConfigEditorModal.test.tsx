@@ -51,7 +51,7 @@ describe("IntegrationConfigEditorModal", () => {
         onSave={jest.fn()}
         onClose={jest.fn()}
         integration={service}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -78,7 +78,7 @@ describe("IntegrationConfigEditorModal", () => {
         onSave={jest.fn()}
         onClose={jest.fn()}
         integration={service}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -86,13 +86,13 @@ describe("IntegrationConfigEditorModal", () => {
     await user.click(
       screen.getByRole("textbox", {
         name: "controlRoomUrl",
-      })
+      }),
     );
     await user.type(
       screen.getByRole("textbox", {
         name: "controlRoomUrl",
       }),
-      "https://invalid.control.room/"
+      "https://invalid.control.room/",
     );
     await user.click(screen.getByRole("textbox", { name: "username" }));
 

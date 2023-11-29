@@ -63,12 +63,12 @@ function useExtensionTrace() {
       if (
         !isEqual(
           lastRun.map((x) => selectTraceMetadata(x)),
-          extensionTrace.map((x) => selectTraceMetadata(x))
+          extensionTrace.map((x) => selectTraceMetadata(x)),
         )
       ) {
         console.debug(
           "Updating extension trace in Redux slice: %s",
-          extensionId
+          extensionId,
         );
         dispatch(setExtensionTrace({ extensionId, records: lastRun }));
       }

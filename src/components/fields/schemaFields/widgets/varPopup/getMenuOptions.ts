@@ -49,7 +49,7 @@ function convertArrayNodesToArrays(node: ExistenceNode): void {
  */
 function getMenuOptions(
   knownVars: VarMap,
-  contextValues: JsonObject
+  contextValues: JsonObject,
 ): Array<[string, UnknownRecord]> {
   const varMap = knownVars.getMap();
 

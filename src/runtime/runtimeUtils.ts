@@ -60,11 +60,11 @@ import { type UnknownObject } from "@/types/objectTypes";
 // Can't use TypeScript's assert return type for promises: https://github.com/microsoft/TypeScript/issues/34636
 export async function throwIfInvalidInput(
   brick: Brick,
-  brickArgs: RenderedArgs
+  brickArgs: RenderedArgs,
 ): Promise<void> {
   const validationResult = await validateInput(
     castSchema(brick.inputSchema),
-    excludeUndefined(brickArgs)
+    excludeUndefined(brickArgs),
   );
   if (!validationResult.valid) {
     // Don't need to check logValues here because this is logging to the console, not the provided logger
@@ -79,7 +79,7 @@ export async function throwIfInvalidInput(
       "Invalid inputs for brick",
       brick.inputSchema,
       brickArgs,
-      validationResult.errors
+      validationResult.errors,
     );
   }
 }
@@ -91,13 +91,13 @@ export async function logIfInvalidOutput(
   brick: Brick,
   output: unknown,
   logger: Logger,
-  { window }: { window: BrickWindow }
+  { window }: { window: BrickWindow },
 ): Promise<void> {
   if (!isEmpty(brick.outputSchema)) {
     const baseSchema = castSchema(brick.outputSchema);
     const validationResult = await validateOutput(
       hasMultipleTargets(window) ? arraySchema(baseSchema) : baseSchema,
-      excludeUndefined(output)
+      excludeUndefined(output),
     );
     if (!validationResult.valid) {
       // For now, don't halt execution on output schema violation. If the output is malformed in a way that
@@ -107,8 +107,8 @@ export async function logIfInvalidOutput(
           "Invalid outputs for brick",
           brick.outputSchema,
           output,
-          validationResult.errors
-        )
+          validationResult.errors,
+        ),
       );
     }
   }
@@ -124,13 +124,13 @@ async function renderConfigOption(
   {
     explicitRender,
     autoescape,
-  }: Pick<ApiVersionOptions, "explicitRender" | "autoescape">
+  }: Pick<ApiVersionOptions, "explicitRender" | "autoescape">,
 ): Promise<unknown> {
   const render = explicitRender
     ? null
     : engineRenderer(
         brickConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
-        { autoescape }
+        { autoescape },
       );
 
   const { value } = (await mapArgs({ value: brickConfig[fieldName] }, context, {
@@ -147,7 +147,7 @@ async function renderConfigOption(
 export async function shouldRunBlock(
   brickConfig: BrickConfig,
   context: BrickArgsContext,
-  { explicitRender, autoescape }: ApiVersionOptions
+  { explicitRender, autoescape }: ApiVersionOptions,
 ): Promise<boolean> {
   if (brickConfig.if !== undefined) {
     const condition = await renderConfigOption(brickConfig, context, "if", {
@@ -169,7 +169,7 @@ export async function selectBlockRootElement(
   brickConfig: BrickConfig,
   defaultRoot: SelectorRoot,
   context: BrickArgsContext,
-  { explicitRender, autoescape }: ApiVersionOptions
+  { explicitRender, autoescape }: ApiVersionOptions,
 ): Promise<SelectorRoot> {
   const rootMode = brickConfig.rootMode ?? "inherit";
 
@@ -195,7 +195,7 @@ export async function selectBlockRootElement(
         brickConfig,
         context,
         "root",
-        { explicitRender, autoescape }
+        { explicitRender, autoescape },
       );
 
       let ref;
@@ -204,7 +204,7 @@ export async function selectBlockRootElement(
       } catch {
         console.warn(
           "Invalid element reference provided: %s",
-          brickConfig.root
+          brickConfig.root,
         );
         throw new BusinessError("Invalid element reference provided");
       }
@@ -236,7 +236,7 @@ export async function selectBlockRootElement(
       const rootDescriptor =
         (defaultRoot as HTMLElement)?.tagName ?? "document";
       throw new BusinessError(
-        `No roots found for ${brickConfig.root} (root=${rootDescriptor})`
+        `No roots found for ${brickConfig.root} (root=${rootDescriptor})`,
       );
     }
 
@@ -247,9 +247,9 @@ export async function selectBlockRootElement(
 }
 
 export function assertModComponentNotResolved<
-  Config extends UnknownObject = UnknownObject
+  Config extends UnknownObject = UnknownObject,
 >(
-  modComponent: ModComponentBase<Config>
+  modComponent: ModComponentBase<Config>,
 ): asserts modComponent is UnresolvedModComponent<Config> {
   if (isInnerDefinitionRegistryId(modComponent.extensionPointId)) {
     throw new Error("Expected UnresolvedModComponent");
@@ -258,7 +258,7 @@ export function assertModComponentNotResolved<
 
 export function isApiVersionAtLeast(
   is: ApiVersion,
-  atLeast: ApiVersion
+  atLeast: ApiVersion,
 ): boolean {
   const isNum = Number(is.slice(1));
   const atLeastNum = Number(atLeast.slice(1));

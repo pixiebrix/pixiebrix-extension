@@ -38,7 +38,7 @@ type AsyncPermissionsState = AsyncState<PermissionsStatus> & {
  */
 function useCloudExtensionPermissions(
   extension: StandaloneModDefinition,
-  services: IntegrationDependency[]
+  services: IntegrationDependency[],
 ): AsyncPermissionsState {
   const permissionsState = useAsyncState(
     async () => {
@@ -52,11 +52,11 @@ function useCloudExtensionPermissions(
         hasPermissions: false,
         permissions: emptyPermissionsFactory(),
       },
-    }
+    },
   );
 
   const request = useRequestPermissionsCallback(
-    permissionsState.data?.permissions
+    permissionsState.data?.permissions,
   );
 
   return {

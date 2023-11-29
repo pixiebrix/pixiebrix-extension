@@ -81,7 +81,7 @@ export class ResolvePerson extends TransformerABC {
             exact_match: true,
             term: name,
           },
-        }
+        },
       );
       organization_id =
         data.items.length > 0 ? data.items[0].item.id : undefined;
@@ -99,7 +99,7 @@ export class ResolvePerson extends TransformerABC {
           term: name,
           organization_id,
         },
-      }
+      },
     );
 
     if (data.items.length === 0) {

@@ -33,7 +33,7 @@ import { castDraft, type Draft } from "immer";
 export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   ...args: [
     ...AsyncStateArray,
-    (...args: AsyncValueArray<AsyncStates>) => Result
+    (...args: AsyncValueArray<AsyncStates>) => Result,
   ]
 ): AsyncState<Result> {
   // @ts-expect-error -- getting last element
@@ -76,7 +76,7 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   if (states.every((x) => x.isSuccess)) {
     try {
       const data = mergeFunction(
-        ...(states.map((x) => x.data) as ExtractValueType<AsyncStates>)
+        ...(states.map((x) => x.data) as ExtractValueType<AsyncStates>),
       );
 
       // We might consider checking that currentData is not undefined for any of the states instead of using isFetching.
@@ -89,8 +89,8 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
         ? undefined
         : mergeFunction(
             ...(states.map(
-              (x) => x.currentData
-            ) as ExtractValueType<AsyncStates>)
+              (x) => x.currentData,
+            ) as ExtractValueType<AsyncStates>),
           );
 
       return {
@@ -139,7 +139,7 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
  */
 export function defaultInitialValue<Value, State extends AsyncState<Value>>(
   state: State,
-  initialValue: Value
+  initialValue: Value,
 ): State {
   if (state.isUninitialized || state.isLoading) {
     return {
@@ -163,7 +163,7 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
  */
 export function fallbackValue<Value, State extends AsyncState<Value>>(
   state: State,
-  fallbackValue: Value
+  fallbackValue: Value,
 ): State {
   if (!state.isSuccess) {
     return {
@@ -215,7 +215,7 @@ export function loadingAsyncStateFactory<Value>(): AsyncState<Value> {
  * @param value the value
  */
 export function valueToAsyncState<Value>(
-  value: Value
+  value: Value,
 ): FetchableAsyncState<Value> {
   return {
     data: value,
@@ -253,7 +253,7 @@ export function errorToAsyncState<Value>(error: unknown): AsyncState<Value> {
  * @see UseCachedQueryResult
  */
 export function valueToAsyncCacheState<Value>(
-  value: Value
+  value: Value,
 ): UseCachedQueryResult<Value> {
   return {
     ...valueToAsyncState(value),
@@ -279,7 +279,7 @@ export function checkAsyncStateInvariants(state: AsyncState): void {
     )
   ) {
     throw new Error(
-      "Expected one of: isUninitialized, isLoading, isFetching, isSuccess, isError"
+      "Expected one of: isUninitialized, isLoading, isFetching, isSuccess, isError",
     );
   }
 
@@ -297,7 +297,7 @@ export function checkAsyncStateInvariants(state: AsyncState): void {
 
 export function setValueOnState<T>(
   state: Draft<AsyncState<T>>,
-  value: T
+  value: T,
 ): Draft<AsyncState<T>> {
   state.data = castDraft(value);
   state.currentData = castDraft(value);
@@ -315,7 +315,7 @@ export function setValueOnState<T>(
 
 export function setErrorOnState<T>(
   state: Draft<AsyncState<T>>,
-  error: unknown
+  error: unknown,
 ): Draft<AsyncState<T>> {
   state.data = undefined;
   state.currentData = undefined;
@@ -332,7 +332,7 @@ export function setErrorOnState<T>(
 }
 
 export function isFetchableAsyncState<Value>(
-  state: AsyncState<Value>
+  state: AsyncState<Value>,
 ): state is FetchableAsyncState<Value> {
   return "refetch" in state;
 }

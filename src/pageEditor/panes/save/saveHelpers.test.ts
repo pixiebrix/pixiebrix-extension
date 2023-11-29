@@ -81,16 +81,16 @@ jest.mock("@/pageEditor/starterBricks/base", () => ({
 describe("generatePersonalBrickId", () => {
   test("replace other scope", () => {
     expect(
-      generateScopeBrickId("@foo", validateRegistryId("@pixiebrix/baz"))
+      generateScopeBrickId("@foo", validateRegistryId("@pixiebrix/baz")),
     ).toBe("@foo/baz");
   });
 
   test("add scope", () => {
     expect(generateScopeBrickId("@foo", validateRegistryId("baz"))).toBe(
-      "@foo/baz"
+      "@foo/baz",
     );
     expect(
-      generateScopeBrickId("@foo", validateRegistryId("collection/baz"))
+      generateScopeBrickId("@foo", validateRegistryId("collection/baz")),
     ).toBe("@foo/collection/baz");
   });
 });
@@ -108,13 +108,13 @@ describe("replaceRecipeExtension round trip", () => {
         modDefinition,
         screen: "pageEditor",
         isReinstall: false,
-      })
+      }),
     );
 
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
 
     const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0]
+      state.extensions[0],
     );
     element.label = "New Label";
 
@@ -123,14 +123,14 @@ describe("replaceRecipeExtension round trip", () => {
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element
+      element,
     );
 
     expect(newRecipe).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
-      })
+      }),
     );
   });
 
@@ -152,13 +152,13 @@ describe("replaceRecipeExtension round trip", () => {
         modDefinition,
         screen: "pageEditor",
         isReinstall: false,
-      })
+      }),
     );
 
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
 
     const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0]
+      state.extensions[0],
     );
     element.label = "New Label";
 
@@ -167,14 +167,14 @@ describe("replaceRecipeExtension round trip", () => {
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element
+      element,
     );
 
     expect(newRecipe).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
-      })
+      }),
     );
   });
 
@@ -187,7 +187,7 @@ describe("replaceRecipeExtension round trip", () => {
         modDefinition,
         screen: "pageEditor",
         isReinstall: false,
-      })
+      }),
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
@@ -201,7 +201,7 @@ describe("replaceRecipeExtension round trip", () => {
     });
 
     const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0]
+      state.extensions[0],
     );
 
     element.label = "New Label";
@@ -212,14 +212,14 @@ describe("replaceRecipeExtension round trip", () => {
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element
+      element,
     );
 
     expect(newRecipe).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
-      })
+      }),
     );
   });
 
@@ -237,7 +237,7 @@ describe("replaceRecipeExtension round trip", () => {
         modDefinition,
         screen: "pageEditor",
         isReinstall: false,
-      })
+      }),
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
@@ -251,7 +251,7 @@ describe("replaceRecipeExtension round trip", () => {
     });
 
     const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0]
+      state.extensions[0],
     );
 
     element.label = "New Label";
@@ -264,7 +264,7 @@ describe("replaceRecipeExtension round trip", () => {
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element
+      element,
     );
 
     expect(newRecipe).toStrictEqual(
@@ -272,14 +272,14 @@ describe("replaceRecipeExtension round trip", () => {
         draft.metadata.id = newId;
 
         draft.definitions.extensionPoint2 = cloneDeep(
-          modDefinition.definitions.extensionPoint
+          modDefinition.definitions.extensionPoint,
         );
         (
           draft.definitions.extensionPoint2.definition as MenuDefinition
         ).template = newTemplate;
         draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
         draft.extensionPoints[0].label = "New Label";
-      })
+      }),
     );
   });
 
@@ -297,7 +297,7 @@ describe("replaceRecipeExtension round trip", () => {
         modDefinition,
         screen: "pageEditor",
         isReinstall: false,
-      })
+      }),
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
@@ -311,7 +311,7 @@ describe("replaceRecipeExtension round trip", () => {
     });
 
     const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0]
+      state.extensions[0],
     );
 
     element.label = "New Label";
@@ -322,14 +322,14 @@ describe("replaceRecipeExtension round trip", () => {
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element
+      element,
     );
 
     expect(newRecipe).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
-      })
+      }),
     );
   });
 
@@ -354,7 +354,7 @@ describe("replaceRecipeExtension round trip", () => {
         modDefinition,
         screen: "pageEditor",
         isReinstall: false,
-      })
+      }),
     );
 
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
@@ -370,7 +370,7 @@ describe("replaceRecipeExtension round trip", () => {
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element
+      element,
     );
 
     expect(newRecipe).toStrictEqual(
@@ -379,7 +379,7 @@ describe("replaceRecipeExtension round trip", () => {
         draft.metadata.id = newId;
         draft.definitions[starterBrick.metadata.id].apiVersion = "v3";
         draft.extensionPoints[0].label = "New Label";
-      })
+      }),
     );
   });
 
@@ -403,7 +403,7 @@ describe("replaceRecipeExtension round trip", () => {
         modDefinition,
         screen: "pageEditor",
         isReinstall: false,
-      })
+      }),
     );
 
     (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
@@ -420,8 +420,8 @@ describe("replaceRecipeExtension round trip", () => {
         modDefinition,
         { ...modDefinition.metadata, id: newId },
         state.extensions,
-        element
-      )
+        element,
+      ),
     ).toThrow();
   });
 });
@@ -429,7 +429,7 @@ describe("replaceRecipeExtension round trip", () => {
 describe("blueprint options", () => {
   async function runReplaceRecipeExtensions(
     recipeOptions: ModOptionsDefinition,
-    elementOptions: ModOptionsDefinition
+    elementOptions: ModOptionsDefinition,
   ) {
     const modDefinition = defaultModDefinitionFactory({
       options: recipeOptions,
@@ -441,11 +441,11 @@ describe("blueprint options", () => {
         modDefinition,
         screen: "pageEditor",
         isReinstall: false,
-      })
+      }),
     );
 
     const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0]
+      state.extensions[0],
     );
 
     element.optionsDefinition = elementOptions;
@@ -454,7 +454,7 @@ describe("blueprint options", () => {
       modDefinition,
       modDefinition.metadata,
       state.extensions,
-      element
+      element,
     );
   }
 
@@ -466,7 +466,7 @@ describe("blueprint options", () => {
 
     const updatedRecipe = await runReplaceRecipeExtensions(
       undefined,
-      emptyOptions
+      emptyOptions,
     );
 
     expect(updatedRecipe.options).toBeUndefined();
@@ -488,7 +488,7 @@ describe("blueprint options", () => {
 
     const updatedRecipe = await runReplaceRecipeExtensions(
       undefined,
-      elementOptions
+      elementOptions,
     );
 
     expect(updatedRecipe.options).toBe(elementOptions);
@@ -522,7 +522,7 @@ describe("blueprint options", () => {
 
     const updatedRecipe = await runReplaceRecipeExtensions(
       blueprintOptions,
-      elementOptions
+      elementOptions,
     );
 
     expect(updatedRecipe.options).toBe(elementOptions);
@@ -549,7 +549,7 @@ describe("blueprint options", () => {
 
     const updatedRecipe = await runReplaceRecipeExtensions(
       blueprintOptions,
-      elementOptions
+      elementOptions,
     );
 
     expect(updatedRecipe.options).toBeUndefined();
@@ -598,7 +598,7 @@ describe("isRecipeEditable", () => {
 });
 
 function selectExtensionPoints(
-  recipe: UnsavedModDefinition
+  recipe: UnsavedModDefinition,
 ): StarterBrickConfig[] {
   return recipe.extensionPoints.map(({ id }) => {
     const definition = recipe.definitions[id]
@@ -651,7 +651,7 @@ describe("buildRecipe", () => {
 
     // Use the adapter to convert to FormState
     const element = (await adapter.fromExtension(
-      modComponent
+      modComponent,
     )) as ModComponentFormState;
 
     // Call the function under test
@@ -779,7 +779,7 @@ describe("buildRecipe", () => {
           modDefinition,
           screen: "pageEditor",
           isReinstall: false,
-        })
+        }),
       );
 
       // Collect the dirty form states for any changed extensions
@@ -802,7 +802,7 @@ describe("buildRecipe", () => {
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
           const element = (await adapter.fromExtension(
-            extension
+            extension,
           )) as ModComponentFormState;
 
           // Edit the label
@@ -831,7 +831,7 @@ describe("buildRecipe", () => {
 
       // Compare results
       expect(newRecipe).toStrictEqual(updated);
-    }
+    },
   );
 });
 

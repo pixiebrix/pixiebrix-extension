@@ -26,7 +26,7 @@ describe("MarkdownInline", () => {
         sanitizeConfig={{
           ALLOWED_TAGS: ["strong"],
         }}
-      />
+      />,
     );
     expect(asFragment()).toMatchSnapshot();
   });
@@ -38,7 +38,7 @@ describe("MarkdownInline", () => {
         sanitizeConfig={{
           ALLOWED_TAGS: ["strong", "a"],
         }}
-      />
+      />,
     );
     expect(asFragment()).toMatchSnapshot();
   });

@@ -50,7 +50,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "bar" }),
-      testOptions("v1")
+      testOptions("v1"),
     );
     expect(result).toStrictEqual({ message: "hello, bar" });
   });
@@ -69,7 +69,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput(cloneDeep(initialContext)),
-      testOptions("v1")
+      testOptions("v1"),
     );
     expect(result).toStrictEqual(initialContext);
   });
@@ -95,7 +95,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const result = await reducePipeline(
         pipeline,
         simpleInput({}),
-        testOptions(apiVersion)
+        testOptions(apiVersion),
       );
 
       expect(result).toStrictEqual({
@@ -104,5 +104,5 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         ...extraEmptyModStateContext(apiVersion),
       });
     });
-  }
+  },
 );

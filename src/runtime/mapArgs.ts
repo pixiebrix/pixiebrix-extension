@@ -43,7 +43,7 @@ export type Args = string | UnknownObject | UnknownObject[];
 export async function renderExplicit(
   config: Args,
   ctxt: UnknownObject,
-  options: RendererOptions
+  options: RendererOptions,
 ): Promise<unknown> {
   if (isTemplateExpression(config)) {
     // This check is added to prevent exceptions when rendering a faulty template
@@ -65,13 +65,13 @@ export async function renderExplicit(
   // Array.isArray must come before the object check because arrays are objects
   if (Array.isArray(config)) {
     return Promise.all(
-      config.map(async (x) => renderExplicit(x, ctxt, options))
+      config.map(async (x) => renderExplicit(x, ctxt, options)),
     );
   }
 
   if (isObject(config)) {
     const renderedEntries = await asyncMapValues(config, async (subConfig) =>
-      renderExplicit(subConfig as UnknownObject, ctxt, options)
+      renderExplicit(subConfig as UnknownObject, ctxt, options),
     );
 
     return pickBy(renderedEntries, (x) => x != null);
@@ -88,11 +88,11 @@ export function renderMustache(config: string, ctxt: UnknownObject): string;
 // eslint-disable-next-line @typescript-eslint/ban-types -- we don't want to require index signature
 export function renderMustache<T extends object>(
   config: T,
-  ctxt: UnknownObject
+  ctxt: UnknownObject,
 ): T;
 export function renderMustache(
   config: UnknownObject[],
-  ctxt: UnknownObject
+  ctxt: UnknownObject,
 ): UnknownObject[];
 export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
   if (Array.isArray(config)) {
@@ -103,7 +103,7 @@ export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
     return pickBy(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: The whole type of renderMustache is too loose
       mapValues(config, (subConfig) => renderMustache(subConfig as any, ctxt)),
-      (x) => x != null
+      (x) => x != null,
     );
   }
 
@@ -117,20 +117,20 @@ export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
 export async function renderImplicit(
   config: Args,
   ctxt: UnknownObject,
-  render: AsyncTemplateRenderer | TemplateRenderer
+  render: AsyncTemplateRenderer | TemplateRenderer,
 ): Promise<unknown> {
   if (Array.isArray(config)) {
     return Promise.all(
-      config.map(async (x) => renderImplicit(x, ctxt, render))
+      config.map(async (x) => renderImplicit(x, ctxt, render)),
     );
   }
 
   if (isObject(config)) {
     return pickBy(
       await asyncMapValues(config, async (subConfig) =>
-        renderImplicit(subConfig as UnknownObject, ctxt, render)
+        renderImplicit(subConfig as UnknownObject, ctxt, render),
       ),
-      (x) => x != null
+      (x) => x != null,
     );
   }
 
@@ -173,7 +173,7 @@ export async function mapArgs(
   ctxt: UnknownObject,
   // We're intentionally forcing callers to provide options here because the options should always depend on the
   // `apiVersion` of the block/extensionPoint/blueprint that mapArgs is being called from
-  { implicitRender, autoescape }: MapOptions
+  { implicitRender, autoescape }: MapOptions,
 ): Promise<unknown> {
   if (implicitRender) {
     return renderImplicit(config, ctxt, implicitRender);

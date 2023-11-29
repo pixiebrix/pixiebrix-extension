@@ -184,7 +184,7 @@ const dataFactory = ({
   },
   ...integrationConfigs.map((integrationConfig) => {
     const integration = integrations.find(
-      (x) => x.id === integrationConfig.integrationId
+      (x) => x.id === integrationConfig.integrationId,
     );
     if (!integration) {
       throw new Error(`Unknown integration ${integrationConfig.integrationId}`);
@@ -204,7 +204,7 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
 }) => {
   const integrationConfigs = useSelector<RootState, IntegrationConfig[]>(
     selectIntegrationConfigs,
-    isEqual
+    isEqual,
   );
 
   const resetAuth = useCallback(async (authId: UUID) => {
@@ -217,11 +217,11 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
   }, []);
   const columns = useMemo(
     () => columnFactory({ navigate, resetAuth }),
-    [navigate, resetAuth]
+    [navigate, resetAuth],
   );
   const data = useMemo(
     () => dataFactory({ integrationConfigs, integrations }),
-    [integrationConfigs, integrations]
+    [integrationConfigs, integrations],
   );
 
   const forceShowRecord: (config: IntegrationConfig) => boolean = useMemo(
@@ -229,7 +229,7 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
       forceShowIntegrationConfigId
         ? ({ id }) => id === forceShowIntegrationConfigId
         : null,
-    [forceShowIntegrationConfigId]
+    [forceShowIntegrationConfigId],
   );
 
   return (

@@ -42,7 +42,7 @@ interface CreateNew extends SuggestionTypeBase {
 }
 
 function isNew<T extends SuggestionTypeBase>(
-  suggestion: T | CreateNew
+  suggestion: T | CreateNew,
 ): suggestion is CreateNew {
   return suggestion && "isNew" in suggestion;
 }
@@ -91,7 +91,7 @@ export interface Props<SuggestionType extends SuggestionTypeBase> {
 
 const filterSuggestions = <T extends SuggestionTypeBase>(
   suggestions: T[],
-  value: string
+  value: string,
 ) => {
   const input = value.trim().toLowerCase();
   return input.length === 0
@@ -100,7 +100,7 @@ const filterSuggestions = <T extends SuggestionTypeBase>(
 };
 
 const getSuggestionValue = <SuggestionType extends SuggestionTypeBase>(
-  suggestion: SuggestionType
+  suggestion: SuggestionType,
 ) => suggestion.value;
 
 const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
@@ -145,7 +145,12 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
 
       setCurrentSuggestions(newSuggestions);
     },
-    [filterSuggestionsByValue, renderCreateNew, suggestions, createdSuggestions]
+    [
+      filterSuggestionsByValue,
+      renderCreateNew,
+      suggestions,
+      createdSuggestions,
+    ],
   );
 
   const renderSuggestionWithCreateNew = useCallback(
@@ -153,7 +158,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
       isNew(suggestion)
         ? renderCreateNew(`Create "${suggestion.value}"`)
         : renderSuggestion(suggestion),
-    [renderCreateNew, renderSuggestion]
+    [renderCreateNew, renderSuggestion],
   );
 
   const onHighlighted = useCallback(
@@ -161,7 +166,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
       if (isNew(suggestion)) return;
       onSuggestionHighlighted(suggestion);
     },
-    [onSuggestionHighlighted]
+    [onSuggestionHighlighted],
   );
 
   const clearSuggestions = useCallback(() => {
@@ -174,7 +179,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
       onTextChanged(params.newValue);
       setCurrentValue(params.newValue);
     },
-    [onTextChanged, setCurrentValue]
+    [onTextChanged, setCurrentValue],
   );
 
   const nativeOnSuggestionSelected: OnSuggestionSelected<
@@ -204,7 +209,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
       placeholder: inputPlaceholder,
       disabled: isDisabled,
     }),
-    [value, handleChange, inputPlaceholder, isDisabled]
+    [value, handleChange, inputPlaceholder, isDisabled],
   );
 
   const theme = useMemo(
@@ -217,7 +222,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
       suggestion: "dropdown-item text-wrap",
       suggestionHighlighted: "active",
     }),
-    [isClearable]
+    [isClearable],
   );
 
   if (typeof value !== "string") {

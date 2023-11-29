@@ -38,7 +38,7 @@ export class SplitText extends TransformerABC {
       "@pixiebrix/text/split",
       "Split/Chunk Text",
       "Split/chunk text into chunks, e.g., for providing to an LLM",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -59,7 +59,7 @@ export class SplitText extends TransformerABC {
         default: 200,
       },
     },
-    ["text"]
+    ["text"],
   );
 
   override outputSchema: Schema = {

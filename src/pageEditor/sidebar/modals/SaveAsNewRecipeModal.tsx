@@ -27,7 +27,7 @@ import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 
 const SaveAsNewRecipeModal: React.FC = () => {
   const { isSaveAsNewRecipeModalVisible: show } = useSelector(
-    selectEditorModalVisibilities
+    selectEditorModalVisibilities,
   );
 
   const recipeId = useSelector(selectActiveRecipeId);

@@ -22,10 +22,10 @@ test("can generate fresh identifier", () => {
   const root = "field" as SafeString;
   expect(freshIdentifier(root, [])).toBe("field");
   expect(freshIdentifier(root, [], { includeFirstNumber: true })).toBe(
-    "field1"
+    "field1",
   );
   expect(
-    freshIdentifier(root, [], { includeFirstNumber: true, startNumber: 0 })
+    freshIdentifier(root, [], { includeFirstNumber: true, startNumber: 0 }),
   ).toBe("field0");
   expect(freshIdentifier(root, ["field"])).toBe("field2");
   expect(freshIdentifier(root, ["foo", "bar"])).toBe("field");

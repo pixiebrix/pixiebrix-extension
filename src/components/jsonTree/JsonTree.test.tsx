@@ -409,6 +409,6 @@ describe("JsonTree - searchData", () => {
     "matches data with %s",
     async (_, query, data, expected) => {
       expect(searchData(query, data)).toStrictEqual(expected);
-    }
+    },
   );
 });

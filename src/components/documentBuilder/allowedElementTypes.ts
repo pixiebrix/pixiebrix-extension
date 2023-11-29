@@ -53,7 +53,7 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
 export const VALID_HEADER_TAGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
 export function getAllowedChildTypes(
-  parentElement: DocumentElement
+  parentElement: DocumentElement,
 ): DocumentElementType[] {
   return allowedChildTypes[parentElement.type] ?? [];
 }

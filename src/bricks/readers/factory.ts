@@ -40,7 +40,7 @@ export interface ReaderDefinition {
 }
 
 export interface ReaderConfig<
-  TDefinition extends ReaderDefinition = ReaderDefinition
+  TDefinition extends ReaderDefinition = ReaderDefinition,
 > {
   apiVersion?: ApiVersion;
   metadata: Metadata;
@@ -50,24 +50,24 @@ export interface ReaderConfig<
 }
 
 function validateReaderDefinition(
-  component: unknown
+  component: unknown,
 ): asserts component is ReaderConfig {
   const validator = new Validator(
-    dereference(readerSchema as Schema) as ValidatorSchema
+    dereference(readerSchema as Schema) as ValidatorSchema,
   );
   const result = validator.validate(component);
   if (!result.valid) {
     console.warn("Invalid reader configuration", result);
     throw new InvalidDefinitionError(
       "Invalid reader configuration",
-      result.errors
+      result.errors,
     );
   }
 }
 
 export type Read<TConfig = unknown> = (
   config: TConfig,
-  root: SelectorRoot
+  root: SelectorRoot,
 ) => Promise<JsonObject>;
 
 const _readerFactories = new Map<string, Read>();

@@ -60,7 +60,7 @@ const ConnectionErrorDisplay: React.FC<ErrorDisplayProps> = ({
       successMessage: "Recreated local databases. Reloading page.",
       errorMessage: "Error recreating local databases",
     },
-    []
+    [],
   );
 
   return (
@@ -98,7 +98,7 @@ const QuotaErrorDisplay: React.FC<ErrorDisplayProps> = ({
     async () => ({
       storageEstimate: (await navigator.storage.estimate()) as StorageEstimate,
     }),
-    []
+    [],
   );
 
   const recoverAction = useUserAction(
@@ -109,7 +109,7 @@ const QuotaErrorDisplay: React.FC<ErrorDisplayProps> = ({
       successMessage: "Reclaimed local space. Reloading page.",
       errorMessage: "Error reclaiming local space",
     },
-    []
+    [],
   );
 
   return (

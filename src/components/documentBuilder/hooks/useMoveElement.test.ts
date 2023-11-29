@@ -105,7 +105,7 @@ describe("moveElement", () => {
       {
         parentId: "0.children.0.children.0",
         index: 0,
-      }
+      },
     );
 
     expect(result[0].children[0].children[0].children).toHaveLength(2);
@@ -124,7 +124,7 @@ describe("moveElement", () => {
       {
         parentId: "0",
         index: 0,
-      }
+      },
     );
 
     expect(result[0].children).toHaveLength(2);
@@ -142,7 +142,7 @@ describe("moveElement", () => {
       {
         parentId: "0",
         index: 1,
-      }
+      },
     );
 
     expect(result[0].children).toHaveLength(2);

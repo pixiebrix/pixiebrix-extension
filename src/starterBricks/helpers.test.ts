@@ -30,7 +30,7 @@ beforeEach(() => {
 describe("awaitElementOnce", () => {
   it("finds change in ancestor", async () => {
     document.body.innerHTML = getDocument(
-      '<div id="root"><div id="menu"></div></div>'
+      '<div id="root"><div id="menu"></div></div>',
     ).body.innerHTML;
     const [promise] = awaitElementOnce(".newClass #menu");
     document.querySelector("#root").classList.add("newClass");
@@ -43,7 +43,7 @@ describe("awaitElementOnce", () => {
 
   it("finds change in ancestor with :has", async () => {
     document.body.innerHTML = getDocument(
-      '<div id="root"><h1>Foo</h1><div id="menu"></div></div>'
+      '<div id="root"><h1>Foo</h1><div id="menu"></div></div>',
     ).body.innerHTML;
     const [promise] = awaitElementOnce('#root:has(h1:contains("Bar")) #menu');
     document.querySelector("h1").textContent = "Bar";
@@ -58,21 +58,21 @@ describe("awaitElementOnce", () => {
     // Mimics targeting the LinkedIn modal
 
     document.body.innerHTML = getDocument(
-      '<div id="root"></div>'
+      '<div id="root"></div>',
     ).body.innerHTML;
 
     const [promise] = awaitElementOnce(
-      'div[data-test-modal-id="send-invite-modal"] div:has(>button[aria-label="Cancel adding a note"])'
+      'div[data-test-modal-id="send-invite-modal"] div:has(>button[aria-label="Cancel adding a note"])',
     );
 
     $("#root").append(
-      '<div data-test-modal-id="send-invite-modal"><div></div></div>'
+      '<div data-test-modal-id="send-invite-modal"><div></div></div>',
     );
     requestIdleCallback.runIdleCallbacks();
     await tick();
 
     $("[data-test-modal-id] div").append(
-      '<button aria-label="Cancel adding a note"></button>'
+      '<button aria-label="Cancel adding a note"></button>',
     );
     requestIdleCallback.runIdleCallbacks();
     await tick();
@@ -83,7 +83,7 @@ describe("awaitElementOnce", () => {
   it("ensure the passed in selector is never mutated", async () => {
     const selectors = [".table-actions"];
     document.body.innerHTML = getDocument(
-      '<div class="table-actions"></div>'
+      '<div class="table-actions"></div>',
     ).body.innerHTML;
 
     awaitElementOnce(selectors);

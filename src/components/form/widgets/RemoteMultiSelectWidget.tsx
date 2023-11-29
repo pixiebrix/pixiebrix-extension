@@ -58,7 +58,7 @@ const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
   const [options, isLoading, loadError] = useOptionsResolver(
     config,
     optionsFactory,
-    factoryArgs
+    factoryArgs,
   );
   useReportError(loadError);
 
@@ -80,7 +80,7 @@ const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
       isLoading={isLoading}
       value={
         options?.filter((option: Option) =>
-          (field.value ?? []).includes(option.value)
+          (field.value ?? []).includes(option.value),
         ) ?? []
       }
       onChange={async (options) => {

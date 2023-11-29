@@ -80,7 +80,7 @@ export type QuickBarConfig = {
 
 export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarConfig> {
   static isQuickBarExtensionPoint(
-    extensionPoint: StarterBrick
+    extensionPoint: StarterBrick,
   ): extensionPoint is QuickBarStarterBrickABC {
     // Need to a access a type specific property (QuickBarExtensionPoint._definition) on a base-typed entity (StarterBrick)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -113,11 +113,11 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
         ],
       },
     },
-    ["title", "action"]
+    ["title", "action"],
   );
 
   async getBricks(
-    extension: ResolvedModComponent<QuickBarConfig>
+    extension: ResolvedModComponent<QuickBarConfig>,
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -185,7 +185,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
           reportError(error, selectEventData(extension));
           throw error;
         }
-      })
+      }),
     );
 
     const numErrors = results.filter((x) => x.status === "rejected").length;
@@ -199,7 +199,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
    * @private
    */
   private async registerExtensionAction(
-    extension: ResolvedModComponent<QuickBarConfig>
+    extension: ResolvedModComponent<QuickBarConfig>,
   ): Promise<void> {
     const {
       title: name,
@@ -214,7 +214,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     ); // Defaults to a box
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension)
+      selectExtensionContext(extension),
     );
 
     quickBarRegistry.addAction({
@@ -228,7 +228,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
         try {
           const reader = await this.getBaseReader();
           const serviceContext = await makeServiceContextFromDependencies(
-            extension.integrationDependencies
+            extension.integrationDependencies,
           );
 
           const targetElement = guessSelectedElement() ?? document;
@@ -267,14 +267,14 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
       extension.label ?? "No Label",
       {
         extension,
-      }
+      },
     );
   }
 
   async runModComponents(): Promise<void> {
     if (this.modComponents.length === 0) {
       console.debug(
-        `quickBar extension point ${this.id} has no installed extensions`
+        `quickBar extension point ${this.id} has no installed extensions`,
       );
       // Not sure if this is needed or not, but remove any straggler extension actions
       quickBarRegistry.removeExtensionPointActions(this.id);
@@ -363,7 +363,7 @@ export class RemoteQuickBarExtensionPoint extends QuickBarStarterBrickABC {
 }
 
 export function fromJS(
-  config: StarterBrickConfig<QuickBarDefinition>
+  config: StarterBrickConfig<QuickBarDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "quickBar") {

@@ -360,7 +360,7 @@ describe("setExistenceFromValues", () => {
         myArray: expect.objectContaining({
           [IS_ARRAY]: true,
         }),
-      })
+      }),
     );
   });
 

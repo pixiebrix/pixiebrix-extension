@@ -182,7 +182,7 @@ export class CustomFormRenderer extends RendererABC {
     super(
       CustomFormRenderer.BLOCK_ID,
       "Custom Form",
-      "Show a custom form connected to a data source"
+      "Show a custom form connected to a data source",
     );
   }
 
@@ -194,7 +194,7 @@ export class CustomFormRenderer extends RendererABC {
 
   override getPipelineVariableSchema(
     _config: BrickConfig,
-    pipelineName: string
+    pipelineName: string,
   ): Schema | undefined {
     if (pipelineName === "onSubmit") {
       if (
@@ -232,7 +232,7 @@ export class CustomFormRenderer extends RendererABC {
       submitCaption?: string;
       successMessage?: string;
     }>,
-    { logger, runPipeline }: BrickOptions
+    { logger, runPipeline }: BrickOptions,
   ): Promise<ComponentRef> {
     if (logger.context.extensionId == null) {
       throw new Error("extensionId is required");
@@ -246,7 +246,7 @@ export class CustomFormRenderer extends RendererABC {
         "recordId is required for database and localStorage",
         this.id,
         "recordId",
-        recordId
+        recordId,
       );
     }
 
@@ -282,7 +282,7 @@ export class CustomFormRenderer extends RendererABC {
         className,
         async onSubmit(
           values: JsonObject,
-          { submissionCount }: { submissionCount: number }
+          { submissionCount }: { submissionCount: number },
         ) {
           try {
             const normalizedValues = normalizeOutgoingFormData(schema, values);
@@ -300,9 +300,9 @@ export class CustomFormRenderer extends RendererABC {
                 },
                 {
                   [getOutputReference(
-                    CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME
+                    CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME,
                   )]: normalizedValues,
-                }
+                },
               );
             }
 
@@ -330,7 +330,7 @@ export class CustomFormRenderer extends RendererABC {
 async function getInitialData(
   storage: Storage,
   recordId: string,
-  { blueprintId, extensionId }: Context
+  { blueprintId, extensionId }: Context,
 ): Promise<UnknownObject> {
   switch (storage.type) {
     case "localStorage": {
@@ -363,7 +363,7 @@ async function getInitialData(
           params: {
             missing_key: "blank",
           },
-        }
+        },
       );
       assertObject(data);
       return data;
@@ -374,7 +374,7 @@ async function getInitialData(
         "Invalid storage type",
         CustomFormRenderer.BLOCK_ID,
         "storage",
-        storage
+        storage,
       );
     }
   }
@@ -384,7 +384,7 @@ async function setData(
   storage: Storage,
   recordId: string,
   values: UnknownObject,
-  { blueprintId, extensionId }: Context
+  { blueprintId, extensionId }: Context,
 ): Promise<void> {
   const cleanValues = ensureJsonObject(values);
 
@@ -429,7 +429,7 @@ async function setData(
         "Invalid storage type",
         CustomFormRenderer.BLOCK_ID,
         "storage",
-        storage
+        storage,
       );
     }
   }

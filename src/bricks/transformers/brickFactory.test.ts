@@ -175,7 +175,7 @@ test("inner pipelines receive correct context", async () => {
   await reducePipeline(
     pipeline,
     simpleInput({ customInput: "Closure Environment" }),
-    testOptions("v3")
+    testOptions("v3"),
   );
 
   expect(ContextBrick.contexts[0]).toStrictEqual({
@@ -247,7 +247,7 @@ describe("getModVariableSchema", () => {
       brick.getModVariableSchema({
         id: validateRegistryId("test/pipeline-echo"),
         config: {},
-      })
+      }),
     ).resolves.toEqual({
       type: "object",
       additionalProperties: false,
@@ -390,7 +390,7 @@ describe("tracing", () => {
         runId,
         extensionId,
         branches: initialBranches,
-      }
+      },
     );
 
     expect(OptionsBrick.options[0].meta).toStrictEqual({

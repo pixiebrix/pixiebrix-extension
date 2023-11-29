@@ -34,7 +34,7 @@ export interface ColumnDefinition<TRow extends Row> {
 
 function renderValue<TRow extends Row>(
   column: ColumnDefinition<TRow>,
-  row: TRow
+  row: TRow,
 ) {
   const renderer = column.renderer ?? String;
   const value = Object.hasOwn(row, column.property)
@@ -45,7 +45,7 @@ function renderValue<TRow extends Row>(
 
 function renderRow<TRow extends Row>(
   columns: Array<ColumnDefinition<TRow>>,
-  row: TRow
+  row: TRow,
 ) {
   const columnHTML = columns
     .map((column) => `<td>${renderValue(column, row)}</td>`)
@@ -116,7 +116,7 @@ table.blueTable tfoot .links a{
 `;
 
 function makeDataTable<TRow extends UnknownObject>(
-  columns: Array<ColumnDefinition<TRow>>
+  columns: Array<ColumnDefinition<TRow>>,
 ): (ctxt: unknown) => SafeHTML {
   return (ctxt: unknown): SafeHTML => {
     if (!isUnknownObjectArray(ctxt)) {

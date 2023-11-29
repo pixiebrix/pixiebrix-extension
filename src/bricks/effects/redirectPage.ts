@@ -31,7 +31,7 @@ export class NavigateURLEffect extends EffectABC {
       "@pixiebrix/browser/location",
       "Redirect Page",
       "Navigate the current page to a URL",
-      "faWindowMaximize"
+      "faWindowMaximize",
     );
   }
 
@@ -56,7 +56,7 @@ export class OpenURLEffect extends EffectABC {
       "@pixiebrix/browser/open-tab",
       "Open a tab",
       "Open a URL in a new tab",
-      "faWindowMaximize"
+      "faWindowMaximize",
     );
   }
 

@@ -122,7 +122,7 @@ export const generateNewPropertyName = (existingProperties: string[]) =>
 export const moveStringInArray = (
   array: string[],
   stringToBeMoved: string,
-  direction: "up" | "down"
+  direction: "up" | "down",
 ) => {
   const copy = [...array];
   const fromIndex = array.indexOf(stringToBeMoved);
@@ -139,7 +139,7 @@ export const moveStringInArray = (
 export const validateNextPropertyName = (
   schema: Schema,
   propertyName: string,
-  nextPropertyName: string
+  nextPropertyName: string,
 ) => {
   if (nextPropertyName === propertyName) {
     return null;
@@ -176,7 +176,7 @@ export const validateNextPropertyName = (
 export const produceSchemaOnPropertyNameChange = (
   rjsfSchema: RJSFSchema,
   propertyName: string,
-  nextPropertyName: string
+  nextPropertyName: string,
 ) =>
   produce(rjsfSchema, (draft) => {
     // Relying on Immer to protect against object injections
@@ -189,7 +189,7 @@ export const produceSchemaOnPropertyNameChange = (
       draft.schema.required = replaceStringInArray(
         draft.schema.required,
         propertyName,
-        nextPropertyName
+        nextPropertyName,
       );
     }
 
@@ -197,7 +197,7 @@ export const produceSchemaOnPropertyNameChange = (
       const nextUiOrder = replaceStringInArray(
         draft.uiSchema[UI_ORDER],
         propertyName,
-        nextPropertyName
+        nextPropertyName,
       );
       draft.uiSchema[UI_ORDER] = nextUiOrder;
     }
@@ -212,7 +212,7 @@ export const produceSchemaOnPropertyNameChange = (
 export const produceSchemaOnUiTypeChange = (
   rjsfSchema: RJSFSchema,
   propertyName: string,
-  nextUiType: string
+  nextUiType: string,
 ) => {
   const { propertyType, uiWidget, propertyFormat, extra } =
     parseUiType(nextUiType);
@@ -280,7 +280,7 @@ export const produceSchemaOnUiTypeChange = (
         // If switching from Dropdown, convert the enum to options with labels
         draftPropertySchema.oneOf = Array.isArray(draftPropertySchema.enum)
           ? draftPropertySchema.enum.map(
-              (item) => ({ const: item } as SchemaDefinition)
+              (item) => ({ const: item }) as SchemaDefinition,
             )
           : [];
         delete draftPropertySchema.enum;
@@ -322,7 +322,7 @@ export const normalizeSchema = (rjsfSchemaDraft: Draft<RJSFSchema>) => {
 
 export const getNormalizedUiOrder = (
   propertyKeys: string[],
-  uiOrder: string[] = []
+  uiOrder: string[] = [],
 ) => {
   // A naive check to see if all property keys are presenter in uiOrder
   if (propertyKeys.length === uiOrder.length - 1 && uiOrder.at(-1) === "*") {

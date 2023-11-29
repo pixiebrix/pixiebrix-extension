@@ -24,7 +24,7 @@ import {
 
 export function makeTemplateExpression(
   template: TemplateEngine,
-  value: string
+  value: string,
 ): Expression {
   return {
     __type__: template,
@@ -37,7 +37,7 @@ export function makeTemplateExpression(
  * @param value the brick pipeline.
  */
 export function makePipelineExpression(
-  value: BrickPipeline
+  value: BrickPipeline,
 ): PipelineExpression {
   return {
     __type__: "pipeline",
@@ -46,7 +46,7 @@ export function makePipelineExpression(
 }
 
 export function makeVariableExpression(
-  value: string
+  value: string,
 ): Expression<string, "var"> {
   return {
     __type__: "var",

@@ -34,7 +34,7 @@ const warnUndefinedValueOnce = once(() => {
   // This will warn once per module -- not once per instance of useAsyncState. We might want to track in the slice
   // instead. But this is sufficient for now, and keeps the reducer state clean.
   console.warn(
-    "useAsyncState:promiseOrGenerator produced an undefined value. Avoid returning undefined for async state values."
+    "useAsyncState:promiseOrGenerator produced an undefined value. Avoid returning undefined for async state values.",
   );
 });
 
@@ -107,7 +107,7 @@ function useAsyncState<T = unknown>(
     initialValue,
   }: {
     initialValue?: T;
-  } = {}
+  } = {},
 ): FetchableAsyncState<T> {
   // Callback to check if the component is still mounted, to avoid updating state on unmounted React components
   const checkIsMounted = useIsMounted();
@@ -121,7 +121,7 @@ function useAsyncState<T = unknown>(
       ? // Initialize as loading instead of uninitialized. In RTK Query, uninitialized is used for conditional fetching
         // via `skip`: https://redux-toolkit.js.org/rtk-query/usage/conditional-fetching
         loadingAsyncStateFactory()
-      : valueToAsyncState(initialValue)
+      : valueToAsyncState(initialValue),
   );
 
   // Effect to automatically refetch when stated dependencies change

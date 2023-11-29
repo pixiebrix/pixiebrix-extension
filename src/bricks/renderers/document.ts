@@ -31,7 +31,7 @@ export class DocumentRenderer extends RendererABC {
     super(
       DocumentRenderer.BLOCK_ID,
       "Render Document",
-      "Render an interactive document"
+      "Render an interactive document",
     );
   }
 
@@ -48,7 +48,7 @@ export class DocumentRenderer extends RendererABC {
 
   async render(
     { body }: BrickArgs,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<ComponentRef> {
     return {
       Component: DocumentViewLazy,

@@ -25,7 +25,7 @@ import {
 export abstract class RendererABC extends BrickABC {
   abstract render(
     inputs: BrickArgs,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<RendererOutput>;
 
   override async isRootAware(): Promise<boolean> {

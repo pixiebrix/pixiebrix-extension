@@ -61,7 +61,7 @@ const throttledRefreshRegistries = throttle(
   {
     leading: true,
     trailing: false,
-  }
+  },
 );
 
 /**
@@ -89,7 +89,7 @@ function useRefreshRegistries(options?: {
         }
       }
     },
-    [setLoaded]
+    [setLoaded],
   );
 
   useAsyncEffect(
@@ -99,7 +99,7 @@ function useRefreshRegistries(options?: {
       }
     },
     // Dependencies intentionally left blank -- only running on the initial mount
-    []
+    [],
   );
 
   return [loaded, refresh];

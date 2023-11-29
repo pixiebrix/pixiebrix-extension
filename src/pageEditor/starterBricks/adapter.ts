@@ -44,7 +44,7 @@ export const ADAPTERS = new Map<StarterBrickType, ElementConfig>([
 ]);
 
 export async function selectType(
-  extension: ModComponentBase
+  extension: ModComponentBase,
 ): Promise<StarterBrickType> {
   if (hasInnerExtensionPointRef(extension)) {
     return (
@@ -68,13 +68,13 @@ export async function selectType(
 }
 
 export async function extensionToFormState(
-  extension: ModComponentBase
+  extension: ModComponentBase,
 ): Promise<ModComponentFormState> {
   const type = await selectType(extension);
   const { fromExtension } = ADAPTERS.get(type);
   if (!fromExtension) {
     throw new Error(
-      `Editing existing extensions not implemented for type: '${type}'`
+      `Editing existing extensions not implemented for type: '${type}'`,
     );
   }
 
@@ -83,7 +83,7 @@ export async function extensionToFormState(
 }
 
 export function formStateToDynamicElement(
-  formState: ModComponentFormState
+  formState: ModComponentFormState,
 ): DynamicDefinition {
   const elementConfig = ADAPTERS.get(formState.type);
   return elementConfig.asDynamicElement(formState);

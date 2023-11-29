@@ -37,13 +37,13 @@ import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContext
 
 export const isAppServiceField = createTypePredicate(
   (schema) =>
-    schema.$ref === `${SERVICES_BASE_SCHEMA_URL}${PIXIEBRIX_INTEGRATION_ID}`
+    schema.$ref === `${SERVICES_BASE_SCHEMA_URL}${PIXIEBRIX_INTEGRATION_ID}`,
 );
 
 export const isServiceField = createTypePredicate(
   (x) =>
     x.$ref?.startsWith(SERVICES_BASE_SCHEMA_URL) ||
-    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(x.$ref)
+    INTEGRATION_DEPENDENCY_FIELD_REFS.includes(x.$ref),
 );
 
 export const isCssClassField = (fieldDefinition: Schema) =>
@@ -63,7 +63,7 @@ export const hasCustomWidget = (uiSchema?: UiSchema) =>
  * @param schema
  */
 export function isLabelledEnumField(
-  schema: Schema
+  schema: Schema,
 ): schema is LabelledEnumSchema {
   return (
     schema.type === "string" &&
@@ -119,7 +119,7 @@ export function isSimpleServiceField(schema: Schema): boolean {
 }
 
 export function isIntegrationDependencyValueFormat(
-  value: unknown
+  value: unknown,
 ): value is Expression {
   // Default service value, see ServiceWidget
   if (value == null) {

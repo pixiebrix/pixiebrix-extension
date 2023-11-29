@@ -20,7 +20,7 @@ import { JSDOM } from "jsdom";
 
 function getTable(
   html: string,
-  attributes: Record<string, string> = {}
+  attributes: Record<string, string> = {},
 ): HTMLTableElement {
   const table = JSDOM.fragment("<table>" + html)
     .firstElementChild as HTMLTableElement;
@@ -216,7 +216,7 @@ describe("getAllTables", () => {
       <tr><td>Mario<td>42
       <tr><td>Luigi<td>39
     `,
-      { id: "Characters" }
+      { id: "Characters" },
     );
 
     const actual = getAllTables(getDocument(table1));
@@ -233,7 +233,7 @@ describe("getAllTables", () => {
       <tr><td>Mario<td>42
       <tr><td>Luigi<td>39
     `,
-      { "aria-label": "Characters" }
+      { "aria-label": "Characters" },
     );
 
     const actual = getAllTables(getDocument(table1));
@@ -250,14 +250,14 @@ describe("getAllTables", () => {
       <tr><td>Mario<td>42
       <tr><td>Luigi<td>39
     `,
-      { "aria-describedby": "other-element" }
+      { "aria-describedby": "other-element" },
     );
 
     const actual = getAllTables(
       getDocument(
         table1,
-        JSDOM.fragment("<p id='other-element'>Characters</p>")
-      )
+        JSDOM.fragment("<p id='other-element'>Characters</p>"),
+      ),
     );
 
     const expected = new Map([["characters", parseDomTable(table1)]]);

@@ -107,7 +107,7 @@ const NoActiveSidebarPanelsView: React.FunctionComponent = () => {
 
 function getModViewItemForPanel(
   modViewItems: ModViewItem[],
-  panel: PanelEntry
+  panel: PanelEntry,
 ): ModViewItem | null {
   return (
     modViewItems.find(({ mod }) => {
@@ -135,7 +135,8 @@ export const ActiveSidebarModsList: React.FunctionComponent<{
   const sidebarPanels = useSelector(selectSidebarPanels);
 
   const activeMods = modViewItems.filter(
-    (modViewItem) => modViewItem.status === "Active" && !modViewItem.unavailable
+    (modViewItem) =>
+      modViewItem.status === "Active" && !modViewItem.unavailable,
   );
 
   const tableInstance = useTable<PanelEntry>({

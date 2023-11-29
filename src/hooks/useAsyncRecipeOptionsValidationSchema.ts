@@ -32,7 +32,7 @@ function isEmptySchema(schema: Schema | undefined): boolean {
 }
 
 export async function getOptionsValidationSchema(
-  optionsDefinitionSchema: Schema | undefined
+  optionsDefinitionSchema: Schema | undefined,
 ): Promise<AnyObjectSchema> {
   if (isEmptySchema(optionsDefinitionSchema)) {
     return object().shape({});
@@ -42,7 +42,7 @@ export async function getOptionsValidationSchema(
   // reason, so we need to clone it to make sure dereference() can add
   // fields to the object
   const dereferencedSchema = await dereference(
-    cloneDeep(optionsDefinitionSchema)
+    cloneDeep(optionsDefinitionSchema),
   );
 
   const yupSchema = buildYup(dereferencedSchema);
@@ -50,16 +50,16 @@ export async function getOptionsValidationSchema(
   // "this field is required" error unless we allow null values for required fields
   // @see FieldTemplate.tsx for context as to why fields are null instead of undefined
   return yupSchema.shape(
-    mapValues(yupSchema.fields, (value) => value.nullable())
+    mapValues(yupSchema.fields, (value) => value.nullable()),
   );
 }
 
 const useAsyncRecipeOptionsValidationSchema = (
-  optionsDefinitionSchema: Schema | undefined
+  optionsDefinitionSchema: Schema | undefined,
 ): FetchableAsyncState<AnyObjectSchema> =>
   useAsyncState(
     async () => getOptionsValidationSchema(optionsDefinitionSchema),
-    [optionsDefinitionSchema]
+    [optionsDefinitionSchema],
   );
 
 export default useAsyncRecipeOptionsValidationSchema;

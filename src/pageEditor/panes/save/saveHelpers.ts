@@ -63,17 +63,17 @@ import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContext
  */
 export function generateScopeBrickId(
   newScope: string,
-  sourceId: RegistryId
+  sourceId: RegistryId,
 ): RegistryId {
   const match = PACKAGE_REGEX.exec(sourceId);
   return validateRegistryId(
-    compact([newScope, match.groups?.collection, match.groups?.name]).join("/")
+    compact([newScope, match.groups?.collection, match.groups?.name]).join("/"),
   );
 }
 
 export function isRecipeEditable(
   editablePackages: EditablePackageMetadata[],
-  recipe: ModDefinition
+  recipe: ModDefinition,
 ): boolean {
   // The user might lose access to the recipe while they were editing it (the recipe or an extension)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
@@ -92,7 +92,7 @@ export function isRecipeEditable(
  */
 function findRecipeIndex(
   sourceRecipe: ModDefinition,
-  extension: ModComponentBase
+  extension: ModComponentBase,
 ): number {
   if (sourceRecipe.metadata.version !== extension._recipe.version) {
     console.warn(
@@ -100,30 +100,30 @@ function findRecipeIndex(
       {
         recipeVersion: sourceRecipe.metadata.version,
         extensionVersion: extension._recipe.version,
-      }
+      },
     );
   }
 
   // Labels in the recipe aren't guaranteed to be unique
   const labelMatches = sourceRecipe.extensionPoints.filter(
-    (x) => x.label === extension.label
+    (x) => x.label === extension.label,
   );
 
   if (labelMatches.length === 0) {
     throw new Error(
-      `There are no starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`
+      `There are no starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`,
     );
   }
 
   if (labelMatches.length > 1) {
     throw new Error(
-      `There are multiple starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`
+      `There are multiple starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`,
     );
   }
 
   if (labelMatches.length === 1) {
     return sourceRecipe.extensionPoints.findIndex(
-      (x) => x.label === extension.label
+      (x) => x.label === extension.label,
     );
   }
 }
@@ -135,7 +135,7 @@ function findRecipeIndex(
  * @note This function is just for safety, there's currently no way for a mod to end up with "mixed" integration api versions.
  */
 export function findMaxIntegrationDependencyApiVersion(
-  integrationDependencies: Array<Pick<IntegrationDependency, "apiVersion">>
+  integrationDependencies: Array<Pick<IntegrationDependency, "apiVersion">>,
 ): ModDependencyAPIVersion {
   let maxApiVersion: ModDependencyAPIVersion = "v1";
   for (const integrationDependency of integrationDependencies) {
@@ -154,11 +154,11 @@ export function selectExtensionPointIntegrations({
   "integrationDependencies"
 >): ModComponentDefinition["services"] {
   const apiVersion = findMaxIntegrationDependencyApiVersion(
-    integrationDependencies
+    integrationDependencies,
   );
   if (apiVersion === "v1") {
     return Object.fromEntries(
-      integrationDependencies.map((x) => [x.outputKey, x.integrationId])
+      integrationDependencies.map((x) => [x.outputKey, x.integrationId]),
     );
   }
 
@@ -204,15 +204,15 @@ export function replaceRecipeExtension(
   sourceRecipe: ModDefinition,
   metadata: Metadata,
   installedExtensions: ModComponentBase[],
-  element: ModComponentFormState
+  element: ModComponentFormState,
 ): UnsavedModDefinition {
   const installedExtension = installedExtensions.find(
-    (x) => x.id === element.uuid
+    (x) => x.id === element.uuid,
   );
 
   if (installedExtension == null) {
     throw new Error(
-      `Could not find local copy of starter brick: ${element.uuid}`
+      `Could not find local copy of starter brick: ${element.uuid}`,
     );
   }
 
@@ -234,7 +234,7 @@ export function replaceRecipeExtension(
         }
       } else {
         throw new Error(
-          `Element's API Version (${element.apiVersion}) does not match mod's API Version (${sourceRecipe.apiVersion}) and mod's API Version cannot be updated`
+          `Element's API Version (${element.apiVersion}) does not match mod's API Version (${sourceRecipe.apiVersion}) and mod's API Version cannot be updated`,
         );
       }
     }
@@ -292,12 +292,12 @@ export function replaceRecipeExtension(
           !isEqual(
             // eslint-disable-next-line security/detect-object-injection -- existing id
             draft.definitions[originalInnerId].definition,
-            extensionPointConfig.definition
+            extensionPointConfig.definition,
           )
         ) {
           const freshId = freshIdentifier(
             "extensionPoint" as SafeString,
-            Object.keys(sourceRecipe.definitions)
+            Object.keys(sourceRecipe.definitions),
           ) as InnerDefinitionRef;
           newInnerId = freshId;
           // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
@@ -335,7 +335,7 @@ export function replaceRecipeExtension(
 }
 
 function selectExtensionPointConfig(
-  extension: ModComponentBase
+  extension: ModComponentBase,
 ): ModComponentDefinition {
   const extensionPoint: ModComponentDefinition = {
     ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
@@ -411,18 +411,18 @@ export function buildRecipe({
     // We need to handle the unlikely edge-case of zero extensions here, hence the null-coalesce
     const itemsApiVersion = versionedItems[0]?.apiVersion ?? recipe.apiVersion;
     const badApiVersion = versionedItems.find(
-      (item) => item.apiVersion !== itemsApiVersion
+      (item) => item.apiVersion !== itemsApiVersion,
     )?.apiVersion;
 
     if (badApiVersion) {
       throw new Error(
-        `Mod bricks have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All bricks in a mod must have the same API Version.`
+        `Mod bricks have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All bricks in a mod must have the same API Version.`,
       );
     }
 
     if (itemsApiVersion !== recipe.apiVersion) {
       throw new Error(
-        `Mod uses API Version ${recipe.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`
+        `Mod uses API Version ${recipe.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`,
       );
     }
 
@@ -443,7 +443,7 @@ export function buildRecipe({
         }
 
         return extension;
-      }
+      },
     );
 
     const { innerDefinitions, extensionPoints } = buildExtensionPoints([
@@ -465,7 +465,7 @@ type BuildExtensionPointsResult = {
 };
 
 function buildExtensionPoints(
-  extensions: ModComponentBase[]
+  extensions: ModComponentBase[],
 ): BuildExtensionPointsResult {
   const innerDefinitions: InnerDefinitions = {};
   const extensionPoints: ModComponentDefinition[] = [];
@@ -479,7 +479,7 @@ function buildExtensionPoints(
     let newExtensionPointId: RegistryId | InnerDefinitionRef = null;
 
     for (const [extensionPointId, definition] of Object.entries(
-      extension.definitions ?? {}
+      extension.definitions ?? {},
     )) {
       const usedExtensionPointIds = Object.keys(innerDefinitions);
 
@@ -526,7 +526,7 @@ function buildExtensionPoints(
       const newInnerId = needsFreshExtensionPointId
         ? freshIdentifier(
             DEFAULT_EXTENSION_POINT_VAR as SafeString,
-            usedExtensionPointIds
+            usedExtensionPointIds,
           )
         : extensionPointId;
 

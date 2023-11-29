@@ -49,7 +49,7 @@ export function getAllPropertyNames(obj: Record<string, unknown>): string[] {
  */
 export function deepPickBy(
   obj: unknown,
-  predicate: (value: unknown, parent?: unknown) => boolean
+  predicate: (value: unknown, parent?: unknown) => boolean,
 ): unknown {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
   // `typeof null === "object"`, so have to check for it before the "object" check below
@@ -64,7 +64,7 @@ export function deepPickBy(
   if (typeof obj === "object") {
     return mapValues(
       pickBy(obj, (value) => predicate(value, obj)),
-      (value) => deepPickBy(value, predicate)
+      (value) => deepPickBy(value, predicate),
     );
   }
 
@@ -89,7 +89,7 @@ export function ensureJsonObject(value: UnknownObject): JsonObject {
 
 export function getProperty<TResult = unknown>(
   obj: UnknownObject,
-  property: string
+  property: string,
 ): TResult | undefined {
   if (Object.hasOwn(obj, property)) {
     // Checking for hasOwn
@@ -105,22 +105,22 @@ export function getProperty<TResult = unknown>(
 export function cleanValue(
   value: unknown[],
   maxDepth?: number | undefined,
-  depth?: number
+  depth?: number,
 ): unknown[];
 export function cleanValue(
   value: Record<string, unknown>,
   maxDepth?: number | undefined,
-  depth?: number
+  depth?: number,
 ): Record<string, unknown>;
 export function cleanValue(
   value: unknown,
   maxDepth?: number | undefined,
-  depth?: number
+  depth?: number,
 ): unknown;
 export function cleanValue(
   value: unknown,
   maxDepth: number | undefined,
-  depth = 0
+  depth = 0,
 ): unknown {
   const recurse = partial(cleanValue, partial.placeholder, maxDepth, depth + 1);
 
@@ -148,7 +148,7 @@ export function excludeUndefined(obj: unknown): unknown {
   if (isPlainObject(obj) && typeof obj === "object") {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
-      excludeUndefined
+      excludeUndefined,
     );
   }
 
@@ -161,7 +161,7 @@ export function removeUndefined(obj: unknown): unknown {
 
 export function mapObject<Input, Output>(
   obj: Record<string, Input>,
-  fn: (value: Input, key: string) => Output
+  fn: (value: Input, key: string) => Output,
 ): Record<string, Output> {
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
 }

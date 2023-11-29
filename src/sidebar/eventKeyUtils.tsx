@@ -29,7 +29,7 @@ import hash from "object-hash";
 import { sortBy } from "lodash";
 
 export function eventKeyForEntry(
-  entry: SidebarEntry | undefined
+  entry: SidebarEntry | undefined,
 ): string | null {
   if (entry == null) {
     return null;
@@ -67,7 +67,7 @@ export function defaultEventKey(
     staticPanels = [],
     modActivationPanel = null,
   }: SidebarEntries,
-  closedTabs: SidebarState["closedTabs"]
+  closedTabs: SidebarState["closedTabs"],
 ): string | null {
   if (forms.length > 0) {
     return eventKeyForEntry(forms.at(-1));
@@ -96,7 +96,7 @@ export function defaultEventKey(
 
 function getOpenPanelEntries(
   entries: SidebarEntry[],
-  closedTabs: SidebarState["closedTabs"]
+  closedTabs: SidebarState["closedTabs"],
 ): SidebarEntry[] {
   return entries.filter((entry) => {
     const key = eventKeyForEntry(entry);

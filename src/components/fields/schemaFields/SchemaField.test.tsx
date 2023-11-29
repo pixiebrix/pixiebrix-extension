@@ -45,7 +45,7 @@ jest.mock(
   () => ({
     __esModule: true,
     default: jest.fn().mockReturnValue(() => <div>DatabaseCreateModal</div>),
-  })
+  }),
 );
 
 type SchemaTestCase = {
@@ -208,13 +208,13 @@ describe("SchemaField", () => {
               description: "A test field",
             }}
           />
-        </Formik>
+        </Formik>,
       );
 
       // Renders text entry HTML element
       expect(screen.getByRole("textbox")).toBeInTheDocument();
       expect(screen.getByRole("button")).toBeInTheDocument();
-    }
+    },
   );
 
   test("string field options", async () => {
@@ -229,7 +229,7 @@ describe("SchemaField", () => {
       />,
       {
         initialValues: { apiVersion: "v3", testField: "" },
-      }
+      },
     );
 
     // Renders text entry HTML element
@@ -248,7 +248,7 @@ describe("SchemaField", () => {
           description: "A test field",
         }}
       />,
-      { initialValues: { apiVersion: "v3", testField: 42 } }
+      { initialValues: { apiVersion: "v3", testField: 42 } },
     );
 
     // Renders number entry HTML element
@@ -284,7 +284,7 @@ describe("SchemaField", () => {
       await waitForEffect();
 
       const toggle = within(screen.getByTestId("toggle-myField")).getByRole(
-        "button"
+        "button",
       );
       expect(toggle).toBeInTheDocument();
 
@@ -305,10 +305,10 @@ describe("SchemaField", () => {
             apiVersion: "v3",
             myField: expectedEndValue,
           },
-          expect.anything()
+          expect.anything(),
         );
       });
-    }
+    },
   );
 
   test("string/integer field options", async () => {
@@ -321,7 +321,7 @@ describe("SchemaField", () => {
           description: "A test field",
         }}
       />,
-      { initialValues: { apiVersion: "v3", testField: 42 } }
+      { initialValues: { apiVersion: "v3", testField: 42 } },
     );
 
     // Renders number entry HTML element because current value is a number
@@ -345,12 +345,12 @@ describe("SchemaField", () => {
       await waitForEffect();
 
       const widgetLoadingIndicator = screen.queryByTestId(
-        `${fieldName}-widget-loading`
+        `${fieldName}-widget-loading`,
       );
       expect(widgetLoadingIndicator).toBeNull();
 
       const toggle = within(
-        screen.queryByTestId(`toggle-${fieldName}`)
+        screen.queryByTestId(`toggle-${fieldName}`),
       ).getByRole("button");
       expect(toggle).toBeInTheDocument();
 
@@ -358,11 +358,11 @@ describe("SchemaField", () => {
 
       await waitFor(() => {
         const testIds = [...screen.getAllByRole("button")].map(
-          (x) => x.dataset.testid
+          (x) => x.dataset.testid,
         );
         expect(testIds).toEqual(uniq(testIds));
       });
-    }
+    },
   );
 
   test.each(schemaTestCases)(
@@ -375,7 +375,7 @@ describe("SchemaField", () => {
       await waitForEffect();
 
       const toggle = within(screen.getByTestId("toggle-aTestField")).getByRole(
-        "button"
+        "button",
       );
       expect(toggle).toBeInTheDocument();
 
@@ -390,7 +390,7 @@ describe("SchemaField", () => {
           expect(testIds.at(-1)).toBe("omit");
         }
       });
-    }
+    },
   );
 
   const databaseFieldTestCases = [
@@ -415,11 +415,11 @@ describe("SchemaField", () => {
           }}
           isRequired={isRequired}
         />,
-        { initialValues: { apiVersion: "v3", testField: null } }
+        { initialValues: { apiVersion: "v3", testField: null } },
       );
 
       await expectToggleOptions("toggle-testField", expectedOptions);
-    }
+    },
   );
 
   test("don't render truthy root aware field", async () => {
@@ -430,7 +430,7 @@ describe("SchemaField", () => {
           type: "boolean",
         }}
       />,
-      { initialValues: { apiVersion: "v3", config: { isRootAware: true } } }
+      { initialValues: { apiVersion: "v3", config: { isRootAware: true } } },
     );
 
     // Renders no HTML element
@@ -449,13 +449,13 @@ describe("SchemaField", () => {
             type: "boolean",
           }}
         />,
-        { initialValues: { apiVersion: "v3", config: { isRootAware: value } } }
+        { initialValues: { apiVersion: "v3", config: { isRootAware: value } } },
       );
 
       // Renders switch HTML element
       expect(screen.getByText(/isrootaware/i)).toBeInTheDocument();
       await expectToggleOptions("", []);
-    }
+    },
   );
 
   test("labelled enum field schema defaults to selection widget", async () => {
@@ -473,7 +473,7 @@ describe("SchemaField", () => {
           ],
         }}
       />,
-      { initialValues: { apiVersion: "v3", testField: "foo" } }
+      { initialValues: { apiVersion: "v3", testField: "foo" } },
     );
 
     await expectToggleOptions("toggle-testField", ["select", "string", "var"]);
@@ -517,7 +517,7 @@ describe("SchemaField", () => {
         schema={schema}
         uiSchema={{ "ui:widget": widget }}
       />,
-      { initialValues: {} }
+      { initialValues: {} },
     );
     expect(await assertion()).toBeInTheDocument();
   });

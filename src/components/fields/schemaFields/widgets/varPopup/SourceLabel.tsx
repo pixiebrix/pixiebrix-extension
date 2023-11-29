@@ -53,9 +53,8 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
       }
     }
   } else {
-    const blockConfig = blocksInfo.find(
-      (block) => block.path === source
-    )?.blockConfig;
+    const blockConfig = blocksInfo.find((block) => block.path === source)
+      ?.blockConfig;
     if (blockConfig == null) {
       label = source;
     } else {

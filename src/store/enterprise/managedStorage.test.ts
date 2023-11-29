@@ -48,7 +48,7 @@ describe("readManagedStorageByKey", () => {
   it("reads managed storage", async () => {
     await browser.storage.managed.set({ partnerId: "taco-bell" });
     await expect(readManagedStorageByKey("partnerId")).resolves.toBe(
-      "taco-bell"
+      "taco-bell",
     );
   });
 });

@@ -42,11 +42,11 @@ const hasSession = "session" in chrome.storage;
 export class SessionMap<Value extends JsonValue> {
   constructor(
     private readonly key: string,
-    private readonly url: ImportMeta["url"]
+    private readonly url: ImportMeta["url"],
   ) {
     expectContext(
       "background",
-      "This polyfill doesn’t share data across contexts; only use it in the background page"
+      "This polyfill doesn’t share data across contexts; only use it in the background page",
     );
   }
 

@@ -68,7 +68,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
-      } as Metadata),
+      }) as Metadata,
     definition: define<QuickBarDefinition>({
       type: "quickBar",
       isAvailable: () => ({
@@ -123,24 +123,24 @@ describe("quickBarExtension", () => {
     starterBrick.registerModComponent(
       extensionFactory({
         extensionPointId: starterBrick.id,
-      })
+      }),
     );
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS
+      NUM_DEFAULT_QUICKBAR_ACTIONS,
     );
     await starterBrick.install();
     await starterBrick.runModComponents({ reason: RunReason.MANUAL });
 
     expect(quickBarRegistry.currentActions).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS + 1
+      NUM_DEFAULT_QUICKBAR_ACTIONS + 1,
     );
 
     expect(rootReader.readCount).toBe(0);
 
     // QuickBar adds another div to the body
     expect(document.body.innerHTML).toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>'
+      '<div id="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually

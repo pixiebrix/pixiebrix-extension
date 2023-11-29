@@ -34,7 +34,7 @@ export const marketplaceTagFactory = define<MarketplaceTag>({
  * @param modDefinition
  */
 export function modDefinitionToMarketplacePackage(
-  modDefinition: ModDefinition
+  modDefinition: ModDefinition,
 ): MarketplaceListing["package"] {
   return {
     id: modDefinition.metadata.id,
@@ -60,5 +60,5 @@ export const marketplaceListingFactory = define<MarketplaceListing>({
     ({
       id: uuidSequence,
       name: `@test/test-${n}`,
-    } as unknown as MarketplaceListing["package"]),
+    }) as unknown as MarketplaceListing["package"],
 });
