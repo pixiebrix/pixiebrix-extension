@@ -22,7 +22,7 @@ type ComponentData = Record<string, unknown>;
 export function traverse<T = unknown>(
   next: (current: T) => T | null,
   source: T,
-  count: number
+  count: number,
 ): T | null {
   let current = source;
   for (let i = 0; i < count && current; i++) {
@@ -58,7 +58,7 @@ export interface ComponentAdapter<TComponent = unknown> {
 
 export interface ReadAdapter<
   TComponent = unknown,
-  TData extends ComponentData = ComponentData
+  TData extends ComponentData = ComponentData,
 > {
   /**
    * Returns the data defined for the component.
@@ -78,7 +78,7 @@ export interface ReadAdapter<
 
 export interface WriteAdapter<
   TComponent = unknown,
-  TData extends ComponentData = ComponentData
+  TData extends ComponentData = ComponentData,
 > {
   /**
    * Set data on a component in framework
@@ -88,13 +88,13 @@ export interface WriteAdapter<
 
 export type ReadableComponentAdapter<
   TComponent = unknown,
-  TData extends ComponentData = ComponentData
+  TData extends ComponentData = ComponentData,
 > = TreeAdapter<TComponent> &
   ComponentAdapter<TComponent> &
   ReadAdapter<TComponent, TData>;
 
 export type WriteableComponentAdapter<
   TComponent = unknown,
-  TData extends ComponentData = ComponentData
+  TData extends ComponentData = ComponentData,
 > = ReadableComponentAdapter<TComponent, TData> &
   WriteAdapter<TComponent, TData>;

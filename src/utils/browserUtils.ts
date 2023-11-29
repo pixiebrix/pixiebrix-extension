@@ -31,6 +31,6 @@ export function isGoogleChrome(): boolean {
   // https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
   // @ts-expect-error -- userAgentData is defined in Chrome browser
   return navigator.userAgentData?.brands?.some(
-    (x: { brand: string }) => x.brand === "Google Chrome"
+    (x: { brand: string }) => x.brand === "Google Chrome",
   );
 }

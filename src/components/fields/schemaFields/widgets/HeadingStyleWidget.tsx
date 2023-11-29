@@ -24,7 +24,7 @@ import { useField } from "formik";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
 
 const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
-  props
+  props,
 ) => {
   const [{ value }, , { setValue }] = useField<string>(props.name);
 

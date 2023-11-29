@@ -46,7 +46,7 @@ describe("RendererComponent", () => {
     const onAction = jest.fn();
 
     runHeadlessPipelineMock.mockRejectedValue(
-      new SubmitPanelAction("submit", { foo: "bar" })
+      new SubmitPanelAction("submit", { foo: "bar" }),
     );
 
     const config = {
@@ -80,7 +80,7 @@ describe("RendererComponent", () => {
         body={{ Component: DocumentView as any, props }}
         meta={{ runId, extensionId }}
         onAction={onAction}
-      />
+      />,
     );
 
     await waitForEffect();

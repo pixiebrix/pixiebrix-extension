@@ -63,7 +63,7 @@ const modsPageSlice = createSlice({
     },
     setSortBy(
       state,
-      { payload: sortBy }: PayloadAction<Array<SortingRule<ModViewItem>>>
+      { payload: sortBy }: PayloadAction<Array<SortingRule<ModViewItem>>>,
     ) {
       state.sortBy = sortBy;
     },

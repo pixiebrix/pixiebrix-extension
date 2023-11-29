@@ -48,8 +48,8 @@ describe("RegistryIdWidget", () => {
           authActions.setAuth(
             authStateFactory({
               scope: testUserScope,
-            })
-          )
+            }),
+          ),
         );
       },
     });
@@ -70,7 +70,7 @@ describe("RegistryIdWidget", () => {
 
     const [validOrganizations, invalidOrganizations] = partition(
       authState.organizations,
-      (organization) => editorRoles.has(organization.role)
+      (organization) => editorRoles.has(organization.role),
     );
 
     render(<RegistryIdWidget name="testField" />, {
@@ -107,7 +107,7 @@ describe("RegistryIdWidget", () => {
     const anotherOrganization = authState.organizations.find(
       (organization: { id: string; role: number }) =>
         organization.id !== authState.organization.id &&
-        editorRoles.has(organization.role)
+        editorRoles.has(organization.role),
     );
 
     const { getFormState } = render(<RegistryIdWidget name="testField" />, {

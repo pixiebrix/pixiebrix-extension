@@ -124,7 +124,7 @@ export type SettingsStateV1 = SkunkworksSettings & {
    *
    * @since 1.7.12
    */
-  authMethod: typeof AUTH_METHODS[number] | null;
+  authMethod: (typeof AUTH_METHODS)[number] | null;
 
   /**
    * Theme name for the extension

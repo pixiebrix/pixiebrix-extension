@@ -122,7 +122,7 @@ export function searchData(query: string, data: unknown): unknown {
     const values = mapValues(data, (value, key) =>
       includes(normalize(key), normalizedQuery)
         ? value
-        : searchData(query, value)
+        : searchData(query, value),
     );
     const pickResult = pickBy(values, (value, key) => {
       const keyMatch = includes(normalize(key), normalizedQuery);
@@ -209,7 +209,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       setQuery(target.value);
       onSearchQueryChange?.(target.value);
     },
-    [onSearchQueryChange]
+    [onSearchQueryChange],
   );
 
   // This component doesn't react to state changes, only setting the initial expanded state
@@ -219,7 +219,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   const getExpanded = useCallback(
     (keyPath: Array<string | number>) =>
       Boolean(get(expandedStateRef.current, reverse([...keyPath]))),
-    []
+    [],
   );
 
   const labelRenderer = useCallback(
@@ -227,7 +227,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       keyPath: Array<string | number>,
       nodeType: string,
       isExpanded: boolean,
-      expandable: boolean
+      expandable: boolean,
     ): ReactNode => {
       if (expandable && getExpanded(keyPath) !== isExpanded) {
         // Using Immer allows to work with immutable objects
@@ -248,7 +248,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
         <span>{keyPath[0]}:</span>
       );
     },
-    [onExpandedStateChange, getExpanded, copyLabelRenderer, copyable]
+    [onExpandedStateChange, getExpanded, copyLabelRenderer, copyable],
   );
 
   const labelText = query ? `Search Results: ${query}` : label;

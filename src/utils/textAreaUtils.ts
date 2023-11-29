@@ -27,7 +27,7 @@ interface Coordinates {
  */
 export function getTextareaCaretCoordinates(
   element: HTMLTextAreaElement,
-  position: number
+  position: number,
 ): Coordinates {
   const div = document.createElement("div");
   const span = document.createElement("span");

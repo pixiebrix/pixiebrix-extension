@@ -73,11 +73,11 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
           block: item,
           type: await getType(item),
         });
-      })
+      }),
     );
 
     const failureCount = typePromises.filter(
-      (x) => x.status === "rejected"
+      (x) => x.status === "rejected",
     ).length;
     if (failureCount > 0) {
       console.warn("Failed to compute type for %d block(s)", failureCount);

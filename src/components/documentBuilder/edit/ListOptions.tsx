@@ -49,7 +49,7 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
   };
 
   const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = async (
-    event
+    event,
   ) => {
     const nextType = event.target.value as DocumentElementType;
 
@@ -57,7 +57,7 @@ const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
       documentElement,
       (draft: ListDocumentElement) => {
         draft.config.element.__value__ = createNewElement(nextType);
-      }
+      },
     );
 
     await setDocumentElement(nextDocumentElement);

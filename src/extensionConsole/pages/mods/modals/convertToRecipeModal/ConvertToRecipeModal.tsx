@@ -32,7 +32,7 @@ const ConvertToRecipeModal: React.FunctionComponent = () => {
   const { showShareContext, showPublishContext } =
     useSelector(selectModalsContext);
   const showConvertToRecipeModal = Boolean(
-    showShareContext?.extensionId || showPublishContext?.extensionId
+    showShareContext?.extensionId || showPublishContext?.extensionId,
   );
 
   return (

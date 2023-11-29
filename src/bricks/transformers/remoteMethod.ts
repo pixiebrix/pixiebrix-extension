@@ -71,7 +71,7 @@ export class RemoteMethod extends TransformerABC {
     super(
       RemoteMethod.BLOCK_ID,
       "HTTP Request",
-      "Send an RESTful HTTP request, i.e., GET, PUT, POST, PATCH, DELETE"
+      "Send an RESTful HTTP request, i.e., GET, PUT, POST, PATCH, DELETE",
     );
   }
 
@@ -92,13 +92,13 @@ export class RemoteMethod extends TransformerABC {
         "Expected configured service",
         this.id,
         "service",
-        service
+        service,
       );
     }
 
     const { data } = await performConfiguredRequestInBackground(
       service,
-      requestConfig as AxiosRequestConfig
+      requestConfig as AxiosRequestConfig,
     );
     return data;
   }

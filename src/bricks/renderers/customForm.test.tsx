@@ -86,7 +86,7 @@ describe("form data normalization", () => {
       const normalizedData = normalizeIncomingFormData(schema, data);
 
       expect(normalizedData).toStrictEqual(expected);
-    }
+    },
   );
 
   test("normalizes non-empty outgoing data", () => {
@@ -181,7 +181,7 @@ describe("form data normalization", () => {
         fields={fields}
         widgets={uiWidgets}
         FieldTemplate={FieldTemplate}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -193,7 +193,7 @@ describe("form data normalization", () => {
     await userEvent.click(
       screen.getByRole("button", {
         name: "Submit",
-      })
+      }),
     );
 
     expect(screen.queryByText("Error")).not.toBeInTheDocument();
@@ -218,7 +218,7 @@ describe("CustomFormRenderer", () => {
           },
         },
       } as any,
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     render(<Component {...props} />);

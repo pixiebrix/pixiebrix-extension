@@ -49,8 +49,8 @@ describe("SchemaSelectWidget", () => {
           initialValues: {
             [fieldName]: null,
           },
-        }
-      ).asFragment()
+        },
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -73,8 +73,8 @@ describe("SchemaSelectWidget", () => {
           initialValues: {
             [fieldName]: null,
           },
-        }
-      ).asFragment()
+        },
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 });
@@ -86,7 +86,7 @@ describe("mapSchemaToOptions", () => {
         schema: { type: "string", enum: [] },
         value: "foo",
         created: [],
-      })
+      }),
     ).toEqual({
       creatable: false,
       options: [{ value: "foo", label: "foo" }],
@@ -99,7 +99,7 @@ describe("mapSchemaToOptions", () => {
         schema: { type: "string", oneOf: [{ const: "foo", title: "Foo" }] },
         value: "foo",
         created: [],
-      })
+      }),
     ).toEqual({
       creatable: false,
       options: [{ value: "foo", label: "Foo" }],

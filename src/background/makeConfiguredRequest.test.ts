@@ -37,7 +37,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 // Disable automatic __mocks__ resolution #6799
 jest.mock("@/services/apiClient", () =>
-  jest.requireActual("../services/apiClient.ts")
+  jest.requireActual("../services/apiClient.ts"),
 );
 setContext("background");
 
@@ -71,7 +71,7 @@ afterEach(() => {
 
 // Use real version of pixiebrixConfigurationFactory
 const { pixiebrixConfigurationFactory } = jest.requireActual(
-  "@/integrations/locator"
+  "@/integrations/locator",
 );
 (locator.pixiebrixConfigurationFactory as jest.Mock) =
   pixiebrixConfigurationFactory;
@@ -84,21 +84,21 @@ serviceRegistry.register([
     id: PIXIEBRIX_INTEGRATION_ID,
     authenticateRequest: (
       serviceConfig: SecretsConfig,
-      requestConfig: AxiosRequestConfig
+      requestConfig: AxiosRequestConfig,
     ) => requestConfig,
   },
   {
     id: EXAMPLE_SERVICE_API,
     authenticateRequest: (
       serviceConfig: SecretsConfig,
-      requestConfig: AxiosRequestConfig
+      requestConfig: AxiosRequestConfig,
     ) => requestConfig,
   },
   {
     id: EXAMPLE_SERVICE_TOKEN_API,
     authenticateRequest: (
       serviceConfig: SecretsConfig,
-      requestConfig: AxiosRequestConfig
+      requestConfig: AxiosRequestConfig,
     ) => requestConfig,
     isToken: true,
   },
@@ -156,7 +156,7 @@ describe("authenticated direct requests", () => {
     jest
       .spyOn(Locator.prototype, "findIntegrationConfig")
       .mockResolvedValue(
-        directIntegrationConfig as unknown as IntegrationConfig
+        directIntegrationConfig as unknown as IntegrationConfig,
       );
   });
 
@@ -164,7 +164,7 @@ describe("authenticated direct requests", () => {
     axiosMock.onAny().reply(200, {});
     const response = await performConfiguredRequest(
       directIntegrationConfig,
-      requestConfig
+      requestConfig,
     );
     expect(response.status).toBe(200);
   });
@@ -175,7 +175,7 @@ describe("authenticated direct requests", () => {
       .mockResolvedValue(null);
 
     await expect(async () =>
-      performConfiguredRequest(directIntegrationConfig, requestConfig)
+      performConfiguredRequest(directIntegrationConfig, requestConfig),
     ).rejects.toThrow("Local integration configuration not found:");
   });
 
@@ -184,7 +184,7 @@ describe("authenticated direct requests", () => {
 
     const request = performConfiguredRequest(
       directIntegrationConfig,
-      requestConfig
+      requestConfig,
     );
 
     await expect(request).rejects.toThrow(ContextError);
@@ -193,7 +193,7 @@ describe("authenticated direct requests", () => {
     });
     await expect(request).rejects.toHaveProperty(
       "cause.cause.response.status",
-      403
+      403,
     );
   });
 });
@@ -206,7 +206,7 @@ describe("proxy service requests", () => {
     });
     const { status, data } = await performConfiguredRequest(
       proxiedIntegrationConfig,
-      requestConfig
+      requestConfig,
     );
     expect(JSON.parse(String(axiosMock.history.post[0].data))).toEqual({
       ...requestConfig,
@@ -231,7 +231,7 @@ describe("proxy service requests", () => {
 
         const request = performConfiguredRequest(
           proxiedIntegrationConfig,
-          requestConfig
+          requestConfig,
         );
 
         await expect(request).rejects.toThrow(ContextError);
@@ -244,14 +244,14 @@ describe("proxy service requests", () => {
           },
         });
       });
-    }
+    },
   );
 
   it("handle proxy error", async () => {
     axiosMock.onAny().reply(500);
     const request = performConfiguredRequest(
       proxiedIntegrationConfig,
-      requestConfig
+      requestConfig,
     );
 
     await expect(request).rejects.toThrow(ContextError);
@@ -272,7 +272,7 @@ describe("proxy service requests", () => {
     axiosMock.onAny().networkError();
     const request = performConfiguredRequest(
       proxiedIntegrationConfig,
-      requestConfig
+      requestConfig,
     );
 
     await expect(request).rejects.toThrow(ContextError);
@@ -294,7 +294,7 @@ describe("Retry token request", () => {
     jest
       .spyOn(Locator.prototype, "findIntegrationConfig")
       .mockResolvedValue(
-        directTokenIntegrationConfig as unknown as IntegrationConfig
+        directTokenIntegrationConfig as unknown as IntegrationConfig,
       );
   });
 
@@ -304,12 +304,12 @@ describe("Retry token request", () => {
       axiosMock.onGet(requestConfig.url).reply(statusCode, {});
       const response = performConfiguredRequest(
         directTokenIntegrationConfig,
-        requestConfig
+        requestConfig,
       );
       await expect(response).rejects.toThrow(ContextError);
       // Once on the initial call b/c no cached auth data, and once for the retry
       expect(mockGetToken).toHaveBeenCalledTimes(2);
-    }
+    },
   );
 
   it("Handles expired AA token", async () => {
@@ -318,7 +318,7 @@ describe("Retry token request", () => {
       .reply(400, { message: "Access Token has expired" });
     const response = performConfiguredRequest(
       directTokenIntegrationConfig,
-      requestConfig
+      requestConfig,
     );
     await expect(response).rejects.toThrow(ContextError);
     // Once on the initial call b/c no cached auth data, and once for the retry

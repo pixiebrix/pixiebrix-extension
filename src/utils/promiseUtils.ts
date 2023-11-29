@@ -30,15 +30,15 @@ export const foreverPendingPromise = new Promise(() => {});
  */
 export async function asyncMapValues<
   InputObject extends Record<string, unknown>,
-  OutputValues
+  OutputValues,
 >(mapping: InputObject, fn: ObjectIterator<InputObject, OutputValues>) {
   const entries = Object.entries(mapping) as Array<
     [string, InputObject[keyof InputObject]]
   >;
   const resolvedEntries = await Promise.all(
     entries.map(async ([key, value]) =>
-      Promise.all([key, fn(value, key, mapping)])
-    )
+      Promise.all([key, fn(value, key, mapping)]),
+    ),
   );
   return Object.fromEntries(resolvedEntries) as {
     [K in keyof InputObject]: Awaited<OutputValues>;
@@ -46,20 +46,20 @@ export async function asyncMapValues<
 }
 
 export async function allSettledValues<T = unknown>(
-  promises: Array<Promise<T>>
+  promises: Array<Promise<T>>,
 ): Promise<T[]> {
   const settled = await Promise.allSettled(promises);
   return settled
     .filter(
       (promise): promise is PromiseFulfilledResult<Awaited<T>> =>
-        promise.status === "fulfilled"
+        promise.status === "fulfilled",
     )
     .map(({ value }) => value);
 }
 
 export async function logPromiseDuration<P>(
   title: string,
-  promise: Promise<P>
+  promise: Promise<P>,
 ): Promise<P> {
   const start = Date.now();
   try {
@@ -83,7 +83,7 @@ export async function logPromiseDuration<P>(
  */
 export const memoizeUntilSettled: typeof pMemoize = (
   functionToMemoize,
-  options
+  options,
 ) =>
   pMemoize(functionToMemoize, {
     ...options,
@@ -93,7 +93,7 @@ export const memoizeUntilSettled: typeof pMemoize = (
 /** Loop an iterable with the ability to place `await` in the loop itself */
 export async function asyncForEach<Item>(
   iterable: Iterable<Item>,
-  iteratee: (item: Item) => Promise<void>
+  iteratee: (item: Item) => Promise<void>,
 ): Promise<void> {
   await Promise.all([...iterable].map(unary(iteratee)));
 }
@@ -108,7 +108,7 @@ export async function awaitValue<T>(
     waitMillis: number;
     retryMillis?: number;
     predicate?: (value: T) => boolean;
-  }
+  },
 ): Promise<T> {
   const start = Date.now();
   let value: T;
@@ -127,7 +127,7 @@ export async function awaitValue<T>(
 
 export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
-  { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 }
+  { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 },
 ): Promise<T | undefined> {
   const endBy = Date.now() + maxWaitMillis;
   do {
@@ -159,7 +159,7 @@ export async function retryWithJitter<T>(
     retries?: number;
     shouldRetry?: (error: unknown) => boolean;
     maxDelayMillis?: number;
-  }
+  },
 ): Promise<T> {
   for (let attemptCount = 0; attemptCount < retries + 1; attemptCount++) {
     try {
@@ -183,25 +183,25 @@ export async function retryWithJitter<T>(
  * Returns a new object with all the values from the original resolved
  */
 export async function resolveObj<T>(
-  obj: Record<string, Promise<T>>
+  obj: Record<string, Promise<T>>,
 ): Promise<Record<string, T>> {
   return Object.fromEntries(
-    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
+    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v])),
   );
 }
 
 export function groupPromisesByStatus<T>(
-  results: Array<PromiseSettledResult<T>>
+  results: Array<PromiseSettledResult<T>>,
 ) {
   const rejected = results
     .filter(
-      (result): result is PromiseRejectedResult => result.status === "rejected"
+      (result): result is PromiseRejectedResult => result.status === "rejected",
     )
     .map(({ reason }) => reason);
   const fulfilled = results
     .filter(
       (result): result is PromiseFulfilledResult<T> =>
-        result.status === "fulfilled"
+        result.status === "fulfilled",
     )
     .map(({ value }) => value);
 

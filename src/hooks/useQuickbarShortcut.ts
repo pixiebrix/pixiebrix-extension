@@ -26,7 +26,7 @@ function useQuickbarShortcut(): {
   const { data: shortcut } = useAsyncState(async () => {
     const commands = await chromeP.commands.getAll();
     const command = commands.find(
-      (command) => command.name === "toggle-quick-bar"
+      (command) => command.name === "toggle-quick-bar",
     );
     return command?.shortcut;
   }, []);

@@ -61,7 +61,7 @@ export interface BaseExtensionState {
  */
 export interface BaseFormStateV1<
   TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
 > {
   /**
    * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
@@ -133,7 +133,7 @@ export interface BaseFormStateV1<
  */
 export type BaseFormStateV2<
   TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
 > = Except<BaseFormStateV1<TExtension, TExtensionPoint>, "services"> & {
   /**
    * The integration dependencies configured for the extension
@@ -145,7 +145,7 @@ export type BaseFormStateV2<
 };
 export type BaseFormState<
   TExtension extends BaseExtensionState = BaseExtensionState,
-  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState,
 > = Except<
   BaseFormStateV2<TExtension, TExtensionPoint>,
   "integrationDependencies"

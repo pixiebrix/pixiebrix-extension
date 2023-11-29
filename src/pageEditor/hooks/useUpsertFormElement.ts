@@ -44,7 +44,7 @@ const { markSaved } = editorSlice.actions;
 async function upsertPackageConfig(
   packageUUID: UUID | null,
   kind: "reader" | "extensionPoint",
-  config: unknown
+  config: unknown,
 ): Promise<void> {
   const client = await getLinkedApiClient();
 
@@ -126,7 +126,7 @@ function useUpsertFormElement(): SaveCallback {
   const saveElement = useCallback(
     async (
       element: ModComponentFormState,
-      options: SaveOptions
+      options: SaveOptions,
     ): Promise<string | null> => {
       if (options.checkPermissions) {
         // Good to prompt the creator for permissions if any is missing, but they're not actually required to save
@@ -156,14 +156,14 @@ function useUpsertFormElement(): SaveCallback {
             const packageId = element.installed
               ? editablePackages.find(
                   // Bricks endpoint uses "name" instead of id
-                  (x) => x.name === extensionPointConfig.metadata.id
+                  (x) => x.name === extensionPointConfig.metadata.id,
                 )?.id
               : null;
 
             await upsertPackageConfig(
               packageId,
               "extensionPoint",
-              extensionPointConfig
+              extensionPointConfig,
             );
           } catch (error) {
             return onStepError(error, "saving foundation");
@@ -185,17 +185,17 @@ function useUpsertFormElement(): SaveCallback {
             saveExtension({
               extension: extensionWithInnerDefinitions(
                 rawExtension,
-                extensionPointConfig.definition
+                extensionPointConfig.definition,
               ),
               pushToCloud: options.pushToCloud,
-            })
+            }),
           );
         } else {
           dispatch(
             saveExtension({
               extension: rawExtension,
               pushToCloud: options.pushToCloud,
-            })
+            }),
           );
         }
 
@@ -214,7 +214,7 @@ function useUpsertFormElement(): SaveCallback {
 
       return null;
     },
-    [dispatch, editablePackages, sessionId]
+    [dispatch, editablePackages, sessionId],
   );
 
   return useCallback(
@@ -230,7 +230,7 @@ function useUpsertFormElement(): SaveCallback {
         return "Save error";
       }
     },
-    [saveElement]
+    [saveElement],
   );
 }
 

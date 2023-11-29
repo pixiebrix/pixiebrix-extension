@@ -83,7 +83,7 @@ describe("SetupPage", () => {
     render(
       <MemoryRouter>
         <SetupPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -105,10 +105,10 @@ describe("SetupPage", () => {
           dispatch(
             settingsSlice.actions.setAuthIntegrationId({
               integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-            })
+            }),
           );
         },
-      }
+      },
     );
 
     await waitFor(() => {
@@ -132,7 +132,7 @@ describe("SetupPage", () => {
     render(
       <HashRouter>
         <SetupPage />
-      </HashRouter>
+      </HashRouter>,
     );
 
     await waitFor(() => {
@@ -141,13 +141,13 @@ describe("SetupPage", () => {
 
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
     expect(
-      screen.getByLabelText("Control Room URL").getAttribute("value")
+      screen.getByLabelText("Control Room URL").getAttribute("value"),
       // Schema should get pre-pended automatically from hostname
     ).toBe("https://mycontrolroom.com");
 
     // Sanity check we haven't redirected away from the start screen yet
     expect(location.href).toBe(
-      "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com"
+      "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com",
     );
 
     const button = screen.getByText("Connect AARI");
@@ -165,7 +165,7 @@ describe("SetupPage", () => {
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
     history.push(
-      "/start?hostname=community2.cloud-2.automationanywhere.digital"
+      "/start?hostname=community2.cloud-2.automationanywhere.digital",
     );
 
     // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
@@ -173,7 +173,7 @@ describe("SetupPage", () => {
     render(
       <HashRouter>
         <SetupPage />
-      </HashRouter>
+      </HashRouter>,
     );
 
     await waitFor(() => {
@@ -190,7 +190,7 @@ describe("SetupPage", () => {
 
     // Hostname comes as hostname, not URL
     history.push(
-      "/start?hostname=community2.cloud-2.automationanywhere.digital"
+      "/start?hostname=community2.cloud-2.automationanywhere.digital",
     );
 
     // Needs to use HashRouter instead of MemoryRouter for the useLocation calls in the components to work correctly
@@ -198,7 +198,7 @@ describe("SetupPage", () => {
     render(
       <HashRouter>
         <SetupPage />
-      </HashRouter>
+      </HashRouter>,
     );
 
     await waitFor(() => {
@@ -210,7 +210,7 @@ describe("SetupPage", () => {
 
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
     expect(
-      screen.getByLabelText("Control Room URL").getAttribute("value")
+      screen.getByLabelText("Control Room URL").getAttribute("value"),
       // Schema get pre-pended automatically
     ).toBe("https://community2.cloud-2.automationanywhere.digital");
 
@@ -245,7 +245,7 @@ describe("SetupPage", () => {
     render(
       <MemoryRouter>
         <SetupPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -254,7 +254,7 @@ describe("SetupPage", () => {
 
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
     expect(
-      screen.getByLabelText("Control Room URL").getAttribute("value")
+      screen.getByLabelText("Control Room URL").getAttribute("value"),
     ).toStrictEqual(controlRoomUrl);
   });
 });

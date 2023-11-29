@@ -33,10 +33,10 @@ export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const navigateTab = getNotifier("NAVIGATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
 export const ensureExtensionPointsInstalled = getMethod(
-  "ENSURE_EXTENSION_POINTS_INSTALLED"
+  "ENSURE_EXTENSION_POINTS_INSTALLED",
 );
 export const removeInstalledExtension = getNotifier(
-  "REMOVE_INSTALLED_EXTENSION"
+  "REMOVE_INSTALLED_EXTENSION",
 );
 export const resetTab = getNotifier("RESET_TAB");
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
@@ -44,7 +44,7 @@ export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const rehydrateSidebar = getMethod("REHYDRATE_SIDEBAR");
 
 export const getReservedSidebarEntries = getMethod(
-  "GET_RESERVED_SIDEBAR_ENTRIES"
+  "GET_RESERVED_SIDEBAR_ENTRIES",
 );
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
@@ -67,7 +67,7 @@ export const runExtensionPointReader = getMethod("RUN_EXTENSION_POINT_READER");
 export const enableOverlay = getMethod("ENABLE_OVERLAY");
 export const disableOverlay = getMethod("DISABLE_OVERLAY");
 export const getInstalledExtensionPoints = getMethod(
-  "INSTALLED_EXTENSION_POINTS"
+  "INSTALLED_EXTENSION_POINTS",
 );
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
 export const handleNavigate = getNotifier("HANDLE_NAVIGATE");
@@ -83,7 +83,7 @@ export const getPageState = getMethod("GET_PAGE_STATE");
 export const setPageState = getMethod("SET_PAGE_STATE");
 
 export const reloadMarketplaceEnhancements = getMethod(
-  "RELOAD_MARKETPLACE_ENHANCEMENTS"
+  "RELOAD_MARKETPLACE_ENHANCEMENTS",
 );
 
 export const notify = {

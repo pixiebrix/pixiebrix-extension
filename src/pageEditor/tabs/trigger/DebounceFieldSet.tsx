@@ -21,7 +21,7 @@ const DebounceFieldSet: React.FC<{
   const fieldName = partial(joinName, "extensionPoint.definition");
 
   const [{ value: debounce }] = useField<DebounceOptions | null>(
-    fieldName("debounce")
+    fieldName("debounce"),
   );
 
   return (

@@ -35,20 +35,20 @@ describe("ChildObjectField", () => {
     render(
       <Formik initialValues={initialValues} onSubmit={jest.fn()}>
         <ChildObjectField name="data" schema={schema} heading="Test Field" />
-      </Formik>
+      </Formik>,
     );
 
   const expectToggleMode = (
     container: HTMLElement,
     toggleTestId: string,
-    mode: string
+    mode: string,
   ) => {
     expect(
-      container.querySelector(`[data-testid="${toggleTestId}"]`)
+      container.querySelector(`[data-testid="${toggleTestId}"]`),
     ).not.toBeNull();
 
     expect(
-      container.querySelector(`[data-testid="${toggleTestId}"]`)
+      container.querySelector(`[data-testid="${toggleTestId}"]`),
     ).toHaveAttribute("data-test-selected", mode);
   };
 
@@ -61,7 +61,7 @@ describe("ChildObjectField", () => {
           InputValue: { type: "string", description: "A string input value" },
         },
       },
-      {}
+      {},
     );
 
     // Starts as Exclude because it's not required

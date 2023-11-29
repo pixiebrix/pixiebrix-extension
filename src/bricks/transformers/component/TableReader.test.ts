@@ -64,7 +64,7 @@ describe("TableReader", () => {
 
     const result = await tableReaderBlock.run(
       unsafeAssumeValidArg(blockConfig.config),
-      brickOptionsFactory({ root })
+      brickOptionsFactory({ root }),
     );
 
     expect(result).toStrictEqual(expected);
@@ -91,7 +91,7 @@ describe("TableReader", () => {
     const getResult = async () =>
       tableReaderBlock.run(
         unsafeAssumeValidArg(blockConfig.config),
-        brickOptionsFactory({ root })
+        brickOptionsFactory({ root }),
       );
 
     await expect(getResult).rejects.toThrow(TypeError);
@@ -117,7 +117,7 @@ describe("TableReader", () => {
 
     const result = await tableReaderBlock.run(
       unsafeAssumeValidArg(blockConfig.config),
-      brickOptionsFactory({ root: document.querySelector("table") })
+      brickOptionsFactory({ root: document.querySelector("table") }),
     );
 
     expect(result).toStrictEqual(expected);

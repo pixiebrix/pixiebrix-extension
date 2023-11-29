@@ -35,7 +35,7 @@ function useViewLogsAction(modViewItem: ModViewItem): () => void | null {
               blueprintId: mod.metadata.id,
             }
           : selectExtensionContext(mod),
-      })
+      }),
     );
   };
 

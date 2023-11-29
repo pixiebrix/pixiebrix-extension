@@ -45,7 +45,7 @@ const useShowPublishUrlEffect = () => {
         modModalsSlice.actions.setPublishContext({
           ...(blueprintId ? { blueprintId } : {}),
           ...(extensionId ? { extensionId } : {}),
-        } as PublishContext)
+        } as PublishContext),
       );
 
       // Remove the search params after showing the modal

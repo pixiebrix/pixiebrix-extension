@@ -34,7 +34,7 @@ describe("MatchRulesSection", () => {
           urlPatterns: [],
           selectors: [],
         }),
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -51,7 +51,7 @@ describe("MatchRulesSection", () => {
           selectors: ["#foo"],
         }),
         setupRedux(dispatch) {},
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 });

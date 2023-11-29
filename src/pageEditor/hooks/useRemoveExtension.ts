@@ -87,7 +87,7 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
         });
       }
     },
-    [dispatch, sessionId, showConfirmation]
+    [dispatch, sessionId, showConfirmation],
   );
 }
 

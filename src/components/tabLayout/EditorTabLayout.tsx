@@ -44,7 +44,7 @@ const EditorTabLayout: React.FC<{
   defaultTabName?: string;
 }> = ({ tabs, actionButtons = [], defaultTabName }) => {
   const [activeTabName, setActiveTabName] = useState(
-    defaultTabName ?? tabs[0].name
+    defaultTabName ?? tabs[0].name,
   );
 
   return (
@@ -77,7 +77,7 @@ const EditorTabLayout: React.FC<{
                 {actionButtons.map(
                   (
                     { variant, onClick, caption, disabled = false, icon },
-                    index
+                    index,
                   ) => (
                     <Button
                       key={index} // Action buttons shouldn't normally be changing order
@@ -94,7 +94,7 @@ const EditorTabLayout: React.FC<{
                       )}
                       {caption}
                     </Button>
-                  )
+                  ),
                 )}
               </ButtonGroup>
             </>

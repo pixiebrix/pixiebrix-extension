@@ -53,7 +53,7 @@ describe("ForEachElement", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toBeUndefined();
@@ -79,7 +79,7 @@ describe("ForEachElement", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({ message: "This is a message" });
@@ -111,7 +111,7 @@ describe("ForEachElement", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({ message: `Got reference: ${ref}` });
@@ -142,7 +142,7 @@ describe("ForEachElement", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({ message: "Got reference: " });

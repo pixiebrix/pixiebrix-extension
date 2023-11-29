@@ -37,7 +37,7 @@ function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <TourStepOptions name="extension.blockPipeline.0" configKey="config" />
-    </Formik>
+    </Formik>,
   );
 }
 

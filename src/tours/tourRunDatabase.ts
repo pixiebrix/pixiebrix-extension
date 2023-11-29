@@ -130,7 +130,7 @@ export async function recordStart(run: TourMetadata): Promise<void> {
  */
 export async function recordEnd(
   nonce: UUID,
-  update: TourStatus
+  update: TourStatus,
 ): Promise<void> {
   const db = await openTourDB();
 

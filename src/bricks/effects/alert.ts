@@ -31,7 +31,7 @@ export class AlertEffect extends EffectABC {
     super(
       ALERT_EFFECT_ID,
       "Window Alert",
-      "Show an alert/notification in the browser window"
+      "Show an alert/notification in the browser window",
     );
   }
 
@@ -58,7 +58,7 @@ export class AlertEffect extends EffectABC {
         default: 2500,
       },
     },
-    ["message"]
+    ["message"],
   );
 
   async effect({

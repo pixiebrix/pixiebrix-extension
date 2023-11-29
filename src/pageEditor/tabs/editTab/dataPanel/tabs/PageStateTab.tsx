@@ -71,7 +71,7 @@ const PageStateTab: React.VFC = () => {
         Mod: "Loading...",
         Public: "Loading...",
       },
-    }
+    },
   );
 
   return (

@@ -165,10 +165,10 @@ describe("syncElementUIStates", () => {
     });
 
     expect(selectActiveNodeId({ editor: newEditorState })).toEqual(
-      FOUNDATION_NODE_ID
+      FOUNDATION_NODE_ID,
     );
     expect(
-      newEditorState.elementUIStates[element.uuid].nodeUIStates
+      newEditorState.elementUIStates[element.uuid].nodeUIStates,
     ).not.toContainKey(invalidNodeId);
   });
 
@@ -193,14 +193,14 @@ describe("syncElementUIStates", () => {
 
     // Maintains the foundation node state and adds the block node state for both blocks in the pipeline
     expect(
-      newEditorState.elementUIStates[element.uuid].nodeUIStates
+      newEditorState.elementUIStates[element.uuid].nodeUIStates,
     ).toContainKey(FOUNDATION_NODE_ID);
     expect(
-      newEditorState.elementUIStates[element.uuid].nodeUIStates
+      newEditorState.elementUIStates[element.uuid].nodeUIStates,
     ).toContainKey(node1Id);
     const node2Id = element.extension.blockPipeline[1].instanceId;
     expect(
-      newEditorState.elementUIStates[element.uuid].nodeUIStates
+      newEditorState.elementUIStates[element.uuid].nodeUIStates,
     ).toContainKey(node2Id);
   });
 });
@@ -295,7 +295,7 @@ describe("removeElement", () => {
     expect(newState.dirty).not.toContainKey(element.uuid);
     expect(newState.elementUIStates).not.toContainKey(element.uuid);
     expect(newState.showV3UpgradeMessageByElement).not.toContainKey(
-      element.uuid
+      element.uuid,
     );
   });
 
@@ -319,7 +319,7 @@ describe("removeElement", () => {
         [unavailableElement.uuid]: {
           ...makeInitialElementUIState(),
           pipelineMap: getPipelineMap(
-            unavailableElement.extension.blockPipeline
+            unavailableElement.extension.blockPipeline,
           ),
           activeNodeId:
             unavailableElement.extension.blockPipeline[0].instanceId,
@@ -335,15 +335,15 @@ describe("removeElement", () => {
       removeElement(draft, unavailableElement.uuid);
     });
     expect(selectActiveElementId({ editor: newState })).toEqual(
-      availableElement.uuid
+      availableElement.uuid,
     );
     expect(selectElements({ editor: newState })).not.toContain(
-      unavailableElement
+      unavailableElement,
     );
     expect(newState.dirty).not.toContainKey(unavailableElement.uuid);
     expect(newState.elementUIStates).not.toContainKey(unavailableElement.uuid);
     expect(newState.showV3UpgradeMessageByElement).not.toContainKey(
-      unavailableElement.uuid
+      unavailableElement.uuid,
     );
   });
 });
@@ -415,13 +415,13 @@ describe("removeRecipeData", () => {
     expect(selectActiveRecipeId({ editor: newState })).toBeNull();
     expect(selectExpandedRecipeId({ editor: newState })).toBeNull();
     expect(
-      selectDirtyOptionDefinitionsForRecipeId(recipe.id)({ editor: newState })
+      selectDirtyOptionDefinitionsForRecipeId(recipe.id)({ editor: newState }),
     ).toBeUndefined();
     expect(
-      selectDirtyMetadataForRecipeId(recipe.id)({ editor: newState })
+      selectDirtyMetadataForRecipeId(recipe.id)({ editor: newState }),
     ).toBeUndefined();
     expect(
-      selectDeletedElements({ editor: newState })[recipe.id]
+      selectDeletedElements({ editor: newState })[recipe.id],
     ).toBeUndefined();
   });
 });

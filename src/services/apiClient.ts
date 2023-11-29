@@ -30,7 +30,7 @@ import { isAbsoluteUrl } from "@/utils/urlUtils";
  * @throws SuspiciousOperationError if the absolute URL provided is not for the current base URL
  */
 export async function absoluteApiUrl(
-  relativeOrAbsoluteURL: string
+  relativeOrAbsoluteURL: string,
 ): Promise<string> {
   const absolute = isAbsoluteUrl(relativeOrAbsoluteURL);
   const base = await getBaseURL();
@@ -38,7 +38,7 @@ export async function absoluteApiUrl(
   if (absolute) {
     if (!relativeOrAbsoluteURL.startsWith(base)) {
       throw new SuspiciousOperationError(
-        `URL is not a PixieBrix service URL: ${relativeOrAbsoluteURL}`
+        `URL is not a PixieBrix service URL: ${relativeOrAbsoluteURL}`,
       );
     }
 
@@ -108,7 +108,7 @@ export async function getApiClient(): Promise<AxiosInstance> {
  * @deprecated use RTK Query mutation
  */
 export async function saveUserExtension(
-  extension: ModComponentBase
+  extension: ModComponentBase,
 ): Promise<void> {
   const client = await getLinkedApiClient();
   await client.put(`/api/extensions/${extension.id}/`, extension);

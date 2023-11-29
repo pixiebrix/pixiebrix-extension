@@ -72,7 +72,7 @@ function useAddBlock(): AddBlock {
         compact([
           "input" as OutputKey,
           ...Object.values(pipelineMap).map((x) => x.blockConfig.outputKey),
-        ])
+        ]),
       );
       const newBlock = createNewBlock(block.id, {
         blockInputSchema: block.inputSchema,
@@ -83,7 +83,7 @@ function useAddBlock(): AddBlock {
 
       return newBlock;
     },
-    [pipelineMap]
+    [pipelineMap],
   );
 
   /**
@@ -110,17 +110,17 @@ function useAddBlock(): AddBlock {
         analyses.map(async (analysis) => {
           await analysis.run(newExtension);
           return analysis.getAnnotations();
-        })
+        }),
       );
       const annotations = annotationSets.flat();
       const newBlockPath = joinPathParts(
         addBlockLocation.path,
-        addBlockLocation.index
+        addBlockLocation.index,
       );
 
       // Find annotations for the added block
       const newBlockAnnotation = annotations.find(
-        (annotation) => annotation.position.path === newBlockPath
+        (annotation) => annotation.position.path === newBlockPath,
       );
 
       if (newBlockAnnotation) {
@@ -129,7 +129,7 @@ function useAddBlock(): AddBlock {
 
       return {};
     },
-    [activeExtension, addBlockLocation, makeNewBlock]
+    [activeExtension, addBlockLocation, makeNewBlock],
   );
 
   const addBlock = useCallback(
@@ -145,7 +145,7 @@ function useAddBlock(): AddBlock {
           block: newBlock,
           pipelinePath: addBlockLocation.path,
           pipelineIndex: addBlockLocation.index,
-        })
+        }),
       );
 
       reportEvent(Events.BRICK_ADD, {
@@ -155,7 +155,13 @@ function useAddBlock(): AddBlock {
         source: "PageEditor-BrickSearchModal",
       });
     },
-    [activeExtension?.uuid, addBlockLocation, dispatch, makeNewBlock, sessionId]
+    [
+      activeExtension?.uuid,
+      addBlockLocation,
+      dispatch,
+      makeNewBlock,
+      sessionId,
+    ],
   );
 
   return {

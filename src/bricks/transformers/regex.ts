@@ -43,7 +43,7 @@ export class RegexTransformer extends TransformerABC {
       "@pixiebrix/regex",
       "Regex Extractor",
       "Extract data using a Regex (regular expression)",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -74,7 +74,7 @@ export class RegexTransformer extends TransformerABC {
         default: false,
       },
     },
-    ["regex", "input"]
+    ["regex", "input"],
   );
 
   override outputSchema: Schema = {
@@ -128,7 +128,7 @@ export class RegexTransformer extends TransformerABC {
         ? {
             type: "object",
             properties: Object.fromEntries(
-              namedGroups.map((name) => [name, { type: "string" }])
+              namedGroups.map((name) => [name, { type: "string" }]),
             ),
           }
         : {

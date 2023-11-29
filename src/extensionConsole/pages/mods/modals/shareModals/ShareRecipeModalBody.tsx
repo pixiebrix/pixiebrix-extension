@@ -58,7 +58,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const AddATeamMenuList = createMenuListWithAddButton(
-  "https://app.pixiebrix.com/teams/create"
+  "https://app.pixiebrix.com/teams/create",
 );
 
 const ShareRecipeModalBody: React.FunctionComponent = () => {
@@ -94,7 +94,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
 
   const saveSharing = async (
     formValues: ShareModFormState,
-    helpers: FormikHelpers<ShareModFormState>
+    helpers: FormikHelpers<ShareModFormState>,
   ) => {
     try {
       const newRecipe = produce(recipe, (draft) => {
@@ -102,7 +102,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
       });
 
       const packageId = editablePackages.find(
-        (x) => x.name === newRecipe.metadata.id
+        (x) => x.name === newRecipe.metadata.id,
       )?.id;
 
       await updateRecipe({
@@ -155,7 +155,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
                         ({
                           label: x.name,
                           value: x.id,
-                        } satisfies Option)
+                        }) satisfies Option,
                     )}
                   onChange={(selected: Option) => {
                     setFieldValue("organizations", [
@@ -187,7 +187,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
                         size="sm"
                         onClick={() => {
                           const next = values.organizations.filter(
-                            (x: string) => x !== organization.id
+                            (x: string) => x !== organization.id,
                           );
                           setFieldValue("organizations", next);
                         }}

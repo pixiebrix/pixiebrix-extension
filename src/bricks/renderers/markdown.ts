@@ -28,7 +28,7 @@ export class MarkdownRenderer extends RendererABC {
     super(
       MarkdownRenderer.BLOCK_ID,
       "Render Markdown",
-      "Render Markdown to sanitized HTML"
+      "Render Markdown to sanitized HTML",
     );
   }
 
@@ -40,7 +40,7 @@ export class MarkdownRenderer extends RendererABC {
         format: "markdown",
       },
     },
-    ["markdown"]
+    ["markdown"],
   );
 
   async render({ markdown }: BrickArgs): Promise<ComponentRef> {

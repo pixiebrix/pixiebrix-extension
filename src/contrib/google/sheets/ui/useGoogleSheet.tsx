@@ -34,7 +34,7 @@ type GoogleSheetState = {
 };
 
 function useGoogleSheet(
-  blockConfigPath: string
+  blockConfigPath: string,
 ): FetchableAsyncState<GoogleSheetState> {
   const googleAccountAsyncState = useGoogleAccount();
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
@@ -44,7 +44,7 @@ function useGoogleSheet(
     [],
     {
       initialValue: BASE_SHEET_SCHEMA,
-    }
+    },
   );
 
   const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
@@ -54,7 +54,7 @@ function useGoogleSheet(
     async (
       googleAccount: SanitizedIntegrationConfig | null,
       spreadsheetId: string | null,
-      baseSchema: Schema
+      baseSchema: Schema,
     ) => {
       if (!spreadsheetId) {
         return {
@@ -73,7 +73,7 @@ function useGoogleSheet(
         spreadsheet,
         spreadsheetFieldSchema: baseSchema,
       };
-    }
+    },
   );
 
   return {

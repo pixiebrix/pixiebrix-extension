@@ -22,7 +22,7 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 
 const registry = new BaseRegistry<RegistryId, StarterBrick>(
   ["foundation", "extensionPoint"],
-  fromJS
+  fromJS,
 );
 
 export default registry;

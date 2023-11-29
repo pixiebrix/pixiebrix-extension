@@ -46,8 +46,8 @@ body {
   min-height: calc(100vh - #{$navbar-height});
   width: 100%;
 
-  transition: width $action-transition-duration
-      $action-transition-timing-function,
+  transition:
+    width $action-transition-duration $action-transition-timing-function,
     margin $action-transition-duration $action-transition-timing-function;
 
   @media (min-width: 992px) {

@@ -29,7 +29,7 @@ describe("Split", () => {
         chunkSize: 8,
         chunkOverlap: 2,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toStrictEqual({

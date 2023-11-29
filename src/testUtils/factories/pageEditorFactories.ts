@@ -76,13 +76,13 @@ const internalFormStateFactory = define<
       starterBrick.definition.type = type;
       return starterBrick;
     },
-    "type"
+    "type",
   ),
 });
 
 export const formStateFactory = (
   override?: FactoryConfig<ModComponentFormState>,
-  pipelineOverride?: BrickPipeline
+  pipelineOverride?: BrickPipeline,
 ): ModComponentFormState => {
   if (pipelineOverride) {
     return internalFormStateFactory({
@@ -98,7 +98,7 @@ export const formStateFactory = (
 
 export const triggerFormStateFactory = (
   override?: FactoryConfig<TriggerFormState>,
-  pipelineOverride?: BrickPipeline
+  pipelineOverride?: BrickPipeline,
 ) => {
   const defaultTriggerProps = trigger.fromNativeElement(
     "https://test.com",
@@ -106,7 +106,7 @@ export const triggerFormStateFactory = (
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
-    null
+    null,
   );
 
   return formStateFactory(
@@ -114,13 +114,13 @@ export const triggerFormStateFactory = (
       ...defaultTriggerProps,
       ...override,
     } as FactoryConfig<ModComponentFormState>,
-    pipelineOverride
+    pipelineOverride,
   ) as TriggerFormState;
 };
 
 export const sidebarPanelFormStateFactory = (
   override?: FactoryConfig<SidebarFormState>,
-  pipelineOverride?: BrickPipeline
+  pipelineOverride?: BrickPipeline,
 ) => {
   const defaultTriggerProps = sidebar.fromNativeElement(
     "https://test.com",
@@ -129,7 +129,7 @@ export const sidebarPanelFormStateFactory = (
       name: (n: number) => `Extension Point ${n}`,
     }),
     // TypeScript complains if the 3rd positional argument is left off
-    undefined as never
+    undefined as never,
   );
 
   return formStateFactory(
@@ -137,13 +137,13 @@ export const sidebarPanelFormStateFactory = (
       ...defaultTriggerProps,
       ...override,
     } as FactoryConfig<ModComponentFormState>,
-    pipelineOverride
+    pipelineOverride,
   ) as SidebarFormState;
 };
 
 export const contextMenuFormStateFactory = (
   override?: FactoryConfig<ContextMenuFormState>,
-  pipelineOverride?: BrickPipeline
+  pipelineOverride?: BrickPipeline,
 ) => {
   const defaultTriggerProps = contextMenu.fromNativeElement(
     "https://test.com",
@@ -151,7 +151,7 @@ export const contextMenuFormStateFactory = (
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
-    null
+    null,
   );
 
   return formStateFactory(
@@ -159,13 +159,13 @@ export const contextMenuFormStateFactory = (
       ...defaultTriggerProps,
       ...override,
     } as FactoryConfig<ModComponentFormState>,
-    pipelineOverride
+    pipelineOverride,
   ) as ContextMenuFormState;
 };
 
 export const quickbarFormStateFactory = (
   override?: FactoryConfig<QuickBarFormState>,
-  pipelineOverride?: BrickPipeline
+  pipelineOverride?: BrickPipeline,
 ) => {
   const defaultTriggerProps = quickBar.fromNativeElement(
     "https://test.com",
@@ -173,7 +173,7 @@ export const quickbarFormStateFactory = (
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
-    null
+    null,
   );
 
   return formStateFactory(
@@ -181,13 +181,13 @@ export const quickbarFormStateFactory = (
       ...defaultTriggerProps,
       ...override,
     } as FactoryConfig<ModComponentFormState>,
-    pipelineOverride
+    pipelineOverride,
   ) as QuickBarFormState;
 };
 
 export const menuItemFormStateFactory = (
   override?: FactoryConfig<ActionFormState>,
-  pipelineOverride?: BrickPipeline
+  pipelineOverride?: BrickPipeline,
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
     "https://test.com",
@@ -199,7 +199,7 @@ export const menuItemFormStateFactory = (
       item: {
         caption: "Caption for test",
       },
-    } as ButtonSelectionResult
+    } as ButtonSelectionResult,
   );
 
   return formStateFactory(
@@ -207,7 +207,7 @@ export const menuItemFormStateFactory = (
       ...defaultTriggerProps,
       ...override,
     } as FactoryConfig<ModComponentFormState>,
-    pipelineOverride
+    pipelineOverride,
   ) as ActionFormState;
 };
 

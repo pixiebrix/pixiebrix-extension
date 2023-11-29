@@ -45,7 +45,7 @@ import { selectPageEditorDimensions } from "@/pageEditor/utils";
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
   const isConnectingToContentScript = useSelector(
-    selectTabIsConnectingToContentScript
+    selectTabIsConnectingToContentScript,
   );
   const sessionId = useSelector(selectSessionId);
   const { isBetaError, editorError } = useSelector(selectErrorState);

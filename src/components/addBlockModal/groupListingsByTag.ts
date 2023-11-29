@@ -29,7 +29,7 @@ const EMPTY_TAGGED_BRICK_IDS: Record<string, Set<RegistryId>> = {};
  */
 function groupListingsByTag(
   marketplaceTags: MarketplaceTag[],
-  listings: Record<RegistryId, MarketplaceListing>
+  listings: Record<RegistryId, MarketplaceListing>,
 ): Record<string, Set<RegistryId>> {
   if (isEmpty(marketplaceTags) || isEmpty(listings)) {
     return EMPTY_TAGGED_BRICK_IDS;
@@ -37,7 +37,7 @@ function groupListingsByTag(
 
   // Create the Record with tag name keys and empty Set values
   const taggedBrickIds = Object.fromEntries(
-    marketplaceTags.map((tag) => [tag.name, new Set<RegistryId>()])
+    marketplaceTags.map((tag) => [tag.name, new Set<RegistryId>()]),
   );
 
   // Populate the Record value Sets with listings that apply to each tag

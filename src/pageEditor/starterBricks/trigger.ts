@@ -49,7 +49,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  _element: null
+  _element: null,
 ): TriggerFormState {
   return {
     type: "trigger",
@@ -82,7 +82,7 @@ function fromNativeElement(
 }
 
 function selectExtensionPointConfig(
-  formState: TriggerFormState
+  formState: TriggerFormState,
 ): StarterBrickConfig<TriggerDefinition> {
   const { extensionPoint } = formState;
   const {
@@ -124,7 +124,7 @@ function selectExtensionPointConfig(
 
 function selectExtension(
   state: TriggerFormState,
-  options: { includeInstanceIds?: boolean } = {}
+  options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<TriggerConfig> {
   const { extension } = state;
   const config: TriggerConfig = {
@@ -147,7 +147,7 @@ function asDynamicElement(element: TriggerFormState): DynamicDefinition {
 }
 
 async function fromExtension(
-  config: ModComponentBase<TriggerConfig>
+  config: ModComponentBase<TriggerConfig>,
 ): Promise<TriggerFormState> {
   const extensionPoint = await lookupExtensionPoint<
     TriggerDefinition,
@@ -172,7 +172,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "action"
+    "action",
   );
 
   return {

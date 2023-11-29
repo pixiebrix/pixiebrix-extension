@@ -92,7 +92,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
       }
 
       stringUrlsFieldAnalysisPromises.push(
-        this.analyzeStringUrlsField(urls, fieldName)
+        this.analyzeStringUrlsField(urls, fieldName),
       );
     }
 
@@ -121,7 +121,7 @@ class ExtensionUrlPatternAnalysis implements Analysis {
 
   async analyzeStringUrlsField(
     urls: string[],
-    fieldName: string
+    fieldName: string,
   ): Promise<void> {
     for (const [index, url] of Object.entries(urls)) {
       if (url === allUrls) {

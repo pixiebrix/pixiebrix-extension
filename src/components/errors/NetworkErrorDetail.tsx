@@ -52,7 +52,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
 
   const permissionsState = useAsyncState<boolean | undefined>(
     async () => containsPermissions({ origins: [absoluteUrl] }),
-    [absoluteUrl]
+    [absoluteUrl],
   );
 
   const cleanConfig = useMemo(() => {

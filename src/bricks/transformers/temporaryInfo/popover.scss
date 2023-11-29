@@ -144,14 +144,20 @@ $popover-z-index: 9999;
   pointer-events: none;
   position: fixed;
   top: 0;
-  transition: all 0.3s ease-out, height 0ms 0.3s, opacity 0.3s 0ms;
+  transition:
+    all 0.3s ease-out,
+    height 0ms 0.3s,
+    opacity 0.3s 0ms;
   width: 100vw;
   z-index: calc($popover-z-index - 1);
 
   &.pixiebrix-modal-is-visible {
     height: 100vh;
     opacity: 0.5;
-    transition: all 0.3s ease-out, height 0s 0s, opacity 0.3s 0s;
+    transition:
+      all 0.3s ease-out,
+      height 0s 0s,
+      opacity 0.3s 0s;
     transform: translateZ(0);
 
     path {

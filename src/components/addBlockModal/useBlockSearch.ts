@@ -40,7 +40,7 @@ function useBlockSearch(
   blocks: Brick[],
   taggedBrickIds: Record<string, Set<string>>,
   query: string,
-  searchTag: string | null
+  searchTag: string | null,
 ): BlockOption[] {
   const { fuse, blockOptions } = useMemo(() => {
     if (isEmpty(blocks)) {
@@ -64,7 +64,7 @@ function useBlockSearch(
         // We should never show @internal bricks to users. They'll sometimes find their way in from the registry.
         .filter((x) => !x.id.startsWith("@internal/") && blockHasTag(x))
         .map((x) => makeBlockOption(x)),
-      (x) => x.label
+      (x) => x.label,
     );
     const fuse = new Fuse<BlockOption>(blockOptions, {
       keys: ["label", "blockResult.description", "value"],
@@ -85,7 +85,7 @@ function useBlockSearch(
       isNullOrBlank(query) || !fuse
         ? blockOptions
         : fuse.search(query).map((x) => x.item),
-    [query, fuse, blockOptions]
+    [query, fuse, blockOptions],
   );
 }
 

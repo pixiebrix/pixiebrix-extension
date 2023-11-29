@@ -33,7 +33,7 @@ describe("initialRecord", () => {
     render(
       <MemoryRouter>
         <PaginatedTable data={[]} columns={columns} showSearchFilter />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByRole("table")).not.toBeNull();
@@ -57,7 +57,7 @@ describe("initialRecord", () => {
           forceShowRecord={data[1]}
           showSearchFilter={false}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitForEffect();

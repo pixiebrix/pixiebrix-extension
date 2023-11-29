@@ -22,11 +22,11 @@ import { oauth2Storage } from "@/auth/authConstants";
 
 export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   serviceAuthId: UUID,
-  data: TAuthData
+  data: TAuthData,
 ): Promise<void> {
   expectContext(
     "background",
-    "Only the background page can access oauth2 information"
+    "Only the background page can access oauth2 information",
   );
 
   const current = await oauth2Storage.get();
@@ -37,11 +37,11 @@ export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
 }
 
 export async function getCachedAuthData(
-  serviceAuthId: UUID
+  serviceAuthId: UUID,
 ): Promise<AuthData | undefined> {
   expectContext(
     "background",
-    "Only the background page can access token and oauth2 data"
+    "Only the background page can access token and oauth2 data",
   );
 
   const current = await oauth2Storage.get();
@@ -54,13 +54,13 @@ export async function getCachedAuthData(
 export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
   expectContext(
     "background",
-    "Only the background page can access oauth2 information"
+    "Only the background page can access oauth2 information",
   );
 
   const current = await oauth2Storage.get();
   if (Object.hasOwn(current, serviceAuthId)) {
     console.debug(
-      `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
+      `deleteCachedAuthData: removed data for auth ${serviceAuthId}`,
     );
     // OK because we're guarding with hasOwn
     // eslint-disable-next-line security/detect-object-injection
@@ -70,7 +70,7 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
   } else {
     console.warn(
       "deleteCachedAuthData: No cached auth data exists for key: %s",
-      serviceAuthId
+      serviceAuthId,
     );
   }
 }

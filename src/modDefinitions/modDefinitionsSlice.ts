@@ -114,7 +114,7 @@ const loadModDefinitionsFromCache = createAsyncThunk<
     dispatch(modDefinitionsSlice.actions.startFetchingFromCache());
     const modDefinitions = await modDefinitionRegistry.all();
     dispatch(
-      modDefinitionsSlice.actions.setModDefinitionsFromCache(modDefinitions)
+      modDefinitionsSlice.actions.setModDefinitionsFromCache(modDefinitions),
     );
   } catch {
     dispatch(modDefinitionsSlice.actions.setCacheError());

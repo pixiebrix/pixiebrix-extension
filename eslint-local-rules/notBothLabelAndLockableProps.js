@@ -33,7 +33,8 @@ module.exports = {
       JSXOpeningElement(node) {
         const hasLabelAttribute = node.attributes.some(
           (attribute) =>
-            attribute.type === "JSXAttribute" && attribute.name.name === "label"
+            attribute.type === "JSXAttribute" &&
+            attribute.name.name === "label",
         );
 
         const hasLockablePropsSpread = node.attributes.some((attribute) => {

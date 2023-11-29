@@ -38,7 +38,7 @@ export function isPrimitive(value: unknown): value is Primitive {
 export function boolean(value: unknown): boolean {
   if (typeof value === "string") {
     return ["true", "t", "yes", "y", "on", "1"].includes(
-      value.trim().toLowerCase()
+      value.trim().toLowerCase(),
     );
   }
 
@@ -55,7 +55,7 @@ export function boolean(value: unknown): boolean {
 
 export function assert<T>(
   value: T,
-  assertionMessage: string
+  assertionMessage: string,
 ): asserts value is Exclude<T, null | undefined> {
   if (value == null) {
     throw new TypeError(assertionMessage);

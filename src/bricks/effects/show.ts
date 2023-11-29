@@ -29,7 +29,7 @@ export class ShowEffect extends EffectABC {
     super(
       "@pixiebrix/show",
       "Show",
-      "Show one or more elements that are currently hidden on the page"
+      "Show one or more elements that are currently hidden on the page",
     );
   }
 
@@ -41,7 +41,7 @@ export class ShowEffect extends EffectABC {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    []
+    [],
   );
 
   override async isRootAware(): Promise<boolean> {
@@ -53,7 +53,7 @@ export class ShowEffect extends EffectABC {
       selector,
       isRootAware,
     }: BrickArgs<{ selector?: string; isRootAware?: boolean }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

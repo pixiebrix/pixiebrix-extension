@@ -56,7 +56,7 @@ type EffectConfig<TAnalysis extends Analysis = Analysis> = {
     listenerApi: ListenerEffectAPI<
       RootState,
       ThunkDispatch<unknown, unknown, AnyAction>
-    >
+    >,
   ) => void;
   debounce?: number;
 };
@@ -64,7 +64,7 @@ type EffectConfig<TAnalysis extends Analysis = Analysis> = {
 type AnalysisFactory<
   TAnalysis extends Analysis,
   TAction = AnyAction,
-  TState = unknown
+  TState = unknown,
 > = (action: TAction, state: TState) => TAnalysis | null | Promise<TAnalysis>;
 
 class ReduxAnalysisManager {
@@ -78,7 +78,7 @@ class ReduxAnalysisManager {
   public registerAnalysisEffect<TAnalysis extends Analysis>(
     analysisFactory: AnalysisFactory<TAnalysis>,
     listenerConfig: AnalysisListenerConfig,
-    effectConfig?: EffectConfig<TAnalysis>
+    effectConfig?: EffectConfig<TAnalysis>,
   ) {
     let abortController: AbortController;
 
@@ -115,7 +115,7 @@ class ReduxAnalysisManager {
           analysisSlice.actions.startAnalysis({
             extensionId,
             analysisId: analysis.id,
-          })
+          }),
         );
 
         try {
@@ -126,7 +126,7 @@ class ReduxAnalysisManager {
               extensionId,
               analysisId: analysis.id,
               error: serializeError(error),
-            })
+            }),
           );
           return;
         }
@@ -136,7 +136,7 @@ class ReduxAnalysisManager {
             extensionId,
             analysisId: analysis.id,
             annotations: analysis.getAnnotations(),
-          })
+          }),
         );
 
         if (effectConfig?.postAnalysisAction) {

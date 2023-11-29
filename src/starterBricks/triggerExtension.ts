@@ -254,7 +254,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       this.debouncedRunTriggersAndNotify = debounce(
         this._runTriggersAndNotify,
         waitMillis,
-        options
+        options,
       );
     }
 
@@ -287,7 +287,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // DOM events too. However, we can't because WeakSet is not an enumerable collection
     // https://esdiscuss.org/topic/removal-of-weakmap-weakset-clear
     const $currentElements: JQuery<HTMLElement | Document> = isEmpty(
-      this.triggerSelector
+      this.triggerSelector,
     )
       ? $(document)
       : $safeFind(this.triggerSelector);
@@ -317,7 +317,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   });
 
   async getBricks(
-    extension: ResolvedModComponent<TriggerConfig>
+    extension: ResolvedModComponent<TriggerConfig>,
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -331,7 +331,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         // @input.event doesn't show up in autocomplete/etc. otherwise
         eventReader ? new CompositeReader({ event: eventReader }) : null,
         await this.getBaseReader(),
-      ])
+      ]),
     );
   }
 
@@ -342,17 +342,17 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       compact([
         shim ? new CompositeReader({ event: shim }) : null,
         await this.getBaseReader(),
-      ])
+      ]),
     );
   }
 
   private async runExtension(
     ctxt: JsonObject,
     extension: ResolvedModComponent<TriggerConfig>,
-    root: SelectorRoot
+    root: SelectorRoot,
   ) {
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension)
+      selectExtensionContext(extension),
     );
 
     const { action: actionConfig } = extension.config;
@@ -361,7 +361,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       input: ctxt,
       root,
       serviceContext: await makeServiceContextFromDependencies(
-        extension.integrationDependencies
+        extension.integrationDependencies,
       ),
       optionsArgs: extension.optionsArgs,
     };
@@ -376,7 +376,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * Shared event handler for DOM event triggers
    */
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
-    event
+    event,
   ) => {
     console.debug("TriggerExtensionPoint:eventHandler", {
       id: this.id,
@@ -395,7 +395,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       element = $(event.target).closest(this.triggerSelector).get(0);
       console.debug(
         "Locating closest element for target: %s",
-        this.triggerSelector
+        this.triggerSelector,
       );
     }
 
@@ -431,7 +431,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       nativeEvent,
     }: {
       nativeEvent: Event | null;
-    }
+    },
   ): Promise<void> {
     let extensionsToRun = this.modComponents;
 
@@ -439,7 +439,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       // Enforce synchronous behavior for `hover` event
       extensionsToRun = extensionsToRun.filter(
         (extension) =>
-          !this.runningExtensionElements.get(extension.id)?.has(root)
+          !this.runningExtensionElements.get(extension.id)?.has(root),
       );
     }
 
@@ -469,7 +469,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     await Promise.all(
       extensionsToRun.map(async (extension) => {
         const extensionLogger = this.logger.childLogger(
-          selectExtensionContext(extension)
+          selectExtensionContext(extension),
         );
         try {
           this.markRun(extension.id, root);
@@ -493,7 +493,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
           reportEvent(Events.TRIGGER_RUN, selectEventData(extension));
           extensionLogger.info("Successfully ran trigger");
         }
-      })
+      }),
     );
   }
 
@@ -503,19 +503,19 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   private readonly _runTriggersAndNotify = async (
     roots: SelectorRoot[],
     // Force parameter to be included to make it explicit which types of triggers pass nativeEvent
-    { nativeEvent }: { nativeEvent: Event | null }
+    { nativeEvent }: { nativeEvent: Event | null },
   ): Promise<void> => {
     // Previously, run trigger returns individual extension errors. That approach was confusing, because it mixed
     // thrown errors with collected errors returned as values. Instead, we now just rely on a thrown error, and at
     // most one error will be thrown per root.
     const promises = roots.map(async (root) =>
-      this._runTrigger(root, { nativeEvent })
+      this._runTrigger(root, { nativeEvent }),
     );
 
     const results = await Promise.allSettled(promises);
 
     const errors = compact(
-      results.map((x) => (x.status === "rejected" ? x.reason : null))
+      results.map((x) => (x.status === "rejected" ? x.reason : null)),
     );
 
     await this.notifyErrors(errors);
@@ -609,13 +609,13 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       });
     } else {
       this.logger.warn(
-        "Skipping interval trigger because interval is not greater than zero"
+        "Skipping interval trigger because interval is not greater than zero",
       );
     }
   }
 
   private attachInitializeTrigger(
-    $elements: JQuery<Document | HTMLElement>
+    $elements: JQuery<Document | HTMLElement>,
   ): void {
     this.cancelObservers();
 
@@ -635,7 +635,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         });
       },
       // `target` is a required option
-      { target: document }
+      { target: document },
     );
 
     this.addCancelHandler(() => {
@@ -658,7 +658,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         root: null,
         // RootMargin: "0px",
         threshold: 0.2,
-      }
+      },
     );
 
     for (const element of $elements) {
@@ -676,7 +676,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
           appearObserver.observe(element);
         },
         // `target` is a required option
-        { target: document }
+        { target: document },
       );
       this.addCancelHandler(() => {
         mutationObserver.disconnect();
@@ -705,7 +705,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   private attachDOMTrigger(
     $elements: JQuery<HTMLElement | Document>,
-    { watch = false }: { watch?: boolean }
+    { watch = false }: { watch?: boolean },
   ): void {
     const domEventName =
       this.trigger === "custom"
@@ -749,7 +749,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     if (watch) {
       if ($elements.get(0) === document) {
         console.warn(
-          "TriggerExtensionPoint: ignoring watchMode for document target"
+          "TriggerExtensionPoint: ignoring watchMode for document target",
         );
         return;
       }
@@ -766,7 +766,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
           this.attachDOMTrigger($(element as HTMLElement), { watch: false });
         },
         // `target` is a required option
-        { target: document }
+        { target: document },
       );
       this.addCancelHandler(() => {
         mutationObserver.disconnect();
@@ -775,7 +775,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   private assertElement(
-    $root: JQuery<HTMLElement | Document>
+    $root: JQuery<HTMLElement | Document>,
   ): asserts $root is JQuery {
     if ($root.get(0) === document) {
       throw new Error(`Trigger ${this.trigger} requires a selector`);
@@ -832,7 +832,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
           this.attachDOMTrigger($root, { watch: this.attachMode === "watch" });
         } else {
           throw new BusinessError(
-            "No trigger event configured for starter brick"
+            "No trigger event configured for starter brick",
           );
         }
       }
@@ -997,7 +997,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 }
 
 export function fromJS(
-  config: StarterBrickConfig<TriggerDefinition>
+  config: StarterBrickConfig<TriggerDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "trigger") {

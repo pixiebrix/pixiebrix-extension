@@ -43,7 +43,7 @@ jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
 }));
 
 const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
-  useSanitizedIntegrationConfigFormikAdapter
+  useSanitizedIntegrationConfigFormikAdapter,
 );
 
 jest.mock("@/hooks/auth", () => ({
@@ -67,7 +67,7 @@ jest.mock("@/contrib/uipath/uipathHooks", () => {
 
 jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
   const mock = jest.requireActual(
-    "@/components/form/widgets/RemoteSelectWidget"
+    "@/components/form/widgets/RemoteSelectWidget",
   );
   return {
     __esModule: true,
@@ -97,7 +97,7 @@ function makeBaseState() {
           inputArguments: {},
         },
       },
-    ]
+    ],
   );
 }
 
@@ -105,7 +105,7 @@ function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
       <ProcessOptions name="extension.blockPipeline.0" configKey="config" />
-    </Formik>
+    </Formik>,
   );
 }
 
@@ -116,7 +116,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-    valueToAsyncState(null)
+    valueToAsyncState(null),
   );
 });
 
@@ -133,7 +133,7 @@ describe("UiPath Options", () => {
   test("Render with selected dependency", async () => {
     useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
       // Values not needed here, just need to return something non-null
-      valueToAsyncState({} as unknown as SanitizedIntegrationConfig)
+      valueToAsyncState({} as unknown as SanitizedIntegrationConfig),
     );
 
     const base = makeBaseState();
@@ -155,7 +155,7 @@ describe("UiPath Options", () => {
   test("Render timeout field if await result", async () => {
     useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
       // Values not needed here, just need to return something non-null
-      valueToAsyncState({} as unknown as SanitizedIntegrationConfig)
+      valueToAsyncState({} as unknown as SanitizedIntegrationConfig),
     );
 
     const base = makeBaseState();
@@ -168,7 +168,7 @@ describe("UiPath Options", () => {
     await waitForEffect();
 
     expect(
-      screen.getByText("Result Timeout (Milliseconds)")
+      screen.getByText("Result Timeout (Milliseconds)"),
     ).toBeInTheDocument();
   });
 });

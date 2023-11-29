@@ -40,7 +40,7 @@ test("should invoke the callback for a brick expression", () => {
   class Visitor extends PipelineExpressionVisitor {
     override visitExpression(
       position: BrickPosition,
-      expression: Expression<unknown>
+      expression: Expression<unknown>,
     ) {
       visitExpression(position, expression);
     }
@@ -57,7 +57,7 @@ test("should invoke the callback for a brick expression", () => {
     {
       __type__: "nunjucks",
       __value__: "test",
-    }
+    },
   );
   expect(visitExpression).toHaveBeenCalledWith(
     {
@@ -66,7 +66,7 @@ test("should invoke the callback for a brick expression", () => {
     {
       __type__: "var",
       __value__: "@foo",
-    }
+    },
   );
 });
 
@@ -89,7 +89,7 @@ test("should invoke the callback for a Document expression", () => {
   class Visitor extends PipelineExpressionVisitor {
     override visitExpression(
       position: BrickPosition,
-      expression: Expression<unknown>
+      expression: Expression<unknown>,
     ) {
       visitExpression(position, expression);
     }
@@ -107,6 +107,6 @@ test("should invoke the callback for a Document expression", () => {
     {
       __type__: "nunjucks",
       __value__: "test",
-    }
+    },
   );
 });

@@ -47,7 +47,7 @@ function useAllBricks(): {
 
   const allTypedPromise = useSyncExternalStore(
     subscribe,
-    brickRegistry.allTyped.bind(brickRegistry)
+    brickRegistry.allTyped.bind(brickRegistry),
   );
 
   useAsyncEffect(
@@ -61,7 +61,7 @@ function useAllBricks(): {
         console.debug("Error loading blocks", error);
       }
     },
-    [allTypedPromise, setAllTyped]
+    [allTypedPromise, setAllTyped],
   );
 
   return {

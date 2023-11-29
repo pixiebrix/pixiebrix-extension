@@ -35,7 +35,7 @@ export default function extractIntegrationIdsFromSchema(
   schema: Schema,
   options?: {
     suppressNotFoundError?: boolean;
-  }
+  },
 ): RegistryId[] {
   if (schema.$ref) {
     const match = INTEGRATION_ID_URL_REGEX.exec(schema.$ref);
@@ -49,7 +49,7 @@ export default function extractIntegrationIdsFromSchema(
       .flatMap((x) =>
         extractIntegrationIdsFromSchema(x as Schema, {
           suppressNotFoundError: true,
-        })
+        }),
       );
   }
 
@@ -59,7 +59,7 @@ export default function extractIntegrationIdsFromSchema(
       .flatMap((x) =>
         extractIntegrationIdsFromSchema(x as Schema, {
           suppressNotFoundError: true,
-        })
+        }),
       );
   }
 

@@ -33,7 +33,7 @@ const Markdown: React.FunctionComponent<MarkdownProps> = ({
   const content = useMemo(
     () =>
       typeof markdown === "string" ? sanitize(String(marked(markdown))) : null,
-    [markdown]
+    [markdown],
   );
 
   return (

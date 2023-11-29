@@ -26,7 +26,7 @@ describe("ReplaceTextEffect", () => {
     document.body.innerHTML = "<div>foobar</div>";
     const nodeIterator = document.createNodeIterator(
       document.body,
-      NodeFilter.SHOW_ELEMENT
+      NodeFilter.SHOW_ELEMENT,
     );
     nodeIterator.nextNode();
   });
@@ -41,13 +41,13 @@ describe("ReplaceTextEffect", () => {
           pattern: "foo",
           color,
         }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
 
       expect(document.body.innerHTML).toBe(
-        '<div><mark style="background-color: yellow;">foo</mark>bar</div>'
+        '<div><mark style="background-color: yellow;">foo</mark>bar</div>',
       );
-    }
+    },
   );
 
   test("case insensitive match", async () => {
@@ -58,11 +58,11 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         isCaseInsensitive: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div><mark style="background-color: yellow;">fOo</mark>bAr</div>'
+      '<div><mark style="background-color: yellow;">fOo</mark>bAr</div>',
     );
   });
 
@@ -73,7 +73,7 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "foo",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe("<div>fOobAr</div>");
@@ -87,11 +87,11 @@ describe("ReplaceTextEffect", () => {
         pattern: "[foo]",
         isCaseInsensitive: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div><mark style="background-color: yellow;">[fOo]</mark>bAr</div>'
+      '<div><mark style="background-color: yellow;">[fOo]</mark>bAr</div>',
     );
   });
 
@@ -102,11 +102,11 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "bar",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div>foo<mark style="background-color: yellow;">bar</mark></div>'
+      '<div>foo<mark style="background-color: yellow;">bar</mark></div>',
     );
   });
 
@@ -117,11 +117,11 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "oba",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div>fo<mark style="background-color: yellow;">oba</mark>r</div>'
+      '<div>fo<mark style="background-color: yellow;">oba</mark>r</div>',
     );
   });
 
@@ -135,12 +135,12 @@ describe("ReplaceTextEffect", () => {
         unsafeAssumeValidArg({
           pattern: "foo",
         }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
     }
 
     expect(document.body.innerHTML).toBe(
-      '<div><mark style="background-color: yellow;">foo</mark>bar</div>'
+      '<div><mark style="background-color: yellow;">foo</mark>bar</div>',
     );
   });
 
@@ -153,11 +153,11 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         selector: "div",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div><div><mark style="background-color: yellow;">foo</mark>bar</div></div>'
+      '<div><div><mark style="background-color: yellow;">foo</mark>bar</div></div>',
     );
   });
 
@@ -170,11 +170,11 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div><mark style="background-color: yellow;">foo</mark>bar</div>'
+      '<div><mark style="background-color: yellow;">foo</mark>bar</div>',
     );
   });
 
@@ -187,12 +187,12 @@ describe("ReplaceTextEffect", () => {
         pattern: "foo",
         color: "#A020F0",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
       // `markjs` highlights with rgb
-      '<div><mark style="background-color: rgb(160, 32, 240);">foo</mark>bar</div>'
+      '<div><mark style="background-color: rgb(160, 32, 240);">foo</mark>bar</div>',
     );
   });
 
@@ -205,11 +205,11 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div><mark style="background-color: yellow;">foo</mark>bar<mark style="background-color: yellow;">foo</mark></div>'
+      '<div><mark style="background-color: yellow;">foo</mark>bar<mark style="background-color: yellow;">foo</mark></div>',
     );
   });
 
@@ -222,11 +222,11 @@ describe("ReplaceTextEffect", () => {
         pattern: "[fo]+",
         isRegex: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div><div><mark style="background-color: yellow;">foo</mark></div><div><mark style="background-color: yellow;">foo</mark></div></div>'
+      '<div><div><mark style="background-color: yellow;">foo</mark></div><div><mark style="background-color: yellow;">foo</mark></div></div>',
     );
   });
 
@@ -239,12 +239,12 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "Sup",
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.title).toBe("Support page");
     expect(document.body.innerHTML).toBe(
-      '<h1><mark style="background-color: yellow;">Sup</mark>erlatives Abound</h1>'
+      '<h1><mark style="background-color: yellow;">Sup</mark>erlatives Abound</h1>',
     );
   });
 
@@ -258,7 +258,7 @@ describe("ReplaceTextEffect", () => {
         isRegex: true,
         color: '"<script>alert("xss")</script>',
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe("<div><mark>foo</mark>bar</div>");
@@ -275,12 +275,12 @@ describe("ReplaceTextEffect", () => {
         pattern: ".+",
         isRegex: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
       // The text content was sanitized
-      "<div><mark style=\"background-color: yellow;\">&lt;script&gt;alert('xss')&lt;/script&gt;</mark></div>"
+      "<div><mark style=\"background-color: yellow;\">&lt;script&gt;alert('xss')&lt;/script&gt;</mark></div>",
     );
   });
 
@@ -294,11 +294,11 @@ describe("ReplaceTextEffect", () => {
       unsafeAssumeValidArg({
         pattern: "foo",
       }),
-      brickOptionsFactory({ root })
+      brickOptionsFactory({ root }),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div><h1><mark style="background-color: yellow;">foo</mark>bar</h1><h2>foobaz</h2></div>'
+      '<div><h1><mark style="background-color: yellow;">foo</mark>bar</h1><h2>foobaz</h2></div>',
     );
   });
 
@@ -311,11 +311,11 @@ describe("ReplaceTextEffect", () => {
         pattern: "foobar",
         isAcrossElements: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(document.body.innerHTML).toBe(
-      '<div><span><mark style="background-color: yellow;">foo</mark></span><span><mark style="background-color: yellow;">bar</mark></span></div>'
+      '<div><span><mark style="background-color: yellow;">foo</mark></span><span><mark style="background-color: yellow;">bar</mark></span></div>',
     );
   });
 });

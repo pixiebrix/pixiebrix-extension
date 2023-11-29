@@ -44,7 +44,7 @@ describe("getModDefinitionIntegrationIds", () => {
           modComponentDefinition2,
           modComponentDefinition3,
         ],
-      })
+      }),
     ).toEqual([serviceId1, serviceId2]);
   });
 
@@ -77,7 +77,7 @@ describe("getModDefinitionIntegrationIds", () => {
     expect(
       getModDefinitionIntegrationIds({
         extensionPoints: [modComponentDefinition1, modComponentDefinition2],
-      })
+      }),
     ).toEqual([serviceId1, serviceId2]);
   });
 
@@ -120,7 +120,7 @@ describe("getModDefinitionIntegrationIds", () => {
           modComponentDefinition2,
           modComponentDefinition3,
         ],
-      })
+      }),
     ).toEqual([serviceId1, serviceId2]);
   });
 });

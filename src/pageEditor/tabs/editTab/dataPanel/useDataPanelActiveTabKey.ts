@@ -22,10 +22,10 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { type DataPanelTabKey } from "./dataPanelTypes";
 
 export default function useDataPanelActiveTabKey(
-  defaultTabKey: DataPanelTabKey
+  defaultTabKey: DataPanelTabKey,
 ): [
   activeKey: DataPanelTabKey,
-  onSelectTab: (eventKey: DataPanelTabKey) => void
+  onSelectTab: (eventKey: DataPanelTabKey) => void,
 ] {
   const dispatch = useDispatch();
 
@@ -34,7 +34,7 @@ export default function useDataPanelActiveTabKey(
     (eventKey: DataPanelTabKey) => {
       dispatch(actions.setNodeDataPanelTabSelected(eventKey));
     },
-    [dispatch]
+    [dispatch],
   );
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function useDataPanelActiveTabKey(
 
   const activeKey = useMemo(
     () => savedActiveKey ?? defaultTabKey,
-    [defaultTabKey, savedActiveKey]
+    [defaultTabKey, savedActiveKey],
   );
 
   return [activeKey, onSelectTab];

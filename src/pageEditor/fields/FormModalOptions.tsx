@@ -53,7 +53,7 @@ const FormModalOptions: React.FC<{
 }> = ({ name, configKey }) => {
   const [activeElement, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement
+    editorActions.setNodePreviewActiveElement,
   );
 
   const configName = `${name}.${configKey}`;

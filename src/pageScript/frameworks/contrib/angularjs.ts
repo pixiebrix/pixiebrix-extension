@@ -75,7 +75,7 @@ function getAngularData(instance: AngularElement): Scope {
     (value, key) =>
       typeof value !== "function" &&
       !key.startsWith("$$") &&
-      !key.startsWith("$")
+      !key.startsWith("$"),
   );
 }
 

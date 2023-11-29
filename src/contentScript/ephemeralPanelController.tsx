@@ -35,7 +35,7 @@ let renderSequenceNumber = 0;
  * @see updateTemporarySidebarPanel
  */
 export function updateTemporaryOverlayPanel(
-  entry: Except<TemporaryPanelEntry, "type">
+  entry: Except<TemporaryPanelEntry, "type">,
 ): void {
   expectContext("contentScript");
 

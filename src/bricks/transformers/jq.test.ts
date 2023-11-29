@@ -29,7 +29,7 @@ describe("smoke tests", () => {
   test("passes input to filter", async () => {
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".foo", data: { foo: 42 } }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await expect(promise).resolves.toBe(42);
@@ -48,9 +48,9 @@ describe("smoke tests", () => {
             filter: ".foo.data",
             data: { foo: { data: number } },
           }),
-          brickOptionsFactory()
-        )
-      )
+          brickOptionsFactory(),
+        ),
+      ),
     );
 
     // There shouldn't be any interference between the concurrent runs
@@ -62,7 +62,7 @@ describe("ctxt", () => {
   test.each([[null], [""]])("pass context if data is %s", async (data) => {
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".foo", data }),
-      brickOptionsFactory({ ctxt: { foo: 42 } })
+      brickOptionsFactory({ ctxt: { foo: 42 } }),
     );
 
     await expect(promise).resolves.toBe(42);
@@ -73,7 +73,7 @@ describe("json", () => {
   test("string data is not interpreted", async () => {
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".", data: "[]" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     // String is returned as-is, not as a JSON array
@@ -118,7 +118,7 @@ describe("jq compilation errors", () => {
     try {
       await new JQTransformer().transform(
         unsafeAssumeValidArg({ filter: '"', data: {} }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
     } catch (error) {
       expect(serializeError(error)).toStrictEqual({
@@ -143,12 +143,12 @@ describe("jq compilation errors", () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: "{", data: {} }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await expect(promise).rejects.toThrow(InputValidationError);
     await expect(promise).rejects.toThrow(
-      "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
+      "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?",
     );
   });
 
@@ -156,12 +156,12 @@ describe("jq compilation errors", () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: "a | b", data: {} }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await expect(promise).rejects.toThrow(InputValidationError);
     await expect(promise).rejects.toThrow(
-      "Invalid jq filter, see error log for details"
+      "Invalid jq filter, see error log for details",
     );
   });
 });
@@ -171,7 +171,7 @@ describe("jq execution errors", () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".foo[]", data: {} }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
@@ -182,12 +182,12 @@ describe("jq execution errors", () => {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3216
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: '"" | fromdate', data: {} }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
     await expect(promise).rejects.toThrow(
-      'date "" does not match format "%Y-%m-%dT%H:%M:%SZ"'
+      'date "" does not match format "%Y-%m-%dT%H:%M:%SZ"',
     );
   });
 });
@@ -197,12 +197,12 @@ describe("known jq-web bugs and quirks", () => {
     // https://github.com/fiatjaf/jq-web/issues/32
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: ".[] | .Title", data: [] }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await expect(promise).rejects.toThrow(BusinessError);
     await expect(promise).rejects.toThrow(
-      "ensure the jq filter produces a result for the data"
+      "ensure the jq filter produces a result for the data",
     );
   });
 
@@ -218,9 +218,9 @@ describe("known jq-web bugs and quirks", () => {
             filter: ".foo.data",
             data: { foo: { data: number } },
           }),
-          brickOptionsFactory()
-        )
-      )
+          brickOptionsFactory(),
+        ),
+      ),
     );
 
     await expect(values).resolves.toStrictEqual(range(3000).map((n) => n));
@@ -230,7 +230,7 @@ describe("known jq-web bugs and quirks", () => {
     // https://github.com/fiatjaf/jq-web/issues/19
     const promise = new JQTransformer().transform(
       unsafeAssumeValidArg({ filter: "1 % 1", data: [] }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await expect(promise).rejects.toThrow(BusinessError);

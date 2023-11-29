@@ -25,7 +25,7 @@ export class ErrorEffect extends EffectABC {
     super(
       "@pixiebrix/error",
       "Raise business error",
-      "Raise/throw a business error"
+      "Raise/throw a business error",
     );
   }
 

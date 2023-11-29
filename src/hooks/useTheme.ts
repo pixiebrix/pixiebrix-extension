@@ -35,7 +35,7 @@ import { isEmpty } from "lodash";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 
 async function activateBackgroundTheme(
-  flush: () => Promise<void>
+  flush: () => Promise<void>,
 ): Promise<void> {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
   await flush();
@@ -76,7 +76,7 @@ export function useGetTheme(): Theme {
       dispatch(
         settingsSlice.actions.setPartnerId({
           partnerId: managedPartnerId ?? "",
-        })
+        }),
       );
     }
   }, [partnerId, dispatch, managedPartnerIdIsLoading, managedPartnerId]);
@@ -86,7 +86,7 @@ export function useGetTheme(): Theme {
     dispatch(
       settingsSlice.actions.setTheme({
         theme: partnerTheme ?? partnerId ?? DEFAULT_THEME,
-      })
+      }),
     );
   }, [dispatch, partnerId, partnerTheme, theme]);
 

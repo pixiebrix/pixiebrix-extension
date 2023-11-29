@@ -74,14 +74,14 @@ describe("useMilestones", () => {
 
     expect(hasEveryMilestone(["test_milestone_1"])).toBe(true);
     expect(hasEveryMilestone(["test_milestone_1", "test_milestone_2"])).toBe(
-      true
+      true,
     );
     expect(
       hasEveryMilestone([
         "test_milestone_1",
         "test_milestone_2",
         "does_not_exist",
-      ])
+      ]),
     ).toBe(false);
     expect(hasEveryMilestone([])).toBe(true);
   });

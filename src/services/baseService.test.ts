@@ -22,6 +22,6 @@ describe("withoutTrailingSlash", () => {
     "strips trailing slash for %s",
     (url) => {
       expect(withoutTrailingSlash(url)).toBe("https://app.pixiebrix.com");
-    }
+    },
   );
 });

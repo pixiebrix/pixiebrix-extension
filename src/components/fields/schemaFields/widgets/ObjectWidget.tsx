@@ -81,7 +81,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
     ({ target }: React.FocusEvent<HTMLInputElement>) => {
       onRename?.(target.value);
     },
-    [onRename]
+    [onRename],
   );
 
   const currentProperty = getFieldNamesFromPathString(field.name)[1];
@@ -137,7 +137,7 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
 
   const PropertyRowComponent = useMemo(
     () => getPropertyRow(propertySchema),
-    [propertySchema]
+    [propertySchema],
   );
 
   const deleteProp = useCallback(() => {
@@ -148,7 +148,7 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     (newProp: string) => {
       onRename(property, newProp);
     },
-    [property, onRename]
+    [property, onRename],
   );
 
   return (
@@ -165,7 +165,7 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
 };
 
 function getPropertyRow(
-  schema: Schema
+  schema: Schema,
 ): React.FunctionComponent<PropertyRowProps> {
   switch (schema?.type) {
     case "array":
@@ -200,8 +200,8 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
     const declared = schema.properties ?? {};
     const additional = Object.fromEntries(
       Object.entries(field.value ?? {}).filter(
-        ([property]) => !declared[property]
-      )
+        ([property]) => !declared[property],
+      ),
     );
     return [[...Object.keys(declared), ...Object.keys(additional)], declared];
   }, [field.value, schema.properties]);
@@ -214,10 +214,10 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
           if (draft) {
             delete draft[property];
           }
-        })
+        }),
       );
     },
-    [name, setFieldValue, valueRef]
+    [name, setFieldValue, valueRef],
   );
 
   const onRename = useCallback(
@@ -236,11 +236,11 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
           produce(previousValue, (draft) => {
             draft[newProp] = draft[oldProp] ?? "";
             delete draft[oldProp];
-          })
+          }),
         );
       }
     },
-    [name, setFieldValue, valueRef]
+    [name, setFieldValue, valueRef],
   );
 
   const addProperty = useCallback(() => {
@@ -249,10 +249,10 @@ const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
       produce(valueRef.current, (draft) => {
         const prop = freshIdentifier(
           "property" as SafeString,
-          Object.keys(draft)
+          Object.keys(draft),
         );
         draft[prop] = "";
-      })
+      }),
     );
   }, [name, setFieldValue, valueRef]);
 

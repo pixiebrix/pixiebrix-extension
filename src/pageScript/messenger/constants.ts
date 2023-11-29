@@ -27,5 +27,5 @@ export const CKEDITOR_SET_VALUE = "@@pixiebrix/script/CKEDITOR_SET_VALUE";
 const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;
 export const KNOWN_READERS = [...KNOWN_ADAPTERS, "jquery"] as const;
 
-export type FrameworkAdapter = typeof KNOWN_ADAPTERS[number];
-export type Framework = typeof KNOWN_READERS[number];
+export type FrameworkAdapter = (typeof KNOWN_ADAPTERS)[number];
+export type Framework = (typeof KNOWN_READERS)[number];

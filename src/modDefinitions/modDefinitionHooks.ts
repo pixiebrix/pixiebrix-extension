@@ -44,14 +44,14 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
  * @see useAllModDefinitions
  */
 export function useOptionalModDefinition(
-  id: RegistryId
+  id: RegistryId,
 ): FetchableAsyncState<ModDefinition | null> {
   const state = useAllModDefinitions();
 
   const findModDefinition = useCallback(
     (modDefinitions: ModDefinition[]) =>
       modDefinitions.find((x) => x.metadata.id === id),
-    [id]
+    [id],
   );
 
   const modDefinitionState = useMergeAsyncState(state, findModDefinition);
@@ -78,7 +78,7 @@ export function useOptionalModDefinition(
  * @see useAllModDefinitions
  */
 export function useRequiredModDefinitions(
-  ids: RegistryId[]
+  ids: RegistryId[],
 ): AsyncState<ModDefinition[]> {
   const state = useAllModDefinitions();
 
@@ -89,22 +89,22 @@ export function useRequiredModDefinitions(
 
       if (ids.length !== matches.length) {
         const missingIds = ids.filter(
-          (x) => !matches.some((mod) => mod.metadata.id === x)
+          (x) => !matches.some((mod) => mod.metadata.id === x),
         );
         throw new Error(
-          `Mod definition(s) not found: ${missingIds.join(", ")}`
+          `Mod definition(s) not found: ${missingIds.join(", ")}`,
         );
       }
 
       return matches;
-    }
+    },
   );
 
   // Avoid reference change when useAllModDefinitions switches from cache to remote fetch
   const data = useMemoCompare(modDefinitionState.data, deepEquals);
   const currentData = useMemoCompare(
     modDefinitionState.currentData,
-    deepEquals
+    deepEquals,
   );
 
   // Don't error until the lookup fails against the remote data
@@ -131,7 +131,7 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
   const dispatch = useDispatch();
   const refetch = useCallback(
     () => dispatch(modDefinitionsActions.syncRemoteModDefinitions()),
-    [dispatch]
+    [dispatch],
   );
   const state = useSelector(selectAllModDefinitions);
 

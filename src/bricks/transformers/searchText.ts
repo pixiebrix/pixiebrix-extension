@@ -156,7 +156,7 @@ export class SearchText extends TransformerABC {
       "@pixiebrix/text/search",
       "Search Text",
       "Search for word and/or phrase(s) in text",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -199,7 +199,7 @@ export class SearchText extends TransformerABC {
         default: false,
       },
     },
-    ["text", "query"]
+    ["text", "query"],
   );
 
   override outputSchema: Schema = {

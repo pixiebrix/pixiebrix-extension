@@ -43,7 +43,7 @@ describe("AsyncRemoteSelectWidget", () => {
         defaultOptions
         value={null}
         config={null}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -66,7 +66,7 @@ describe("AsyncRemoteSelectWidget", () => {
         defaultOptions
         value={null}
         config={null}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -93,7 +93,7 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         value={null}
         config={null}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -127,7 +127,7 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         value={null}
         config={null}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -158,7 +158,7 @@ describe("AsyncRemoteSelectWidget", () => {
         defaultOptions
         value="test-value"
         config={null}
-      />
+      />,
     );
 
     await act(async () => {
@@ -192,7 +192,7 @@ describe("AsyncRemoteSelectWidget", () => {
         onChange={onChangeMock}
         value={null}
         config={null}
-      />
+      />,
     );
 
     await waitForEffect();

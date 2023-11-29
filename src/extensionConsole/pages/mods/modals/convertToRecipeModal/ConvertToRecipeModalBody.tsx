@@ -69,7 +69,7 @@ const validationSchema = Yup.object().shape({
     .test(
       "semver",
       "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-      (value: string) => testIsSemVerString(value, { allowLeadingV: false })
+      (value: string) => testIsSemVerString(value, { allowLeadingV: false }),
     )
     .required(),
   description: Yup.string().required(),
@@ -138,7 +138,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
       description: "Created with the PixieBrix Page Editor",
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- initial values for the form, we calculate them once
-    []
+    [],
   );
 
   const closeModal = () => {
@@ -149,7 +149,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
 
   const convertToMod = async (
     formValues: ConvertModFormState,
-    helpers: FormikHelpers<ConvertModFormState>
+    helpers: FormikHelpers<ConvertModFormState>,
   ) => {
     try {
       const unsavedModDefinition = makeBlueprint(extension, {
@@ -179,7 +179,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
           extensionsSlice.actions.attachExtension({
             extensionId: extension.id,
             recipeMetadata: pickModDefinitionMetadata(modDefinition),
-          })
+          }),
         );
       } else {
         // In case of cloud extension, we need to delete it
@@ -195,13 +195,13 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
         dispatch(
           modModalsSlice.actions.setShareContext({
             blueprintId: modDefinition.metadata.id,
-          })
+          }),
         );
       } else {
         dispatch(
           modModalsSlice.actions.setPublishContext({
             blueprintId: modDefinition.metadata.id,
-          })
+          }),
         );
       }
     } catch (error) {

@@ -25,7 +25,7 @@ import v3OptionalServices from "@contrib/recipes/v3-optional-services-example.tx
 describe("validateSchema", () => {
   test("validates a v1 blueprint", async () => {
     await expect(validateSchema(objToYaml(trelloBlueprint))).resolves.toEqual(
-      {}
+      {},
     );
   });
 

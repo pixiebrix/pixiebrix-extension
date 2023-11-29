@@ -75,7 +75,7 @@ export class IFrameRenderer extends RendererABC {
 
     if (safeMode) {
       return assumeSafe(
-        `<iframe src="${parsedURL.href}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`
+        `<iframe src="${parsedURL.href}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`,
       );
     }
 
@@ -84,7 +84,7 @@ export class IFrameRenderer extends RendererABC {
     const source = `${frameURL}?url=${encodeURIComponent(parsedURL.href)}`;
 
     return assumeSafe(
-      `<iframe src="${source}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`
+      `<iframe src="${source}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`,
     );
   }
 }

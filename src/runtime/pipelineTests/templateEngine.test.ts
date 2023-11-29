@@ -45,11 +45,11 @@ describe.each([["mustache"], ["handlebars"], ["nunjucks"]])(
       const result = await reducePipeline(
         pipeline as BrickConfig,
         simpleInput({ inputArg: "hello" }),
-        testOptions("v1")
+        testOptions("v1"),
       );
       expect(result).toStrictEqual({ message: "hello" });
     });
-  }
+  },
 );
 
 describe("apiVersion: v1", () => {
@@ -61,7 +61,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v1")
+      testOptions("v1"),
     );
     expect(result).toStrictEqual({ message: "hello" });
   });
@@ -75,7 +75,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline as BrickConfig,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v1")
+      testOptions("v1"),
     );
     expect(result).toStrictEqual({ message: "HELLO" });
   });
@@ -90,7 +90,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ message: "{{@input.inputArg}}" });
   });
@@ -114,7 +114,7 @@ describe("apiVersion: v3", () => {
       const result = await reducePipeline(
         pipeline,
         simpleInput({ inputArg: "hello" }),
-        testOptions("v3")
+        testOptions("v3"),
       );
       expect(result).toStrictEqual({ message: "hello" });
     });
@@ -135,7 +135,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ message: "" });
   });
@@ -154,7 +154,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline as BrickConfig,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ message: "HELLO" });
   });
@@ -172,7 +172,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual({ message: "hello" });
   });
@@ -193,16 +193,16 @@ describe("Error handling", () => {
       await reducePipeline(
         pipeline as BrickConfig,
         simpleInput({ inputArg: "hello" }),
-        testOptions("v3")
+        testOptions("v3"),
       );
       throw new Error("reducePipeline should have thrown");
     } catch (error: any) {
       expect(selectSpecificError(error, BusinessError)).toBeInstanceOf(
-        BusinessError
+        BusinessError,
       );
       expect(error.message).toBe(
         `Invalid template: (unknown path) [Line 1, Column 14]
-  expected variable end. Template: "{{@input }"`
+  expected variable end. Template: "{{@input }"`,
       );
     }
   });

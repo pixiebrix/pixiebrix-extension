@@ -115,7 +115,7 @@ describe("useSubmitBrick", () => {
         {
           resetForm,
           setErrors,
-        } as any
+        } as any,
       );
     });
 
@@ -165,7 +165,7 @@ describe("useSubmitBrick", () => {
         {
           resetForm,
           setErrors,
-        } as any
+        } as any,
       );
     });
 

@@ -44,7 +44,7 @@ describe("PageStateAnalysis", () => {
           type: AnnotationType.Info,
         }),
       ]);
-    }
+    },
   );
 
   it("shows info on shared page state for custom form", async () => {
@@ -113,7 +113,7 @@ describe("PageStateAnalysis", () => {
           type: AnnotationType.Warning,
         }),
       ]);
-    }
+    },
   );
 
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(
@@ -134,6 +134,6 @@ describe("PageStateAnalysis", () => {
       await analysis.run(state);
 
       expect(analysis.getAnnotations()).toEqual([]);
-    }
+    },
   );
 });

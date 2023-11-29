@@ -82,12 +82,12 @@ function detectLoop(timestamps: Date[]): void {
   const current = new Date();
 
   const renders = timestamps.filter(
-    (x) => Math.abs(current.getTime() - x.getTime()) < RENDER_LOOP_WINDOW_MS
+    (x) => Math.abs(current.getTime() - x.getTime()) < RENDER_LOOP_WINDOW_MS,
   );
 
   if (renders.length > RENDER_LOOP_THRESHOLD) {
     const diffs = timestamps.map((x) =>
-      Math.abs(current.getTime() - x.getTime())
+      Math.abs(current.getTime() - x.getTime()),
     );
     console.error("Panel is stuck in a render loop", {
       diffs,
@@ -154,7 +154,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       },
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
     },
-    ["heading", "body"]
+    ["heading", "body"],
   );
 
   public get kind(): "panel" {
@@ -162,7 +162,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   }
 
   async getBricks(
-    extension: ResolvedModComponent<PanelConfig>
+    extension: ResolvedModComponent<PanelConfig>,
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.body);
   }
@@ -187,7 +187,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     for (const extension of this.modComponents) {
       const $item = this.$container.find(
-        `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
+        `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`,
       );
       if ($item.length === 0) {
         console.debug(`Panel for ${extension.id} was not in the menu`);
@@ -205,7 +205,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   async install(): Promise<boolean> {
     if (!(await this.isAvailable())) {
       console.debug(
-        `Skipping panel extension because it's not available for the page: ${this.id}`
+        `Skipping panel extension because it's not available for the page: ${this.id}`,
       );
       return false;
     }
@@ -213,7 +213,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     const selector = this.getContainerSelector();
 
     console.debug(
-      `Awaiting panel container for ${this.id}: ${JSON.stringify(selector)}`
+      `Awaiting panel container for ${this.id}: ${JSON.stringify(selector)}`,
     );
 
     const [containerPromise, cancelInstall] = awaitElementOnce(selector);
@@ -227,7 +227,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     if (this.$container.length > 1) {
       console.error(
-        `Multiple containers found for selector: ${JSON.stringify(selector)}`
+        `Multiple containers found for selector: ${JSON.stringify(selector)}`,
       );
       this.logger.error(`Multiple containers found: ${this.$container.length}`);
       return false;
@@ -243,12 +243,12 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
         () => {
           console.debug(
             `Container removed from DOM for ${this.id}: ${JSON.stringify(
-              selector
-            )}`
+              selector,
+            )}`,
           );
           this.$container = undefined;
         },
-        this.cancelController.signal
+        this.cancelController.signal,
       );
     }
 
@@ -261,7 +261,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
   private async runExtension(
     readerOutput: JsonObject,
-    extension: ResolvedModComponent<PanelConfig>
+    extension: ResolvedModComponent<PanelConfig>,
   ) {
     if (this.uninstalled) {
       throw new Error("panelExtension has already been destroyed");
@@ -283,7 +283,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const bodyUUID = uuidv4();
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension)
+      selectExtensionContext(extension),
     );
 
     const {
@@ -303,7 +303,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
 
     const serviceContext = await makeServiceContextFromDependencies(
-      extension.integrationDependencies
+      extension.integrationDependencies,
     );
     const extensionContext = { ...readerOutput, ...serviceContext };
 
@@ -314,13 +314,13 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
         body: `<div id="${bodyUUID}"></div>`,
         icon: icon ? await getSvgIcon(icon) : null,
         bodyUUID,
-      })
+      }),
     );
 
     $panel.attr(PIXIEBRIX_DATA_ATTR, extension.id);
 
     const $existingPanel = this.$container.find(
-      `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
+      `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`,
     );
 
     // Clean up removal monitor, otherwise it will be re-triggered during replaceWith
@@ -387,7 +387,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
         try {
           const bodyOrComponent = await errorBoundary(
             rendererPromise,
-            extensionLogger
+            extensionLogger,
           );
           render(bodyContainer, bodyOrComponent, {
             shadowDOM,
@@ -417,7 +417,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
         this.collapsedExtensions.set(extension.id, !showing);
         if (showing) {
           console.debug(
-            `Installing body for collapsible panel: ${extension.id}`
+            `Installing body for collapsible panel: ${extension.id}`,
           );
           await installBody();
         }
@@ -428,7 +428,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       }
     } else {
       console.debug(
-        `Installing body for non-collapsible panel: ${extension.id}`
+        `Installing body for non-collapsible panel: ${extension.id}`,
       );
       await installBody();
     }
@@ -568,7 +568,7 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 }
 
 export function fromJS(
-  config: StarterBrickConfig<PanelDefinition>
+  config: StarterBrickConfig<PanelDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "panel") {

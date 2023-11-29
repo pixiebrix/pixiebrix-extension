@@ -58,7 +58,7 @@ describe("AddBlockModal", () => {
             path: "",
             flavor: PipelineFlavor.AllBlocks,
             index: 0,
-          })
+          }),
         );
       },
       // This currently produces a warning, but allows us to snapshot the modal
@@ -83,7 +83,7 @@ describe("AddBlockModal", () => {
             path: PIPELINE_BLOCKS_FIELD_NAME,
             flavor: PipelineFlavor.AllBlocks,
             index: 0,
-          })
+          }),
         );
       },
       container: document.body,

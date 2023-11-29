@@ -22,7 +22,7 @@ import { type GroupBase, type MenuListProps } from "react-select";
 type MenuListWithAddButtonProps<
   OptionType,
   IsMulti extends boolean,
-  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
+  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>,
 > = MenuListProps<OptionType, IsMulti, GroupType> & {
   onAddClick?: () => void;
   href?: string;
@@ -31,9 +31,9 @@ type MenuListWithAddButtonProps<
 const MenuListWithAddButton = <
   OptionType,
   IsMulti extends boolean,
-  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
+  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>,
 >(
-  props: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
+  props: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>,
 ) => {
   const {
     children,
@@ -61,7 +61,7 @@ const MenuListWithAddButton = <
           "menu-list": true,
           "menu-list--is-multi": isMulti,
         },
-        className
+        className,
       )}
       ref={innerRef}
       {...innerProps}
@@ -93,9 +93,9 @@ const createMenuListWithAddButton = (action: (() => void) | string) => {
   const MenuList = <
     OptionType,
     IsMulti extends boolean,
-    GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
+    GroupType extends GroupBase<OptionType> = GroupBase<OptionType>,
   >(
-    menuListProps: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
+    menuListProps: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>,
   ) => (
     <MenuListWithAddButton
       onAddClick={onAddClick}

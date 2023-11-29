@@ -37,7 +37,7 @@ const Header: React.FunctionComponent = () => {
         <Button
           className={cx(
             styles.button,
-            theme === "default" ? styles.themeColorOverride : styles.themeColor
+            theme === "default" ? styles.themeColorOverride : styles.themeColor,
           )}
           onClick={async () => {
             const topLevelFrame = await getTopLevelFrame();
@@ -66,7 +66,7 @@ const Header: React.FunctionComponent = () => {
         variant="link"
         className={cx(
           styles.button,
-          theme === "default" ? styles.themeColorOverride : styles.themeColor
+          theme === "default" ? styles.themeColorOverride : styles.themeColor,
         )}
       >
         <FontAwesomeIcon icon={faCog} />

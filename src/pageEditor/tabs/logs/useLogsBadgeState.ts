@@ -27,7 +27,7 @@ function useLogsBadgeState(): [number, Variant] | [undefined, undefined] {
   const unreadByLevels = useMemo(() => {
     const lastTimestamp = Math.max(...entries.map((x) => Number(x.timestamp)));
     const unread = availableEntries.filter(
-      (x) => Number(x.timestamp) > lastTimestamp
+      (x) => Number(x.timestamp) > lastTimestamp,
     );
 
     return groupBy(unread, (x) => x.level);

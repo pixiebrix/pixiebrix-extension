@@ -134,7 +134,7 @@ describe("bricksRegistry", () => {
 
     bricksRegistry.clear();
     await expect(bricksRegistry.lookup(echoBrick.id)).resolves.toEqual(
-      echoBrick
+      echoBrick,
     );
   });
 
@@ -155,7 +155,7 @@ describe("bricksRegistry", () => {
     bricksRegistry.register([echoBrick]);
 
     await expect(
-      bricksRegistry.lookup(value.metadata.id)
+      bricksRegistry.lookup(value.metadata.id),
     ).resolves.not.toThrow();
 
     expect(bricksRegistry.isCachedInitialized).toBe(false);

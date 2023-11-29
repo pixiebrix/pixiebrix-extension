@@ -30,7 +30,7 @@ import ButtonOptions from "@/components/documentBuilder/edit/ButtonOptions";
 
 const useElementOptions = (
   element: DocumentElement,
-  elementName: string
+  elementName: string,
 ): React.FC => {
   const elementType = element.type;
 
@@ -71,7 +71,7 @@ const useElementOptions = (
     },
     // The element type can't change, so this is OK
     // eslint-disable-next-line react-hooks/exhaustive-deps -- leaving element off to prevent remounting
-    [elementType, elementName]
+    [elementType, elementName],
   );
 
   return ElementOptions;

@@ -40,14 +40,14 @@ import { castArray, uniq } from "lodash";
  * @see RequireIntegrationConfig
  */
 function useSanitizedIntegrationConfigFormikAdapter(
-  integrationIds: RegistryId | RegistryId[]
+  integrationIds: RegistryId | RegistryId[],
 ): FetchableAsyncState<SanitizedIntegrationConfig | null> {
   const idArray = uniq(castArray(integrationIds));
   const {
     values: { integrationDependencies = [] },
   } = useFormikContext<{ integrationDependencies: IntegrationDependency[] }>();
   const matchingIntegrationDependencies = integrationDependencies.filter(
-    ({ integrationId }) => idArray.includes(integrationId)
+    ({ integrationId }) => idArray.includes(integrationId),
   );
   if (matchingIntegrationDependencies.length > 1) {
     throw new Error("Multiple matching integrations configured");

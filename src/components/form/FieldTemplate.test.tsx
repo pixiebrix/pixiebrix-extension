@@ -30,7 +30,7 @@ describe("FieldTemplate", () => {
 
   const renderFieldTemplate = (partialProps?: Partial<FieldProps>) =>
     render(
-      <FieldTemplate name="testName" onChange={jest.fn()} {...partialProps} />
+      <FieldTemplate name="testName" onChange={jest.fn()} {...partialProps} />,
     );
 
   test.each([

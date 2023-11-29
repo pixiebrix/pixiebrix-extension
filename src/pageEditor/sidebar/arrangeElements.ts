@@ -67,7 +67,7 @@ function arrangeElements({
     .filter((extension) => queryFilter(extension));
 
   const filteredDynamicElements: ModComponentFormState[] = elements.filter(
-    (element) => queryFilter(element)
+    (element) => queryFilter(element),
   );
 
   const grouped = groupBy(
@@ -75,15 +75,15 @@ function arrangeElements({
     (extension) =>
       isModComponentBase(extension)
         ? extension._recipe?.id
-        : extension.recipe?.id
+        : extension.recipe?.id,
   );
 
   const _elementsByRecipeId = new Map<string, Element[]>(
-    Object.entries(grouped)
+    Object.entries(grouped),
   );
   for (const elements of _elementsByRecipeId.values()) {
     elements.sort((a, b) =>
-      lowerCase(a.label).localeCompare(lowerCase(b.label))
+      lowerCase(a.label).localeCompare(lowerCase(b.label)),
     );
   }
 

@@ -56,7 +56,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
     await clearCachedAuthSecrets();
     // The success message will just flash up, because the page reloads on the next line
     notify.success(
-      "Cleared the browser extension token. Visit the web app to set it again"
+      "Cleared the browser extension token. Visit the web app to set it again",
     );
     // Reload to force contentScripts and background page to reload. The RequireAuth component listens for auth changes,
     // but we should for non-extension context to reload too.
@@ -77,7 +77,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
       successMessage: "Cleared all cached OAuth2 tokens",
       errorMessage: "Error clearing cached OAuth2 tokens",
     },
-    [dispatch]
+    [dispatch],
   );
 
   const reload = useCallback(() => {
@@ -117,7 +117,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           // Ensure it's connectable
           const response = await pTimeout(
             fetch(new URL("api/me", newPixiebrixUrl).href),
-            { milliseconds: SAVING_URL_TIMEOUT_MS }
+            { milliseconds: SAVING_URL_TIMEOUT_MS },
           );
 
           // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
@@ -140,7 +140,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
         duration: Number.POSITIVE_INFINITY,
       });
     },
-    [serviceURL, setServiceURL]
+    [serviceURL, setServiceURL],
   );
 
   return (
@@ -175,7 +175,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
                       integrationId: isEmpty(event.target.value)
                         ? null
                         : validateRegistryId(event.target.value),
-                    })
+                    }),
                   );
                 } catch (error) {
                   notify.error({
@@ -201,7 +201,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
                 dispatch(
                   settingsSlice.actions.setPartnerId({
                     partnerId: event.target.value,
-                  })
+                  }),
                 );
               }}
             />
@@ -218,7 +218,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
                 dispatch(
                   settingsSlice.actions.setAuthMethod({
                     authMethod: event.target.value,
-                  })
+                  }),
                 );
               }}
             />

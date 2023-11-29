@@ -100,7 +100,7 @@ export const DefaultErrorComponent: React.FC<ErrorDisplayProps> = ({
           // In the content script
           .replaceAll(
             `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
-            ""
+            "",
           )}
       </pre>
     )}
@@ -108,7 +108,7 @@ export const DefaultErrorComponent: React.FC<ErrorDisplayProps> = ({
 );
 
 class ErrorBoundary<
-  Props extends BoundaryProps = BoundaryProps
+  Props extends BoundaryProps = BoundaryProps,
 > extends Component<Props, ErrorState> {
   override state: ErrorState = {
     error: undefined,

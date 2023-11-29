@@ -46,7 +46,7 @@ const ActivateRecipeCard: React.FC = () => {
   const dispatch = useDispatch();
   const recipeId = useRecipeIdParam();
   const isReactivate = useSelector(
-    selectRecipeHasAnyExtensionsInstalled(recipeId)
+    selectRecipeHasAnyExtensionsInstalled(recipeId),
   );
   // Page parent component is gating this content component on isFetching, so
   // recipe will always be resolved here
@@ -66,8 +66,8 @@ const ActivateRecipeCard: React.FC = () => {
   useSetDocumentTitle(
     `${isReactivate ? "Reactivate" : "Activate"} ${truncate(
       recipe.metadata.name,
-      { length: 15 }
-    )}`
+      { length: 15 },
+    )}`,
   );
 
   if (isLoadingWizard) {

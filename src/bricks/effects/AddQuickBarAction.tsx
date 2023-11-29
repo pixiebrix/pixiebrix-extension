@@ -71,7 +71,7 @@ class AddQuickBarAction extends EffectABC {
     super(
       AddQuickBarAction.BLOCK_ID,
       "Add Quick Bar Action",
-      "Add an action to the PixieBrix Quick Bar"
+      "Add an action to the PixieBrix Quick Bar",
     );
   }
 
@@ -113,7 +113,7 @@ class AddQuickBarAction extends EffectABC {
         default: DEFAULT_PRIORITY,
       },
     },
-    ["title", "action"]
+    ["title", "action"],
   );
 
   async effect(
@@ -126,7 +126,7 @@ class AddQuickBarAction extends EffectABC {
       // Be explicit about the default priority if non is provided
       priority = DEFAULT_PRIORITY,
     }: BrickArgs<ActionConfig>,
-    { root, logger, runPipeline, abortSignal }: BrickOptions
+    { root, logger, runPipeline, abortSignal }: BrickOptions,
   ): Promise<void> {
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the Quick Bar
     if (abortSignal.aborted) {
@@ -167,7 +167,7 @@ class AddQuickBarAction extends EffectABC {
             counter,
           },
           {},
-          root
+          root,
         );
 
         counter += 1;

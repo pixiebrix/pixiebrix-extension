@@ -39,7 +39,7 @@ export const getCssClassInputFieldOptions = () =>
 const CssClassField: React.VFC<SchemaFieldProps> = (props) => {
   const cssClassInputFieldOptions = useMemo(
     () => getCssClassInputFieldOptions(),
-    []
+    [],
   );
 
   const enrichedProps = {

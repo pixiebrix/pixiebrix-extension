@@ -32,7 +32,7 @@ describe("parseDataUrl", () => {
         url,
         decode: true,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toStrictEqual({
@@ -52,7 +52,7 @@ describe("parseDataUrl", () => {
         url,
         decodeText: false,
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toStrictEqual({

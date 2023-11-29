@@ -55,7 +55,7 @@ describe("createModVariableProxy", () => {
 
     const ctxt = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") }
+      { blueprintId: null, options: apiVersionOptions("v3") },
     );
 
     expect(ctxt["@mod"].foo).toBe(42);
@@ -66,17 +66,17 @@ describe("createModVariableProxy", () => {
     (version: ApiVersion) => {
       const ctxt = extendModVariableContext(
         {},
-        { blueprintId: null, options: apiVersionOptions(version) }
+        { blueprintId: null, options: apiVersionOptions(version) },
       );
 
       expect(ctxt["@mod"]).toBeUndefined();
-    }
+    },
   );
 
   it("does not overwrite existing state", () => {
     const ctxt = extendModVariableContext(
       { "@mod": "foo" },
-      { blueprintId: null, options: apiVersionOptions("v3") }
+      { blueprintId: null, options: apiVersionOptions("v3") },
     );
     expect(ctxt["@mod"]).toBe("foo");
   });
@@ -84,7 +84,7 @@ describe("createModVariableProxy", () => {
   it("sets symbol", () => {
     const ctxt = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") }
+      { blueprintId: null, options: apiVersionOptions("v3") },
     );
     expect(isModVariableContext(ctxt)).toBe(true);
     // The symbol shouldn't show up when enumerating properties. (We don't want it to show up in the UI)
@@ -98,7 +98,7 @@ describe("createModVariableProxy", () => {
   it("do not update by default", () => {
     const ctxt1 = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") }
+      { blueprintId: null, options: apiVersionOptions("v3") },
     );
 
     setPageState({
@@ -120,7 +120,7 @@ describe("createModVariableProxy", () => {
   it("update if update flag is set", () => {
     const ctxt1 = extendModVariableContext(
       {},
-      { blueprintId: null, options: apiVersionOptions("v3") }
+      { blueprintId: null, options: apiVersionOptions("v3") },
     );
 
     setPageState({

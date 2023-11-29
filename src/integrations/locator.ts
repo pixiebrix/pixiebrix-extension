@@ -109,7 +109,7 @@ class LazyLocatorFactory {
   constructor() {
     forbidContext(
       "contentScript",
-      "LazyLocatorFactory cannot run in the contentScript"
+      "LazyLocatorFactory cannot run in the contentScript",
     );
 
     if (wasInitialized) {
@@ -131,7 +131,7 @@ class LazyLocatorFactory {
       this.remote = await fetch<RemoteIntegrationConfig[]>(
         // Fetch full configurations, including credentials for configurations with pushdown
         "/api/services/shared/",
-        { requireLinked: true }
+        { requireLinked: true },
       );
       console.debug(`Fetched ${this.remote.length} remote service auth(s)`);
     } catch (error) {
@@ -193,7 +193,7 @@ class LazyLocatorFactory {
           serviceId: validateRegistryId(x.service.name),
         })),
       ],
-      (x) => x.level
+      (x) => x.level,
     );
   }
 
@@ -219,14 +219,14 @@ class LazyLocatorFactory {
             label: x.label,
             config: x.config,
             // `config` will contain secrets because we filtered for pushdown configurations
-          } as IntegrationConfig)
+          }) as IntegrationConfig,
       );
 
     return [...this.local, ...remote].find((x) => x.id === authId);
   }
 
   async locateAllForService(
-    serviceId: RegistryId
+    serviceId: RegistryId,
   ): Promise<SanitizedIntegrationConfig[]> {
     if (!this.initialized) {
       await this.refresh();
@@ -265,11 +265,11 @@ class LazyLocatorFactory {
 
   async locate(
     serviceId: RegistryId,
-    authId: UUID
+    authId: UUID,
   ): Promise<SanitizedIntegrationConfig> {
     expectContext(
       "background",
-      "The service locator must run in the background worker"
+      "The service locator must run in the background worker",
     );
 
     if (!this.initialized) {
@@ -284,21 +284,21 @@ class LazyLocatorFactory {
     if (!authId) {
       throw new NotConfiguredError(
         `No configuration selected for ${serviceId}`,
-        serviceId
+        serviceId,
       );
     }
 
     const service = await servicesRegistry.lookup(serviceId);
 
     const match = this.options.find(
-      (x) => x.serviceId === serviceId && x.id === authId
+      (x) => x.serviceId === serviceId && x.id === authId,
     );
 
     if (!match) {
       throw new MissingConfigurationError(
         `Configuration ${authId} not found for ${serviceId}`,
         serviceId,
-        authId
+        authId,
       );
     }
 

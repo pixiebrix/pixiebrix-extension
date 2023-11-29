@@ -29,7 +29,7 @@ export const getVisiblePanelCount = ({
   // Temporary Panels are removed from the sidebar state when they are closed, so we don't need to filter them out
   const closablePanels = [...panels, ...staticPanels];
   const openPanels = closablePanels.filter(
-    (panel) => !closedTabs[eventKeyForEntry(panel)]
+    (panel) => !closedTabs[eventKeyForEntry(panel)],
   );
 
   return (

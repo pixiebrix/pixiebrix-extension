@@ -42,7 +42,7 @@ describe("IdentityOptions", () => {
     });
 
     await expect(
-      screen.findByRole("button", { name: "Add Property" })
+      screen.findByRole("button", { name: "Add Property" }),
     ).resolves.toBeInTheDocument();
   });
 });

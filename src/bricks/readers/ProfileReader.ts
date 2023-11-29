@@ -27,7 +27,7 @@ class ProfileReader extends ReaderABC {
     super(
       "@pixiebrix/profile",
       "PixieBrix user profile reader",
-      "Read email, groups, and other profile information from PixieBrix app"
+      "Read email, groups, and other profile information from PixieBrix app",
     );
   }
 

@@ -29,7 +29,7 @@ export function getMaxMigrationsVersion(migrations: MigrationManifest): number {
 }
 
 function isPersistedState(
-  state: UnknownObject & Partial<PersistedState>
+  state: UnknownObject & Partial<PersistedState>,
 ): state is UnknownObject & PersistedState {
   return Boolean(state._persist);
 }
@@ -48,7 +48,7 @@ function isPersistedState(
 export default function migratePersistedState<MigratedState>(
   state: UnknownObject & Partial<PersistedState>,
   migrations: MigrationManifest,
-  inferPersistedVersion?: (state: UnknownObject) => number
+  inferPersistedVersion?: (state: UnknownObject) => number,
 ): MigratedState {
   const maxVersion = getMaxMigrationsVersion(migrations);
 
@@ -85,13 +85,13 @@ export default function migratePersistedState<MigratedState>(
 
     if (migration == null) {
       throw new Error(
-        `Redux persistence migration not found for version: ${storedState._persist.version}`
+        `Redux persistence migration not found for version: ${storedState._persist.version}`,
       );
     }
 
     if (typeof migration !== "function") {
       throw new TypeError(
-        `Redux persistence migrations must be functions. For version: ${newVersion}, found: ${typeof migration}`
+        `Redux persistence migrations must be functions. For version: ${newVersion}, found: ${typeof migration}`,
       );
     }
 

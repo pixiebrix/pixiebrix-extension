@@ -31,7 +31,7 @@ export type KindFilterValue = "Brick" | "Mod" | "Integration" | "Starter";
  * @since 1.7.20
  */
 export function mapKindToKindUiValue(
-  kind: EditablePackageMetadata["kind"]
+  kind: EditablePackageMetadata["kind"],
 ): KindFilterValue {
   switch (kind.toLowerCase()) {
     case "brick":

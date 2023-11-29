@@ -34,7 +34,7 @@ import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 async function findSpreadsheetIdFromFieldValue(
   integrationDependencies: IntegrationDependency[],
   spreadsheetIdValue: string | Expression | null,
-  optionsArgs: OptionsArgs
+  optionsArgs: OptionsArgs,
 ): Promise<string | null> {
   // Unselected sheet-picker and select list will both set the field value to null
   if (spreadsheetIdValue == null) {
@@ -49,7 +49,7 @@ async function findSpreadsheetIdFromFieldValue(
   // Check for spreadsheetId var value in mod options
   const optionsSpreadsheetIdValue = getOptionsArgForFieldValue(
     spreadsheetIdValue,
-    optionsArgs
+    optionsArgs,
   );
   if (
     typeof optionsSpreadsheetIdValue === "string" &&
@@ -60,7 +60,7 @@ async function findSpreadsheetIdFromFieldValue(
 
   if (!isIntegrationDependencyValueFormat(spreadsheetIdValue)) {
     throw new Error(
-      "Invalid spreadsheetId value, expected integration dependency"
+      "Invalid spreadsheetId value, expected integration dependency",
     );
   }
 
@@ -68,33 +68,33 @@ async function findSpreadsheetIdFromFieldValue(
   // if the dependencies passed in are empty, we're not going to be able to match against one
   if (isEmpty(integrationDependencies)) {
     throw new Error(
-      "Invalid spreadsheetId variable, please use a Mod Inputs variable instead"
+      "Invalid spreadsheetId variable, please use a Mod Inputs variable instead",
     );
   }
 
   const sheetIdIntegrationDependencyOutputKey =
     getSheetIdIntegrationOutputKey(spreadsheetIdValue);
   const sheetIdIntegrationDependency = integrationDependencies.find(
-    ({ outputKey }) => outputKey === sheetIdIntegrationDependencyOutputKey
+    ({ outputKey }) => outputKey === sheetIdIntegrationDependencyOutputKey,
   );
 
   if (!sheetIdIntegrationDependency) {
     throw new Error(
-      "Unable to locate a matching Google Sheets integration configuration on this mod, please use a Mod Inputs variable instead"
+      "Unable to locate a matching Google Sheets integration configuration on this mod, please use a Mod Inputs variable instead",
     );
   }
 
   const { integrationId, configId } = sheetIdIntegrationDependency;
   const sanitizedIntegrationConfig = await services.locate(
     integrationId,
-    configId
+    configId,
   );
   const configSpreadsheetId = sanitizedIntegrationConfig.config?.spreadsheetId;
 
   if (!configSpreadsheetId) {
     throw new Error(
       "Could not find spreadsheetId in integration configuration: " +
-        JSON.stringify(sanitizedIntegrationConfig)
+        JSON.stringify(sanitizedIntegrationConfig),
     );
   }
 
@@ -105,12 +105,12 @@ async function findSpreadsheetIdFromFieldValue(
  * Hook to get the Google Sheets spreadsheetId from an integration configuration or direct input.
  */
 function useSpreadsheetId(
-  blockConfigPath: string
+  blockConfigPath: string,
 ): FetchableAsyncState<string | null> {
   const { integrationDependencies } = useContext(ModIntegrationsContext);
 
   const [{ value: fieldValue }, , { setError }] = useField<string | Expression>(
-    joinName(blockConfigPath, "spreadsheetId")
+    joinName(blockConfigPath, "spreadsheetId"),
   );
 
   const [{ value: optionsArgs }] = useField<OptionsArgs>("optionsArgs");
@@ -122,7 +122,7 @@ function useSpreadsheetId(
       const result = await findSpreadsheetIdFromFieldValue(
         integrationDependencies,
         fieldValue,
-        optionsArgs
+        optionsArgs,
       );
       setError(null);
       if (result != null) {

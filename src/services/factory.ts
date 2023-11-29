@@ -47,7 +47,7 @@ import { missingProperties } from "@/utils/schemaUtils";
  * access to authenticate secrets.
  */
 export class LocalDefinedService<
-  TDefinition extends IntegrationDefinition = IntegrationDefinition
+  TDefinition extends IntegrationDefinition = IntegrationDefinition,
 > extends IntegrationABC {
   private readonly _definition: TDefinition;
 
@@ -73,7 +73,7 @@ export class LocalDefinedService<
    */
   isAvailable(url: string): boolean {
     const patterns = castArray(
-      this._definition.isAvailable?.matchPatterns ?? []
+      this._definition.isAvailable?.matchPatterns ?? [],
     );
     return patterns.length === 0 || testMatchPatterns(patterns, url);
   }
@@ -138,7 +138,7 @@ export class LocalDefinedService<
    */
   getOrigins(serviceConfig: SanitizedConfig): string[] {
     const patterns = castArray(
-      this._definition.isAvailable?.matchPatterns ?? []
+      this._definition.isAvailable?.matchPatterns ?? [],
     );
 
     if (
@@ -148,7 +148,7 @@ export class LocalDefinedService<
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrlTemplate = this._definition.authentication.baseURL;
       const baseUrl = safeParseUrl(
-        renderMustache(baseUrlTemplate, serviceConfig)
+        renderMustache(baseUrlTemplate, serviceConfig),
       );
 
       if (baseUrl.hostname) {
@@ -214,7 +214,7 @@ export class LocalDefinedService<
    */
   private checkRequestUrl(
     baseURL: string | null,
-    requestConfig: AxiosRequestConfig
+    requestConfig: AxiosRequestConfig,
   ): void {
     const absoluteURL =
       baseURL && !isAbsoluteUrl(requestConfig.url)
@@ -223,18 +223,18 @@ export class LocalDefinedService<
 
     if (!this.isAvailable(absoluteURL)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${absoluteURL}`
+        `Service ${this.id} cannot be used to authenticate requests to ${absoluteURL}`,
       );
     }
   }
 
   private authenticateRequestKey(
     serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig
+    requestConfig: AxiosRequestConfig,
   ): AxiosRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`
+        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
       );
     }
 
@@ -244,12 +244,12 @@ export class LocalDefinedService<
       params = {},
     } = renderMustache<KeyAuthenticationDefinition>(
       (this._definition.authentication as KeyAuthenticationDefinition) ?? {},
-      serviceConfig
+      serviceConfig,
     );
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL"
+        "Must use absolute URLs for services that don't define a baseURL",
       );
     }
 
@@ -266,11 +266,11 @@ export class LocalDefinedService<
 
   private authenticateBasicRequest(
     serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig
+    requestConfig: AxiosRequestConfig,
   ): AxiosRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`
+        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
       );
     }
 
@@ -280,18 +280,18 @@ export class LocalDefinedService<
       headers = {},
     } = renderMustache<BasicAuthenticationDefinition>(
       this._definition.authentication as BasicAuthenticationDefinition,
-      serviceConfig
+      serviceConfig,
     );
 
     if (isEmpty(basic.username) && isEmpty(basic.password)) {
       throw new BusinessError(
-        "At least one of username and password is required for basic authentication"
+        "At least one of username and password is required for basic authentication",
       );
     }
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL"
+        "Must use absolute URLs for services that don't define a baseURL",
       );
     }
 
@@ -300,7 +300,7 @@ export class LocalDefinedService<
       draft.headers = {
         ...draft.headers,
         Authorization: `Basic ${btoa(
-          [basic.username, basic.password].join(":")
+          [basic.username, basic.password].join(":"),
         )}`,
         ...headers,
       };
@@ -314,7 +314,7 @@ export class LocalDefinedService<
   private authenticateRequestToken(
     serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig,
-    tokenData: AuthData
+    tokenData: AuthData,
   ): AxiosRequestConfig {
     if (isEmpty(tokenData)) {
       throw new Error("Empty token data provided");
@@ -324,12 +324,12 @@ export class LocalDefinedService<
       this._definition.authentication as
         | OAuth2AuthenticationDefinition
         | TokenAuthenticationDefinition,
-      { ...serviceConfig, ...tokenData }
+      { ...serviceConfig, ...tokenData },
     );
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL"
+        "Must use absolute URLs for services that don't define a baseURL",
       );
     }
 
@@ -346,14 +346,14 @@ export class LocalDefinedService<
   authenticateRequest(
     serviceConfig: SecretsConfig,
     requestConfig: AxiosRequestConfig,
-    authData?: AuthData
+    authData?: AuthData,
   ): AxiosRequestConfig {
     const missing = missingProperties(this.schema, serviceConfig);
     if (missing.length > 0) {
       throw new NotConfiguredError(
         `Service ${this.id} is not fully configured`,
         this.id,
-        missing
+        missing,
       );
     }
 
@@ -361,7 +361,7 @@ export class LocalDefinedService<
       return this.authenticateRequestToken(
         serviceConfig,
         requestConfig,
-        authData
+        authData,
       );
     }
 

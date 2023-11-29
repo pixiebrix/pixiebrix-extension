@@ -35,7 +35,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 const sortedStarterBricks = sortBy(
   [...ADAPTERS.values()],
-  (x) => x.displayOrder
+  (x) => x.displayOrder,
 );
 
 const TEMPLATE_TELEMETRY_SOURCE = "starter_brick_menu";
@@ -74,7 +74,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
         }
 
         return flagOn(config.flag);
-      })
+      }),
     );
 
     return (

@@ -80,7 +80,7 @@ type SanitizedResponse<T = unknown> = Pick<
 };
 
 function sanitizeResponse<T>(
-  response: AxiosResponse<T> | null
+  response: AxiosResponse<T> | null,
 ): SanitizedResponse<T> | null {
   if (response == null) {
     return null;
@@ -106,7 +106,7 @@ function prepareErrorForMessenger(error: unknown): unknown {
     // and request properties were getting dropped. (Potentially because AxiosError is sometimes missing a stack, or
     // it may depend on which properties are enumerable)
     parentError.cause = deserializeError(
-      serializeError(parentError.cause, { useToJSON: false })
+      serializeError(parentError.cause, { useToJSON: false }),
     );
   }
 
@@ -116,12 +116,12 @@ function prepareErrorForMessenger(error: unknown): unknown {
 }
 
 export async function serializableAxiosRequest<T>(
-  config: AxiosRequestConfig
+  config: AxiosRequestConfig,
 ): Promise<SanitizedResponse<T>> {
   // Network requests must go through background page for permissions/CORS to work properly
   expectContext(
     "background",
-    "Network requests must be made from the background page"
+    "Network requests must be made from the background page",
   );
 
   // Axios does not perform validation, so call before the axios call.
@@ -142,7 +142,7 @@ export const getOAuth2AuthData = memoizeUntilSettled(
   async (
     integration: Integration,
     localConfig: IntegrationConfig,
-    sanitizedIntegrationConfig: SanitizedIntegrationConfig
+    sanitizedIntegrationConfig: SanitizedIntegrationConfig,
   ): Promise<AuthData> => {
     // We wrap both the cache data lookup and the login request in the memoization here
     // instead of only around the login call, in order to avoid a race condition between
@@ -153,12 +153,12 @@ export const getOAuth2AuthData = memoizeUntilSettled(
     }
 
     return data;
-  }
+  },
 );
 
 async function authenticate(
   config: SanitizedIntegrationConfig,
-  request: AxiosRequestConfig
+  request: AxiosRequestConfig,
 ): Promise<AxiosRequestConfig> {
   expectContext("background");
 
@@ -168,7 +168,7 @@ async function authenticate(
 
   if (config.proxy) {
     throw new Error(
-      `Integration configuration for service ${config.serviceId} is not a local configuration: ${config.id}`
+      `Integration configuration for service ${config.serviceId} is not a local configuration: ${config.id}`,
     );
   }
 
@@ -186,7 +186,7 @@ async function authenticate(
       {
         ...request,
         url: await absoluteApiUrl(request.url),
-      }
+      },
     );
   }
 
@@ -211,7 +211,7 @@ async function authenticate(
 
     if (isEmpty(data)) {
       throw new Error(
-        `No auth data found for token authentication response for ${integration.id}`
+        `No auth data found for token authentication response for ${integration.id}`,
       );
     }
 
@@ -223,7 +223,7 @@ async function authenticate(
 
 async function proxyRequest<T>(
   integrationConfig: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig
+  requestConfig: AxiosRequestConfig,
 ): Promise<RemoteResponse<T>> {
   if (integrationConfig == null) {
     throw new Error("Integration configuration is required for proxyRequest");
@@ -239,11 +239,11 @@ async function proxyRequest<T>(
         auth_id: integrationConfig.id,
         service_id: integrationConfig.serviceId,
       },
-    }
+    },
   );
 
   const proxyResponse = await serializableAxiosRequest<ProxyResponseData>(
-    authenticatedRequestConfig
+    authenticatedRequestConfig,
   );
 
   const { data: remoteResponse } = proxyResponse;
@@ -251,7 +251,7 @@ async function proxyRequest<T>(
   if (isProxiedErrorResponse(remoteResponse)) {
     throw new ProxiedRemoteServiceError(
       selectRemoteResponseErrorMessage(remoteResponse),
-      proxyResponseToAxiosResponse(remoteResponse)
+      proxyResponseToAxiosResponse(remoteResponse),
     );
   }
 
@@ -291,7 +291,7 @@ function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
 
 async function _performConfiguredRequest(
   integrationConfig: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig
+  requestConfig: AxiosRequestConfig,
 ): Promise<RemoteResponse> {
   if (integrationConfig.proxy) {
     // Service uses the PixieBrix remote proxy to perform authentication. Proxy the request.
@@ -300,7 +300,7 @@ async function _performConfiguredRequest(
 
   try {
     return await serializableAxiosRequest(
-      await authenticate(integrationConfig, requestConfig)
+      await authenticate(integrationConfig, requestConfig),
     );
   } catch (error) {
     // Try again - automatically try to get a new token using the refresh token (if applicable)
@@ -310,7 +310,7 @@ async function _performConfiguredRequest(
 
     if (axiosError && isAuthenticationError(axiosError)) {
       const integration = await serviceRegistry.lookup(
-        integrationConfig.serviceId
+        integrationConfig.serviceId,
       );
       if (integration.isOAuth2 || integration.isToken) {
         // Don't refresh the Automation Anywhere OAuth2 token here because it has its own unique refresh call
@@ -322,12 +322,12 @@ async function _performConfiguredRequest(
           try {
             const isTokenRefreshed = await refreshPKCEToken(
               integration,
-              integrationConfig
+              integrationConfig,
             );
 
             if (isTokenRefreshed) {
               return serializableAxiosRequest(
-                await authenticate(integrationConfig, requestConfig)
+                await authenticate(integrationConfig, requestConfig),
               );
             }
           } catch (error) {
@@ -346,7 +346,7 @@ async function _performConfiguredRequest(
         await deleteCachedAuthData(integrationConfig.id);
 
         return serializableAxiosRequest(
-          await authenticate(integrationConfig, requestConfig)
+          await authenticate(integrationConfig, requestConfig),
         );
       }
     }
@@ -365,7 +365,7 @@ async function _performConfiguredRequest(
 }
 
 async function getIntegrationMessageContext(
-  config: SanitizedIntegrationConfig
+  config: SanitizedIntegrationConfig,
 ): Promise<MessageContext> {
   // Try resolving the integration to get metadata to include with the error
   let resolvedIntegration: Integration;
@@ -389,13 +389,13 @@ async function getIntegrationMessageContext(
  */
 export async function performConfiguredRequest<TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: AxiosRequestConfig
+  requestConfig: AxiosRequestConfig,
   // Note: This signature is ignored by `webext-messenger`
   // so it must be copied into `background/messenger/api.ts`
 ): Promise<RemoteResponse<TData>> {
   if (integrationConfig != null && typeof integrationConfig !== "object") {
     throw new TypeError(
-      "expected configured integration for integrationConfig"
+      "expected configured integration for integrationConfig",
     );
   }
 
@@ -403,7 +403,7 @@ export async function performConfiguredRequest<TData>(
     // No integration configuration provided. Perform request directly without authentication
     if (!isAbsoluteUrl(requestConfig.url) && requestConfig.baseURL == null) {
       throw new BusinessError(
-        "expected absolute URL for request without integration"
+        "expected absolute URL for request without integration",
       );
     }
 
@@ -423,7 +423,7 @@ export async function performConfiguredRequest<TData>(
   try {
     return (await _performConfiguredRequest(
       integrationConfig,
-      requestConfig
+      requestConfig,
     )) as RemoteResponse<TData>;
   } catch (error) {
     throw new ContextError("Error performing request", {

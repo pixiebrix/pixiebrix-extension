@@ -34,7 +34,7 @@ import { onAbort } from "@/utils/promiseUtils";
 export function onNodeRemoved(
   element: Element,
   callback: () => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): void {
   if (signal?.aborted) {
     return;
@@ -72,7 +72,7 @@ export function onNodeRemoved(
 
 function mutationSelector(
   selector: string,
-  target?: HTMLElement | Document
+  target?: HTMLElement | Document,
 ): [Promise<JQuery>, () => void] {
   let observer: MutationObserver;
   const promise = new Promise<JQuery>((resolve) => {
@@ -81,7 +81,7 @@ function mutationSelector(
       (i: number, element: HTMLElement) => {
         resolve($(element));
       },
-      { target: target ?? document }
+      { target: target ?? document },
     );
   });
   return [
@@ -100,7 +100,7 @@ function mutationSelector(
  */
 export function awaitElementOnce(
   selector: string | string[],
-  $root: JQuery<HTMLElement | Document> = $(document)
+  $root: JQuery<HTMLElement | Document> = $(document),
 ): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
@@ -118,17 +118,17 @@ export function awaitElementOnce(
   // Find immediately, or wait for it to be initialized
   const $elements: JQuery<HTMLElement | Document> = $safeFind(
     nextSelector,
-    $root
+    $root,
   );
 
   if ($elements.length === 0) {
     console.debug(
-      `awaitElementOnce: selector not immediately found; awaiting selector: ${nextSelector}`
+      `awaitElementOnce: selector not immediately found; awaiting selector: ${nextSelector}`,
     );
 
     const [nextElementPromise, cancel] = mutationSelector(
       nextSelector,
-      $root.get(0)
+      $root.get(0),
     );
     let innerCancel = noop;
     return [
@@ -143,7 +143,7 @@ export function awaitElementOnce(
       }),
       () => {
         console.debug(
-          `awaitElementOnce: caller cancelled wait for selector: ${nextSelector}`
+          `awaitElementOnce: caller cancelled wait for selector: ${nextSelector}`,
         );
         cancel();
         innerCancel();
@@ -167,19 +167,19 @@ export function awaitElementOnce(
  */
 export function acquireElement(
   element: HTMLElement,
-  extensionPointId: string
+  extensionPointId: string,
 ): boolean {
   const existing = element.getAttribute(EXTENSION_POINT_DATA_ATTR);
   if (existing) {
     if (extensionPointId !== existing) {
       console.warn(
-        `acquireElement: cannot acquire for ${extensionPointId} because it has extension point ${existing} attached to it`
+        `acquireElement: cannot acquire for ${extensionPointId} because it has extension point ${existing} attached to it`,
       );
       return false;
     }
 
     console.debug(
-      `acquireElement: re-acquiring element for ${extensionPointId}`
+      `acquireElement: re-acquiring element for ${extensionPointId}`,
     );
   }
 
@@ -191,7 +191,7 @@ export function acquireElement(
  * Returns the MessageContext associated with `extension`.
  */
 export function selectExtensionContext(
-  extension: ResolvedModComponent
+  extension: ResolvedModComponent,
 ): MessageContext {
   return {
     // The step label will be re-assigned later in reducePipeline
@@ -210,7 +210,7 @@ export function selectExtensionContext(
  */
 export function shouldModComponentRunForStateChange(
   modComponent: ModComponentBase,
-  event: Event
+  event: Event,
 ): boolean {
   if (event instanceof CustomEvent) {
     const { detail } = event;

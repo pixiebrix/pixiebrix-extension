@@ -24,7 +24,7 @@ import { CancelError } from "@/errors/businessErrors";
 describe("RootCancelledPanel", () => {
   it("should render", () => {
     const { asFragment } = render(
-      <RootCancelledPanel error={new CancelError()} />
+      <RootCancelledPanel error={new CancelError()} />,
     );
     expect(asFragment()).toMatchSnapshot();
   });

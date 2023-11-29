@@ -55,7 +55,7 @@ type PanelDefinition = {
  */
 function useTemporaryPanelDefinition(
   target: Target,
-  initialNonce: UUID
+  initialNonce: UUID,
 ): PanelDefinition {
   const params = new URLSearchParams(location.search);
   const frameNonce = validateUUID(params.get("frameNonce"));

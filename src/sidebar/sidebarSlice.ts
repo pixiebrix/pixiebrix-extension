@@ -70,27 +70,27 @@ function eventKeyExists(state: SidebarState, query: string | null): boolean {
 
 function findNextActiveKey(
   state: SidebarState,
-  { extensionId, blueprintId, panelHeading }: ActivatePanelOptions
+  { extensionId, blueprintId, panelHeading }: ActivatePanelOptions,
 ): string {
   // Try matching on extension
   if (extensionId) {
     // Prefer form to panel -- however, it would be unusual to target an ephemeral form when reshowing the sidebar
     const extensionForm = state.forms.find(
-      (x) => x.extensionId === extensionId
+      (x) => x.extensionId === extensionId,
     );
     if (extensionForm) {
       return eventKeyForEntry(extensionForm);
     }
 
     const extensionTemporaryPanel = state.temporaryPanels.find(
-      (x) => x.extensionId === extensionId
+      (x) => x.extensionId === extensionId,
     );
     if (extensionTemporaryPanel) {
       return eventKeyForEntry(extensionTemporaryPanel);
     }
 
     const extensionPanel = state.panels.find(
-      (x) => x.extensionId === extensionId
+      (x) => x.extensionId === extensionId,
     );
     if (extensionPanel) {
       return eventKeyForEntry(extensionPanel);
@@ -110,7 +110,7 @@ function findNextActiveKey(
   // Try matching on blueprint
   if (blueprintId) {
     const blueprintPanel = state.panels.find(
-      (x) => x.blueprintId === blueprintId
+      (x) => x.blueprintId === blueprintId,
     );
     if (blueprintPanel) {
       return eventKeyForEntry(blueprintPanel);
@@ -151,7 +151,7 @@ async function closePanels(nonces: UUID[]): Promise<void> {
  */
 async function resolvePanel(
   nonce: UUID,
-  action: Pick<SubmitPanelAction, "type" | "detail">
+  action: Pick<SubmitPanelAction, "type" | "detail">,
 ): Promise<void> {
   const topLevelFrame = await getTopLevelFrame();
   resolveTemporaryPanel(topLevelFrame, nonce, action);
@@ -159,7 +159,7 @@ async function resolvePanel(
 
 export function fixActiveTabOnRemove(
   state: Draft<SidebarState>,
-  removedEntry: SidebarEntry | null
+  removedEntry: SidebarEntry | null,
 ) {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
@@ -168,7 +168,7 @@ export function fixActiveTabOnRemove(
     const matchingExtension = panels.find(
       ({ extensionId }) =>
         "extensionId" in removedEntry &&
-        extensionId === removedEntry.extensionId
+        extensionId === removedEntry.extensionId,
     );
 
     if (matchingExtension) {
@@ -182,7 +182,7 @@ export function fixActiveTabOnRemove(
           "blueprintId" in removedEntry &&
           // Need to check for removedEntry.blueprintId to avoid switching between ModComponentBases that don't have blueprint ids
           blueprintId === removedEntry.blueprintId &&
-          blueprintId
+          blueprintId,
       );
 
       if (matchingMod) {
@@ -206,7 +206,7 @@ const sidebarSlice = createSlice({
         temporaryPanels: TemporaryPanelEntry[];
         forms: FormPanelEntry[];
         modActivationPanel: ModActivationPanelEntry | null;
-      }>
+      }>,
     ) {
       /** We need a visible count > 1 to prevent useHideEmptySidebar from closing it on first load. If there are no visible panels,
        * we'll show mod launcher. activatePanel then hides the modLauncher if there is another visible panel.
@@ -256,7 +256,7 @@ const sidebarSlice = createSlice({
 
       const [thisExtensionForms, otherForms] = partition(
         state.forms,
-        (x) => x.extensionId === form.extensionId
+        (x) => x.extensionId === form.extensionId,
       );
 
       // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire
@@ -279,12 +279,12 @@ const sidebarSlice = createSlice({
     },
     updateTemporaryPanel(
       state,
-      action: PayloadAction<{ panel: TemporaryPanelEntry }>
+      action: PayloadAction<{ panel: TemporaryPanelEntry }>,
     ) {
       const { panel } = action.payload;
 
       const index = state.temporaryPanels.findIndex(
-        (x) => x.nonce === panel.nonce
+        (x) => x.nonce === panel.nonce,
       );
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- index from findIndex
@@ -293,21 +293,21 @@ const sidebarSlice = createSlice({
     },
     addTemporaryPanel(
       state,
-      action: PayloadAction<{ panel: TemporaryPanelEntry }>
+      action: PayloadAction<{ panel: TemporaryPanelEntry }>,
     ) {
       const { panel } = action.payload;
 
       const [existingExtensionTemporaryPanels, otherTemporaryPanels] =
         partition(
           state.temporaryPanels,
-          (x) => x.extensionId === panel.extensionId
+          (x) => x.extensionId === panel.extensionId,
         );
 
       // Cancel all panels for the extension, except if there's a placeholder that was added in setInitialPanels
       void cancelPanels(
         existingExtensionTemporaryPanels
           .filter((x) => x.nonce !== panel.nonce)
-          .map(({ nonce }) => nonce)
+          .map(({ nonce }) => nonce),
       );
 
       state.temporaryPanels = castDraft([...otherTemporaryPanels, panel]);
@@ -318,7 +318,7 @@ const sidebarSlice = createSlice({
 
       const entry = remove(
         state.temporaryPanels,
-        (panel) => panel.nonce === nonce
+        (panel) => panel.nonce === nonce,
       )[0];
 
       void closePanels([nonce]);
@@ -327,13 +327,13 @@ const sidebarSlice = createSlice({
     },
     resolveTemporaryPanel(
       state,
-      action: PayloadAction<{ nonce: UUID; action: SubmitPanelAction }>
+      action: PayloadAction<{ nonce: UUID; action: SubmitPanelAction }>,
     ) {
       const { nonce, action: panelAction } = action.payload;
 
       const entry = remove(
         state.temporaryPanels,
-        (panel) => panel.nonce === nonce
+        (panel) => panel.nonce === nonce,
       )[0];
 
       void resolvePanel(nonce, panelAction);
@@ -376,7 +376,7 @@ const sidebarSlice = createSlice({
     setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
       // For now, pick an arbitrary order that's stable. There's no guarantees on which order panels are registered
       state.panels = castDraft(
-        sortBy(action.payload.panels, (panel) => panel.extensionId)
+        sortBy(action.payload.panels, (panel) => panel.extensionId),
       );
 
       // Try fulfilling the pendingActivePanel request
@@ -396,7 +396,7 @@ const sidebarSlice = createSlice({
     },
     showModActivationPanel(
       state,
-      action: PayloadAction<ModActivationPanelEntry>
+      action: PayloadAction<ModActivationPanelEntry>,
     ) {
       const entry = action.payload;
       state.modActivationPanel = entry;

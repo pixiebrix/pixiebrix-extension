@@ -43,7 +43,7 @@ const SERVICE_VAR_REGEX = /^@\w+$/;
 // TODO: rewrite using PipelineExpressionVisitor
 function deepFindIntegrationDependencyVariables(
   obj: unknown,
-  variables: Set<string>
+  variables: Set<string>,
 ) {
   if (typeof obj !== "object" || obj == null) {
     return;
@@ -76,12 +76,12 @@ function deepFindIntegrationDependencyVariables(
  * including the `@`-prefixes
  */
 export function selectIntegrationDependencyVariables(
-  state: Pick<ModComponentFormState, "extension">
+  state: Pick<ModComponentFormState, "extension">,
 ): Set<string> {
   const variables = new Set<string>();
   deepFindIntegrationDependencyVariables(
     state.extension.blockPipeline,
-    variables
+    variables,
   );
   return variables;
 }
@@ -104,7 +104,7 @@ export function removeUnusedDependencies(draft: Draft<IntegrationsFormSlice>) {
 
   const used = selectIntegrationDependencyVariables(draft);
   draft.integrationDependencies = draft.integrationDependencies.filter(
-    ({ outputKey }) => used.has(keyToFieldValue(outputKey).__value__)
+    ({ outputKey }) => used.has(keyToFieldValue(outputKey).__value__),
   );
 }
 
@@ -113,7 +113,7 @@ export function removeUnusedDependencies(draft: Draft<IntegrationsFormSlice>) {
  * @param state the form state
  */
 export function produceExcludeUnusedDependencies<
-  T extends IntegrationsFormSlice = IntegrationsFormSlice
+  T extends IntegrationsFormSlice = IntegrationsFormSlice,
 >(state: T): T {
   return produce<T>(state, removeUnusedDependencies);
 }

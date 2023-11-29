@@ -84,14 +84,14 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
     async (databaseOptions: Option[]) => {
       if (newMods.some((x) => x.requiresConfiguration)) {
         throw new Error(
-          "One or more mods require configuration. Activate the mods individually to configure them."
+          "One or more mods require configuration. Activate the mods individually to configure them.",
         );
       }
 
       return Promise.all(
         newMods.map(async (mod) => {
           const optionsValidationSchema = await getOptionsValidationSchema(
-            mod.modDefinition.options?.schema
+            mod.modDefinition.options?.schema,
           );
 
           const wizard = wizardStateFactory({
@@ -104,13 +104,13 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
 
           const result = await activate(
             wizard.initialValues,
-            mod.modDefinition
+            mod.modDefinition,
           );
 
           if (result.error) {
             throw new Error(
               `Error activating ${mod.modDefinition.metadata.name}`,
-              { cause: new Error(result.error) }
+              { cause: new Error(result.error) },
             );
           }
 
@@ -118,9 +118,9 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
             result,
             mod,
           };
-        })
+        }),
       );
-    }
+    },
   );
 
   return (

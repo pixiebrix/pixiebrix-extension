@@ -76,7 +76,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
 }
 
 function selectExtensionPointConfig(
-  formState: QuickBarFormState
+  formState: QuickBarFormState,
 ): StarterBrickConfig<QuickBarDefinition> {
   const { extensionPoint } = formState;
   const {
@@ -103,7 +103,7 @@ function selectExtensionPointConfig(
 
 function selectExtension(
   state: QuickBarFormState,
-  options: { includeInstanceIds?: boolean } = {}
+  options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<QuickBarConfig> {
   const { extension } = state;
   const config: QuickBarConfig = {
@@ -120,7 +120,7 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: ModComponentBase<QuickBarConfig>
+  config: ModComponentBase<QuickBarConfig>,
 ): Promise<QuickBarFormState> {
   const extensionPoint = await lookupExtensionPoint<
     QuickBarDefinition,
@@ -134,7 +134,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "action"
+    "action",
   );
 
   return {

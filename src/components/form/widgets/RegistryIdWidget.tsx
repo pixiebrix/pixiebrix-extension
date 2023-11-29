@@ -49,7 +49,7 @@ const RegistryIdWidget: React.VFC<{
   const organizationScopes = organizations
     .filter(
       (organization) =>
-        !isEmpty(organization.scope) && editorRoles.has(organization.role)
+        !isEmpty(organization.scope) && editorRoles.has(organization.role),
     )
     .map((organization) => organization.scope);
 
@@ -75,7 +75,7 @@ const RegistryIdWidget: React.VFC<{
   };
 
   const onChangeId: React.ChangeEventHandler<HTMLInputElement> = async (
-    event
+    event,
   ) => {
     const newId = event.target.value;
     // Don't validate here with validateRegistryId(), that should be done through form validation

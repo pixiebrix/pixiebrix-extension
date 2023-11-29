@@ -46,7 +46,7 @@ function selectFilters(state: { workshop: WorkshopState }) {
 }
 
 export function useEnrichBricks(
-  bricks: EditablePackageMetadata[]
+  bricks: EditablePackageMetadata[],
 ): EnrichedBrick[] {
   const recent = useSelector(selectRecent);
 
@@ -65,7 +65,7 @@ export function useEnrichBricks(
       }),
       // Show recently accessed first
       [(x) => x.timestamp ?? -1, (x) => x.verbose_name],
-      ["desc", "asc"]
+      ["desc", "asc"],
     );
   }, [recent, bricks]);
 }
@@ -77,7 +77,7 @@ export function useSearchOptions(bricks: EnrichedBrick[]) {
         value,
         label: value ?? "[No Scope]",
       })),
-    [bricks]
+    [bricks],
   );
 
   const collectionOptions = useMemo(
@@ -86,7 +86,7 @@ export function useSearchOptions(bricks: EnrichedBrick[]) {
         value,
         label: value ?? "[No Collection]",
       })),
-    [bricks]
+    [bricks],
   );
 
   const kindOptions = useMemo(
@@ -95,9 +95,9 @@ export function useSearchOptions(bricks: EnrichedBrick[]) {
         (value) => ({
           value,
           label: value,
-        })
+        }),
       ),
-    [bricks]
+    [bricks],
   );
 
   return {
@@ -136,7 +136,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
       new Fuse(bricks, {
         keys: ["verbose_name", "name"],
       }),
-    [bricks]
+    [bricks],
   );
 
   const sortedBricks = useMemo(() => {
@@ -146,7 +146,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
       (x) =>
         (scopes.length === 0 || scopes.includes(x.scope)) &&
         (collections.length === 0 || collections.includes(x.collection)) &&
-        (kinds.length === 0 || kinds.includes(mapKindToKindUiValue(x.kind)))
+        (kinds.length === 0 || kinds.includes(mapKindToKindUiValue(x.kind))),
     );
   }, [fuse, query, scopes, collections, kinds, bricks]);
 
@@ -186,11 +186,11 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
             placeholder="Filter collection"
             options={collectionOptions}
             value={collectionOptions.filter((x) =>
-              collections.includes(x.value)
+              collections.includes(x.value),
             )}
             onChange={(values) => {
               dispatch(
-                actions.setCollections((values ?? []).map((x) => x.value))
+                actions.setCollections((values ?? []).map((x) => x.value)),
               );
             }}
           />

@@ -35,7 +35,7 @@ const FixedInnerObjectWidget: React.FC<SchemaFieldProps> = (props) => {
 
     if (schema.oneOf) {
       const matches = objectSchema.oneOf.filter(
-        (x) => typeof x !== "boolean" && x.type === "object"
+        (x) => typeof x !== "boolean" && x.type === "object",
       );
 
       if (matches.length > 1) {

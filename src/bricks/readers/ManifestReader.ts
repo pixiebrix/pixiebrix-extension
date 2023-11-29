@@ -25,7 +25,7 @@ class ManifestReader extends ReaderABC {
     super(
       "@pixiebrix/chrome-extension-manifest",
       "Chrome manifest reader",
-      "Read the Chrome extension manifest"
+      "Read the Chrome extension manifest",
     );
   }
 

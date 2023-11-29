@@ -36,7 +36,7 @@ const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
 
   const expandedRows = useMemo(
     () => tableInstance.rows.flatMap((row) => [row, ...row.subRows]),
-    [tableInstance.rows]
+    [tableInstance.rows],
   );
 
   const getItemSize = useCallback(
@@ -44,7 +44,7 @@ const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
       const row = expandedRows.at(index);
       return row.isGrouped ? HEADER_ROW_HEIGHT_PX : ROW_HEIGHT_PX;
     },
-    [expandedRows]
+    [expandedRows],
   );
 
   // `react-window` caches itemSize which causes inconsistent

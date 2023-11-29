@@ -29,7 +29,7 @@ const renderNavbar = () => {
   return render(
     <MemoryRouter>
       <Navbar logo={logo} />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 };
 

@@ -28,7 +28,7 @@ import { selectExtensionAnnotations } from "@/analysis/analysisSelectors";
 const StateTab: React.FC = () => {
   const activeElement = useSelector(selectActiveElement);
   const annotations = useSelector(
-    selectExtensionAnnotations(activeElement.uuid)
+    selectExtensionAnnotations(activeElement.uuid),
   );
 
   return (

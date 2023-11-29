@@ -31,7 +31,7 @@ const PermissionsRow: React.FunctionComponent<{
   } = useFormikContext<FormState>();
   const permissionsState = useCloudExtensionPermissions(
     extension,
-    integrationDependencies
+    integrationDependencies,
   );
 
   return (

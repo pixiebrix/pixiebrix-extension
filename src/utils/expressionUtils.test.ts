@@ -29,7 +29,7 @@ describe("containsTemplateExpression", () => {
 
   it("finds template tag", () => {
     expect(containsTemplateExpression("{% if @foo %}hello!{% endif %}")).toBe(
-      true
+      true,
     );
   });
 
@@ -49,13 +49,13 @@ describe("isTextLiteralOrNull", () => {
 
   it("finds template literal", () => {
     expect(isTextLiteralOrNull(makeTemplateExpression("nunjucks", "foo"))).toBe(
-      true
+      true,
     );
   });
 
   it("finds simple template expressions", () => {
     expect(
-      isTextLiteralOrNull(makeTemplateExpression("nunjucks", "{{foo}}"))
+      isTextLiteralOrNull(makeTemplateExpression("nunjucks", "{{foo}}")),
     ).toBe(false);
   });
 });
@@ -71,7 +71,7 @@ describe("castTextLiteralOrThrow", () => {
 
   it("finds simple template expressions", () => {
     expect(() =>
-      castTextLiteralOrThrow(makeTemplateExpression("nunjucks", "{{foo}}"))
+      castTextLiteralOrThrow(makeTemplateExpression("nunjucks", "{{foo}}")),
     ).toThrow(TypeError);
   });
 });

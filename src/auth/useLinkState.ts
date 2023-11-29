@@ -42,7 +42,7 @@ function useLinkState(): LinkState {
   // hasToken is true for either native PixieBrix token, or partner Bearer JWT
   const [hasToken, tokenLoading, tokenError, refreshTokenState] = useAsyncState(
     isLinked,
-    []
+    [],
   );
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import { useCallback, useEffect } from "react";
  */
 export default function useEscapeHandler(
   cancel: () => void,
-  active: boolean
+  active: boolean,
 ): void {
   const escapeHandler = useCallback(
     (event: KeyboardEvent) => {
@@ -18,7 +18,7 @@ export default function useEscapeHandler(
         cancel();
       }
     },
-    [cancel]
+    [cancel],
   );
 
   useEffect(() => {

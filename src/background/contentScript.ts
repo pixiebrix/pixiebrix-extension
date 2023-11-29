@@ -50,7 +50,7 @@ function makeTargetKey(target: Target): string {
 // eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
 function onContentScriptReadyMessage(
   message: unknown,
-  sender: Runtime.MessageSender
+  sender: Runtime.MessageSender,
 ): Promise<void> | undefined {
   if (
     isRemoteProcedureCallRequest(message) &&
@@ -76,7 +76,7 @@ function onContentScriptReadyMessage(
 
 export async function onReadyNotification(
   target: Target,
-  signal: AbortSignal
+  signal: AbortSignal,
 ): Promise<void> {
   // Track if this thread is created the promise, so it can be the one to delete it from the map
   let isLeader = false;
@@ -132,12 +132,12 @@ export const ensureContentScript = memoizeUntilSettled(
     }
   },
   // Stringify because Target is an object
-  { cacheKey: JSON.stringify }
+  { cacheKey: JSON.stringify },
 );
 
 async function ensureContentScriptWithoutTimeout(
   target: Target,
-  signal: AbortSignal
+  signal: AbortSignal,
 ): Promise<void> {
   // Start waiting for the notification as early as possible. Browser might have already injected the content script
   const readyNotificationPromise = onReadyNotification(target, signal);

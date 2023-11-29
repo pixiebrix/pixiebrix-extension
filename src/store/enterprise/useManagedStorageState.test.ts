@@ -37,7 +37,7 @@ describe("useManagedStorageState", () => {
   it("handles already initialized state", async () => {
     await browser.storage.managed.set({ partnerId: "taco-bell" });
     const { result, waitForNextUpdate } = renderHook(() =>
-      useManagedStorageState()
+      useManagedStorageState(),
     );
     await waitForNextUpdate();
     expect(result.current).toStrictEqual({
@@ -49,7 +49,7 @@ describe("useManagedStorageState", () => {
   // Can't test because mock doesn't fire change events: https://github.com/clarkbw/jest-webextension-mock/issues/170
   it.skip("listens for changes", async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
-      useManagedStorageState()
+      useManagedStorageState(),
     );
     expect(result.current.data).toBeUndefined();
     await browser.storage.managed.set({ partnerId: "taco-bell" });

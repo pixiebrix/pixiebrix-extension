@@ -66,7 +66,7 @@ class ReplaceTextEffect extends EffectABC {
     super(
       "@pixiebrix/html/replace-text",
       "Replace Text",
-      "Replace text within an HTML document or subtree"
+      "Replace text within an HTML document or subtree",
     );
   }
 
@@ -113,7 +113,7 @@ class ReplaceTextEffect extends EffectABC {
       isRegex?: boolean;
       selector?: string;
     }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     // Don't make replacements outside the `body`, like in `title`
     const body = (root as Document).body ?? root.ownerDocument.body;

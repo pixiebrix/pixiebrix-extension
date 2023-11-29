@@ -54,7 +54,7 @@ export class WithAsyncModVariable extends TransformerABC {
     super(
       WithAsyncModVariable.BRICK_ID,
       "Run with Async Mod Variable",
-      "Run bricks asynchronously and store the status and result in a Mod Variable"
+      "Run bricks asynchronously and store the status and result in a Mod Variable",
     );
   }
 
@@ -80,7 +80,7 @@ export class WithAsyncModVariable extends TransformerABC {
         description: "The Mod Variable to store the status and data in",
       },
     },
-    ["body", "stateKey"]
+    ["body", "stateKey"],
   );
 
   defaultOutputKey = "async";
@@ -100,7 +100,7 @@ export class WithAsyncModVariable extends TransformerABC {
   };
 
   override async getModVariableSchema(
-    _config: BrickConfig
+    _config: BrickConfig,
   ): Promise<Schema | undefined> {
     const { stateKey } = _config.config;
 
@@ -172,7 +172,7 @@ export class WithAsyncModVariable extends TransformerABC {
       body: PipelineExpression;
       stateKey: string;
     }>,
-    { logger, runPipeline }: BrickOptions
+    { logger, runPipeline }: BrickOptions,
   ) {
     const requestId = uuidv4();
     const { blueprintId, extensionId } = logger.context;
@@ -182,7 +182,7 @@ export class WithAsyncModVariable extends TransformerABC {
         "Mod Variable Name is required",
         this.id,
         "stateKey",
-        stateKey
+        stateKey,
       );
     }
 
@@ -229,7 +229,7 @@ export class WithAsyncModVariable extends TransformerABC {
           requestId: null,
           error: null,
         },
-        "patch"
+        "patch",
       );
     } else {
       // Preserve the previous data/error, if any
@@ -238,7 +238,7 @@ export class WithAsyncModVariable extends TransformerABC {
           isFetching: true,
           currentData: null,
         },
-        "patch"
+        "patch",
       );
     }
 
@@ -265,7 +265,7 @@ export class WithAsyncModVariable extends TransformerABC {
             requestId,
             error: null,
           },
-          "put"
+          "put",
         );
       })
       // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
@@ -285,7 +285,7 @@ export class WithAsyncModVariable extends TransformerABC {
             requestId,
             error: serializeError(error),
           },
-          "put"
+          "put",
         );
       });
 

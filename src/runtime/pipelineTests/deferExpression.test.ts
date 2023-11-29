@@ -45,7 +45,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ value: 42 }),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual([
       // The deferBrick is set up to look for !defer expression as the top level expression
@@ -72,7 +72,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ value: 42 }),
-      testOptions("v3")
+      testOptions("v3"),
     );
     expect(result).toStrictEqual([
       // The deferBrick is set up to look for !defer expression as the top level expression

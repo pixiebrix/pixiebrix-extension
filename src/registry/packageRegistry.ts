@@ -113,7 +113,7 @@ function latestVersion(versions: PackageVersion[]): PackageVersion | null {
         versions,
         (x) => -x.version.major,
         (x) => -x.version.minor,
-        (x) => -x.version.patch
+        (x) => -x.version.patch,
       )[0]
     : null;
 }
@@ -128,12 +128,14 @@ export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
   try {
     const bricks = flatten(
       await Promise.all(
-        kinds.map(async (kind) => db.getAllFromIndex(BRICK_STORE, "kind", kind))
-      )
+        kinds.map(async (kind) =>
+          db.getAllFromIndex(BRICK_STORE, "kind", kind),
+        ),
+      ),
     );
 
     return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
-      latestVersion(versions)
+      latestVersion(versions),
     );
   } finally {
     db.close();
@@ -219,7 +221,7 @@ async function replaceAll(packages: PackageVersion[]): Promise<void> {
 }
 
 export function parsePackage(
-  item: RegistryPackage
+  item: RegistryPackage,
 ): Except<PackageVersion, "timestamp"> {
   const [major, minor, patch] = item.metadata.version
     .split(".")

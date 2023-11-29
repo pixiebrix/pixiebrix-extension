@@ -49,7 +49,7 @@ export class SetPageState extends TransformerABC {
     super(
       SetPageState.BRICK_ID,
       "Set shared page state",
-      "Set shared page state values and returns the updated state"
+      "Set shared page state values and returns the updated state",
     );
   }
 
@@ -94,7 +94,7 @@ export class SetPageState extends TransformerABC {
         default: "shallow",
       },
     },
-    ["data"]
+    ["data"],
   );
 
   uiSchema = {
@@ -102,7 +102,7 @@ export class SetPageState extends TransformerABC {
   };
 
   override async getModVariableSchema(
-    _config: BrickConfig
+    _config: BrickConfig,
   ): Promise<Schema | undefined> {
     const { data, namespace = "blueprint" } = _config.config;
 
@@ -140,7 +140,7 @@ export class SetPageState extends TransformerABC {
       namespace?: Namespace;
       mergeStrategy?: MergeStrategy;
     }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
@@ -161,7 +161,7 @@ export class GetPageState extends TransformerABC {
     super(
       GetPageState.BRICK_ID,
       "Get shared page state",
-      "Get shared page state values"
+      "Get shared page state values",
     );
   }
 
@@ -178,7 +178,7 @@ export class GetPageState extends TransformerABC {
         default: "blueprint",
       },
     },
-    []
+    [],
   );
 
   override async isPure(): Promise<boolean> {
@@ -192,7 +192,7 @@ export class GetPageState extends TransformerABC {
 
   async transform(
     { namespace = "blueprint" }: BrickArgs<{ namespace?: Namespace }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
     return getPageState({ namespace, blueprintId, extensionId });

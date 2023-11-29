@@ -30,8 +30,8 @@ describe("sortedFields", () => {
             $ref: "https://app.pixiebrix.com/schemas/services/serpapi/api",
           },
         } as Schema,
-        {}
-      ).map((x) => x.prop)
+        {},
+      ).map((x) => x.prop),
     ).toStrictEqual(["zzz", "aaa"]);
   });
 
@@ -46,8 +46,8 @@ describe("sortedFields", () => {
             $ref: "https://app.pixiebrix.com/schemas/database#",
           },
         } as Schema,
-        {}
-      ).map((x) => x.prop)
+        {},
+      ).map((x) => x.prop),
     ).toStrictEqual(["zzz", "aaa"]);
   });
 
@@ -63,8 +63,8 @@ describe("sortedFields", () => {
             type: "string",
           },
         } as Schema,
-        {}
-      ).map((x) => x.prop)
+        {},
+      ).map((x) => x.prop),
     ).toStrictEqual(["bbb", "aaa"]);
   });
 
@@ -85,8 +85,8 @@ describe("sortedFields", () => {
         } as Schema,
         {
           "ui:order": ["bbb", "aaa"],
-        }
-      ).map((x) => x.prop)
+        },
+      ).map((x) => x.prop),
     ).toStrictEqual(["bbb", "aaa", "ccc"]);
   });
 
@@ -106,8 +106,8 @@ describe("sortedFields", () => {
         } as Schema,
         {
           "ui:order": ["*", "aaa"],
-        }
-      ).map((x) => x.prop)
+        },
+      ).map((x) => x.prop),
     ).toStrictEqual(["bbb", "ccc", "aaa"]);
   });
 
@@ -130,8 +130,8 @@ describe("sortedFields", () => {
             },
           },
         } as Schema,
-        {}
-      ).map((x) => x.prop)
+        {},
+      ).map((x) => x.prop),
     ).toStrictEqual(["bbb", "ccc", "aaa"]);
   });
 
@@ -147,8 +147,8 @@ describe("sortedFields", () => {
           },
         } as Schema,
         {},
-        { preserveSchemaOrder: true }
-      ).map((x) => x.prop)
+        { preserveSchemaOrder: true },
+      ).map((x) => x.prop),
     ).toStrictEqual(["ccc", "aaa"]);
   });
 });

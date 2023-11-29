@@ -35,7 +35,7 @@ export type PermissionsStatus = {
  * @param value the value to check
  */
 export function isPermissionsStatus(
-  value: unknown
+  value: unknown,
 ): value is PermissionsStatus {
   return (
     typeof value === "object" &&

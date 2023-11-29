@@ -77,32 +77,32 @@ const panelEntryFactory = define<PanelEntry>({
 
 export function sidebarEntryFactory<T = PanelEntry>(
   type: "panel",
-  override?: FactoryConfig<T>
+  override?: FactoryConfig<T>,
 ): PanelEntry;
 export function sidebarEntryFactory<T = TemporaryPanelEntry>(
   type: "temporaryPanel",
-  override?: FactoryConfig<T>
+  override?: FactoryConfig<T>,
 ): TemporaryPanelEntry;
 export function sidebarEntryFactory<T = FormPanelEntry>(
   type: "form",
-  override?: FactoryConfig<T>
+  override?: FactoryConfig<T>,
 ): FormPanelEntry;
 export function sidebarEntryFactory<T = ModActivationPanelEntry>(
   type: "activateMods",
-  override?: FactoryConfig<T>
+  override?: FactoryConfig<T>,
 ): ModActivationPanelEntry;
 
 export function sidebarEntryFactory<T = StaticPanelEntry>(
   type: "staticPanel",
-  override?: FactoryConfig<T>
+  override?: FactoryConfig<T>,
 ): StaticPanelEntry;
 export function sidebarEntryFactory<T = SidebarEntry>(
   type: EntryType,
-  override?: FactoryConfig<T>
+  override?: FactoryConfig<T>,
 ): SidebarEntry {
   if (type === "activateMods") {
     return activateModPanelEntryFactory(
-      override as FactoryConfig<ModActivationPanelEntry>
+      override as FactoryConfig<ModActivationPanelEntry>,
     );
   }
 
@@ -112,7 +112,7 @@ export function sidebarEntryFactory<T = SidebarEntry>(
 
   if (type === "temporaryPanel") {
     return temporaryPanelEntryFactory(
-      override as FactoryConfig<TemporaryPanelEntry>
+      override as FactoryConfig<TemporaryPanelEntry>,
     );
   }
 

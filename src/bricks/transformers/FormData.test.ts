@@ -103,7 +103,7 @@ describe("FormData block", () => {
       arg,
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#fooForm"),
-      })
+      }),
     );
 
     expect(result).toEqual({

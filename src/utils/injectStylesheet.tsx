@@ -26,7 +26,7 @@ import { waitAnimationFrame } from "@/utils/domUtils";
  *  import stylesheetUrl from "intro.js/introjs.css?loadAsUrl";
  */
 export default async function injectStylesheet(
-  url: string
+  url: string,
 ): Promise<HTMLElement> {
   const link = document.createElement("link");
   link.setAttribute("rel", "stylesheet");

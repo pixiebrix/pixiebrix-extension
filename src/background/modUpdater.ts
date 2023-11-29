@@ -61,7 +61,7 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping automatic mod updates because the extension is not linked to the PixieBrix service"
+      "Skipping automatic mod updates because the extension is not linked to the PixieBrix service",
     );
     return false;
   }
@@ -72,7 +72,7 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
     return profile.flags.includes("automatic-mod-updates");
   } catch (error) {
     console.debug(
-      "Skipping automatic mod updates because /api/me/ request failed"
+      "Skipping automatic mod updates because /api/me/ request failed",
     );
     reportError(error);
     return false;
@@ -98,19 +98,19 @@ export async function getActivatedMarketplaceModVersions(): Promise<
   const modVersions: PackageVersionPair[] = [];
 
   for (const [name, modComponents] of Object.entries(
-    groupBy(mods, "id")
+    groupBy(mods, "id"),
   ) as Array<[RegistryId, Array<ActivatedModComponent["_recipe"]>]>) {
     const uniqueModVersions: SemVerString[] = uniq(
-      modComponents.map((modComponent) => modComponent.version)
+      modComponents.map((modComponent) => modComponent.version),
     );
 
     if (uniqueModVersions.length > 1) {
       reportError(
         new Error(
           `Found multiple mod component versions activated for the same mod: ${name} (${uniqueModVersions.join(
-            ", "
-          )})`
-        )
+            ", ",
+          )})`,
+        ),
       );
     }
 
@@ -128,7 +128,7 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping automatic mod updates because the extension is not linked to the PixieBrix service"
+      "Skipping automatic mod updates because the extension is not linked to the PixieBrix service",
     );
     return [];
   }
@@ -170,18 +170,18 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
  */
 function deactivateModComponent(
   modComponent: UnresolvedModComponent,
-  reduxState: ActivatedModState
+  reduxState: ActivatedModState,
 ): ActivatedModState {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
   newOptionsState = extensionsSlice.reducer(
     newOptionsState,
-    extensionsSlice.actions.removeExtension({ extensionId: modComponent.id })
+    extensionsSlice.actions.removeExtension({ extensionId: modComponent.id }),
   );
 
   newEditorState = editorSlice.reducer(
     newEditorState,
-    editorSlice.actions.removeElement(modComponent.id)
+    editorSlice.actions.removeElement(modComponent.id),
   );
 
   return {
@@ -200,7 +200,7 @@ function deactivateModComponent(
  */
 export function deactivateMod(
   modId: RegistryId,
-  reduxState: ActivatedModState
+  reduxState: ActivatedModState,
 ): {
   reduxState: ActivatedModState;
   deactivatedModComponents: UnresolvedModComponent[];
@@ -250,7 +250,7 @@ export function deactivateMod(
  */
 function updateMod(
   modDefinition: ModDefinition,
-  reduxState: ActivatedModState
+  reduxState: ActivatedModState,
 ): ActivatedModState {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
@@ -266,12 +266,12 @@ function updateMod(
 
   const configuredDependencies = inferConfiguredModIntegrations(
     deactivatedModComponents.filter(
-      ({ integrationDependencies }) => integrationDependencies
-    )
+      ({ integrationDependencies }) => integrationDependencies,
+    ),
   );
 
   const optionsArgs = inferRecipeOptions(
-    deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs)
+    deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs),
   );
 
   newOptionsState = extensionsSlice.reducer(
@@ -282,7 +282,7 @@ function updateMod(
       optionsArgs,
       screen: "background",
       isReinstall: true,
-    })
+    }),
   );
 
   return {

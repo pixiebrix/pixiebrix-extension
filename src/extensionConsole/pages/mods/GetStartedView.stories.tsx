@@ -101,8 +101,8 @@ ActivateBlueprint.parameters = {
                 verbose_name: testRecipe.metadata.name,
               },
             },
-          ])
-        )
+          ]),
+        ),
       ),
     ],
   },

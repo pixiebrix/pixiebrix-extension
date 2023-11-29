@@ -33,7 +33,7 @@ export function markAppStart() {
  */
 export function measureDurationFromAppStart(
   action: string,
-  reportThreshold: number | null = 5000
+  reportThreshold: number | null = 5000,
 ) {
   const { duration } = performance.measure(APP_START_ACTION);
   const message = `Performance: "${action}" took ${Math.round(duration)}ms`;

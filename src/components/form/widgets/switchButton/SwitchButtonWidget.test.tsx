@@ -27,7 +27,7 @@ test.each(values)("renders value %s", (value) => {
       name="Name for Test"
       value={value}
       onChange={jest.fn()}
-    />
+    />,
   );
   expect(asFragment()).toMatchSnapshot();
 });
@@ -36,7 +36,7 @@ test.each(values)("calls onChange", async (value) => {
   const name = "Name for Test";
   const onChangeMock = jest.fn();
   const { container } = render(
-    <SwitchButtonWidget value={value} onChange={onChangeMock} name={name} />
+    <SwitchButtonWidget value={value} onChange={onChangeMock} name={name} />,
   );
 
   // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access

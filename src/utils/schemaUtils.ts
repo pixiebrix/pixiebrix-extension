@@ -51,7 +51,7 @@ export function getSubSchema(schema: Schema, path: string): Schema {
  */
 export function missingProperties(
   schema: Schema,
-  obj: Record<string, unknown>
+  obj: Record<string, unknown>,
 ): string[] {
   const acc = [];
   for (const propertyKey of schema.required ?? []) {
@@ -110,7 +110,7 @@ export function isComplexSchema(schema: Schema): boolean {
 // eslint-disable-next-line complexity -- there's a lot of combinations to handle :shrug:
 export function unionSchemaDefinitionTypes(
   lhs: SchemaDefinition,
-  rhs: SchemaDefinition
+  rhs: SchemaDefinition,
 ): SchemaDefinition {
   if (isEmpty(lhs) || isEmpty(rhs)) {
     return true;
@@ -200,7 +200,7 @@ export function unionSchemaDefinitionTypes(
       // eslint-disable-next-line security/detect-object-injection -- from keys
       result.properties[property] = unionSchemaDefinitionTypes(
         lhsProperty,
-        rhsProperty
+        rhsProperty,
       );
     }
   }

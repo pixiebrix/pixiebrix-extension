@@ -43,7 +43,7 @@ function parseResponseParams(url: URL): UnknownObject {
 
 async function implicitGrantFlow(
   auth: IntegrationConfig,
-  oauth2: OAuth2Context
+  oauth2: OAuth2Context,
 ): Promise<AuthData> {
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
 

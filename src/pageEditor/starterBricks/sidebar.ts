@@ -80,7 +80,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 }
 
 function selectExtensionPointConfig(
-  formState: SidebarFormState
+  formState: SidebarFormState,
 ): StarterBrickConfig {
   const { extensionPoint } = formState;
   const {
@@ -101,7 +101,7 @@ function selectExtensionPointConfig(
 
 function selectExtension(
   state: SidebarFormState,
-  options: { includeInstanceIds?: boolean } = {}
+  options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<SidebarConfig> {
   const { extension } = state;
   const config: SidebarConfig = {
@@ -125,7 +125,7 @@ function asDynamicElement(element: SidebarFormState): DynamicDefinition {
 }
 
 async function fromExtension(
-  config: ModComponentBase<SidebarConfig>
+  config: ModComponentBase<SidebarConfig>,
 ): Promise<SidebarFormState> {
   const extensionPoint = await lookupExtensionPoint<
     SidebarDefinition,
@@ -136,7 +136,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "body"
+    "body",
   );
 
   const {

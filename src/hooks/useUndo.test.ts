@@ -39,7 +39,7 @@ describe("useUndo", () => {
     // We will need to rerender the hook between changes, since the value input comes
     // from this variable outside the hook render.
     const { result: undoRef, rerender } = renderHook(() =>
-      useUndo(value, setValue)
+      useUndo(value, setValue),
     );
 
     // Simulate a user typing into an input
@@ -77,7 +77,7 @@ describe("useUndo", () => {
     };
 
     const { result: undoRef, rerender } = renderHook(() =>
-      useUndo(value, setValue)
+      useUndo(value, setValue),
     );
 
     setValue("abc def");
@@ -124,7 +124,7 @@ describe("useUndo", () => {
       () => useUndo(value, setValue),
       {
         initialProps: { value, setValue },
-      }
+      },
     );
 
     setValue("abc def");
@@ -158,7 +158,7 @@ bbb`);
     };
 
     const { result: undoRef, rerender } = renderHook(() =>
-      useUndo(value, setValue)
+      useUndo(value, setValue),
     );
 
     setValue("abc");

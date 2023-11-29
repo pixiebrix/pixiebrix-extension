@@ -35,11 +35,11 @@ describe("highlight", () => {
           rootSelector: ".a",
           color,
         }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
 
       expect(document.body.innerHTML).toMatchSnapshot();
-    }
+    },
   );
 
   test("is root aware if rootMode is 'inherit'", async () => {
@@ -61,7 +61,7 @@ describe("highlight", () => {
       }),
       brickOptionsFactory({
         root: document.querySelector<HTMLElement>("#tree"),
-      })
+      }),
     );
 
     expect(document.body.innerHTML).toMatchSnapshot();
@@ -88,10 +88,10 @@ describe("highlight", () => {
         }),
         brickOptionsFactory({
           root: document.querySelector<HTMLElement>("#tree"),
-        })
+        }),
       );
 
       expect(document.body.innerHTML).toMatchSnapshot();
-    }
+    },
   );
 });

@@ -38,7 +38,7 @@ const MarkdownInline: React.FunctionComponent<MarkdownProps> = ({
       typeof markdown === "string"
         ? sanitize(String(marked.parseInline(markdown)), sanitizeConfig)
         : null,
-    [markdown, sanitizeConfig]
+    [markdown, sanitizeConfig],
   );
 
   return (

@@ -56,14 +56,14 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
   const isBadValue =
     dependencyOutputKey &&
     !root.integrationDependencies.some(({ outputKey }) =>
-      isEqual(keyToFieldValue(outputKey), dependencyOutputKey)
+      isEqual(keyToFieldValue(outputKey), dependencyOutputKey),
     );
 
   useAsyncEffect(
     async () => {
       if (dependencyOutputKey == null) {
         const match = root.integrationDependencies.find(
-          ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID
+          ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
         );
         if (match?.outputKey) {
           // If the service is already being used, default to the currently configured auth
@@ -71,7 +71,7 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
             "PixieBrix dependency already exists for %s, using output key %s",
             match.integrationId,
             match.outputKey,
-            { root, match }
+            { root, match },
           );
           await setDependencyOutputKey(keyToFieldValue(match.outputKey));
         } else {
@@ -89,7 +89,7 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
               });
 
               set(draft, name, keyToFieldValue(PIXIEBRIX_OUTPUT_KEY));
-            })
+            }),
           );
         }
       } else if (isBadValue) {
@@ -99,7 +99,7 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
       }
     },
     // Run on mount, or if we detect a "bad value" (see comment above)
-    [isBadValue]
+    [isBadValue],
   );
 
   return null;

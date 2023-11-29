@@ -63,7 +63,7 @@ describe("Trace normal exit", () => {
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() }
+      { ...testOptions("v3"), runId: uuidv4() },
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -75,13 +75,13 @@ describe("Trace normal exit", () => {
           message: "hello",
         }),
         renderError: null,
-      })
+      }),
     );
     expect(traces.addExit).toHaveBeenCalledTimes(1);
     expect(traces.addExit).toHaveBeenCalledWith(
       expect.objectContaining({
         skippedRun: false,
-      })
+      }),
     );
 
     // Should not record brick run when tracing is enabled
@@ -101,7 +101,7 @@ describe("Trace normal exit", () => {
       },
       simpleInput({ inputArg: "hello" }),
       // `runId` defaults to null
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -124,8 +124,8 @@ describe("Trace render error", () => {
           instanceId,
         },
         simpleInput({ inputArg: "hello" }),
-        { ...testOptions("v3"), runId: uuidv4() }
-      )
+        { ...testOptions("v3"), runId: uuidv4() },
+      ),
     ).rejects.toThrow(/doesNotExist/);
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -135,7 +135,7 @@ describe("Trace render error", () => {
         renderError: expect.objectContaining({
           message: expect.anything(),
         }),
-      })
+      }),
     );
 
     expect(traces.addExit).toHaveBeenCalledTimes(1);
@@ -144,7 +144,7 @@ describe("Trace render error", () => {
         error: expect.objectContaining({
           message: "@doesNotExist.bar undefined (missing @doesNotExist)",
         }),
-      })
+      }),
     );
   });
 
@@ -160,7 +160,7 @@ describe("Trace render error", () => {
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() }
+      { ...testOptions("v3"), runId: uuidv4() },
     );
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -170,14 +170,14 @@ describe("Trace render error", () => {
         renderError: expect.objectContaining({
           message: expect.anything(),
         }),
-      })
+      }),
     );
 
     expect(traces.addExit).toHaveBeenCalledTimes(1);
     expect(traces.addExit).toHaveBeenCalledWith(
       expect.objectContaining({
         skippedRun: true,
-      })
+      }),
     );
   });
 });
@@ -205,7 +205,7 @@ describe("Trace conditional execution", () => {
         },
       ],
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() }
+      { ...testOptions("v3"), runId: uuidv4() },
     );
 
     expect(traces.addEntry).toHaveBeenCalledTimes(2);
@@ -213,14 +213,14 @@ describe("Trace conditional execution", () => {
     expect(traces.addEntry).toHaveBeenCalledWith(
       expect.objectContaining({
         renderedArgs: { message: "hello" },
-      })
+      }),
     );
 
     expect(traces.addExit).toHaveBeenCalledTimes(2);
     expect(traces.addExit).toHaveBeenCalledWith(
       expect.objectContaining({
         skippedRun: true,
-      })
+      }),
     );
   });
 });
@@ -385,7 +385,7 @@ describe("Trace normal execution", () => {
           name: "BusinessError",
           message: "hello",
         }),
-      })
+      }),
     );
   });
 });
@@ -400,7 +400,7 @@ describe("Tracing disabled", () => {
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -417,7 +417,7 @@ describe("Tracing disabled", () => {
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -441,12 +441,12 @@ describe("Tracing disabled", () => {
         config: {
           message: makeTemplateExpression(
             "nunjucks",
-            "Hello, {{@input.inputArg}}"
+            "Hello, {{@input.inputArg}}",
           ),
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({});

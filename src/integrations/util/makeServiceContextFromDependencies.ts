@@ -29,7 +29,7 @@ export default async function makeServiceContextFromDependencies(
   // `ModComponentBase.integrationDependencies` is an optional field. Since we don't have strict-nullness checking on, calls to this method
   // are error-prone. So just be defensive in the signature
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3262
-  dependencies: IntegrationDependency[] | null = []
+  dependencies: IntegrationDependency[] | null = [],
 ): Promise<ServiceContext> {
   const dependencyContext = async ({
     integrationId,
@@ -42,7 +42,7 @@ export default async function makeServiceContextFromDependencies(
       configId,
       {
         retry: true,
-      }
+      },
     );
     return {
       // Our JSON validator gets mad at undefined values
@@ -60,7 +60,7 @@ export default async function makeServiceContextFromDependencies(
             : null;
 
         return [`@${dependency.outputKey}`, context];
-      })
-    )
+      }),
+    ),
   );
 }

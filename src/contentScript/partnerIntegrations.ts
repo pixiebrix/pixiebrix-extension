@@ -23,12 +23,12 @@ async function markPartnerIntegrations() {
   const principals = await getPartnerPrincipals();
 
   const principal = principals.find(
-    (principal) => principal.hostname === location.hostname
+    (principal) => principal.hostname === location.hostname,
   );
   if (principal) {
     document.documentElement.setAttribute(
       INTEGRATION_ATTR,
-      principal.principalId
+      principal.principalId,
     );
   }
 }

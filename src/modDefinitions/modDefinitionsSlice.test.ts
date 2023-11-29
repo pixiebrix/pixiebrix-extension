@@ -52,18 +52,18 @@ describe("loadModDefinitionsFromCache", () => {
     const dispatch = jest.fn();
     const cachedModDefinitions = [defaultModDefinitionFactory()];
     (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
-      cachedModDefinitions
+      cachedModDefinitions,
     );
 
     const thunkFunction = modDefinitionsActions.loadModDefinitionsFromCache();
     await thunkFunction(
       dispatch,
       () => ({ modDefinitions: initialState }),
-      undefined
+      undefined,
     );
     expect(modDefinitionsRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setModDefinitionsFromCache(cachedModDefinitions)
+      modDefinitionsActions.setModDefinitionsFromCache(cachedModDefinitions),
     );
   });
 });
@@ -82,7 +82,7 @@ describe("syncRemoteModDefinitions", () => {
           isRemoteUninitialized: false,
         },
       }),
-      undefined
+      undefined,
     );
 
     expect(syncRemotePackagesMock).not.toHaveBeenCalled();
@@ -93,23 +93,23 @@ describe("syncRemoteModDefinitions", () => {
 
     const cachedModDefinitions = [defaultModDefinitionFactory()];
     (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
-      cachedModDefinitions
+      cachedModDefinitions,
     );
 
     const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
       dispatch,
-      () => ({ modDefinitions: {} } as ModDefinitionsRootState),
-      undefined
+      () => ({ modDefinitions: {} }) as ModDefinitionsRootState,
+      undefined,
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.startFetchingFromRemote()
+      modDefinitionsActions.startFetchingFromRemote(),
     );
     expect(syncRemotePackagesMock).toHaveBeenCalledTimes(1);
     expect(modDefinitionsRegistry.all).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setModDefinitions(cachedModDefinitions)
+      modDefinitionsActions.setModDefinitions(cachedModDefinitions),
     );
   });
 
@@ -122,13 +122,13 @@ describe("syncRemoteModDefinitions", () => {
     const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(
       dispatch,
-      () => ({ modDefinitions: {} } as ModDefinitionsRootState),
-      undefined
+      () => ({ modDefinitions: {} }) as ModDefinitionsRootState,
+      undefined,
     );
 
     const serializedError = serializeError(error, { useToJSON: false });
     expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setError(serializedError)
+      modDefinitionsActions.setError(serializedError),
     );
   });
 });
@@ -138,7 +138,7 @@ describe("reducers", () => {
     const state = { ...initialState };
     const nextState = modDefinitionsSlice.reducer(
       state,
-      modDefinitionsActions.startFetchingFromRemote()
+      modDefinitionsActions.startFetchingFromRemote(),
     );
     expect(nextState.isFetching).toBeTrue();
     expect(nextState.isLoading).toBeFalse();
@@ -158,7 +158,7 @@ describe("reducers", () => {
     };
     const nextState = modDefinitionsSlice.reducer(
       state,
-      modDefinitionsActions.setModDefinitions(modDefinitions)
+      modDefinitionsActions.setModDefinitions(modDefinitions),
     );
 
     expect(nextState).toEqual({

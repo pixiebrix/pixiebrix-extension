@@ -49,17 +49,17 @@ const ModsPageToolbar: React.FunctionComponent<{
 
   const [view, setView] = useReduxState(
     selectView,
-    modsPageSlice.actions.setView
+    modsPageSlice.actions.setView,
   );
 
   const [groupBy, setGroupBy] = useReduxState(
     selectGroupBy,
-    modsPageSlice.actions.setGroupBy
+    modsPageSlice.actions.setGroupBy,
   );
 
   const [sortBy, setSortBy] = useReduxState(
     selectSortBy,
-    modsPageSlice.actions.setSortBy
+    modsPageSlice.actions.setSortBy,
   );
 
   const activeTab = useSelector(selectActiveTab);

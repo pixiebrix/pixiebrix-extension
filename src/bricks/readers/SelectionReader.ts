@@ -25,7 +25,7 @@ export class SelectionReader extends ReaderABC {
     super(
       "@pixiebrix/selection",
       "Selection Reader",
-      "Data about the current selection"
+      "Data about the current selection",
     );
   }
 
