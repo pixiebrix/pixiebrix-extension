@@ -16,12 +16,19 @@
  */
 
 import { type KeyPath } from "react-json-tree";
-import { type MutableRefObject, useCallback, useEffect, useState } from "react";
+import {
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import {
   defaultMenuOption,
   type MenuOptions,
   moveMenuOption,
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import { isEqual } from "lodash";
 
 /**
  * Hook to navigate the variable popover menu using the keyboard from the input field
@@ -46,10 +53,17 @@ function useKeyboardNavigation({
 }) {
   // User's current selection in the variable menu
   const [activeKeyPath, setActiveKeyPath] = useState<KeyPath | null>();
+  const prevMenuOptions = useRef(menuOptions);
 
   // Set the default active key path
+  // menuOptions is not guaranteed to be referentially equal, so we store the previous value
+  // and compare it to the current value to determine if we need to update the active key path
+  // See https://github.com/pixiebrix/pixiebrix-extension/issues/7006
   useEffect(() => {
-    setActiveKeyPath(defaultMenuOption(menuOptions, likelyVariable));
+    if (!isEqual(prevMenuOptions.current, menuOptions)) {
+      setActiveKeyPath(defaultMenuOption(menuOptions, likelyVariable));
+      prevMenuOptions.current = menuOptions;
+    }
   }, [likelyVariable, menuOptions]);
 
   const move = useCallback(
