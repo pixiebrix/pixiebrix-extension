@@ -207,6 +207,8 @@ export function getSharingSource({
   let sharingType: SharingType | null = null;
   const organization = getOrganization(mod, organizations);
 
+  assert(organization, "Organization could not found");
+
   if (!isModDefinition(mod) && !isResolvedModComponent(mod)) {
     const error = new InvalidTypeError(
       "Mod is not a ModDefinition or ResolvedModComponent",
@@ -322,7 +324,9 @@ function getOrganization(
 
   // If more than one sharing organization, use the first.
   // This is an uncommon scenario.
-  return organizations.find((org) => sharing.organizations.includes(org.id));
+  return organizations.find(
+    (org) => org.id && sharing.organizations.includes(org.id),
+  );
 }
 
 /**
