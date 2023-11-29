@@ -38,6 +38,7 @@ import { Events } from "@/telemetry/events";
 
 type TabId = number;
 
+// Arbitrary number of tabs above which performance *might* be degraded
 const LARGE_AMOUNT_OF_TABS = 20;
 
 // TODO: One tab could have multiple targets, but `tabToTarget` currently only supports one at a time
